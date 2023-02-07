@@ -265,14 +265,17 @@ class OntoCAPE_Material(BaseOntology):
         else:
             raise ValueError(f"Multiple solutes found in {self.instance_iri} given list of species {lst_species}")
 
-class InputChemical(OntoCAPE_Material):
+class Chemical(OntoCAPE_Material):
+    clz: str = ONTOREACTION_CHEMICAL
+
+class InputChemical(Chemical):
     clz: str = ONTOREACTION_INPUTCHEMICAL
 
     def is_reactant_stream(self, reactant_species_iris: List[str]) -> bool:
         # It is a reactant stream if any of the species in the InputChemical appears in reactant_species_iris
         return any([pc.representsOccurenceOf in reactant_species_iris for pc in self.thermodynamicBehaviour.isComposedOfSubsystem])
 
-class OutputChemical(OntoCAPE_Material):
+class OutputChemical(Chemical):
     clz: str = ONTOREACTION_OUTPUTCHEMICAL
 
 class OntoKin_Species(BaseOntology):

@@ -98,7 +98,7 @@
 .
 
 ## Internal Standard instances
-# note that this should also be included in the AutoSampler solution part
+# note that this should also be included in the AutoSampler amount part
 :PhaseComponent_InternalStandard
     rdf:type OntoHPLC:InternalStandard;
     OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
@@ -400,7 +400,7 @@
 
 :ReagentBottle_1
     a OntoLab:ReagentBottle;
-    OntoVapourtec:isFilledWith :ChemicalSolution_1;
+    OntoVapourtec:isFilledWith :ChemicalAmount_1;
     OntoVapourtec:hasMaxLevel :ReagentBottle_1_level_max;
     OntoVapourtec:hasWarningLevel :ReagentBottle_1_level_warning;
     OntoVapourtec:hasFillLevel :ReagentBottle_1_level_fill;
@@ -453,7 +453,7 @@
 
 :ReagentBottle_2
     a OntoLab:ReagentBottle;
-    OntoVapourtec:isFilledWith :ChemicalSolution_2;
+    OntoVapourtec:isFilledWith :ChemicalAmount_2;
     OntoVapourtec:hasMaxLevel :ReagentBottle_2_level_max;
     OntoVapourtec:hasWarningLevel :ReagentBottle_2_level_warning;
     OntoVapourtec:hasFillLevel :ReagentBottle_2_level_fill;
@@ -506,7 +506,7 @@
 
 :ReagentBottle_3
     a OntoLab:ReagentBottle;
-    OntoVapourtec:isFilledWith :ChemicalSolution_3;
+    OntoVapourtec:isFilledWith :ChemicalAmount_3;
     OntoVapourtec:hasMaxLevel :ReagentBottle_3_level_max;
     OntoVapourtec:hasWarningLevel :ReagentBottle_3_level_warning;
     OntoVapourtec:hasFillLevel :ReagentBottle_3_level_fill;
@@ -893,25 +893,25 @@
 .
 
 ##################################
-## Chemical solutions instances ##
+## Chemical amounts instances ##
 ##################################
 
-:ChemicalSolution_1
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_1
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :ReagentBottle_1;
     ontocapecpsb:refersToMaterial :Material_1;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_2
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_2
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :ReagentBottle_2;
     ontocapecpsb:refersToMaterial :Material_2;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_3
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_3
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :ReagentBottle_3;
     ontocapecpsb:refersToMaterial :Material_3;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;

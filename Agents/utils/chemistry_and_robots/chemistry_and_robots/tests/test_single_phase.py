@@ -258,11 +258,11 @@ AUTOSAMPLERSITE_1 = AutoSamplerSite(
         instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Vial_1',
         clz='https://www.theworldavatar.com/kg/ontovapourtec/Vial',
         namespace_for_init=None,
-        isFilledWith=ChemicalSolution(
-            instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/ChemicalSolution_1',
-            clz='https://www.theworldavatar.com/kg/ontolab/ChemicalSolution',
+        isFilledWith=ChemicalAmount(
+            instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/ChemicalAmount_1',
+            clz='https://www.theworldavatar.com/kg/ontolab/ChemicalAmount',
             namespace_for_init=None,
-            refersToMaterial=OntoCAPE_Material(
+            refersToMaterial=Chemical(
                 instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/Material_1',
                 clz='http://www.theworldavatar.com/ontology/ontocape/material/material.owl#Material',
                 namespace_for_init=None,
@@ -402,7 +402,7 @@ def test_equal_single_phase(input_chemical, autosamplersite, desired_result):
     assert (input_chemical.thermodynamicBehaviour == autosamplersite.holds.isFilledWith.refersToMaterial.thermodynamicBehaviour) == desired_result
 
 @pytest.mark.parametrize(
-    "ontocape_material,chemical_species,desired_result",
+    "chemical,chemical_species,desired_result",
     [
         (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',True),
         (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',True),
@@ -421,5 +421,5 @@ def test_equal_single_phase(input_chemical, autosamplersite, desired_result):
         (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983',True),
     ],
 )
-def test_contains_chemical_species(ontocape_material, chemical_species, desired_result):
-    assert ontocape_material.contains_chemical_species(chemical_species) == desired_result
+def test_contains_chemical_species(chemical, chemical_species, desired_result):
+    assert chemical.contains_chemical_species(chemical_species) == desired_result

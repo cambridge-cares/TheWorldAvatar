@@ -363,7 +363,7 @@ def test_get_rxn_exp_assigned_to_r4_reactor(initialise_triples, r4_reactor_iri, 
     ],
 )
 def test_get_input_chemical_of_rxn_exp(initialise_triples, rxnexp_iris, rxn_input_chemical_dict):
-    """Also tests get_ontocape_material."""
+    """Also tests get_chemical."""
     sparql_client = initialise_triples
     dict_queried_input_chemical = sparql_client.get_input_chemical_of_rxn_exp(rxnexp_iris)
     for rxnexp_iri in rxnexp_iris:
@@ -635,7 +635,7 @@ def test_get_existing_hplc_report(initialise_triples):
     assert all(pt.instance_iri in TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value for pt in list_chrom_pts)
     hplc_report = sparql_client.get_existing_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
     assert all(pt in list_chrom_pts for pt in hplc_report.records)
-    assert hplc_report.generatedFor.instance_iri == TargetIRIs.CHEMICAL_SOLUTION_FOR_DUMMY_OUTPUTCHEMICAL_IRI.value
+    assert hplc_report.generatedFor.instance_iri == TargetIRIs.CHEMICAL_AMOUNT_FOR_DUMMY_OUTPUTCHEMICAL_IRI.value
     assert hplc_report.remoteFilePath is not None
     assert hplc_report.localFilePath is not None
     assert hplc_report.lastLocalModifiedAt > 0
@@ -688,19 +688,19 @@ def test_identify_rxn_exp_when_uploading_hplc_report(initialise_triples, hplc_di
     assert rxn_exp == expected_rxn_exp
 
 @pytest.mark.parametrize(
-    "local_file_path,hplc_digital_twin,chemical_solution_iri,internal_standard_species,internal_standard_run_conc,hplc_method_iri",
+    "local_file_path,hplc_digital_twin,chemical_amount_iri,internal_standard_species,internal_standard_run_conc,hplc_method_iri",
     [
-        (conftest.HPLC_XLS_REPORT_FILE, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
-        (conftest.HPLC_TXT_REPORT_FILE, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
-        (conftest.HPLC_XLS_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
-        (conftest.HPLC_TXT_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
-        (conftest.HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
-        (conftest.HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
-        (conftest.HPLC_XLS_REPORT_FILE_NO_PRODUCT, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
-        (conftest.HPLC_TXT_REPORT_FILE_NO_PRODUCT, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_AMOUNT_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_AMOUNT_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_AMOUNT_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_AMOUNT_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_AMOUNT_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_AMOUNT_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_NO_PRODUCT, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_AMOUNT_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_NO_PRODUCT, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_AMOUNT_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
     ],
 )
-def test_upload_download_process_raw_hplc_report(initialise_triples, generate_random_download_path, local_file_path, hplc_digital_twin, chemical_solution_iri, internal_standard_species, internal_standard_run_conc, hplc_method_iri):
+def test_upload_download_process_raw_hplc_report(initialise_triples, generate_random_download_path, local_file_path, hplc_digital_twin, chemical_amount_iri, internal_standard_species, internal_standard_run_conc, hplc_method_iri):
     """This is an integration test of five methods that are called by different agents: upload_raw_hplc_report_to_kg, collect_triples_for_hplc_job,
     get_raw_hplc_report_remote_path_and_extension, download_remote_raw_hplc_report, and process_raw_hplc_report."""
     sparql_client = initialise_triples
@@ -714,9 +714,9 @@ def test_upload_download_process_raw_hplc_report(initialise_triples, generate_ra
         hplc_digital_twin=hplc_digital_twin
     )
 
-    # Second make the connection between HPLCReport and ChemicalSolution (as part of Execution Agent)
+    # Second make the connection between HPLCReport and ChemicalAmount (as part of Execution Agent)
     g = Graph()
-    g = sparql_client.collect_triples_for_hplc_job("http://placeholder/rxn_exp_"+str(uuid.uuid4()), chemical_solution_iri, hplc_digital_twin, hplc_report_iri, hplc_method_iri, g)
+    g = sparql_client.collect_triples_for_hplc_job("http://placeholder/rxn_exp_"+str(uuid.uuid4()), chemical_amount_iri, hplc_digital_twin, hplc_report_iri, hplc_method_iri, g)
     sparql_client.uploadGraph(g)
 
     # Third download uploaded HPLC report file, make sure the content is the same
@@ -754,13 +754,13 @@ def test_upload_download_process_raw_hplc_report(initialise_triples, generate_ra
         assert pt.hasPeakArea.hasValue.hasNumericalValue > 0
         assert pt.hasPeakArea.hasValue.hasUnit is not None
     dct_phase_comp = {pt.indicatesComponent.instance_iri:pt.indicatesComponent for pt in list_chrom_pts if not pt.unidentified}
-    chemical_solution_instance = hplc_report_instance.generatedFor
-    assert chemical_solution_instance.instance_iri == chemical_solution_iri
-    dct_phase_comp_chemical_solution = {pc.instance_iri:pc for pc in chemical_solution_instance.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem}
-    assert len(dct_phase_comp) == len(dct_phase_comp_chemical_solution)
-    assert all([dct_phase_comp[pc] == dct_phase_comp_chemical_solution[pc] for pc in dct_phase_comp])
-    dct_conc_phase_comp = {pc.hasProperty.instance_iri:pc.hasProperty for pc in chemical_solution_instance.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem}
-    dct_conc_composition = {conc.instance_iri:conc for conc in chemical_solution_instance.refersToMaterial.thermodynamicBehaviour.has_composition.comprisesDirectly}
+    chemical_amount_instance = hplc_report_instance.generatedFor
+    assert chemical_amount_instance.instance_iri == chemical_amount_iri
+    dct_phase_comp_chemical_amount = {pc.instance_iri:pc for pc in chemical_amount_instance.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem}
+    assert len(dct_phase_comp) == len(dct_phase_comp_chemical_amount)
+    assert all([dct_phase_comp[pc] == dct_phase_comp_chemical_amount[pc] for pc in dct_phase_comp])
+    dct_conc_phase_comp = {pc.hasProperty.instance_iri:pc.hasProperty for pc in chemical_amount_instance.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem}
+    dct_conc_composition = {conc.instance_iri:conc for conc in chemical_amount_instance.refersToMaterial.thermodynamicBehaviour.has_composition.comprisesDirectly}
     assert len(dct_conc_phase_comp) == len(dct_conc_composition)
     assert all([dct_conc_phase_comp[conc] == dct_conc_composition[conc] for conc in dct_conc_phase_comp])
 
@@ -876,14 +876,14 @@ def test_register_agent_with_hardware(initialise_triples):
         hardware_iri, onto.ONTOLAB_ISMANAGEDBY, agent_iri
     ))
 
-def test_connect_hplc_report_with_chemical_solution(initialise_triples):
+def test_connect_hplc_report_with_chemical_amount(initialise_triples):
     sparql_client = initialise_triples
     hplc_report_iri = "http://"+str(uuid.uuid4())
-    chemical_solution_iri = "http://"+str(uuid.uuid4())
-    sparql_client.connect_hplc_report_with_chemical_solution(
-        hplc_report_iri=hplc_report_iri, chemical_solution_iri=chemical_solution_iri)
+    chemical_amount_iri = "http://"+str(uuid.uuid4())
+    sparql_client.connect_hplc_report_with_chemical_amount(
+        hplc_report_iri=hplc_report_iri, chemical_amount_iri=chemical_amount_iri)
     assert sparql_client.check_if_triple_exist(
-        hplc_report_iri, onto.ONTOHPLC_GENERATEDFOR, chemical_solution_iri)
+        hplc_report_iri, onto.ONTOHPLC_GENERATEDFOR, chemical_amount_iri)
 
 @pytest.mark.parametrize(
     "local_file_path,hplc_digital_twin",
@@ -993,29 +993,29 @@ def test_update_vapourtec_autosampler_liquid_level_millilitre(initialise_triples
     assert all([(dct_site_loop_volume[iri] - dct_site_loop_volume_updated_again[iri]) < 0.0001 for iri in dct_site_loop_volume_updated_again])
 
 @pytest.mark.parametrize(
-    "amount_of_chemical_solution",
+    "amount_of_chemical_amount",
     [
         (5),
         (6),
     ],
 )
-def test_create_chemical_solution_for_reaction_outlet(initialise_triples, amount_of_chemical_solution):
+def test_create_chemical_amount_for_reaction_outlet(initialise_triples, amount_of_chemical_amount):
     sparql_client = initialise_triples
 
     autosampler = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
     empty_site = [site.instance_iri for site in autosampler.hasSite if site.holds.isFilledWith is None][0]
-    g = sparql_client.create_chemical_solution_for_reaction_outlet(
-        autosampler_site_iri=empty_site, amount_of_chemical_solution=amount_of_chemical_solution)
+    g = sparql_client.create_chemical_amount_for_reaction_outlet(
+        autosampler_site_iri=empty_site, amount_of_chemical_amount=amount_of_chemical_amount)
 
-    qres = g.query("""SELECT ?chemical_solution_iri WHERE {?chemical_solution_iri rdf:type <%s>.}""" % onto.ONTOLAB_CHEMICALSOLUTION)
+    qres = g.query("""SELECT ?chemical_amount_iri WHERE {?chemical_amount_iri rdf:type <%s>.}""" % onto.ONTOLAB_CHEMICALAMOUNT)
     assert len(qres) == 1
     for row in qres:
-        chemical_solution_iri = row.chemical_solution_iri
+        chemical_amount_iri = row.chemical_amount_iri
     autosampler_updated = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
     dct_site_loop_volume = {site.instance_iri:site.holds.hasFillLevel.hasValue.hasNumericalValue for site in autosampler_updated.hasSite}
-    dct_site_chemical_solution = {site.instance_iri:site.holds.isFilledWith.instance_iri for site in autosampler_updated.hasSite if site.holds.isFilledWith is not None}
-    assert dct_site_loop_volume[empty_site] == amount_of_chemical_solution
-    assert dct_site_chemical_solution[empty_site] == chemical_solution_iri.toPython()
+    dct_site_chemical_amount = {site.instance_iri:site.holds.isFilledWith.instance_iri for site in autosampler_updated.hasSite if site.holds.isFilledWith is not None}
+    assert dct_site_loop_volume[empty_site] == amount_of_chemical_amount
+    assert dct_site_chemical_amount[empty_site] == chemical_amount_iri.toPython()
 
 def test_release_vapourtec_rs400_settings(initialise_triples):
     sparql_client = initialise_triples
@@ -1106,7 +1106,7 @@ def test_detect_new_hplc_report_from_hplc_derivation(initialise_triples):
     ],
 )
 def test_get_output_chemical_of_rxn_exp(initialise_triples, rxnexp_iris, rxn_input_chemical_dict):
-    """Also tests get_ontocape_material."""
+    """Also tests get_chemical."""
     sparql_client = initialise_triples
     dict_queried_output_chemical = sparql_client.get_output_chemical_of_rxn_exp(rxnexp_iris)
     for rxnexp_iri in rxnexp_iris:
@@ -1283,7 +1283,7 @@ def test_collect_triples_for_performance_indicators(initialise_triples):
         assert (None, None, Literal(performance_indicator.positionalID)) in g
         assert (None, None, URIRef(performance_indicator.yieldLimitingSpecies)) in g
 
-def test_collect_triples_for_output_chemical_of_chem_sol(initialise_triples):
+def test_collect_triples_for_output_chemical_of_chem_amount(initialise_triples):
     sparql_client = initialise_triples
 
     lst_phase_component = []
@@ -1303,11 +1303,11 @@ def test_collect_triples_for_output_chemical_of_chem_sol(initialise_triples):
             hasProperty=phase_component_conc,
             representsOccurenceOf="http://"+str(uuid.uuid4())
         ))
-    material_iri = "http://"+str(uuid.uuid4())
-    chemical_solution = onto.ChemicalSolution(
+    chemical_iri = "http://"+str(uuid.uuid4())
+    chemical_amount = onto.ChemicalAmount(
         instance_iri="http://"+str(uuid.uuid4()),
-        refersToMaterial=onto.OntoCAPE_Material(
-            instance_iri=material_iri,
+        refersToMaterial=onto.Chemical(
+            instance_iri=chemical_iri,
             thermodynamicBehaviour=onto.OntoCAPE_SinglePhase(
                 instance_iri="http://"+str(uuid.uuid4()),
                 hasStateOfAggregation=onto.OntoCAPE_StateOfAggregation(
@@ -1317,7 +1317,7 @@ def test_collect_triples_for_output_chemical_of_chem_sol(initialise_triples):
                     instance_iri="http://"+str(uuid.uuid4()),
                     comprisesDirectly=lst_phase_component_conc,
                 ),
-                representsThermodynamicBehaviorOf=material_iri
+                representsThermodynamicBehaviorOf=chemical_iri
             )
         ),
         fills="http://"+str(uuid.uuid4()),
@@ -1325,28 +1325,28 @@ def test_collect_triples_for_output_chemical_of_chem_sol(initialise_triples):
     rxn_exp_iri = "http://"+str(uuid.uuid4())
 
     g = Graph()
-    g = sparql_client.collect_triples_for_output_chemical_of_chem_sol(
-        chemical_solution=chemical_solution,
+    g = sparql_client.collect_triples_for_output_chemical_of_chem_amount(
+        chemical_amount=chemical_amount,
         rxn_exp_iri=rxn_exp_iri,
         g=g
     )
 
-    assert (URIRef(chemical_solution.instance_iri), URIRef(onto.ONTOCAPE_REFERSTOMATERIAL), URIRef(chemical_solution.refersToMaterial.instance_iri)) in g
-    assert (URIRef(rxn_exp_iri), URIRef(onto.ONTOREACTION_HASOUTPUTCHEMICAL), URIRef(chemical_solution.refersToMaterial.instance_iri)) in g
-    assert if_object_collected_in_graph(g, chemical_solution.refersToMaterial)
+    assert (URIRef(chemical_amount.instance_iri), URIRef(onto.ONTOCAPE_REFERSTOMATERIAL), URIRef(chemical_amount.refersToMaterial.instance_iri)) in g
+    assert (URIRef(rxn_exp_iri), URIRef(onto.ONTOREACTION_HASOUTPUTCHEMICAL), URIRef(chemical_amount.refersToMaterial.instance_iri)) in g
+    assert if_object_collected_in_graph(g, chemical_amount.refersToMaterial)
 
 def test_collect_triples_for_hplc_job(initialise_triples):
     sparql_client = initialise_triples
 
     g = Graph()
     rxn_exp_iri = "http://"+str(uuid.uuid4())
-    chemical_solution_iri = "http://"+str(uuid.uuid4())
+    chemical_amount_iri = "http://"+str(uuid.uuid4())
     hplc_digital_twin = "http://"+str(uuid.uuid4())
     hplc_report_iri = "http://"+str(uuid.uuid4())
     hplc_method_iri = "http://"+str(uuid.uuid4())
 
     g = sparql_client.collect_triples_for_hplc_job(
-        rxn_exp_iri=rxn_exp_iri, chemical_solution_iri=chemical_solution_iri,
+        rxn_exp_iri=rxn_exp_iri, chemical_amount_iri=chemical_amount_iri,
         hplc_digital_twin=hplc_digital_twin, hplc_report_iri=hplc_report_iri,
         hplc_method_iri=hplc_method_iri, g=g
     )
@@ -1359,7 +1359,7 @@ def test_collect_triples_for_hplc_job(initialise_triples):
     assert (URIRef(hplc_job_iri), URIRef(onto.ONTOHPLC_CHARACTERISES), URIRef(rxn_exp_iri)) in g
     assert (URIRef(hplc_job_iri), URIRef(onto.ONTOHPLC_USESMETHOD), URIRef(hplc_method_iri)) in g
     assert (URIRef(hplc_job_iri), URIRef(onto.ONTOHPLC_HASREPORT), URIRef(hplc_report_iri)) in g
-    assert (URIRef(hplc_report_iri), URIRef(onto.ONTOHPLC_GENERATEDFOR), URIRef(chemical_solution_iri)) in g
+    assert (URIRef(hplc_report_iri), URIRef(onto.ONTOHPLC_GENERATEDFOR), URIRef(chemical_amount_iri)) in g
 
 def test_collect_triples_for_chromatogram_point(initialise_triples):
     sparql_client = initialise_triples

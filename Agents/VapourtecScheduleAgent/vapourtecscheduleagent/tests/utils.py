@@ -72,23 +72,23 @@ def get_vapourtec_input_file_iri(derivation_iri: str, sparql_client):
     return sparql_client.performQuery(query)[0]['vapourtec_input_file']
 
 
-def get_chemical_solution_iri(derivation_iri: str, sparql_client):
-    query = """SELECT ?chemical_solution WHERE {?chemical_solution <%s> <%s>; a <%s>.}""" % (
-        cf.ONTODERIVATION_BELONGSTO, derivation_iri, cf.ONTOLAB_CHEMICALSOLUTION
+def get_chemical_amount_iri(derivation_iri: str, sparql_client):
+    query = """SELECT ?chemical_amount WHERE {?chemical_amount <%s> <%s>; a <%s>.}""" % (
+        cf.ONTODERIVATION_BELONGSTO, derivation_iri, cf.ONTOLAB_CHEMICALAMOUNT
     )
-    return sparql_client.performQuery(query)[0]['chemical_solution']
+    return sparql_client.performQuery(query)[0]['chemical_amount']
 
 def get_hplc_job(
     hplc_digital_twin,
     rxn_exp_iri,
-    chemical_solution_iri,
+    chemical_amount_iri,
     sparql_client
 ):
     query = """SELECT ?hplc_job WHERE {?hplc_job ^<%s> <%s>; <%s> <%s>; <%s> <%s>; <%s>/<%s> <%s>.}""" % (
         cf.ONTOHPLC_HASJOB, hplc_digital_twin,
         RDF.type.toPython(), cf.ONTOHPLC_HPLCJOB,
         cf.ONTOHPLC_CHARACTERISES, rxn_exp_iri,
-        cf.ONTOHPLC_HASREPORT, cf.ONTOHPLC_GENERATEDFOR, chemical_solution_iri
+        cf.ONTOHPLC_HASREPORT, cf.ONTOHPLC_GENERATEDFOR, chemical_amount_iri
     )
     response = sparql_client.performQuery(query)
     return [response[i]['hplc_job'] for i in range(len(response))]

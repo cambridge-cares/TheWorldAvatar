@@ -62,7 +62,7 @@ class VapourtecAgent(DerivationAgent):
         return [ONTOREACTION_REACTIONEXPERIMENT]
 
     def agent_output_concepts(self) -> list:
-        return [ONTOLAB_EQUIPMENTSETTINGS, ONTOVAPOURTEC_VAPOURTECINPUTFILE, ONTOLAB_CHEMICALSOLUTION]
+        return [ONTOLAB_EQUIPMENTSETTINGS, ONTOVAPOURTEC_VAPOURTECINPUTFILE, ONTOLAB_CHEMICALAMOUNT]
 
     def validate_inputs(self, http_request) -> bool:
         return super().validate_inputs(http_request)
@@ -205,23 +205,23 @@ class VapourtecAgent(DerivationAgent):
         # Send warnings if the liquid level of any vials is lower than the warning level
         # This can be done by checking the liquid level of all vials and reagent bottles via a periodic job
 
-        # Create chemical solution instance for the reaction outlet stream
-        # <chemical_solution> <fills> <vial>. <vial> <isFilledWith> <chemical_solution>. here we should write the vial location to the KG
+        # Create chemical amount instance for the reaction outlet stream
+        # <chemical_amount> <fills> <vial>. <vial> <isFilledWith> <chemical_amount>. here we should write the vial location to the KG
         # update <vial> <hasFillLevel>/<hasValue>/<hasNumericalValue> <xxx>.
         # (the rest information about vial should already be known as part of digital twin of autosampler)
         # TODO [limitation of API for now] the amount of collected chemicals (collection volume) should be retrieved properly
-        _amount_of_chemical_solution_ = 3
+        _amount_of_chemical_amount_ = 3
         if vapourtec_rs400.collects_to_fraction_collector():
-            chemical_solution_graph = self.sparql_client.create_chemical_solution_for_reaction_outlet(
+            chemical_amount_graph = self.sparql_client.create_chemical_amount_for_reaction_outlet(
                 autosampler_site_iri=col_site_iri,
-                amount_of_chemical_solution=_amount_of_chemical_solution_,
+                amount_of_chemical_amount=_amount_of_chemical_amount_,
             )
         else:
-            chemical_solution_graph = self.sparql_client.create_chemical_solution_for_outlet_to_waste(
+            chemical_amount_graph = self.sparql_client.create_chemical_amount_for_outlet_to_waste(
                 waste_bottle_iri=waste_bottle_iri,
-                amount_of_chemical_solution=_amount_of_chemical_solution_,
+                amount_of_chemical_amount=_amount_of_chemical_amount_,
             )
-        derivation_outputs.addGraph(chemical_solution_graph)
+        derivation_outputs.addGraph(chemical_amount_graph)
 
         # Remove the link between equipment settings and the digital twin of hardware
         # --> so within execution operation of each reaction experiment, the hardware got configured and released

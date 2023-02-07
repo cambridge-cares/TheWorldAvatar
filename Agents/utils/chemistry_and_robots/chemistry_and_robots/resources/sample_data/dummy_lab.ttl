@@ -97,7 +97,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 # all other peaks should be unidentified, perhaps with a rdfs:comment about their identity
 :HPLCReport_Dummy
     a ontohplc:HPLCReport;
-    ontohplc:generatedFor :ChemicalSolution_For_Dummy_OutputChemical;
+    ontohplc:generatedFor :ChemicalAmount_For_Dummy_OutputChemical;
     ontohplc:lastLocalModifiedAt "123"^^xsd:double;
     ontohplc:lastUploadedAt "125"^^xsd:double;
     ontohplc:remoteFilePath "http://placeholder_path"^^xsd:anyURI;
@@ -117,8 +117,8 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 # 1.55	15000 product benzalacetone
 # 3.55	120 internal standard
 # 4.55	20 impurity dibenzylideneacetone
-:ChemicalSolution_For_Dummy_OutputChemical
-    a ontolab:ChemicalSolution;
+:ChemicalAmount_For_Dummy_OutputChemical
+    a ontolab:ChemicalAmount;
     ontocapecpsb:refersToMaterial :OutputChemical_Dummy;
     ontovapourtec:fills :Vial_5;
     ontolab:containsUnidentifiedComponent "true"^^xsd:boolean;
@@ -943,7 +943,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :ReagentBottle_1_Dummy
     a ontolab:ReagentBottle;
-    ontovapourtec:isFilledWith :ChemicalSolution_1;
+    ontovapourtec:isFilledWith :ChemicalAmount_1;
     ontovapourtec:hasMaxLevel :ReagentBottle_1_level_max;
     ontovapourtec:hasWarningLevel :ReagentBottle_1_level_warning;
     ontovapourtec:hasFillLevel :ReagentBottle_1_level_fill;
@@ -1266,7 +1266,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 :Vial_1
     a ontovapourtec:Vial;
     ontovapourtec:isHeldIn :Site_1;
-    ontovapourtec:isFilledWith :ChemicalSolution_1;
+    ontovapourtec:isFilledWith :ChemicalAmount_1;
     ontovapourtec:hasMaxLevel :Vial_1_level_max;
     ontovapourtec:hasWarningLevel :Vial_1_level_warning;
     ontovapourtec:hasFillLevel :Vial_1_level_fill;
@@ -1314,7 +1314,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 :Vial_2
     a ontovapourtec:Vial;
     ontovapourtec:isHeldIn :Site_2;
-    ontovapourtec:isFilledWith :ChemicalSolution_2;
+    ontovapourtec:isFilledWith :ChemicalAmount_2;
     ontovapourtec:hasMaxLevel :Vial_2_level_max;
     ontovapourtec:hasWarningLevel :Vial_2_level_warning;
     ontovapourtec:hasFillLevel :Vial_2_level_fill;
@@ -1362,7 +1362,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 :Vial_3
     a ontovapourtec:Vial;
     ontovapourtec:isHeldIn :Site_3;
-    ontovapourtec:isFilledWith :ChemicalSolution_3;
+    ontovapourtec:isFilledWith :ChemicalAmount_3;
     ontovapourtec:hasMaxLevel :Vial_3_level_max;
     ontovapourtec:hasWarningLevel :Vial_3_level_warning;
     ontovapourtec:hasFillLevel :Vial_3_level_fill;
@@ -1410,7 +1410,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 :Vial_4
     a ontovapourtec:Vial;
     ontovapourtec:isHeldIn :Site_4;
-    ontovapourtec:isFilledWith :ChemicalSolution_4;
+    ontovapourtec:isFilledWith :ChemicalAmount_4;
     ontovapourtec:hasMaxLevel :Vial_4_level_max;
     ontovapourtec:hasWarningLevel :Vial_4_level_warning;
     ontovapourtec:hasFillLevel :Vial_4_level_fill;
@@ -1458,7 +1458,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 :Vial_5
     a ontovapourtec:Vial;
     ontovapourtec:isHeldIn :Site_5;
-    ontovapourtec:isFilledWith :ChemicalSolution_For_Dummy_OutputChemical;
+    ontovapourtec:isFilledWith :ChemicalAmount_For_Dummy_OutputChemical;
     ontovapourtec:hasMaxLevel :Vial_5_level_max;
     ontovapourtec:hasWarningLevel :Vial_5_level_warning;
     ontovapourtec:hasFillLevel :Vial_5_level_fill;
@@ -1642,32 +1642,32 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 .
 
 ##################################
-## Chemical solutions instances ##
+## Chemical amounts instances ##
 ##################################
 
-:ChemicalSolution_1
-    a ontolab:ChemicalSolution;
+:ChemicalAmount_1
+    a ontolab:ChemicalAmount;
     ontovapourtec:fills :Vial_1;
     ontocapecpsb:refersToMaterial :Material_1;
     ontolab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_2
-    a ontolab:ChemicalSolution;
+:ChemicalAmount_2
+    a ontolab:ChemicalAmount;
     ontovapourtec:fills :Vial_2;
     ontocapecpsb:refersToMaterial :Material_2;
     ontolab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_3
-    a ontolab:ChemicalSolution;
+:ChemicalAmount_3
+    a ontolab:ChemicalAmount;
     ontovapourtec:fills :Vial_3;
     ontocapecpsb:refersToMaterial :Material_3;
     ontolab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_4
-    a ontolab:ChemicalSolution;
+:ChemicalAmount_4
+    a ontolab:ChemicalAmount;
     ontovapourtec:fills :Vial_4;
     ontocapecpsb:refersToMaterial :Material_4;
     ontolab:containsUnidentifiedComponent "false"^^xsd:boolean;

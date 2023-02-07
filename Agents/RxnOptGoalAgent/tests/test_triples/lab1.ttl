@@ -98,7 +98,7 @@
 .
 
 ## Internal Standard instances
-# note that this should also be included in the AutoSampler solution part
+# note that this should also be included in the AutoSampler amount part
 :PhaseComponent_InternalStandard
     rdf:type OntoHPLC:InternalStandard;
     OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
@@ -678,7 +678,7 @@
 .
 
 ###########################################################
-## Create a few sites that hold input chemical solutions ##
+## Create a few sites that hold input chemical amounts ##
 ###########################################################
 :Site_1
     a OntoVapourtec:AutoSamplerSite;
@@ -689,7 +689,7 @@
 :Vial_1
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_1;
-    OntoVapourtec:isFilledWith :ChemicalSolution_1;
+    OntoVapourtec:isFilledWith :ChemicalAmount_1;
     OntoVapourtec:hasMaxLevel :Vial_1_level_max;
     OntoVapourtec:hasWarningLevel :Vial_1_level_warning;
     OntoVapourtec:hasFillLevel :Vial_1_level_fill;
@@ -737,7 +737,7 @@
 :Vial_2
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_2;
-    OntoVapourtec:isFilledWith :ChemicalSolution_2;
+    OntoVapourtec:isFilledWith :ChemicalAmount_2;
     OntoVapourtec:hasMaxLevel :Vial_2_level_max;
     OntoVapourtec:hasWarningLevel :Vial_2_level_warning;
     OntoVapourtec:hasFillLevel :Vial_2_level_fill;
@@ -785,7 +785,7 @@
 :Vial_3
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_3;
-    OntoVapourtec:isFilledWith :ChemicalSolution_3;
+    OntoVapourtec:isFilledWith :ChemicalAmount_3;
     OntoVapourtec:hasMaxLevel :Vial_3_level_max;
     OntoVapourtec:hasWarningLevel :Vial_3_level_warning;
     OntoVapourtec:hasFillLevel :Vial_3_level_fill;
@@ -833,7 +833,7 @@
 :Vial_4
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_4;
-    OntoVapourtec:isFilledWith :ChemicalSolution_4;
+    OntoVapourtec:isFilledWith :ChemicalAmount_4;
     OntoVapourtec:hasMaxLevel :Vial_4_level_max;
     OntoVapourtec:hasWarningLevel :Vial_4_level_warning;
     OntoVapourtec:hasFillLevel :Vial_4_level_fill;
@@ -881,7 +881,7 @@
 :Vial_5
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_5;
-    OntoVapourtec:isFilledWith :ChemicalSolution_5;
+    OntoVapourtec:isFilledWith :ChemicalAmount_5;
     OntoVapourtec:hasMaxLevel :Vial_5_level_max;
     OntoVapourtec:hasWarningLevel :Vial_5_level_warning;
     OntoVapourtec:hasFillLevel :Vial_5_level_fill;
@@ -929,7 +929,7 @@
 :Vial_6
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_6;
-    OntoVapourtec:isFilledWith :ChemicalSolution_6;
+    OntoVapourtec:isFilledWith :ChemicalAmount_6;
     OntoVapourtec:hasMaxLevel :Vial_6_level_max;
     OntoVapourtec:hasWarningLevel :Vial_6_level_warning;
     OntoVapourtec:hasFillLevel :Vial_6_level_fill;
@@ -977,7 +977,7 @@
 :Vial_7
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_7;
-    OntoVapourtec:isFilledWith :ChemicalSolution_7;
+    OntoVapourtec:isFilledWith :ChemicalAmount_7;
     OntoVapourtec:hasMaxLevel :Vial_7_level_max;
     OntoVapourtec:hasWarningLevel :Vial_7_level_warning;
     OntoVapourtec:hasFillLevel :Vial_7_level_fill;
@@ -1025,7 +1025,7 @@
 :Vial_8
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_8;
-    OntoVapourtec:isFilledWith :ChemicalSolution_8;
+    OntoVapourtec:isFilledWith :ChemicalAmount_8;
     OntoVapourtec:hasMaxLevel :Vial_8_level_max;
     OntoVapourtec:hasWarningLevel :Vial_8_level_warning;
     OntoVapourtec:hasFillLevel :Vial_8_level_fill;
@@ -1073,7 +1073,7 @@
 :Vial_9
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_9;
-    OntoVapourtec:isFilledWith :ChemicalSolution_9;
+    OntoVapourtec:isFilledWith :ChemicalAmount_9;
     OntoVapourtec:hasMaxLevel :Vial_9_level_max;
     OntoVapourtec:hasWarningLevel :Vial_9_level_warning;
     OntoVapourtec:hasFillLevel :Vial_9_level_fill;
@@ -1121,7 +1121,7 @@
 :Vial_10
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_10;
-    OntoVapourtec:isFilledWith :ChemicalSolution_10;
+    OntoVapourtec:isFilledWith :ChemicalAmount_10;
     OntoVapourtec:hasMaxLevel :Vial_10_level_max;
     OntoVapourtec:hasWarningLevel :Vial_10_level_warning;
     OntoVapourtec:hasFillLevel :Vial_10_level_fill;
@@ -1169,7 +1169,7 @@
 :Vial_11
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_11;
-    OntoVapourtec:isFilledWith :ChemicalSolution_11;
+    OntoVapourtec:isFilledWith :ChemicalAmount_11;
     OntoVapourtec:hasMaxLevel :Vial_11_level_max;
     OntoVapourtec:hasWarningLevel :Vial_11_level_warning;
     OntoVapourtec:hasFillLevel :Vial_11_level_fill;
@@ -1217,7 +1217,7 @@
 :Vial_12
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_12;
-    OntoVapourtec:isFilledWith :ChemicalSolution_12;
+    OntoVapourtec:isFilledWith :ChemicalAmount_12;
     OntoVapourtec:hasMaxLevel :Vial_12_level_max;
     OntoVapourtec:hasWarningLevel :Vial_12_level_warning;
     OntoVapourtec:hasFillLevel :Vial_12_level_fill;
@@ -1265,7 +1265,7 @@
 :Vial_13
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_13;
-    OntoVapourtec:isFilledWith :ChemicalSolution_13;
+    OntoVapourtec:isFilledWith :ChemicalAmount_13;
     OntoVapourtec:hasMaxLevel :Vial_13_level_max;
     OntoVapourtec:hasWarningLevel :Vial_13_level_warning;
     OntoVapourtec:hasFillLevel :Vial_13_level_fill;
@@ -1313,7 +1313,7 @@
 :Vial_14
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_14;
-    OntoVapourtec:isFilledWith :ChemicalSolution_14;
+    OntoVapourtec:isFilledWith :ChemicalAmount_14;
     OntoVapourtec:hasMaxLevel :Vial_14_level_max;
     OntoVapourtec:hasWarningLevel :Vial_14_level_warning;
     OntoVapourtec:hasFillLevel :Vial_14_level_fill;
@@ -1361,7 +1361,7 @@
 :Vial_15
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_15;
-    OntoVapourtec:isFilledWith :ChemicalSolution_15;
+    OntoVapourtec:isFilledWith :ChemicalAmount_15;
     OntoVapourtec:hasMaxLevel :Vial_15_level_max;
     OntoVapourtec:hasWarningLevel :Vial_15_level_warning;
     OntoVapourtec:hasFillLevel :Vial_15_level_fill;
@@ -1409,7 +1409,7 @@
 :Vial_16
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_16;
-    OntoVapourtec:isFilledWith :ChemicalSolution_16;
+    OntoVapourtec:isFilledWith :ChemicalAmount_16;
     OntoVapourtec:hasMaxLevel :Vial_16_level_max;
     OntoVapourtec:hasWarningLevel :Vial_16_level_warning;
     OntoVapourtec:hasFillLevel :Vial_16_level_fill;
@@ -1457,7 +1457,7 @@
 :Vial_17
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_17;
-    OntoVapourtec:isFilledWith :ChemicalSolution_17;
+    OntoVapourtec:isFilledWith :ChemicalAmount_17;
     OntoVapourtec:hasMaxLevel :Vial_17_level_max;
     OntoVapourtec:hasWarningLevel :Vial_17_level_warning;
     OntoVapourtec:hasFillLevel :Vial_17_level_fill;
@@ -1505,7 +1505,7 @@
 :Vial_18
     a OntoVapourtec:Vial;
     OntoVapourtec:isHeldIn :Site_18;
-    OntoVapourtec:isFilledWith :ChemicalSolution_18;
+    OntoVapourtec:isFilledWith :ChemicalAmount_18;
     OntoVapourtec:hasMaxLevel :Vial_18_level_max;
     OntoVapourtec:hasWarningLevel :Vial_18_level_warning;
     OntoVapourtec:hasFillLevel :Vial_18_level_fill;
@@ -1553,130 +1553,130 @@
 .
 
 ##################################
-## Chemical solutions instances ##
+## Chemical amounts instances ##
 ##################################
 
-:ChemicalSolution_1
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_1
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_1;
     ontocapecpsb:refersToMaterial :Material_1;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_2
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_2
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_2;
     ontocapecpsb:refersToMaterial :Material_1;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_3
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_3
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_3;
     ontocapecpsb:refersToMaterial :Material_1;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_4
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_4
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_4;
     ontocapecpsb:refersToMaterial :Material_1;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_5
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_5
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_5;
     ontocapecpsb:refersToMaterial :Material_1;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_6
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_6
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_6;
     ontocapecpsb:refersToMaterial :Material_1;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_7
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_7
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_7;
     ontocapecpsb:refersToMaterial :Material_2;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_8
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_8
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_8;
     ontocapecpsb:refersToMaterial :Material_2;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_9
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_9
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_9;
     ontocapecpsb:refersToMaterial :Material_2;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_10
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_10
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_10;
     ontocapecpsb:refersToMaterial :Material_2;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_11
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_11
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_11;
     ontocapecpsb:refersToMaterial :Material_2;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_12
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_12
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_12;
     ontocapecpsb:refersToMaterial :Material_2;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_13
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_13
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_13;
     ontocapecpsb:refersToMaterial :Material_3;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_14
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_14
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_14;
     ontocapecpsb:refersToMaterial :Material_3;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_15
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_15
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_15;
     ontocapecpsb:refersToMaterial :Material_3;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_16
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_16
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_16;
     ontocapecpsb:refersToMaterial :Material_3;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_17
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_17
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_17;
     ontocapecpsb:refersToMaterial :Material_3;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
-:ChemicalSolution_18
-    a OntoLab:ChemicalSolution;
+:ChemicalAmount_18
+    a OntoLab:ChemicalAmount;
     OntoVapourtec:fills :Site_18;
     ontocapecpsb:refersToMaterial :Material_3;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;

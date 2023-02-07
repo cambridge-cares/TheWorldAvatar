@@ -42,7 +42,7 @@ class HPLCAgent(DerivationAgent):
                 raise Exception("Agent <%s> registration with hardware <%s> failed." % (self.agentIRI, self.hplc_digital_twin))
 
     def agent_input_concepts(self) -> list:
-        return [ONTOREACTION_REACTIONEXPERIMENT, ONTOLAB_CHEMICALSOLUTION]
+        return [ONTOREACTION_REACTIONEXPERIMENT, ONTOLAB_CHEMICALAMOUNT]
 
     def agent_output_concepts(self) -> list:
         return [ONTOHPLC_HPLCJOB]
@@ -54,9 +54,9 @@ class HPLCAgent(DerivationAgent):
         # Record the time when the job starts
         start_timestamp = datetime.now().timestamp()
 
-        # Get the ChemicalSolution iri from the agent inputs (derivation_inputs)
+        # Get the ChemicalAmount iri from the agent inputs (derivation_inputs)
         try:
-            chemical_solution_iri = derivation_inputs.getIris(ONTOLAB_CHEMICALSOLUTION)[0]
+            chemical_amount_iri = derivation_inputs.getIris(ONTOLAB_CHEMICALAMOUNT)[0]
             rxn_exp_iri = derivation_inputs.getIris(ONTOREACTION_REACTIONEXPERIMENT)[0]
         except Exception as e:
             self.logger.error(e)
@@ -87,7 +87,7 @@ class HPLCAgent(DerivationAgent):
         # NOTE i.e., earlier collected triples not being erased, we initialise a new g=Graph() here
         g = Graph()
         g = self.sparql_client.collect_triples_for_hplc_job(
-            rxn_exp_iri, chemical_solution_iri,
+            rxn_exp_iri, chemical_amount_iri,
             self.hplc_digital_twin, hplc_report_detected, self.current_hplc_method,
             g
         )

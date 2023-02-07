@@ -119,14 +119,14 @@ class PreparationMethod(BaseOntology):
 class OntoCAPE_MaterialAmount(BaseOntology):
     clz: str = ONTOCAPE_MATERIALAMOUNT
 
-class ChemicalSolution(OntoCAPE_MaterialAmount):
-    clz: str = ONTOLAB_CHEMICALSOLUTION
-    refersToMaterial: Optional[OntoCAPE_Material] # NOTE OntoCAPE_Material is made optional to accommodate the situation where ChemicalSolution is generated but not characterised yet, i.e. unknow concentration
+class ChemicalAmount(OntoCAPE_MaterialAmount):
+    clz: str = ONTOLAB_CHEMICALAMOUNT
+    refersToMaterial: Optional[Chemical] # NOTE Chemical is made optional to accommodate the situation where ChemicalAmount is generated but not characterised yet, i.e. unknow concentration
     # NOTE "fills" should point to the actual instance of ontovapourtec.Vial, but here we simplify it with only pointing to the iri
     # NOTE this is due to practical reason as we need to import ontovapourtec.Vial here, but it will cause circular import issue
     # NOTE str will be used for simplicity until a good way to resolve circular import can be find
-    # NOTE update_forward_ref() with 'Vial' annotation won't help as we will need to put ChemicalSolution.update_forward_ref() in ontovapourtec
-    # NOTE which won't work as developer will need to also import ontovapourtec to make ChemicalSolution fully resolvable
+    # NOTE update_forward_ref() with 'Vial' annotation won't help as we will need to put ChemicalAmount.update_forward_ref() in ontovapourtec
+    # NOTE which won't work as developer will need to also import ontovapourtec to make ChemicalAmount fully resolvable
     # NOTE which defeats the whole point of making them separate
     # NOTE "fills" should also be able to point to actual instance of ontolab.ReagentBottle
     # TODO [future work] provide super class for ontovapourtec.Vial and ontolab.ReagentBottle, e.g. ontolab.Container
@@ -135,13 +135,13 @@ class ChemicalSolution(OntoCAPE_MaterialAmount):
     containsUnidentifiedComponent: Optional[bool] = False
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
-        # <chemical_solution> <rdf:type> <ChemicalSolution>
+        # <chemical_amount> <rdf:type> <ChemicalAmount>
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
 
-        # <chemical_solution> <fills> <vial>
+        # <chemical_amount> <fills> <vial>
         g.add((URIRef(self.instance_iri), URIRef(ONTOVAPOURTEC_FILLS), URIRef(self.fills)))
 
-        # <chemical_solution> <refersToMaterial> <material>
+        # <chemical_amount> <refersToMaterial> <material>
         g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_REFERSTOMATERIAL), URIRef(self.refersToMaterial.instance_iri)))
         g = self.refersToMaterial.create_instance_for_kg(g)
 
@@ -150,14 +150,14 @@ class ChemicalSolution(OntoCAPE_MaterialAmount):
 
         if self.containsUnidentifiedComponent is not None:
             # NOTE only add this triple when it's known, otherwise just skip it
-            # <chemical_solution> <containsUnidentifiedComponent> boolean
+            # <chemical_amount> <containsUnidentifiedComponent> boolean
             g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_CONTAINSUNIDENTIFIEDCOMPONENT), Literal(self.containsUnidentifiedComponent)))
 
         return g
 
 class ReagentBottle(BaseOntology):
     clz: str = ONTOLAB_REAGENTBOTTLE
-    isFilledWith: ChemicalSolution
+    isFilledWith: ChemicalAmount
     hasFillLevel: OM_Volume
     hasWarningLevel: OM_Volume
     hasMaxLevel: OM_Volume

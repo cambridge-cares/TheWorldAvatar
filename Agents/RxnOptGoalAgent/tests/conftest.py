@@ -826,9 +826,9 @@ def assert_rxn_iterations(
         rxn_exp_instance = sparql_client.getReactionExperiment(rxn_exp_iri)[0]
         assert all([condition.translateToParameterSetting is not None for condition in rxn_exp_instance.hasReactionCondition if condition.clz != ONTOREACTION_REACTIONPRESSURE])
 
-        # Third, check there is chemical solution instance
-        chemical_solution_iri = get_chemical_solution_iri(vapourtec_derivation, sparql_client)
-        assert chemical_solution_iri is not None
+        # Third, check there is chemical amount instance
+        chemical_amount_iri = get_chemical_amount_iri(vapourtec_derivation, sparql_client)
+        assert chemical_amount_iri is not None
         new_rs400_list = sparql_client.get_vapourtec_rs400(
             list_vapourtec_rs400_iri=[vapourtec_agent.vapourtec_digital_twin for vapourtec_agent in vapourtec_agent_lst],
         )
@@ -837,8 +837,8 @@ def assert_rxn_iterations(
         new_autosampler = new_rs400.get_autosampler()
         new_autosampler_liquid_level = {s.holds.isFilledWith.instance_iri:s.holds.hasFillLevel.hasValue.hasNumericalValue for s in [site for site in new_autosampler.hasSite if site.holds.isFilledWith is not None]}
         # NOTE below is commented out as the reactor outlet is now send to the waste tank
-        # assert chemical_solution_iri in new_autosampler_liquid_level
-        # assert new_autosampler_liquid_level[chemical_solution_iri] >= 0
+        # assert chemical_amount_iri in new_autosampler_liquid_level
+        # assert new_autosampler_liquid_level[chemical_amount_iri] >= 0
 
         print(f"Vapourtec Derivation checked successfully for reaction experiment {rxn_exp_iri}")
 
@@ -849,7 +849,7 @@ def assert_rxn_iterations(
         lst_response = get_hplc_job(
             [hplc_agent.hplc_digital_twin for hplc_agent in hplc_agent_lst],
             new_exp_iri,
-            chemical_solution_iri,
+            chemical_amount_iri,
             sparql_client
         )
         assert len(lst_response) == 1
@@ -1003,19 +1003,19 @@ def get_vapourtec_input_file_iri(derivation_iri: str, sparql_client: PySparqlCli
     return response[0]['vapourtec_input_file']
 
 
-def get_chemical_solution_iri(derivation_iri: str, sparql_client: PySparqlClient):
+def get_chemical_amount_iri(derivation_iri: str, sparql_client: PySparqlClient):
     query = f"""
-        SELECT ?chemical_solution
+        SELECT ?chemical_amount
         WHERE {{
-            ?chemical_solution <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}>; a <{ONTOLAB_CHEMICALSOLUTION}>.
+            ?chemical_amount <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}>; a <{ONTOLAB_CHEMICALAMOUNT}>.
         }}"""
-    return sparql_client.performQuery(query)[0]['chemical_solution']
+    return sparql_client.performQuery(query)[0]['chemical_amount']
 
 
 def get_hplc_job(
     hplc_digital_twin_lst,
     rxn_exp_iri,
-    chemical_solution_iri,
+    chemical_amount_iri,
     sparql_client: PySparqlClient
 ):
     query = f"""
@@ -1025,7 +1025,7 @@ def get_hplc_job(
             ?hplc_job ^<{ONTOHPLC_HASJOB}> ?hplc_digital_twin;
                       a <{ONTOHPLC_HPLCJOB}>;
                       <{ONTOHPLC_CHARACTERISES}> <{rxn_exp_iri}>;
-                      <{ONTOHPLC_HASREPORT}>/<{ONTOHPLC_GENERATEDFOR}> <{chemical_solution_iri}>.
+                      <{ONTOHPLC_HASREPORT}>/<{ONTOHPLC_GENERATEDFOR}> <{chemical_amount_iri}>.
         }}"""
     return sparql_client.performQuery(query)
 

@@ -11,29 +11,29 @@ logger = agentlogging.get_logger('dev')
 pytest_plugins = ["docker_compose"]
 
 @pytest.mark.parametrize(
-    "rxn_exp_iri,report_path_in_pkg,hplc_digital_twin,chemical_solution_iri,hplc_method_iri,local_agent_test",
+    "rxn_exp_iri,report_path_in_pkg,hplc_digital_twin,chemical_amount_iri,hplc_method_iri,local_agent_test",
     [
-        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, True),
-        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, True),
-        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, False),
-        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, False),
-        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_INCOMPLETE_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, True),
-        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_INCOMPLETE_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, True),
-        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_INCOMPLETE_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, False),
-        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_INCOMPLETE_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, False),
-        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_UNIDENTIFIED_PEAKS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, True),
-        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_UNIDENTIFIED_PEAKS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, True),
-        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_UNIDENTIFIED_PEAKS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, False),
-        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_UNIDENTIFIED_PEAKS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, False),
-        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_NO_PRODUCT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, True),
-        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_NO_PRODUCT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, True),
-        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_NO_PRODUCT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, False),
-        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_NO_PRODUCT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_AMOUNT_1, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_AMOUNT_2, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_AMOUNT_1, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_AMOUNT_2, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_INCOMPLETE_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_AMOUNT_1, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_INCOMPLETE_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_AMOUNT_2, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_INCOMPLETE_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_AMOUNT_1, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_INCOMPLETE_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_AMOUNT_2, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_UNIDENTIFIED_PEAKS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_AMOUNT_1, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_UNIDENTIFIED_PEAKS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_AMOUNT_2, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_UNIDENTIFIED_PEAKS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_AMOUNT_1, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_UNIDENTIFIED_PEAKS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_AMOUNT_2, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_NO_PRODUCT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_AMOUNT_1, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_NO_PRODUCT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_AMOUNT_2, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_NO_PRODUCT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_AMOUNT_1, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_NO_PRODUCT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_AMOUNT_2, conftest.HPLC_METHOD_IRI, False),
     ],
 )
 def test_hplc_postpro_agent(
     initialise_client, retrieve_hplc_report, create_hplc_postpro_agent,
-    rxn_exp_iri, report_path_in_pkg, hplc_digital_twin, chemical_solution_iri, hplc_method_iri, local_agent_test
+    rxn_exp_iri, report_path_in_pkg, hplc_digital_twin, chemical_amount_iri, hplc_method_iri, local_agent_test
 ):
     sparql_client = initialise_client
     initialise_triples(sparql_client)
@@ -74,14 +74,14 @@ def test_hplc_postpro_agent(
         )
 
     # Make the below connections (note that in normal operation, this should be done as part of HPLCAgent and VapourtecExecutionAgent)
-    # <hplc_report> <OntoHPLC:generatedFor> <chemical_solution>
+    # <hplc_report> <OntoHPLC:generatedFor> <chemical_amount>
     # <hplc_job> <rdf:type> <OntoHPLC:HPLCJob>
     # <hplc_digital_twin> <OntoHPLC:hasJob> <hplc_job>
     # <hplc_job> <OntoHPLC:hasReport> <hplc_report>
     # <hplc_job> <OntoHPLC:characterises> <rxn_exp>
     # <hplc_job> <OntoHPLC:usesMethod> <hplc_method>
     g = Graph()
-    g = sparql_client.collect_triples_for_hplc_job(rxn_exp_iri, chemical_solution_iri, hplc_digital_twin, hplc_report_iri, hplc_method_iri, g)
+    g = sparql_client.collect_triples_for_hplc_job(rxn_exp_iri, chemical_amount_iri, hplc_digital_twin, hplc_report_iri, hplc_method_iri, g)
     sparql_client.uploadGraph(g)
 
     # Construct derivation_inputs with the iri of HPLCReport

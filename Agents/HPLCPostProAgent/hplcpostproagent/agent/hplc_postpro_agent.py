@@ -70,7 +70,7 @@ class HPLCPostProAgent(DerivationAgent):
 
         # Collect the generated OutputChemical triples, PerformanceIndicator triples and HPLCReport triples to derivation_outputs
         derivation_outputs.addGraph(self.sparql_client.collect_triples_for_performance_indicators(lst_performance_indicator, Graph()))
-        derivation_outputs.addGraph(self.sparql_client.collect_triples_for_output_chemical_of_chem_sol(hplc_report_instance.generatedFor, rxn_exp_instance.instance_iri, Graph()))
+        derivation_outputs.addGraph(self.sparql_client.collect_triples_for_output_chemical_of_chem_amount(hplc_report_instance.generatedFor, rxn_exp_instance.instance_iri, Graph()))
         derivation_outputs.addGraph(self.sparql_client.collect_triples_for_chromatogram_point(hplc_report_instance.records, hplc_report_iri, Graph()))
 
 

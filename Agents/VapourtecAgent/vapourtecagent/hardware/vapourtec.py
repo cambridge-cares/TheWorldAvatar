@@ -101,7 +101,7 @@ def create_exp_run_csv(
                 fc_header = np.hstack((fc_header, np.array(([[FC_AUTOSAMPLER_SITE + equip_settings.specifies.locationID],
                             [int(equip_settings.pumpsLiquidFrom.locationID)]]))))
                 fc_header = np.hstack((fc_header, np.array(([[FC_REAGENT_CONC + equip_settings.specifies.locationID],
-                            [round_setting_value(FC_REAGENT_CONC, get_reagent_conc_of_chem_solution(rxnexp, equip_settings.pumpsLiquidFrom.holds.isFilledWith))]]))))
+                            [round_setting_value(FC_REAGENT_CONC, get_reagent_conc_of_chem_amount(rxnexp, equip_settings.pumpsLiquidFrom.holds.isFilledWith))]]))))
             if equip_settings.hasSampleLoopVolumeSetting is not None:
                 # TODO need to check about the units
                 fc_header = np.hstack((fc_header, np.array(([[FC_REAGENT_USE],
@@ -121,21 +121,21 @@ def create_exp_run_csv(
 
     return run_csv_path
 
-def get_reagent_conc_of_chem_solution(rxnexp: ReactionExperiment, chem_solution: ChemicalSolution):
+def get_reagent_conc_of_chem_amount(rxnexp: ReactionExperiment, chem_amount: ChemicalAmount):
     list_reactant = [reac.hasUniqueSpecies for reac in rxnexp.isOccurenceOf.hasReactant]
     if rxnexp.isOccurenceOf.hasCatalyst is not None:
         list_catalyst = [cata.hasUniqueSpecies for cata in rxnexp.isOccurenceOf.hasCatalyst]
     else:
         list_catalyst = []
     # TODO retrieve the units as well here - we need a generalised way of handling the units
-    list_component = [component.representsOccurenceOf for component in chem_solution.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem]
-    dict_conc = {component.representsOccurenceOf:component.hasProperty.hasValue.numericalValue for component in chem_solution.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem}
+    list_component = [component.representsOccurenceOf for component in chem_amount.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem]
+    dict_conc = {component.representsOccurenceOf:component.hasProperty.hasValue.numericalValue for component in chem_amount.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem}
 
     reagent = list(set(list_reactant+list_catalyst) & set(list_component))
     if len(reagent) > 1:
-        raise Exception("Multiple reactant/catalyst (%s) identified within one chemical solution: %s" % (', '.join(reagent), str(chem_solution.json())))
+        raise Exception("Multiple reactant/catalyst (%s) identified within one chemical amount: %s" % (', '.join(reagent), str(chem_amount.json())))
     elif len(reagent) < 1:
-        raise Exception("No reactant/catalyst identified within one chemical solution: %s" % str(chem_solution.json()))
+        raise Exception("No reactant/catalyst identified within one chemical amount: %s" % str(chem_amount.json()))
     else:
         reagent = reagent[0]
 

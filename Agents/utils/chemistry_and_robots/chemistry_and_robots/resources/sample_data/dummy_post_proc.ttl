@@ -111,11 +111,11 @@
 :Vial_1_1
     a ontovapourtec:Vial;
     ontovapourtec:isHeldIn :Site_1_1;
-    ontovapourtec:isFilledWith :ChemicalSolution_1_1;
+    ontovapourtec:isFilledWith :ChemicalAmount_1_1;
 .
 
-:ChemicalSolution_1_1
-    a ontolab:ChemicalSolution;
+:ChemicalAmount_1_1
+    a ontolab:ChemicalAmount;
     ontovapourtec:fills :Vial_1_1;
     # ontolab:containsUnidentifiedComponent is not specified for this chemical as it is not post processed yet
 .
@@ -178,11 +178,11 @@
 :Vial_2_1
     a ontovapourtec:Vial;
     ontovapourtec:isHeldIn :Site_2_1;
-    ontovapourtec:isFilledWith :ChemicalSolution_2_1;
+    ontovapourtec:isFilledWith :ChemicalAmount_2_1;
 .
 
-:ChemicalSolution_2_1
-    a ontolab:ChemicalSolution;
+:ChemicalAmount_2_1
+    a ontolab:ChemicalAmount;
     ontovapourtec:fills :Vial_2_1;
     # ontolab:containsUnidentifiedComponent is not specified for this chemical as it is not post processed yet
 .
