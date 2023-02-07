@@ -122,6 +122,10 @@ public class DatasetLoader {
             OntopClient ontopClient = OntopClient.getInstance();
             Path directory = dataset.getDirectory();
             dataset.getOntopMappings().forEach(mapping -> ontopClient.updateOBDA(directory.resolve(mapping)));
+
+            // record added datasets in the default kb namespace
+            BlazegraphClient.getInstance().getRemoteStoreClient("kb")
+            .executeUpdate(dataset.getQueryStringForCataloging());
         }
     }
 
