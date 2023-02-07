@@ -122,24 +122,12 @@ class OntoCAPE_MaterialAmount(BaseOntology):
 class ChemicalAmount(OntoCAPE_MaterialAmount):
     clz: str = ONTOLAB_CHEMICALAMOUNT
     refersToMaterial: Optional[Chemical] # NOTE Chemical is made optional to accommodate the situation where ChemicalAmount is generated but not characterised yet, i.e. unknow concentration
-    # NOTE "fills" should point to the actual instance of ontovapourtec.Vial, but here we simplify it with only pointing to the iri
-    # NOTE this is due to practical reason as we need to import ontovapourtec.Vial here, but it will cause circular import issue
-    # NOTE str will be used for simplicity until a good way to resolve circular import can be find
-    # NOTE update_forward_ref() with 'Vial' annotation won't help as we will need to put ChemicalAmount.update_forward_ref() in ontovapourtec
-    # NOTE which won't work as developer will need to also import ontovapourtec to make ChemicalAmount fully resolvable
-    # NOTE which defeats the whole point of making them separate
-    # NOTE "fills" should also be able to point to actual instance of ontolab.ReagentBottle
-    # TODO [future work] provide super class for ontovapourtec.Vial and ontolab.ReagentBottle, e.g. ontolab.Container
-    fills: str
     isPreparedBy: Optional[PreparationMethod] = None
     containsUnidentifiedComponent: Optional[bool] = False
 
     def create_instance_for_kg(self, g: Graph) -> Graph:
         # <chemical_amount> <rdf:type> <ChemicalAmount>
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
-
-        # <chemical_amount> <fills> <vial>
-        g.add((URIRef(self.instance_iri), URIRef(ONTOVAPOURTEC_FILLS), URIRef(self.fills)))
 
         # <chemical_amount> <refersToMaterial> <material>
         g.add((URIRef(self.instance_iri), URIRef(ONTOCAPE_REFERSTOMATERIAL), URIRef(self.refersToMaterial.instance_iri)))
@@ -155,12 +143,16 @@ class ChemicalAmount(OntoCAPE_MaterialAmount):
 
         return g
 
-class ReagentBottle(BaseOntology):
-    clz: str = ONTOLAB_REAGENTBOTTLE
-    isFilledWith: ChemicalAmount
+
+class ChemicalContainer(BaseOntology):
+    clz: str = ONTOLAB_CHEMICALCONTAINER
+    isFilledWith: Optional[ChemicalAmount] = None # NOTE ChemicalAmount is made optional to accommodate situation where the container is empty
     hasFillLevel: OM_Volume
-    hasWarningLevel: OM_Volume
+    hasWarningLevel: OM_Volume # TODO [next iteration] notify researchers to fill up if the fill level is below the warning level
     hasMaxLevel: OM_Volume
+
+class ReagentBottle(ChemicalContainer):
+    clz: str = ONTOLAB_REAGENTBOTTLE
 
     def contains_chemical_species(
         self,

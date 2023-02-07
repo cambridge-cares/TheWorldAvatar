@@ -242,9 +242,9 @@
 
 :WasteReceptacle
     a OntoLab:WasteBottle;
-    OntoVapourtec:hasMaxLevel :WasteReceptacle_1_level_max;
-    OntoVapourtec:hasWarningLevel :WasteReceptacle_1_level_warning;
-    OntoVapourtec:hasFillLevel :WasteReceptacle_1_level_fill;
+    OntoLab:hasMaxLevel :WasteReceptacle_1_level_max;
+    OntoLab:hasWarningLevel :WasteReceptacle_1_level_warning;
+    OntoLab:hasFillLevel :WasteReceptacle_1_level_fill;
 .
 
 :WasteReceptacle_1_level_max
@@ -400,10 +400,10 @@
 
 :ReagentBottle_1
     a OntoLab:ReagentBottle;
-    OntoVapourtec:isFilledWith :ChemicalAmount_1;
-    OntoVapourtec:hasMaxLevel :ReagentBottle_1_level_max;
-    OntoVapourtec:hasWarningLevel :ReagentBottle_1_level_warning;
-    OntoVapourtec:hasFillLevel :ReagentBottle_1_level_fill;
+    OntoLab:isFilledWith :ChemicalAmount_1;
+    OntoLab:hasMaxLevel :ReagentBottle_1_level_max;
+    OntoLab:hasWarningLevel :ReagentBottle_1_level_warning;
+    OntoLab:hasFillLevel :ReagentBottle_1_level_fill;
 .
 
 :ReagentBottle_1_level_max
@@ -453,10 +453,10 @@
 
 :ReagentBottle_2
     a OntoLab:ReagentBottle;
-    OntoVapourtec:isFilledWith :ChemicalAmount_2;
-    OntoVapourtec:hasMaxLevel :ReagentBottle_2_level_max;
-    OntoVapourtec:hasWarningLevel :ReagentBottle_2_level_warning;
-    OntoVapourtec:hasFillLevel :ReagentBottle_2_level_fill;
+    OntoLab:isFilledWith :ChemicalAmount_2;
+    OntoLab:hasMaxLevel :ReagentBottle_2_level_max;
+    OntoLab:hasWarningLevel :ReagentBottle_2_level_warning;
+    OntoLab:hasFillLevel :ReagentBottle_2_level_fill;
 .
 
 :ReagentBottle_2_level_max
@@ -506,10 +506,10 @@
 
 :ReagentBottle_3
     a OntoLab:ReagentBottle;
-    OntoVapourtec:isFilledWith :ChemicalAmount_3;
-    OntoVapourtec:hasMaxLevel :ReagentBottle_3_level_max;
-    OntoVapourtec:hasWarningLevel :ReagentBottle_3_level_warning;
-    OntoVapourtec:hasFillLevel :ReagentBottle_3_level_fill;
+    OntoLab:isFilledWith :ChemicalAmount_3;
+    OntoLab:hasMaxLevel :ReagentBottle_3_level_max;
+    OntoLab:hasWarningLevel :ReagentBottle_3_level_warning;
+    OntoLab:hasFillLevel :ReagentBottle_3_level_fill;
 .
 
 :ReagentBottle_3_level_max
@@ -852,11 +852,11 @@
 .
 
 :Vial_56
-    a OntoVapourtec:Vial;
+    a OntoLab:Vial;
     OntoVapourtec:isHeldIn :Site_56;
-    OntoVapourtec:hasMaxLevel :Vial_56_level_max;
-    OntoVapourtec:hasWarningLevel :Vial_56_level_warning;
-    OntoVapourtec:hasFillLevel :Vial_56_level_fill;
+    OntoLab:hasMaxLevel :Vial_56_level_max;
+    OntoLab:hasWarningLevel :Vial_56_level_warning;
+    OntoLab:hasFillLevel :Vial_56_level_fill;
 .
 
 :Vial_56_level_max
@@ -898,21 +898,18 @@
 
 :ChemicalAmount_1
     a OntoLab:ChemicalAmount;
-    OntoVapourtec:fills :ReagentBottle_1;
     ontocapecpsb:refersToMaterial :Material_1;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
 :ChemicalAmount_2
     a OntoLab:ChemicalAmount;
-    OntoVapourtec:fills :ReagentBottle_2;
     ontocapecpsb:refersToMaterial :Material_2;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .
 
 :ChemicalAmount_3
     a OntoLab:ChemicalAmount;
-    OntoVapourtec:fills :ReagentBottle_3;
     ontocapecpsb:refersToMaterial :Material_3;
     OntoLab:containsUnidentifiedComponent "false"^^xsd:boolean;
 .

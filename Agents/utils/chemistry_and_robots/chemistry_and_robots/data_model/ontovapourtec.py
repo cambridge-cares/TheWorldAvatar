@@ -104,12 +104,8 @@ class PumpSettings(EquipmentSettings):
 
         return super().create_instance_for_kg(g, configure_digital_twin)
 
-class Vial(BaseOntology):
-    clz: str = ONTOVAPOURTEC_VIAL
-    isFilledWith: Optional[ChemicalAmount] = None # NOTE ChemicalAmount is made optional to accommodate situation where vial is empty
-    hasFillLevel: OM_Volume
-    hasWarningLevel: OM_Volume # notify researchers to fill up if the fill level is below the warning level
-    hasMaxLevel: OM_Volume
+class Vial(ChemicalContainer):
+    clz: str = ONTOLAB_VIAL
     isHeldIn: str # NOTE here we simplify the implementation to use str instead of the actual AutoSamplerSite
 
 class AutoSamplerSite(BaseOntology):

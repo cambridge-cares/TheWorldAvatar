@@ -684,25 +684,25 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     ?autosampler <{ONTOVAPOURTEC_HASSITE}> ?site.
                     ?site <{ONTOVAPOURTEC_HOLDS}> ?vial; <{ONTOVAPOURTEC_LOCATIONID}> ?loc.
                     OPTIONAL {{
-                        ?vial <{ONTOVAPOURTEC_HASFILLLEVEL}> ?fill_level.
+                        ?vial <{ONTOLAB_HASFILLLEVEL}> ?fill_level.
                         ?fill_level <{OM_HASVALUE}> ?fill_level_om_value.
                         ?fill_level_om_value <{OM_HASUNIT}> ?fill_level_unit;
                                              <{OM_HASNUMERICALVALUE}> ?fill_level_num_val.
                     }}
                     OPTIONAL {{
-                        ?vial <{ONTOVAPOURTEC_HASWARNINGLEVEL}> ?warn_level.
+                        ?vial <{ONTOLAB_HASWARNINGLEVEL}> ?warn_level.
                         ?warn_level <{OM_HASVALUE}> ?warn_level_om_value.
                         ?warn_level_om_value <{OM_HASUNIT}> ?warn_level_unit;
                                              <{OM_HASNUMERICALVALUE}> ?warn_level_num_val.
                     }}
                     OPTIONAL {{
-                        ?vial <{ONTOVAPOURTEC_HASMAXLEVEL}> ?max_level.
+                        ?vial <{ONTOLAB_HASMAXLEVEL}> ?max_level.
                         ?max_level <{OM_HASVALUE}> ?max_level_om_value.
                         ?max_level_om_value <{OM_HASUNIT}> ?max_level_unit;
                                             <{OM_HASNUMERICALVALUE}> ?max_level_num_val.
                     }}
                     OPTIONAL {{
-                        ?vial <{ONTOVAPOURTEC_ISFILLEDWITH}> ?chemical_amount.
+                        ?vial <{ONTOLAB_ISFILLEDWITH}> ?chemical_amount.
                         # NOTE below is made optional to accommodate the situation where the chemical amount is generated at the end of reaction
                         # NOTE but not characterised by HPLCPostPro yet, thus we don't have information about the concentation, hence not known if contains unidentified component
                         OPTIONAL {{?chemical_amount <{ONTOLAB_CONTAINSUNIDENTIFIEDCOMPONENT}> ?contains_unidentified_component.}}
@@ -1406,19 +1406,19 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         ?contains_unidentified_component
         WHERE {{
             VALUES ?reagent_bottle {{ <{reagent_bottle_iri}> }}
-            ?reagent_bottle <{ONTOVAPOURTEC_HASFILLLEVEL}> ?fill_level.
+            ?reagent_bottle <{ONTOLAB_HASFILLLEVEL}> ?fill_level.
             ?fill_level <{OM_HASVALUE}> ?fill_level_om_value.
             ?fill_level_om_value <{OM_HASUNIT}> ?fill_level_unit; <{OM_HASNUMERICALVALUE}> ?fill_level_num_val.
 
-            ?reagent_bottle <{ONTOVAPOURTEC_HASMAXLEVEL}> ?max_level.
+            ?reagent_bottle <{ONTOLAB_HASMAXLEVEL}> ?max_level.
             ?max_level <{OM_HASVALUE}> ?max_level_om_value.
             ?max_level_om_value <{OM_HASUNIT}> ?max_level_unit; <{OM_HASNUMERICALVALUE}> ?max_level_num_val.
 
-            ?reagent_bottle <{ONTOVAPOURTEC_HASWARNINGLEVEL}> ?warn_level.
+            ?reagent_bottle <{ONTOLAB_HASWARNINGLEVEL}> ?warn_level.
             ?warn_level <{OM_HASVALUE}> ?warn_level_om_value.
             ?warn_level_om_value <{OM_HASUNIT}> ?warn_level_unit; <{OM_HASNUMERICALVALUE}> ?warn_level_num_val.
 
-            ?reagent_bottle <{ONTOVAPOURTEC_ISFILLEDWITH}> ?chemical_amount.
+            ?reagent_bottle <{ONTOLAB_ISFILLEDWITH}> ?chemical_amount.
             ?chemical_amount <{ONTOLAB_CONTAINSUNIDENTIFIEDCOMPONENT}> ?contains_unidentified_component.
         }}"""
 
@@ -1984,9 +1984,15 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         )
 
         # create chemical amount instance
-        _response = self.performQuery("""SELECT ?amount ?local_report_file ?last_local_modification ?last_upload ?vial
-            WHERE{<%s> <%s> ?amount; <%s> ?local_report_file; <%s> ?last_local_modification; <%s> ?last_upload.
-            ?amount <%s> ?vial.}""" % (hplc_report_iri, ONTOHPLC_GENERATEDFOR, ONTOHPLC_LOCALFILEPATH, ONTOHPLC_LASTLOCALMODIFIEDAT, ONTOHPLC_LASTUPLOADEDAT, ONTOVAPOURTEC_FILLS))
+        _response = self.performQuery(
+            f"""SELECT ?amount ?local_report_file ?last_local_modification ?last_upload ?vial
+            WHERE{{
+                <{hplc_report_iri}> <{ONTOHPLC_GENERATEDFOR}> ?amount;
+                                    <{ONTOHPLC_LOCALFILEPATH}> ?local_report_file;
+                                    <{ONTOHPLC_LASTLOCALMODIFIEDAT}> ?last_local_modification;
+                                    <{ONTOHPLC_LASTUPLOADEDAT}> ?last_upload.
+                ?amount ^<{ONTOLAB_ISFILLEDWITH}> ?vial.
+            }}""")
         if len(_response) > 1:
             raise Exception("Multiple instances of ChemicalAmount identified for HPLCReport <%s>: %s" % (hplc_report_iri, str(_response)))
         elif len(_response) < 1:
@@ -2089,7 +2095,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                    WHERE {{
                        <{hplc_report_iri}> <{ONTOHPLC_GENERATEDFOR}> ?chemical_amount; <{ONTOHPLC_REMOTEFILEPATH}> ?report_path;
                        <{ONTOHPLC_LOCALFILEPATH}> ?local_report_file; <{ONTOHPLC_LASTLOCALMODIFIEDAT}> ?lastLocalModifiedAt;
-                       <{ONTOHPLC_LASTUPLOADEDAT}> ?lastUploadedAt. ?chemical_amount <{ONTOVAPOURTEC_FILLS}> ?vial.
+                       <{ONTOHPLC_LASTUPLOADEDAT}> ?lastUploadedAt. ?chemical_amount ^<{ONTOLAB_ISFILLEDWITH}> ?vial.
                        ?chemical_amount <{ONTOLAB_CONTAINSUNIDENTIFIEDCOMPONENT}> ?contains_unidentified_component.
                     }}"""
         response = self.performQuery(query)
@@ -2235,7 +2241,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 site = trimIRI(site)
                 delete_clause.append(f"""?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)} .""")
                 insert_clause.append(f"""?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)}_updated .""")
-                where_clause.append(f"""<{site}> <{ONTOVAPOURTEC_HOLDS}>/<{ONTOVAPOURTEC_HASFILLLEVEL}>/<{OM_HASVALUE}> ?measure_{str(i)} .
+                where_clause.append(f"""<{site}> <{ONTOVAPOURTEC_HOLDS}>/<{ONTOLAB_HASFILLLEVEL}>/<{OM_HASVALUE}> ?measure_{str(i)} .
                         ?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)} .
                         BIND (?liquid_level_{str(i)} {'-' if for_consumption else '+'} {level_change_of_site[site]} AS ?liquid_level_{str(i)}_updated).""")
 
@@ -2258,7 +2264,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 bottle = trimIRI(bottle)
                 delete_clause.append(f"""?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)} .""")
                 insert_clause.append(f"""?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)}_updated .""")
-                where_clause.append(f"""<{bottle}> <{ONTOVAPOURTEC_HASFILLLEVEL}>/<{OM_HASVALUE}> ?measure_{str(i)} . ?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)} . BIND (?liquid_level_{str(i)} {'-' if for_consumption else '+'} {level_change_of_bottle[bottle]} AS ?liquid_level_{str(i)}_updated).""")
+                where_clause.append(f"""<{bottle}> <{ONTOLAB_HASFILLLEVEL}>/<{OM_HASVALUE}> ?measure_{str(i)} . ?measure_{str(i)} <{OM_HASNUMERICALVALUE}> ?liquid_level_{str(i)} . BIND (?liquid_level_{str(i)} {'-' if for_consumption else '+'} {level_change_of_bottle[bottle]} AS ?liquid_level_{str(i)}_updated).""")
 
             update = """DELETE {""" + ' '.join(delete_clause) + """} INSERT {""" + ' '.join(insert_clause) + """} WHERE {""" + ' '.join(where_clause) + """}"""
             self.performUpdate(update)
@@ -2270,8 +2276,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         g.add((URIRef(chemical_amount_iri), RDF.type, URIRef(ONTOLAB_CHEMICALAMOUNT)))
         update = f"""{PREFIX_RDF} INSERT {{
             <{chemical_amount_iri}> rdf:type <{ONTOLAB_CHEMICALAMOUNT}>.
-            <{chemical_amount_iri}> <{ONTOVAPOURTEC_FILLS}> ?vial.
-            ?vial <{ONTOVAPOURTEC_ISFILLEDWITH}> <{chemical_amount_iri}>.
+            ?vial <{ONTOLAB_ISFILLEDWITH}> <{chemical_amount_iri}>.
             }} WHERE {{<{autosampler_site_iri}> <{ONTOVAPOURTEC_HOLDS}> ?vial.}}"""
         # NOTE hewe we don't add triple <chemical_amount> <containsUnidentifiedComponent> boolean
         # NOTE this will be added by method collect_triples_for_output_chemical_of_chem_amount called by HPLCPostProAgent
@@ -2285,6 +2290,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         return g
 
     # TODO add unit test
+    # TODO [future work] this method adds the triple <waste_bottle> <ontolab:isFilledWith> <chemical_amount>.
+    # TODO [future work] it needs a proper way to handle the waste bottle liquid level and its content
     def create_chemical_amount_for_outlet_to_waste(self, waste_bottle_iri: str, amount_of_chemical_amount: float):
         g = Graph()
         waste_bottle_iri = trimIRI(waste_bottle_iri)
@@ -2292,7 +2299,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         g.add((URIRef(chemical_amount_iri), RDF.type, URIRef(ONTOLAB_CHEMICALAMOUNT)))
         update = f"""{PREFIX_RDF} INSERT DATA {{
             <{chemical_amount_iri}> rdf:type <{ONTOLAB_CHEMICALAMOUNT}>.
-            <{chemical_amount_iri}> <{ONTOVAPOURTEC_FILLS}> <{waste_bottle_iri}>}}"""
+            <{waste_bottle_iri}> <{ONTOLAB_ISFILLEDWITH}> <{chemical_amount_iri}>.}}"""
         self.performUpdate(update)
         self.update_waste_bottle_liquid_level_millilitre(
             {waste_bottle_iri:amount_of_chemical_amount}, for_consumption=False

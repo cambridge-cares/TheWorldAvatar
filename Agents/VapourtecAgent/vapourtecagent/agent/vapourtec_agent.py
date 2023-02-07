@@ -206,7 +206,7 @@ class VapourtecAgent(DerivationAgent):
         # This can be done by checking the liquid level of all vials and reagent bottles via a periodic job
 
         # Create chemical amount instance for the reaction outlet stream
-        # <chemical_amount> <fills> <vial>. <vial> <isFilledWith> <chemical_amount>. here we should write the vial location to the KG
+        # <vial> <isFilledWith> <chemical_amount>. here we should write the vial location to the KG
         # update <vial> <hasFillLevel>/<hasValue>/<hasNumericalValue> <xxx>.
         # (the rest information about vial should already be known as part of digital twin of autosampler)
         # TODO [limitation of API for now] the amount of collected chemicals (collection volume) should be retrieved properly

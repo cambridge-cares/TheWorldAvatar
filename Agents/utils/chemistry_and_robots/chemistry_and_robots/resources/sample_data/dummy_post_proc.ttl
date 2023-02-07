@@ -11,10 +11,10 @@
 @prefix OntoCAPEPha:    <http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> .
 @prefix OntoCAPEUpp:    <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> .
 @prefix ontospecies:    <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> .
-@prefix ontovapourtec:    <https://www.theworldavatar.com/kg/ontovapourtec/> .
+@prefix OntoVapourtec:    <https://www.theworldavatar.com/kg/ontovapourtec/> .
 @prefix ontohplc:        <https://www.theworldavatar.com/kg/ontohplc/> .
 @prefix ontobpr:        <https://www.theworldavatar.com/kg/ontobpr/> .
-@prefix ontolab:        <https://www.theworldavatar.com/kg/ontolab/> .
+@prefix OntoLab:        <https://www.theworldavatar.com/kg/ontolab/> .
 @prefix :                <http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/> .
 @prefix dummylab:       <http://example.com/blazegraph/namespace/testlab/dummy_lab/> .
 
@@ -57,7 +57,7 @@
 ## First set of equipment ##
 ############################
 :AutomatedRxnPlatform_1
-    a ontolab:LabEquipment;
+    a OntoLab:LabEquipment;
     saref:consistsOf :VapourtecRS400_1;
     saref:consistsOf :HPLC_1;
 .
@@ -69,16 +69,16 @@
 .
 
 :VapourtecRS400_1
-    a ontovapourtec:VapourtecRS400;
+    a OntoVapourtec:VapourtecRS400;
     saref:consistsOf :VapourtecR4_1;
     saref:consistsOf :AutoSampler_1;
-    saref:hasState ontovapourtec:RunningReaction;
+    saref:hasState OntoVapourtec:RunningReaction;
 .
 
 :VapourtecR4_1
-    a ontovapourtec:VapourtecR4Reactor;
-    ontovapourtec:hasReactorVolume :VapourtecR4_1_ReactorVolume;
-    ontolab:isSpecifiedBy :ReactorSettings_1;
+    a OntoVapourtec:VapourtecR4Reactor;
+    OntoVapourtec:hasReactorVolume :VapourtecR4_1_ReactorVolume;
+    OntoLab:isSpecifiedBy :ReactorSettings_1;
 .
 
 :VapourtecR4_1_ReactorVolume
@@ -93,38 +93,37 @@
 .
 
 :ReactorSettings_1
-    a ontovapourtec:ReactorSettings;
-    ontolab:wasGeneratedFor <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70>;
+    a OntoVapourtec:ReactorSettings;
+    OntoLab:wasGeneratedFor <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70>;
 .
 
 :AutoSampler_1
-    a ontovapourtec:AutoSampler;
-    ontovapourtec:hasSite :Site_1_1;
+    a OntoVapourtec:AutoSampler;
+    OntoVapourtec:hasSite :Site_1_1;
 .
 
 :Site_1_1
-    a ontovapourtec:AutoSamplerSite;
-    ontovapourtec:locationID "1"^^xsd:string;
-    ontovapourtec:holds :Vial_1_1;
+    a OntoVapourtec:AutoSamplerSite;
+    OntoVapourtec:locationID "1"^^xsd:string;
+    OntoVapourtec:holds :Vial_1_1;
 .
 
 :Vial_1_1
-    a ontovapourtec:Vial;
-    ontovapourtec:isHeldIn :Site_1_1;
-    ontovapourtec:isFilledWith :ChemicalAmount_1_1;
+    a OntoLab:Vial;
+    OntoVapourtec:isHeldIn :Site_1_1;
+    OntoLab:isFilledWith :ChemicalAmount_1_1;
 .
 
 :ChemicalAmount_1_1
-    a ontolab:ChemicalAmount;
-    ontovapourtec:fills :Vial_1_1;
-    # ontolab:containsUnidentifiedComponent is not specified for this chemical as it is not post processed yet
+    a OntoLab:ChemicalAmount;
+    # OntoLab:containsUnidentifiedComponent is not specified for this chemical as it is not post processed yet
 .
 
 #############################
 ## Second set of equipment ##
 #############################
 :AutomatedRxnPlatform_2
-    a ontolab:LabEquipment;
+    a OntoLab:LabEquipment;
     saref:consistsOf :VapourtecRS400_2;
     saref:consistsOf :HPLC_2;
 .
@@ -136,16 +135,16 @@
 .
 
 :VapourtecRS400_2
-    a ontovapourtec:VapourtecRS400;
+    a OntoVapourtec:VapourtecRS400;
     saref:consistsOf :VapourtecR4_2;
     saref:consistsOf :AutoSampler_2;
-    saref:hasState ontovapourtec:RunningReaction;
+    saref:hasState OntoVapourtec:RunningReaction;
 .
 
 :VapourtecR4_2
-    a ontovapourtec:VapourtecR4Reactor;
-    ontovapourtec:hasReactorVolume :VapourtecR4_2_ReactorVolume;
-    ontolab:isSpecifiedBy :ReactorSettings_2;
+    a OntoVapourtec:VapourtecR4Reactor;
+    OntoVapourtec:hasReactorVolume :VapourtecR4_2_ReactorVolume;
+    OntoLab:isSpecifiedBy :ReactorSettings_2;
 .
 
 :VapourtecR4_2_ReactorVolume
@@ -160,29 +159,28 @@
 .
 
 :ReactorSettings_2
-    a ontovapourtec:ReactorSettings;
-    ontolab:wasGeneratedFor <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8>;
+    a OntoVapourtec:ReactorSettings;
+    OntoLab:wasGeneratedFor <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8>;
 .
 
 :AutoSampler_2
-    a ontovapourtec:AutoSampler;
-    ontovapourtec:hasSite :Site_2_1;
+    a OntoVapourtec:AutoSampler;
+    OntoVapourtec:hasSite :Site_2_1;
 .
 
 :Site_2_1
-    a ontovapourtec:AutoSamplerSite;
-    ontovapourtec:locationID "1"^^xsd:string;
-    ontovapourtec:holds :Vial_2_1;
+    a OntoVapourtec:AutoSamplerSite;
+    OntoVapourtec:locationID "1"^^xsd:string;
+    OntoVapourtec:holds :Vial_2_1;
 .
 
 :Vial_2_1
-    a ontovapourtec:Vial;
-    ontovapourtec:isHeldIn :Site_2_1;
-    ontovapourtec:isFilledWith :ChemicalAmount_2_1;
+    a OntoLab:Vial;
+    OntoVapourtec:isHeldIn :Site_2_1;
+    OntoLab:isFilledWith :ChemicalAmount_2_1;
 .
 
 :ChemicalAmount_2_1
-    a ontolab:ChemicalAmount;
-    ontovapourtec:fills :Vial_2_1;
-    # ontolab:containsUnidentifiedComponent is not specified for this chemical as it is not post processed yet
+    a OntoLab:ChemicalAmount;
+    # OntoLab:containsUnidentifiedComponent is not specified for this chemical as it is not post processed yet
 .
