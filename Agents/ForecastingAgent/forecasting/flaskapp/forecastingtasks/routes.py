@@ -19,8 +19,8 @@ from forecasting.errorhandling.exceptions import InvalidInput
 from py4jps import agentlogging
 
 # Initialise logger instance (ensure consistent logger level`)
-logger = agentlogging.get_logger('dev')
-#logger = agentlogging.get_logger('prod')
+#logger = agentlogging.get_logger('dev')
+logger = agentlogging.get_logger('prod')
 
 
 forecastingtasks_bp = Blueprint(
