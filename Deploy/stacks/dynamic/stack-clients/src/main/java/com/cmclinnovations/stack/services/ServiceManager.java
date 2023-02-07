@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
@@ -85,6 +87,47 @@ public final class ServiceManager {
             serviceNames.add(loadConfig(uri));
         }
         return serviceNames;
+    }
+
+    public ServiceConfig duplicateServiceConfig(String oldServiceName, String newServiceName) {
+
+        if (serviceConfigs.containsKey(newServiceName)) {
+            return serviceConfigs.get(newServiceName);
+        } else {
+            ServiceConfig newServiceConfig;
+            if (defaultServices.contains(oldServiceName)) {
+                try {
+                    Optional<URI> configFile = FileUtils.listFiles(DEFAULT_CONFIG_DIR).stream()
+                            .filter(uri -> uri.toString().endsWith("/" + oldServiceName + ".json"))
+                            .findFirst();
+
+                    newServiceConfig = objectMapper
+                            .readValue(configFile.get().toURL(), ServiceConfig.class);
+
+                } catch (IOException | URISyntaxException | NoSuchElementException ex) {
+                    throw new RuntimeException("Failed to load default service config '" + oldServiceName + "'.", ex);
+                }
+                // Ignore user specified services for now as their files clash with the dataset
+                // config files.
+                // } else if (userServices.contains(oldServiceName)) {
+                // try {
+                // newServiceConfig = objectMapper.readValue(
+                // USER_CONFIG_DIR.resolve(newServiceName + ".json").toUri().toURL(),
+                // ServiceConfig.class);
+                // } catch (IOException ex) {
+                // throw new RuntimeException("Failed to load user service config '" +
+                // oldServiceName + "'.", ex);
+                // }
+            } else {
+                throw new RuntimeException("No service config with name '" + oldServiceName + "'.");
+            }
+
+            serviceConfigs.put(newServiceName, newServiceConfig);
+
+            newServiceConfig.setName(newServiceName);
+
+            return newServiceConfig;
+        }
     }
 
     private ServiceConfig getServiceConfig(String serviceName) {
