@@ -51,7 +51,8 @@ def create_app():
                 asset_url = validate_asset_url(data["assetUrl"])
                 logger.debug("assetURL is valid!")
             else:
-                raise InvalidInputError("Missing `assetUrl` parameter in request!")
+                logger.error("Missing `assetUrl` parameter in request!")
+                return jsonify({"data": "Missing `assetUrl` parameter in request!"}), 400
         else:
             return "Invalid Request Method. Only POST request is accepted."
 
@@ -71,7 +72,7 @@ def create_app():
         logger.info("Generating the tilesets...")
         gen_tilesets(metadata, query_endpoint, update_endpoint)
         # Return the result in JSON format
-        return jsonify({"result": "IFC model has successfully been converted." +
+        return jsonify({"result": "IFC model has successfully been converted. " +
         "Please visit the 'data' directory for the outputs"})
     
     return app

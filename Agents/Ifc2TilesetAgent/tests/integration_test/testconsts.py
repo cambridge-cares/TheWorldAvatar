@@ -11,12 +11,31 @@ A module that provides all configurations, inputs, and expected results for test
 # NOTE Port must be mapped to host for this to work
 KG_ENDPOINT = "http://172.17.0.1:9999/blazegraph/namespace/kb/sparql"
 
+ROOT_TILE = dict(
+        x_center = 40,
+        y_center = 0,
+        z_center = 15,
+        length = 100,
+        width = 100,
+        height = 10
+    )
+CHILD_TILE = dict(
+    x_center = 10,
+    y_center = 0,
+    z_center = 5,
+    length = 50,
+    width = 50,
+    height = 6
+)
+
 DEFAULT_RESPONSE = "The Ifc2Tileset agent offers the following functionality at the specified API endpoint:<BR>"
 DEFAULT_RESPONSE += "<BR>"
 DEFAULT_RESPONSE += "(POST) request to convert IFC models to Cesium's 3D tilesets:<BR>"
 DEFAULT_RESPONSE += "&nbsp&nbsp [this_url]/api<BR>"
 DEFAULT_RESPONSE += "&nbsp&nbsp [this_url] is the host and port currently shown in the address bar"
 
+SUCCESSFUL_API_RESPONSE = "IFC model has successfully been converted. Please visit the 'data' directory for the outputs"
+INVALID_PARAM_API_RESPONSE = "Missing `assetUrl` parameter in request!"
 # ----------------------------------------------------------------------------------
 # Test inputs and expected results
 # ----------------------------------------------------------------------------------

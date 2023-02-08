@@ -5,11 +5,13 @@ A module that provides all pytest fixtures and utility functions for all integra
 """
 # Standard import
 import os
+import json
 
 # Third party import
 import pytest
 import ifcopenshell
 from ifcopenshell.api import run
+import yaml
 
 # Self import
 from agent import create_app
@@ -118,13 +120,23 @@ def assert_asset_geometries():
 # ----------------------------------------------------------------------------------
 
 @pytest.fixture(scope='module')
-def client():
-    app = create_app()
-    app.config.update({
-        "TESTING": True,
-    })
+def tileset_content():
+    """
+    A test function to read the contents of a tileset.json
 
-    yield app.test_client()
+    Argument:
+    json_filepath - File path to the tileset.json
+    Returns:
+    The tileset's contents as a Python dictionary
+    """
+    def _retrieve_tileset_contents(json_filepath):
+        # Read the results
+        json_output = open(json_filepath, "r", encoding="utf-8")
+        contents = json_output.read()  # Store as string
+        tileset_content = json.loads(contents)  # Convert to dictionary
+        json_output.close()
+        return tileset_content
+    return _retrieve_tileset_contents
 
 
 # ----------------------------------------------------------------------------------
@@ -144,6 +156,31 @@ def initialise_client():
     # Clean up operations at the end of the test
     clear_triplestore(kg_client)
     clear_loggers()
+
+@pytest.fixture(scope='function')
+def flaskapp():
+    app = create_app()
+    app.config.update({
+        "TESTING": True,
+    })
+    yield app.test_client()
+
+@pytest.fixture(scope='function')
+def sample_properties():
+    """
+    Generates a sample yaml file with required properties for retrieval
+    """
+    yaml_path = "./config/properties.yaml"
+    data = dict(
+        root_tile = testconsts.ROOT_TILE,
+        child_tile = testconsts.CHILD_TILE,
+        query_endpoint = testconsts.KG_ENDPOINT,
+        update_endpoint = testconsts.KG_ENDPOINT
+    )
+    # Generate the file
+    with open(yaml_path, 'w') as outfile:
+        yaml.dump(data, outfile)
+    return yaml_path
 
 # ----------------------------------------------------------------------------------
 # Helper functions
