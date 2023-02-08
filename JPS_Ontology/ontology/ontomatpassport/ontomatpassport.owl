@@ -1,0 +1,358 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#"
+     xml:base="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasImage -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasImage">
+        <rdfs:label xml:lang="en">Image</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasManufacturerRegistrationCountry -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasManufacturerRegistrationCountry">
+        <rdfs:range rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <rdfs:label xml:lang="en">Manufacturer registration country</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasSubComponent -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasSubComponent">
+        <rdfs:label xml:lang="en">Sub-component</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/goodrelations/v1#name -->
+
+    <owl:DatatypeProperty rdf:about="http://purl.org/goodrelations/v1#name">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasAutomaticTrackingOrScanning -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasAutomaticTrackingOrScanning">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:label xml:lang="en">Automatic tracking/scanning</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasBrandName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasBrandName">
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/goodrelations/v1#name"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label xml:lang="en">Brand name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasCEMarkingDocument -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasCEMarkingDocument">
+        <rdfs:label xml:lang="en">CE marking document</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasComponentOrProductName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasComponentOrProductName">
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/goodrelations/v1#name"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label xml:lang="en">Component or product name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasEPDDocument -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasEPDDocument">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:label xml:lang="en">EPD document</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasFunctionality -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasFunctionality">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label xml:lang="en">Functionality</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasGTINOrEAN -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasGTINOrEAN">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label xml:lang="en">GTIN/EAN</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasMSDSDocument -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasMSDSDocument">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <rdfs:label xml:lang="en">MSDS document</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasManufacturerName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasManufacturerName">
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/goodrelations/v1#name"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label xml:lang="en">Manufacturer name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasManufacturerRegistrationNumber -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasManufacturerRegistrationNumber">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label xml:lang="en">Manufacturer registration number</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasTradeName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasTradeName">
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/goodrelations/v1#name"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:label xml:lang="en">Trade name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://purl.org/dc/dcmitype/Image -->
+
+    <owl:Class rdf:about="http://purl.org/dc/dcmitype/Image">
+        <rdfs:label xml:lang="en">Image</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService -->
+
+    <owl:Class rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService">
+        <rdfs:label xml:lang="en">Product</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/HeatTransferCoefficient -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/HeatTransferCoefficient">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ThermalPerformance"/>
+        <rdfs:label xml:lang="en">Heat transfer coefficient</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#BulkModulus -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#BulkModulus">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity"/>
+        <rdfs:label xml:lang="en">Bulk modulus</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalComposition -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalComposition">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty"/>
+        <rdfs:label xml:lang="en">Chemical Composition</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:label xml:lang="en">Chemical Property</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#CompressiveStrength -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#CompressiveStrength">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity"/>
+        <rdfs:label xml:lang="en">Compressive strength</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Density -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Density">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Dimension -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Dimension">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <rdfs:label xml:lang="en">Dimension</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ExpectedLifetime -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ExpectedLifetime">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity"/>
+        <rdfs:label xml:lang="en">Expected lifetime</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ThermalPerformance"/>
+        <rdfs:label xml:lang="en">Resistance and rigidity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ShearModulus -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ShearModulus">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity"/>
+        <rdfs:label xml:lang="en">Shear modulus</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#TensileStrength -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#TensileStrength">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity"/>
+        <rdfs:label xml:lang="en">Tensile strength</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ThermalPerformance -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ThermalPerformance">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <rdfs:label xml:lang="en">Thermal performance</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Weight -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Weight">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <rdfs:label xml:lang="en">Weight</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#YoungModulus -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#YoungModulus">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity"/>
+        <rdfs:label xml:lang="en">Young&apos;s modulus</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ThermalPerformance"/>
+        <rdfs:label xml:lang="en">Thermal conductivity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property">
+        <rdfs:label xml:lang="en">Property</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://dbpedia.org/ontology/Country -->
+
+    <owl:Class rdf:about="https://dbpedia.org/ontology/Country">
+        <rdfs:label xml:lang="en">Country</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://w3id.org/mdo/core/PhysicalProperty -->
+
+    <owl:Class rdf:about="https://w3id.org/mdo/core/PhysicalProperty">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:label xml:lang="en">Physical Property</rdfs:label>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi -->
+

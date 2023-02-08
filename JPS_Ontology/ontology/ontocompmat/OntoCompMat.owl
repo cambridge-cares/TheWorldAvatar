@@ -39,6 +39,29 @@
     
 
 
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#hasAdvantageOverBulkMaterials -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#hasAdvantageOverBulkMaterials"/>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#hasConstituent -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#hasConstituent">
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeMaterial"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Matrix"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Reinforcement"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+        <rdfs:label xml:lang="en">has constituent</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#hasManufacturingProcessAffectingFactor -->
 
     <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#hasManufacturingProcessAffectingFactor">
@@ -204,6 +227,22 @@
     
 
 
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#HighStiffness -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#HighStiffness">
+        <rdfs:label xml:lang="en">High Stiffness</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#HighStrength -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#HighStrength">
+        <rdfs:label xml:lang="en">High Strength</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#InjectionMoulding -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#InjectionMoulding">
@@ -218,6 +257,22 @@
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#LaminatedComposite">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#StructuralComposite"/>
         <rdfs:label xml:lang="en">Laminated Composite</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#LowDensity -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#LowDensity">
+        <rdfs:label xml:lang="en">Low Density</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Matrix -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Matrix">
+        <rdfs:label xml:lang="en">Matrix</rdfs:label>
     </owl:Class>
     
 
@@ -325,6 +380,14 @@
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#CompositeProcessingTechnique"/>
         <rdfs:label xml:lang="en">Reaction Injection Moulding</rdfs:label>
         <skos:altLabel xml:lang="en">RIM</skos:altLabel>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Reinforcement -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/0/untitled-ontology-14#Reinforcement">
+        <rdfs:label xml:lang="en">Reinforcement</rdfs:label>
     </owl:Class>
     
 
