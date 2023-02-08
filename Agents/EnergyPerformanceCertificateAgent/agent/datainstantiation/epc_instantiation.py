@@ -1420,21 +1420,23 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                     logger.error('Unable to retrieve building usage category.')
                     raise KGException('Unable to retrieve building usage category.') from ex
                 
+                usage_list = []
                 # Map usage
                 if len(retrieved_usage) == 1:
-                    usage = USAGE_MAPPING.get(retrieved_usage)
+                    usage = USAGE_MAPPING.get(retrieved_usage[0].get('usage'))
                 else:
                     max_weight = 0
                     for u in retrieved_usage:
-                        query = get_usage_share(u)
+                        usage_list.append(u.get('usage'))
+                        query = get_usage_share(u.get('usage_iri'))
                         try:
                             weight = (kgclient_epc.performQuery(query))
                         except KGException as ex:
                             logger.error('Unable to retrieve usage share.')
                             raise KGException('Unable to retrieve usage share.') from ex
-                        if weight > max_weight:
-                            max_weight = weight
-                            primary_usage = u
+                        if float(weight[0].get('share')) > max_weight:
+                            max_weight = float(weight[0].get('share'))
+                            primary_usage = u.get('usage')
                     usage = USAGE_MAPPING.get(primary_usage)
 
                 # Extract all floor surface geometries for this building
@@ -1484,7 +1486,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                     # Optional (for styling)
                     'type': feature_type,
                     'usage': usage,
-                    'usage_categories': retrieved_usage,
+                    'usage_categories': usage_list,
                 }
                 if surf.get('height').any():
                     props['building height'] = float(surf['height'].iloc[0])

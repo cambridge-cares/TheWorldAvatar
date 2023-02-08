@@ -233,10 +233,10 @@ def get_matched_buildings() -> str:
 def get_buildings_usage(bldg_iri: str):
     # Retrieve usages of OntoBuiltEnv buildings 
     query = f"""
-        SELECT ?usage
+        SELECT ?usage ?usage_iri
         WHERE {{
           <{bldg_iri}> <{OBE_HAS_PROPERTY_USAGE}> ?usage_iri .
-          ?usage_iri <{RDF_TYPE} ?usage
+          ?usage_iri <{RDF_TYPE}> ?usage
         }}
     """
     # Remove unnecessary whitespaces
