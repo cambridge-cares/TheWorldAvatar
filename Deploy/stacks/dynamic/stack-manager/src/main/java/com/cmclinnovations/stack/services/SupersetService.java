@@ -29,7 +29,9 @@ public class SupersetService extends ContainerService {
 
     protected static final List<String> BODY_SUBSTITUTIONS_PATH_LIST = Arrays.asList(
             "/static", "/chart/", "/dashboard/", "/dataset/", "/savedqueryview/", "/tablemodelview/",
-            "/dashboardasync/", "/csstemplateasyncmodelview/", "api/v1/", "/login", "/logout", "/superset/");
+            "/dashboardasync/", "/csstemplatemodelview/", "/csstemplateasyncmodelview/", "api/v1/", "/login", "/logout",
+            "/superset/", "/csstemplatemodelview/", "/annotationlayer/", "/logmodelview/",
+            "/rowlevelsecurityfiltersmodelview/", "/roles/", "/users/");
     protected static final List<String> SUB_FILTER_TYPES_LIST = Arrays.asList(
             "text/css", "text/javascript", "application/javascript", "application/json");
     public static final String LOCATION = "location";
