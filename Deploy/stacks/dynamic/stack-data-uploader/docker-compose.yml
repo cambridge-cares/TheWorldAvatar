@@ -3,12 +3,6 @@ services:
   stack-data-uploader:
     image: docker.cmclinnovations.com/stack-data-uploader${IMAGE_SUFFIX}:1.8.0-podman-SNAPSHOT
     secrets:
-      - source: blazegraph
-        target: /blazegraph
-      - source: postgis
-        target: /postgis
-      - source: geoserver
-        target: /geoserver
       - blazegraph_password
       - postgis_password
       - geoserver_password
