@@ -61,9 +61,10 @@ if __name__ == '__main__':
     # res = performFederatedQuery(queryStr1, ["https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGridTopology", "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKEnergyConsumptionKG"])
     ONS_json = "http://statistics.data.gov.uk/sparql.json" 
     # ONS_json = "http://statistics.data.gov.uk/sparql"
-    # res = performFederatedQuery(queryStr, [ukdigitaltwinendpoint, ukdigitaltwinendpoint])
+    # res = performFederatedQuery(qstr, [ukdigitaltwinendpoint, ukdigitaltwinendpoint])
     # res = performFederatedQuery(queryONS, [ONS_json, ukdigitaltwinendpoint])
-    ## res = performQuery('ukdigitaltwin_test2', qstr)
+    res = performQuery("ukdigitaltwin_test3", qstr)
+    
     i = 0
     while i < 20:
     ## res = performQuery(ONS_json, qstr)

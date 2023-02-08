@@ -20,7 +20,7 @@ def pdGeo(data, class_label):
             feature = """{
                 "type": "Feature",
                 "properties": {
-                "Population": "%s",
+                "Population": %s,
                 "marker-color": "#ceb69c",
                 "marker-size": "small",
                 "marker-symbol": "marker"

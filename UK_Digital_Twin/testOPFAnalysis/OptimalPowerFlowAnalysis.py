@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 18 Jan 2023          #
+# Last Update Date: 03 Feb 2023          #
 ##########################################
 
 """
@@ -277,6 +277,8 @@ class OptimalPowerFlowAnalysis:
         self.pieChartPath = '.\\regionalEnergyBreakdownPieChart\\' + self.time_now + '\\'
         self.branchLossJSONPath = '.\\branchLossGeoJSONFiles\\' + self.time_now + '\\'
         self.majorEnergySourceJSONPath = '.\\majorEnergySourceJSONFiles\\' + self.time_now + '\\'
+        self.outputOfDifferentEnergySourceJSONPath = '.\\outputOfDifferentEnergySourceJSONFiles\\' + self.time_now + '\\'
+        self.regionalOutputJSONPath = '.\\regionalOutputJSONFiles\\' + self.time_now + '\\'
 
     """Find the power plants located in each demanding areas"""
     def powerPlantAndDemandingAreasMapper(self):
@@ -402,9 +404,10 @@ class OptimalPowerFlowAnalysis:
                     parse(iri, rule='IRI')
                 self.retrofitListBeforeSelection, self.genTypeSummary = queryOPFInput.queryGeneratorToBeRetrofitted_SelectedFuelOrGenerationTechnologyType(self.retrofitGenerationFuelOrGenType, self.topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel)
             print("===The number of the generator that goes to the site selection method is (before cluster):===", len(self.retrofitListBeforeSelection))           
+            
             ## cluster the close generators, self.retrofitListBeforeSelection will be changed
-            ##TODO:close the site cluster using the new site selection method instead
-            ##self.siteCluster()
+            ## self.siteCluster() ## site cluster is no longer used and this problem is dealed in the sp_pymoo.siteSelector
+            
             print("===The number of the generator that goes to the site selection method is (after cluster):===", len(self.retrofitListBeforeSelection))
             print("The total number of generator is", len(self.generatorNodeList))
 
@@ -1265,7 +1268,7 @@ class OptimalPowerFlowAnalysis:
                 genLatLon = self.ObjectSet[genName].latlon
                 smallLACode = self.ObjectSet[genName].smallAreaCode
                 regionLACode = self.ObjectSet[genName].RegionLACode
-                fuelType = self.generatorNodeList[gen_index][7]
+                fuelType = self.ObjectSet[genName].fueltype
                 genRawResult_eachWeight.append({'genIRI':genIRI, 'connectedBus': connectedBus, 'Pg_output': Pg_output, 'genLatLon': genLatLon, 'smallLACode': smallLACode, 'regionLACode': regionLACode, 'fuelType': fuelType})
 
             if self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0:
@@ -1479,7 +1482,7 @@ class OptimalPowerFlowAnalysis:
                                     if smallAreaCode == Area_LACode or smallAreaCode in Area_LACode:
                                         genOutput = float(gen['Pg_output']) * (24 * 365) / 1000
                                         netDemandingOfThisArea -= genOutput
-                                netDemanding_smallArea.append({'smallAreaCode': Area_LACode, 'netDemanding':netDemandingOfThisArea, 'smallAreaBoundery':boundary})
+                                netDemanding_smallArea.append({'smallAreaCode': Area_LACode, 'netDemanding':netDemandingOfThisArea, 'smallAreaBoundary':boundary})
                             netDemanding_smallArea_eachWeight.append(netDemanding_smallArea)
 
                             for regionalDemanding in self.regionalDemandingList:
@@ -1554,7 +1557,7 @@ class OptimalPowerFlowAnalysis:
                             genOutput = float(self.ObjectSet[SMRName].PG_OUTPUT) * (24 * 365) / 1000
                             demandingValue_smallArea -= genOutput   
                             counter_smr += 1  
-                    netDemanding_smallArea.append({'smallAreaCode': Area_LACode, 'netDemanding':demandingValue_smallArea, 'smallAreaBoundery':boundary})
+                    netDemanding_smallArea.append({'smallAreaCode': Area_LACode, 'netDemanding':demandingValue_smallArea, 'smallAreaBoundary':boundary})
                 if counter_gen + counter_smr != len(genNameList) + len(SMRNameList):
                     raiseExceptions('There are some generators in the list are not counted to fulfill the demanding, please check if the small LACode is properly assigned as an attribute of the generator/SMR instance.')
                 self.netDemandingList_smallAreaForEachWeight.append(netDemanding_smallArea)  
@@ -1689,7 +1692,7 @@ class OptimalPowerFlowAnalysis:
                     outPutData[genTypeLabel.index('NaturalGas')] += op
                     labelToBeDeleted.append('SourGas')
                     dataToBeDeleted.append(op)
-                elif not label in ['Solar', 'Oil', 'NaturalGas', 'Coal', 'Wind', 'Nuclear', 'SMR']:
+                elif not label in ['Solar', 'Oil', 'NaturalGas', 'Coal', 'Wind', 'Nuclear', 'SMR', 'Hydro']:
                     i = genTypeLabel.index(label)
                     labelToBeDeleted.append(label)
                     dataToBeDeleted.append(outPutData[i])
@@ -1782,7 +1785,7 @@ class OptimalPowerFlowAnalysis:
                             outPutData[genTypeLabel.index('NaturalGas')] += op
                             labelToBeDeleted.append('SourGas')
                             dataToBeDeleted.append(op)
-                    elif not label in ['Solar', 'Oil', 'NaturalGas', 'Coal', 'Wind', 'Nuclear', 'SMR']:
+                    elif not label in ['Solar', 'Oil', 'NaturalGas', 'Coal', 'Wind', 'Nuclear', 'SMR', 'Hydro']:
                         i = genTypeLabel.index(label)
                         labelToBeDeleted.append(label)
                         dataToBeDeleted.append(outPutData[i])
@@ -1874,7 +1877,7 @@ class OptimalPowerFlowAnalysis:
                             outPutData[genTypeLabel.index('NaturalGas')] += op
                             labelToBeDeleted.append('SourGas')
                             dataToBeDeleted.append(op)
-                    elif not label in ['Solar', 'Oil', 'NaturalGas', 'Coal', 'Wind', 'Nuclear', 'SMR']:
+                    elif not label in ['Solar', 'Oil', 'NaturalGas', 'Coal', 'Wind', 'Nuclear', 'SMR', 'Hydro']:
                         i = genTypeLabel.index(label)
                         labelToBeDeleted.append(label)
                         dataToBeDeleted.append(outPutData[i])
@@ -1923,9 +1926,9 @@ class OptimalPowerFlowAnalysis:
                     "type": "Feature",
                     "properties": {
                     "Fuel Type": "%s",
-                    "Capacity": "%s",
-                    "Output": "%s",
-                    "Carbon tax rate": "%s",
+                    "Capacity": %s,
+                    "Output": %s,
+                    "Carbon tax rate": %s,
                     "Status": "%s",
                     "marker-color": "%s",
                     "marker-size": "medium",
@@ -1939,7 +1942,7 @@ class OptimalPowerFlowAnalysis:
                         %s
                     ]
                     }
-                    },"""%(self.ObjectSet[extant_gen].fueltype, self.ObjectSet[extant_gen].capacity, round(float(self.ObjectSet[extant_gen].PG_OUTPUT), 2), self.ObjectSet[extant_gen].CarbonTax, 
+                    },"""%(self.ObjectSet[extant_gen].fueltype, float(self.ObjectSet[extant_gen].capacity), round(float(self.ObjectSet[extant_gen].PG_OUTPUT), 2), self.ObjectSet[extant_gen].CarbonTax, 
                 self.ObjectSet[extant_gen].status, gen_fuel_col(str(self.ObjectSet[extant_gen].fueltype)), self.ObjectSet[extant_gen].generatorNodeIRI, self.ObjectSet[extant_gen].latlon[1], self.ObjectSet[extant_gen].latlon[0])
                 # adding new line 
                 geojson_file += '\n'+feature
@@ -1972,9 +1975,9 @@ class OptimalPowerFlowAnalysis:
                     "type": "Feature",
                     "properties": {
                     "Fuel Type": "%s",
-                    "Capacity": "%s",
-                    "Output": "%s",
-                    "Carbon tax rate": "%s",
+                    "Capacity": %s,
+                    "Output": %s,
+                    "Carbon tax rate": %s,
                     "Status": "Closed",
                     "marker-color": "%s",
                     "marker-size": "medium",
@@ -1988,7 +1991,7 @@ class OptimalPowerFlowAnalysis:
                         %s
                     ]
                     }
-                    },"""%(self.ObjectSet[extant_gen].fueltype, self.ObjectSet[extant_gen].capacity, round(float(self.ObjectSet[extant_gen].PG_OUTPUT), 2), self.ObjectSet[extant_gen].CarbonTax, 
+                    },"""%(self.ObjectSet[extant_gen].fueltype, float(self.ObjectSet[extant_gen].capacity), round(float(self.ObjectSet[extant_gen].PG_OUTPUT), 2), self.ObjectSet[extant_gen].CarbonTax, 
                     gen_fuel_col(str(self.ObjectSet[extant_gen].fueltype)), self.ObjectSet[extant_gen].generatorNodeIRI, self.ObjectSet[extant_gen].latlon[1], self.ObjectSet[extant_gen].latlon[0])
                 # adding new line 
                 geojson_file += '\n'+feature
@@ -2024,8 +2027,8 @@ class OptimalPowerFlowAnalysis:
                 "type": "Feature",
                 "properties": {
                 "Fuel Type": "%s",
-                "Capacity": "%s",
-                "Output": "%s",
+                "Capacity": %s,
+                "Output": %s,
                 "Operation ratio": "%s",
                 "Number of SMR units": "%s",
                 "Carbon tax rate": "%s",
@@ -2039,7 +2042,7 @@ class OptimalPowerFlowAnalysis:
                     %s
                 ]
                 }
-            },"""%(self.ObjectSet[smr].fueltype, self.ObjectSet[smr].capacity, round(float(self.ObjectSet[smr].PG_OUTPUT),2), round(float(self.ObjectSet[smr].PG_OUTPUT)/float(self.ObjectSet[smr].capacity), 2), int(float(self.ObjectSet[smr].capacity)/self.SMRCapability), 
+            },"""%(self.ObjectSet[smr].fueltype, float(self.ObjectSet[smr].capacity), round(float(self.ObjectSet[smr].PG_OUTPUT),2), round(float(self.ObjectSet[smr].PG_OUTPUT)/float(self.ObjectSet[smr].capacity), 2), int(float(self.ObjectSet[smr].capacity)/self.SMRCapability), 
             self.ObjectSet[smr].CarbonTax, self.ObjectSet[smr].status, self.ObjectSet[smr].generatorNodeIRI,  self.ObjectSet[smr].latlon[1], self.ObjectSet[smr].latlon[0])
             # adding new line 
             geojson_file += '\n'+feature
@@ -2071,7 +2074,7 @@ class OptimalPowerFlowAnalysis:
                 "type": "Feature",
                 "properties": {
                 "Fuel Type": "%s",
-                "Capacity": "%s",
+                "Capacity": %s,
                 "Status": "Decommissioned",
                 "marker-color": "#000000",
                 "marker-size": "medium",
@@ -2084,7 +2087,7 @@ class OptimalPowerFlowAnalysis:
                     %s
                 ]
                 }
-                },"""%(dcgen[7], dcgen[6], dcgen[8][1], dcgen[8][0])
+                },"""%(dcgen[7], float(dcgen[6]), dcgen[8][1], dcgen[8][0])
             # adding new line 
             geojson_file += '\n'+feature
             
@@ -2159,7 +2162,7 @@ class OptimalPowerFlowAnalysis:
                             "features": ["""
                         # iterating over features (rows in results array)
                         for demanding in demanding_eachWeight:
-                            boundary =  ast.literal_eval(geojson.dumps(mapping(demanding ['smallAreaBoundery'])))
+                            boundary =  ast.literal_eval(geojson.dumps(mapping(demanding ['smallAreaBoundary'])))
                             # creating point feature 
                             feature = """{
                                 "type": "Feature",
@@ -2215,7 +2218,7 @@ class OptimalPowerFlowAnalysis:
                         "features": ["""
                     # iterating over features (rows in results array)
                     for demanding in specifiedDemandingList:
-                        boundary =  ast.literal_eval(geojson.dumps(mapping(demanding ['smallAreaBoundery'])))
+                        boundary =  ast.literal_eval(geojson.dumps(mapping(demanding ['smallAreaBoundary'])))
                         # creating point feature 
                         feature = """{
                             "type": "Feature",
@@ -2258,7 +2261,7 @@ class OptimalPowerFlowAnalysis:
                                 "features": ["""
                             # iterating over features (rows in results array)
                             for demanding in demanding_eachWeight:
-                                boundary =  ast.literal_eval(geojson.dumps(mapping(demanding ['smallAreaBoundery'])))
+                                boundary =  ast.literal_eval(geojson.dumps(mapping(demanding ['smallAreaBoundary'])))
                                 # creating point feature 
                                 feature = """{
                                     "type": "Feature",
@@ -2477,396 +2480,7 @@ class OptimalPowerFlowAnalysis:
                             print('---GeoJSON written successfully: net Demanding for regional areas---', file_label)
         
         return 
-
-    """This method is to generate the pie chart for regional energy breakdown"""
-    def EnergySupplyBreakDownPieChartCreator_RegionalAreas(self, energyBreakdownList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
-        ## check the storage path
-        self.mkdirPieChart('RegionalAreaEnergyBreakdown\\')
-        
-        weatherNameList = []
-        for weather in weatherConditionList:
-            weatherNameList.append(weather[2])
-        
-        if ifSpecifiedResults is True:
-            if specifiedConfigList == [] or specifiedConfigList == [[]]:
-                raise ValueError('specifiedConfigList should contain at list 1 non-empty list.')
-            for cf in specifiedConfigList:
-                if len(cf) < 3:
-                    raise ValueError('The sub list of the specifiedConfigList should contain at least 3 elements specifying the SMR number, carbon tax and weather condition.')
-                elif len(cf) == 3: ## SMR number, Carbon tax, weather condition 
-                    if not cf[0] in NumberOfSMRUnitList:
-                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
-                    else:
-                        smrIndex = NumberOfSMRUnitList.index(cf[0])
-                    if not cf[1] in CarbonTaxForOPFList:
-                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
-                    else:
-                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
-                    if not cf[2] in weatherNameList:
-                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
-                    else:
-                        weatherIndex = weatherNameList.index(cf[2])
-                    
-                    specifiedEnergyBreakdownList = energyBreakdownList[smrIndex][carbonTaxList][weatherIndex]
-                    
-                    genLabel_shortList = ['Renewable', 'Fossil fuels', 'Nuclear', 'Others'] ## specified short list of the gen type label 
-
-                    for i_weight, energyBreakdown_eachWeight in enumerate(specifiedEnergyBreakdownList):
-                        for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
-                            ## eliminate the zero items for the long list
-                            energyBreakdown_longList_withoutZero = []
-                            genLabel_longList_withoutZero = []
-                            for eb_i, eb in enumerate(energyBreakdown_eachRegion['percentageBreakdown']):
-                                if int(eb) != 0:
-                                    energyBreakdown_longList_withoutZero.append(eb)
-                                    genLabel_longList_withoutZero.append(energyBreakdown_eachRegion['genTypeLabel'][eb_i])
-
-                            ## convert the nuclear type into the Conventional Nuclear
-                            if 'Nuclear' in genLabel_longList_withoutZero:
-                                i_Nuclear = genLabel_longList_withoutZero.index('Nuclear')
-                                genLabel_longList_withoutZero[i_Nuclear] = 'Conventional Nuclear'
-
-                            if 'NaturalGas' in genLabel_longList_withoutZero:
-                                i_NaturalGas = genLabel_longList_withoutZero.index('NaturalGas')
-                                genLabel_longList_withoutZero[i_NaturalGas] = 'Natural Gas'
-
-                            ## populate the short list of the energy breakdown
-                            energyBreakdown_shortList = [0, 0, 0, 0]
-                            for gl_i, gl in enumerate(genLabel_longList_withoutZero):
-                                if gl in ['Solar', 'Wind']: 
-                                    energyBreakdown_shortList[0] += energyBreakdown_longList_withoutZero[gl_i]
-                                elif gl in ['Oil', 'NaturalGas', 'Coal']:
-                                    energyBreakdown_shortList[1] += energyBreakdown_longList_withoutZero[gl_i]
-                                elif gl in ['Conventional Nuclear', 'SMR']:
-                                    energyBreakdown_shortList[2] += energyBreakdown_longList_withoutZero[gl_i]
-                                else:
-                                    energyBreakdown_shortList[3] += energyBreakdown_longList_withoutZero[gl_i]
-
-                            ## eliminate the zero items for the short list
-                            energyBreakdown_shortList_withoutZero = [] 
-                            genLabel_shortList_withoutZero = []
-                            for ebs_i, ebs in enumerate(energyBreakdown_shortList):
-                                if int(ebs) != 0:
-                                    energyBreakdown_shortList_withoutZero.append(ebs)
-                                    genLabel_shortList_withoutZero.append(genLabel_shortList[ebs_i])
-                            
-                            ## rearrange the energyBreakdown_longList
-                            energyBreakdown_longList_withoutZero_rearrange = []
-                            genLabel_longList_withoutZero_rearrange = []
-                            colour_longList = [] ## colour list for long list 
-                            if 'Wind' in genLabel_longList_withoutZero:
-                                genLabel_longList_withoutZero_rearrange.append('Wind')
-                                i_label = genLabel_longList_withoutZero.index('Wind')
-                                energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                colour_longList.append("#13bef2")
-                            if 'Solar' in genLabel_longList_withoutZero:
-                                genLabel_longList_withoutZero_rearrange.append('Solar')
-                                i_label = genLabel_longList_withoutZero.index('Solar')
-                                energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                colour_longList.append("#ffcc33")
-                            if 'Natural Gas' in genLabel_longList_withoutZero:
-                                genLabel_longList_withoutZero_rearrange.append('NaturalGas')
-                                i_label = genLabel_longList_withoutZero.index('NaturalGas')
-                                energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                colour_longList.append("#1B2631")
-                            if 'Coal' in genLabel_longList_withoutZero:
-                                genLabel_longList_withoutZero_rearrange.append('Coal')
-                                i_label = genLabel_longList_withoutZero.index('Coal')
-                                energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                colour_longList.append("#2d37bc")
-                            if 'Oil' in genLabel_longList_withoutZero:
-                                genLabel_longList_withoutZero_rearrange.append('Oil')
-                                i_label = genLabel_longList_withoutZero.index('Oil')
-                                energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                colour_longList.append("#99A3A4")
-                            if 'Conventional Nuclear' in genLabel_longList_withoutZero:
-                                genLabel_longList_withoutZero_rearrange.append('Conventional Nuclear')
-                                i_label = genLabel_longList_withoutZero.index('Conventional Nuclear')
-                                energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                colour_longList.append("#285400")
-                            if 'SMR' in genLabel_longList_withoutZero:
-                                genLabel_longList_withoutZero_rearrange.append('SMR')
-                                i_label = genLabel_longList_withoutZero.index('SMR')
-                                energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                colour_longList.append("#1e8700")
-                            if 'Others' in genLabel_longList_withoutZero:
-                                genLabel_longList_withoutZero_rearrange.append('Others')
-                                i_label = genLabel_longList_withoutZero.index('Others')
-                                energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                colour_longList.append("#873600")
-
-                            ## colour for short list 
-                            colour_shortList = []
-                            if 'Renewable' in genLabel_shortList_withoutZero:
-                                colour_shortList.append("#6fb6eb")
-                            if 'Fossil fuels' in genLabel_shortList_withoutZero:
-                                colour_shortList.append("#5F676E")
-                            if 'Nuclear' in genLabel_shortList_withoutZero:
-                                colour_shortList.append("#6e996f")
-                            if 'Others' in genLabel_shortList_withoutZero:
-                                colour_shortList.append("#a16900")
-
-                            ## Create pie chart
-                            plt.pie(energyBreakdown_longList_withoutZero_rearrange, colors = colour_longList, startangle=90, frame=True) ##labels=genLabel_longList_withoutZero_rearrange, autopct='%1.1f%%',
-                            plt.pie(energyBreakdown_shortList_withoutZero, colors = colour_shortList, radius = 0.75, startangle = 90)  ## labels=genLabel_shortList_withoutZero,
-                            ## Convert the pie chart into a ring
-                            centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
-                            fig = plt.gcf()
-                            fig.gca().add_artist(centre_circle)
-
-                            plt.axis('equal')
-                            plt.tight_layout()
-                            ## plt.legend(loc='upper right')
-                            file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['ReginalLACode'] + '_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ').pdf' 
-                            plt.savefig(self.pieChartPath + file_label, dpi = 1200, bbox_inches='tight')
-                            ## plt.show()
-                            # plt.close()
-                            plt.clf()
-                            plt.cla()
-                            
-                elif len(cf) == 4: ## SMR number, Carbon tax, weather condition, weight 
-                    if not cf[0] in NumberOfSMRUnitList:
-                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
-                    else:
-                        smrIndex = NumberOfSMRUnitList.index(cf[0])
-                    if not cf[1] in CarbonTaxForOPFList:
-                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
-                    else:
-                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
-                    if not cf[2] in weatherNameList:
-                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
-                    else:
-                        weatherIndex = weatherNameList.index(cf[2]) 
-                    if not cf[3] in self.weighterList:
-                        raise ValueError('The second element of the sub list of the specifiedConfigList should be weight.')
-                    else:
-                        weightIndex = self.weighterList.index(cf[3]) 
-                    
-                    specifiedEnergyBreakdownList = energyBreakdownList[smrIndex][carbonTaxList][weatherIndex][weightIndex]
-                    
-                    genLabel_shortList = ['Renewable', 'Fossil fuels', 'Nuclear', 'Others'] ## specified short list of the gen type label 
-                    
-                    for energyBreakdown_eachRegion in specifiedEnergyBreakdownList:
-                        ## eliminate the zero items for the long list
-                        energyBreakdown_longList_withoutZero = []
-                        genLabel_longList_withoutZero = []
-                        for eb_i, eb in enumerate(energyBreakdown_eachRegion['percentageBreakdown']):
-                            if int(eb) != 0:
-                                energyBreakdown_longList_withoutZero.append(eb)
-                                genLabel_longList_withoutZero.append(energyBreakdown_eachRegion['genTypeLabel'][eb_i])
-
-                        ## convert the nuclear type into the Conventional Nuclear
-                        if 'Nuclear' in genLabel_longList_withoutZero:
-                            i_Nuclear = genLabel_longList_withoutZero.index('Nuclear')
-                            genLabel_longList_withoutZero[i_Nuclear] = 'Conventional Nuclear'
-
-                        ## populate the short list of the energy breakdown
-                        energyBreakdown_shortList = [0, 0, 0, 0]
-                        for gl_i, gl in enumerate(genLabel_longList_withoutZero):
-                            if gl in ['Solar', 'Wind']: 
-                                energyBreakdown_shortList[0] += energyBreakdown_longList_withoutZero[gl_i]
-                            elif gl in ['Oil', 'NaturalGas', 'Coal']:
-                                energyBreakdown_shortList[1] += energyBreakdown_longList_withoutZero[gl_i]
-                            elif gl in ['Conventional Nuclear', 'SMR']:
-                                energyBreakdown_shortList[2] += energyBreakdown_longList_withoutZero[gl_i]
-                            else:
-                                energyBreakdown_shortList[3] += energyBreakdown_longList_withoutZero[gl_i]
-
-                        ## eliminate the zero items for the short list
-                        energyBreakdown_shortList_withoutZero = [] 
-                        genLabel_shortList_withoutZero = []
-                        for ebs_i, ebs in enumerate(energyBreakdown_shortList):
-                            if int(ebs) != 0:
-                                energyBreakdown_shortList_withoutZero.append(ebs)
-                                genLabel_shortList_withoutZero.append(genLabel_shortList[ebs_i])
-                        
-                        ## rearrange the energyBreakdown_longList
-                        energyBreakdown_longList_withoutZero_rearrange = []
-                        genLabel_longList_withoutZero_rearrange = []
-                        colour_longList = [] ## colour list for long list 
-                        if 'Wind' in genLabel_longList_withoutZero:
-                            genLabel_longList_withoutZero_rearrange.append('Wind')
-                            i_label = genLabel_longList_withoutZero.index('Wind')
-                            energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                            colour_longList.append("#13bef2")
-                        if 'Solar' in genLabel_longList_withoutZero:
-                            genLabel_longList_withoutZero_rearrange.append('Solar')
-                            i_label = genLabel_longList_withoutZero.index('Solar')
-                            energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                            colour_longList.append("#ffcc33")
-                        if 'Natural Gas' in genLabel_longList_withoutZero:
-                            genLabel_longList_withoutZero_rearrange.append('NaturalGas')
-                            i_label = genLabel_longList_withoutZero.index('NaturalGas')
-                            energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                            colour_longList.append("#1B2631")
-                        if 'Coal' in genLabel_longList_withoutZero:
-                            genLabel_longList_withoutZero_rearrange.append('Coal')
-                            i_label = genLabel_longList_withoutZero.index('Coal')
-                            energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                            colour_longList.append("#2d37bc")
-                        if 'Oil' in genLabel_longList_withoutZero:
-                            genLabel_longList_withoutZero_rearrange.append('Oil')
-                            i_label = genLabel_longList_withoutZero.index('Oil')
-                            energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                            colour_longList.append("#99A3A4")
-                        if 'Conventional Nuclear' in genLabel_longList_withoutZero:
-                            genLabel_longList_withoutZero_rearrange.append('Conventional Nuclear')
-                            i_label = genLabel_longList_withoutZero.index('Conventional Nuclear')
-                            energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                            colour_longList.append("#285400")
-                        if 'SMR' in genLabel_longList_withoutZero:
-                            genLabel_longList_withoutZero_rearrange.append('SMR')
-                            i_label = genLabel_longList_withoutZero.index('SMR')
-                            energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                            colour_longList.append("#1e8700")
-                        if 'Others' in genLabel_longList_withoutZero:
-                            genLabel_longList_withoutZero_rearrange.append('Others')
-                            i_label = genLabel_longList_withoutZero.index('Others')
-                            energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                            colour_longList.append("#873600")
-                        
-                        ## colour for short list 
-                        colour_shortList = []
-                        if 'Renewable' in genLabel_shortList_withoutZero:
-                            colour_shortList.append("#6fb6eb")
-                        if 'Fossil fuels' in genLabel_shortList_withoutZero:
-                            colour_shortList.append("#5F676E")
-                        if 'Nuclear' in genLabel_shortList_withoutZero:
-                            colour_shortList.append("#6e996f")
-                        if 'Others' in genLabel_shortList_withoutZero:
-                            colour_shortList.append("#a16900")
-
-                        ## Create pie chart
-                        plt.pie(energyBreakdown_longList_withoutZero_rearrange, colors = colour_longList, startangle=90, frame=True) ##labels=genLabel_longList_withoutZero_rearrange, autopct='%1.1f%%',
-                        plt.pie(energyBreakdown_shortList_withoutZero, colors = colour_shortList, radius = 0.75, startangle = 90)  ## labels=genLabel_shortList_withoutZero,
-                        ## Convert the pie chart into a ring
-                        centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
-                        fig = plt.gcf()
-                        fig.gca().add_artist(centre_circle)
-                        plt.axis('equal')
-                        plt.tight_layout()
-
-                        file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['ReginalLACode'] + '_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ').pdf' 
-                        plt.savefig(self.pieChartPath + file_label, dpi = 1200, bbox_inches='tight')
-                        # plt.show()
-                        # plt.close()
-                        plt.clf()
-                        plt.cla()                                
-                else:
-                    raise ValueError('Invailed sub list of the specifiedConfigList.')
-        else:
-            for i_smr, energyBreakdown_eachSMRDesign in enumerate(energyBreakdownList):
-                for i_carbontax, energyBreakdown_eachCarbonTax in enumerate(energyBreakdown_eachSMRDesign):
-                    for i_weather, energyBreakdown_eachWeather in enumerate(energyBreakdown_eachCarbonTax):
-                        for i_weight, energyBreakdown_eachWeight in enumerate(energyBreakdown_eachWeather):
-                            for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
-                                ## eliminate the zero items for the long list
-                                energyBreakdown_longList_withoutZero = []
-                                genLabel_longList_withoutZero = []
-                                for eb_i, eb in enumerate(energyBreakdown_eachRegion['percentageBreakdown']):
-                                    if int(eb) != 0:
-                                        energyBreakdown_longList_withoutZero.append(eb)
-                                        genLabel_longList_withoutZero.append(energyBreakdown_eachRegion['genTypeLabel'][eb_i])
-
-                                ## convert the nuclear type into the Conventional Nuclear
-                                if 'Nuclear' in genLabel_longList_withoutZero:
-                                    i_Nuclear = genLabel_longList_withoutZero.index('Nuclear')
-                                    genLabel_longList_withoutZero[i_Nuclear] = 'Conventional Nuclear'
-
-                                ## populate the short list of the energy breakdown
-                                energyBreakdown_shortList = [0, 0, 0, 0]
-                                for gl_i, gl in enumerate(genLabel_longList_withoutZero):
-                                    if gl in ['Solar', 'Wind']: 
-                                        energyBreakdown_shortList[0] += energyBreakdown_longList_withoutZero[gl_i]
-                                    elif gl in ['Oil', 'NaturalGas', 'Coal']:
-                                        energyBreakdown_shortList[1] += energyBreakdown_longList_withoutZero[gl_i]
-                                    elif gl in ['Conventional Nuclear', 'SMR']:
-                                        energyBreakdown_shortList[2] += energyBreakdown_longList_withoutZero[gl_i]
-                                    else:
-                                        energyBreakdown_shortList[3] += energyBreakdown_longList_withoutZero[gl_i]
-
-                                ## eliminate the zero items for the short list
-                                energyBreakdown_shortList_withoutZero = [] 
-                                genLabel_shortList_withoutZero = []
-                                for ebs_i, ebs in enumerate(energyBreakdown_shortList):
-                                    if int(ebs) != 0:
-                                        energyBreakdown_shortList_withoutZero.append(ebs)
-                                        genLabel_shortList_withoutZero.append(genLabel_shortList[ebs_i])
-                                
-                                ## rearrange the energyBreakdown_longList
-                                energyBreakdown_longList_withoutZero_rearrange = []
-                                genLabel_longList_withoutZero_rearrange = []
-                                colour_longList = [] ## colour list for long list 
-                                if 'Wind' in genLabel_longList_withoutZero:
-                                    genLabel_longList_withoutZero_rearrange.append('Wind')
-                                    i_label = genLabel_longList_withoutZero.index('Wind')
-                                    energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                    colour_longList.append("#13bef2")
-                                if 'Solar' in genLabel_longList_withoutZero:
-                                    genLabel_longList_withoutZero_rearrange.append('Solar')
-                                    i_label = genLabel_longList_withoutZero.index('Solar')
-                                    energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                    colour_longList.append("#ffcc33")
-                                if 'Natural Gas' in genLabel_longList_withoutZero:
-                                    genLabel_longList_withoutZero_rearrange.append('NaturalGas')
-                                    i_label = genLabel_longList_withoutZero.index('NaturalGas')
-                                    energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                    colour_longList.append("#1B2631")
-                                if 'Coal' in genLabel_longList_withoutZero:
-                                    genLabel_longList_withoutZero_rearrange.append('Coal')
-                                    i_label = genLabel_longList_withoutZero.index('Coal')
-                                    energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                    colour_longList.append("#2d37bc")
-                                if 'Oil' in genLabel_longList_withoutZero:
-                                    genLabel_longList_withoutZero_rearrange.append('Oil')
-                                    i_label = genLabel_longList_withoutZero.index('Oil')
-                                    energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                    colour_longList.append("#99A3A4")
-                                if 'Conventional Nuclear' in genLabel_longList_withoutZero:
-                                    genLabel_longList_withoutZero_rearrange.append('Conventional Nuclear')
-                                    i_label = genLabel_longList_withoutZero.index('Conventional Nuclear')
-                                    energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                    colour_longList.append("#285400")
-                                if 'SMR' in genLabel_longList_withoutZero:
-                                    genLabel_longList_withoutZero_rearrange.append('SMR')
-                                    i_label = genLabel_longList_withoutZero.index('SMR')
-                                    energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                    colour_longList.append("#1e8700")
-                                if 'Others' in genLabel_longList_withoutZero:
-                                    genLabel_longList_withoutZero_rearrange.append('Others')
-                                    i_label = genLabel_longList_withoutZero.index('Others')
-                                    energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
-                                    colour_longList.append("#873600")
-                                
-                                ## colour for short list 
-                                colour_shortList = []
-                                if 'Renewable' in genLabel_shortList_withoutZero:
-                                    colour_shortList.append("#6fb6eb")
-                                if 'Fossil fuels' in genLabel_shortList_withoutZero:
-                                    colour_shortList.append("#5F676E")
-                                if 'Nuclear' in genLabel_shortList_withoutZero:
-                                    colour_shortList.append("#6e996f")
-                                if 'Others' in genLabel_shortList_withoutZero:
-                                    colour_shortList.append("#a16900")
-
-                                ## Create pie chart
-                                plt.pie(energyBreakdown_longList_withoutZero_rearrange, colors = colour_longList, startangle=90, frame=True) ##labels=genLabel_longList_withoutZero_rearrange, autopct='%1.1f%%',
-                                plt.pie(energyBreakdown_shortList_withoutZero, colors = colour_shortList, radius = 0.75, startangle = 90)  ## labels=genLabel_shortList_withoutZero,
-                                ## Convert the pie chart into a ring
-                                centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
-                                fig = plt.gcf()
-                                fig.gca().add_artist(centre_circle)
-
-                                plt.axis('equal')
-                                plt.tight_layout()
-                                file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['ReginalLACode'] + '_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ').pdf' 
-                                plt.savefig(self.pieChartPath + file_label, dpi = 1200, bbox_inches='tight')
-                                # plt.show()
-                                # plt.close()
-                                plt.clf()
-                                plt.cla()          
-        return 
-
+ 
     """This method is to generate the visulisation GeoJSON file of the branch transmission loss"""
     def GeoJSONCreator_branchGrid(self, branchData, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
         ## check the storage path
@@ -3066,9 +2680,599 @@ class OptimalPowerFlowAnalysis:
                             geojson_written.close() 
                             print('---GeoJSON written successfully: GeoJSONCreator_branchGrid---', file_label)
         return 
-   
-    
+     
+    """This method is to generate the pie chart for regional energy breakdown"""
+    def EnergySupplyBreakDownPieChartCreator_RegionalAreas(self, energyBreakdownList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
+        ## check the storage path
+        self.mkdirPieChart('RegionalAreaEnergyBreakdown\\')
+        
+        weatherNameList = []
+        for weather in weatherConditionList:
+            weatherNameList.append(weather[2])
+        
+        if ifSpecifiedResults is True:
+            if specifiedConfigList == [] or specifiedConfigList == [[]]:
+                raise ValueError('specifiedConfigList should contain at list 1 non-empty list.')
+            for cf in specifiedConfigList:
+                if len(cf) < 3:
+                    raise ValueError('The sub list of the specifiedConfigList should contain at least 3 elements specifying the SMR number, carbon tax and weather condition.')
+                elif len(cf) == 3: ## SMR number, Carbon tax, weather condition 
+                    if not cf[0] in NumberOfSMRUnitList:
+                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
+                    else:
+                        smrIndex = NumberOfSMRUnitList.index(cf[0])
+                    if not cf[1] in CarbonTaxForOPFList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
+                    else:
+                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
+                    if not cf[2] in weatherNameList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
+                    else:
+                        weatherIndex = weatherNameList.index(cf[2])
+                    
+                    specifiedEnergyBreakdownList = energyBreakdownList[smrIndex][carbonTaxList][weatherIndex]
+                    
+                    genLabel_shortList = ['Renewable', 'Fossil fuels', 'Nuclear', 'Others'] ## specified short list of the gen type label 
+
+                    for i_weight, energyBreakdown_eachWeight in enumerate(specifiedEnergyBreakdownList):
+                        for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
+                            ## eliminate the zero items for the long list
+                            energyBreakdown_longList_withoutZero = []
+                            genLabel_longList_withoutZero = []
+                            for eb_i, eb in enumerate(energyBreakdown_eachRegion['percentageBreakdown']):
+                                if int(eb) != 0:
+                                    energyBreakdown_longList_withoutZero.append(eb)
+                                    genLabel_longList_withoutZero.append(energyBreakdown_eachRegion['genTypeLabel'][eb_i])
+
+                            ## convert the nuclear type into the Conventional Nuclear
+                            if 'Nuclear' in genLabel_longList_withoutZero:
+                                i_Nuclear = genLabel_longList_withoutZero.index('Nuclear')
+                                genLabel_longList_withoutZero[i_Nuclear] = 'Conventional Nuclear'
+
+                            if 'NaturalGas' in genLabel_longList_withoutZero:
+                                i_NaturalGas = genLabel_longList_withoutZero.index('NaturalGas')
+                                genLabel_longList_withoutZero[i_NaturalGas] = 'Natural Gas'
+
+                            ## populate the short list of the energy breakdown
+                            energyBreakdown_shortList = [0, 0, 0, 0]
+                            for gl_i, gl in enumerate(genLabel_longList_withoutZero):
+                                if gl in ['Solar', 'Wind']: 
+                                    energyBreakdown_shortList[0] += energyBreakdown_longList_withoutZero[gl_i]
+                                elif gl in ['Oil', 'Natural Gas', 'Coal']:
+                                    energyBreakdown_shortList[1] += energyBreakdown_longList_withoutZero[gl_i]
+                                elif gl in ['Conventional Nuclear', 'SMR']:
+                                    energyBreakdown_shortList[2] += energyBreakdown_longList_withoutZero[gl_i]
+                                else:
+                                    energyBreakdown_shortList[3] += energyBreakdown_longList_withoutZero[gl_i]
+
+                            ## eliminate the zero items for the short list
+                            energyBreakdown_shortList_withoutZero = [] 
+                            genLabel_shortList_withoutZero = []
+                            for ebs_i, ebs in enumerate(energyBreakdown_shortList):
+                                if int(ebs) != 0:
+                                    energyBreakdown_shortList_withoutZero.append(ebs)
+                                    genLabel_shortList_withoutZero.append(genLabel_shortList[ebs_i])
+                            
+                            ## rearrange the energyBreakdown_longList
+                            energyBreakdown_longList_withoutZero_rearrange = []
+                            genLabel_longList_withoutZero_rearrange = []
+                            colour_longList = [] ## colour list for long list 
+                            if 'Wind' in genLabel_longList_withoutZero:
+                                genLabel_longList_withoutZero_rearrange.append('Wind')
+                                i_label = genLabel_longList_withoutZero.index('Wind')
+                                energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                                colour_longList.append("#13bef2")
+                            if 'Solar' in genLabel_longList_withoutZero:
+                                genLabel_longList_withoutZero_rearrange.append('Solar')
+                                i_label = genLabel_longList_withoutZero.index('Solar')
+                                energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                                colour_longList.append("#ffcc33")
+                            if 'Natural Gas' in genLabel_longList_withoutZero:
+                                genLabel_longList_withoutZero_rearrange.append('Natural Gas')
+                                i_label = genLabel_longList_withoutZero.index('Natural Gas')
+                                energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                                colour_longList.append("#1B2631")
+                            if 'Coal' in genLabel_longList_withoutZero:
+                                genLabel_longList_withoutZero_rearrange.append('Coal')
+                                i_label = genLabel_longList_withoutZero.index('Coal')
+                                energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                                colour_longList.append("#873600")
+                            if 'Oil' in genLabel_longList_withoutZero:
+                                genLabel_longList_withoutZero_rearrange.append('Oil')
+                                i_label = genLabel_longList_withoutZero.index('Oil')
+                                energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                                colour_longList.append("#99A3A4")
+                            if 'Conventional Nuclear' in genLabel_longList_withoutZero:
+                                genLabel_longList_withoutZero_rearrange.append('Conventional Nuclear')
+                                i_label = genLabel_longList_withoutZero.index('Conventional Nuclear')
+                                energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                                colour_longList.append("#cc3300")
+                            if 'SMR' in genLabel_longList_withoutZero:
+                                genLabel_longList_withoutZero_rearrange.append('SMR')
+                                i_label = genLabel_longList_withoutZero.index('SMR')
+                                energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                                colour_longList.append("#1e8700")
+                            if 'Others' in genLabel_longList_withoutZero:
+                                genLabel_longList_withoutZero_rearrange.append('Others')
+                                i_label = genLabel_longList_withoutZero.index('Others')
+                                energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                                colour_longList.append("#2d37bc")
+
+                            ## colour for short list 
+                            colour_shortList = []
+                            if 'Renewable' in genLabel_shortList_withoutZero:
+                                colour_shortList.append("#6fb6eb")
+                            if 'Fossil fuels' in genLabel_shortList_withoutZero:
+                                colour_shortList.append("#5F676E")
+                            if 'Nuclear' in genLabel_shortList_withoutZero:
+                                colour_shortList.append("#6e996f")
+                            if 'Others' in genLabel_shortList_withoutZero:
+                                colour_shortList.append("#2d37bc")
+
+                            ## Create pie chart
+                            plt.pie(energyBreakdown_longList_withoutZero_rearrange, colors = colour_longList, startangle=90, frame=True) ##labels=genLabel_longList_withoutZero_rearrange, autopct='%1.1f%%',
+                            plt.pie(energyBreakdown_shortList_withoutZero, colors = colour_shortList, radius = 0.75, startangle = 90)  ## labels=genLabel_shortList_withoutZero,
+                            ## Convert the pie chart into a ring
+                            centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
+                            fig = plt.gcf()
+                            fig.gca().add_artist(centre_circle)
+
+                            plt.axis('equal')
+                            plt.tight_layout()
+                            ## plt.legend(loc='upper right')
+                            file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['ReginalLACode'] + '_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ').pdf' 
+                            plt.savefig(self.pieChartPath + file_label, dpi = 1200, bbox_inches='tight')
+                            ## plt.show()
+                            # plt.close()
+                            plt.clf()
+                            plt.cla()
+                            
+                elif len(cf) == 4: ## SMR number, Carbon tax, weather condition, weight 
+                    if not cf[0] in NumberOfSMRUnitList:
+                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
+                    else:
+                        smrIndex = NumberOfSMRUnitList.index(cf[0])
+                    if not cf[1] in CarbonTaxForOPFList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
+                    else:
+                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
+                    if not cf[2] in weatherNameList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
+                    else:
+                        weatherIndex = weatherNameList.index(cf[2]) 
+                    if not cf[3] in self.weighterList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be weight.')
+                    else:
+                        weightIndex = self.weighterList.index(cf[3]) 
+                    
+                    specifiedEnergyBreakdownList = energyBreakdownList[smrIndex][carbonTaxList][weatherIndex][weightIndex]
+                    
+                    genLabel_shortList = ['Renewable', 'Fossil fuels', 'Nuclear', 'Others'] ## specified short list of the gen type label 
+                    
+                    for energyBreakdown_eachRegion in specifiedEnergyBreakdownList:
+                        ## eliminate the zero items for the long list
+                        energyBreakdown_longList_withoutZero = []
+                        genLabel_longList_withoutZero = []
+                        for eb_i, eb in enumerate(energyBreakdown_eachRegion['percentageBreakdown']):
+                            if int(eb) != 0:
+                                energyBreakdown_longList_withoutZero.append(eb)
+                                genLabel_longList_withoutZero.append(energyBreakdown_eachRegion['genTypeLabel'][eb_i])
+
+                        ## convert the nuclear type into the Conventional Nuclear
+                        if 'Nuclear' in genLabel_longList_withoutZero:
+                            i_Nuclear = genLabel_longList_withoutZero.index('Nuclear')
+                            genLabel_longList_withoutZero[i_Nuclear] = 'Conventional Nuclear'
+
+                        ## populate the short list of the energy breakdown
+                        energyBreakdown_shortList = [0, 0, 0, 0]
+                        for gl_i, gl in enumerate(genLabel_longList_withoutZero):
+                            if gl in ['Solar', 'Wind']: 
+                                energyBreakdown_shortList[0] += energyBreakdown_longList_withoutZero[gl_i]
+                            elif gl in ['Oil', 'Natural Gas', 'Coal']:
+                                energyBreakdown_shortList[1] += energyBreakdown_longList_withoutZero[gl_i]
+                            elif gl in ['Conventional Nuclear', 'SMR']:
+                                energyBreakdown_shortList[2] += energyBreakdown_longList_withoutZero[gl_i]
+                            else:
+                                energyBreakdown_shortList[3] += energyBreakdown_longList_withoutZero[gl_i]
+
+                        ## eliminate the zero items for the short list
+                        energyBreakdown_shortList_withoutZero = [] 
+                        genLabel_shortList_withoutZero = []
+                        for ebs_i, ebs in enumerate(energyBreakdown_shortList):
+                            if int(ebs) != 0:
+                                energyBreakdown_shortList_withoutZero.append(ebs)
+                                genLabel_shortList_withoutZero.append(genLabel_shortList[ebs_i])
+                        
+                        ## rearrange the energyBreakdown_longList
+                        energyBreakdown_longList_withoutZero_rearrange = []
+                        genLabel_longList_withoutZero_rearrange = []
+                        colour_longList = [] ## colour list for long list 
+                        if 'Wind' in genLabel_longList_withoutZero:
+                            genLabel_longList_withoutZero_rearrange.append('Wind')
+                            i_label = genLabel_longList_withoutZero.index('Wind')
+                            energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                            colour_longList.append("#13bef2")
+                        if 'Solar' in genLabel_longList_withoutZero:
+                            genLabel_longList_withoutZero_rearrange.append('Solar')
+                            i_label = genLabel_longList_withoutZero.index('Solar')
+                            energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                            colour_longList.append("#ffcc33")
+                        if 'Natural Gas' in genLabel_longList_withoutZero:
+                            genLabel_longList_withoutZero_rearrange.append('Natural Gas')
+                            i_label = genLabel_longList_withoutZero.index('Natural Gas')
+                            energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                            colour_longList.append("#1B2631")
+                        if 'Coal' in genLabel_longList_withoutZero:
+                            genLabel_longList_withoutZero_rearrange.append('Coal')
+                            i_label = genLabel_longList_withoutZero.index('Coal')
+                            energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                            colour_longList.append("#873600")
+                        if 'Oil' in genLabel_longList_withoutZero:
+                            genLabel_longList_withoutZero_rearrange.append('Oil')
+                            i_label = genLabel_longList_withoutZero.index('Oil')
+                            energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                            colour_longList.append("#99A3A4")
+                        if 'Conventional Nuclear' in genLabel_longList_withoutZero:
+                            genLabel_longList_withoutZero_rearrange.append('Conventional Nuclear')
+                            i_label = genLabel_longList_withoutZero.index('Conventional Nuclear')
+                            energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                            colour_longList.append("#cc3300")
+                        if 'SMR' in genLabel_longList_withoutZero:
+                            genLabel_longList_withoutZero_rearrange.append('SMR')
+                            i_label = genLabel_longList_withoutZero.index('SMR')
+                            energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                            colour_longList.append("#1e8700")
+                        if 'Others' in genLabel_longList_withoutZero:
+                            genLabel_longList_withoutZero_rearrange.append('Others')
+                            i_label = genLabel_longList_withoutZero.index('Others')
+                            energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                            colour_longList.append("#2d37bc")
+                        
+                        ## colour for short list 
+                        colour_shortList = []
+                        if 'Renewable' in genLabel_shortList_withoutZero:
+                            colour_shortList.append("#6fb6eb")
+                        if 'Fossil fuels' in genLabel_shortList_withoutZero:
+                            colour_shortList.append("#5F676E")
+                        if 'Nuclear' in genLabel_shortList_withoutZero:
+                            colour_shortList.append("#6e996f")
+                        if 'Others' in genLabel_shortList_withoutZero:
+                            colour_shortList.append("#2d37bc")
+
+                        ## Create pie chart
+                        plt.pie(energyBreakdown_longList_withoutZero_rearrange, colors = colour_longList, startangle=90, frame=True) ##labels=genLabel_longList_withoutZero_rearrange, autopct='%1.1f%%',
+                        plt.pie(energyBreakdown_shortList_withoutZero, colors = colour_shortList, radius = 0.75, startangle = 90)  ## labels=genLabel_shortList_withoutZero,
+                        ## Convert the pie chart into a ring
+                        centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
+                        fig = plt.gcf()
+                        fig.gca().add_artist(centre_circle)
+                        plt.axis('equal')
+                        plt.tight_layout()
+
+                        file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['ReginalLACode'] + '_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ').pdf' 
+                        plt.savefig(self.pieChartPath + file_label, dpi = 1200, bbox_inches='tight')
+                        # plt.show()
+                        # plt.close()
+                        plt.clf()
+                        plt.cla()                                
+                else:
+                    raise ValueError('Invailed sub list of the specifiedConfigList.')
+        else:
+            for i_smr, energyBreakdown_eachSMRDesign in enumerate(energyBreakdownList):
+                for i_carbontax, energyBreakdown_eachCarbonTax in enumerate(energyBreakdown_eachSMRDesign):
+                    for i_weather, energyBreakdown_eachWeather in enumerate(energyBreakdown_eachCarbonTax):
+                        for i_weight, energyBreakdown_eachWeight in enumerate(energyBreakdown_eachWeather):
+                            for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
+                                ## eliminate the zero items for the long list
+                                energyBreakdown_longList_withoutZero = []
+                                genLabel_longList_withoutZero = []
+                                for eb_i, eb in enumerate(energyBreakdown_eachRegion['percentageBreakdown']):
+                                    if int(eb) != 0:
+                                        energyBreakdown_longList_withoutZero.append(eb)
+                                        genLabel_longList_withoutZero.append(energyBreakdown_eachRegion['genTypeLabel'][eb_i])
+
+                                ## convert the nuclear type into the Conventional Nuclear
+                                if 'Nuclear' in genLabel_longList_withoutZero:
+                                    i_Nuclear = genLabel_longList_withoutZero.index('Nuclear')
+                                    genLabel_longList_withoutZero[i_Nuclear] = 'Conventional Nuclear'
+
+                                ## populate the short list of the energy breakdown
+                                energyBreakdown_shortList = [0, 0, 0, 0]
+                                for gl_i, gl in enumerate(genLabel_longList_withoutZero):
+                                    if gl in ['Solar', 'Wind']: 
+                                        energyBreakdown_shortList[0] += energyBreakdown_longList_withoutZero[gl_i]
+                                    elif gl in ['Oil', 'Natural Gas', 'Coal']:
+                                        energyBreakdown_shortList[1] += energyBreakdown_longList_withoutZero[gl_i]
+                                    elif gl in ['Conventional Nuclear', 'SMR']:
+                                        energyBreakdown_shortList[2] += energyBreakdown_longList_withoutZero[gl_i]
+                                    else:
+                                        energyBreakdown_shortList[3] += energyBreakdown_longList_withoutZero[gl_i]
+
+                                ## eliminate the zero items for the short list
+                                energyBreakdown_shortList_withoutZero = [] 
+                                genLabel_shortList_withoutZero = []
+                                for ebs_i, ebs in enumerate(energyBreakdown_shortList):
+                                    if int(ebs) != 0:
+                                        energyBreakdown_shortList_withoutZero.append(ebs)
+                                        genLabel_shortList_withoutZero.append(genLabel_shortList[ebs_i])
+                                
+                                ## rearrange the energyBreakdown_longList
+                                energyBreakdown_longList_withoutZero_rearrange = []
+                                genLabel_longList_withoutZero_rearrange = []
+                                colour_longList = [] ## colour list for long list 
+                                if 'Wind' in genLabel_longList_withoutZero:
+                                    genLabel_longList_withoutZero_rearrange.append('Wind')
+                                    i_label = genLabel_longList_withoutZero.index('Wind')
+                                    energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                                    colour_longList.append("#13bef2")
+                                if 'Solar' in genLabel_longList_withoutZero:
+                                    genLabel_longList_withoutZero_rearrange.append('Solar')
+                                    i_label = genLabel_longList_withoutZero.index('Solar')
+                                    energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                                    colour_longList.append("#ffcc33")
+                                if 'Natural Gas' in genLabel_longList_withoutZero:
+                                    genLabel_longList_withoutZero_rearrange.append('Natural Gas')
+                                    i_label = genLabel_longList_withoutZero.index('Natural Gas')
+                                    energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                                    colour_longList.append("#1B2631")
+                                if 'Coal' in genLabel_longList_withoutZero:
+                                    genLabel_longList_withoutZero_rearrange.append('Coal')
+                                    i_label = genLabel_longList_withoutZero.index('Coal')
+                                    energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                                    colour_longList.append("#873600")
+                                if 'Oil' in genLabel_longList_withoutZero:
+                                    genLabel_longList_withoutZero_rearrange.append('Oil')
+                                    i_label = genLabel_longList_withoutZero.index('Oil')
+                                    energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                                    colour_longList.append("#99A3A4")
+                                if 'Conventional Nuclear' in genLabel_longList_withoutZero:
+                                    genLabel_longList_withoutZero_rearrange.append('Conventional Nuclear')
+                                    i_label = genLabel_longList_withoutZero.index('Conventional Nuclear')
+                                    energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                                    colour_longList.append("#cc3300")
+                                if 'SMR' in genLabel_longList_withoutZero:
+                                    genLabel_longList_withoutZero_rearrange.append('SMR')
+                                    i_label = genLabel_longList_withoutZero.index('SMR')
+                                    energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                                    colour_longList.append("#1e8700")
+                                if 'Others' in genLabel_longList_withoutZero:
+                                    genLabel_longList_withoutZero_rearrange.append('Others')
+                                    i_label = genLabel_longList_withoutZero.index('Others')
+                                    energyBreakdown_longList_withoutZero_rearrange.append(energyBreakdown_longList_withoutZero[i_label])
+                                    colour_longList.append("#2d37bc")
+                                
+                                ## colour for short list 
+                                colour_shortList = []
+                                if 'Renewable' in genLabel_shortList_withoutZero:
+                                    colour_shortList.append("#6fb6eb")
+                                if 'Fossil fuels' in genLabel_shortList_withoutZero:
+                                    colour_shortList.append("#5F676E")
+                                if 'Nuclear' in genLabel_shortList_withoutZero:
+                                    colour_shortList.append("#6e996f")
+                                if 'Others' in genLabel_shortList_withoutZero:
+                                    colour_shortList.append("#2d37bc")
+
+                                ## Create pie chart
+                                plt.pie(energyBreakdown_longList_withoutZero_rearrange, colors = colour_longList, startangle=90, frame=True) ##labels=genLabel_longList_withoutZero_rearrange, autopct='%1.1f%%',
+                                plt.pie(energyBreakdown_shortList_withoutZero, colors = colour_shortList, radius = 0.75, startangle = 90)  ## labels=genLabel_shortList_withoutZero,
+                                ## Convert the pie chart into a ring
+                                centre_circle = plt.Circle((0,0),0.5,color='black', fc='white',linewidth=0)
+                                fig = plt.gcf()
+                                fig.gca().add_artist(centre_circle)
+
+                                plt.axis('equal')
+                                plt.tight_layout()
+                                file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['ReginalLACode'] + '_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ').pdf' 
+                                plt.savefig(self.pieChartPath + file_label, dpi = 1200, bbox_inches='tight')
+                                # plt.show()
+                                # plt.close()
+                                plt.clf()
+                                plt.cla()          
+        return 
+
+    """This method is to generate the GeoJSON files demonstrate total energy output of each region"""
+    def GeoJSONCreator_totalOutputOfRegionalAreas(self, energyBreakdownList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
+        ## check the storage path
+        self.mkdirRegionalOutputJSON()
+
+        ## Determine the upper and lower bounds
+        regionalTotalOutputList = []
+        for energyBreakdown_eachSMRDesign in energyBreakdownList:
+            for energyBreakdown_eachCarbonTax in energyBreakdown_eachSMRDesign:
+                for energyBreakdown_eachWeather in energyBreakdown_eachCarbonTax:
+                    for energyBreakdown_eachWeight in energyBreakdown_eachWeather:
+                        for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
+                            regionalTotalOutput = 0
+                            for output in energyBreakdown_eachRegion['outputBreakdown']:
+                                regionalTotalOutput += float(output) 
+                            energyBreakdown_eachRegion['totalOutput'] = round(regionalTotalOutput,2)
+                            regionalTotalOutputList.append(regionalTotalOutput)
+
+        upperbound = round(float(max(regionalTotalOutputList)), 2)
+        lowerbound = 0
+       
+        weatherNameList = []
+        for weather in weatherConditionList:
+            weatherNameList.append(weather[2])
+
+        if ifSpecifiedResults is True:
+            if specifiedConfigList == [] or specifiedConfigList == [[]]:
+                raise ValueError('specifiedConfigList should contain at list 1 non-empty list.')
+            for cf in specifiedConfigList:
+                if len(cf) < 3:
+                    raise ValueError('The sub list of the specifiedConfigList should contain at least 3 elements specifying the SMR number, carbon tax and weather condition.')
+                elif len(cf) == 3: ## SMR number, Carbon tax, weather condition 
+                    if not cf[0] in NumberOfSMRUnitList:
+                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
+                    else:
+                        smrIndex = NumberOfSMRUnitList.index(cf[0])
+                    if not cf[1] in CarbonTaxForOPFList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
+                    else:
+                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
+                    if not cf[2] in weatherNameList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
+                    else:
+                        weatherIndex = weatherNameList.index(cf[2])
+                    
+                    specifiedEnergyBreakdownList = energyBreakdownList[smrIndex][carbonTaxList][weatherIndex]
+
+                    for i_weight, energyBreakdown_eachWeight in enumerate(specifiedEnergyBreakdownList):                     
+                        geojson_file = """
+                        {
+                            "type": "FeatureCollection",
+                            "features": ["""
+                        # iterating over features (rows in results array)
+                        for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
+                            boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
+                            ## Total energy generation
+                            regionalTotalOutput = 0
+                            for output in energyBreakdown_eachRegion['outputBreakdown']:
+                                regionalTotalOutput += float(output)
+                            regionalTotalOutput = round(regionalTotalOutput)
+                            feature = """{
+                                "type": "Feature",
+                                "properties": {
+                                "regionalLACode": "%s",
+                                "totalOutput": %s,
+                                "color": "%s",
+                                "fill": "%s",
+                                "fill-opacity": 0.6,
+                                "stroke-width" : 0.2,
+                                "stroke-opacity" : 0.7
+                                },
+                                "geometry":  %s             
+                            },"""%(energyBreakdown_eachRegion['regionalAreaBoundary'], regionalTotalOutput, outPut * 100, outPut * 100, str(boundary).replace("\'", "\""))         
+                            # adding new line 
+                            geojson_file += '\n' + feature
+                            
+                        geojson_file = geojson_file[:-1]
+                        # finishing file end 
+                        end_geojson = """
+                            ]
+                        }
+                        """
+                        geojson_file += end_geojson
+                        # saving as geoJSON
+                        file_label = 'TotalOutputForRegionalArea_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
+                        geojson_written = open(self.outputOfDifferentEnergySourceJSONPath + file_label + '.geojson','w')
+                        geojson_written.write(geojson_file)
+                        geojson_written.close() 
+                        print('---GeoJSON written successfully: total output of regional area---', file_label)                                        
+                elif len(cf) == 4: ## SMR number, Carbon tax, weather condition, weight 
+                    if not cf[0] in NumberOfSMRUnitList:
+                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
+                    else:
+                        smrIndex = NumberOfSMRUnitList.index(cf[0])
+                    if not cf[1] in CarbonTaxForOPFList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
+                    else:
+                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
+                    if not cf[2] in weatherNameList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
+                    else:
+                        weatherIndex = weatherNameList.index(cf[2]) 
+                    if not cf[3] in self.weighterList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be weight.')
+                    else:
+                        weightIndex = self.weighterList.index(cf[3]) 
+                    
+                    specifiedEnergyBreakdownList = energyBreakdownList[smrIndex][carbonTaxList][weatherIndex][weightIndex]
+                    
+                    geojson_file = """
+                    {
+                        "type": "FeatureCollection",
+                        "features": ["""
+                    # iterating over features (rows in results array)
+                    for energyBreakdown_eachRegion in specifiedEnergyBreakdownList:
+                        boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
+                        ## Total energy generation
+                        regionalTotalOutput = 0
+                        for output in energyBreakdown_eachRegion['outputBreakdown']:
+                            regionalTotalOutput += float(output)
+                        regionalTotalOutput = round(regionalTotalOutput)
+                        feature = """{
+                            "type": "Feature",
+                            "properties": {
+                            "regionalLACode": "%s",
+                            "totalOutput": %s,
+                            "color": "%s",
+                            "fill": "%s",
+                            "fill-opacity": 0.6,
+                            "stroke-width" : 0.2,
+                            "stroke-opacity" : 0.7
+                            },
+                            "geometry":  %s             
+                        },"""%(energyBreakdown_eachRegion['regionalAreaBoundary'], regionalTotalOutput, outPut * 100, outPut * 100, str(boundary).replace("\'", "\""))         
+                        # adding new line 
+                        geojson_file += '\n' + feature
+                        
+                    geojson_file = geojson_file[:-1]
+                    # finishing file end 
+                    end_geojson = """
+                        ]
+                    }
+                    """
+                    geojson_file += end_geojson
+                    # saving as geoJSON
+                    file_label = 'TotalOutputForRegionalArea_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(cf[3], 2)) + ')'
+                    geojson_written = open(self.outputOfDifferentEnergySourceJSONPath + file_label + '.geojson','w')
+                    geojson_written.write(geojson_file)
+                    geojson_written.close() 
+                    print('---GeoJSON written successfully: total output of regional area---', file_label)                                                     
+                else:
+                    raise ValueError('Invailed sub list of the specifiedConfigList.')
+        else:
+            for i_smr, energyBreakdown_eachSMRDesign in enumerate(energyBreakdownList):
+                for i_carbontax, energyBreakdown_eachCarbonTax in enumerate(energyBreakdown_eachSMRDesign):
+                    for i_weather, energyBreakdown_eachWeather in enumerate(energyBreakdown_eachCarbonTax):
+                        for i_weight, energyBreakdown_eachWeight in enumerate(energyBreakdown_eachWeather):                                            
+                            geojson_file = """
+                            {
+                                "type": "FeatureCollection",
+                                "features": ["""
+                            # iterating over features (rows in results array)
+                            for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
+                                boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
+                                ## Total energy generation
+                                regionalTotalOutput = 0
+                                for output in energyBreakdown_eachRegion['outputBreakdown']:
+                                    regionalTotalOutput += float(output)
+                                regionalTotalOutput = round(regionalTotalOutput)
+                                feature = """{
+                                    "type": "Feature",
+                                    "properties": {
+                                    "regionalLACode": "%s",
+                                    "totalOutput": %s,
+                                    "color": "%s",
+                                    "fill": "%s",
+                                    "fill-opacity": 0.6,
+                                    "stroke-width" : 0.2,
+                                    "stroke-opacity" : 0.7
+                                    },
+                                    "geometry":  %s             
+                                },"""%(energyBreakdown_eachRegion['regionalAreaBoundary'], regionalTotalOutput, outPut * 100, outPut * 100, str(boundary).replace("\'", "\""))         
+                                # adding new line 
+                                geojson_file += '\n' + feature
+                                
+                            geojson_file = geojson_file[:-1]
+                            # finishing file end 
+                            end_geojson = """
+                                ]
+                            }
+                            """
+                            geojson_file += end_geojson
+                            # saving as geoJSON
+                            file_label = 'TotalOutputForRegionalArea_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
+                            geojson_written = open(self.outputOfDifferentEnergySourceJSONPath + file_label + '.geojson','w')
+                            geojson_written.write(geojson_file)
+                            geojson_written.close() 
+                            print('---GeoJSON written successfully: total output of regional area---', file_label)                                  
+            return 
+
+
     """This method is to generate the visulisation GeoJSON file for the 3D bar of major energy source for each small area and the full bar of generation mix"""
+    ## 3D bars
     def GeoJSONCreator_majorEnergySourceForSmallArea(self, energyBreakdownList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
         ## check the storage path
         self.mkdirmajorEnergySourceJSON('smallAreaMajorEnergySource_fill-extrusion\\')
@@ -3100,12 +3304,11 @@ class OptimalPowerFlowAnalysis:
                     
                     specifiedEnergyBreakdownList = energyBreakdownList[smrIndex][carbonTaxList][weatherIndex]
 
-                    genLabel_shortList = ['Renewable', 'Fossil fuels', 'Nuclear', 'Others']
+                    genLabel_shortList = ['Renewable', 'Fossil fuels', 'Conventional Nuclear', 'SMR', 'Others']
                     ## colour for short list 
-                    colour_shortList = ["#6fb6eb", "#5F676E", "#6e996f", "#a16900"] 
+                    colour_shortList = ["#6fb6eb", "#5F676E", "#cc3300", "#1e8700", "#2d37bc"] 
 
-                    for i_weight, energyBreakdown_eachWeight in enumerate(specifiedEnergyBreakdownList):
-                        
+                    for i_weight, energyBreakdown_eachWeight in enumerate(specifiedEnergyBreakdownList):                     
                         ##--major energy sources --##
                         geojson_file_longList = """
                         {
@@ -3134,16 +3337,18 @@ class OptimalPowerFlowAnalysis:
                                 energyBreakdown_eachRegion['genTypeLabel'][i_NaturalGas] = 'Natural Gas'
 
                             ## populate the short list of the energy breakdown
-                            energyBreakdown_shortList = [0, 0, 0, 0]
+                            energyBreakdown_shortList = [0, 0, 0, 0, 0]
                             for gl_i, gl in enumerate(energyBreakdown_eachRegion['genTypeLabel']):
                                 if gl in ['Solar', 'Wind']: 
                                     energyBreakdown_shortList[0] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                                elif gl in ['Oil', 'NaturalGas', 'Coal']:
+                                elif gl in ['Oil', 'Natural Gas', 'Coal']:
                                     energyBreakdown_shortList[1] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                                elif gl in ['Conventional Nuclear', 'SMR']:
+                                elif gl in ['Conventional Nuclear']:
                                     energyBreakdown_shortList[2] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                                else:
+                                elif gl in ['SMR']:
                                     energyBreakdown_shortList[3] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
+                                else:
+                                    energyBreakdown_shortList[4] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
 
                             maxEnergySource_shortList= max(energyBreakdown_shortList)
                             maxEnergySource_shortList_index = energyBreakdown_shortList.index(maxEnergySource_shortList)
@@ -3165,15 +3370,15 @@ class OptimalPowerFlowAnalysis:
                                 energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
                                 colour_longList.append("#ffcc33")
                             if 'Natural Gas' in energyBreakdown_eachRegion['genTypeLabel']:
-                                genLabel_longList_rearrange.append('NaturalGas')
-                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('NaturalGas')
+                                genLabel_longList_rearrange.append('Natural Gas')
+                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Natural Gas')
                                 energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
                                 colour_longList.append("#1B2631")
                             if 'Coal' in energyBreakdown_eachRegion['genTypeLabel']:
                                 genLabel_longList_rearrange.append('Coal')
                                 i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Coal')
                                 energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                colour_longList.append("#2d37bc")
+                                colour_longList.append("#873600")
                             if 'Oil' in energyBreakdown_eachRegion['genTypeLabel']:
                                 genLabel_longList_rearrange.append('Oil')
                                 i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Oil')
@@ -3183,7 +3388,7 @@ class OptimalPowerFlowAnalysis:
                                 genLabel_longList_rearrange.append('Conventional Nuclear')
                                 i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Conventional Nuclear')
                                 energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                colour_longList.append("#285400")
+                                colour_longList.append("#cc3300")
                             if 'SMR' in energyBreakdown_eachRegion['genTypeLabel']:
                                 genLabel_longList_rearrange.append('SMR')
                                 i_label = energyBreakdown_eachRegion['genTypeLabel'].index('SMR')
@@ -3193,10 +3398,10 @@ class OptimalPowerFlowAnalysis:
                                 genLabel_longList_rearrange.append('Others')
                                 i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Others')
                                 energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                colour_longList.append("#873600")
+                                colour_longList.append("#2d37bc")
 
                             ## pick the major energy source 
-                            boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion ['smallAreaBoundery'])))
+                            boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
                             maxOutputEnergySource = max(energyBreakdown_eachRegion ['outputBreakdown'])
                             maxOutputEnergySource_index = energyBreakdown_eachRegion ['outputBreakdown'].index(maxOutputEnergySource)
                             maxOutputEnergySource_label = energyBreakdown_eachRegion['genTypeLabel'][maxOutputEnergySource_index]
@@ -3208,60 +3413,62 @@ class OptimalPowerFlowAnalysis:
                             elif maxOutputEnergySource_label == 'Natural Gas':
                                 colourOfPolygon = "#1B2631"
                             elif maxOutputEnergySource_label == 'Coal':
-                                colourOfPolygon = "#2d37bc"
+                                colourOfPolygon = "#873600"
                             elif maxOutputEnergySource_label == 'Oil':
                                 colourOfPolygon = "#99A3A4"
                             elif maxOutputEnergySource_label == 'Conventional Nuclear':
-                                colourOfPolygon = "#285400"
+                                colourOfPolygon = "#cc3300"
                             elif maxOutputEnergySource_label == 'SMR':
                                 colourOfPolygon = "#1e8700"
                             elif maxOutputEnergySource_label == 'Others':
-                                colourOfPolygon = "#873600"
+                                colourOfPolygon = "#2d37bc"
 
                             ## creating feature for subclassify (long list)
-                            feature_longList = """{
-                                "type": "Feature",
-                                "properties": {
-                                "smallArea_LACode": "%s",
-                                "majorOutput": "%s",
-                                "majorEnergySource": "%s",
-                                "color": "%s",
-                                "fill": "%s",
-                                "fill-opacity": 0.9,
-                                "stroke-width" : 0.2,
-                                "stroke-opacity" : 0.7,
-                                "height": "%s",
-                                "base_height": 0
-                                },
-                                "geometry":  %s             
-                            },"""%(energyBreakdown_eachRegion['smallAreaCode'], round(float(maxOutputEnergySource), 2), maxOutputEnergySource_label, colourOfPolygon, colourOfPolygon, round(float(maxOutputEnergySource), 2), str(boundary).replace("\'", "\""))         
-                            
+                            if int(maxOutputEnergySource) > 0:
+                                feature_longList = """{
+                                    "type": "Feature",
+                                    "properties": {
+                                    "smallArea_LACode": "%s",
+                                    "majorOutput": "%s",
+                                    "majorEnergySource": "%s",
+                                    "color": "%s",
+                                    "fill": "%s",
+                                    "fill-opacity": 0.6,
+                                    "stroke-width" : 0.2,
+                                    "stroke-opacity" : 0.7,
+                                    "height": %s,
+                                    "base_height": 0
+                                    },
+                                    "geometry":  %s             
+                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(maxOutputEnergySource*100), 2), maxOutputEnergySource_label, colourOfPolygon, colourOfPolygon, round(float(maxOutputEnergySource * 100), 2), str(boundary).replace("\'", "\""))         
+                                # adding new line 
+                                geojson_file_longList += '\n' + feature_longList
+
                             ##  creating feature for broad classification (short list)
-                            feature_shortList = """{
-                                "type": "Feature",
-                                "properties": {
-                                "smallArea_LACode": "%s",
-                                "majorOutput": "%s",
-                                "majorEnergySource": "%s",
-                                "color": "%s",
-                                "fill": "%s",
-                                "fill-opacity": 0.9,
-                                "stroke-width" : 0.2,
-                                "stroke-opacity" : 0.7,
-                                "height": "%s",
-                                "base_height": 0
-                                },
-                                "geometry":  %s             
-                            },"""%(energyBreakdown_eachRegion['smallAreaCode'], round(float(maxEnergySource_shortList), 2), maxEnergySource_shortList_label, maxEnergySource_shortList_colour, maxEnergySource_shortList_colour, round(float(maxEnergySource_shortList), 2), str(boundary).replace("\'", "\""))         
-                            
-                            # adding new line 
-                            geojson_file_longList += '\n' + feature_longList
-                            geojson_file_shortList += '\n' + feature_shortList
+                            if int(maxEnergySource_shortList) > 0:
+                                feature_shortList = """{
+                                    "type": "Feature",
+                                    "properties": {
+                                    "smallArea_LACode": "%s",
+                                    "majorOutput": "%s",
+                                    "majorEnergySource": "%s",
+                                    "color": "%s",
+                                    "fill": "%s",
+                                    "fill-opacity": 0.8,
+                                    "stroke-width" : 0.2,
+                                    "stroke-opacity" : 0.7,
+                                    "height": %s,
+                                    "base_height": 0
+                                    },
+                                    "geometry":  %s             
+                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(maxEnergySource_shortList), 2), maxEnergySource_shortList_label, maxEnergySource_shortList_colour, maxEnergySource_shortList_colour, round(float(maxEnergySource_shortList), 2), str(boundary).replace("\'", "\""))                                      
+                                # adding new line 
+                                geojson_file_shortList += '\n' + feature_shortList
 
                             ##  creating feature for each energy type in the same region
                             baseHight = 0
                             for colour_index, eb_eachEnergyTypeInSameRegion in enumerate(energyBreakdown_longList_rearrange):
-                                if eb_eachEnergyTypeInSameRegion > 0:                                   
+                                if int(eb_eachEnergyTypeInSameRegion) > 0:                                   
                                     feature_fullbar = """{
                                     "type": "Feature",
                                     "properties": {
@@ -3270,14 +3477,14 @@ class OptimalPowerFlowAnalysis:
                                     "energySource": "%s",
                                     "color": "%s",
                                     "fill": "%s",
-                                    "fill-opacity": 0.9,
+                                    "fill-opacity": 0.5,
                                     "stroke-width" : 0.2,
                                     "stroke-opacity" : 0.7,
-                                    "height": "%s",
-                                    "base_height": "%s"
+                                    "height": %s,
+                                    "base_height": %s
                                     },
                                     "geometry":  %s             
-                                    },"""%(energyBreakdown_eachRegion['smallAreaCode'], round(float(eb_eachEnergyTypeInSameRegion), 2), genLabel_longList_rearrange[colour_index], colour_longList[colour_index], colour_longList[colour_index], round(float(eb_eachEnergyTypeInSameRegion), 2), str(baseHight), str(boundary).replace("\'", "\""))         
+                                    },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(eb_eachEnergyTypeInSameRegion), 2), genLabel_longList_rearrange[colour_index], colour_longList[colour_index], colour_longList[colour_index], round(float(eb_eachEnergyTypeInSameRegion), 2), str(baseHight), str(boundary).replace("\'", "\""))         
                                     baseHight += round(float(eb_eachEnergyTypeInSameRegion), 2)
                                     # adding new line 
                                     geojson_file_fullbar += '\n' + feature_fullbar
@@ -3309,7 +3516,7 @@ class OptimalPowerFlowAnalysis:
 
                         file_label_fullbar = 'SmallAreaFullBar_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
                         geojson_written_fullbar = open(self.majorEnergySourceJSONPath + 'smallAreaFullBar_fill-extrusion\\' + file_label_fullbar + '.geojson','w')
-                        geojson_written_fullbar.write(file_label_fullbar)
+                        geojson_written_fullbar.write(geojson_file_fullbar)
                         geojson_written_shortList.close() 
                         print('---GeoJSON written successfully: full bar for small areas---', file_label_fullbar)                                         
                 elif len(cf) == 4: ## SMR number, Carbon tax, weather condition, weight 
@@ -3332,9 +3539,9 @@ class OptimalPowerFlowAnalysis:
                     
                     specifiedEnergyBreakdownList = energyBreakdownList[smrIndex][carbonTaxList][weatherIndex][weightIndex]
                     
-                    genLabel_shortList = ['Renewable', 'Fossil fuels', 'Nuclear', 'Others']
+                    genLabel_shortList = ['Renewable', 'Fossil fuels', 'Conventional Nuclear', 'SMR', 'Others']
                     ## colour for short list 
-                    colour_shortList = ["#6fb6eb", "#5F676E", "#6e996f", "#a16900"] 
+                    colour_shortList = ["#6fb6eb", "#5F676E", "#cc3300", "#1e8700", "#2d37bc"] 
 
                     ##--major energy sources --##
                     geojson_file_longList = """
@@ -3365,16 +3572,18 @@ class OptimalPowerFlowAnalysis:
                             energyBreakdown_eachRegion['genTypeLabel'][i_NaturalGas] = 'Natural Gas'
 
                         ## populate the short list of the energy breakdown
-                        energyBreakdown_shortList = [0, 0, 0, 0]
+                        energyBreakdown_shortList = [0, 0, 0, 0, 0]
                         for gl_i, gl in enumerate(energyBreakdown_eachRegion['genTypeLabel']):
                             if gl in ['Solar', 'Wind']: 
                                 energyBreakdown_shortList[0] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                            elif gl in ['Oil', 'NaturalGas', 'Coal']:
+                            elif gl in ['Oil', 'Natural Gas', 'Coal']:
                                 energyBreakdown_shortList[1] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                            elif gl in ['Conventional Nuclear', 'SMR']:
+                            elif gl in ['Conventional Nuclear']:
                                 energyBreakdown_shortList[2] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                            else:
+                            elif gl in ['SMR']:
                                 energyBreakdown_shortList[3] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
+                            else:
+                                energyBreakdown_shortList[4] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
 
                         maxEnergySource_shortList= max(energyBreakdown_shortList)
                         maxEnergySource_shortList_index = energyBreakdown_shortList.index(maxEnergySource_shortList)
@@ -3396,15 +3605,15 @@ class OptimalPowerFlowAnalysis:
                             energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
                             colour_longList.append("#ffcc33")
                         if 'Natural Gas' in energyBreakdown_eachRegion['genTypeLabel']:
-                            genLabel_longList_rearrange.append('NaturalGas')
-                            i_label = energyBreakdown_eachRegion['genTypeLabel'].index('NaturalGas')
+                            genLabel_longList_rearrange.append('Natural Gas')
+                            i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Natural Gas')
                             energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
                             colour_longList.append("#1B2631")
                         if 'Coal' in energyBreakdown_eachRegion['genTypeLabel']:
                             genLabel_longList_rearrange.append('Coal')
                             i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Coal')
                             energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                            colour_longList.append("#2d37bc")
+                            colour_longList.append("#873600")
                         if 'Oil' in energyBreakdown_eachRegion['genTypeLabel']:
                             genLabel_longList_rearrange.append('Oil')
                             i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Oil')
@@ -3414,7 +3623,7 @@ class OptimalPowerFlowAnalysis:
                             genLabel_longList_rearrange.append('Conventional Nuclear')
                             i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Conventional Nuclear')
                             energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                            colour_longList.append("#285400")
+                            colour_longList.append("#cc3300")
                         if 'SMR' in energyBreakdown_eachRegion['genTypeLabel']:
                             genLabel_longList_rearrange.append('SMR')
                             i_label = energyBreakdown_eachRegion['genTypeLabel'].index('SMR')
@@ -3424,10 +3633,10 @@ class OptimalPowerFlowAnalysis:
                             genLabel_longList_rearrange.append('Others')
                             i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Others')
                             energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                            colour_longList.append("#873600")
+                            colour_longList.append("#2d37bc")
 
                         ## pick the major energy source 
-                        boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion ['smallAreaBoundery'])))
+                        boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
                         maxOutputEnergySource = max(energyBreakdown_eachRegion ['outputBreakdown'])
                         maxOutputEnergySource_index = energyBreakdown_eachRegion ['outputBreakdown'].index(maxOutputEnergySource)
                         maxOutputEnergySource_label = energyBreakdown_eachRegion['genTypeLabel'][maxOutputEnergySource_index]
@@ -3439,60 +3648,62 @@ class OptimalPowerFlowAnalysis:
                         elif maxOutputEnergySource_label == 'Natural Gas':
                             colourOfPolygon = "#1B2631"
                         elif maxOutputEnergySource_label == 'Coal':
-                            colourOfPolygon = "#2d37bc"
+                            colourOfPolygon = "#873600"
                         elif maxOutputEnergySource_label == 'Oil':
                             colourOfPolygon = "#99A3A4"
                         elif maxOutputEnergySource_label == 'Conventional Nuclear':
-                            colourOfPolygon = "#285400"
+                            colourOfPolygon = "#cc3300"
                         elif maxOutputEnergySource_label == 'SMR':
                             colourOfPolygon = "#1e8700"
                         elif maxOutputEnergySource_label == 'Others':
-                            colourOfPolygon = "#873600"
+                            colourOfPolygon = "#2d37bc"
 
                         ## creating feature for subclassify (long list)
-                        feature_longList = """{
-                            "type": "Feature",
-                            "properties": {
-                            "smallArea_LACode": "%s",
-                            "majorOutput": "%s",
-                            "majorEnergySource": "%s",
-                            "color": "%s",
-                            "fill": "%s",
-                            "fill-opacity": 0.9,
-                            "stroke-width" : 0.2,
-                            "stroke-opacity" : 0.7,
-                            "height": "%s",
-                            "base_height": 0
-                            },
-                            "geometry":  %s             
-                        },"""%(energyBreakdown_eachRegion['smallAreaCode'], round(float(maxOutputEnergySource), 2), maxOutputEnergySource_label, colourOfPolygon, colourOfPolygon, round(float(maxOutputEnergySource), 2), str(boundary).replace("\'", "\""))         
-                        
+                        if int(maxOutputEnergySource) > 0:
+                            feature_longList = """{
+                                "type": "Feature",
+                                "properties": {
+                                "smallArea_LACode": "%s",
+                                "majorOutput": "%s",
+                                "majorEnergySource": "%s",
+                                "color": "%s",
+                                "fill": "%s",
+                                "fill-opacity": 0.6,
+                                "stroke-width" : 0.2,
+                                "stroke-opacity" : 0.7,
+                                "height": %s,
+                                "base_height": 0
+                                },
+                                "geometry":  %s             
+                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(maxOutputEnergySource), 2), maxOutputEnergySource_label, colourOfPolygon, colourOfPolygon, round(float(maxOutputEnergySource), 2), str(boundary).replace("\'", "\""))         
+                            # adding new line 
+                            geojson_file_longList += '\n' + feature_longList
+
                         ##  creating feature for broad classification (short list)
-                        feature_shortList = """{
-                            "type": "Feature",
-                            "properties": {
-                            "smallArea_LACode": "%s",
-                            "majorOutput": "%s",
-                            "majorEnergySource": "%s",
-                            "color": "%s",
-                            "fill": "%s",
-                            "fill-opacity": 0.9,
-                            "stroke-width" : 0.2,
-                            "stroke-opacity" : 0.7,
-                            "height": "%s",
-                            "base_height": 0
-                            },
-                            "geometry":  %s             
-                        },"""%(energyBreakdown_eachRegion['smallAreaCode'], round(float(maxEnergySource_shortList), 2), maxEnergySource_shortList_label, maxEnergySource_shortList_colour, maxEnergySource_shortList_colour, round(float(maxEnergySource_shortList), 2), str(boundary).replace("\'", "\""))         
-                        
-                        # adding new line 
-                        geojson_file_longList += '\n' + feature_longList
-                        geojson_file_shortList += '\n' + feature_shortList
+                        if int(maxEnergySource_shortList) > 0:
+                            feature_shortList = """{
+                                "type": "Feature",
+                                "properties": {
+                                "smallArea_LACode": "%s",
+                                "majorOutput": "%s",
+                                "majorEnergySource": "%s",
+                                "color": "%s",
+                                "fill": "%s",
+                                "fill-opacity": 0.8,
+                                "stroke-width" : 0.2,
+                                "stroke-opacity" : 0.7,
+                                "height": %s,
+                                "base_height": 0
+                                },
+                                "geometry":  %s             
+                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(maxEnergySource_shortList), 2), maxEnergySource_shortList_label, maxEnergySource_shortList_colour, maxEnergySource_shortList_colour, round(float(maxEnergySource_shortList), 2), str(boundary).replace("\'", "\""))         
+                            # adding new line 
+                            geojson_file_shortList += '\n' + feature_shortList
 
                         ##  creating feature for each energy type in the same region
                         baseHight = 0
                         for colour_index, eb_eachEnergyTypeInSameRegion in enumerate(energyBreakdown_longList_rearrange):
-                            if eb_eachEnergyTypeInSameRegion > 0:                                   
+                            if int(eb_eachEnergyTypeInSameRegion) > 0:                                   
                                 feature_fullbar = """{
                                 "type": "Feature",
                                 "properties": {
@@ -3501,14 +3712,14 @@ class OptimalPowerFlowAnalysis:
                                 "energySource": "%s",
                                 "color": "%s",
                                 "fill": "%s",
-                                "fill-opacity": 0.9,
+                                "fill-opacity": 0.5,
                                 "stroke-width" : 0.2,
                                 "stroke-opacity" : 0.7,
-                                "height": "%s",
-                                "base_height": "%s"
+                                "height": %s,
+                                "base_height": %s
                                 },
                                 "geometry":  %s             
-                                },"""%(energyBreakdown_eachRegion['smallAreaCode'], round(float(eb_eachEnergyTypeInSameRegion), 2), genLabel_longList_rearrange[colour_index], colour_longList[colour_index], colour_longList[colour_index], round(float(eb_eachEnergyTypeInSameRegion), 2), str(baseHight), str(boundary).replace("\'", "\""))         
+                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(eb_eachEnergyTypeInSameRegion), 2), genLabel_longList_rearrange[colour_index], colour_longList[colour_index], colour_longList[colour_index], round(float(eb_eachEnergyTypeInSameRegion), 2), str(baseHight), str(boundary).replace("\'", "\""))         
                                 baseHight += round(float(eb_eachEnergyTypeInSameRegion), 2)
                                 # adding new line 
                                 geojson_file_fullbar += '\n' + feature_fullbar
@@ -3540,7 +3751,7 @@ class OptimalPowerFlowAnalysis:
 
                     file_label_fullbar = 'SmallAreaFullBar_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ')'
                     geojson_written_fullbar = open(self.majorEnergySourceJSONPath + 'smallAreaFullBar_fill-extrusion\\' + file_label_fullbar + '.geojson','w')
-                    geojson_written_fullbar.write(file_label_fullbar)
+                    geojson_written_fullbar.write(geojson_file_fullbar)
                     geojson_written_shortList.close() 
                     print('---GeoJSON written successfully: full bar for small areas---', file_label_fullbar)                                 
                 else:
@@ -3550,10 +3761,9 @@ class OptimalPowerFlowAnalysis:
                 for i_carbontax, energyBreakdown_eachCarbonTax in enumerate(energyBreakdown_eachSMRDesign):
                     for i_weather, energyBreakdown_eachWeather in enumerate(energyBreakdown_eachCarbonTax):
                         for i_weight, energyBreakdown_eachWeight in enumerate(energyBreakdown_eachWeather):
-                            genLabel_shortList = ['Renewable', 'Fossil fuels', 'Nuclear', 'Others']
+                            genLabel_shortList = ['Renewable', 'Fossil fuels', 'Conventional Nuclear', 'SMR', 'Others']
                             ## colour for short list 
-                            colour_shortList = ["#6fb6eb", "#5F676E", "#6e996f", "#a16900"] 
-
+                            colour_shortList = ["#6fb6eb", "#5F676E", "#cc3300", "#1e8700", "#2d37bc"] 
                             ##--major energy sources --##
                             geojson_file_longList = """
                             {
@@ -3583,16 +3793,18 @@ class OptimalPowerFlowAnalysis:
                                     energyBreakdown_eachRegion['genTypeLabel'][i_NaturalGas] = 'Natural Gas'
 
                                 ## populate the short list of the energy breakdown
-                                energyBreakdown_shortList = [0, 0, 0, 0]
+                                energyBreakdown_shortList = [0, 0, 0, 0, 0]
                                 for gl_i, gl in enumerate(energyBreakdown_eachRegion['genTypeLabel']):
                                     if gl in ['Solar', 'Wind']: 
                                         energyBreakdown_shortList[0] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                                    elif gl in ['Oil', 'NaturalGas', 'Coal']:
+                                    elif gl in ['Oil', 'Natural Gas', 'Coal']:
                                         energyBreakdown_shortList[1] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                                    elif gl in ['Conventional Nuclear', 'SMR']:
+                                    elif gl in ['Conventional Nuclear']:
                                         energyBreakdown_shortList[2] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
-                                    else:
+                                    elif gl in ['SMR']:
                                         energyBreakdown_shortList[3] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
+                                    else:
+                                        energyBreakdown_shortList[4] += energyBreakdown_eachRegion['outputBreakdown'][gl_i]
 
                                 maxEnergySource_shortList= max(energyBreakdown_shortList)
                                 maxEnergySource_shortList_index = energyBreakdown_shortList.index(maxEnergySource_shortList)
@@ -3614,15 +3826,15 @@ class OptimalPowerFlowAnalysis:
                                     energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
                                     colour_longList.append("#ffcc33")
                                 if 'Natural Gas' in energyBreakdown_eachRegion['genTypeLabel']:
-                                    genLabel_longList_rearrange.append('NaturalGas')
-                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('NaturalGas')
+                                    genLabel_longList_rearrange.append('Natural Gas')
+                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Natural Gas')
                                     energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
                                     colour_longList.append("#1B2631")
                                 if 'Coal' in energyBreakdown_eachRegion['genTypeLabel']:
                                     genLabel_longList_rearrange.append('Coal')
                                     i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Coal')
                                     energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                    colour_longList.append("#2d37bc")
+                                    colour_longList.append("#873600")
                                 if 'Oil' in energyBreakdown_eachRegion['genTypeLabel']:
                                     genLabel_longList_rearrange.append('Oil')
                                     i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Oil')
@@ -3632,7 +3844,7 @@ class OptimalPowerFlowAnalysis:
                                     genLabel_longList_rearrange.append('Conventional Nuclear')
                                     i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Conventional Nuclear')
                                     energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                    colour_longList.append("#285400")
+                                    colour_longList.append("#cc3300")
                                 if 'SMR' in energyBreakdown_eachRegion['genTypeLabel']:
                                     genLabel_longList_rearrange.append('SMR')
                                     i_label = energyBreakdown_eachRegion['genTypeLabel'].index('SMR')
@@ -3642,10 +3854,10 @@ class OptimalPowerFlowAnalysis:
                                     genLabel_longList_rearrange.append('Others')
                                     i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Others')
                                     energyBreakdown_longList_rearrange.append(energyBreakdown_eachRegion['outputBreakdown'][i_label])
-                                    colour_longList.append("#873600")
+                                    colour_longList.append("#2d37bc")
 
                                 ## pick the major energy source 
-                                boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion ['smallAreaBoundery'])))
+                                boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
                                 maxOutputEnergySource = max(energyBreakdown_eachRegion ['outputBreakdown'])
                                 maxOutputEnergySource_index = energyBreakdown_eachRegion ['outputBreakdown'].index(maxOutputEnergySource)
                                 maxOutputEnergySource_label = energyBreakdown_eachRegion['genTypeLabel'][maxOutputEnergySource_index]
@@ -3657,60 +3869,62 @@ class OptimalPowerFlowAnalysis:
                                 elif maxOutputEnergySource_label == 'Natural Gas':
                                     colourOfPolygon = "#1B2631"
                                 elif maxOutputEnergySource_label == 'Coal':
-                                    colourOfPolygon = "#2d37bc"
+                                    colourOfPolygon = "#873600"
                                 elif maxOutputEnergySource_label == 'Oil':
                                     colourOfPolygon = "#99A3A4"
                                 elif maxOutputEnergySource_label == 'Conventional Nuclear':
-                                    colourOfPolygon = "#285400"
+                                    colourOfPolygon = "#cc3300"
                                 elif maxOutputEnergySource_label == 'SMR':
                                     colourOfPolygon = "#1e8700"
                                 elif maxOutputEnergySource_label == 'Others':
-                                    colourOfPolygon = "#873600"
+                                    colourOfPolygon = "#2d37bc"
 
                                 ## creating feature for subclassify (long list)
-                                feature_longList = """{
-                                    "type": "Feature",
-                                    "properties": {
-                                    "smallArea_LACode": "%s",
-                                    "majorOutput": "%s",
-                                    "majorEnergySource": "%s",
-                                    "color": "%s",
-                                    "fill": "%s",
-                                    "fill-opacity": 0.9,
-                                    "stroke-width" : 0.2,
-                                    "stroke-opacity" : 0.7,
-                                    "height": "%s",
-                                    "base_height": 0
-                                    },
-                                    "geometry":  %s             
-                                },"""%(energyBreakdown_eachRegion['smallAreaCode'], round(float(maxOutputEnergySource), 2), maxOutputEnergySource_label, colourOfPolygon, colourOfPolygon, round(float(maxOutputEnergySource), 2), str(boundary).replace("\'", "\""))         
-                                
+                                if int(maxOutputEnergySource) > 0:
+                                    feature_longList = """{
+                                        "type": "Feature",
+                                        "properties": {
+                                        "smallArea_LACode": "%s",
+                                        "majorOutput": "%s",
+                                        "majorEnergySource": "%s",
+                                        "color": "%s",
+                                        "fill": "%s",
+                                        "fill-opacity": 0.6,
+                                        "stroke-width" : 0.2,
+                                        "stroke-opacity" : 0.7,
+                                        "height": %s,
+                                        "base_height": 0
+                                        },
+                                        "geometry":  %s             
+                                    },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(maxOutputEnergySource), 2), maxOutputEnergySource_label, colourOfPolygon, colourOfPolygon, round(float(maxOutputEnergySource), 2), str(boundary).replace("\'", "\""))         
+                                    # adding new line 
+                                    geojson_file_longList += '\n' + feature_longList
+
                                 ##  creating feature for broad classification (short list)
-                                feature_shortList = """{
-                                    "type": "Feature",
-                                    "properties": {
-                                    "smallArea_LACode": "%s",
-                                    "majorOutput": "%s",
-                                    "majorEnergySource": "%s",
-                                    "color": "%s",
-                                    "fill": "%s",
-                                    "fill-opacity": 0.9,
-                                    "stroke-width" : 0.2,
-                                    "stroke-opacity" : 0.7,
-                                    "height": "%s",
-                                    "base_height": 0
-                                    },
-                                    "geometry":  %s             
-                                },"""%(energyBreakdown_eachRegion['smallAreaCode'], round(float(maxEnergySource_shortList), 2), maxEnergySource_shortList_label, maxEnergySource_shortList_colour, maxEnergySource_shortList_colour, round(float(maxEnergySource_shortList), 2), str(boundary).replace("\'", "\""))         
-                                
-                                # adding new line 
-                                geojson_file_longList += '\n' + feature_longList
-                                geojson_file_shortList += '\n' + feature_shortList
+                                if int(maxEnergySource_shortList) > 0:
+                                    feature_shortList = """{
+                                        "type": "Feature",
+                                        "properties": {
+                                        "smallArea_LACode": "%s",
+                                        "majorOutput": "%s",
+                                        "majorEnergySource": "%s",
+                                        "color": "%s",
+                                        "fill": "%s",
+                                        "fill-opacity": 0.8,
+                                        "stroke-width" : 0.2,
+                                        "stroke-opacity" : 0.7,
+                                        "height": %s,
+                                        "base_height": 0
+                                        },
+                                        "geometry":  %s             
+                                    },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(maxEnergySource_shortList), 2), maxEnergySource_shortList_label, maxEnergySource_shortList_colour, maxEnergySource_shortList_colour, round(float(maxEnergySource_shortList), 2), str(boundary).replace("\'", "\""))         
+                                    # adding new line 
+                                    geojson_file_shortList += '\n' + feature_shortList
 
                                 ##  creating feature for each energy type in the same region
                                 baseHight = 0
                                 for colour_index, eb_eachEnergyTypeInSameRegion in enumerate(energyBreakdown_longList_rearrange):
-                                    if eb_eachEnergyTypeInSameRegion > 0:                                   
+                                    if int(eb_eachEnergyTypeInSameRegion) > 0:                                   
                                         feature_fullbar = """{
                                         "type": "Feature",
                                         "properties": {
@@ -3719,14 +3933,14 @@ class OptimalPowerFlowAnalysis:
                                         "energySource": "%s",
                                         "color": "%s",
                                         "fill": "%s",
-                                        "fill-opacity": 0.9,
+                                        "fill-opacity": 0.5,
                                         "stroke-width" : 0.2,
                                         "stroke-opacity" : 0.7,
-                                        "height": "%s",
-                                        "base_height": "%s"
+                                        "height": %s,
+                                        "base_height": %s
                                         },
                                         "geometry":  %s             
-                                        },"""%(energyBreakdown_eachRegion['smallAreaCode'], round(float(eb_eachEnergyTypeInSameRegion), 2), genLabel_longList_rearrange[colour_index], colour_longList[colour_index], colour_longList[colour_index], round(float(eb_eachEnergyTypeInSameRegion), 2), str(baseHight), str(boundary).replace("\'", "\""))         
+                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], round(float(eb_eachEnergyTypeInSameRegion), 2), genLabel_longList_rearrange[colour_index], colour_longList[colour_index], colour_longList[colour_index], round(float(eb_eachEnergyTypeInSameRegion), 2), str(baseHight), str(boundary).replace("\'", "\""))         
                                         baseHight += round(float(eb_eachEnergyTypeInSameRegion), 2)
                                         # adding new line 
                                         geojson_file_fullbar += '\n' + feature_fullbar
@@ -3759,11 +3973,908 @@ class OptimalPowerFlowAnalysis:
 
                             file_label_fullbar = 'SmallAreaFullBar_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
                             geojson_written_fullbar = open(self.majorEnergySourceJSONPath + 'smallAreaFullBar_fill-extrusion\\' + file_label_fullbar + '.geojson','w')
-                            geojson_written_fullbar.write(file_label_fullbar)
+                            geojson_written_fullbar.write(geojson_file_fullbar)
                             geojson_written_shortList.close() 
                             print('---GeoJSON written successfully: full bar for small areas---', file_label_fullbar)                                   
         return 
 
+    """This method is to generate the visulisation GeoJSON file for the 3D bar of different energy sources output for each small area"""
+    ## 3D bars
+    def GeoJSONCreator_outputOfDifferentEnergySourceForSmallArea(self, energyBreakdownList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
+        ## check the storage path
+        for genType in ['Wind', 'Solar', 'NaturalGas', 'Coal', 'Oil', 'ConventionalNuclear', 'SMR', 'Hydro', 'Others']:
+            path = 'outputOfDifferentEnergySourceForSmallArea_fill-extrusion\\' + str(genType) + '\\'
+            self.mkdiroutputOfDifferentEnergySourceForSmallAreaJSON(path)
+
+        weatherNameList = []
+        for weather in weatherConditionList:
+            weatherNameList.append(weather[2])
+
+        if ifSpecifiedResults is True:
+            if specifiedConfigList == [] or specifiedConfigList == [[]]:
+                raise ValueError('specifiedConfigList should contain at list 1 non-empty list.')
+            for cf in specifiedConfigList:
+                if len(cf) < 3:
+                    raise ValueError('The sub list of the specifiedConfigList should contain at least 3 elements specifying the SMR number, carbon tax and weather condition.')
+                elif len(cf) == 3: ## SMR number, Carbon tax, weather condition 
+                    if not cf[0] in NumberOfSMRUnitList:
+                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
+                    else:
+                        smrIndex = NumberOfSMRUnitList.index(cf[0])
+                    if not cf[1] in CarbonTaxForOPFList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
+                    else:
+                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
+                    if not cf[2] in weatherNameList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
+                    else:
+                        weatherIndex = weatherNameList.index(cf[2])
+                    
+                    specifiedEnergyBreakdownList = energyBreakdownList[smrIndex][carbonTaxList][weatherIndex]
+
+                    for i_weight, energyBreakdown_eachWeight in enumerate(specifiedEnergyBreakdownList):                     
+                        ##--different sources (long list)--##
+                        geojson_file_Wind = """
+                        {
+                            "type": "FeatureCollection",
+                            "features": ["""
+                        geojson_file_Solar = """
+                        {
+                            "type": "FeatureCollection",
+                            "features": ["""
+                        geojson_file_NaturalGas= """
+                        {
+                            "type": "FeatureCollection",
+                            "features": ["""
+                        geojson_file_Coal= """
+                        {
+                            "type": "FeatureCollection",
+                            "features": ["""                        
+                        geojson_file_Oil= """
+                        {
+                            "type": "FeatureCollection",
+                            "features": ["""                       
+                        geojson_file_ConventionalNuclear= """
+                        {
+                            "type": "FeatureCollection",
+                            "features": ["""
+                        geojson_file_SMR = """
+                        {
+                            "type": "FeatureCollection",
+                            "features": ["""
+                        geojson_file_Hydro = """
+                        {
+                            "type": "FeatureCollection",
+                            "features": ["""                       
+                        geojson_file_Others= """
+                        {
+                            "type": "FeatureCollection",
+                            "features": ["""
+
+                        # iterating over features (rows in results array)
+                        for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
+                            boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
+                            ## convert the nuclear type into the Conventional Nuclear
+                            if 'Nuclear' in energyBreakdown_eachRegion['genTypeLabel']:
+                                i_Nuclear = energyBreakdown_eachRegion['genTypeLabel'].index('Nuclear')
+                                energyBreakdown_eachRegion['genTypeLabel'][i_Nuclear] = 'Conventional Nuclear'
+                            
+                            ## convert the NaturalGas type into the Natural Gas
+                            if 'NaturalGas' in energyBreakdown_eachRegion['genTypeLabel']:
+                                i_NaturalGas = energyBreakdown_eachRegion['genTypeLabel'].index('NaturalGas')
+                                energyBreakdown_eachRegion['genTypeLabel'][i_NaturalGas] = 'Natural Gas'
+
+                            for genType in energyBreakdown_eachRegion['genTypeLabel']:
+                                if genType == 'Wind':
+                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Wind')
+                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                    if int(outPut) > 0:
+                                        feature_Wind = """{
+                                            "type": "Feature",
+                                            "properties": {
+                                            "smallArea_LACode": "%s",
+                                            "output": "%s",
+                                            "energySource": "Wind",
+                                            "color": "#13bef2",
+                                            "fill-opacity": 0.6,
+                                            "stroke-width" : 0.2,
+                                            "stroke-opacity" : 0.7,
+                                            "height": %s,
+                                            "base_height": 0
+                                            },
+                                            "geometry":  %s             
+                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                        # adding new line 
+                                        geojson_file_Wind += '\n' + feature_Wind
+                                elif genType == 'Solar':
+                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Solar')
+                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                    if int(outPut) > 0:
+                                        feature_Solar = """{
+                                            "type": "Feature",
+                                            "properties": {
+                                            "smallArea_LACode": "%s",
+                                            "output": "%s",
+                                            "energySource": "Solar",
+                                            "color": "#ffcc33",
+                                            "fill-opacity": 0.6,
+                                            "stroke-width" : 0.2,
+                                            "stroke-opacity" : 0.7,
+                                            "height": %s,
+                                            "base_height": 0
+                                            },
+                                            "geometry":  %s             
+                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                        # adding new line 
+                                        geojson_file_Solar += '\n' + feature_Solar
+                                elif genType == 'Natural Gas':
+                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Natural Gas')
+                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                    if int(outPut) > 0:
+                                        feature_NaturalGas = """{
+                                            "type": "Feature",
+                                            "properties": {
+                                            "smallArea_LACode": "%s",
+                                            "output": "%s",
+                                            "energySource": "Natural Gas",
+                                            "color": "#1B2631",
+                                            "fill-opacity": 0.6,
+                                            "stroke-width" : 0.2,
+                                            "stroke-opacity" : 0.7,
+                                            "height": %s,
+                                            "base_height": 0
+                                            },
+                                            "geometry":  %s             
+                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                        # adding new line 
+                                        geojson_file_NaturalGas += '\n' + feature_NaturalGas
+                                elif genType == 'Coal':
+                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Coal')
+                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                    if int(outPut) > 0:
+                                        feature_Coal = """{
+                                            "type": "Feature",
+                                            "properties": {
+                                            "smallArea_LACode": "%s",
+                                            "output": "%s",
+                                            "energySource": "Coal",
+                                            "color": "#873600",
+                                            "fill-opacity": 0.6,
+                                            "stroke-width" : 0.2,
+                                            "stroke-opacity" : 0.7,
+                                            "height": %s,
+                                            "base_height": 0
+                                            },
+                                            "geometry":  %s             
+                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                        # adding new line 
+                                        geojson_file_Coal += '\n' + feature_Coal
+                                elif genType == 'Oil':
+                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Oil')
+                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                    if int(outPut) > 0:
+                                        feature_Oil = """{
+                                            "type": "Feature",
+                                            "properties": {
+                                            "smallArea_LACode": "%s",
+                                            "output": "%s",
+                                            "energySource": "Oil",
+                                            "color": "#99A3A4",
+                                            "fill-opacity": 0.6,
+                                            "stroke-width" : 0.2,
+                                            "stroke-opacity" : 0.7,
+                                            "height": %s,
+                                            "base_height": 0
+                                            },
+                                            "geometry":  %s             
+                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                        # adding new line 
+                                        geojson_file_Oil += '\n' + feature_Oil                                    
+                                elif genType == 'Conventional Nuclear':
+                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Conventional Nuclear')
+                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                    if int(outPut) > 0:
+                                        feature_ConventionalNuclear = """{
+                                            "type": "Feature",
+                                            "properties": {
+                                            "smallArea_LACode": "%s",
+                                            "output": "%s",
+                                            "energySource": "Conventional Nuclear",
+                                            "color": "#cc3300",
+                                            "fill-opacity": 0.6,
+                                            "stroke-width" : 0.2,
+                                            "stroke-opacity" : 0.7,
+                                            "height": %s,
+                                            "base_height": 0
+                                            },
+                                            "geometry":  %s             
+                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                        # adding new line 
+                                        geojson_file_ConventionalNuclear += '\n' + feature_ConventionalNuclear
+                                elif genType == 'SMR':
+                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('SMR')
+                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                    if int(outPut) > 0:
+                                        feature_SMR = """{
+                                            "type": "Feature",
+                                            "properties": {
+                                            "smallArea_LACode": "%s",
+                                            "output": "%s",
+                                            "energySource": "SMR",
+                                            "color": "#1e8700",
+                                            "fill-opacity": 0.6,
+                                            "stroke-width" : 0.2,
+                                            "stroke-opacity" : 0.7,
+                                            "height": %s,
+                                            "base_height": 0
+                                            },
+                                            "geometry":  %s             
+                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                        # adding new line 
+                                        geojson_file_SMR += '\n' + feature_SMR
+                                elif genType == 'Hydro':
+                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Hydro')
+                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                    if int(outPut) > 0:
+                                        feature_Hydro = """{
+                                            "type": "Feature",
+                                            "properties": {
+                                            "smallArea_LACode": "%s",
+                                            "output": "%s",
+                                            "energySource": "Hydro",
+                                            "color": "#3b3bff",
+                                            "fill-opacity": 0.6,
+                                            "stroke-width" : 0.2,
+                                            "stroke-opacity" : 0.7,
+                                            "height": %s,
+                                            "base_height": 0
+                                            },
+                                            "geometry":  %s             
+                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                        # adding new line 
+                                        geojson_file_Hydro += '\n' + feature_Hydro
+                                elif genType == 'Others':
+                                    i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Others')
+                                    outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                    if int(outPut) > 0:
+                                        feature_Others = """{
+                                            "type": "Feature",
+                                            "properties": {
+                                            "smallArea_LACode": "%s",
+                                            "output": "%s",
+                                            "energySource": "Others",
+                                            "color": "#2d37bc",
+                                            "fill-opacity": 0.6,
+                                            "stroke-width" : 0.2,
+                                            "stroke-opacity" : 0.7,
+                                            "height": %s,
+                                            "base_height": 0
+                                            },
+                                            "geometry":  %s             
+                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                        # adding new line 
+                                        geojson_file_Others += '\n' + feature_Others
+
+                        # removing last comma as is last line
+                        geojson_file_Wind = geojson_file_Wind[:-1]
+                        geojson_file_Solar = geojson_file_Solar[:-1]
+                        geojson_file_NaturalGas = geojson_file_NaturalGas[:-1]
+                        geojson_file_Coal = geojson_file_Coal[:-1]
+                        geojson_file_Oil = geojson_file_Oil[:-1]
+                        geojson_file_ConventionalNuclear = geojson_file_ConventionalNuclear[:-1]
+                        geojson_file_SMR = geojson_file_SMR[:-1]
+                        geojson_file_Hydro = geojson_file_Hydro[:-1]
+                        geojson_file_Others = geojson_file_Others[:-1]
+                        # finishing file end 
+                        end_geojson = """
+                            ]
+                        }
+                        """
+                        geojson_file_Wind += end_geojson
+                        geojson_file_Solar += end_geojson
+                        geojson_file_NaturalGas += end_geojson
+                        geojson_file_Coal += end_geojson
+                        geojson_file_Oil += end_geojson
+                        geojson_file_ConventionalNuclear += end_geojson
+                        geojson_file_SMR += end_geojson
+                        geojson_file_Hydro += end_geojson
+                        geojson_file_Others += end_geojson
+
+                        geojson_file_list = [geojson_file_Wind, geojson_file_Solar, geojson_file_NaturalGas, geojson_file_Coal, geojson_file_Oil, geojson_file_ConventionalNuclear, geojson_file_SMR, geojson_file_Hydro, geojson_file_Others]
+
+                        # saving as geoJSON
+                        for i_geojson_file, genType in enumerate(['Wind', 'Solar', 'NaturalGas', 'Coal', 'Oil', 'ConventionalNuclear', 'SMR', 'Hydro', 'Others']):
+                            geojson_file = geojson_file_list[i_geojson_file]
+                            path = 'outputOfDifferentEnergySourceForSmallArea_fill-extrusion\\' + str(genType) + '\\'
+                            file_label = genType + '_OutputOfDifferentEnergySourceForSmallArea_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
+                            geojson_written = open(self.outputOfDifferentEnergySourceJSONPath + path + file_label + '.geojson','w')
+                            geojson_written.write(geojson_file)
+                            geojson_written.close() 
+                            print('---GeoJSON written successfully: output of different energy source for small area---', genType)                                        
+                elif len(cf) == 4: ## SMR number, Carbon tax, weather condition, weight 
+                    if not cf[0] in NumberOfSMRUnitList:
+                        raise ValueError('The first element of the sub list of the specifiedConfigList should be SMR number.')
+                    else:
+                        smrIndex = NumberOfSMRUnitList.index(cf[0])
+                    if not cf[1] in CarbonTaxForOPFList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be carbon tax.')
+                    else:
+                        carbonTaxList = CarbonTaxForOPFList.index(cf[1])
+                    if not cf[2] in weatherNameList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be werather condition.')
+                    else:
+                        weatherIndex = weatherNameList.index(cf[2]) 
+                    if not cf[3] in self.weighterList:
+                        raise ValueError('The second element of the sub list of the specifiedConfigList should be weight.')
+                    else:
+                        weightIndex = self.weighterList.index(cf[3]) 
+                    
+                    specifiedEnergyBreakdownList = energyBreakdownList[smrIndex][carbonTaxList][weatherIndex][weightIndex]
+
+                    ##--different sources (long list)--##
+                    geojson_file_Wind = """
+                    {
+                        "type": "FeatureCollection",
+                        "features": ["""
+                    geojson_file_Solar = """
+                    {
+                        "type": "FeatureCollection",
+                        "features": ["""
+                    geojson_file_NaturalGas= """
+                    {
+                        "type": "FeatureCollection",
+                        "features": ["""
+                    geojson_file_Coal= """
+                    {
+                        "type": "FeatureCollection",
+                        "features": ["""                        
+                    geojson_file_Oil= """
+                    {
+                        "type": "FeatureCollection",
+                        "features": ["""                       
+                    geojson_file_ConventionalNuclear= """
+                    {
+                        "type": "FeatureCollection",
+                        "features": ["""
+                    geojson_file_SMR = """
+                    {
+                        "type": "FeatureCollection",
+                        "features": ["""
+                    geojson_file_Hydro = """
+                    {
+                        "type": "FeatureCollection",
+                        "features": ["""                       
+                    geojson_file_Others= """
+                    {
+                        "type": "FeatureCollection",
+                        "features": ["""
+
+                    # iterating over features (rows in results array)
+                    for energyBreakdown_eachRegion in specifiedEnergyBreakdownList:
+                        boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
+                        ## convert the nuclear type into the Conventional Nuclear
+                        if 'Nuclear' in energyBreakdown_eachRegion['genTypeLabel']:
+                            i_Nuclear = energyBreakdown_eachRegion['genTypeLabel'].index('Nuclear')
+                            energyBreakdown_eachRegion['genTypeLabel'][i_Nuclear] = 'Conventional Nuclear'
+                        
+                        ## convert the NaturalGas type into the Natural Gas
+                        if 'NaturalGas' in energyBreakdown_eachRegion['genTypeLabel']:
+                            i_NaturalGas = energyBreakdown_eachRegion['genTypeLabel'].index('NaturalGas')
+                            energyBreakdown_eachRegion['genTypeLabel'][i_NaturalGas] = 'Natural Gas'
+
+                        for genType in energyBreakdown_eachRegion['genTypeLabel']:
+                            if genType == 'Wind':
+                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Wind')
+                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                if int(outPut) > 0:
+                                    feature_Wind = """{
+                                        "type": "Feature",
+                                        "properties": {
+                                        "smallArea_LACode": "%s",
+                                        "output": "%s",
+                                        "energySource": "Wind",
+                                        "color": "#13bef2",
+                                        "fill-opacity": 0.6,
+                                        "stroke-width" : 0.2,
+                                        "stroke-opacity" : 0.7,
+                                        "height": %s,
+                                        "base_height": 0
+                                        },
+                                        "geometry":  %s             
+                                    },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                    # adding new line 
+                                    geojson_file_Wind += '\n' + feature_Wind
+                            elif genType == 'Solar':
+                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Solar')
+                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                if int(outPut) > 0:
+                                    feature_Solar = """{
+                                        "type": "Feature",
+                                        "properties": {
+                                        "smallArea_LACode": "%s",
+                                        "output": "%s",
+                                        "energySource": "Solar",
+                                        "color": "#ffcc33",
+                                        "fill-opacity": 0.6,
+                                        "stroke-width" : 0.2,
+                                        "stroke-opacity" : 0.7,
+                                        "height": %s,
+                                        "base_height": 0
+                                        },
+                                        "geometry":  %s             
+                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                    # adding new line 
+                                    geojson_file_Solar += '\n' + feature_Solar
+                            elif genType == 'Natural Gas':
+                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Natural Gas')
+                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                if int(outPut) > 0:
+                                    feature_NaturalGas = """{
+                                        "type": "Feature",
+                                        "properties": {
+                                        "smallArea_LACode": "%s",
+                                        "output": "%s",
+                                        "energySource": "Natural Gas",
+                                        "color": "#1B2631",
+                                        "fill-opacity": 0.6,
+                                        "stroke-width" : 0.2,
+                                        "stroke-opacity" : 0.7,
+                                        "height": %s,
+                                        "base_height": 0
+                                        },
+                                        "geometry":  %s             
+                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                    # adding new line 
+                                    geojson_file_NaturalGas += '\n' + feature_NaturalGas
+                            elif genType == 'Coal':
+                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Coal')
+                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                if int(outPut) > 0:
+                                    feature_Coal = """{
+                                        "type": "Feature",
+                                        "properties": {
+                                        "smallArea_LACode": "%s",
+                                        "output": "%s",
+                                        "energySource": "Coal",
+                                        "color": "#873600",
+                                        "fill-opacity": 0.6,
+                                        "stroke-width" : 0.2,
+                                        "stroke-opacity" : 0.7,
+                                        "height": %s,
+                                        "base_height": 0
+                                        },
+                                        "geometry":  %s             
+                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                    # adding new line 
+                                    geojson_file_Coal += '\n' + feature_Coal
+                            elif genType == 'Oil':
+                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Oil')
+                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                if int(outPut) > 0:
+                                    feature_Oil = """{
+                                        "type": "Feature",
+                                        "properties": {
+                                        "smallArea_LACode": "%s",
+                                        "output": "%s",
+                                        "energySource": "Oil",
+                                        "color": "#99A3A4",
+                                        "fill-opacity": 0.6,
+                                        "stroke-width" : 0.2,
+                                        "stroke-opacity" : 0.7,
+                                        "height": %s,
+                                        "base_height": 0
+                                        },
+                                        "geometry":  %s             
+                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                    # adding new line 
+                                    geojson_file_Oil += '\n' + feature_Oil                                    
+                            elif genType == 'Conventional Nuclear':
+                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Conventional Nuclear')
+                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                if int(outPut) > 0:
+                                    feature_ConventionalNuclear = """{
+                                        "type": "Feature",
+                                        "properties": {
+                                        "smallArea_LACode": "%s",
+                                        "output": "%s",
+                                        "energySource": "Conventional Nuclear",
+                                        "color": "#cc3300",
+                                        "fill-opacity": 0.6,
+                                        "stroke-width" : 0.2,
+                                        "stroke-opacity" : 0.7,
+                                        "height": %s,
+                                        "base_height": 0
+                                        },
+                                        "geometry":  %s             
+                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                    # adding new line 
+                                    geojson_file_ConventionalNuclear += '\n' + feature_ConventionalNuclear
+                            elif genType == 'SMR':
+                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('SMR')
+                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                if int(outPut) > 0:
+                                    feature_SMR = """{
+                                        "type": "Feature",
+                                        "properties": {
+                                        "smallArea_LACode": "%s",
+                                        "output": "%s",
+                                        "energySource": "SMR",
+                                        "color": "#1e8700",
+                                        "fill-opacity": 0.6,
+                                        "stroke-width" : 0.2,
+                                        "stroke-opacity" : 0.7,
+                                        "height": %s,
+                                        "base_height": 0
+                                        },
+                                        "geometry":  %s             
+                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                    # adding new line 
+                                    geojson_file_SMR += '\n' + feature_SMR
+                            elif genType == 'Hydro':
+                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Hydro')
+                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                if int(outPut) > 0:
+                                    feature_Hydro = """{
+                                        "type": "Feature",
+                                        "properties": {
+                                        "smallArea_LACode": "%s",
+                                        "output": "%s",
+                                        "energySource": "Hydro",
+                                        "color": "#3b3bff",
+                                        "fill-opacity": 0.6,
+                                        "stroke-width" : 0.2,
+                                        "stroke-opacity" : 0.7,
+                                        "height": %s,
+                                        "base_height": 0
+                                        },
+                                        "geometry":  %s             
+                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                    # adding new line 
+                                    geojson_file_Hydro += '\n' + feature_Hydro
+                            elif genType == 'Others':
+                                i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Others')
+                                outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                if int(outPut) > 0:
+                                    feature_Others = """{
+                                        "type": "Feature",
+                                        "properties": {
+                                        "smallArea_LACode": "%s",
+                                        "output": "%s",
+                                        "energySource": "Others",
+                                        "color": "#2d37bc",
+                                        "fill-opacity": 0.6,
+                                        "stroke-width" : 0.2,
+                                        "stroke-opacity" : 0.7,
+                                        "height": %s,
+                                        "base_height": 0
+                                        },
+                                        "geometry":  %s             
+                                        },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                    # adding new line 
+                                    geojson_file_Others += '\n' + feature_Others
+
+                    # removing last comma as is last line
+                    geojson_file_Wind = geojson_file_Wind[:-1]
+                    geojson_file_Solar = geojson_file_Solar[:-1]
+                    geojson_file_NaturalGas = geojson_file_NaturalGas[:-1]
+                    geojson_file_Coal = geojson_file_Coal[:-1]
+                    geojson_file_Oil = geojson_file_Oil[:-1]
+                    geojson_file_ConventionalNuclear = geojson_file_ConventionalNuclear[:-1]
+                    geojson_file_SMR = geojson_file_SMR[:-1]
+                    geojson_file_Hydro = geojson_file_Hydro[:-1]
+                    geojson_file_Others = geojson_file_Others[:-1]
+                    # finishing file end 
+                    end_geojson = """
+                        ]
+                    }
+                    """
+                    geojson_file_Wind += end_geojson
+                    geojson_file_Solar += end_geojson
+                    geojson_file_NaturalGas += end_geojson
+                    geojson_file_Coal += end_geojson
+                    geojson_file_Oil += end_geojson
+                    geojson_file_ConventionalNuclear += end_geojson
+                    geojson_file_SMR += end_geojson
+                    geojson_file_Hydro += end_geojson
+                    geojson_file_Others += end_geojson
+
+                    geojson_file_list = [geojson_file_Wind, geojson_file_Solar, geojson_file_NaturalGas, geojson_file_Coal, geojson_file_Oil, geojson_file_ConventionalNuclear, geojson_file_SMR, geojson_file_Hydro, geojson_file_Others]
+
+                    # saving as geoJSON
+                    for i_geojson_file, genType in enumerate(['Wind', 'Solar', 'NaturalGas', 'Coal', 'Oil', 'ConventionalNuclear', 'SMR', 'Hydro', 'Others']):
+                        geojson_file = geojson_file_list[i_geojson_file]
+                        path = 'outputOfDifferentEnergySourceForSmallArea_fill-extrusion\\' + str(genType) + '\\'
+                        file_label = genType + '_OutputOfDifferentEnergySourceForSmallArea_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(cf[3], 2)) + ')'
+                        geojson_written = open(self.outputOfDifferentEnergySourceJSONPath + path + file_label + '.geojson','w')
+                        geojson_written.write(geojson_file)
+                        geojson_written.close() 
+                        print('---GeoJSON written successfully: output of different energy source for small area---', genType)                                        
+                else:
+                    raise ValueError('Invailed sub list of the specifiedConfigList.')
+        else:
+            for i_smr, energyBreakdown_eachSMRDesign in enumerate(energyBreakdownList):
+                for i_carbontax, energyBreakdown_eachCarbonTax in enumerate(energyBreakdown_eachSMRDesign):
+                    for i_weather, energyBreakdown_eachWeather in enumerate(energyBreakdown_eachCarbonTax):
+                        for i_weight, energyBreakdown_eachWeight in enumerate(energyBreakdown_eachWeather):                                            
+                            ##--different sources (long list)--##
+                            geojson_file_Wind = """
+                            {
+                                "type": "FeatureCollection",
+                                "features": ["""
+                            geojson_file_Solar = """
+                            {
+                                "type": "FeatureCollection",
+                                "features": ["""
+                            geojson_file_NaturalGas= """
+                            {
+                                "type": "FeatureCollection",
+                                "features": ["""
+                            geojson_file_Coal= """
+                            {
+                                "type": "FeatureCollection",
+                                "features": ["""                        
+                            geojson_file_Oil= """
+                            {
+                                "type": "FeatureCollection",
+                                "features": ["""                       
+                            geojson_file_ConventionalNuclear= """
+                            {
+                                "type": "FeatureCollection",
+                                "features": ["""
+                            geojson_file_SMR = """
+                            {
+                                "type": "FeatureCollection",
+                                "features": ["""
+                            geojson_file_Hydro = """
+                            {
+                                "type": "FeatureCollection",
+                                "features": ["""                       
+                            geojson_file_Others= """
+                            {
+                                "type": "FeatureCollection",
+                                "features": ["""
+
+                            # iterating over features (rows in results array)
+                            for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
+                                boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
+                                ## convert the nuclear type into the Conventional Nuclear
+                                if 'Nuclear' in energyBreakdown_eachRegion['genTypeLabel']:
+                                    i_Nuclear = energyBreakdown_eachRegion['genTypeLabel'].index('Nuclear')
+                                    energyBreakdown_eachRegion['genTypeLabel'][i_Nuclear] = 'Conventional Nuclear'
+                                
+                                ## convert the NaturalGas type into the Natural Gas
+                                if 'NaturalGas' in energyBreakdown_eachRegion['genTypeLabel']:
+                                    i_NaturalGas = energyBreakdown_eachRegion['genTypeLabel'].index('NaturalGas')
+                                    energyBreakdown_eachRegion['genTypeLabel'][i_NaturalGas] = 'Natural Gas'
+
+                                for genType in energyBreakdown_eachRegion['genTypeLabel']:
+                                    if genType == 'Wind':
+                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Wind')
+                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                        if int(outPut) > 0:
+                                            feature_Wind = """{
+                                                "type": "Feature",
+                                                "properties": {
+                                                "smallArea_LACode": "%s",
+                                                "output": "%s",
+                                                "energySource": "Wind",
+                                                "color": "#13bef2",
+                                                "fill-opacity": 0.6,
+                                                "stroke-width" : 0.2,
+                                                "stroke-opacity" : 0.7,
+                                                "height": %s,
+                                                "base_height": 0
+                                                },
+                                                "geometry":  %s             
+                                            },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                            # adding new line 
+                                            geojson_file_Wind += '\n' + feature_Wind
+                                    elif genType == 'Solar':
+                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Solar')
+                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                        if int(outPut) > 0:
+                                            feature_Solar = """{
+                                                "type": "Feature",
+                                                "properties": {
+                                                "smallArea_LACode": "%s",
+                                                "output": "%s",
+                                                "energySource": "Solar",
+                                                "color": "#ffcc33",
+                                                "fill-opacity": 0.6,
+                                                "stroke-width" : 0.2,
+                                                "stroke-opacity" : 0.7,
+                                                "height": %s,
+                                                "base_height": 0
+                                                },
+                                                "geometry":  %s             
+                                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                            # adding new line 
+                                            geojson_file_Solar += '\n' + feature_Solar
+                                    elif genType == 'Natural Gas':
+                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Natural Gas')
+                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                        if int(outPut) > 0:
+                                            feature_NaturalGas = """{
+                                                "type": "Feature",
+                                                "properties": {
+                                                "smallArea_LACode": "%s",
+                                                "output": "%s",
+                                                "energySource": "Natural Gas",
+                                                "color": "#1B2631",
+                                                "fill-opacity": 0.6,
+                                                "stroke-width" : 0.2,
+                                                "stroke-opacity" : 0.7,
+                                                "height": %s,
+                                                "base_height": 0
+                                                },
+                                                "geometry":  %s             
+                                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                            # adding new line 
+                                            geojson_file_NaturalGas += '\n' + feature_NaturalGas
+                                    elif genType == 'Coal':
+                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Coal')
+                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                        if int(outPut) > 0:
+                                            feature_Coal = """{
+                                                "type": "Feature",
+                                                "properties": {
+                                                "smallArea_LACode": "%s",
+                                                "output": "%s",
+                                                "energySource": "Coal",
+                                                "color": "#873600",
+                                                "fill-opacity": 0.6,
+                                                "stroke-width" : 0.2,
+                                                "stroke-opacity" : 0.7,
+                                                "height": %s,
+                                                "base_height": 0
+                                                },
+                                                "geometry":  %s             
+                                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                            # adding new line 
+                                            geojson_file_Coal += '\n' + feature_Coal
+                                    elif genType == 'Oil':
+                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Oil')
+                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                        if int(outPut) > 0:
+                                            feature_Oil = """{
+                                                "type": "Feature",
+                                                "properties": {
+                                                "smallArea_LACode": "%s",
+                                                "output": "%s",
+                                                "energySource": "Oil",
+                                                "color": "#99A3A4",
+                                                "fill-opacity": 0.6,
+                                                "stroke-width" : 0.2,
+                                                "stroke-opacity" : 0.7,
+                                                "height": %s,
+                                                "base_height": 0
+                                                },
+                                                "geometry":  %s             
+                                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                            # adding new line 
+                                            geojson_file_Oil += '\n' + feature_Oil                                    
+                                    elif genType == 'Conventional Nuclear':
+                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Conventional Nuclear')
+                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                        if int(outPut) > 0:
+                                            feature_ConventionalNuclear = """{
+                                                "type": "Feature",
+                                                "properties": {
+                                                "smallArea_LACode": "%s",
+                                                "output": "%s",
+                                                "energySource": "Conventional Nuclear",
+                                                "color": "#cc3300",
+                                                "fill-opacity": 0.6,
+                                                "stroke-width" : 0.2,
+                                                "stroke-opacity" : 0.7,
+                                                "height": %s,
+                                                "base_height": 0
+                                                },
+                                                "geometry":  %s             
+                                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                            # adding new line 
+                                            geojson_file_ConventionalNuclear += '\n' + feature_ConventionalNuclear
+                                    elif genType == 'SMR':
+                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('SMR')
+                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                        if int(outPut) > 0:
+                                            feature_SMR = """{
+                                                "type": "Feature",
+                                                "properties": {
+                                                "smallArea_LACode": "%s",
+                                                "output": "%s",
+                                                "energySource": "SMR",
+                                                "color": "#1e8700",
+                                                "fill-opacity": 0.6,
+                                                "stroke-width" : 0.2,
+                                                "stroke-opacity" : 0.7,
+                                                "height": %s,
+                                                "base_height": 0
+                                                },
+                                                "geometry":  %s             
+                                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                            # adding new line 
+                                            geojson_file_SMR += '\n' + feature_SMR
+                                    elif genType == 'Hydro':
+                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Hydro')
+                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                        if int(outPut) > 0:
+                                            feature_Hydro = """{
+                                                "type": "Feature",
+                                                "properties": {
+                                                "smallArea_LACode": "%s",
+                                                "output": "%s",
+                                                "energySource": "Hydro",
+                                                "color": "#3b3bff",
+                                                "fill-opacity": 0.6,
+                                                "stroke-width" : 0.2,
+                                                "stroke-opacity" : 0.7,
+                                                "height": %s,
+                                                "base_height": 0
+                                                },
+                                                "geometry":  %s             
+                                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                            # adding new line 
+                                            geojson_file_Hydro += '\n' + feature_Hydro
+                                    elif genType == 'Others':
+                                        i_label = energyBreakdown_eachRegion['genTypeLabel'].index('Others')
+                                        outPut = round(float(energyBreakdown_eachRegion['outputBreakdown'][i_label]), 2)
+                                        if int(outPut) > 0:
+                                            feature_Others = """{
+                                                "type": "Feature",
+                                                "properties": {
+                                                "smallArea_LACode": "%s",
+                                                "output": "%s",
+                                                "energySource": "Others",
+                                                "color": "#2d37bc",
+                                                "fill-opacity": 0.6,
+                                                "stroke-width" : 0.2,
+                                                "stroke-opacity" : 0.7,
+                                                "height": %s,
+                                                "base_height": 0
+                                                },
+                                                "geometry":  %s             
+                                                },"""%(energyBreakdown_eachRegion['smallAreaLACode'], outPut, outPut * 100, str(boundary).replace("\'", "\""))         
+                                            # adding new line 
+                                            geojson_file_Others += '\n' + feature_Others
+
+                            # removing last comma as is last line
+                            geojson_file_Wind = geojson_file_Wind[:-1]
+                            geojson_file_Solar = geojson_file_Solar[:-1]
+                            geojson_file_NaturalGas = geojson_file_NaturalGas[:-1]
+                            geojson_file_Coal = geojson_file_Coal[:-1]
+                            geojson_file_Oil = geojson_file_Oil[:-1]
+                            geojson_file_ConventionalNuclear = geojson_file_ConventionalNuclear[:-1]
+                            geojson_file_SMR = geojson_file_SMR[:-1]
+                            geojson_file_Hydro = geojson_file_Hydro[:-1]
+                            geojson_file_Others = geojson_file_Others[:-1]
+                            # finishing file end 
+                            end_geojson = """
+                                ]
+                            }
+                            """
+                            geojson_file_Wind += end_geojson
+                            geojson_file_Solar += end_geojson
+                            geojson_file_NaturalGas += end_geojson
+                            geojson_file_Coal += end_geojson
+                            geojson_file_Oil += end_geojson
+                            geojson_file_ConventionalNuclear += end_geojson
+                            geojson_file_SMR += end_geojson
+                            geojson_file_Hydro += end_geojson
+                            geojson_file_Others += end_geojson
+
+                            geojson_file_list = [geojson_file_Wind, geojson_file_Solar, geojson_file_NaturalGas, geojson_file_Coal, geojson_file_Oil, geojson_file_ConventionalNuclear, geojson_file_SMR, geojson_file_Hydro, geojson_file_Others]
+
+                            # saving as geoJSON
+                            for i_geojson_file, genType in enumerate(['Wind', 'Solar', 'NaturalGas', 'Coal', 'Oil', 'ConventionalNuclear', 'SMR', 'Hydro', 'Others']):
+                                geojson_file = geojson_file_list[i_geojson_file]
+                                path = 'outputOfDifferentEnergySourceForSmallArea_fill-extrusion\\' + str(genType) + '\\'
+                                file_label = genType + '_OutputOfDifferentEnergySourceForSmallArea_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
+                                geojson_written = open(self.outputOfDifferentEnergySourceJSONPath + path + file_label + '.geojson','w')
+                                geojson_written.write(geojson_file)
+                                geojson_written.close() 
+                                print('---GeoJSON written successfully: output of different energy source for small area---', genType)                                        
+            return 
 
     def mkdirJSON(self):
         folder = os.path.exists(self.filePathForJSON)
@@ -3810,6 +4921,22 @@ class OptimalPowerFlowAnalysis:
         if not folder:                
             os.makedirs(self.majorEnergySourceJSONPath + addingPath)           
             print("---  new folder %s...  ---" % self.majorEnergySourceJSONPath + addingPath)
+        else:
+            print("---  There has this folder!  ---")
+
+    def mkdiroutputOfDifferentEnergySourceForSmallAreaJSON(self, addingPath):
+        folder = os.path.exists(self.outputOfDifferentEnergySourceJSONPath + addingPath)
+        if not folder:                
+            os.makedirs(self.outputOfDifferentEnergySourceJSONPath + addingPath)           
+            print("---  new folder %s...  ---" % self.outputOfDifferentEnergySourceJSONPath + addingPath)
+        else:
+            print("---  There has this folder!  ---")
+
+    def mkdirRegionalOutputJSON(self):
+        folder = os.path.exists(self.regionalOutputJSONPath)
+        if not folder:                
+            os.makedirs(self.regionalOutputJSONPath)           
+            print("---  new folder %s...  ---" % self.regionalOutputJSONPath)
         else:
             print("---  There has this folder!  ---")
 
@@ -4740,7 +5867,7 @@ class OptimalPowerFlowAnalysis:
         ## set up the clourmap
         cmap = mpl.cm.get_cmap("viridis", len(genTypeLabel))
         colorList = cmap(numpy.linspace(0, 1, len(genTypeLabel)))
-        colorList = ["#13bef2", "#ffcc33", "#1B2631", "#99A3A4", "#2d37bc", "#285400", "#1e8700", "#873600"]
+        colorList = ["#13bef2", "#ffcc33", "#1B2631", "#99A3A4", "#873600", "#cc3300", "#1e8700", "#873600"] ## "#285400" nuclear
 
         # cmap = mpl.cm.get_cmap("twilight", len(genTypeLabel))
         # colorList = cmap(numpy.linspace(0, 1, len(genTypeLabel)))
@@ -4793,7 +5920,7 @@ class OptimalPowerFlowAnalysis:
         if len(energyBreakdown_eachSMRDesign) != len(NumberOfSMRUnitList):
             raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
         ## set up the clourmap
-        colorList = ["#13bef2", "#ffcc33", "#1B2631", "#99A3A4", "#2d37bc", "#285400", "#1e8700", "#873600"]
+        colorList = ["#13bef2", "#ffcc33", "#1B2631", "#99A3A4", "#873600", "#cc3300", "#1e8700", "#873600"]
 
         # for w in range(len(weatherConditionList)):
         #     for weight_index in range(len(self.weighterList)):
@@ -4954,7 +6081,7 @@ if __name__ == '__main__':
 ## TODO: change the picked weight 
     pickedWeight = 0.9
 
-    NumberOfSMRUnitList = [0, 5, 10, 25, 30, 40, 45, 46, 50, 51, 54]  ## [0, 5, 10, 25, 30, 43, 46, 51] #[0, 1, 5, 10, 15, 20, 22, 24, 25, 28, 30, 35, 40, 45, 47, 50, 54, 60]
+    NumberOfSMRUnitList = [0, 5, 10, 25, 30, 40, 45, 46, 50, 51, 52, 53, 54] #[0, 1, 5, 10, 15, 20, 22, 24, 25, 28, 30, 35, 40, 45, 47, 50, 54, 60]
     weighterList = [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
     CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 70, 80, 100]
     weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
@@ -4969,7 +6096,7 @@ if __name__ == '__main__':
 
     ## Specified net demanding results for GeoJSON creation 
     ifSpecifiedResultsForNetDemanding = True
-    specifiedConfig = [[51, 60, "WLSL"], [51, 60, "WHSH"]]
+    specifiedConfig = [[53, 60, "WLSL"], [53, 60, "WHSH"]]
 #############10 BUS Model#################################################################################################################################################################
     # testOPF1 = OptimalPowerFlowAnalysis(topologyNodeIRI_10Bus, AgentIRI, "2017-01-31", slackBusNodeIRI, loadAllocatorName, EBusModelVariableInitialisationMethodName, ELineInitialisationMethodName,
     #     piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, newGeneratorType, discountRate, bankRate, 
@@ -4983,7 +6110,7 @@ if __name__ == '__main__':
     # testOPF1.ModelOutputFormatter()
     # testOPF1.CarbonEmissionCalculator()
     # testOPF1.EnergySupplyBreakDownPieChartCreator()
-    # testOPF1.ModelPythonObjectOntologiser()
+    # testOPF1.ModelPythonObjectOntologiser()0
 
     def visulasitionOfCluster(list, file_label):
         geojson_file = """
@@ -5241,10 +6368,10 @@ if __name__ == '__main__':
      
     ##-- The line charts showing the procesed results --##
     # testOPF_29BusModel.lineGraph_weatherImpact(pickedWeight, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)    
-    # testOPF_29BusModel.lineGraph_weightImpact(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
+    ## testOPF_29BusModel.lineGraph_weightImpact(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
     # testOPF_29BusModel.lineGraph_SMRImpactForCO2Emission(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
     # testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForEachSMRDesign(energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
-    # estOPF_29BusModel.stackAreaGraph_EnergyBreakDownForOptimisedDesign(summary_eachSMRDesign, energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
+    # testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForOptimisedDesign(summary_eachSMRDesign, energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
 
     # netDemanding_smallArea_eachSMRDesign, netDemanding_regionalArea_eachSMRDesign = testOPF_29BusModel.netDemandingCalculator(ifReadLocalResults, genRawResult_eachSMRDesign)
 
@@ -5261,7 +6388,10 @@ if __name__ == '__main__':
     # testOPF_29BusModel.GeoJSONCreator_netDemandingForRegionalArea(netDemanding_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
     # testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator_RegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
     # testOPF_29BusModel.GeoJSONCreator_branchGrid(branchRawResult_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
-    testOPF_29BusModel.GeoJSONCreator_majorEnergySourceForSmallArea(energyBreakdown_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
+    # testOPF_29BusModel.GeoJSONCreator_majorEnergySourceForSmallArea(energyBreakdown_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
+    # testOPF_29BusModel.GeoJSONCreator_outputOfDifferentEnergySourceForSmallArea(energyBreakdown_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
+    testOPF_29BusModel.GeoJSONCreator_totalOutputOfRegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
+
 
 
     # #testOPF_29BusModel.dataHeatmapCreator_OPEXRatio(ratio_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)         

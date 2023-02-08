@@ -324,8 +324,8 @@ def queryAreaBoundaries(LA_code:str):
     print('...HTTP GET demanding Area Boundaries is done...')
     
     ## clear the symbols in the query results
-    if '\"^^' in  res :
-        res = (res.split('\"^^')[0]).replace('\"','') 
+
+    res = (res.split('\"^^')[0]).replace('\"','') 
 
     # Check the availability of the geometry of each area
     if res == 0: 
