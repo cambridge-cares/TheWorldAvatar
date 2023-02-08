@@ -4,7 +4,7 @@
 FROM python:3.9.16-slim as builder
 
 # Install required software including Java
-RUN apt update && apt install -y git curl unzip openjdk-11-jdk-headless git
+RUN apt update && apt install -y curl unzip openjdk-11-jdk-headless
 
 # Expose the port on which our server will run
 EXPOSE 5105
