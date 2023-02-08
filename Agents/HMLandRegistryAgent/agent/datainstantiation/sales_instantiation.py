@@ -553,6 +553,9 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                 except KGException as ex:
                     logger.error('Unable to retrieve property value.')
                     raise KGException('Unable to retrieve property value.') from ex
+                if prop_value:
+                    prop_value_postgis = prop_value[0].get('prop_value')
+
                 # Extract all floor surface geometries for this building
                 surf = data[data['obe_bldg'] == b]
                 # Initialise list of surface geometry coordinates (polygons)
@@ -599,7 +602,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                     'geom_iri': b + '/geometry',
                     # Optional (for styling)
                     'type': feature_type,
-                    'property_value': prop_value,
+                    'property_value': prop_value_postgis,
                 }
                 if surf.get('height').any():
                     props['building height'] = float(surf['height'].iloc[0])

@@ -257,7 +257,7 @@ def get_matched_buildings() -> str:
     """
     # Remove unnecessary whitespaces
     query = ' '.join(query.split())
-    return 
+    return query
 
 
 def get_matched_ocgml_information(obe_endpoint, ocgml_endpoint, bldg_iris=[]) -> str:

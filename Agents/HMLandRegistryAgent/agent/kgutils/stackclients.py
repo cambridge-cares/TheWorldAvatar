@@ -20,21 +20,17 @@ from agent.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, ON
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
-# create a JVM module view and use it to import the required java classes
-jpsBaseLibView = jpsBaseLibGW.createModuleView()
-jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
-
-stackClientsView = stackClientsGw.createModuleView()
-stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.*")
-
-
 class OntopClient:
     
     def __init__(self, query_endpoint=ONTOP_URL):
 
+        # create a JVM module view and use it to import the required java classes
+        self.jpsBaseLibView = jpsBaseLibGW.createModuleView()
+        jpsBaseLibGW.importPackages(self.jpsBaseLibView,"uk.ac.cam.cares.jps.base.query.*")
+
         try:
             # Initialise OntopClient as RemoteStoreClient
-            self.ontop_client = jpsBaseLibView.RemoteStoreClient(query_endpoint)
+            self.ontop_client = self.jpsBaseLibView.RemoteStoreClient(query_endpoint)
         except Exception as ex:
             logger.error("Unable to initialise OntopClient.")
             raise StackException("Unable to initialise OntopClient.") from ex
@@ -57,6 +53,10 @@ class OntopClient:
     def upload_ontop_mapping():
         # Initialise ONTOP client and upload mapping file using default properties
         # from environment variables
+
+        # Create a JVM module view and use it to import the required java classes
+        stackClientsView = stackClientsGw.createModuleView()
+        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.ontop.OntopClient")
 
         try:
             # Create JAVA path object to mapping file
@@ -158,6 +158,11 @@ class GdalClient:
     
     def __init__(self):
 
+        # Create a JVM module view and use it to import the required java classes
+        stackClientsView = stackClientsGw.createModuleView()
+        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.gdal.GDALClient")
+        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions")
+
         try:
             self.client = stackClientsView.GDALClient()
             self.orgoptions = stackClientsView.Ogr2OgrOptions()
@@ -177,6 +182,11 @@ class GdalClient:
 class GeoserverClient:
 
     def __init__(self):
+
+        # Create a JVM module view and use it to import the required java classes
+        stackClientsView = stackClientsGw.createModuleView()
+        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.geoserver.GeoServerClient")
+        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings")
 
         try:
             self.client = stackClientsView.GeoServerClient()

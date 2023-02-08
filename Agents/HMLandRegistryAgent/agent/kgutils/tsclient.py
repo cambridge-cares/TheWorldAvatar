@@ -18,10 +18,6 @@ logger = agentlogging.get_logger("prod")
 
 class TSClient:
 
-    # Create a JVM module view and use it to import the required java classes
-    jpsBaseLibView = jpsBaseLibGW.createModuleView()
-    jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
-    jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
 
     def __init__(self, kg_client, timeclass=TIMECLASS, rdb_url=DB_URL, 
                  rdb_user=DB_USER, rdb_password=DB_PASSWORD):
@@ -36,6 +32,11 @@ class TSClient:
             rdb_user (str): Username for relational database
             rdb_password (str): Password for relational database
         """        
+
+        # Create a JVM module view and use it to import the required java classes
+        jpsBaseLibView = jpsBaseLibGW.createModuleView()
+        jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
+        jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
 
         # 1) Create an instance of a RemoteStoreClient (to retrieve RDB connection)
         try:
@@ -69,6 +70,10 @@ class TSClient:
     @staticmethod
     def create_timeseries(times: list, dataIRIs: list, values: list):
         # Create Java TimeSeries object (i.e. to attach via TSClient)
+
+        # Create a JVM module view and use it to import the required java classes
+        jpsBaseLibView = jpsBaseLibGW.createModuleView()
+        jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
 
         try:
             timeseries = TSClient.jpsBaseLibView.TimeSeries(times, dataIRIs, values)
