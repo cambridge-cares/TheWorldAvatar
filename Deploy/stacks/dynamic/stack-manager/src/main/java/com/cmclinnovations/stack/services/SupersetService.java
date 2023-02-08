@@ -89,12 +89,13 @@ public class SupersetService extends ContainerService {
 
         locationBlock.addEntry(new NgxComment("# Prevents zipping of response as that would prevent subfiltering"));
         NgxParam proxySetHeaderParam = new NgxParam();
+        proxySetHeaderParam.addValue("proxy_set_header");
         proxySetHeaderParam.addValue("Accept-Encoding");
         proxySetHeaderParam.addValue("\"\"");
         locationBlock.addEntry(proxySetHeaderParam);
 
         locationBlock.addEntry(new NgxComment("# Substitutaion expressions for response body"));
-        BODY_SUBSTITUTIONS_PATH_LIST.stream().forEach(subPath -> {
+        SUB_FILTER_TYPES.stream().forEach(subPath -> {
             NgxParam subFilterParam = new NgxParam();
             subFilterParam.addValue("sub_filter");
             subFilterParam.addValue("\"" + subPath + "\"");
