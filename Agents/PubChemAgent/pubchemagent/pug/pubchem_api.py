@@ -73,10 +73,10 @@ class pug_api():
     
     def pug_request_exp_prop(self, cid) -> dict:
 
-        num_prop_list={'Acid Value', 'Autoignition Temperature', 'Caco2 Permeability', 'Collision Cross Section', 
-        'Dissociation Constants', 'LogP', 'LogS', 'Hydrophobicity', 'Isoelectric Point', 'Ionization Potential'}
+        num_prop_list={'Autoignition Temperature', 'Caco2 Permeability', 'Collision Cross Section', 
+        'LogP', 'LogS', 'Hydrophobicity', 'Isoelectric Point', 'Ionization Potential'}
 
-        thermo_list={'Boiling Point', 'Density', 'Flash Point', 'Melting Point', 'Solubility', 
+        thermo_list={'Boiling Point', 'Density', 'Dissociation Constants', 'Flash Point', 'Melting Point', 'Solubility', 
         'Vapor Density', 'Vapor Pressure', 'Viscosity', 'Heat of Combustion', 'Heat of Vaporization', 
         'Henry\'s Law Constant', 'Enthalpy of Sublimation', 'Surface Tension', 'Optical Rotation'}
 
@@ -110,7 +110,7 @@ class pug_api():
                                         ep_string = i_value.get('String')
                                         ep_unit=''
                                         description = ep_string
-                                        ep_string = pug_api.string_parser(ep_string)
+                                        Q, ep_string = pug_api.string_parser(ep_string)
                                 elif 'Number' in item.get('Value'):
                                     value = item.get('Value')
                                     ep_string = value.get('Number')
@@ -119,21 +119,30 @@ class pug_api():
                                     else:
                                         ep_unit=''
                                     description = str(ep_string[0]) + ' ' + ep_unit
-                                    ep_string = pug_api.string_parser(description)
+                                    Q, ep_string = pug_api.string_parser(description)
                                 reference_num = item.get('ReferenceNumber')
-                                for r in Reference:
-                                    if item.get('Reference'):
+                                if item.get('Reference'):
                                         reference='DOI:' + item.get('Reference')[0].partition('DOI:')[2]
-                                    if r.get('ReferenceNumber') == reference_num:
-                                        reference=r.get('URL')   
+                                if 'Reference' not in item or reference == 'DOI:':    
+                                    for r in Reference:
+                                        if r.get('ReferenceNumber') == reference_num:
+                                            reference=r.get('URL')   
                                 exp_prop[i]['key'] = key.replace(' ', '').replace('/','').replace('\'','')                                       
                                 exp_prop[i]['value'] = ep_string
-                                exp_prop[i]['description'] = description
+                                exp_prop[i]['description'] = description.replace("\'","").replace("\\","/").replace('"','')
                                 exp_prop[i]['reference'] = reference
                                 exp_prop[i]['dateofaccess'] = date.today()
                                 if key in class_list: 
-                                    exp_prop[i]['type']='classification'
-                                    exp_prop[i]['description']=' '
+                                    exp_prop[i]['key'] = 'ChemicalClass'
+                                    if ' -> ' in exp_prop[i]['description']:
+                                        exp_prop[i]['type']='classification'
+                                        exp_prop[i]['value2'] = exp_prop[i]['description'].partition(' -> ')[0]
+                                        exp_prop[i]['value1'] = exp_prop[i]['description'].partition(' -> ')[2]
+                                        exp_prop[i]['description']='Haz-Map Classification'
+                                    else:
+                                        exp_prop[i]['type']='classification'
+                                        exp_prop[i]['value'] = exp_prop[i]['description']
+                                        exp_prop[i]['description']='Haz-Map Classification'
                                 elif key in thermo_list:
                                     exp_prop[i]['type']='thermo_prop'
                                 else:
@@ -145,7 +154,7 @@ class pug_api():
         return exp_prop
 
     def string_parser(str) -> dict:
-        thermo_props = {}
+        props = {}
         unit = ''
         ref_quantity = ''
         ref_unit = ''
@@ -174,19 +183,26 @@ class pug_api():
                         result[a] = result[a].to_base_units()
                         ref_quantity = result[a].m
                         ref_unit = result[a].u            
-            thermo_props ['value'] = quantity
-            thermo_props ['unit'] = unit
-            thermo_props ['ref_value'] = ref_quantity
-            thermo_props ['ref_unit'] = ref_unit  
+            props ['value'] = quantity
+            props ['unit'] = unit
+            props ['ref_value'] = ref_quantity
+            props ['ref_unit'] = ref_unit  
         except Exception as exc:
             print(exc)
             print(str)
-            thermo_props = str
-            return thermo_props
+            props = str
+            return props
         
-        return thermo_props
+        return result, props
 
     def preprocess(str) -> str:
+        str=re.sub(r"estim([,A-Za-z ]){1,100}","", str)
+        str=re.sub(r"//","", str)
+        str=re.sub(r"()","", str)
+        if len(str)>200:
+            str=''
+        if len(str)>100:
+            str = str[0:len(str)//2]
         str=re.sub("\([0-9]{1,10}.[0-9]{1,10}\)","",str)
         str=re.sub("\([0-9]{1,10}\)","",str)
         str=re.sub("± [0-9]{1,10}.[0-9]{1,10}", "",str)
@@ -196,8 +212,33 @@ class pug_api():
         str=re.sub("MHz", "megaHz",str)
         str=re.sub("(USCG, 1999)","", str)
         str=re.sub("(NTP, 1992)","", str)
+        str=re.sub("(NIOSH, 2022)","", str)
+        str=re.sub("(EPA, 1998)","", str)
+        
+        #Flash Point
+        str=re.sub("c.c."," ", str)
+        str=re.sub("cup","", str)
+
+        #Density
+        str=re.sub("/4 °C","", str)
+        str=re.sub("/20 °C","", str)
+        str=re.sub("(d20/4)","", str)
+        str=re.sub("g cu cm","g/cu cm", str)
+        str=re.sub("(15/15C)","", str)
+
+        #Solubility
+        str=re.sub("at pH 7.4","", str)
+        str=re.sub("g/100 mL", "* 10 mg/ml",str)
+
+        str=re.sub(r"\\",r"/", str)
+        str=re.sub("MM HG","mmHg", str)
+        str=re.sub("1 atm","760 mmHg", str)
         str=str.partition("[M+")[0]
         str=str.partition("[M-")[0]
+        if bool(data_found := re.findall("[0-9]{1,2}/[0-9]{1}", str)): 
+            str=re.sub("/", " to ", str)
+        if bool(data_found := re.findall("[0-9]{1,2}/-[0-9]{1}", str)):
+            str=re.sub("/", " to ", str)
         if bool(data_found := re.findall("[-.0-9]{1,6}[- ]{1,3}[-.0-9]{1,6}", str)):
             data_found = data_found[0]
             reduced_range = re.findall("[-]?[.0-9]{1,6}[^0-9-,/; ]{0,10}", data_found)[0]
@@ -362,91 +403,94 @@ class pug_api():
                     for prop in data:
                         if prop.get('TOCHeading') in spectra_list:
                             spectra_type = prop.get('TOCHeading')
-                            prop_list = prop.get('Section')
-                            for item in prop_list:
-                                frequency = ''
-                                solvent = ''
-                                peaks = ''
-                                ionization_mode = ''
-                                instrument_type = ''
-                                prop_list_2 = item.get('Information')
-                                for item2 in prop_list_2:
-                                    if inew != i:
-                                        spectra[inew]={}
-                                        spectra[inew]['type'] = ''
-                                        spectra[inew]['key'] = ''
-                                        spectra[inew]['peaks'] = ''
-                                        spectra[inew]['frequency'] = ''
-                                        spectra[inew]['solvent'] = ''
-                                        spectra[inew]['ionization_mode'] = ''
-                                        spectra[inew]['instrument_type'] = ''
-                                        i = inew
-                                    if item2.get('Name') and item2.get('Name') == 'Frequency':
-                                        frequency = item2.get('Value').get('StringWithMarkup')[0].get('String')
-                                        frequency = pug_api.string_parser(frequency)
-                                        spectra[i]['frequency']=frequency
-                                    if item2.get('Name') and item2.get('Name') == 'Solvent':
-                                        solvent = item2.get('Value').get('StringWithMarkup')[0].get('String')
-                                        spectra[i]['solvent']=solvent.replace('Water','H2O')
-                                    if item2.get('Name') and item2.get('Name') == 'Ionization Mode':
-                                        ionization_mode = item2.get('Value').get('StringWithMarkup')[0].get('String')
-                                        spectra[i]['ionization_mode']=ionization_mode.lower()
-                                    if item2.get('Name') and item2.get('Name') == 'Instrument Type':
-                                        instrument_type = item2.get('Value').get('StringWithMarkup')[0].get('String')
-                                        spectra[i]['instrument_type']=instrument_type.partition('(')[0]
-                                    if item2.get('Name') and ("Shift" in item2.get('Name') or "Top 5 Peaks" in item2.get('Name')):
-                                        key = item.get('TOCHeading')
-                                        value = item2.get('Value').get('StringWithMarkup')
-                                        reference_num = item2.get('ReferenceNumber')
-                                        for r in Reference:
-                                            if r.get('ReferenceNumber') == reference_num:
-                                                reference=r.get('URL') 
-                                                break  
-                                        x1 = []  
-                                        x2 = []
-                                        intensity = []
-                                        for i_value in value:
-                                            peaks = i_value.get('String')    
-                                            spectra[i]['key'] = key.replace(' ', '').replace('/','').replace('-','')  
-                                            spectra[i]['peaks'] = {}                  
-                                            if spectra_type == '1D NMR Spectra':
-                                                peaks = peaks.split(', ')
-                                                for j in peaks:
-                                                    j=j.split(':')
-                                                    x1.append(j[0])
-                                                    if len(j) == 2:
-                                                        intensity.append(j[1])
-                                                    else:
-                                                        intensity.append('')
-                                                spectra[i]['peaks']['x1'] = x1
-                                                spectra[i]['peaks']['intensity'] = intensity
-                                            elif spectra_type == '2D NMR Spectra':
-                                                peaks = peaks.split(', ')
-                                                for j in peaks:
-                                                    j=j.split(':')
-                                                    x1.append(j[0])
-                                                    x2.append(j[1])
-                                                    if len(j) == 3:
-                                                        intensity.append(j[2])
-                                                    else:
-                                                        intensity.append('')
-                                                spectra[i]['peaks']['x1'] = x1
-                                                spectra[i]['peaks']['x2'] = x2
-                                                spectra[i]['peaks']['intensity'] = intensity
-                                            elif spectra_type == 'Mass Spectrometry':
-                                                peaks = peaks.split(' ')
-                                                x1.append(peaks[0])
-                                                if len(peaks) == 2:
-                                                    intensity.append(peaks[1])
-                                                else:
-                                                    intensity.append('')
-                                                spectra[i]['peaks']['x1'] = x1
-                                                spectra[i]['peaks']['intensity'] = intensity
-                                            spectra[i]['reference'] = reference
-                                            spectra[i]['type'] = spectra_type.replace(' ', '')
-                                            inew=i+1
-                    if 'type' in spectra[inew] and spectra[inew]['type'] == '':
-                        spectra.popitem()
+                            if ('Section') in prop:
+                                prop_list = prop.get('Section')
+                                for item in prop_list:
+                                    frequency = ''
+                                    solvent = ''
+                                    peaks = ''
+                                    ionization_mode = ''
+                                    instrument_type = ''
+                                    prop_list_2 = item.get('Information')
+                                    if prop_list_2:
+                                        for item2 in prop_list_2:
+                                            if inew != i:
+                                                spectra[inew]={}
+                                                spectra[inew]['type'] = ''
+                                                spectra[inew]['key'] = ''
+                                                spectra[inew]['peaks'] = ''
+                                                spectra[inew]['frequency'] = ''
+                                                spectra[inew]['solvent'] = ''
+                                                spectra[inew]['ionization_mode'] = ''
+                                                spectra[inew]['instrument_type'] = ''
+                                                i = inew
+                                            if item2.get('Name') and item2.get('Name') == 'Frequency':
+                                                frequency = item2.get('Value').get('StringWithMarkup')[0].get('String')
+                                                Q, frequency = pug_api.string_parser(frequency)
+                                                spectra[i]['frequency']=frequency
+                                            if item2.get('Name') and item2.get('Name') == 'Solvent':
+                                                solvent = item2.get('Value').get('StringWithMarkup')[0].get('String')
+                                                spectra[i]['solvent']=solvent.replace('Water','H2O')
+                                            if item2.get('Name') and item2.get('Name') == 'Ionization Mode':
+                                                ionization_mode = item2.get('Value').get('StringWithMarkup')[0].get('String')
+                                                spectra[i]['ionization_mode']=ionization_mode.lower()
+                                            if item2.get('Name') and item2.get('Name') == 'Instrument Type':
+                                                instrument_type = item2.get('Value').get('StringWithMarkup')[0].get('String')
+                                                spectra[i]['instrument_type']=instrument_type.partition('(')[0]
+                                            if item2.get('Name') and ("Shift" in item2.get('Name') or "Top 5 Peaks" in item2.get('Name')):
+                                                key = item.get('TOCHeading')
+                                                value = item2.get('Value').get('StringWithMarkup')
+                                                reference_num = item2.get('ReferenceNumber')
+                                                for r in Reference:
+                                                    if r.get('ReferenceNumber') == reference_num:
+                                                        reference=r.get('URL') 
+                                                        break  
+                                                x1 = []  
+                                                x2 = []
+                                                intensity = []
+                                                for i_value in value:
+                                                    peaks = i_value.get('String')    
+                                                    spectra[i]['key'] = key.replace(' ', '').replace('/','').replace('-','')  
+                                                    spectra[i]['peaks'] = {}                  
+                                                    if spectra_type == '1D NMR Spectra':
+                                                        peaks = peaks.split(', ')
+                                                        for j in peaks:
+                                                            j=j.split(':')
+                                                            x1.append(j[0])
+                                                            if len(j) == 2:
+                                                                intensity.append(j[1])
+                                                            else:
+                                                                intensity.append('')
+                                                        spectra[i]['peaks']['x1'] = x1
+                                                        spectra[i]['peaks']['intensity'] = intensity
+                                                    elif spectra_type == '2D NMR Spectra':
+                                                        peaks = peaks.split(', ')
+                                                        for j in peaks:
+                                                            j=j.split(':')
+                                                            x1.append(j[0])
+                                                            x2.append(j[1])
+                                                            if len(j) == 3:
+                                                                intensity.append(j[2])
+                                                            else:
+                                                                intensity.append('')
+                                                        spectra[i]['peaks']['x1'] = x1
+                                                        spectra[i]['peaks']['x2'] = x2
+                                                        spectra[i]['peaks']['intensity'] = intensity
+                                                    elif spectra_type == 'Mass Spectrometry':
+                                                        peaks = peaks.split(' ')
+                                                        x1.append(peaks[0])
+                                                        if len(peaks) == 2:
+                                                            intensity.append(peaks[1])
+                                                        else:
+                                                            intensity.append('')
+                                                        spectra[i]['peaks']['x1'] = x1
+                                                        spectra[i]['peaks']['intensity'] = intensity
+                                                    spectra[i]['reference'] = reference
+                                                    spectra[i]['type'] = spectra_type.replace(' ', '')
+                                                    inew=i+1
+                    if spectra != {}:
+                        if 'type' in spectra[inew] and spectra[inew]['type'] == '':
+                            spectra.popitem()
                                 
         return spectra
 
@@ -509,19 +553,20 @@ class pug_api():
                                         ep_string = i_value.get('String')
                                         ep_unit = ''
                                         description = ep_string
-                                        ep_string = pug_api.string_parser(ep_string)
+                                        Q, ep_string = pug_api.string_parser(ep_string)
                                 else:
                                     value = item.get('Value')
                                     ep_string = value.get('Number')
                                     ep_unit = value.get('Unit')
                                     description = str(ep_string[0]) + ' ' + ep_unit
-                                    ep_string = pug_api.string_parser(description)
+                                    Q, ep_string = pug_api.string_parser(description)
                                 reference_num = item.get('ReferenceNumber')
-                                for r in Reference:
-                                    if item.get('Reference'):
+                                if item.get('Reference'):
                                         reference='DOI:' + item.get('Reference')[0].partition('DOI:')[2]
-                                    if r.get('ReferenceNumber') == reference_num:
-                                        reference=r.get('URL')    
+                                if 'Reference' not in item or reference == 'DOI:':   
+                                    for r in Reference:
+                                        if r.get('ReferenceNumber') == reference_num:
+                                            reference=r.get('URL')    
                                 el_props[i]['key'] = key                                    
                                 el_props[i]['value'] = ep_string
                                 el_props[i]['description'] = description
@@ -575,18 +620,20 @@ class pug_api():
                     comp_props[j]['value']={}
                     comp_props[j]['value']['value'] = description
                     comp_props[j]['value']['unit'] = ''
+                    comp_props[j]['type'] = 'string_prop'
                 else:
-                    value = pug_api.string_parser(str(description))
+                    Q, value = pug_api.string_parser(str(description))
                     comp_props[j]['value'] = value
+                    comp_props[j]['type'] = 'num_prop'
                 comp_props[j]['reference'] = provenance
-                comp_props[j]['type'] = 'num_prop'
                 comp_props[j]['description'] = description
                 comp_props[j]['dateofaccess'] = date.today()
                 j = j+1
-        for item in count_list.keys():
+        if count_list != None:
+            for item in count_list.keys():
                 comp_props[j]={}
                 description = count_list.get(item) 
-                value = pug_api.string_parser(str(description))
+                Q, value = pug_api.string_parser(str(description))
                 comp_props[j]['key']=item.replace('_', ' ').title().replace(' ' , '') + 'Count'
                 comp_props[j]['value']= value
                 comp_props[j]['reference'] = 'https://pubchem.ncbi.nlm.nih.gov'
@@ -598,7 +645,7 @@ class pug_api():
         # get charge 
         charge = data.get('PC_Compounds')[0].get('charge')
         comp_props[j]={}
-        value = pug_api.string_parser(str(charge))
+        Q, value = pug_api.string_parser(str(charge))
         comp_props[j]['key']='Charge'
         comp_props[j]['value']= value
         comp_props[j]['reference'] = 'https://pubchem.ncbi.nlm.nih.gov'
@@ -645,18 +692,19 @@ class pug_api():
             i=i+1
         
         atom_bonds = data.get('PC_Compounds')[0].get('bonds')
-        id1=atom_bonds.get('aid1')
-        id2=atom_bonds.get('aid2')
-        order=atom_bonds.get('order')
+        if atom_bonds:
+            id1=atom_bonds.get('aid1')
+            id2=atom_bonds.get('aid2')
+            order=atom_bonds.get('order')
         
-        i=0
-        for item in id1:
-            bonds[i] = {}
-            bonds[i]['id1'] = id1[i]
-            bonds[i]['id2'] = id2[i]
-            bonds[i]['order'] = order[i]
+            i=0
+            for item in id1:
+                bonds[i] = {}
+                bonds[i]['id1'] = id1[i]
+                bonds[i]['id2'] = id2[i]
+                bonds[i]['order'] = order[i]
 
-            i=i+1
+                i=i+1
 
         return geometry, bonds
 

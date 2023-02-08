@@ -4,8 +4,8 @@ from pubchemagent.kgoperations.querytemplates import *
 
 
 def get_iri_data(inchi):
-    # query = get_iri_query(inchi_string=inchi)
-    query = spec_inchi_query(inchi_string=inchi)
+    inchi_string=inchi
+    query = get_iri_query(inchi_string)
     sparqlendpoint = SPARQL_ENDPOINTS['copyontospecies']
     # create a SPARQL object for performing the query
     kg_client = kg_operations(sparqlendpoint)
@@ -14,6 +14,24 @@ def get_iri_data(inchi):
     if data:
         data = data[0]
         iri = data['speciesIRI']
+    else:
+        inchi_string = inchi_string.replace("=1S/", "=1/")
+        query = get_iri_query(inchi_string)
+        data = kg_client.querykg(query)
+        if data:
+            data = data[0]
+            iri = data['speciesIRI']
+        else:
+            inchi_string = inchi_string.replace("=1/", "=1S/")
+            query = spec_inchi_query(inchi_string)
+            sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
+            # create a SPARQL object for performing the query
+            kg_client = kg_operations(sparqlendpoint)
+            data = kg_client.querykg(query)
+            if data:
+                data = data[0]
+                iri = data['speciesIRI']
+
     return iri
 
 def get_uuid(typeIRI, string):

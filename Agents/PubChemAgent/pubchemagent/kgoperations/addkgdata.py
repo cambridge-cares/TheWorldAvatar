@@ -8,7 +8,6 @@ import re
 # a sample data addition function
 def insert_ontospecies(typeIRI, type, uuid, data):
     prev_key = ''
-    insert_str0 = pubchem_start_insert(typeIRI, type, uuid)
     insert_str1 = ' '
     for item in data:
         insert_str = ''
@@ -40,31 +39,42 @@ def insert_ontospecies(typeIRI, type, uuid, data):
         elif data[item].get('type') == 'string_prop':
             insert_str = pubchem_string_prop_insert(typeIRI, type, uuid, i, prov_uuid, data[item])
         elif data[item].get('type') == 'classification':
-            classificationIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#' + data[item].get('key') + '>'
-            classification_uuid = find_uuid(data[item].get('key'), classificationIRI, data[item].get('value'), data[item].get('description') )
-            insert_str = pubchem_classification_insert(typeIRI, type, uuid, i, prov_uuid, classification_uuid, data[item])
+            if data[item].get('value2'):
+                classificationIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#' + data[item].get('key') + '>'
+                classification_uuid1 = find_uuid(data[item].get('key'), classificationIRI, data[item].get('value1'), data[item].get('description') )
+                classification_uuid2 = find_uuid(data[item].get('key'), classificationIRI, data[item].get('value2'), data[item].get('description') )
+                insert_str = pubchem_hm_classification_insert(typeIRI, type, uuid, i, prov_uuid, classification_uuid1, classification_uuid2, data[item])
+            else:
+                classificationIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#' + data[item].get('key') + '>'
+                classification_uuid = find_uuid(data[item].get('key'), classificationIRI, data[item].get('value'), data[item].get('description') )
+                insert_str = pubchem_classification_insert(typeIRI, type, uuid, i, prov_uuid, classification_uuid, data[item])
         elif data[item].get('type') == 'use':
             useIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#' + data[item].get('key') + '>'
-            use_uuid = find_uuid(data[item].get('key'), useIRI, data[item].get('value'))
+            use_uuid = find_uuid(data[item].get('key'), useIRI, data[item].get('value'), data[item].get('description'))
             insert_str = pubchem_use_insert(typeIRI, type, uuid, i, prov_uuid, use_uuid, data[item])
+        elif data[item].get('type') == 'group':
+            groupIRI = '<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#' + data[item].get('key') + '>'
+            group_uuid = find_uuid(data[item].get('key'), groupIRI, data[item].get('value'), data[item].get('description'))
+            insert_str = pubchem_group_insert(typeIRI, type, uuid, i, prov_uuid, group_uuid, data[item])
 
         prev_key = data[item].get('key')
         insert_str1 = insert_str1 + insert_str
 
-    insert_str = insert_str0 + insert_str1 + '}'
+    insert_str = insert_str1
+    return insert_str
 
+def insert_start(typeIRI, type, uuid):
+    insert_str = pubchem_start_insert(typeIRI, type, uuid)
+    return insert_str
+
+def insert_end(insert_str):
+    insert_str = insert_str + '}'
     sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
     # create a SPARQL object for performing the query
     kg_client = kg_operations(sparqlendpoint)
     kg_client.insertkg(insertStr=insert_str)
 
 def insert_structure(typeIRI, type, uuid, geometry, bonds):
-
-    insert_str0 = pubchem_start_insert(typeIRI, type, uuid)
-
-    sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
-    # create a SPARQL object for performing the query
-    kg_client = kg_operations(sparqlendpoint)
 
     geomIRI = '<http://www.theworldavatar.com/kg/ontospecies/Geometry_1_Species_' + uuid + '>'
 
@@ -79,19 +89,18 @@ def insert_structure(typeIRI, type, uuid, geometry, bonds):
         geometry[item]['element']=elementIRI
     
     insert_str1 = pubchem_atom_insert(uuid, geomIRI, prov_uuid, unit_uuid, geometry)
-    #kg_client.insertkg(insertStr=insert_str)
 
     insert_str2 = ''
     for item in bonds:
         insert_str = pubchem_bond_insert(uuid, item+1, bonds[item])
         insert_str2 = insert_str2 + insert_str
     
-    insert_str = insert_str0 + insert_str1 + insert_str2 +'}'
-    
-    kg_client.insertkg(insertStr=insert_str)
+    insert_str = insert_str1 + insert_str2
+
+    return insert_str
 
 def insert_spectra(typeIRI, type, uuid, data):
-    insert_str0 = pubchem_start_insert(typeIRI, type, uuid)
+
     insert_str1 = ' '
     prev_key = ''
     for item in data:
@@ -148,12 +157,9 @@ def insert_spectra(typeIRI, type, uuid, data):
         prev_key = data[item].get('key')
         insert_str1 = insert_str1 + insert_str
 
-    insert_str = insert_str0 + insert_str1 + '}'
+    insert_str = insert_str1
 
-    sparqlendpoint = SPARQL_ENDPOINTS['pubchem']
-    # create a SPARQL object for performing the query
-    kg_client = kg_operations(sparqlendpoint)
-    kg_client.insertkg(insertStr=insert_str)
+    return insert_str
 
 
 def find_uuid(name, typeIRI, string, comment = ''):

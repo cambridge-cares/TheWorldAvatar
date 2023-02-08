@@ -13,8 +13,8 @@ Options:
 
 def main():
 
-    #for el in range(1,41):
-    #    app.element_instantiation(el)
+    for el in range(1,119):
+        app.element_instantiation(el)
 
     #try:
     #    args = docopt(__doc__, version='1.0.0rc2')
@@ -27,7 +27,7 @@ def main():
 
     inchi = 'inchi string'
     a = 0
-    a_stop = 100
+    a_stop = 0
     with open('inchi_list.txt') as f:
         while inchi:
             inchi = f.readline().replace("\"","").replace("\n", "")
