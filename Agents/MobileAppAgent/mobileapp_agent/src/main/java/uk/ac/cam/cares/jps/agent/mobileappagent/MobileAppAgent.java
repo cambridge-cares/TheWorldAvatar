@@ -25,6 +25,7 @@ import java.util.*;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatterBuilder;
+import static uk.ac.cam.cares.jps.agent.mobileappagent.InstantiationClient.instantiationMethod;
 
 //To run this agent, run curl -s http://localhost:8080/MobileAppAgent-1.0-SNAPSHOT/performTS/ in command prompt
 @Controller
@@ -70,7 +71,7 @@ public class MobileAppAgent extends JPSAgent {
     private static final String user = "postgres";
     private static final String password = "postgres";
     private static RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
-    private static RemoteStoreClient storeClient = new RemoteStoreClient("http://127.0.0.1:9999/blazegraph/namespace/develop/sparql", "http://127.0.0.1:9999/blazegraph/namespace/develop/sparql");
+    private static RemoteStoreClient storeClient = new RemoteStoreClient("http://127.0.0.1:9999/blazegraph/namespace/test/sparql", "http://127.0.0.1:9999/blazegraph/namespace/test/sparql");
     private static TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
     private JSONArray dataArray;
     private String Query;
@@ -96,35 +97,44 @@ public class MobileAppAgent extends JPSAgent {
      * @param requestParams Request parameters as a JSONObject.
      * @return response in JSON format.
      */
-    @Override
-    public JSONObject processRequestParameters(JSONObject requestParams) {
-        if (validateInput(requestParams)) {
-            //Loop through each table
-            for (int i = 0; i < tableList.size(); i++) {
-
-                Query = getQueryString(i);
-                dataArray = rdbStoreClient.executeQuery(Query);
-
-
-                if (checkIfTimeSeriesExists(i))//Check if dbTable exists
-                {
-                    String IRIQuery;
-
-                    IRIQuery = getQueryDataIRIFromDBTable(i);
-                    JSONArray dataIRIArray = rdbStoreClient.executeQuery(IRIQuery);
-
-                    //Get the newest timeseries
-                    TimeSeries getTimeSeries = parseDataToLists(i, dataArray, parseJSONArrayToList(dataIRIArray));
-                    updateData(getTimeSeries);
-                }
-                else  //When time series does not exist create timeseries
-                {
-                    initTimeseriesIfNotExist(i,dataArray);
-                }
-            }
-        }
-        return requestParams;
-    }
+//    @Override
+//    public JSONObject processRequestParameters(JSONObject requestParams) {
+//        if (validateInput(requestParams)) {
+//
+//            HashMap hashMap = new HashMap();
+//            Boolean unitsWereInstantiated = null;
+//
+//            //Loop through each table
+//            for (int i = 0; i < tableList.size(); i++) {
+//
+//                Query = getQueryString(i);
+//                dataArray = rdbStoreClient.executeQuery(Query);
+//
+//
+//                if (checkIfTimeSeriesExists(i))//Check if dbTable exists
+//                {
+//                    String IRIQuery;
+//
+//                    IRIQuery = getQueryDataIRIFromDBTable(i);
+//                    JSONArray dataIRIArray = rdbStoreClient.executeQuery(IRIQuery);
+//
+//                    //Get the newest timeseries
+//                    TimeSeries getTimeSeries = parseDataToLists(i, dataArray, parseJSONArrayToList(dataIRIArray));
+//                    updateData(getTimeSeries);
+//                    unitsWereInstantiated=true;
+//                }
+//                else  //When time series does not exist create timeseries
+//                {
+//                    initTimeseriesIfNotExist(i,dataArray, hashMap);
+//
+//                }
+//            }
+//            if (unitsWereInstantiated==true)
+//            {instantiationMethod(hashMap); LOGGER.debug(String.format("Units were instantiated"));}
+//            else{LOGGER.debug(String.format("Units were not instantiated"));}
+//        }
+//        return requestParams;
+//    }
 
     /**
      * Checks the incoming JSON request for validity.
@@ -139,6 +149,9 @@ public class MobileAppAgent extends JPSAgent {
 
 
     public void Test() {
+        HashMap hashMap = new HashMap();
+        Boolean unitsWereInstantiated = false;
+
         //Loop through each table
         for (int i = 0; i < tableList.size(); i++) {
             
@@ -156,12 +169,17 @@ public class MobileAppAgent extends JPSAgent {
                 //Get the newest timeseries
                 TimeSeries getTimeSeries = parseDataToLists(i, dataArray, parseJSONArrayToList(dataIRIArray));
                 updateData(getTimeSeries);
+                unitsWereInstantiated=true;
             }
             else  //When time series does not exist create timeseries
             {
-                initTimeseriesIfNotExist(i,dataArray);
+                initTimeseriesIfNotExist(i,dataArray, hashMap);
+
             }
         }
+        if (unitsWereInstantiated==true)
+        { LOGGER.debug(String.format("Units were instantiated"));}
+        else{instantiationMethod(hashMap); LOGGER.debug(String.format("Units is now instantiated"));}
     }
 
     /** Boolean operation that checks if timeseries exists by querying the DBTable, if DBTable returns 0 or catch exception, it does not exist
@@ -190,9 +208,9 @@ public class MobileAppAgent extends JPSAgent {
      * @param i table number
      * @param dataArray that was previously queried
      */
-    private void initTimeseriesIfNotExist(int i , JSONArray dataArray){
+    private void initTimeseriesIfNotExist(int i , JSONArray dataArray, HashMap hashMap){
         //Create Timeseries
-        List<String> dataIRIList = createTimeSeries(i);
+        List<String> dataIRIList = createTimeSeries(i, hashMap);
 
         //GetTimeSeries
         TimeSeries getTimeSeries = parseDataToLists(i, dataArray, dataIRIList);
@@ -254,7 +272,7 @@ public class MobileAppAgent extends JPSAgent {
      * @param tableNumber
      * @return dataIRIList
      */
-    private List<String> createTimeSeries(int tableNumber) {
+    private List<String> createTimeSeries(int tableNumber, HashMap hashMap) {
         List tableHeader= tableHeaderList.get(tableNumber);
         List<String> dataIRIList = new ArrayList<>();;
 
@@ -262,6 +280,9 @@ public class MobileAppAgent extends JPSAgent {
         for (int sensorVariable = 1; sensorVariable < tableHeader.size() ;sensorVariable++){
             String dataIRIName =BASEURI+ tableHeader.get(sensorVariable)+ "_"+ UUID.randomUUID();
 
+
+            String key = "measure_"+tableHeader.get(sensorVariable);
+            hashMap.put(key,dataIRIName);
             dataIRIList.add(dataIRIName);
         }
 

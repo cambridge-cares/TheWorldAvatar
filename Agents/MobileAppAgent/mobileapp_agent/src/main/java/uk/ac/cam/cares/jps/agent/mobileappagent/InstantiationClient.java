@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.mobileappagent;
 
+import it.unimi.dsi.fastutil.Hash;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
@@ -15,22 +16,14 @@ import uk.ac.cam.cares.ogm.models.ModelContext;
 import java.time.OffsetDateTime;
 import java.util.*;
 
-
+//Accessagent needs to be running with proper JSON Routing
 public class InstantiationClient {
-    public static void main(String[] args) throws ParseException {
-        instantiationMethod();
+    public static void instantiationMethod(HashMap dataIRI) {
 
-    }
 
-    public static void instantiationMethod() {
 
         // Create context to work in, and also clear any old existing data
         ModelContext context = new ModelContext("http://localhost:48888/test");
-        context.update("CLEAR ALL");
-
-
-        HashMap dataIRI = dataIRIHashMapGenerator();
-
 
         /**
          * Creating instances and randomUUID.
@@ -173,9 +166,9 @@ public class InstantiationClient {
         /**
          * Microphone class
          */
+        soundPressureLevel.microphone=microphone;
         microphone.soundPressureLevel=soundPressureLevel;
         noise.soundPressureLevel=soundPressureLevel;
-        soundPressureLevel.noise=noise;
 
         /**
          * Measure class
@@ -351,10 +344,12 @@ public class InstantiationClient {
     public static class GeomLocation extends SensorLoggerModel{}
     public static class Altitude extends SensorLoggerModel{}
     public static class SoundPressureLevel extends SensorLoggerModel{
-        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#", backward = true)
-        protected Noise noise;
+
+        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures",backward = true)
+        protected Microphone microphone;
+
     }
-    public static class Noise extends SoundPressureLevel{
+    public static class Noise extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
         protected SoundPressureLevel soundPressureLevel;
     }
@@ -379,112 +374,4 @@ public class InstantiationClient {
         @Getter @Setter @FieldAnnotation(value = "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",backward = true, innerType = Measure.class)
         protected ArrayList<Measure> unitsInstant;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public static final String accelerometer = "accelerometer";
-    public static final String gravity = "gravity";
-    public static final String light = "light";
-    public static final String location = "location";
-    public static final String magnetometer = "magnetometer";
-    public static final String microphone = "microphone";
-
-    //Declare table header as string.
-    public static final String timestamp = "timestamp";
-    public static final String accel_x = "accel_x";
-    public static final String accel_y = "accel_y";
-    public static final String accel_z = "accel_z";
-    public static final String gravity_x = "gravity_x";
-    public static final String gravity_y = "gravity_y";
-    public static final String gravity_z = "gravity_z";
-    public static final String light_value = "light_value";
-    public static final String bearing = "bearing";
-    public static final String speed = "speed";
-    public static final String altitude = "altitude";
-    public static final String geom_location = "geom_location";
-    public static final String magnetometer_x = "magnetometer_x";
-    public static final String magnetometer_y = "magnetometer_y";
-    public static final String magnetometer_z = "magnetometer_z";
-    public static final String dbfs = "dbfs";
-
-    //Declare tableHeader as list of strings
-    public static List<String> accelerometerHeader = Arrays.asList(timestamp, accel_x, accel_y, accel_z);
-    public static List<String> gravityHeader = Arrays.asList(timestamp, gravity_x, gravity_y, gravity_z);
-    public static List<String> lightHeader = Arrays.asList(timestamp, light_value);
-    public static List<String> locationHeader = Arrays.asList(timestamp, bearing, speed, altitude, geom_location);
-    public static List<String> magnetometerHeader = Arrays.asList(timestamp, magnetometer_x, magnetometer_y, magnetometer_z);
-    public static List<String> microphoneHeader = Arrays.asList(timestamp, dbfs);
-    public static List<List<String>> tableHeaderList= Arrays.asList(accelerometerHeader,gravityHeader,lightHeader,locationHeader,magnetometerHeader,microphoneHeader);
-    public static List<String> tableList = Arrays.asList(accelerometer, gravity,light, location,magnetometer,microphone);
-    private static final String dbURL = "jdbc:postgresql://localhost:5432/develop";
-    private static final String user = "postgres";
-    private static final String password = "postgres";
-    private static RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
-    private static RemoteStoreClient storeClient = new RemoteStoreClient("http://127.0.0.1:9999/blazegraph/namespace/develop/sparql", "http://127.0.0.1:9999/blazegraph/namespace/develop/sparql");
-    private static TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
-    private JSONArray dataArray;
-    private String Query;
-    private static final String BASEURI = "https://www.theworldavatar.com/kg/measure_";
-
-
-
-
-    public static HashMap dataIRIHashMapGenerator() {
-
-        HashMap hashMap = new HashMap();
-
-        //Loop through each table
-        for (int i = 0; i < tableList.size(); i++) {
-            List tableHeader= tableHeaderList.get(i);
-            List<String> dataIRIList = new ArrayList<>();;
-            for (int sensorVariable = 1; sensorVariable < tableHeader.size() ;sensorVariable++){
-                String dataIRIName =BASEURI+ tableHeader.get(sensorVariable)+ "_"+ UUID.randomUUID();
-
-                String key = "measure_"+tableHeader.get(sensorVariable);
-                dataIRIList.add(dataIRIName);
-                hashMap.put(key,dataIRIName);
-            }
-        }
-        return hashMap;
-    }
-
 }
