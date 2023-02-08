@@ -15,7 +15,7 @@ from agent.datacalculation.datacalculation import *
 from agent.datamodel.iris import OM_DEGREE_C
 from agent.datamodel.functionality import T_from_COP ,call_pickle, data_treatment, \
                     normalization, create_color_bar,save_figures,convert_to_tensor, \
-                    select_column, get_median, compare_tensor
+                    select_column, get_median, compare_tensor, tensor_to_df
 
 import matplotlib.pyplot as plt
 import geopandas as gpd
@@ -90,7 +90,7 @@ def fuel_cost(df_elec_in:pd.DataFrame, df_gas_in:pd.DataFrame, price_elec: float
     df_cost_gas = monthly_disaggregation(df_cost_gas,monthly_ref_gas,annual)
     
     # Merge to total cost
-    df_cost_total = df_cost_elec.merge(df_cost_gas, left_on=df_cost_elec.columns[0], right_on=df_cost_gas.columns[0], how='outer')
+    df_cost_total = df_cost_elec.merge(df_cost_gas, left_on=df_cost_elec.columns[0], right_on=df_cost_gas.columns[0],how='inner')
     # Iterate through the columns of the merged dataframe and add the values
     for col in df_cost_gas.columns[1:]:
         df_cost_total[col] = df_cost_total[col + '_x'] + df_cost_total[col + '_y']
@@ -133,7 +133,7 @@ def fuel_emission(df_elec_in:pd.DataFrame, df_gas_in:pd.DataFrame, carbon_intens
     df_emission_gas = monthly_disaggregation(df_emission_gas,monthly_ref_gas,annual)
     
     # Merge to total cost
-    df_emission_total = df_emission_elec.merge(df_emission_gas, left_on=df_emission_elec.columns[0], right_on=df_emission_gas.columns[0], how='outer')
+    df_emission_total = df_emission_elec.merge(df_emission_gas, left_on=df_emission_elec.columns[0], right_on=df_emission_gas.columns[0],how='inner')
     # Iterate through the columns of the merged dataframe and add the values
     for col in df_emission_gas.columns[1:]:
         df_emission_total[col] = df_emission_total[col + '_x'] + df_emission_total[col + '_y']
@@ -912,7 +912,7 @@ print(df_ele)
 '''
 # ----------------------------------------------------------------
 
-# Test for fuel emission agent----------------------------------------
+# Test for fuel emission agent------------------------------------
 '''
 # Retrieve consumption data from KG
 df_elec = retrieve_elec_data_from_KG() 
@@ -927,11 +927,11 @@ print(df_emission_elec)
 '''
 # ----------------------------------------------------------------
 
-# Test for change of fuel agent ---------------------------------------------
-
+# Test for change of fuel agent ----------------------------------
+'''
 # Read the temp data
 df_temp = retrieve_temp_from_KG()
-df_temp = df_temp[:-62136]
+
 # Convert df into tensor
 unique_LSOA, temp_tensor = convert_to_tensor(input = df_temp)
 
@@ -958,10 +958,75 @@ _, gas_tensor = convert_to_tensor(input = df_gas, monthly_ref= gas_monthly_distr
 temp_tensor, unique_LSOA, gas_tensor, cop = compare_tensor(temp_tensor,unique_LSOA,gas_tensor,cop)
 
 # call agent
-change_of_gas, change_of_elec = call_change_of_fuel_agent(url, uptake, gas_tensor,0.7,cop)
+change_of_gas, change_of_elec = call_change_of_fuel_agent(url, uptake, gas_tensor,0.9,cop)
 print(change_of_elec)
+'''
+# ----------------------------------------------------------------
 
+# Test for inequality index agent ----------------------------------
 
+# Read the temp data
+df_temp = retrieve_temp_from_KG()
+
+# Convert df into tensor
+unique_LSOA, temp_tensor = convert_to_tensor(input = df_temp)
+
+# call calculation agent
+url = 'http://localhost:5005/api/lsoacalculationagent_cop/calculation/cop'
+cop = call_cop_agent(url, temp_tensor, OM_DEGREE_C)
+
+# convert gas/elec consumption into tensor according to unique_LSOA
+# get gas/elec consumption df
+df_gas = retrieve_gas_data_from_KG()
+df_elec = retrieve_elec_data_from_KG()
+df_gas = select_column(df_gas, ['s','usage'])
+df_elec = select_column(df_elec, ['s','usage'])
+
+# get monthly distribution gas/elec
+gas_monthly_distribution = read_from_web_monthly_distribution_gas()
+elec_monthly_distribution = read_from_web_monthly_distribution_elec()
+
+# convert gas/elec df to tensor
+_, gas_tensor = convert_to_tensor(input = df_gas, monthly_ref= gas_monthly_distribution, LSOA_index_id= unique_LSOA, year=YEAR)
+_, elec_tensor = convert_to_tensor(input = df_elec, monthly_ref= elec_monthly_distribution, LSOA_index_id= unique_LSOA, year=YEAR)
+
+# compare the shape, select the shortest one
+temp_tensor, unique_LSOA, gas_tensor, cop, elec_tensor = compare_tensor(temp_tensor,unique_LSOA,gas_tensor,cop,elec_tensor)
+
+# call calculation agent
+url = 'http://localhost:5003/api/lsoacalculationagent_change_of_fuel/calculation/change_of_fuel'
+uptake = 0.5
+# call change of fuel agent
+change_of_gas, change_of_elec = call_change_of_fuel_agent(url, uptake, gas_tensor, 0.9, cop)
+
+# fabricate into df
+df_change_of_gas = tensor_to_df(-change_of_gas,unique_LSOA,'tas',True)
+df_change_of_elec = tensor_to_df(change_of_elec,unique_LSOA,'tas',True)
+
+# calculate change of cost
+url = 'http://localhost:5004/api/lsoacalculationagent_fuel_cost/calculation/fuel_cost'
+df_cost_total, _, _ = call_fuel_cost_agent(url ,df_change_of_elec ,df_change_of_gas ,YEAR ,True)
+df_cost_total = select_column(df_cost_total,[0,1])
+
+# get the fuel poverty data, convert into tensor according to unique_LSOA
+df_fuel_poor = retrieve_fuel_poor_from_KG()
+df_fuel_poor = select_column(df_fuel_poor, ['s','result'])
+
+# # First example dataframe
+# np.random.seed(0)
+# letters = ['a', 'b', 'c', 'd', 'e']
+# df_cost_total = pd.DataFrame({'letters': letters, 'floats': np.random.randint(1000, 10000, size=len(letters))})
+
+# # Second example dataframe
+# np.random.seed(1)
+# letters2 = letters + ['f', 'g', 'h', 'i', 'j', 'k', 'l']
+# df_fuel_poor = pd.DataFrame({'letters': letters2, 'floats': np.random.rand(len(letters2))})
+
+# calculate inequality index
+url = 'http://localhost:5007/api/lsoacalculationagent_inequality_index/calculation/inequality_index'
+df_inequality_index = call_inequality_index_agent(url, df_cost_total, df_fuel_poor)
+print(df_inequality_index)
+# ----------------------------------------------------------------
 
 # ----------------------------------------------------------------
 ##########################################################

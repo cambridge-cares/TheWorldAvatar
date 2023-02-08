@@ -318,6 +318,39 @@ def compare_tensor(array_temp, unique_LSOA, *array_to_compare):
     
     return array_temp, unique_LSOA, *array_to_compare
 
+def tensor_to_df(tensor, lsoa_index, temp_var = None, annual = False):
+    '''
+    Convert a given tensor (shape of (3,xxx,12)) into dataframe
+    Arguments:
+        tensor: to be converted
+        lsoa_index: use to locate the lsoa code, which will be used for first column in df
+        temp_var: 'tasmax'/'tas'/'tasmin' use to select the correct set of data
+                   based on max / mean / min temperature
+        annual: if True, annual data will be provided on the second column along with the rest for the monthly data
+                if False, only monthly data will be provided
+    '''
+    #  shape reduce to (xxx,12)
+    if temp_var == 'tasmin':
+        result_arr = tensor[0]
+    if temp_var == 'tas':
+        result_arr = tensor[1]
+    if temp_var == 'tasmax':
+        result_arr = tensor[2]
+    
+    # create a df
+    months = ['January', 'February', 'March', 'April', 'May', 'June', \
+          'July', 'August', 'September', 'October', 'November', 'December']
+
+    df = pd.DataFrame(result_arr, columns=months)
+    df.insert(0, 'LSOA_code', list(lsoa_index.keys()))
+
+    #  shape reduce to (xxx)
+    if annual == True:
+        result_arr_annual = np.sum(result_arr, axis=1)
+        df.insert(1, 'annual', result_arr_annual)
+
+    return df
+
 def remove_unlocated_data(df):
     # Create a boolean mask indicating which rows contain 'Unallocated' in the first column
     mask = df[df.columns[0]].str.contains('Unallocated')

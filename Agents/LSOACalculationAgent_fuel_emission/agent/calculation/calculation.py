@@ -55,6 +55,8 @@ def calculating_fuel_emission(df_elec_in:pd.DataFrame, df_gas_in:pd.DataFrame, y
     df_emission_gas = calculating_single_emission_gas(df_gas_in, year, annual)
     
     # Merge to total emission
+    df_emission_elec.rename(columns={df_emission_elec.columns[0]: 'LSOA_code'}, inplace=True)
+    df_emission_gas.rename(columns={df_emission_gas.columns[0]: 'LSOA_code'}, inplace=True)
     df_emission_total = df_emission_elec.merge(df_emission_gas, left_on=df_emission_elec.columns[0], right_on=df_emission_gas.columns[0], how='inner')
     
     # Iterate through the columns of the merged dataframe and add the values

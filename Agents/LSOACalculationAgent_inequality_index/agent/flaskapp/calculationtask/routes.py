@@ -35,14 +35,14 @@ def api_calculation_fuel_cost():
 
         # Get df_change_of_cost
     try:
-        inputs['df_change_of_cost'] = str(query['df_change_of_cost'])
+        inputs['df_change_of_cost'] = pd.DataFrame.from_dict(query['df_change_of_cost'])
     except Exception as ex:
         logger.error('Required df_change_of_cost could not be determined.')
         raise InvalidInput('Required df_change_of_cost could not be determined.') from ex
 
         # Get df_fuel_poverty
     try:
-        inputs['df_fuel_poverty'] = str(query['df_fuel_poverty'])
+        inputs['df_fuel_poverty'] = pd.DataFrame.from_dict(query['df_fuel_poverty'])
     except Exception as ex:
         logger.error('Required df_fuel_poverty could not be determined.')
         raise InvalidInput('Required df_fuel_poverty could not be determined.') from ex

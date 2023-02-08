@@ -183,7 +183,7 @@ def call_fuel_cost_agent(url:str, df_elec_in:pd.DataFrame = pd.DataFrame(), df_g
     if annual:
         query['query']['annual'] = str(annual)
 
-        logger.info('Sending data to calculationagent_fuel_cost...')
+    logger.info('Sending data to calculationagent_fuel_cost...')
     
     try:
         headers = {'Content-type': 'application/json'}
@@ -259,7 +259,7 @@ def call_fuel_emission_agent(url:str, df_elec_in:pd.DataFrame = pd.DataFrame(), 
     if annual:
         query['query']['annual'] = str(annual)
 
-        logger.info('Sending data to calculationagent_fuel_emission...')
+    logger.info('Sending data to calculationagent_fuel_emission...')
     
     try:
         headers = {'Content-type': 'application/json'}
@@ -295,3 +295,75 @@ def call_fuel_emission_agent(url:str, df_elec_in:pd.DataFrame = pd.DataFrame(), 
         df_emission_gas= pd.DataFrame()
     
     return df_emission_total, df_emission_elec, df_emission_gas
+
+def call_inequality_index_agent(url:str, df_change_of_cost_in:pd.DataFrame, df_fuel_poverty_in:pd.DataFrame, min_dc: float = None, max_dc: float = None,min_fp: float = None, max_fp: float = None):
+    '''
+    To calculate the inequality index, generate dataframe in JSON format, based on given change of fuel cost and fuel poverty proportion (GET request):
+    (request expects all individual query parameter to be provided in a single nested JSON object with key 'query', see details below):
+    Arguments:
+    df_change_of_cost: two-column data frame, the first column (i.e. at position [0]) should be occupied with LSOA code as identifiers, respectively, the annual change of fuel cost data should be placed at the second column (i.e. at position [1]) using the unit of sterling pound
+
+    df_fuel_poverty: two-column data frame, the first column (i.e. at position [0]) should be occupied with LSOA code as identifiers, respectively, the fuel poverty data should be placed at the second column (i.e. at position [1]). No unit for this index
+    NOTE: column names don't matters as long as the position is correct
+    Example input df:
+    LSOA_code	     	Change of fuel cost
+    0  	E01011954	     	1000
+    1	E01011969	     	1000
+    2	E01011970	     	1000
+
+    min change of cost nth-percentile: input a float number(let's say 'n'), which means 'nth'-percentile of the distribution of the argument across all households, will be used as the min change of cost for normalisation (see equation above)
+    If not provided, default value 1 will be used
+
+    max change of cost nth-percentile: input a float number(let's say 'n'), which means 'nth'-percentile of the distribution of the argument across all households, will be used as the max change of cost for normalisation (see equation above)
+    If not provided, default value 99 will be used
+
+    min fuel poverty: input a float number, which will be used as the min fuel poverty for normalisation (see equation above)
+    If not provided, default value 0 will be used
+
+    max fuel poverty: input a float number, which will be used as the max fuel poverty for normalisation (see equation above)
+    If not provided, default value 0.2 will be used
+    '''
+    # Make a copy so it won't ruin the original df
+    df_change_of_cost = copy.deepcopy(df_change_of_cost_in)
+    df_fuel_poverty = copy.deepcopy(df_fuel_poverty_in)
+
+    # Wrapping the query
+    query = {
+        'query':{
+                'df_change_of_cost':df_change_of_cost.to_dict(orient='list'),
+                'df_fuel_poverty':df_fuel_poverty.to_dict(orient='list'),
+                }
+        }
+
+    if min_dc:
+        query['query']['min change of cost nth-percentile'] = float(min_dc)
+
+    if max_dc:
+        query['query']['max change of cost nth-percentile'] = float(max_dc)
+
+    if min_fp:
+        query['query']['min fuel poverty'] = float(min_fp)
+
+    if max_fp:
+        query['query']['max fuel poverty'] = float(max_fp)
+
+    logger.info('Sending data to calculationagent_inequality_index...')
+    
+    try:
+        headers = {'Content-type': 'application/json'}
+        response = requests.get(url, headers=headers, json=query)
+
+    except Exception as ex:
+        logger.error(f'Fail to connect to calculation agent (fuel emission) -- Response code {response.status_code}')
+        raise ConnectionError(f'Fail to connect to calculation agent (fuel emission) -- Response code {response.status_code}') from ex
+
+    try:
+        data = response.json()
+
+    except Exception as ex:
+        logger.error(f'No valid JSON context from response -- Response code {response.status_code}')
+        raise InvalidInput(f'No valid JSON context from response -- Response code {response.status_code}') from ex
+    
+    df_inequality_index = pd.DataFrame.from_dict(data['df_inequality_index'])
+    
+    return df_inequality_index

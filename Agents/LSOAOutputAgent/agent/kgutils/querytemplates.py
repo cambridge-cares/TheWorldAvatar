@@ -19,7 +19,7 @@ def output_query_template(keyword: str, year: str = YEAR):
 
 
     '''
-    if keyword == 'Temperature':
+    if keyword == 'Temperature' or 'Fuel poverty':
         query = 'PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> '
     else:
         query = ''
