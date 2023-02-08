@@ -1,16 +1,14 @@
 package uk.ac.cam.cares.jps.agent.ontochemplant;
 
+import java.net.URI;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.agent.model.ontochemplant.*;
 import uk.ac.cam.cares.ogm.models.ModelContext;
-import uk.ac.cam.cares.jps.agent.model.ontochemplant.Building;
-import uk.ac.cam.cares.jps.agent.model.ontochemplant.CityObject;
-import uk.ac.cam.cares.jps.agent.model.ontochemplant.OntoChemPlantModel;
-import uk.ac.cam.cares.jps.agent.model.ontochemplant.PlantItem;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
@@ -38,7 +36,7 @@ public class OntoChemPlantAgent {
 	private static final String ERROR = "Selected object is neither a building nor a plant item.";
 
 	public static JSONObject createOntoChemPlantModel(JSONObject input) throws SQLException {
-		
+
 		JSONArray result = new JSONArray();
         JSONObject final_results = new JSONObject();
         String cityObjectIri = (input.getJSONArray(OntoChemPlantAgentLauncher.IRI)).getString(0);
@@ -49,39 +47,51 @@ public class OntoChemPlantAgent {
 
         // New model context for jibusinessunits namespace
         ModelContext context = new ModelContext(TWA_NAMESPACE);
-        
-        /* 
-         * Decide whether the selected object is a building or plant item based on its object class ID in 
+
+        /*
+         * Decide whether the selected object is a building or plant item based on its object class ID in
          * CityGML, and pull information from KG. City furniture object ID = 21, Building object ID = 26
          */
         if (cityObject.getObjectClassId().intValue() == 21) {
-        	
+
           String cityfurnitureIri = cityObjectIri.replace(CITY_OBJECT, CITY_FURNITURE);
           OntoChemPlantModel ocp_model = context.createHollowModel(OntoChemPlantModel.class, cityfurnitureIri);
           context.pullAll(ocp_model);
 
-          PlantItem plantitem = context.createHollowModel(PlantItem.class, ocp_model.getOntoCityGMLRepresentationOf().toString());
+          PlantItem plantitem = context.createHollowModel(PlantItem.class, ocp_model.getOntoCityGMLRepresentationOf().get(0).toString());
           context.recursivePullAll(plantitem, 1);
 
           ArrayList<PlantItem> PlantItemList = new ArrayList<>();
           PlantItemList.add(plantitem);
-          result.put(PlantItemList);
           final_results.put("chemplant", PlantItemList);
 
         } else if (cityObject.getObjectClassId().intValue() == 26){
-        	
+
           String buildingIri = cityObjectIri.replace(CITY_OBJECT, BUILDING);
           OntoChemPlantModel ocp_model = context.createHollowModel(OntoChemPlantModel.class, buildingIri);
           context.pullAll(ocp_model);
 
-          Building building = context.createHollowModel(Building.class, ocp_model.getOntoCityGMLRepresentationOf().toString());
-          context.recursivePullAll(building, 3);
-          
-          ArrayList<Building> BuildingList = new ArrayList<>();
-          BuildingList.add(building);
-          result.put(BuildingList);
-          final_results.put("chemplant", BuildingList);
+          // Buildings and storage tanks are both represented by CityGML buildings, check if it is a storage tank
+          if (ocp_model.getOntoCityGMLRepresentationOf().size() > 1) {
+              for (URI element : ocp_model.getOntoCityGMLRepresentationOf()){
+                  if (element.getPath().contains("storage")){
+                      StorageTank tank = context.createHollowModel(StorageTank.class, element.toString());
+                      context.recursivePullAll(tank, 2);
+                      ArrayList<StorageTank> StorageTankList = new ArrayList<>();
+                      StorageTankList.add(tank);
+                      final_results.put("chemplant", StorageTankList);
+                      break;
+                  }
+              }
+          }
+          else {
+              Building building = context.createHollowModel(Building.class, ocp_model.getOntoCityGMLRepresentationOf().get(0).toString());
+              context.recursivePullAll(building, 3);
 
+              ArrayList<Building> BuildingList = new ArrayList<>();
+              BuildingList.add(building);
+              final_results.put("chemplant", BuildingList);
+          }
         }
 
 		else {

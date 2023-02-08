@@ -5,7 +5,8 @@ prefix ems: <https://www.theworldavatar.com/kg/ontoems/>
 SELECT ?label ?value ?unit
 WHERE {
   { BIND ("Type" AS ?label )
-    <STATION_IRI> rdf:type ?value .
+    <STATION_IRI> rdf:type ?value_ini .
+    BIND (replace(str(?value_ini), str(ems:), '') as ?value)
   } UNION { 
     BIND ("Name" AS ?label )
     <STATION_IRI> rdfs:label ?value .

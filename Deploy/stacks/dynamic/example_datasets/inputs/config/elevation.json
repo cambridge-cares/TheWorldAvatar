@@ -5,7 +5,7 @@
     "datasetDirectory": "elevation",
     "dataSubsets": [
         {
-            "type": "Raster",
+            "type": "raster",
             "name": "elevation",
             "skip": false,
             "geoServerSettings": {

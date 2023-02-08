@@ -1,15 +1,15 @@
-from tests.conftest import config_generic
-from tests.conftest import Config4Test1
-from tests.conftest import Config4Test2
+from .conftest import config_generic
+from .conftest import Config4Test1
+from .conftest import Config4Test2
 
-from tests.conftest import config_derivation_agent
-from tests.conftest import AgentConfig
-from tests.conftest import RNGAGENT_ENV
-from tests.conftest import MAXAGENT_ENV
-from tests.conftest import MINAGENT_ENV
-from tests.conftest import DIFFAGENT_ENV
-from tests.conftest import DIFFREVERSEAGENT_ENV
-from tests.conftest import UPDATEENDPOINT_ENV
+from .conftest import config_derivation_agent
+from .conftest import AgentConfig
+from .conftest import RNGAGENT_ENV
+from .conftest import MAXAGENT_ENV
+from .conftest import MINAGENT_ENV
+from .conftest import DIFFAGENT_ENV
+from .conftest import DIFFREVERSEAGENT_ENV
+from .conftest import UPDATEENDPOINT_ENV
 
 from typing import get_type_hints
 from dotenv import dotenv_values

@@ -2,10 +2,6 @@ package uk.ac.cam.cares.jps.base.query.test;
 
 import static org.junit.Assert.*;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +15,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -27,6 +24,7 @@ import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 import static org.mockito.ArgumentMatchers.any;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
@@ -134,6 +132,22 @@ public class RemoteStoreClientTest {
 		kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
 		assertTrue(!kbClient.isUpdateEndpointBlazegraphBackended());
 	}
+	/**
+	 * Checks if the connection URL established for the update endpoint (URL)<p>
+	 * is the expected one.
+	 *
+	 * @throws SQLException
+	 */
+	@Test
+	public void connectionURLForUpdateEndpointTest() throws SQLException{
+		String updateEndpoint = "http://localhost:8080/test";
+		RemoteStoreClient kbClient = new RemoteStoreClient();
+		kbClient.setUpdateEndpoint(updateEndpoint);
+		assertNotNull(kbClient.getConnectionUrl());
+		assertEquals("jdbc:jena:remote:update=".concat(updateEndpoint), kbClient.getConnectionUrl());
+	}
+
+
 
 	/**
 	 * Checks if the connection URL established for the query endpoint (URL)<p>
@@ -321,11 +335,11 @@ public class RemoteStoreClientTest {
 	public void testGet() {
 		
 		String actual = 
-		"<rdf:RDF\r\n"+
-				"    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"\r\n"+
-				"    xmlns:j.0=\"http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#\">\r\n"+
-				"  <j.0:FoodCourt rdf:about=\"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-001.owl#FoodCourt-001\"/>\r\n"+
-				"</rdf:RDF>\r\n";
+		"<rdf:RDF"+System.getProperty("line.separator")+
+				"    xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\""+System.getProperty("line.separator")+
+				"    xmlns:j.0=\"http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#\">"+System.getProperty("line.separator")+
+				"  <j.0:FoodCourt rdf:about=\"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-001.owl#FoodCourt-001\"/>"+System.getProperty("line.separator")+
+				"</rdf:RDF>"+System.getProperty("line.separator");
 				
 		//mock result
 		Model model = ModelFactory.createDefaultModel();
@@ -348,27 +362,20 @@ public class RemoteStoreClientTest {
 	}
 
 	/**
-	 * Test connect method
+	 * Test exception message when the query and update is not valid
 	 */
 	@Test
-	public void testConnect() throws NoSuchMethodException, NoSuchFieldException, SQLException, InvocationTargetException, IllegalAccessException {
-		queryEndpoint = "http://localhost:8080/test";
-		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint);
-		Method connect = kbClient.getClass().getDeclaredMethod("connect", String.class);
-		connect.setAccessible(true);
-		Field connection = kbClient.getClass().getDeclaredField("conn");
-		connection.setAccessible(true);
-		Field statement = kbClient.getClass().getDeclaredField("stmt");
-		statement.setAccessible(true);
-		Connection conn = (Connection) connection.get(kbClient);
-		java.sql.Statement stmt = (java.sql.Statement) statement.get(kbClient);
-		assertNull(conn);
-		assertNull(stmt);
-		connect.invoke(kbClient, kbClient.getConnectionUrl());
-		conn = (Connection) connection.get(kbClient);
-		stmt = (java.sql.Statement) statement.get(kbClient);
-		assertFalse(conn.isClosed());
-		assertNotNull(stmt);
+	public void testExecuteQueryAndUpdateException() {
+		RemoteStoreClient kbClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> kbClient.executeUpdate(formMechanismCountQuery()));
+		Assert.assertTrue(e.getMessage()
+				.contains(formMechanismCountQuery()));
+
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> kbClient.executeQuery(formDeleteQuery()));
+		Assert.assertTrue(e.getMessage()
+				.contains(formDeleteQuery()));
 	}
 
 	/**
@@ -386,7 +393,7 @@ public class RemoteStoreClientTest {
 			query = query.concat("}\n");
 			return query;
 	}
-	
+
 	/**
 	 * A SPARQL query to retrieve the IRIs of all mechanisms in a repository.
 	 * 

@@ -5,13 +5,13 @@
     "skip": false,
     "dataSubsets": [
         {
-            "type": "Tabular",
+            "type": "tabular",
             "skip": false,
             "schema": "public",
             "subdirectory": "tabular"
         },
         {
-            "type": "Vector",
+            "type": "vector",
             "skip": false,
             "schema": "public",
             "table": "forestry",

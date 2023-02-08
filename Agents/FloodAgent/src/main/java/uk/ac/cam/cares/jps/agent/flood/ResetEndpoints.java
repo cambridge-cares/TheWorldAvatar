@@ -22,6 +22,5 @@ public class ResetEndpoints {
 				new TimeSeriesClient<>(storeClient, Instant.class, endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
 		storeClient.executeUpdate("drop all");
 		tsClient.deleteAll();
-		tsClient.disconnectRDB();
 	}
 }

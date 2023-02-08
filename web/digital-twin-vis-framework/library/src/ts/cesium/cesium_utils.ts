@@ -1,5 +1,5 @@
  /**
- * Utilities specific to MapBox implementations
+ * Utilities specific to Mapbox implementations
  */
 class CesiumUtils {
     
@@ -29,9 +29,9 @@ class CesiumUtils {
     }
 
     /**
-	 * Show or hide a single (MapBox) layer on the map.
+	 * Show or hide a single (Mapbox) layer on the map.
 	 * 
-	 * @param {String} layerID MapBox layer name.
+	 * @param {String} layerID Mapbox layer name.
 	 * @param {boolean} visible desired visibility.
 	 */
     public static toggleLayer(layerID, visible) {
@@ -62,11 +62,14 @@ class CesiumUtils {
     }
 
     /**
-     * Change the underlying MapBox style.
+     * Change the underlying Mapbox style.
      * 
-     * @param {String} mode {"light", "dark", "satellite", "satellite-streets"}
+     * @param {String} mode 
      */
     public static changeTerrain(mode) {
+        let imagerySettings = Manager.SETTINGS.getSetting("imagery");
+        if(imagerySettings == null) return;
+
         // Find existing base layer
         let baseLayer = null;
         for(let i = 0; i < MapHandler.MAP.imageryLayers.length; i++) {
@@ -87,26 +90,13 @@ class CesiumUtils {
         // Remove base layer
         MapHandler.MAP.imageryLayers.remove(baseLayer, true);
 
-        // Start of URL for imagery tiles
-        let tileURL = "https://api.mapbox.com/styles/v1/" + MapHandler.MAP_USER + "/";
-        switch(mode.toLowerCase()) {
-            default:
-            case "light":
-                tileURL += "cl6p66equ000314pj8v0p60ub";
-            break;
-            case "dark":
-                tileURL += "cl6owj7v2000415q1oj9aq5zq";
-            break;
-            case "outdoors":
-                tileURL += "cl6p69s56000t14p47gpfhg1o";
-            break;
-            case "satellite":
-                tileURL += "cl6p6j16m000415tj1s4wtfi8";
-            break;
-        }
+        let tileURL = imagerySettings[mode] as string;
+        if(tileURL == null) return;
 
-        // Finish tile URL
-        tileURL += "/tiles/256/{z}/{x}/{y}?access_token=" + MapHandler.MAP_API;
+        // Add the API if missing
+        if(tileURL.endsWith("access_token=")) {
+            tileURL += MapHandler.MAP_API;
+        }
 
         // Add our own imagery provider
         let imageryProvider = new Cesium.UrlTemplateImageryProvider({
@@ -118,37 +108,51 @@ class CesiumUtils {
     }
 
     /**
-     * Reset the camera to a default position.
-     * 
-     * @param {String} mode {"bird", "pitch"}
+     * Generates a JSON object defining the default imagery options if none is provided
+     * by the developer in the settings.json file.
      */
-    public static changeCamera(mode) {
+    public static generateDefaultImagery() {
+        let imagerySettings = {};
+
+        // Add possible imagery options
+        imagerySettings["Light"] =
+            "https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/256/{z}/{x}/{y}?access_token="
+            + MapHandler.MAP_API;
+        imagerySettings["Dark"] =
+            "https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/256/{z}/{x}/{y}?access_token="
+            + MapHandler.MAP_API;
+        imagerySettings["Outdoors"] =
+            "https://api.mapbox.com/styles/v1/mapbox/outdoors-v11/tiles/256/{z}/{x}/{y}?access_token="
+            + MapHandler.MAP_API;
+        imagerySettings["Satellite (Raw)"] =
+            "https://api.mapbox.com/styles/v1/mapbox/satellite-v9/tiles/256/{z}/{x}/{y}?access_token="
+            + MapHandler.MAP_API;
+        imagerySettings["Satellite (Labelled)"] =
+            "https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v11/tiles/256/{z}/{x}/{y}?access_token="
+            + MapHandler.MAP_API;
+
+        // Set default imagery to Dark
+        imagerySettings["default"] = "Dark";
+
+        // Push settings
+        Manager.SETTINGS.putSetting("imagery", imagerySettings);
+    }
+
+    /**
+     * Reset the camera to default position.
+     */
+    public static resetCamera() {
         let mapOptions = MapHandler.MAP_OPTIONS;
+        if(mapOptions == null) return;
 
-        if(mode === "bird") {
-            MapHandler.MAP.camera.flyTo({
-                // @ts-ignore
-                destination : Cesium.Cartesian3.fromDegrees(mapOptions["target"][0], mapOptions["target"][1], mapOptions["target"][2]),
-                orientation: {
-                    // @ts-ignore
-                    heading: Cesium.Math.toRadians(0),
-                    // @ts-ignore
-                    pitch: Cesium.Math.toRadians(-90),
-                    // @ts-ignore
-                    roll: Cesium.Math.toRadians(0)
-                }
-            });
-
-        } else if(mode === "pitch") {
-            MapHandler.MAP.camera.flyTo({
-                destination : Cesium.Cartesian3.fromDegrees(mapOptions["target"][0], mapOptions["target"][1], mapOptions["target"][2]),
-                orientation: {
-                    heading: Cesium.Math.toRadians(30),
-                    pitch: Cesium.Math.toRadians(-45),
-                    roll: Cesium.Math.toRadians(0)
-                }
-            });
-        } 
+        MapHandler.MAP.camera.flyTo({
+            destination : Cesium.Cartesian3.fromDegrees(mapOptions["center"][0], mapOptions["center"][1], mapOptions["center"][2]),
+            orientation: {
+                heading: Cesium.Math.toRadians(mapOptions["heading"]),
+                pitch: Cesium.Math.toRadians(mapOptions["pitch"]),
+                roll: Cesium.Math.toRadians(mapOptions["roll"])
+            }
+        });
     }
 
     /**
@@ -260,4 +264,167 @@ class CesiumUtils {
         }
     }
 
+    /**
+     * Generates content for pop-up box displayed on hover over.
+     */
+    public static getPopupContent(properties: Object) {
+        // Get feature details
+        let name = getName(properties);
+        let desc = getDescription(properties);
+
+        // Make HTML string
+        let html = "";
+        if(desc == null) {
+            html += "<h3 style='text-align: center !important;'>" + name + "</h3>";
+        } else {
+            html += "<h3>" + name + "</h3>";
+            if(desc.length > 100) {
+                html += "<div class='desc-popup long-popup'></br>" + desc + "</div>";
+            } else {
+                html += "<div class='desc-popup'></br>" + desc + "</div>";
+            }
+        }
+
+        // Add thumbnail if present
+        if(properties["thumbnail"]) {
+            html += "<br/><br/>";
+            html += "<img class='thumbnail' src='" + properties["thumbnail"] + "'>";
+        }
+        return html;
+    }
+
+    /**
+     * Sets up keyboard shortcuts for the Cesium camera. This has been added so that
+     * users without a mouse (or with a non-standard touchpad) can still control the
+     * camera.
+     */
+    public static setupKeyboardShortcuts() {
+        // TODO: Add full camera controls here. This will be tricky as Cesium offers
+        // no programmatic way to pan the camera around 2D plane (mimicking the mouse
+        // movement logic).
+        window.addEventListener("keydown", function (event) {
+            if (event.defaultPrevented) return;
+          
+            switch (event.key) {
+                case "PageUp":
+                    MapHandler.MAP.camera.zoomIn(25);
+                    break;
+                case "PageDown":
+                    MapHandler.MAP.camera.zoomOut(25);
+                    break;
+                default:
+                    return;
+            }
+          
+            // Cancel the default action to avoid it being handled twice
+            event.preventDefault();
+        }, true);
+    }
+
+    /**
+     * Flys the camera to the input feature, can be unreliable.
+     * 
+     * @param feature 
+     */
+    public static flyToFeature(feature: Object) {
+        // Is this a WMS feature?
+        if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
+            const position = MapHandler.MAP.scene.globe.ellipsoid.cartographicToCartesian(
+                // @ts-ignore
+                feature.position
+            );
+
+            let offset = CesiumUtils.offsetFromHeadingPitchRange(
+                MapHandler.MAP.camera.heading,
+                MapHandler.MAP.camera.pitch,
+                50
+            );
+            const transform = Cesium.Transforms.eastNorthUpToFixedFrame(position);
+            Cesium.Matrix4.multiplyByPoint(transform, offset, position);
+            MapHandler.MAP.camera.flyTo({
+                destination: position,
+                orientation: {
+                    heading: MapHandler.MAP.camera.heading,
+                    pitch: MapHandler.MAP.camera.pitch,
+                },
+                easingFunction: Cesium.EasingFunction.QUADRATIC_OUT,
+            });
+            return;
+        }
+
+        if(!feature.hasOwnProperty("Longitude")) {
+            // Cesium has not stored position of this feature, cannot fly to
+            return;
+        }
+
+        // 3D feature
+        const positionCartographic = new Cesium.Cartographic(
+            // @ts-ignore
+            Cesium.Math.toRadians(feature.getProperty("Longitude")),
+            // @ts-ignore
+            Cesium.Math.toRadians(feature.getProperty("Latitude")),
+            // @ts-ignore
+            feature.getProperty("Height") * 0.5
+        );
+        const position = MapHandler.MAP.scene.globe.ellipsoid.cartographicToCartesian(
+            positionCartographic
+        );
+
+        let offset = CesiumUtils.offsetFromHeadingPitchRange(
+            MapHandler.MAP.camera.heading,
+            MapHandler.MAP.camera.pitch,
+            // @ts-ignore
+            feature.getProperty("Height") * 2.0
+        );
+
+        const transform = Cesium.Transforms.eastNorthUpToFixedFrame(position);
+        Cesium.Matrix4.multiplyByPoint(transform, offset, position);
+
+        MapHandler.MAP.camera.flyTo({
+            destination: position,
+            orientation: {
+                heading: MapHandler.MAP.camera.heading,
+                pitch: MapHandler.MAP.camera.pitch,
+            },
+            easingFunction: Cesium.EasingFunction.QUADRATIC_OUT,
+        });
+    }
+
+    /**
+     * https://sandcastle.cesium.com/?src=3D%20Tiles%20Interactivity.html
+     * 
+     * @param heading 
+     * @param pitch 
+     * @param range 
+     * @returns 
+     */
+    public static offsetFromHeadingPitchRange(heading, pitch, range) {
+        pitch = Cesium.Math.clamp(
+          pitch,
+          -Cesium.Math.PI_OVER_TWO,
+          Cesium.Math.PI_OVER_TWO
+        );
+        heading = Cesium.Math.zeroToTwoPi(heading) - Cesium.Math.PI_OVER_TWO;
+      
+        const pitchQuat = Cesium.Quaternion.fromAxisAngle(
+          Cesium.Cartesian3.UNIT_Y,
+          -pitch
+        );
+        const headingQuat = Cesium.Quaternion.fromAxisAngle(
+          Cesium.Cartesian3.UNIT_Z,
+          -heading
+        );
+        const rotQuat = Cesium.Quaternion.multiply(
+          headingQuat,
+          pitchQuat,
+          headingQuat
+        );
+        const rotMatrix = Cesium.Matrix3.fromQuaternion(rotQuat);
+      
+        const offset = Cesium.Cartesian3.clone(Cesium.Cartesian3.UNIT_X);
+        Cesium.Matrix3.multiplyByVector(rotMatrix, offset, offset);
+        Cesium.Cartesian3.negate(offset, offset);
+        Cesium.Cartesian3.multiplyByScalar(offset, range, offset);
+        return offset;
+    }
 }

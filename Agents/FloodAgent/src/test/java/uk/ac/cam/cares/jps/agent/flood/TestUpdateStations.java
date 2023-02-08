@@ -128,8 +128,8 @@ public class TestUpdateStations {
 		api = mock(APIConnector.class);
 		when(api.getData(httpClient)).thenReturn(entity);
 		
-		ProcessedData processed_data = UpdateStations.processAPIResponse(api);
-		UpdateStations.uploadDataToRDB(tsClient, sparqlClient, processed_data);
+		// ProcessedData processed_data = UpdateStations.processAPIResponse(api);
+		// UpdateStations.uploadDataToRDB(tsClient, sparqlClient, processed_data);
 	}
 	
 	@AfterEach

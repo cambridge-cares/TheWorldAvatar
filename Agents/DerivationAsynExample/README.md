@@ -5,7 +5,7 @@
 There are a few namespaces used in this example:
 
 ```sparql
-PREFIX OntoDerivation: <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+PREFIX OntoDerivation: <https://www.theworldavatar.com/kg/ontoderivation/>
 PREFIX derivationBase: <https://www.derivationasynexample.com/triplestore/repository/>
 PREFIX example: <http://derivation_asyn_example#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -343,7 +343,7 @@ If this is not successful, it may be the case that the `derivationasynexample` c
 As the derivations are marked as `Requested` at their creations, the new information will be generated automatically. As here we are demonstrating full asynchronous operation (case 6), you may use below SPARQL query in the blazegraph container (http://localhost:8889/blazegraph) to check the status during the course of update:
 
 ```sparql
-PREFIX OntoDerivation: <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+PREFIX OntoDerivation: <https://www.theworldavatar.com/kg/ontoderivation/>
 PREFIX time: <http://www.w3.org/2006/time#>
 SELECT ?derivation ?devTime ?inputTime ?status ?status_type
 WHERE {

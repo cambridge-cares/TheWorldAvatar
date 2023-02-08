@@ -1,7 +1,11 @@
 import random
 import uuid
 import time
+from rdflib import Literal
+from rdflib import URIRef
+from rdflib import Graph
 from rdflib import RDFS
+from rdflib import XSD
 from pyderivationagent import DerivationAgent, DerivationInputs, DerivationOutputs
 from .sparql_client_for_test import PySparqlClientForTest
 from .sparql_client_for_test import RANDOM_EXAMPLE_NUMOFPOINTS
@@ -16,6 +20,11 @@ from .sparql_client_for_test import RANDOM_EXAMPLE_DIFFERENCEREVERSE
 from .sparql_client_for_test import RANDOM_EXAMPLE_HASVALUE
 from .sparql_client_for_test import RANDOM_EXAMPLE_HASPOINT
 from .sparql_client_for_test import RANDOM_EXAMPLE_BASE_URL
+from .sparql_client_for_test import RANDOM_STRING_WITH_SPACES
+from .sparql_client_for_test import RANDOM_EXAMPLE_SPECIALVALUE
+from .sparql_client_for_test import RANDOM_EXAMPLE_INPUTPLACEHOLDEREXCEPTIONTHROW
+from .sparql_client_for_test import RANDOM_EXAMPLE_OUTPUTPLACEHOLDEREXCEPTIONTHROW
+from .sparql_client_for_test import RANDOM_EXAMPLE_EXCEPTION_THROW_MSG
 
 class UpdateEndpoint(DerivationAgent):
     # NOTE Placeholder to enable instantiating UpdateEndpoint instance
@@ -42,13 +51,28 @@ class UpdateEndpoint(DerivationAgent):
             diff_reverse_iri_list = sparql_client.getDiffReverseIRI()
             self.logger.info("Difference IRI: %s", diff_iri)
             self.logger.info("Difference Reverse IRI List: %s", diff_reverse_iri_list)
-            derivations = list(self.derivationClient.getDerivationsOf([diff_iri] + diff_reverse_iri_list).values())
+            derivations = list(self.derivation_client.getDerivationsOf([diff_iri] + diff_reverse_iri_list).values())
             self.logger.info("Derivations: %s", derivations)
             for derivation in derivations:
-                self.derivationClient.unifiedUpdateDerivation(derivation)
+                self.derivation_client.unifiedUpdateDerivation(derivation)
             return {"status": f"successfully requested update derivation {derivations}, will be done in due course"}
         except Exception as e:
             raise f"Difference IRI: {diff_iri}; DifferenceReverse IRI list: {diff_reverse_iri_list}; Requested Derivations: {derivations}; Error in update_derivations: {str(e)}"
+
+class ExceptionThrowAgent(DerivationAgent):
+    def agent_input_concepts(self) -> list:
+        return [RANDOM_EXAMPLE_INPUTPLACEHOLDEREXCEPTIONTHROW]
+
+    def agent_output_concepts(self) -> list:
+        return [RANDOM_EXAMPLE_OUTPUTPLACEHOLDEREXCEPTIONTHROW]
+
+    def validate_inputs(self, http_request) -> bool:
+        return super().validate_inputs(http_request)
+
+    def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
+        # Log IRI of current derivation been handled, implying the function is working as expected as long as the test still passes
+        self.logger.info(f"Processing ExceptionThrow Derivation: {derivation_inputs.getDerivationIRI()}")
+        raise Exception(RANDOM_EXAMPLE_EXCEPTION_THROW_MSG)
 
 class DifferenceAgent(DerivationAgent):
     def agent_input_concepts(self) -> list:
@@ -61,6 +85,8 @@ class DifferenceAgent(DerivationAgent):
         return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
+        # Log IRI of current derivation been handled, implying the function is working as expected as long as the test still passes
+        self.logger.info(f"Processing Difference Derivation: {derivation_inputs.getDerivationIRI()}")
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         # Get min and max value
@@ -90,6 +116,8 @@ class DiffReverseAgent(DerivationAgent):
         # DiffReverseAgent will sleep for a few seconds before it runs
         # This is to simulate an agent running long jobs
         time.sleep(self.time_interval)
+        # Log IRI of current derivation been handled, implying the function is working as expected as long as the test still passes
+        self.logger.info(f"Processing DiffReverse Derivation: {derivation_inputs.getDerivationIRI()}")
 
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
@@ -117,6 +145,9 @@ class MaxValueAgent(DerivationAgent):
         return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
+        # Log IRI of current derivation been handled, implying the function is working as expected as long as the test still passes
+        self.logger.info(f"Processing MaxValue Derivation: {derivation_inputs.getDerivationIRI()}")
+
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         # Get the list of random points
@@ -141,6 +172,9 @@ class MinValueAgent(DerivationAgent):
         return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
+        # Log IRI of current derivation been handled, implying the function is working as expected as long as the test still passes
+        self.logger.info(f"Processing MinValue Derivation: {derivation_inputs.getDerivationIRI()}")
+
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         # Get the list of random points
@@ -165,6 +199,9 @@ class RNGAgent(DerivationAgent):
         return super().validate_inputs(http_request)
 
     def process_request_parameters(self, derivation_inputs: DerivationInputs, derivation_outputs: DerivationOutputs):
+        # Log IRI of current derivation been handled, implying the function is working as expected as long as the test still passes
+        self.logger.info(f"Processing RNG Derivation: {derivation_inputs.getDerivationIRI()}")
+
         sparql_client = self.get_sparql_client(PySparqlClientForTest)
 
         # Get the number of points to be generated
@@ -188,12 +225,20 @@ class RNGAgent(DerivationAgent):
         derivation_outputs.createNewEntity(
             listofpoints_iri, RANDOM_EXAMPLE_LISTOFPOINTS)
 
+        # Generate random points triples in a Graph and add to derivation_outputs
+        g = Graph()
         for i in range(numofpoints):
             new_point = random.randint(lowerlimit, upperlimit)
             pt_iri = RANDOM_EXAMPLE_BASE_URL + 'Point_' + str(uuid.uuid4())
             derivation_outputs.createNewEntity(pt_iri, RANDOM_EXAMPLE_POINT)
-            derivation_outputs.addTriple(
-                listofpoints_iri, RANDOM_EXAMPLE_HASPOINT, pt_iri)
-            derivation_outputs.addLiteral(
-                pt_iri, RANDOM_EXAMPLE_HASVALUE, new_point)
-            derivation_outputs.addLiteral(pt_iri, RDFS.comment.toPython(), "this is a random comment")
+            g.add((URIRef(listofpoints_iri), URIRef(RANDOM_EXAMPLE_HASPOINT), URIRef(pt_iri)))
+            g.add((URIRef(pt_iri), URIRef(RANDOM_EXAMPLE_HASVALUE), Literal(new_point)))
+            # this RANDOM_STRING_WITH_SPACES is to test that the agent can add a string with spaces as data property
+            g.add((URIRef(pt_iri), RDFS.comment, Literal(RANDOM_STRING_WITH_SPACES)))
+            # below special numbers are added to test the python side can be correctly parsed by the java side
+            g.add((URIRef(pt_iri), URIRef(RANDOM_EXAMPLE_SPECIALVALUE), Literal(float("inf"))))
+            g.add((URIRef(pt_iri), URIRef(RANDOM_EXAMPLE_SPECIALVALUE), Literal(float("-inf"))))
+            g.add((URIRef(pt_iri), URIRef(RANDOM_EXAMPLE_SPECIALVALUE), Literal(float("nan"))))
+
+        # addTriple and addLiteral will be called by addGraph, therefore tested behind the scenes
+        derivation_outputs.addGraph(g)

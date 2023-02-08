@@ -19,7 +19,7 @@ WORKDIR /root/code
 COPY pom.xml ./pom.xml
 
 # Retrieve all of the dependencies 
-RUN mvn clean dependency:resolve
+RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository,sharing=locked mvn clean dependency:resolve --update-snapshots
 
 # Copy in the code
 COPY src ./src/
@@ -27,7 +27,17 @@ COPY src ./src/
 # Ensure that the latest versions of SNAPSHOT dependencies are always used
 ARG CACHEBUST=1
 
-RUN mvn deploy --update-snapshots -DskipTests
+RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository,sharing=locked mvn package --update-snapshots -DskipTests
+
+FROM builder as test
+
+RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository2,sharing=locked cp -r /root/.m2/repository2/* /root/.m2/repository
+
+CMD ["mvn", "test"]
+
+FROM builder as deploy
+
+RUN --mount=type=cache,id=stack-mvn,target=/root/.m2/repository,sharing=locked mvn deploy -DskipTests
 
 #==================================================================================================
 
@@ -41,7 +51,12 @@ COPY docker/entrypoint.sh /entrypoint.sh
 WORKDIR /app
 
 # Copy the downloaded dependencies from the builder
-COPY --from=builder /root/code/target/lib /app/lib
+COPY --from=deploy /root/code/target/*.jar /app
+# Copy the downloaded dependencies from the builder
+COPY --from=deploy /root/code/target/lib /app/lib
+
+# Copy the main jar from the builder
+COPY --from=builder /root/code/target/stack-clients*.jar /app
 
 # Port for Java debugging
 EXPOSE 5005

@@ -1,3 +1,4 @@
 include py4jps/resources/resources_registry.json
 recursive-include py4jps/resources/JpsBaseLib *
 global-exclude *.py[cod] __pycache__
+include py4jps/agentlogging/logging.conf

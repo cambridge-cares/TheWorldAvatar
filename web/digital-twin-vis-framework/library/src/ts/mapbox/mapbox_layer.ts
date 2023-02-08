@@ -1,10 +1,10 @@
 /**
  * Represents a single visual layer of data.
  */
-class MapBoxLayer extends DataLayer {
+class MapboxLayer extends DataLayer {
 
     /**
-     * Initialise a new MapBoxLayer instance.
+     * Initialise a new MapboxLayer instance.
      */
     constructor(id: string, name: string, source: DataSource) {
        super(id, name, source);
@@ -18,6 +18,9 @@ class MapBoxLayer extends DataLayer {
         if(onMap) {
             return MapHandler.MAP.getLayoutProperty(this.id, "visibility") === "visible";
         } else {
+            if(this.definition["layout"] == null || this.definition["layout"]["visibility"] == null) {
+                return true;
+            }
             return this.definition["layout"]["visibility"] === "visible";
         }
     }
