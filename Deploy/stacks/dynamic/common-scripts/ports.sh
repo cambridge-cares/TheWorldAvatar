@@ -46,14 +46,14 @@ port=$MIN_PORT
 i=0
 while (( port < MAX_PORT )) && (( i < N_PORTS )); do
     set -e
-#    if ! (${EXECUTABLE} service ls --format "{{.Ports}}" | grep ":$port->" > /dev/null); then # ! (netstat -taln | grep "$port" > /dev/null) &&
+    if [[ "podman" == "$EXECUTABLE" ]] || ! (${EXECUTABLE} service ls --format "{{.Ports}}" | grep ":$port->" > /dev/null); then # ! (netstat -taln | grep "$port" > /dev/null) &&
         echo "$port"
         if [[ "$ACTION" == write ]]; then
             echo "$port" > "${PORT_FILE}"
             exit 0
         fi
         i=$((i+1))
-#    fi
+    fi
     set +e
     port=$((port+INCREMENT))
 done
