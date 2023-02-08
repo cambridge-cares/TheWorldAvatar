@@ -17,20 +17,19 @@ import java.util.*;
 
 
 public class InstantiationClient {
-
     public static void main(String[] args) throws ParseException {
-        foundCompany();
+        instantiationMethod();
 
     }
 
-    public static void foundCompany() {
-
-
-
+    public static void instantiationMethod() {
 
         // Create context to work in, and also clear any old existing data
         ModelContext context = new ModelContext("http://localhost:48888/test");
         context.update("CLEAR ALL");
+
+
+        HashMap dataIRI = dataIRIHashMapGenerator();
 
 
         /**
@@ -64,21 +63,17 @@ public class InstantiationClient {
         Acceleration acceleration = context.createNewModel(Acceleration.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration_"+UUID.randomUUID());
         MagneticFluxDensity magneticFluxDensity = context.createNewModel(MagneticFluxDensity.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity_"+UUID.randomUUID());
         Speed speed = context.createNewModel(Speed.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Speed_"+UUID.randomUUID());
-        Bearing bearing = context.createNewModel(Bearing.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Illuminance_"+UUID.randomUUID());
+        Bearing bearing = context.createNewModel(Bearing.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/bearing_"+UUID.randomUUID());
         Altitude altitude = context.createNewModel(Altitude.class, "https://www.theworldavatar.com/kg/ontoGeo/altitude_"+UUID.randomUUID());
         GeomLocation geomLocation = context.createNewModel(GeomLocation.class, "https://www.theworldavatar.com/kg/ontoGeo/geomlocation_"+UUID.randomUUID());
         Noise noise = context.createNewModel(Noise.class, "https://www.theworldavatar.com/kg/ontouom/Noise_"+UUID.randomUUID());
         SoundPressureLevel soundPressureLevel = context.createNewModel(SoundPressureLevel.class, "https://www.theworldavatar.com/kg/ontouom/SoundPressureLevel_"+UUID.randomUUID());
         Illuminance illuminance = context.createNewModel(Illuminance.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Illuminance_"+UUID.randomUUID());
 
-        //Quantity class
-        Quantity quantity = context.createNewModel(Quantity.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity_"+UUID.randomUUID());
-
-
         /**
          * Input hashmap of instantiated measureIRIList for the measureclass
          */
-        HashMap dataIRI = dataIRIHashMapGenerator();
+
         Measure measure_accel_x = context.createNewModel(Measure.class, dataIRI.get("measure_accel_x").toString());
         Measure measure_accel_y = context.createNewModel(Measure.class, dataIRI.get("measure_accel_y").toString());
         Measure measure_accel_z = context.createNewModel(Measure.class, dataIRI.get("measure_accel_z").toString());
@@ -103,6 +98,12 @@ public class InstantiationClient {
          * Creating context for unitclasses
          */
         Unit metrePerSecond_TimeSquared = context.createNewModel(Unit.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/metrePerSecond_TimeSquared");
+        Unit metre = context.createNewModel(Unit.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/metre");
+        Unit lux = context.createNewModel(Unit.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/lux");
+        Unit microtesla = context.createNewModel(Unit.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/microtesla");
+        Unit metrePerSecond_Time = context.createNewModel(Unit.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/om:metrePerSecond-Time");
+        Unit dBFS = context.createNewModel(Unit.class, "https://www.theworldavatar.com/kg/ontouom/dBFS");
+        Unit degree= context.createNewModel(Unit.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/degree");
 
 
 
@@ -129,6 +130,10 @@ public class InstantiationClient {
         accel_y.accelerometer=accelerometer;
         accel_z.accelerometer=accelerometer;
 
+        acceleration.accelerationVariables.add(accel_x);
+        acceleration.accelerationVariables.add(accel_y);
+        acceleration.accelerationVariables.add(accel_z);
+
         /**
          * GravitySensor class
          */
@@ -136,6 +141,10 @@ public class InstantiationClient {
         gravity_y.gravitysensor=gravitySensor;
         gravity_z.gravitysensor=gravitySensor;
 
+
+        acceleration.accelerationVariables.add(gravity_x);
+        acceleration.accelerationVariables.add(gravity_y);
+        acceleration.accelerationVariables.add(gravity_z);
         /**
          * Magnetometer class
          */
@@ -143,33 +152,30 @@ public class InstantiationClient {
         magnetometer_y.magnetometer=magnetometer;
         magnetometer_z.magnetometer=magnetometer;
 
+        magneticFluxDensity.magneticFluxDensityVariables.add(magnetometer_x);
+        magneticFluxDensity.magneticFluxDensityVariables.add(magnetometer_y);
+        magneticFluxDensity.magneticFluxDensityVariables.add(magnetometer_z);
+
         /**
          * GPSSensor
          */
+        gpsSensor.gpsSensorVariables.add(speed);
+        gpsSensor.gpsSensorVariables.add(altitude);
+        gpsSensor.gpsSensorVariables.add(geomLocation);
+        gpsSensor.gpsSensorVariables.add(bearing);
 
         /**
          * Camera class
          */
         camera.illuminance=illuminance;
+        illuminance.camera=camera;
 
         /**
          * Microphone class
          */
         microphone.soundPressureLevel=soundPressureLevel;
-
-
-
-        /**
-         * Quantity class
-         */
-        quantity.quantities.add(acceleration);
-        quantity.quantities.add(magneticFluxDensity);
-        quantity.quantities.add(bearing);
-        quantity.quantities.add(speed);
-        quantity.quantities.add(soundPressureLevel);
-        quantity.quantities.add(illuminance);
         noise.soundPressureLevel=soundPressureLevel;
-
+        soundPressureLevel.noise=noise;
 
         /**
          * Measure class
@@ -184,16 +190,13 @@ public class InstantiationClient {
         measure_magnetometer_y.measures.add(magnetometer_y);
         measure_magnetometer_z.measures.add(magnetometer_z);
 
-//        measure_speed.measures.add(measure_speed);
-//        measure_geom_location.measures.add(measure_geom_location);
-//        measure_bearing.measures.add(measure_bearing);
-//        measure_altitude.measures.add(measure_altitude);
-//
-//        measure_dbfs.measures.add(measure_dbfs);
-//        measure_light_value.measures.add(measure_light_value);
+        measure_speed.measures.add(speed);
+        measure_geom_location.measures.add(geomLocation);
+        measure_bearing.measures.add(bearing);
+        measure_altitude.measures.add(altitude);
 
-
-
+        measure_dbfs.measures.add(soundPressureLevel);
+        measure_light_value.measures.add(illuminance);
 
         /**
          * Units class
@@ -201,25 +204,31 @@ public class InstantiationClient {
         metrePerSecond_TimeSquared.unitsInstant.add(measure_accel_x);
         metrePerSecond_TimeSquared.unitsInstant.add(measure_accel_y);
         metrePerSecond_TimeSquared.unitsInstant.add(measure_accel_z);
+        metrePerSecond_TimeSquared.unitsInstant.add(measure_gravity_x);
+        metrePerSecond_TimeSquared.unitsInstant.add(measure_gravity_y);
+        metrePerSecond_TimeSquared.unitsInstant.add(measure_gravity_z);
+        microtesla.unitsInstant.add(measure_magnetometer_x);
+        microtesla.unitsInstant.add(measure_magnetometer_y);
+        microtesla.unitsInstant.add(measure_magnetometer_z);
+        lux.unitsInstant.add(measure_light_value);
+        dBFS.unitsInstant.add(measure_dbfs);
+        metrePerSecond_Time.unitsInstant.add(measure_speed);
+        degree.unitsInstant.add(measure_bearing);
+        metre.unitsInstant.add(measure_altitude);
 
         context.pushAllChanges();
     }
-
-
-
 
 
     /**
      * Defining model
      */
     private static class OntoDeviceModel extends Model {}
-    private static class OMModel extends Model {}
     private static class SensorLoggerModel extends Model {}
 
     /**
      * Person branch
      */
-
     public static class Person extends Model {
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/hasA")
         protected InstantiationClient.Smartphone smartphone;
@@ -231,7 +240,6 @@ public class InstantiationClient {
     public static class Smartphone extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/hasA", backward = true)
         protected InstantiationClient.Person person;
-
         @Getter @Setter @FieldAnnotation(value = "https://saref.etsi.org/core/consistsOf", innerType = OntoDeviceModel.class)
         protected ArrayList<OntoDeviceModel> devices;
     }
@@ -257,9 +265,7 @@ public class InstantiationClient {
     /**
      * Gravity Branch
      */
-
     public static class GravitySensor extends OntoDeviceModel{}
-
     public static class Gravity_x extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
         protected InstantiationClient.OntoDeviceModel gravitysensor;
@@ -301,10 +307,8 @@ public class InstantiationClient {
      * Camera branch
      */
     public static class Camera extends OntoDeviceModel {
-
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures")
         protected Illuminance illuminance;
-
     }
 
     /**
@@ -313,18 +317,8 @@ public class InstantiationClient {
 
 
     public static class GPSSensor extends OntoDeviceModel {
-
-        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures")
-        protected Speed speed;
-
-        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures")
-        protected Altitude altitude;
-
-        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures")
-        protected GeomLocation geomLocation;
-
-        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures")
-        protected Bearing bearing;
+        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", innerType = SensorLoggerModel.class)
+        protected ArrayList<SensorLoggerModel> gpsSensorVariables;
 
     }
 
@@ -338,48 +332,50 @@ public class InstantiationClient {
     }
 
 
-    /**
-     * Quantity
-     */
-    public static class Quantity extends OMModel{
-        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#",backward = true, innerType = OMModel.class)
-        protected ArrayList<OMModel> quantities;
+
+    public static class Acceleration extends SensorLoggerModel{
+        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#",innerType = SensorLoggerModel.class,backward = true)
+        protected ArrayList<SensorLoggerModel> accelerationVariables;
+
     }
-    public static class Acceleration extends Quantity{}
-    public static class MagneticFluxDensity extends Quantity{}
-    public static class Speed extends Quantity{}
-    public static class Bearing extends Quantity{}
+    public static class MagneticFluxDensity extends SensorLoggerModel{
+        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#",innerType = SensorLoggerModel.class,backward = true)
+        protected ArrayList<SensorLoggerModel> magneticFluxDensityVariables;
 
-    //Temporary assumptions that GeomLocation and Altitude extends quantity
-    public static class GeomLocation extends Quantity{}
-    public static class Altitude extends Quantity{}
 
-    public static class SoundPressureLevel extends Quantity{}
+    }
+    public static class Speed extends SensorLoggerModel{}
+    public static class Bearing extends SensorLoggerModel{}
+
+    //Temporary assumptions that GeomLocation and Altitude extends SensorLoggerModel
+    public static class GeomLocation extends SensorLoggerModel{}
+    public static class Altitude extends SensorLoggerModel{}
+    public static class SoundPressureLevel extends SensorLoggerModel{
+        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#", backward = true)
+        protected Noise noise;
+    }
     public static class Noise extends SoundPressureLevel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
         protected SoundPressureLevel soundPressureLevel;
     }
-    public static class Illuminance extends Quantity{
+    public static class Illuminance extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
         protected Camera camera;
-
-
     }
 
 
     /**
      * Measure
      */
-    public static class Measure extends OMModel{
-        @Getter @Setter @FieldAnnotation(value = "ttp://www.ontology-of-units-of-measure.org/resource/om-2/hasValue",backward = true, innerType = SensorLoggerModel.class)
+    public static class Measure extends SensorLoggerModel{
+        @Getter @Setter @FieldAnnotation(value = "http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue",backward = true, innerType = SensorLoggerModel.class)
         protected ArrayList<SensorLoggerModel> measures;
-
     }
 
     /**
      *Unit
      */
-    public static class Unit extends OMModel{
+    public static class Unit extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",backward = true, innerType = Measure.class)
         protected ArrayList<Measure> unitsInstant;
     }
