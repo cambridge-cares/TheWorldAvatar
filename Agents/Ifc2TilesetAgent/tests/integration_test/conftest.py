@@ -12,6 +12,7 @@ import ifcopenshell
 from ifcopenshell.api import run
 
 # Self import
+from agent import create_app
 from agent.kgutils import KGClient
 from . import testconsts
 
@@ -110,6 +111,21 @@ def assert_asset_geometries():
                 os.remove(gltfpath)
         return None
     return _setup_geom_assertions
+
+# ----------------------------------------------------------------------------------
+# Module-scoped test fixtures
+# (i.e. the fixture is destroyed during teardown of the last test in the module)
+# ----------------------------------------------------------------------------------
+
+@pytest.fixture(scope='module')
+def client():
+    app = create_app()
+    app.config.update({
+        "TESTING": True,
+    })
+
+    yield app.test_client()
+
 
 # ----------------------------------------------------------------------------------
 # Function-scoped test fixtures

@@ -11,6 +11,12 @@ A module that provides all configurations, inputs, and expected results for test
 # NOTE Port must be mapped to host for this to work
 KG_ENDPOINT = "http://172.17.0.1:9999/blazegraph/namespace/kb/sparql"
 
+DEFAULT_RESPONSE = "The Ifc2Tileset agent offers the following functionality at the specified API endpoint:<BR>"
+DEFAULT_RESPONSE += "<BR>"
+DEFAULT_RESPONSE += "(POST) request to convert IFC models to Cesium's 3D tilesets:<BR>"
+DEFAULT_RESPONSE += "&nbsp&nbsp [this_url]/api<BR>"
+DEFAULT_RESPONSE += "&nbsp&nbsp [this_url] is the host and port currently shown in the address bar"
+
 # ----------------------------------------------------------------------------------
 # Test inputs and expected results
 # ----------------------------------------------------------------------------------
