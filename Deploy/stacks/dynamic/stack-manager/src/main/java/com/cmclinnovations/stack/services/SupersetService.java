@@ -30,7 +30,7 @@ public class SupersetService extends ContainerService {
     protected static final List<String> BODY_SUBSTITUTIONS_PATH_LIST = Arrays.asList(
             "/static", "/chart/", "/dashboard/", "/dataset/", "/savedqueryview/", "/tablemodelview/",
             "/dashboardasync/", "/csstemplateasyncmodelview/", "api/v1/", "/login", "/logout", "/superset/");
-    protected static final List<String> SUB_FILTER_TYPES = Arrays.asList(
+    protected static final List<String> SUB_FILTER_TYPES_LIST = Arrays.asList(
             "text/css", "text/javascript", "application/javascript", "application/json");
     public static final String LOCATION = "location";
 
@@ -77,7 +77,7 @@ public class SupersetService extends ContainerService {
         locationBlock.addEntry(new NgxComment("# List of MIME types to filter (text/http incuded by default)"));
         NgxParam subFilterTypesParam = new NgxParam();
         subFilterTypesParam.addValue("sub_filter_types");
-        BODY_SUBSTITUTIONS_PATH_LIST.stream().forEach(subFilterTypesParam::addValue);
+        SUB_FILTER_TYPES_LIST.stream().forEach(subFilterTypesParam::addValue);
         locationBlock.addEntry(subFilterTypesParam);
 
         locationBlock
@@ -95,7 +95,7 @@ public class SupersetService extends ContainerService {
         locationBlock.addEntry(proxySetHeaderParam);
 
         locationBlock.addEntry(new NgxComment("# Substitutaion expressions for response body"));
-        SUB_FILTER_TYPES.stream().forEach(subPath -> {
+        BODY_SUBSTITUTIONS_PATH_LIST.stream().forEach(subPath -> {
             NgxParam subFilterParam = new NgxParam();
             subFilterParam.addValue("sub_filter");
             subFilterParam.addValue("\"" + subPath + "\"");
