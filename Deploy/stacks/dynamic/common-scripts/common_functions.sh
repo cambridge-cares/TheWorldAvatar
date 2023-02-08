@@ -2,6 +2,7 @@
 
 # Exit on first error
 set -e
+sed -i -e 's/"credsStore": "desktop.exe"/"credsStore": "wincred.exe"/' ~/.docker/config.json
 
 get_executables(){
     # Ensure compatibility with podman

@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
@@ -23,6 +25,9 @@ public final class ServiceManager {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
+    private static final URL DEFAULT_CONFIG_DIR = ServiceManager.class.getResource("defaults");
+    private static final Path USER_CONFIG_DIR = Path.of("/inputs/config");
+
     @JsonProperty(value = "services")
     private final Map<String, ServiceConfig> serviceConfigs = new HashMap<>();
 
@@ -33,23 +38,28 @@ public final class ServiceManager {
     private final List<String> userServices;
 
     public ServiceManager() {
+        this(true);
+    }
+
+    public ServiceManager(boolean loadUserConfigs) {
         try {
-            URL url = ServiceManager.class.getResource("defaults");
-            defaultServices = loadConfigs(url);
+            defaultServices = loadConfigs(DEFAULT_CONFIG_DIR);
         } catch (IOException | URISyntaxException ex) {
             throw new RuntimeException("Failed to load default service configs.", ex);
         }
-
-        try {
-            Path configDir = Path.of("/inputs/config");
-            if (Files.exists(configDir)) {
-                userServices = loadConfigs(configDir);
-                userServices.removeAll(defaultServices);
-            } else {
-                userServices = Collections.emptyList();
+        if (loadUserConfigs) {
+            try {
+                if (Files.exists(USER_CONFIG_DIR)) {
+                    userServices = loadConfigs(USER_CONFIG_DIR);
+                    userServices.removeAll(defaultServices);
+                } else {
+                    userServices = Collections.emptyList();
+                }
+            } catch (IOException | URISyntaxException ex) {
+                throw new RuntimeException("Failed to load user specified service configs.", ex);
             }
-        } catch (IOException | URISyntaxException ex) {
-            throw new RuntimeException("Failed to load user specified service configs.", ex);
+        } else {
+            userServices = Collections.emptyList();
         }
     }
 
@@ -79,16 +89,57 @@ public final class ServiceManager {
         return serviceNames;
     }
 
-    public ServiceConfig getServiceConfig(String serviceName) {
-        return serviceConfigs.get(serviceName);
+    public ServiceConfig duplicateServiceConfig(String oldServiceName, String newServiceName) {
+
+        if (serviceConfigs.containsKey(newServiceName)) {
+            return serviceConfigs.get(newServiceName);
+        } else {
+            ServiceConfig newServiceConfig;
+            if (defaultServices.contains(oldServiceName)) {
+                try {
+                    Optional<URI> configFile = FileUtils.listFiles(DEFAULT_CONFIG_DIR).stream()
+                            .filter(uri -> uri.toString().endsWith("/" + oldServiceName + ".json"))
+                            .findFirst();
+
+                    newServiceConfig = objectMapper
+                            .readValue(configFile.get().toURL(), ServiceConfig.class);
+
+                } catch (IOException | URISyntaxException | NoSuchElementException ex) {
+                    throw new RuntimeException("Failed to load default service config '" + oldServiceName + "'.", ex);
+                }
+                // Ignore user specified services for now as their files clash with the dataset
+                // config files.
+                // } else if (userServices.contains(oldServiceName)) {
+                // try {
+                // newServiceConfig = objectMapper.readValue(
+                // USER_CONFIG_DIR.resolve(newServiceName + ".json").toUri().toURL(),
+                // ServiceConfig.class);
+                // } catch (IOException ex) {
+                // throw new RuntimeException("Failed to load user service config '" +
+                // oldServiceName + "'.", ex);
+                // }
+            } else {
+                throw new RuntimeException("No service config with name '" + oldServiceName + "'.");
+            }
+
+            serviceConfigs.put(newServiceName, newServiceConfig);
+
+            newServiceConfig.setName(newServiceName);
+
+            return newServiceConfig;
+        }
     }
 
-    public <S extends Service> S initialiseService(String stackName, String serviceTemplate) {
-        return initialiseService(stackName, serviceTemplate, serviceTemplate);
+    ServiceConfig getServiceConfig(String serviceName) {
+        ServiceConfig serviceConfig = serviceConfigs.get(serviceName);
+        if (null == serviceConfig) {
+            throw new RuntimeException("No service config loaded with name '" + serviceName + "'.");
+        }
+        return serviceConfig;
     }
 
-    public <S extends Service> S initialiseService(String stackName, String serviceTemplate, String serviceName) {
-        ServiceConfig config = serviceConfigs.get(serviceTemplate);
+    public <S extends Service> S initialiseService(String stackName, String serviceName) {
+        ServiceConfig config = getServiceConfig(serviceName);
         String type = config.getType();
 
         Class<S> typeClass = AbstractService.getTypeClass(type.toLowerCase());
@@ -111,15 +162,13 @@ public final class ServiceManager {
         if (newService instanceof ContainerService) {
             ContainerService newContainerService = (ContainerService) newService;
 
-            DockerService dockerService = this.<DockerService>getService("docker");
-            if (null != dockerService) {
-                dockerService.doPreStartUpConfiguration(newContainerService);
-                dockerService.startContainer(newContainerService);
-                dockerService.doPostStartUpConfiguration(newContainerService);
-            }
+            DockerService dockerService = getOrInitialiseService(stackName, DockerService.TYPE);
+            dockerService.doPreStartUpConfiguration(newContainerService);
+            dockerService.startContainer(newContainerService);
+            dockerService.doPostStartUpConfiguration(newContainerService);
 
-            ReverseProxyService reverseProxyService = this.<ReverseProxyService>getService("nginx");
-            if (null != reverseProxyService) {
+            if (!NginxService.TYPE.equals(serviceName)) {
+                ReverseProxyService reverseProxyService = getOrInitialiseService(stackName, NginxService.TYPE);
                 reverseProxyService.addService(newContainerService);
             }
         }
@@ -131,6 +180,13 @@ public final class ServiceManager {
 
     <S extends Service> S getService(String otherServiceName) {
         return (S) services.get(otherServiceName);
+    }
+
+    <S extends Service> S getOrInitialiseService(String stackName, String otherServiceName) {
+        if (!services.containsKey(otherServiceName)) {
+            initialiseService(stackName, otherServiceName);
+        }
+        return getService(otherServiceName);
     }
 
     public void initialiseUserServices(String stackName) {

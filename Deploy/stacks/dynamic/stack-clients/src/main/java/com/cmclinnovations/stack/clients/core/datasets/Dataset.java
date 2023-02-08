@@ -4,7 +4,9 @@ import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -164,6 +166,7 @@ public class Dataset {
                 .andHas(Rdf.iri(SparqlConstants.ENDPOINT_URL), jdbcUrl));
             } 
             
+            // implementation not complete until we figure out the external URLs
             if (dataSubset.usesGeoServer()) {
                 if (postgisService == null) {
                     throw new RuntimeException("postgisService is null, a datasubset that uses geoserver but does not use postgis?");
@@ -191,6 +194,12 @@ public class Dataset {
         ModifyQuery modify = Queries.MODIFY();
         modify.insert(triplePatternList.toArray(new TriplePattern[triplePatternList.size()]));
         return modify.getQueryString();
+    }
+
+    private Map<String,Boolean> dataSetExists(Map<String, List<String>> catalogToDatasetList) {
+        
+
+        return new HashMap<>();
     }
 
     private class SparqlConstants {
