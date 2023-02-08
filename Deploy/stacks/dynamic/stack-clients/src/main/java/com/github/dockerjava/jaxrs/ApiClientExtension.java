@@ -56,7 +56,7 @@ final public class ApiClientExtension extends ApiClient {
         clientConfig.property(CommonProperties.FEATURE_AUTO_DISCOVERY_DISABLE, true);
 
         clientConfig.register(new ResponseStatusExceptionFilter());
-        // clientConfig.register(JsonClientFilter.class);
+
         RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
 
         switch (dockerHost.getScheme()) {
