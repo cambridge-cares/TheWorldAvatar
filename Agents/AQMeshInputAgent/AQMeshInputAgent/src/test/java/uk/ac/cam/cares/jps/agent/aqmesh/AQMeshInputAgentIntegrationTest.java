@@ -226,7 +226,7 @@ public class AQMeshInputAgentIntegrationTest {
         // Should only insert the gas time-series
         agent.initializeTimeSeriesIfNotExist();
         Mockito.verify(tsClientSpy, Mockito.times(1)).
-                initTimeSeries(Mockito.anyList(), Mockito.anyList(), Mockito.anyString());
+                initTimeSeries(Mockito.anyList(), Mockito.anyList(), Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any());
         // Check that time-series instances were created
         Assert.assertEquals(2, tsClient.countTimeSeries());
         // Check that all IRIs have a time-series attached and that they are attached to the same

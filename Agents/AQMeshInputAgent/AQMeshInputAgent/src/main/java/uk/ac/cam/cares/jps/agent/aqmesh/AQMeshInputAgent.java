@@ -7,6 +7,7 @@ import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient.Type;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
 
 import java.io.File;
@@ -43,7 +44,7 @@ public class AQMeshInputAgent {
     /**
      * The prefix to use when no IRI exists for a JSON key originally
      */
-    public static final String generatedIRIPrefix = TimeSeriesSparql.ns_kb + "aqmesh";
+    public static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "aqmesh";
     /**
      * The time unit used for all time series maintained by the AQMesh input agent
      */
@@ -136,13 +137,11 @@ public class AQMeshInputAgent {
                 List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
                 // Initialize the time series
                 try {
-                tsClient.initTimeSeries(iris, classes, timeUnit);
+                tsClient.initTimeSeries(iris, classes, timeUnit, Type.INSTANTANEOUS, null, null);
                 LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
             } catch (Exception e) {
             	throw new JPSRuntimeException("Could not initialize timeseries!");
-            } finally {
-            	tsClient.disconnectRDB();
-            }
+            } 
             }
         }
     }
@@ -168,9 +167,7 @@ public class AQMeshInputAgent {
         		else {
         			throw e;
         		}        		
-        	} finally {
-        		tsClient.disconnectRDB();
-        	}
+        	} 
         }
         return true;
     }
@@ -203,9 +200,7 @@ public class AQMeshInputAgent {
             	endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
                } catch (Exception e) {
             	   throw new JPSRuntimeException("Could not get max time!");
-               } finally {
-            	   tsClient.disconnectRDB();
-               }
+               } 
                 OffsetDateTime startCurrentTime = ts.getTimes().get(0);
                 // If there is already a maximum time
                 if (endDataTime != null) {
@@ -221,9 +216,7 @@ public class AQMeshInputAgent {
                     LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
                 } catch (Exception e) {
                 	throw new JPSRuntimeException("Could not add timeseries data!");
-                } finally {
-                	tsClient.disconnectRDB();
-                }
+                } 
                 }
             }
         }

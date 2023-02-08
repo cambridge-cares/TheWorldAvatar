@@ -4,7 +4,7 @@
     "datasetDirectory": "cropmap",
     "dataSubsets": [
         {
-            "type": "Vector",
+            "type": "vector",
             "skip": false,
             "schema": "public",
             "table": "cropmap-simple",

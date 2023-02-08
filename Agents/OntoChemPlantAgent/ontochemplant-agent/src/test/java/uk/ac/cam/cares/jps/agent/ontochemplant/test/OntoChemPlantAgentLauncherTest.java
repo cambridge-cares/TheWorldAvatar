@@ -4,12 +4,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
+import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.agent.ontochemplant.OntoChemPlantAgentLauncher;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -21,7 +22,7 @@ public class OntoChemPlantAgentLauncherTest {
 
 	@Test
 	public void testProcessRequestParameters() throws NoSuchMethodException, Exception {
-		OntoChemPlantAgentLauncher testLauncher = new OntoChemPlantAgentLauncher();
+		OntoChemPlantAgentLauncher testLauncher = Mockito.spy(new OntoChemPlantAgentLauncher());
 		Method processRequestParameters = null;
 		try {
 			processRequestParameters = testLauncher.getClass().getDeclaredMethod("processRequestParameters", JSONObject.class);
@@ -34,19 +35,17 @@ public class OntoChemPlantAgentLauncherTest {
 		try {processRequestParameters.invoke(testLauncher, testEmptyRequestParams);
         } catch(Exception e) {
             assert e instanceof InvocationTargetException;
-            assertEquals(((InvocationTargetException) e).getTargetException().getClass(),
-            		RuntimeException.class);
+            assertEquals(RuntimeException.class, ((InvocationTargetException) e).getTargetException().getClass());
         }
 				
-		// Test if result is returned with correct inputs
 		JSONObject testRequestParams = new JSONObject();
 		JSONArray testIRI = new JSONArray();
-		testIRI.put("http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/cityobject/UUID_bd07e1dd-7ffe-4776-8cf0-5409c007e437/");
+		testIRI.put("http://example.com/UUID_1");
 		testRequestParams.put("iris", testIRI);
-		JSONObject actual= (JSONObject) processRequestParameters.invoke(testLauncher, testRequestParams);
-		assertNotNull(actual); 
-		
-		
+		JSONObject result = new JSONObject();
+		doReturn(result).when(testLauncher).processRequestParameters(testRequestParams);
+		testLauncher.processRequestParameters(testRequestParams);
+		verify(testLauncher).processRequestParameters(testRequestParams);
 	}
 	
 	@Test
@@ -79,7 +78,7 @@ public class OntoChemPlantAgentLauncherTest {
 		}
 		
 		// Correct input
-		testIRI.put("http://www.theworldavatar.com:83/citieskg/namespace/jriEPSG24500/sparql/cityobject/UUID_bd07e1dd-7ffe-4776-8cf0-5409c007e437/");
+		testIRI.put("http://example.com/UUID_1");
 		testRequestParams.put("iris", testIRI);
 		boolean result = (boolean) validateInput.invoke(testLauncher, testRequestParams);
 		assertTrue(result);

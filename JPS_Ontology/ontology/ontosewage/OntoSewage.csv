@@ -1,0 +1,170 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoSewage,TBox,https://www.theworldavatar.com/kg/ontosewage/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoSewage,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoSewage,TBox,OntoSewage is an ontology developed for representing sewerage system.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoSewage,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+SewerageComponent,Class,,,,,,"Sewerage component is the infrastructure that conveys sewage or surface runoff (stormwater, meltwater, rainwater) using sewers.",https://www.theworldavatar.com/kg/ontosewage/,Sewerage component
+SewagePlant,Class,,,,,,Sewage plant is a place where sewage is cleaned so that it is not harmful or dangerous to the environment.,https://www.theworldavatar.com/kg/ontosewage/,Sewage plant
+SewerageNetwork,Class,,,,,,Sewerage network is a network of pipes and sewers that work together to collect and drain wastewater from the population or industrial centers to off-site treatment facilities.,https://www.theworldavatar.com/kg/ontosewage/,Sewerage network
+SubNetwork,Class,SewerageNetwork,IS-A,,,,Sub network is a network that contains branch pipes.,https://www.theworldavatar.com/kg/ontosewage/,Sub network
+MainNetwork,Class,SewerageNetwork,IS-A,,,,Main network is a network that contains main pipes.,https://www.theworldavatar.com/kg/ontosewage/,Main network
+SewerageUsage,Class,,,,,,Sewerage usage represents what the sewerage is used for.,https://www.theworldavatar.com/kg/ontosewage/,Sewerage usage
+PressureDrainage,Class,SewerageUsage,IS-A,,,,"Pressure drainage is about managing the mix of air and water and maintaining the water seal in the trap, to protect the buildings occupants from foul odours and the risk of bacterial contamination.",https://www.theworldavatar.com/kg/ontosewage/,Pressure drainage
+MixedProcess,Class,SewerageUsage,IS-A,,,,Mixed process makes it easier to trap harmful substances by increasing a contact area between a flocculant and an undesirable substance.,https://www.theworldavatar.com/kg/ontosewage/,Mixed process
+RainWater,Class,SewerageUsage,IS-A,,,,Water that has fallen as or been obtained from rain.,https://www.theworldavatar.com/kg/ontosewage/,Rain water
+WasteWater,Class,SewerageUsage,IS-A,,,,"Wastewater is the liquid that comes from showers, washing machines, sinks, toilets, bathtubs, dishwashers, and other items that handle dirty water.",https://www.theworldavatar.com/kg/ontosewage/,Waste water
+StreetDrainage,Class,SewerageUsage,IS-A,,,,Drainage of street,https://www.theworldavatar.com/kg/ontosewage/,Street drainage
+PreFlood,Class,SewerageUsage,IS-A,,,,"A stream, river, lake, ocean, or other surface or groundwaters into which treated or untreated wastewater is discharged.",https://www.theworldavatar.com/kg/ontosewage/,Pre flood
+WaterPipe,Class,SewerageUsage,IS-A,,,,A pipe for conveying water.,https://www.theworldavatar.com/kg/ontosewage/,Water pipe
+SewerageRecords,Class,,,,,,"Records such as functional state, ID, and owner of a sewerage component.",https://www.theworldavatar.com/kg/ontosewage/,Sewerage records
+OwnershipType,Class,,,,,,Type of ownership for sewerage component.,https://www.theworldavatar.com/kg/ontosewage/,Ownership type
+Public,Class,OwnershipType,IS-A,,,,"Public ownership means that water could be properly managed at catchment level, and that the whole water cycle could be considered.",https://www.theworldavatar.com/kg/ontosewage/,Public
+Private,Class,OwnershipType,IS-A,,,,Belongs to the homeowner,https://www.theworldavatar.com/kg/ontosewage/,Private
+City,Class,OwnershipType,IS-A,,,,Belongs to the city government,https://www.theworldavatar.com/kg/ontosewage/,City
+FunctionalState,Class,,,,,,"Operational state for sewerage component, i.e., under construction.",https://www.theworldavatar.com/kg/ontosewage/,Functional state
+Constructed,Class,FunctionalState,IS-A,,,,Completely built/developed,https://www.theworldavatar.com/kg/ontosewage/,Constructed
+Stock,Class,FunctionalState,IS-A,,,,Regularly available,https://www.theworldavatar.com/kg/ontosewage/,Stock
+OutOfService,Class,FunctionalState,IS-A,,,,Not available for use,https://www.theworldavatar.com/kg/ontosewage/,Out of service
+Planning,Class,FunctionalState,IS-A,,,,Design or make a plan of (something to be made or built).,https://www.theworldavatar.com/kg/ontosewage/,Planning
+Insulated,Class,FunctionalState,IS-A,,,,Protected by interposing material that prevents the transfer of heat between the external environment and fluid circulating through pipes,https://www.theworldavatar.com/kg/ontosewage/,Insulated
+ConstructionProperties,Class,,,,,,Construction properties for a sewerage component such as construction year and used materials.,https://www.theworldavatar.com/kg/ontosewage/,Construction properties
+https://w3id.org/digitalconstruction/0.3/BuildingMaterials#Material,Class,,,,,,,https://w3id.org/digitalconstruction/0.3/BuildingMaterials,
+Concrete,Class,https://w3id.org/digitalconstruction/0.3/BuildingMaterials#Material,IS-A,,,,Concrete is a composite material composed of fine and coarse aggregate bonded together with a fluid cement (cement paste) that hardens over time.,https://www.theworldavatar.com/kg/ontosewage/,Concrete
+PolyvinylChlorideHard,Class,https://w3id.org/digitalconstruction/0.3/BuildingMaterials#Material,IS-A,,,,Synthetic polymer of plastic.,https://www.theworldavatar.com/kg/ontosewage/,Polyvinyl chloride hard
+ReinforcedConcrete,Class,https://w3id.org/digitalconstruction/0.3/BuildingMaterials#Material,IS-A,,,,Concrete in which steel is embedded in such a manner that the two materials act together in resisting forces.,https://www.theworldavatar.com/kg/ontosewage/,Reinforced concrete
+Stoneware,Class,https://w3id.org/digitalconstruction/0.3/BuildingMaterials#Material,IS-A,,,,"Stoneware is dense pottery fired at high temperatures to make it resistant to liquids, or non-porous.",https://www.theworldavatar.com/kg/ontosewage/,Stoneware
+GrayCastIron,Class,https://w3id.org/digitalconstruction/0.3/BuildingMaterials#Material,IS-A,,,,Grey cast iron is a type of cast iron that has a graphitic microstructure.,https://www.theworldavatar.com/kg/ontosewage/,Gray cast iron
+ChannelType,Class,,,,,,Type of channel for construction properties,https://www.theworldavatar.com/kg/ontosewage/,Channel type
+Penstock,Class,ChannelType,IS-A,,,,A sluice for controlling or directing the flow of water.,https://www.theworldavatar.com/kg/ontosewage/,Penstock
+OpenGravityPipeline,Class,ChannelType,IS-A,,,,"An open pipeline in which the water, according to the law of gravity, travels from a higher starting point to a lower ending point.",https://www.theworldavatar.com/kg/ontosewage/,Open gravity pipeline
+ClosedGravityPipeline,Class,ChannelType,IS-A,,,,"A closed pipeline in which the water, according to the law of gravity, travels from a higher starting point to a lower ending point.",https://www.theworldavatar.com/kg/ontosewage/,Closed gravity pipeline
+https://saref.etsi.org/saref4watr/Pipe,Class,SewerageComponent,IS-A,,,,,https://saref.etsi.org/saref4watr/,
+CrossSection,Class,,,,,,"A surface or shape exposed by making a straight cut through pipe, especially at right angles to an axis.",https://www.theworldavatar.com/kg/ontosewage/,Cross section
+Shape,Class,,,,,,"External form of Manhole's cover, flume, shaft, or cross section.",https://www.theworldavatar.com/kg/ontosewage/,Shape
+EggShaped,Class,Shape,IS-A,,,,Having the oval shape of an egg.(The depth is one and half times the width.),https://www.theworldavatar.com/kg/ontosewage/,Egg shaped
+OpenTrench,Class,Shape,IS-A,,,,"Open trench means a partially or totally excavated trench, including a trench in which a pipe, conduit or cable has been laid but not fully backfilled to the level of the adjoining ground and finally compacted.",https://www.theworldavatar.com/kg/ontosewage/,Open trench
+SemiCircle,Class,Shape,IS-A,,,,A half of a circle or of its circumference.,https://www.theworldavatar.com/kg/ontosewage/,Semi circle
+Circle,Class,Shape,IS-A,,,,A round plane figure whose boundary (the circumference) consists of points equidistant from a fixed point (the centre).,https://www.theworldavatar.com/kg/ontosewage/,Circle
+Rectangle,Class,Shape,IS-A,,,,"A plane figure with four straight sides and four right angles, especially one with unequal adjacent sides, in contrast to a square.",https://www.theworldavatar.com/kg/ontosewage/,Rectangle
+Square,Class,Shape,IS-A,,,,A plane figure with four equal straight sides and four right angles.,https://www.theworldavatar.com/kg/ontosewage/,Square
+Round,Class,Shape,IS-A,,,,Shaped like a circle or cylinder or sphere.,https://www.theworldavatar.com/kg/ontosewage/,Round
+Angular,Class,Shape,IS-A,,,,Having angles or sharp corners.,https://www.theworldavatar.com/kg/ontosewage/,Angular
+http://www.ontology-of-units-of-measure.org/resource/om-2/Height,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+http://www.ontology-of-units-of-measure.org/resource/om-2/Width,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+SewerageFluid,Class,,,,,,"Type of wastewater that is produced by a community of people or natural factors like (rain, flood).",https://www.theworldavatar.com/kg/ontosewage/,Sewerage fluid
+RainWater,Class,SewerageFluid,IS-A,,,,Water that has fallen as or been obtained from rain,https://www.theworldavatar.com/kg/ontosewage/,Rain water
+DomesticWasteWater,Class,SewerageFluid,IS-A,,,,"Wastewater produced due to human activities in households is called domestic wastewater i.e. wastewater from the kitchen, shower, wash basin, toilet and laundry.",https://www.theworldavatar.com/kg/ontosewage/,Domestic waste water
+PipeType,Class,,,,,,Type of pipe such as venting.,https://www.theworldavatar.com/kg/ontosewage/,Pipe type
+ConnectionLine,Class,PipeType,IS-A,,,,Pipe type used for connecting line,https://www.theworldavatar.com/kg/ontosewage/,Connection line
+Pipe,Class,PipeType,IS-A,,,,Pipe type used for pipe,https://www.theworldavatar.com/kg/ontosewage/,Pipe
+ConnectingDuct,Class,PipeType,IS-A,,,,Pipe type used for connecting duct,https://www.theworldavatar.com/kg/ontosewage/,Connecting duct
+ReliefLine,Class,PipeType,IS-A,,,,Pipe type used for relief line,https://www.theworldavatar.com/kg/ontosewage/,Relief line
+http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+http://www.ontology-of-units-of-measure.org/resource/om-2/Thickness,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+http://www.ontology-of-units-of-measure.org/resource/om-2/Length,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+Inclination,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,Degree of sloping in pipe.,https://www.theworldavatar.com/kg/ontosewage/,Inclination
+http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+ConnectionProperties,Class,,,,,,Connection properties of pipe.,https://www.theworldavatar.com/kg/ontosewage/,Connection properties
+EndpointType,Class,,,,,,Type of endpoint which is connected to pipe.,https://www.theworldavatar.com/kg/ontosewage/,Endpoint type
+PropertyConnection,Class,EndpointType,IS-A,,,,The endpoint type used for property connection,https://www.theworldavatar.com/kg/ontosewage/,Property connection
+StreetInlet,Class,EndpointType,IS-A,,,,"The endpoint type used for street inlet where it drains rainwater from the street, sidewalk, square to a sewage system.",https://www.theworldavatar.com/kg/ontosewage/,Street inlet
+ManholeEndpoint,Class,EndpointType,IS-A,,,,The endpoint type used for manhole connection,https://www.theworldavatar.com/kg/ontosewage/,Manhole endpoint
+BranchConnection,Class,SewerageComponent,IS-A,,,,"Branch connection means taking a tapping connection from a run pipe directly by making a hole in the run pipe or using an outlet fitting, which provides a connection of pipe for fluid to flow from a higher diameter to a lower diameter of the pipe.",https://www.theworldavatar.com/kg/ontosewage/,Branch connection
+http://www.ontology-of-units-of-measure.org/resource/om-2/Distance,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+https://saref.etsi.org/saref4watr/Manhole,Class,SewerageComponent,IS-A,,,,,https://saref.etsi.org/saref4watr/,
+ShaftType,Class,,,,,,Type of shaft,https://www.theworldavatar.com/kg/ontosewage/,Shaft type
+Outlet,Class,ShaftType,IS-A,,,,"A pipe with an opening which permits escape or release (of liquid, etc).",https://www.theworldavatar.com/kg/ontosewage/,Outlet
+Structure,Class,ShaftType,IS-A,,,,,https://www.theworldavatar.com/kg/ontosewage/,Structure
+StreetInletShaft,Class,ShaftType,IS-A,,,,It is a component of road drainage. It is used to absorb surface water on paved surfaces and feeds it to underground drainage facilities.,https://www.theworldavatar.com/kg/ontosewage/,Street inlet shaft
+FictionalShaft,Class,ShaftType,IS-A,,,,,https://www.theworldavatar.com/kg/ontosewage/,Fictitious shaft 
+BuildingConnection,Class,ShaftType,IS-A,,,,,https://www.theworldavatar.com/kg/ontosewage/,Building connection
+InspectionOpening,Class,ShaftType,IS-A,,,,Inspection opening is important point in the sewerage infrastructure and is installed to enable access to underground sewer pipes in the event of a blockage.,https://www.theworldavatar.com/kg/ontosewage/,Inspection opening
+ShaftNode,Class,ShaftType,IS-A,,,,,https://www.theworldavatar.com/kg/ontosewage/,Shaft node
+StructureType,Class,,,,,,Type of the connected node to a manhole.,https://www.theworldavatar.com/kg/ontosewage/,Structure type
+StreetInletStructure,Class,StructureType,IS-A,,,,,https://www.theworldavatar.com/kg/ontosewage/,Street inlet structure
+FictitiousStructure,Class,StructureType,IS-A,,,,,https://www.theworldavatar.com/kg/ontosewage/,Fictitious structure
+StandardShaftCircularProfile,Class,StructureType,IS-A,,,,,https://www.theworldavatar.com/kg/ontosewage/,Standard shaft circular profile
+RectangularShaftStructure,Class,StructureType,IS-A,,,,,https://www.theworldavatar.com/kg/ontosewage/,Rectangular shaft structure
+Cover,Class,,,,,,"Cover is a removable plate forming the lid over the opening of a manhole, an opening large enough for a person to pass through that is used as an access point for an underground vault or pipe.",https://www.theworldavatar.com/kg/ontosewage/,Cover
+CoverClass,Class,,,,,,Type of manhole's cover (It is based on the ability to safely hold up to the relating weight),https://www.theworldavatar.com/kg/ontosewage/,Cover class
+12.5T,Class,CoverClass,IS-A,,,,"Max weight (Domestic driveway thresholds for family cars, vans and 4x4s)",https://www.theworldavatar.com/kg/ontosewage/,12.5T
+40T,Class,CoverClass,IS-A,,,,"Max weight (Main roads, highways and high traffic areas such as public car parks)",https://www.theworldavatar.com/kg/ontosewage/,40T
+Shaft,Class,,,,,,Shaft is below the taper and leads down to the base of the manhole.,https://www.theworldavatar.com/kg/ontosewage/,Shaft
+Flume,Class,,,,,,"Flume is a human-made channel for water, in the form of an open declined gravity chute whose walls are raised above the surrounding terrain.",https://www.theworldavatar.com/kg/ontosewage/,Flume
+http://www.ontology-of-units-of-measure.org/resource/om-2/Depth,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+https://schema.org/location,Class,,,,,,,http://schema.org/,
+AssociatedInfrastructure,Class,,,,,,Associated infrastructure of a location.,https://www.theworldavatar.com/kg/ontosewage/,Associated infrastructure
+Terrain,Class,AssociatedInfrastructure,IS-A,,,,"A stretch of land, especially with regard to its physical features.",https://www.theworldavatar.com/kg/ontosewage/,Terrain
+SideWalk,Class,AssociatedInfrastructure,IS-A,,,,A paved path for pedestrians at the side of a road.,https://www.theworldavatar.com/kg/ontosewage/,Side walk
+MainRoad,Class,AssociatedInfrastructure,IS-A,,,,"A road that is commonly used and that goes through the main part of a city, town, etc.",https://www.theworldavatar.com/kg/ontosewage/,Main road
+SideRoad,Class,AssociatedInfrastructure,IS-A,,,,"A minor or subsidiary road, especially one joining or diverging from a main road.",https://www.theworldavatar.com/kg/ontosewage/,Side road
+PrivateProperty,Class,AssociatedInfrastructure,IS-A,,,,Private property refers to the ownership of property by private parties - essentially anyone or anything other than the government.,https://www.theworldavatar.com/kg/ontosewage/,Private property
+http://rdfs.co/juso/Street,Class,,,,,,,http://rdfs.co/juso/,
+http://rdfs.co/juso/District,Class,,,,,,,http://rdfs.co/juso/,
+https://schema.org/GeoCoordinates,Class,,,,,,,https://schema.org/,
+hasUsage,Object Property,,,SewerageComponent,SewerageUsage,,A relationship between a sewerage component and sewerage usage.,https://www.theworldavatar.com/kg/ontosewage/,has usage
+http://www.theworldavatar.com/ontology/ontocape/OntoCAPE.owl#hasPart,Object Property,,,SewerageNetwork,SewerageComponent,,,http://www.theworldavatar.com/ontology/ontocape/OntoCAPE.owl,
+hasSewerageRecords,Object Property,,,SewerageComponent,SewerageRecords,,A relationship between a sewerage component and its records.,https://www.theworldavatar.com/kg/ontosewage/,has sewerage records
+hasFunctionalState,Object Property,,,SewerageRecords,FunctionalState,,A relationship between sewerage records and their functional state.,https://www.theworldavatar.com/kg/ontosewage/,has functional state
+hasOwnershipType,Object Property,,,SewerageRecords,OwnershipType,,A relationship between sewerage records and their ownership type.,https://www.theworldavatar.com/kg/ontosewage/,has ownership type
+hasConstructionProperties,Object Property,,,SewerageComponent,ConstructionProperties,,A relationship between a sewerage component and its construction properties.,https://www.theworldavatar.com/kg/ontosewage/,has construction properties
+hasChannelType,Object Property,,,ConstructionProperties,ChannelType,,A relationship between construction properties of a sewerage component and their channel type.,https://www.theworldavatar.com/kg/ontosewage/,has channel type
+https://w3id.org/digitalconstruction/0.3/BuildingMaterials#hasMaterial,Object Property,,,ConstructionProperties UNION Cover,https://w3id.org/digitalconstruction/0.3/BuildingMaterials#Material,,,https://w3id.org/digitalconstruction/0.3/BuildingMaterials,
+usedFor,Object Property,,,https://saref.etsi.org/saref4watr/Pipe,SewerageFluid,,A relationship between a pipe and sewerage fluid.,https://www.theworldavatar.com/kg/ontosewage/,used for
+hasPipeType,Object Property,,,https://saref.etsi.org/saref4watr/Pipe,PipeType,,A relationship between a pipe type and pipe.,https://www.theworldavatar.com/kg/ontosewage/,has pipe type
+hasCrossSection,Object Property,,,https://saref.etsi.org/saref4watr/Pipe,CrossSection,,A relationship between a pipe and its cross section.,https://www.theworldavatar.com/kg/ontosewage/,has cross section
+hasHeight,Object Property,,,CrossSection,http://www.ontology-of-units-of-measure.org/resource/om-2/Height,,A relationship between a cross section of a pipe and height.,https://www.theworldavatar.com/kg/ontosewage/,has height
+hasWidth,Object Property,,,CrossSection UNION Shaft UNION Flume,http://www.ontology-of-units-of-measure.org/resource/om-2/Width,,A relationship between a cross section of a pipe and width.,https://www.theworldavatar.com/kg/ontosewage/,has width
+hasShape,Object Property,,,CrossSection UNION Cover UNION Shaft UNION Flume,Shape,,A relationship between a cross section of a pipe and shape.,https://www.theworldavatar.com/kg/ontosewage/,has shape
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Height UNION http://www.ontology-of-units-of-measure.org/resource/om-2/Width UNION Inclination UNION http://www.ontology-of-units-of-measure.org/resource/om-2/Length UNION  http://www.ontology-of-units-of-measure.org/resource/om-2/Thickness UNION http://www.ontology-of-units-of-measure.org/resource/om-2/Distance UNION http://www.ontology-of-units-of-measure.org/resource/om-2/Depth,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,,A relationship between a measure and the respective unit of measure.,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,exactly 1,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+hasInclination,Object Property,,,https://saref.etsi.org/saref4watr/Pipe,Inclination,,A relationship between a pipe and inclination.,https://www.theworldavatar.com/kg/ontosewage/,has inclination
+hasLength,Object Property,,,https://saref.etsi.org/saref4watr/Pipe UNION Shaft UNION Flume,http://www.ontology-of-units-of-measure.org/resource/om-2/Length,,A relationship between a pipe or a flume or a shaft and length.,https://www.theworldavatar.com/kg/ontosewage/,has length
+hasWallThickness,Object Property,,,https://saref.etsi.org/saref4watr/Pipe,http://www.ontology-of-units-of-measure.org/resource/om-2/Thickness,,A relationship between a pipe and its wall thickness.,https://www.theworldavatar.com/kg/ontosewage/,has wall thickness
+hasConnectionProperties,Object Property,,,https://saref.etsi.org/saref4watr/Pipe,ConnectionProperties,,A relationship between a pipe and connection properties.,https://www.theworldavatar.com/kg/ontosewage/,has connection properties
+hasEndpointType,Object Property,,,ConnectionProperties,EndpointType,,A relationship between connection properties of a pipe and endpoint of the connection.,https://www.theworldavatar.com/kg/ontosewage/,has endpoint type
+hasBranchPipe,Object Property,,,BranchConnection,https://saref.etsi.org/saref4watr/Pipe,,A relationship between a branch connection and a pipe.,https://www.theworldavatar.com/kg/ontosewage/,has branch pipe
+hasMainPipe,Object Property,,,BranchConnection,https://saref.etsi.org/saref4watr/Pipe,,A relationship between a branch connection and a pipe.,https://www.theworldavatar.com/kg/ontosewage/,has main pipe
+hasOutletLocation,Object Property,,,https://saref.etsi.org/saref4watr/Pipe,https://schema.org/location,,A relationship between a pipe and outlet location.,https://www.theworldavatar.com/kg/ontosewage/,has outlet location
+hasInletLocation,Object Property,,,https://saref.etsi.org/saref4watr/Pipe,https://schema.org/location,,A relationship between a pipe and inlet location.,https://www.theworldavatar.com/kg/ontosewage/,has inlet location
+http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#hasLocation,Object Property,,,BranchConnection UNION https://saref.etsi.org/saref4watr/Manhole,https://schema.org/location,,,http://www.ontologydesignpatterns.org/ont/dul/DUL.owl,
+relativeDistanceOnMainPipe,Object Property,,,BranchConnection,http://www.ontology-of-units-of-measure.org/resource/om-2/Distance,,Distance (in m) between main pipe endpoint and the branch connection on main pipe.,https://www.theworldavatar.com/kg/ontosewage/,relative distance on main pipe
+hasCover,Object Property,,,https://saref.etsi.org/saref4watr/Manhole,Cover,,A relationship between a manhole and cover.,https://www.theworldavatar.com/kg/ontosewage/,has cover
+hasClass,Object Property,,,Cover,CoverClass,,A relationship between a cover and cover class.,https://www.theworldavatar.com/kg/ontosewage/,has class
+hasShaft,Object Property,,,https://saref.etsi.org/saref4watr/Manhole,Shaft,,A relationship between a manhole and shaft.,https://www.theworldavatar.com/kg/ontosewage/,has shaft
+hasDepth,Object Property,,,Shaft,http://www.ontology-of-units-of-measure.org/resource/om-2/Depth,,A relationship between a shaft and depth.,https://www.theworldavatar.com/kg/ontosewage/,has depth
+hasFlume,Object Property,,,https://saref.etsi.org/saref4watr/Manhole,Flume,,A relationship between a manhole and flume.,https://www.theworldavatar.com/kg/ontosewage/,has flume
+hasShaftType,Object Property,,,Shaft,ShaftType,,A relationship between a shaft and its type.,https://www.theworldavatar.com/kg/ontosewage/,has shaft type
+hasStructureType,Object Property,,,https://saref.etsi.org/saref4watr/Manhole,StructureType,,A relationship between a manhole and structure type.,https://www.theworldavatar.com/kg/ontosewage/,has structure type
+isAssociatedWith,Object Property,,,https://schema.org/location,AssociatedInfrastructure,,A relationship between a location and associated infrastructure.,https://www.theworldavatar.com/kg/ontosewage/,is associated with
+http://semanticscience.org/resource/SIO_000061,Object Property,,,https://schema.org/location,http://rdfs.co/juso/Street UNION http://rdfs.co/juso/District,,,http://semanticscience.org/ontology/sio.owl,
+hasCoordinates,Object Property,,,https://schema.org/location,https://schema.org/GeoCoordinates,,A relationship between a location and Geo coordinates.,https://www.theworldavatar.com/kg/ontosewage/,has coordinates
+hasElevation,Object Property,,,https://schema.org/location,https://schema.org/Elevation,,A relationship between a location and elevation.,https://www.theworldavatar.com/kg/ontosewage/,has elevation
+hasElevationAboveSeaLevel,Object Property,,,https://schema.org/Elevation,http://www.ontology-of-units-of-measure.org/resource/om-2/Height,,A relationship which shows the elevation above see level of a location.,https://www.theworldavatar.com/kg/ontosewage/,has elevation above sea level
+isConnectedTo ,Object Property,,,SewerageComponent,SewagePlant,,A relationship between a sewerage component and sewage plant.,https://www.theworldavatar.com/kg/ontosewage/,is connected to
+hasElevationReference,Data Property,,,https://schema.org/Elevation,String,,A relationship which shows the elevation reference.,https://www.theworldavatar.com/kg/ontosewage/,has elevation reference
+hasElevationAccuracy,Data Property,,,https://schema.org/Elevation,String,,A relationship which shows the elevation accuracy.,https://www.theworldavatar.com/kg/ontosewage/,has elevation accuracy
+componentID,Data Property,,,SewerageComponent,String,,Sewerage component ID,https://www.theworldavatar.com/kg/ontosewage/,component ID
+constructionYear,Data Property,,,ConstructionProperties,Integer,,Construction year for sewerage component.,https://www.theworldavatar.com/kg/ontosewage/,construction year
+http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,Float,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+http://www.ontology-of-units-of-measure.org/resource/om-2/symbol,Data Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,String,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,
+hasConnectionID,Data Property,,,https://saref.etsi.org/saref4watr/Pipe,String,,Connection ID of pipe,https://www.theworldavatar.com/kg/ontosewage/,has connection ID
+hasSourceID,Data Property,,,https://saref.etsi.org/saref4watr/Pipe,String,,Source ID of pipe,https://www.theworldavatar.com/kg/ontosewage/,has source ID
+hasUpstreamConnector,Data Property,,,ConnectionProperties,String,,A relationship to show where the sewage enters a pipe.,https://www.theworldavatar.com/kg/ontosewage/,has upstream connector
+hasDownstreamConnector,Data Property,,,ConnectionProperties,String,,A relationship to show where the sewage exits a pipe.,https://www.theworldavatar.com/kg/ontosewage/,has downstream connector
+hasEndpointObject,Data Property,,,ConnectionProperties,String,,Endpoint object of pipe,https://www.theworldavatar.com/kg/ontosewage/,has endpoint object
+clockPositionOfBranchPipe,Data Property,,,BranchConnection,Integer,,Position of branch pipe,https://www.theworldavatar.com/kg/ontosewage/,clock position of branch pipe
+isInFlowDirection,Data Property,,,BranchConnection,boolean,,A relationship to define whether relative distance on main pipe is measured in or against flow direction.,https://www.theworldavatar.com/kg/ontosewage/,is in flow direction
+isInWaterProtectionZone,Data Property,,,https://schema.org/location,boolean,,A relationship to show whether the location is in water protection zone or not.,https://www.theworldavatar.com/kg/ontosewage/,is in water protection zone
+isInFloodplane,Data Property,,,https://schema.org/location,boolean,,A relationship to show whether the location is in flood plane or not.,https://www.theworldavatar.com/kg/ontosewage/,is in flood plane
+hasCatchmentAreaKey,Data Property,,,https://schema.org/location,String,,Catchment area key of a location,https://www.theworldavatar.com/kg/ontosewage/,has catchment area key
+hasPointDesignation,Data Property,,,https://schema.org/location,String,,Point designation of a location,https://www.theworldavatar.com/kg/ontosewage/,has point designation
+hasDistrictReference,Data Property,,,http://rdfs.co/juso/District,Integer,,District reference of a location,https://www.theworldavatar.com/kg/ontosewage/,has district reference
+hasDistrictName,Data Property,,,http://rdfs.co/juso/District,String,,District name of a location,https://www.theworldavatar.com/kg/ontosewage/,has district name
+hasStreetReference,Data Property,,,http://rdfs.co/juso/Street,Integer,,Street reference of a location,https://www.theworldavatar.com/kg/ontosewage/,has street reference
+hasStreetName,Data Property,,,http://rdfs.co/juso/Street,String,,Street name of a location,https://www.theworldavatar.com/kg/ontosewage/,has street name
+hasPositionAccuracy,Data Property,,,https://schema.org/GeoCoordinates,String,,Position accuracy of a geo coordinate,https://www.theworldavatar.com/kg/ontosewage/,has position accuracy
+hasCoordinateReference,Data Property,,,https://schema.org/GeoCoordinates,String,,Coordinate reference of a geo coordinate,https://www.theworldavatar.com/kg/ontosewage/,has coordinate reference
+http://www.opengis.net/ont/geosparql#asWKT,Data Property,,,https://schema.org/GeoCoordinates,http://www.opengis.net/ont/geosparql#wktLiteral,,,http://www.opengis.net/ont/geosparql,

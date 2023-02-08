@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -28,12 +29,13 @@ public class DerivationInputsTest {
 	@Test
 	public void testConstructor1()
 			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		String derivationIRI = "http://" + UUID.randomUUID().toString();
 		// initialise with constructor DerivationInputs(JSONObject mappedInputs)
 		JSONObject mappedInstances = new JSONObject();
 		mappedInstances.put(class1, new JSONArray(Arrays.asList(instance1_1, instance1_2)));
 		mappedInstances.put(class2, new JSONArray(Arrays.asList(instance2_1, instance2_2, instance2_3)));
 		mappedInstances.put(class3, new JSONArray(Arrays.asList(instance3_1)));
-		DerivationInputs devInputs = new DerivationInputs(mappedInstances);
+		DerivationInputs devInputs = new DerivationInputs(mappedInstances, derivationIRI);
 		// Retrieve the value of the private field 'outputs' of the client
 		Field inputs = devInputs.getClass().getDeclaredField("inputs");
 		inputs.setAccessible(true);
@@ -42,11 +44,13 @@ public class DerivationInputsTest {
 		Assert.assertTrue(equalLists(Arrays.asList(instance1_1, instance1_2), inputsf.get(class1)));
 		Assert.assertTrue(equalLists(Arrays.asList(instance2_1, instance2_2, instance2_3), inputsf.get(class2)));
 		Assert.assertTrue(equalLists(Arrays.asList(instance3_1), inputsf.get(class3)));
+		// the derivationIRI should be the same as the one provided
+		Assert.assertEquals(derivationIRI, devInputs.getDerivationIRI());
 
 		// should fail if given wrong JSON structure
 		mappedInstances.put("http://key", new JSONObject().put("http://key2", "http://value"));
 		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
-				() -> new DerivationInputs(mappedInstances));
+				() -> new DerivationInputs(mappedInstances, derivationIRI));
 		Assert.assertTrue(e.getMessage()
 				.contains(DerivationInputs.DERIVATIONINPUTS_SERIALISE_ERROR + mappedInstances.toString()));
 	}
@@ -54,6 +58,7 @@ public class DerivationInputsTest {
 	@Test
 	public void testConstructor2()
 			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		String derivationIRI = "http://" + UUID.randomUUID().toString();
 		// initialise with constructor DerivationInputs(List<Entity> entities)
 		Entity entity1 = new Entity(instance1_1);
 		entity1.setRdfType(class1);
@@ -69,7 +74,7 @@ public class DerivationInputsTest {
 		entity6.setRdfType(class3);
 		List<Entity> entities = Arrays.asList(entity1, entity2, entity3, entity4, entity5, entity6);
 
-		DerivationInputs devInputs = new DerivationInputs(entities);
+		DerivationInputs devInputs = new DerivationInputs(entities, derivationIRI);
 		// Retrieve the value of the private field 'outputs' of the client
 		Field inputs = devInputs.getClass().getDeclaredField("inputs");
 		inputs.setAccessible(true);
@@ -78,17 +83,20 @@ public class DerivationInputsTest {
 		Assert.assertTrue(equalLists(Arrays.asList(instance1_1, instance1_2), inputsf.get(class1)));
 		Assert.assertTrue(equalLists(Arrays.asList(instance2_1, instance2_2, instance2_3), inputsf.get(class2)));
 		Assert.assertTrue(equalLists(Arrays.asList(instance3_1), inputsf.get(class3)));
+		// the derivationIRI should be the same as the one provided
+		Assert.assertEquals(derivationIRI, devInputs.getDerivationIRI());
 	}
 
 	@Test
 	public void testConstructor3()
 			throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		String derivationIRI = "http://" + UUID.randomUUID().toString();
 		// initialise with constructor DerivationInputs(JSONObject mappedInputs)
 		Map<String, List<String>> mappedInstances = new HashMap<>();
 		mappedInstances.put(class1, Arrays.asList(instance1_1, instance1_2));
 		mappedInstances.put(class2, Arrays.asList(instance2_1, instance2_2, instance2_3));
 		mappedInstances.put(class3, Arrays.asList(instance3_1));
-		DerivationInputs devInputs = new DerivationInputs(mappedInstances);
+		DerivationInputs devInputs = new DerivationInputs(mappedInstances, derivationIRI);
 		// Retrieve the value of the private field 'outputs' of the client
 		Field inputs = devInputs.getClass().getDeclaredField("inputs");
 		inputs.setAccessible(true);
@@ -97,40 +105,49 @@ public class DerivationInputsTest {
 		Assert.assertTrue(equalLists(Arrays.asList(instance1_1, instance1_2), inputsf.get(class1)));
 		Assert.assertTrue(equalLists(Arrays.asList(instance2_1, instance2_2, instance2_3), inputsf.get(class2)));
 		Assert.assertTrue(equalLists(Arrays.asList(instance3_1), inputsf.get(class3)));
+		// the derivationIRI should be the same as the one provided
+		Assert.assertEquals(derivationIRI, devInputs.getDerivationIRI());
 	}
 
 	@Test
 	public void testGetIris() {
+		String derivationIRI = "http://" + UUID.randomUUID().toString();
 		JSONObject mappedInstances = new JSONObject();
 		mappedInstances.put(class1, new JSONArray(Arrays.asList(instance1_1, instance1_2)));
 		mappedInstances.put(class2, new JSONArray(Arrays.asList(instance2_1, instance2_2, instance2_3)));
 		mappedInstances.put(class3, new JSONArray(Arrays.asList(instance3_1)));
-		DerivationInputs devInputs = new DerivationInputs(mappedInstances);
+		DerivationInputs devInputs = new DerivationInputs(mappedInstances, derivationIRI);
 
 		Assert.assertTrue(equalLists(Arrays.asList(instance1_1, instance1_2), devInputs.getIris(class1)));
 		Assert.assertTrue(equalLists(Arrays.asList(instance2_1, instance2_2, instance2_3), devInputs.getIris(class2)));
 		Assert.assertTrue(equalLists(Arrays.asList(instance3_1), devInputs.getIris(class3)));
+		// the derivationIRI should be the same as the one provided
+		Assert.assertEquals(derivationIRI, devInputs.getDerivationIRI());
 	}
 
 	@Test
 	public void testGetAllIris() {
+		String derivationIRI = "http://" + UUID.randomUUID().toString();
 		JSONObject mappedInstances = new JSONObject();
 		mappedInstances.put(class1, new JSONArray(Arrays.asList(instance1_1, instance1_2)));
 		mappedInstances.put(class2, new JSONArray(Arrays.asList(instance2_1, instance2_2, instance2_3)));
 		mappedInstances.put(class3, new JSONArray(Arrays.asList(instance3_1)));
-		DerivationInputs devInputs = new DerivationInputs(mappedInstances);
+		DerivationInputs devInputs = new DerivationInputs(mappedInstances,derivationIRI);
 
 		Assert.assertTrue(
 				equalLists(Arrays.asList(instance1_1, instance1_2, instance2_1, instance2_2, instance2_3, instance3_1),
 						devInputs.getAllIris()));
+		// the derivationIRI should be the same as the one provided
+		Assert.assertEquals(derivationIRI, devInputs.getDerivationIRI());
 	}
 
 	@Test
 	public void testAddToInputs1() {
+		String derivationIRI = "http://" + UUID.randomUUID().toString();
 		// initialise with constructor DerivationInputs(JSONObject mappedInputs)
 		JSONObject mappedInstances = new JSONObject();
 		mappedInstances.put(class1, new JSONArray(Arrays.asList(instance1_1)));
-		DerivationInputs devInputs = new DerivationInputs(mappedInstances);
+		DerivationInputs devInputs = new DerivationInputs(mappedInstances, derivationIRI);
 		devInputs.addToInputs("<" + class1 + ">", "<" + instance1_2 + ">");
 		devInputs.addToInputs(class2 + ">", Arrays.asList("<" + instance2_1 + ">"));
 		devInputs.addToInputs("<" + class2, Arrays.asList("<" + instance2_2, instance2_3 + ">"));
@@ -140,14 +157,17 @@ public class DerivationInputsTest {
 		Assert.assertTrue(equalLists(Arrays.asList(instance1_1, instance1_2), outputs.get(class1)));
 		Assert.assertTrue(equalLists(Arrays.asList(instance2_1, instance2_2, instance2_3), outputs.get(class2)));
 		Assert.assertTrue(equalLists(Arrays.asList(instance3_1), outputs.get(class3)));
+		// the derivationIRI should be the same as the one provided
+		Assert.assertEquals(derivationIRI, devInputs.getDerivationIRI());
 	}
 
 	@Test
 	public void testAddToInputs2() {
+		String derivationIRI = "http://" + UUID.randomUUID().toString();
 		// initialise with constructor DerivationInputs(List<Entity> entities)
 		Entity entity1 = new Entity(instance1_1);
 		entity1.setRdfType(class1);
-		DerivationInputs devInputs = new DerivationInputs(Arrays.asList(entity1));
+		DerivationInputs devInputs = new DerivationInputs(Arrays.asList(entity1), derivationIRI);
 		devInputs.addToInputs("<" + class1, instance1_2 + ">");
 		devInputs.addToInputs(class2 + ">", Arrays.asList("<" + instance2_1 + ">"));
 		devInputs.addToInputs(class2 + ">", Arrays.asList("<" + instance2_2 + ">", "<" + instance2_3));
@@ -157,6 +177,8 @@ public class DerivationInputsTest {
 		Assert.assertTrue(equalLists(Arrays.asList(instance1_1, instance1_2), outputs.get(class1)));
 		Assert.assertTrue(equalLists(Arrays.asList(instance2_1, instance2_2, instance2_3), outputs.get(class2)));
 		Assert.assertTrue(equalLists(Arrays.asList(instance3_1), outputs.get(class3)));
+		// the derivationIRI should be the same as the one provided
+		Assert.assertEquals(derivationIRI, devInputs.getDerivationIRI());
 	}
 
 	////////////////////////////////////////////////////////////

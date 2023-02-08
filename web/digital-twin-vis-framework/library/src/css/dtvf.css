@@ -26,7 +26,6 @@ h6 {
     font-weight: 700;
 }
 
-/* MapBox Elements */
 #map {
     width: calc(100% - 500px);
     height: 100%;
@@ -35,28 +34,73 @@ h6 {
     background-color: #cad2d3;
 }
 
+
 .mapboxgl-popup-content {
     text-align: left;
-    font-size: 8pt;
-    width: auto;
-    max-width: 400px;
+    width: min-content;
+    min-width: 175px;
+    min-height: 20px;
     pointer-events: none;
-    background: linear-gradient(180deg,
-            rgba(245, 245, 255, 1) 80%,
-            rgba(230, 230, 240, 1) 100%);
+    background: linear-gradient(180deg,#f5f5ff 80%,#e6e6f0 100%);
+    font-family: Inter,sans-serif !important;
+    font-size: 10pt;
+    padding: 5px;
 }
 
-.mapboxgl-popup-content p {
-    font-style: italic;
-    color: grey;
+.mapboxgl-popup-content h3 {
+    width: max-content !important;
+    min-width: calc(100% - 10px);
+    
+    padding: 5px !important;
+    margin: 0px !important;
+    
+    white-space: nowrap;
+    display: inline-block;
 }
+
+.mapboxgl-popup-content .long-popup {
+    min-width: 400px;
+}
+
+#cesiumMetaBox {
+    width: min-content;
+    min-width: 175px;
+    min-height: 20px;
+    pointer-events: none;
+
+    background: linear-gradient(180deg,#f5f5ff 80%,#e6e6f0 100%);
+    font-family: Inter,sans-serif!important;
+    font-size: 10pt;
+    padding: 5px;
+        
+    position: absolute;
+    bottom: 100px;
+    left: 100px;
+
+    border-radius: 3px;
+    box-shadow: 3px 3px 3px gray;
+}
+#cesiumMetaBox h3 {
+    width: max-content !important;
+    min-width: calc(100% - 10px);
+    padding: 5px!important;
+    margin: 0!important;
+    white-space: nowrap;
+    display: inline-block;
+}
+#cesiumMetaBox .desc-popup {
+    margin-top: 20px;
+}
+#cesiumMetaBox .long-popup {
+    min-width: 400px;
+}
+
 .thumbnail {
     margin-left: 40px;
     width: 300px;
     height: 200px;
     object-fit: cover;
 }
-
 
 /* Side Panel */
 #sidePanel {
@@ -171,13 +215,13 @@ h6 {
 
 #contentContainer {
     width: 100%;
-    height: calc(100% - 80px);
+    height: calc(100% - 115px);
     margin-bottom: 70px;
     flex: 1 1 auto;
     display: flex;
     flex-direction: column;
     overflow-x: hidden;
-    overflow-y: hidden;
+    overflow-y: auto;
 }
 
 #meta-tree {
@@ -274,7 +318,7 @@ h6 {
 .tooltip .tooltiptext {
     visibility: hidden;
     width: 120px;
-    background-color: #808080;
+    background-color: #232323;
     color: #fff;
     text-align: center;
     padding: 5px 0;
@@ -476,7 +520,6 @@ h6 {
 }
 #metaTreeContainer {
     height: 100%;
-    overflow-x: hidden;
     overflow-y: scroll;
 }
 #metaTimeContainer {
@@ -802,22 +845,28 @@ label[for="select-feature"] {
 }
 
 
+/* ===== Scrollbar CSS ===== */
 
-::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-    background-color: rgb(200, 200, 200, 0.5);
-    border-radius: 10px;
+/* Firefox */
+* {
+    scrollbar-width: auto;
+    scrollbar-color: #4b4b4b #c8c8c8;
 }
-
-::-webkit-scrollbar {
-    width: 10px;
-    background-color: #F5F5F5;
+/* Chrome, Edge, and Safari */
+*::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
 }
-
-::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-track {
+    background: transparent;
     border-radius: 10px;
-    background-color: #4b753e;
+    border: 1px solid rgb(220, 220, 220);
+}
+*::-webkit-scrollbar-thumb {
+    background-color: rgb(180, 180, 180);
+    border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
 }
 
 /**
@@ -1082,7 +1131,7 @@ label[for="select-feature"] {
     background-color: transparent !important;
     color: white !important;
     font-family: "Inter", sans-serif !important;
-    font-size: 9pt !important;
+    font-size: 8pt !important;
 
     display: inline-block;
     white-space: nowrap;
@@ -1101,18 +1150,18 @@ label[for="select-feature"] {
 }
 
 .fa-chevron-down {
-    font-size: 10pt !important;
+    font-size: 8pt !important;
     line-height: inherit !important;
     vertical-align: middle;
     padding-right: 4px;
-    padding-bottom: 4px;
+    translate: 0px 2px;
 }
 .fa-chevron-up {
-    font-size: 10pt !important;
+    font-size: 8pt !important;
     line-height: inherit !important;
     vertical-align: middle;
     padding-right: 4px;
-    padding-bottom: 4px;
+    translate: 0px 2px;
 }
 
 .hummingbird-treeview, .hummingbird-treeview * {
@@ -1126,38 +1175,148 @@ label[for="select-feature"] {
 }
 .hummingbird-treeview  span {
     vertical-align: middle;
-    font-size: 9pt !important;
+    font-size: 8pt !important;
 }
 
+
+
 #finderContainer {
+    display: table;
     position: absolute;
     bottom: 30;
     left: 20;
     height: 40px;
-}
-#finderContainer.expanded {
-    width: calc(100% - 560px);
-}
-#finderContainer.collapsed {
-    width: calc(100% - 90px);
-}
+    width: calc(100% - 540px);
 
-#cesiumMetaBox {
-    width: 200px;
+    background-color: rgba(0,0,0,.4);
+    border-radius: 8px;
+}
+#finderContainer label {
+    color: #fff;
+    padding-left: 10px;
+    font-weight: 700;
+    font-size: 12pt;
+    display: table-cell;
+    height: 40px;
+    width: 15%;
+    min-width: 175px;
+    vertical-align: middle;
+}
+.finderSelectClass {
     height: 30px;
-    bottom: 100px;
-    left: 100px;
+    font-size: 10pt;
+    background-color: rgba(0, 0, 0, 0.25);
+    color: white;
+    text-align: center;
+    display: table-cell;
+    width: 20%;
+    margin-top: 5px;
+}
+.finderSelectClass option {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+}
 
+#finderRangeSelect {
+    margin-left: 10px;
+}
+#finderField {
+    display: table-cell;
+    height: 30px;
+    margin-top: 5px;
+    margin-left: 10px;
+    width: 54%;
+    padding-left: 10px;
+}
+
+.searchButton {
+    color: #fff;
+    float: right;
+    height: 40px;
+    margin-right: 10px;
+    cursor: pointer;
+    line-height: 40px;
+    text-align: center;
+    display: table-cell;
+    width: 20px;
+}
+.searchButton i {
+    line-height: 40px;  
+}
+.tooltiptext.lower {
+    position: absolute;
+    z-index: 1;
+    top: -100%;
+    right: 50%;
+    width: 175px;
+    height: 20px;
+    line-height: 20px;
+}
+
+
+.cesium-viewer-bottom {
+    display: none;
+}
+
+#attributionContainer {
+    background-color: rgba(0,0,0,.4);
+    color: white;
+
+    position: absolute;
+    left: 20px;
+    bottom: 0px;
+    border-radius: 8px 8px 0px 0px;
+
+    font-size: 9pt !important;
     font-family: "Inter", sans-serif !important;
-    font-size: 11pt;
     text-align: center;
     line-height: 30px;
+}
+#attributionContainer span {
+    float: left;
+    padding-left: 10px;
+    margin: 0px !important;
+}
+#attributionContainer i {
+    translate: 0px;
+    font-size: 10pt !important;
+    float: right;
+    padding-right: 10px;
+}
+#attributionContainer:hover {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+#attributionContainer.collapsed {
+    width: 250px;
+    height: 30px;
+}
+#attributionContainer.expanded {
+    width: 500px;
+    height: 300px;
+}
+#attributionTitle {
+    height: 30px;
+    cursor: pointer;
+    font-size: 10pt !important;
+}
 
-    border-radius: 3px;
-    background-color: linear-gradient(#f5f5ff, #e1e1eb);
-    color: black;
+#helpContainer {
+    width: 20px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.tooltiptext.right {
     position: absolute;
-    box-shadow: 3px 3px 3px black;
-  
-    display: none;
+    z-index: 1;
+    right: -75px;
+    width: 75px;
+    height: 20px;
+    line-height: 20px;
+}
+
+.mapboxgl-ctrl-bottom-left {
+    top: 5px !important;
+    right: 5px !important;
+    left: revert;
+    bottom: revert;
 }

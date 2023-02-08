@@ -579,9 +579,9 @@ public class DerivationOutputsTest {
 			if (o instanceof Double) {
 				if (((Double) o).isInfinite()) {
 					if (((Double) o) > 0) {
-						return "<" + s + "> <" + p + "> \"INF\"^^<" + XSD.DOUBLE.toString() + "> .";
+						return "<" + s + "> <" + p + "> \"Infinity\"^^<" + XSD.DOUBLE.toString() + "> .";
 					} else {
-						return "<" + s + "> <" + p + "> \"-INF\"^^<" + XSD.DOUBLE.toString() + "> .";
+						return "<" + s + "> <" + p + "> \"-Infinity\"^^<" + XSD.DOUBLE.toString() + "> .";
 					}
 				} else if (((Double) o).isNaN()) {
 					return "<" + s + "> <" + p + "> \"NaN\"^^<" + XSD.DOUBLE.toString() + "> .";

@@ -1,3 +1,8 @@
+# Disable excessive debug logging from numba module
+import logging
+logging.getLogger("numba").setLevel(logging.WARNING)
+logging.getLogger("matplotlib").setLevel(logging.WARNING)
+
 from typing import List
 import json
 
@@ -8,10 +13,6 @@ from pyderivationagent import DerivationOutputs
 from doeagent.kg_operations import *
 from doeagent.data_model import *
 from doeagent.doe_algo import *
-
-# Disable excessive debug logging from numba module
-import logging
-logging.getLogger("numba").setLevel(logging.WARNING)
 
 
 class DoEAgent(DerivationAgent):
@@ -24,7 +25,7 @@ class DoEAgent(DerivationAgent):
         self.sparql_client = self.get_sparql_client(ChemistryAndRobotsSparqlClient)
 
     def agent_input_concepts(self) -> list:
-        return [ONTODOE_DESIGNOFEXPERIMENT]
+        return [ONTODOE_DESIGNOFEXPERIMENT, ONTOLAB_LABORATORY]
 
     def agent_output_concepts(self) -> list:
          return [ONTOREACTION_REACTIONEXPERIMENT]
@@ -38,11 +39,14 @@ class DoEAgent(DerivationAgent):
             doe_instance = self.sparql_client.get_doe_instance(derivation_inputs.getIris(ONTODOE_DESIGNOFEXPERIMENT)[0])
         except Exception as e:
             self.logger.error(e)
-        self.logger.info("Collected inputs from the knowledge graph: ")
-        self.logger.info(json.dumps(doe_instance.dict()))
+
+        # Get the laboratory
+        # TODO currently only one laboratory is supported
+        list_lab_iri = derivation_inputs.getIris(ONTOLAB_LABORATORY) if ONTOLAB_LABORATORY in derivation_inputs.getInputs() else None
+        lab_iri = list_lab_iri[0] if list_lab_iri else None
 
         # Call function to suggest the new experiment and return an instance of dataclass OntoDoE.NewExperiment
-        new_rxn_exp = suggest(doe_instance)
+        new_rxn_exp = suggest(doe_instance, sparql_client=self.sparql_client, lab_iri=lab_iri)
 
         # Upload the created OntoRxn:ReactionVariation triples to KG
         # Also update the triple between OntoDoE:DesignOfExperiment and OntoRxn:ReactionVariation
@@ -52,7 +56,11 @@ class DoEAgent(DerivationAgent):
         derivation_outputs.addGraph(g)
 
 
-def suggest(doe_instance: DesignOfExperiment) -> List[ReactionExperiment]:
+def suggest(
+    doe_instance: DesignOfExperiment,
+    sparql_client: ChemistryAndRobotsSparqlClient,
+    lab_iri: str = None,
+) -> List[ReactionExperiment]:
     """
         This method suggests the new experiment given information provided for design of experiment exercise.
 
@@ -61,7 +69,7 @@ def suggest(doe_instance: DesignOfExperiment) -> List[ReactionExperiment]:
     """
 
     # TODO this method calls summit doe, can be expanded in the future
-    new_exp = proposeNewExperiment(doe_instance)
+    new_exp = proposeNewExperiment(doe_instance, sparql_client, lab_iri)
 
     return new_exp
 

@@ -30,11 +30,13 @@ import org.junit.jupiter.api.io.TempDir;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.mockito.Mockito;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.MockStoreClient;
+import uk.ac.cam.cares.jps.base.query.StoreRouter;
 import uk.ac.cam.cares.jps.accessagent.AccessAgent;
 
 public class AccessAgentTest{
@@ -79,26 +81,71 @@ public class AccessAgentTest{
 		
 		JSONObject requestParams;
 		
+		MockHttpServletRequest request = new MockHttpServletRequest();
+	    request.setServletPath(AccessAgent.ACCESS_URL);
+		
 		//test http get
 		requestParams = new JSONObject();
 		requestParams.put(JPSConstants.METHOD, HttpGet.METHOD_NAME);
-		agent.processRequestParameters(requestParams, null);
+		agent.processRequestParameters(requestParams, request);
 		verify(agent).validateInput(requestParams);
 		verify(agent).performGet(requestParams);
 		
 		//test http put
 		requestParams = new JSONObject();
 		requestParams.put(JPSConstants.METHOD, HttpPut.METHOD_NAME);
-		agent.processRequestParameters(requestParams, null);
+		agent.processRequestParameters(requestParams, request);
 		verify(agent).validateInput(requestParams);
 		verify(agent).performPut(requestParams);
 		
 		//test http post
 		requestParams = new JSONObject();
 		requestParams.put(JPSConstants.METHOD, HttpPost.METHOD_NAME);
-		agent.processRequestParameters(requestParams, null);
+		agent.processRequestParameters(requestParams, request);
 		verify(agent).validateInput(requestParams);
 		verify(agent).performPost(requestParams);
+	}
+	
+	@Test
+	public void testProcessRequestParametersClearCache() {
+		
+		AccessAgent agent = new AccessAgent();
+		
+		MockHttpServletRequest request = new MockHttpServletRequest();
+	    request.setServletPath(AccessAgent.CLEAR_CACHE_URL);
+	    
+	    JSONObject requestParams;
+	    requestParams = new JSONObject();
+		requestParams.put(JPSConstants.METHOD, HttpGet.METHOD_NAME);
+		
+		JSONObject response;
+		response = agent.processRequestParameters(requestParams, request);
+		assertEquals( "Cache cleared.", response.getString(JPSConstants.RESULT_KEY));
+		assertTrue(StoreRouter.getInstance().isCacheEmpty());
+	}
+	
+	@Test
+	public void testProcessRequestParametersClearCacheThrows() {
+	
+		AccessAgent agent = new AccessAgent();
+		
+		MockHttpServletRequest request = new MockHttpServletRequest();
+	    request.setMethod(HttpPost.METHOD_NAME);
+		request.setServletPath(AccessAgent.CLEAR_CACHE_URL);
+	    
+	    JSONObject requestParams;
+	    requestParams = new JSONObject();
+		requestParams.put(JPSConstants.METHOD, HttpPost.METHOD_NAME);
+		
+		Assertions.assertThrows(JPSRuntimeException.class, ()->{agent.processRequestParameters(requestParams, request);});
+	}
+	
+	@Test
+	public void testClearCache() {
+		AccessAgent agent = new AccessAgent();
+		JSONObject response = agent.clearCache();
+		assertEquals( "Cache cleared.", response.getString(JPSConstants.RESULT_KEY));
+		assertTrue(StoreRouter.getInstance().isCacheEmpty());
 	}
 	
 	@Test
@@ -296,7 +343,7 @@ public class AccessAgentTest{
 		
         Assertions.assertThrows(JPSRuntimeException.class, ()->{agent.performPost(jo);});								
 	}	
-	
+		
 	///////////////////////////////////////////////
 	
 	/**

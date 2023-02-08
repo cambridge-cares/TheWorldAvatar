@@ -50,10 +50,10 @@ class DataStore {
     }
     
     /**
-     * Recursively find and load all DataGroups defined within the visualisation.json
+     * Recursively find and load all DataGroups defined within the data.json
      * file.
      * 
-     * @param visFile location of the visualisation.json file
+     * @param visFile location of the data.json file
      * 
      * @returns Promise that fulfills when all loading is complete
      */
@@ -78,7 +78,9 @@ class DataStore {
         }
 
         if(currentNode["stack"]) {
-            currentStack = currentNode["stack"];
+            // Update the stack URL to replace localhost addresses with the
+            // current host location.
+            currentStack = updateURL(currentNode["stack"]);
         }
 
         // Initialise data group
@@ -97,8 +99,8 @@ class DataStore {
             parentGroup.subGroups.push(dataGroup);
         }
         
-        // Store optional mapOptions
-        if(currentNode["mapOptions"]) dataGroup.mapOptions = currentNode["mapOptions"];
+        // Store optional expansion state
+        if(currentNode.hasOwnProperty("expanded")) dataGroup.defaultExpanded = currentNode["expanded"];
 
         // Parse sources and layers (if present)
         if(currentNode["sources"]) {

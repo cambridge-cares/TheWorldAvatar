@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.agent.weather;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.Instant;
 
 import javax.servlet.ServletException;
@@ -37,18 +39,22 @@ public class DeleteStation extends HttpServlet{
 		WeatherPostGISClient postgisClient = new WeatherPostGISClient(Config.dburl,Config.dbuser, Config.dbpassword);
 		
 		String response;
-		try {
-			postgisClient.deleteRow(station);
-			weatherClient.deleteStation(station);
-			response = "Deleted station: <" + station + ">";
-			LOGGER.info(response);
-		} catch (Exception e) {
-			response = "Delete station failed";
+		try (Connection conn = postgisClient.getConnection()) {
+			postgisClient.deleteRow(station, conn);
+		} catch (SQLException e) {
+			LOGGER.error("Probably failed to disconnect from rdb");
 			LOGGER.error(e.getMessage());
-			throw new RuntimeException(e);
 		}
+		weatherClient.deleteStation(station);
+		response = "Deleted station: <" + station + ">";
+		LOGGER.info(response);
 
-		resp.getWriter().write(response);
+		try {
+			resp.getWriter().write(response);
+		} catch (IOException e) {
+			LOGGER.error(e.getMessage());
+			LOGGER.error("Failed to write response");
+		}
     }
 
 	/**

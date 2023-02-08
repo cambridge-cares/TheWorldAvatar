@@ -73,7 +73,7 @@ public class WeatherQueryClientTest {
         // updating data
         Instant oldtimestamp = weatherClient.getLastUpdateTime(station);
         Thread.sleep(1500); // wait for 1.5 second to ensure next timestamp is at least 1 second greater
-        weatherClient.updateStation(station);
+        weatherClient.updateStation(station, null);
         Instant newtimestamp = weatherClient.getLastUpdateTime(station);
         Assertions.assertTrue(newtimestamp.isAfter(oldtimestamp));
         TimeSeries<Instant> historicalData2 = weatherClient.getHistoricalWeatherData(station,1);

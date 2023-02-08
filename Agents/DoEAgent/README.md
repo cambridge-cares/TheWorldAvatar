@@ -101,7 +101,7 @@ The dockerised integration test can be invoked via below commands:
 `(Linux)`
 ```sh
 cd /your_absolute_path_to/TheWorldAvatar/Agents/DoEAgent
-pytest -s doeagent/tests/test_docker_integration.py --docker-compose=./docker-compose.test.yml --reruns 5 --reruns-delay 5
+pytest -s --docker-compose=./docker-compose.test.yml --reruns 5 --reruns-delay 5
 ```
 
 If everything is working as expected, an output on console should be expected similar to the one below (this might take a few minutes) (**Please make a note of the IRI in the response as `<createdDerivationInstance>`, you will need this for querying later**):
@@ -138,13 +138,6 @@ This will also be reflected in the console as an output similar to below will be
 2022-05-22 14:05:54,427 (STDOUT) New experiment suggested successfully, suggested experiment instance: https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_35bb4494-9498-47b3-bdf7-eee8dce3edd6
 ```
 
-Another dockerised integration test is provided in the similar setting, except that the agent is instantiated in memory and the triple store is spun up with dynamic port decided at deployment. This can be executed via:
-
-`(Linux)`
-```sh
-cd /your_absolute_path_to/TheWorldAvatar/Agents/DoEAgent
-pytest -s doeagent/tests/test_example_doe.py --reruns 5 --reruns-delay 5
-```
 
 ## Upload docker image to GitHub
 

@@ -3,6 +3,7 @@ from rdflib import URIRef
 from rdflib import Graph
 from rdflib import RDF
 from flask import Flask
+import requests
 import logging
 import pytest
 import shutil
@@ -15,8 +16,6 @@ from hplcagent.kg_operations import ChemistryAndRobotsSparqlClient
 from hplcagent.data_model import *
 from hplcagent.agent import HPLCAgent
 from hplcagent.conf import config_hplc_agent
-
-logging.getLogger("py4j").setLevel(logging.INFO)
 
 
 # ----------------------------------------------------------------------------------
@@ -71,13 +70,22 @@ def get_service_url(session_scoped_container_getter):
     def _get_service_url(service_name, url_route):
         service = session_scoped_container_getter.get(service_name).network_info[0]
         service_url = f"http://localhost:{service.host_port}/{url_route}"
-        return service_url
 
-    # this will run only once per entire test session and ensures that all the services
-    # in docker containers are ready. Increase the sleep value in case services need a bit
-    # more time to run on your machine.
-    time.sleep(8)
+        # this will run only once per entire test session
+        # it ensures that the services requested in docker containers are ready
+        # e.g. the blazegraph service is ready to accept SPARQL query/update
+        service_available = False
+        while not service_available:
+            try:
+                response = requests.head(service_url)
+                if response.status_code != requests.status_codes.codes.not_found:
+                    service_available = True
+            except requests.exceptions.ConnectionError:
+                time.sleep(3)
+
+        return service_url
     return _get_service_url
+
 
 @pytest.fixture(scope="session")
 def get_service_auth():
@@ -206,6 +214,7 @@ def create_hplc_agent():
         register_agent:bool=False,
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
+        dry_run:bool=False,
     ):
         hplc_agent_config = config_hplc_agent(HPLC_AGENT_ENV)
         hplc_agent = HPLCAgent(
@@ -214,19 +223,26 @@ def create_hplc_agent():
             hplc_report_container_dir=hplc_agent_config.HPLC_REPORT_CONTAINER_DIR if hplc_report_container_dir is None else hplc_report_container_dir,
             current_hplc_method=hplc_agent_config.CURRENT_HPLC_METHOD,
             hplc_report_file_extension=hplc_agent_config.HPLC_REPORT_FILE_EXTENSION if hplc_report_file_extension is None else hplc_report_file_extension,
+            dry_run=dry_run,
             register_agent=hplc_agent_config.REGISTER_AGENT if not register_agent else register_agent,
             agent_iri=hplc_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=hplc_agent_config.DERIVATION_PERIODIC_TIMESCALE if derivation_periodic_timescale is None else derivation_periodic_timescale,
             derivation_instance_base_url=hplc_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=hplc_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=hplc_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_url=host_docker_internal_to_localhost(hplc_agent_config.SPARQL_QUERY_ENDPOINT),
+            kg_update_url=host_docker_internal_to_localhost(hplc_agent_config.SPARQL_UPDATE_ENDPOINT),
             kg_user=hplc_agent_config.KG_USERNAME,
             kg_password=hplc_agent_config.KG_PASSWORD,
-            fs_url=hplc_agent_config.FILE_SERVER_ENDPOINT,
+            fs_url=host_docker_internal_to_localhost(hplc_agent_config.FILE_SERVER_ENDPOINT),
             fs_user=hplc_agent_config.FILE_SERVER_USERNAME,
             fs_password=hplc_agent_config.FILE_SERVER_PASSWORD,
-            agent_endpoint=hplc_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
+            agent_endpoint=hplc_agent_config.ONTOAGENT_OPERATION_HTTP_URL, # we keep this as it is for now (start with http://host.docker.internal)
             app=Flask(__name__),
+            max_thread_monitor_async_derivations=hplc_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+            email_recipient=hplc_agent_config.EMAIL_RECIPIENT,
+            email_subject_prefix=hplc_agent_config.EMAIL_SUBJECT_PREFIX+' WSL2',
+            email_username=hplc_agent_config.EMAIL_USERNAME,
+            email_auth_json_path=os.path.join(SECRETS_PATH,'email_auth.json'),
+            email_start_end_async_derivations=hplc_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
         )
         return hplc_agent
     return _create_hplc_agent
@@ -235,6 +251,10 @@ def create_hplc_agent():
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
+
+
+def host_docker_internal_to_localhost(endpoint: str):
+    return endpoint.replace("host.docker.internal:", "localhost:")
 
 def create_hplc_xls_report(docker_integration:bool=False):
     if docker_integration:

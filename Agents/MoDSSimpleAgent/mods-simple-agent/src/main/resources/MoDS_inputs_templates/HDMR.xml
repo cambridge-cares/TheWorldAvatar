@@ -1,32 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <mods xsi:schemaLocation="http://como.cheng.cam.ac.uk/MoDS MoDS_inputs.xsd" xmlns="http://como.cheng.cam.ac.uk/MoDS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <algorithms>
-        <algorithm name="Initial" display_name="HIDDEN">
-            <details>
-                <detail name="algorithm_type">Initial</detail>
-                <detail name="optimisable_param_subtypes"></detail>
-                <detail name="response_param_subtypes"></detail>
-                <detail name="global">false</detail>
-            </details>
-        </algorithm>
         <algorithm name="Data_Algorithm" display_name="Base data for surrogate model">
             <details>
                 <detail name="algorithm_type">Read_previous</detail>
-                <detail name="optimisable_param_subtypes">subtype_x1 subtype_x2</detail>
-                <detail name="response_param_subtypes">subtype_y1 subtype_y2</detail>
-                <detail name="param_subtypes">subtype_x1 subtype_x2 subtype_y1 subtype_y2</detail>
-                <detail name="objective_function">SumOfSquares</detail>
-                <detail name="output_by_case">false</detail>
                 <detail name="output_values">false</detail>
-                <detail name="global">false</detail>
                 <detail name="previous_algorithm">Data_Algorithm</detail>
             </details>
         </algorithm>
         <algorithm name="GenSurrogateAlg" display_name="Surrogate model">
             <details>
                 <detail name="algorithm_type">Surrogate</detail>
-                <detail name="optimisable_param_subtypes">subtype_x1 subtype_x2</detail>
-                <detail name="response_param_subtypes">subtype_y1 subtype_y2</detail>
                 <detail name="global">false</detail>
                 <detail name="surrogate_type">HDMR</detail>
                 <detail name="fit_to_coded_responses">false</detail>
@@ -37,122 +21,8 @@
             </details>
         </algorithm>
     </algorithms>
-    <models>
-        <model name="Data">
-            <details>
-                <detail name="model_type">Executable</detail>
-            </details>
-        </model>
-    </models>
-    <cases>
-        <case name="CaseGroup_Case">
-            <models>
-                <model>Data</model>
-            </models>
-        </case>
-    </cases>
-    <files>
-        <file file_name="MODS_SIM_INITFILE__cases.csv">
-            <details>
-                <detail name="delimiter">,</detail>
-                <detail name="file_type">DSV</detail>
-            </details>
-        </file>
-        <file file_name="MODS_SIM_INITFILE__AIVarInitReadFile.csv">
-            <details>
-                <detail name="delimiter">,</detail>
-                <detail name="file_type">DSV</detail>
-            </details>
-        </file>
-    </files>
-    <parameters>
-        <parameter type="active_input" subtype="subtype_x1" name="x1" preserve_white_space="true">
-            <scaling>linear</scaling>
-            <cases>
-                <case>CaseGroup_Case</case>
-            </cases>
-            <models>
-                <model>Data</model>
-            </models>
-            <files>
-                <initial_read>
-                    <details>
-                        <detail name="column">x1</detail>
-                        <detail name="row">0</detail>
-                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
-                        <detail name="read_function">Get_DSV_double</detail>
-                        <detail name="lb_abs">1.0</detail>
-                        <detail name="ub_abs">3.0</detail>
-                    </details>
-                </initial_read>
-            </files>
-        </parameter>
-        <parameter type="active_input" subtype="subtype_x2" name="x2" preserve_white_space="true">
-            <scaling>linear</scaling>
-            <cases>
-                <case>CaseGroup_Case</case>
-            </cases>
-            <models>
-                <model>Data</model>
-            </models>
-            <files>
-                <initial_read>
-                    <details>
-                        <detail name="column">x2</detail>
-                        <detail name="row">0</detail>
-                        <detail name="file_name">MODS_SIM_INITFILE__AIVarInitReadFile.csv</detail>
-                        <detail name="read_function">Get_DSV_double</detail>
-                        <detail name="lb_abs">2.0</detail>
-                        <detail name="ub_abs">4.0</detail>
-                    </details>
-                </initial_read>
-            </files>
-        </parameter>
-        <parameter type="active_output" subtype="subtype_y1" case_detail_sep=";" n_params_per_case="1" name="y1" preserve_white_space="true">
-            <scaling>linear</scaling>
-            <cases>
-                <case>CaseGroup_Case</case>
-            </cases>
-            <models>
-                <model>Data</model>
-            </models>
-            <files>
-                <initial_read>
-                    <details>
-                        <detail name="column">y1</detail>
-                        <detail name="row">0</detail>
-                        <detail name="file_name">MODS_SIM_INITFILE__cases.csv</detail>
-                        <detail name="read_function">Get_DSV_double</detail>
-                        <detail name="lb_factor">1.0</detail>
-                        <detail name="ub_factor">1.0</detail>
-                        <detail name="lb_addend">-1.0</detail>
-                        <detail name="ub_addend">1.0</detail>
-                    </details>
-                </initial_read>
-            </files>
-        </parameter>
-        <parameter type="active_output" subtype="subtype_y2" case_detail_sep=";" n_params_per_case="1" name="y2" preserve_white_space="true">
-            <scaling>linear</scaling>
-            <cases>
-                <case>CaseGroup_Case</case>
-            </cases>
-            <models>
-                <model>Data</model>
-            </models>
-            <files>
-                <initial_read>
-                    <details>
-                        <detail name="column">y2</detail>
-                        <detail name="row">0</detail>
-                        <detail name="file_name">MODS_SIM_INITFILE__cases.csv</detail>
-                        <detail name="read_function">Get_DSV_double</detail>
-                        <detail name="lb_factor">1.0</detail>
-                        <detail name="ub_factor">1.0</detail>
-                        <detail name="lb_addend">-1.0</detail>
-                        <detail name="ub_addend">1.0</detail>
-                    </details>
-                </initial_read>
-            </files>
-        </parameter>
-    </parameters>
+    <models></models>
+    <cases></cases>
+    <files></files>
+    <parameters></parameters>
 </mods>

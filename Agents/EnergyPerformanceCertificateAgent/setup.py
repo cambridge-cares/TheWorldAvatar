@@ -19,7 +19,7 @@ setup(
         'JayDeBeApi~=1.2',
         'pandas~=1.3',
         'pyproj~=3.3',
-        'py4jps>=1.0.30', 
+        'py4jps>=1.0.26', 
         'requests~=2.27'
     ]
 )

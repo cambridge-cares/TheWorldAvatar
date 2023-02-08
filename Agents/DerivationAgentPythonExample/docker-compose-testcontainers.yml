@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  # Blazegraph
+  blazegraph:
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    container_name: "blazegraph_dape_test"
+    ports:
+      - 27149:8080
+    environment:
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    # Add a secret to set the password for BASIC authentication
+    secrets:
+      - blazegraph_password
+
+# Secrets used to set runtime passwords
+secrets:
+  blazegraph_password:
+    file: ./tests/dummy_services_secrets/blazegraph_passwd.txt

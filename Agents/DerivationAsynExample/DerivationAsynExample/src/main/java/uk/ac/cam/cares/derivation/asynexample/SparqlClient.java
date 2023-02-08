@@ -46,7 +46,9 @@ public class SparqlClient {
 	public static Iri LowerLimit = p_namespace.iri("LowerLimit");
 	public static Iri NumberOfPoints = p_namespace.iri("NumberOfPoints");
 	public static Iri ScalarValue = p_namespace.iri("ScalarValue");
-	
+	public static Iri InputPlaceholderExceptionThrow = p_namespace.iri("InputPlaceholderExceptionThrow");
+	public static Iri OutputPlaceholderExceptionThrow = p_namespace.iri("OutputPlaceholderExceptionThrow");
+
 	// property
 	public static Iri hasPoint = p_namespace.iri("hasPoint");
 	public static Iri hasValue = p_namespace.iri("hasValue");
@@ -258,7 +260,21 @@ public class SparqlClient {
     	storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
     	return numberOfPoints_iri;
     }
-    
+
+	/**
+	 * This method creates a InputPlaceholderExceptionThrow instance.
+	 * <iri> a <InputPlaceholderExceptionThrow>
+	 * <iri> a owl:NamedIndividual
+	 * @return
+	 */
+	public String createInputPlaceholderExceptionThrow() {
+		String inputPlaceholderExceptionThrowIRI = namespace + UUID.randomUUID().toString();
+		ModifyQuery modify = Queries.MODIFY();
+		modify.insert(iri(inputPlaceholderExceptionThrowIRI).isA(InputPlaceholderExceptionThrow).andIsA(iri(OWL.NAMEDINDIVIDUAL)));
+		storeClient.executeUpdate(modify.prefix(p_namespace).getQueryString());
+		return inputPlaceholderExceptionThrowIRI;
+	}
+
     /**
      * This method queries ?x a <UpperLimit>.
      * @return
@@ -655,39 +671,6 @@ public class SparqlClient {
     	JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
     	
     	return queryResult.getJSONObject(0).getInt(key);
-    }
-    
-    /**
-     * This method creates the OntoAgent instances in the KG given information about the agent I/O signature.
-     * @param service
-     * @param httpUrl
-     * @param inputTypes
-     * @param outputTypes
-     */
-    public void createOntoAgentInstance(String service, String httpUrl, List<String> inputTypes, List<String> outputTypes) {
-    	String operation = getNameSpace(service) + "_" + UUID.randomUUID().toString();
-    	String mcInput = getNameSpace(service) + "_" + UUID.randomUUID().toString();
-    	String mcOutput = getNameSpace(service) + "_" + UUID.randomUUID().toString();
-    	
-    	ModifyQuery modify = Queries.MODIFY();
-    	
-    	modify.insert(iri(service).isA(Service).andHas(hasOperation, iri(operation)));
-    	modify.insert(iri(operation).isA(Operation).andHas(hasInput, iri(mcInput)).andHas(hasOutput, iri(mcOutput)).andHas(hasHttpUrl, iri(httpUrl)));
-    	modify.insert(iri(mcInput).isA(MessageContent));
-    	for (String input : inputTypes) {
-    		String mpInput = getNameSpace(service) + "_" + UUID.randomUUID().toString();
-    		modify.insert(iri(mcInput).has(hasMandatoryPart, iri(mpInput)));
-    		modify.insert(iri(mpInput).isA(MessagePart).andHas(hasType, iri(input)));
-    	}
-    	
-    	modify.insert(iri(mcOutput).isA(MessageContent));
-    	for (String output : outputTypes) {
-    		String mpOutput = getNameSpace(service) + "_" + UUID.randomUUID().toString();
-    		modify.insert(iri(mcOutput).has(hasMandatoryPart, iri(mpOutput)));
-    		modify.insert(iri(mpOutput).isA(MessagePart).andHas(hasType, iri(output)));
-    	}
-    	
-    	storeClient.executeUpdate(modify.prefix(p_namespace,p_agent).getQueryString());
     }
     
     /**
