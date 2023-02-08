@@ -35,8 +35,6 @@ import com.cmclinnovations.swagger.podman.model.PortMapping;
 import com.cmclinnovations.swagger.podman.model.Secret;
 import com.cmclinnovations.swagger.podman.model.SecretInfoReport;
 import com.cmclinnovations.swagger.podman.model.SpecGenerator;
-import com.github.dockerjava.api.command.ListPodsCmd;
-import com.github.dockerjava.api.command.RemovePodCmd;
 import com.github.dockerjava.api.model.Container;
 import com.github.dockerjava.api.model.ContainerSpec;
 import com.github.dockerjava.api.model.ContainerSpecConfig;
@@ -156,9 +154,13 @@ public class PodmanService extends DockerService {
     }
 
     private Optional<ListPodsReport> getPod(ContainerService service) {
-        try (ListPodsCmd listPodsCmd = getClient().getInternalClient().listPodsCmd()) {
-            return listPodsCmd.withNameFilter(List.of(getPodName(service.getContainerName())))
-                    .exec().stream().findAny();
+        String podName = getPodName(service.getContainerName());
+        try {
+            return new PodsApi(getClient().getPodmanClient()).podListLibpod(
+                    URLEncoder.encode("{\"name\":[\"" + podName + "\"]}", "UTF-8"))
+                    .stream().findAny();
+        } catch (UnsupportedEncodingException | ApiException ex) {
+            throw new RuntimeException("Failed to retrieve Pod '" + podName + "'.", ex);
         }
     }
 
@@ -166,9 +168,10 @@ public class PodmanService extends DockerService {
         Optional<ListPodsReport> pod = getPod(service);
 
         if (pod.isPresent()) {
-            try (RemovePodCmd removePodCmd = getClient().getInternalClient()
-                    .removePodCmd(pod.get().getId())) {
-                removePodCmd.exec();
+            try {
+                new PodsApi(getClient().getPodmanClient()).podDeleteLibpod(pod.get().getId(), true);
+            } catch (ApiException ex) {
+                throw new RuntimeException("Failed to remove Pod '" + pod.get().getName() + "'.", ex);
             }
         }
     }

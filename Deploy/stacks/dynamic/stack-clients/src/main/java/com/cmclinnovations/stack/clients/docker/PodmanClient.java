@@ -3,7 +3,6 @@ package com.cmclinnovations.stack.clients.docker;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
@@ -13,12 +12,12 @@ import com.cmclinnovations.swagger.podman.api.SecretsApi;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.dockerjava.api.model.Config;
-import com.github.dockerjava.api.model.Secret;
-import com.github.dockerjava.core.DockerClientConfig;
-import com.github.dockerjava.core.PodmanClientImpl;
-import com.github.dockerjava.transport.DockerHttpClient;
+import com.github.dockerjava.jaxrs.ApiClientExtension;
 
 public class PodmanClient extends DockerClient {
+
+    private final ApiClient apiClient = new ApiClientExtension(URI.create("unix:///var/run/docker.sock"))
+            .setBasePath("unix://localhost:2375/v4.0.0/");
 
     protected PodmanClient() {
     }
@@ -28,19 +27,7 @@ public class PodmanClient extends DockerClient {
     }
 
     public ApiClient getPodmanClient() {
-        return getInternalClient().getPodmanClient();
-    }
-
-    @Override
-    public com.github.dockerjava.api.PodmanClient buildInternalClient(DockerClientConfig dockerConfig,
-            DockerHttpClient httpClient) {
-        return PodmanClientImpl.getInstance(super.buildInternalClient(dockerConfig, httpClient), dockerConfig,
-                httpClient);
-    }
-
-    @Override
-    public com.github.dockerjava.api.PodmanClient getInternalClient() {
-        return (com.github.dockerjava.api.PodmanClient) super.getInternalClient();
+        return apiClient;
     }
 
     @Override
@@ -58,24 +45,6 @@ public class PodmanClient extends DockerClient {
         } catch (ApiException ex) {
             throw new RuntimeException("Failed to create Config/Secret '" + secretName + "'.", ex);
         }
-    }
-
-    @Override
-    public Optional<Secret> getSecret(String secretName) {
-        // TODO Auto-generated method stub
-        return super.getSecret(secretName);
-    }
-
-    @Override
-    public List<Secret> getSecrets() {
-        // TODO Auto-generated method stub
-        return super.getSecrets();
-    }
-
-    @Override
-    public boolean secretExists(String secretName) {
-        // TODO Auto-generated method stub
-        return super.secretExists(secretName);
     }
 
     @Override
