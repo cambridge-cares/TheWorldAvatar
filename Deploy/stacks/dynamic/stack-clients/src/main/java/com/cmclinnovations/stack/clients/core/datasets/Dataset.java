@@ -11,7 +11,6 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
@@ -31,10 +30,13 @@ import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.ac.cam.cares.jps.base.derivation.ValuesPattern;
 
 public class Dataset {
-
+    protected static final Logger LOGGER = LoggerFactory.getLogger(Dataset.class);
     public static final String NAME_KEY = "name";
 
     private String name;
@@ -52,6 +54,9 @@ public class Dataset {
     private final List<String> ontopMappings;
 
     private final boolean skip;
+    private String rdfType;
+    private boolean hasTimeSeries;
+    private String timeSeriesSchema;
 
     // for dcat cataloging
     private boolean exists; // used to determine whether this dataset exists in the catalog
@@ -67,7 +72,10 @@ public class Dataset {
             @JsonProperty(value = "dataSubsets") List<DataSubset> dataSubsets,
             @JsonProperty(value = "styles") List<GeoServerStyle> geoserverStyles,
             @JsonProperty(value = "mappings") List<String> ontopMappings,
-            @JsonProperty(value = "skip") boolean skip) {
+            @JsonProperty(value = "skip") boolean skip,
+            @JsonProperty(value = "rdfType") String rdfType,
+            @JsonProperty(value = "hasTimeSeries") boolean hasTimeSeries,
+            @JsonProperty(value = "timeSeriesSchema") String timeSeriesSchema) {
         this.name = name;
         this.datasetDirectory = datasetDirectory;
         this.database = database;
@@ -78,6 +86,9 @@ public class Dataset {
         this.geoserverStyles = geoserverStyles;
         this.ontopMappings = ontopMappings;
         this.skip = skip;
+        this.rdfType = rdfType;
+        this.hasTimeSeries = hasTimeSeries;
+        this.timeSeriesSchema = timeSeriesSchema;
     }
 
     public String getName() {
@@ -97,10 +108,16 @@ public class Dataset {
     }
 
     public String getDatabase() {
+        if (database != null) {
+            LOGGER.warn("Specification of database name is deprecated, name of dataset will be used, i.e. {}", getName());
+        }
         return getName();
     }
 
     public String getNamespace() {
+        if (null != namespace && null != namespace.getName()) {
+            LOGGER.warn("Specification of namespace name is deprecated, name of dataset will be used, i.e. {}", getName());
+        }
         return getName();
     }
 
@@ -113,6 +130,9 @@ public class Dataset {
     }
 
     public String getWorkspaceName() {
+        if (workspaceName != null) {
+            LOGGER.warn("Specification of workspaceName is deprecated, name of dataset will be used, i.e. {}", getName());
+        }
         return getName();
     }
 
@@ -136,6 +156,14 @@ public class Dataset {
         return skip;
     }
 
+    public String getRdfType() {
+        return (null != rdfType) ? rdfType : SparqlConstants.CATALOG;
+    }
+
+    public String getTimeSeriesSchema() {
+        return (null != timeSeriesSchema) ? timeSeriesSchema : "public";
+    }
+
     public String getQueryStringForCataloging() {
         // makes a sparql query and determine which dataset is already initialised
         // sets the iri if it is already initialised so that the timestamp can be modified
@@ -149,9 +177,9 @@ public class Dataset {
         SelectQuery query = Queries.SELECT(); //used to generate variable programmatically
         Iri catalogIri;
         if (!exists) {
-            catalogIri = Rdf.iri(SparqlConstants.CREDO_NAMESPACE + UUID.randomUUID());
+            catalogIri = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
 
-            insertTriples.add(catalogIri.isA(Rdf.iri(SparqlConstants.CATALOG))
+            insertTriples.add(catalogIri.isA(Rdf.iri(getRdfType()))
             .andHas(Rdf.iri(SparqlConstants.TITLE), getName())
             .andHas(Rdf.iri(SparqlConstants.DESCRIPTION), getDescription())
             .andHas(Rdf.iri(SparqlConstants.MODIFIED), Rdf.literalOfType(currentTime.toString(), Rdf.iri(SparqlConstants.DATETIME))));
@@ -164,23 +192,17 @@ public class Dataset {
             .has(Rdf.iri(SparqlConstants.MODIFIED), Rdf.literalOfType(currentTime.toString(), Rdf.iri(SparqlConstants.DATETIME))));
         }
 
-        
         getDataSubsets().stream().forEach(dataSubset -> {
             if (!dataSubset.getExists()) {
-                String dataSubSetType = dataSubset.getRdfType();
-                if (dataSubset.getRdfType() == null) {
-                    dataSubSetType = SparqlConstants.DATASET;
-                }
-    
-                Iri dataSetIri = Rdf.iri(SparqlConstants.CREDO_NAMESPACE + UUID.randomUUID());
+                Iri dataSetIri = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
                 insertTriples.add(catalogIri.has(Rdf.iri(SparqlConstants.HAS_PART), dataSetIri)); 
-                insertTriples.add(dataSetIri.isA(Rdf.iri(dataSubSetType))
+                insertTriples.add(dataSetIri.isA(Rdf.iri(SparqlConstants.DATASET))
                 .andHas(Rdf.iri(SparqlConstants.MODIFIED), Rdf.literalOfType(currentTime.toString(), Rdf.iri(SparqlConstants.DATETIME)))
                 .andHas(Rdf.iri(SparqlConstants.TITLE), dataSubset.getName())
                 .andHas(Rdf.iri(SparqlConstants.DESCRIPTION), dataSubset.getDescription()));
     
                 String kgUrl = BlazegraphClient.getInstance().getEndpoint().getUrl(getNamespace());
-                Iri blazegraphService = Rdf.iri(SparqlConstants.CREDO_NAMESPACE + UUID.randomUUID());
+                Iri blazegraphService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
     
                 // append triples
                 insertTriples.add(blazegraphService.isA(Rdf.iri(SparqlConstants.BLAZEGRAPH))
@@ -191,10 +213,13 @@ public class Dataset {
                     String jdbcUrl = PostGISClient.getInstance().getEndpoint().getJdbcURL(getDatabase());
     
                     // append triples
-                    postgisService = Rdf.iri(SparqlConstants.CREDO_NAMESPACE + UUID.randomUUID());
+                    postgisService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
                     insertTriples.add(postgisService.isA(Rdf.iri(SparqlConstants.POSTGIS))
-                    .andHas(Rdf.iri(SparqlConstants.HAS_TIMESERIES_SCHEMA), SparqlConstants.TIMESERIES_SCHEMA)
                     .andHas(Rdf.iri(SparqlConstants.ENDPOINT_URL), jdbcUrl));
+
+                    if (hasTimeSeries) {
+                        insertTriples.add(postgisService.has(Rdf.iri(SparqlConstants.HAS_TIMESERIES_SCHEMA), getTimeSeriesSchema()));
+                    }
                 } 
                 
                 // implementation not complete until we figure out the external URLs
@@ -202,7 +227,7 @@ public class Dataset {
                     if (postgisService == null) {
                         throw new RuntimeException("postgisService is null, a datasubset that uses geoserver but does not use postgis?");
                     } else {
-                        Iri geoserverService = Rdf.iri(SparqlConstants.CREDO_NAMESPACE + UUID.randomUUID());
+                        Iri geoserverService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
     
                         // append triples
                         insertTriples.add(geoserverService.isA(Rdf.iri(SparqlConstants.GEOSERVER))
@@ -214,7 +239,7 @@ public class Dataset {
                     if (postgisService == null) {
                         throw new RuntimeException("postgisService is null, a datasubset that uses ontop but does not use postgis?");
                     } else {
-                        Iri ontopService = Rdf.iri(SparqlConstants.CREDO_NAMESPACE + UUID.randomUUID());
+                        Iri ontopService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
     
                         insertTriples.add(ontopService.isA(Rdf.iri(SparqlConstants.ONTOP))
                         .andHas(Rdf.iri(SparqlConstants.USES_DATABASE), postgisService));
@@ -252,8 +277,7 @@ public class Dataset {
         Variable dataSubsetVar = query.var();
         Variable dataSubsetNameVar = query.var();
 
-        GraphPattern mainQuery = GraphPatterns.and(catalogVar.isA(Rdf.iri(SparqlConstants.CATALOG))
-        .andHas(Rdf.iri(SparqlConstants.HAS_PART), dataSubsetVar)
+        GraphPattern mainQuery = GraphPatterns.and(catalogVar.has(Rdf.iri(SparqlConstants.HAS_PART), dataSubsetVar)
         .andHas(Rdf.iri(SparqlConstants.TITLE), catalogNameVar),
         dataSubsetVar.has(Rdf.iri(SparqlConstants.TITLE), dataSubsetNameVar));
 
@@ -285,7 +309,7 @@ public class Dataset {
     }
 
     private class SparqlConstants {
-        static final String CREDO_NAMESPACE = "http://theworldavatar.com/ontology/ontocredo/ontocredo.owl#";
+        static final String DEFAULT_NAMESPACE = "http://theworldavatar.com/kg/";
         static final String DCAT_NAMESPACE = "http://www.w3.org/ns/dcat#";
         static final String DCTERMS_NAMESPACE = "http://purl.org/dc/terms/";
         static final String DATASET = DCAT_NAMESPACE + "Dataset";
@@ -295,13 +319,12 @@ public class Dataset {
         static final String MODIFIED = DCTERMS_NAMESPACE + "modified";
         static final String HAS_PART = DCTERMS_NAMESPACE + "hasPart";
         static final String DATETIME = "http://www.w3.org/2001/XMLSchema#dateTime";
-        static final String BLAZEGRAPH = CREDO_NAMESPACE + "Blazegraph";
-        static final String POSTGIS = CREDO_NAMESPACE + "PostGIS";
-        static final String GEOSERVER = CREDO_NAMESPACE + "GeoServer";
+        static final String BLAZEGRAPH = DEFAULT_NAMESPACE + "Blazegraph";
+        static final String POSTGIS = DEFAULT_NAMESPACE + "PostGIS";
+        static final String GEOSERVER = DEFAULT_NAMESPACE + "GeoServer";
         static final String ENDPOINT_URL = DCAT_NAMESPACE + "endpointURL";
-        static final String TIMESERIES_SCHEMA = "timeseries";
-        static final String HAS_TIMESERIES_SCHEMA = CREDO_NAMESPACE + "hasTimeSeriesSchema";
-        static final String USES_DATABASE = CREDO_NAMESPACE + "usesDatabase";
-        static final String ONTOP = CREDO_NAMESPACE + "Ontop";
+        static final String HAS_TIMESERIES_SCHEMA = DEFAULT_NAMESPACE + "hasTimeSeriesSchema";
+        static final String USES_DATABASE = DEFAULT_NAMESPACE + "usesDatabase";
+        static final String ONTOP = DEFAULT_NAMESPACE + "Ontop";
     }
 }

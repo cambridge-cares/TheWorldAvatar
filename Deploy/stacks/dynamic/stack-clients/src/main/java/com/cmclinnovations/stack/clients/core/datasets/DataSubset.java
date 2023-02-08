@@ -23,9 +23,6 @@ public abstract class DataSubset {
     private boolean skip;
 
     @JsonProperty
-    private String rdftype;
-
-    @JsonProperty
     private String description;
 
     // for dcat cataloging purposes
@@ -38,10 +35,6 @@ public abstract class DataSubset {
     
     public String getDescription() {
         return (null != description) ? description : getName();
-    }
-
-    public String getRdfType() {
-        return rdftype;
     }
 
     public Path getSubdirectory() {
