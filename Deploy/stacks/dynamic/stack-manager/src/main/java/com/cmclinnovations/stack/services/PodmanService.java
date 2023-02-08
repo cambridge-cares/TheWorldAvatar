@@ -2,6 +2,7 @@ package com.cmclinnovations.stack.services;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.nio.file.FileVisitResult;
@@ -308,9 +309,9 @@ public class PodmanService extends DockerService {
                 container = new ContainersApi(getClient().getPodmanClient())
                         .containerListLibpod(true, 1, null, null, null, null,
                                 URLEncoder.encode("{\"name\":[\"" + containerName + "\"],\"pod\":[\""
-                                        + getPodName(containerName) + "\"]}"))
+                                        + getPodName(containerName) + "\"]}", "UTF-8"))
                         .stream().findFirst();
-            } catch (ApiException ex) {
+            } catch (ApiException | UnsupportedEncodingException ex) {
                 throw new RuntimeException("Failed to retrieve state of Container '" + containerName + "'.", ex);
             }
 
