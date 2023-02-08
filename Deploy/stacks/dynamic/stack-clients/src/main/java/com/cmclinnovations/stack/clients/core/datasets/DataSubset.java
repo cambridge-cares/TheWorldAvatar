@@ -28,6 +28,10 @@ public abstract class DataSubset {
     @JsonProperty
     private String description;
 
+    // for dcat cataloging purposes
+    private boolean exists; // used to determine whether this exists in the catalog
+    private String iri;
+
     public String getName() {
         return name;
     }
@@ -67,4 +71,18 @@ public abstract class DataSubset {
     }
 
     abstract void loadInternal(Dataset dataset);
+
+    public void setExists(boolean exists) {
+        this.exists = exists;
+    }
+    public boolean getExists() {
+        return exists;
+    }
+
+    public void setIri(String iri) {
+        this.iri = iri;
+    }
+    public String getIri() {
+        return iri;
+    }
 }
