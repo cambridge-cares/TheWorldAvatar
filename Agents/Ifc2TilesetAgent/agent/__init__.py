@@ -1,2 +1,2 @@
 # Expose Flask app object
-from .app import app
+from .app import create_app

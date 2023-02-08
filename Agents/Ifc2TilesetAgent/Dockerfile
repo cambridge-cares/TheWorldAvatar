@@ -70,5 +70,5 @@ RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /
 USER appuser
 
 # Added timeout of 600s to prevent silent worker killing due to large memory usage
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5105", "agent:app","--timeout", "600"]
+ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5105", "agent:create_app()","--timeout", "600"]
 #==================================================================================================
