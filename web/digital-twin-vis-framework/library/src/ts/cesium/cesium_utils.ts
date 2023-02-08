@@ -273,8 +273,17 @@ class CesiumUtils {
         let desc = getDescription(properties);
 
         // Make HTML string
-        let html = "<b>" + name + "</b>";
-        if(desc != null) html += "<br/>" + desc; 
+        let html = "";
+        if(desc == null) {
+            html += "<h3 style='text-align: center !important;'>" + name + "</h3>";
+        } else {
+            html += "<h3>" + name + "</h3>";
+            if(desc.length > 100) {
+                html += "<div class='desc-popup long-popup'></br>" + desc + "</div>";
+            } else {
+                html += "<div class='desc-popup'></br>" + desc + "</div>";
+            }
+        }
 
         // Add thumbnail if present
         if(properties["thumbnail"]) {
