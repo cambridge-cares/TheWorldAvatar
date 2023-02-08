@@ -99,7 +99,10 @@ public class SupersetService extends ContainerService {
             NgxParam subFilterParam = new NgxParam();
             subFilterParam.addValue("sub_filter");
             subFilterParam.addValue("\"" + subPath + "\"");
-            subFilterParam.addValue("\"" + FileUtils.fixSlashs(externalPath.getPath(), true, false) + subPath + "\"");
+            Boolean hasLeadingSlash = subPath.charAt(0) == '/';
+            subFilterParam
+                    .addValue("\"" + FileUtils.fixSlashs(externalPath.getPath(), hasLeadingSlash, !hasLeadingSlash)
+                            + subPath + "\"");
             // TODO: need to add in extra path here if on front of other nginx
             locationBlock.addEntry(subFilterParam);
         });
