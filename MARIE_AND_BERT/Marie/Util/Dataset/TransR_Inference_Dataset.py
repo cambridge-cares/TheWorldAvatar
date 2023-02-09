@@ -22,7 +22,6 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
         self.entity2idx, self.idx2entity, self.rel2idx, self.idx2rel = self.file_loader.load_index_files()
         self.neg_sample_dict_path = os.path.join(self.full_dataset_dir, "neg_sample_dict.json")
         self.neg_sample_dict = json.loads(open(self.neg_sample_dict_path).read())
-
         self.candidate_dict_path = os.path.join(self.full_dataset_dir, "candidate_dict.json")
         self.candidate_dict = json.loads(open(self.candidate_dict_path).read())
         self.candidate_max = max([len(v) for k, v in self.candidate_dict.items()])
@@ -35,19 +34,30 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
         self.df = df
         self.ent_num = len(self.entity2idx.keys())
         self.rel_num = len(self.rel2idx.keys())
+        self.use_cached_triples = True
 
-        if self.mode == "train":
-            self.triples = self.create_all_triples()
-            print(f"Number of triples for training: {len(self.triples)}")
-        elif self.mode == "numerical":
-            self.triples = self.load_numerical_triples()
-
-        elif self.mode == "train_eval":
-            self.triples = self.create_train_small_triples_for_evaluation()
-
+        cached_triple_path = f"{self.full_dataset_dir}/triple_idx_{self.mode}.json"
+        if os.path.exists(cached_triple_path) and self.use_cached_triples:
+            # the triples are already cached
+            self.triples = json.loads(open(cached_triple_path).read())
         else:
-            self.triples = self.create_test_triples()
-            print(f"Number of triples for testing: {len(self.triples)}")
+
+            if self.mode == "train":
+                self.triples = self.create_all_triples()
+                print(f"Number of triples for training: {len(self.triples)}")
+            elif self.mode == "numerical":
+                self.triples = self.load_numerical_triples()
+
+            elif self.mode == "train_eval":
+                self.triples = self.create_train_small_triples_for_evaluation()
+
+            else:
+                self.triples = self.create_test_triples()
+                print(f"Number of triples for testing: {len(self.triples)}")
+
+            with open(cached_triple_path, "w") as f:
+                f.write(json.dumps(self.triples))
+                f.close()
 
     def create_train_small_triples_for_evaluation(self):
         triples = []
