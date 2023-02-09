@@ -1,0 +1,32 @@
+# This file shows a sample http request to acces the forecastingAgent. The keys are descriped in the README.md file.
+
+# Docker deployment:
+POST http://127.0.0.1:5000/api/forecastingAgent/forecast
+# Stack deployment:
+#POST http://localhost:3838/forecastingAgent/forecast
+Content-Type: application/json
+
+{ "query": {
+      // Heat supply
+      "iri": "<https://www.theworldavatar.com/kg/pms_dh/HeatDemand_d2da5bcf-f833-498d-8887-d8665027ba59>",
+      
+      // GeneratedHeatAmount Gas Turbine
+      //"iri": "<https://www.theworldavatar.com/kg/pms_dh/GeneratedHeatAmount_33ca9f5f-20c2-4368-bb10-17b4dd3dbf97>",
+
+      //Grid connection Temperature
+      //"iri": "https://www.theworldavatar.com/kg/pms_dh/Temperature_0d5a1129-b441-4a61-b983-dd578c52e3f5",
+      
+      //Availability HeatBoiler
+      //"iri": "<https://www.theworldavatar.com/kg/pms_dh/OperatingAvailability_785c0fc9-0363-4cf3-983c-853f58586a4a>",
+
+      "use_model_configuration" : "DEFAULT",
+      //"use_model_configuration" : "PIRMASENS",
+      //"use_model_configuration" : "TFT_HEAT_SUPPLY",
+      //"forecast_start_date": "2019-01-31T00:00:00Z",
+      //"forecast_start_date": "2019-08-12T09:00:00Z",
+      //"forecast_start_date": "2020-10-17T01:00:00Z",
+      //"data_length": 42085,
+      //"data_length": 168,
+      "horizon": 12
+    }
+}

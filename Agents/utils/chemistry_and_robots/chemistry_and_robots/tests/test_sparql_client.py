@@ -9,12 +9,9 @@ import chemistry_and_robots.tests.conftest as conftest
 from rdflib import Literal
 from rdflib import URIRef
 from rdflib import Graph
-import logging
 import filecmp
 import pytest
 import os
-
-logging.getLogger("py4j").setLevel(logging.INFO)
 
 import chemistry_and_robots.data_model as onto
 import chemistry_and_robots.kg_operations.dict_and_list as dal
@@ -23,7 +20,7 @@ import chemistry_and_robots.hardware.hplc as hplc
 pytest_plugins = ["docker_compose"]
 
 # ----------------------------------------------------------------------------------
-# Test cases for sparql_client 
+# Test cases for sparql_client
 # ----------------------------------------------------------------------------------
 # collect_triples_for_equip_settings and collect_triples_for_new_experiment are
 # tested in integration test of agents
@@ -38,7 +35,30 @@ def test_getDesignVariables(initialise_triples):
     design_var_iri_list = [var.instance_iri for var in design_var_list]
     assert len(design_var_iri_list) == len(TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(iri in design_var_iri_list for iri in TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
-    assert all(all([isinstance(var, onto.ContinuousVariable), var.refersTo is not None, var.upperLimit > var.lowerLimit]) for var in design_var_list)
+    assert all(all([isinstance(var, onto.ContinuousVariable),
+                    var.refersTo is not None,
+                    var.refersTo.hasUnit is not None,
+                    var.upperLimit > var.lowerLimit]) for var in design_var_list)
+
+def test_get_fixed_parameters(initialise_triples):
+    sparql_client = initialise_triples
+    param_list = sparql_client.get_fixed_parameters(TargetIRIs.DOE_NO_PRIOR_DATA_DOMAIN_IRI.value)
+    param_iri_list = [param.instance_iri for param in param_list]
+    assert dal.check_if_two_lists_equal(
+        param_iri_list,
+        TargetIRIs.DOE_NO_PRIOR_DATA_FIXED_PARAM_IRI_LIST.value
+    )
+    assert all(
+        all(
+            [
+                isinstance(param, onto.FixedParameter),
+                param.refersTo is not None,
+                param.refersTo.hasValue is not None,
+                param.refersTo.hasValue.hasUnit is not None,
+                param.refersTo.hasValue.hasNumericalValue is not None
+            ]
+        ) for param in param_list
+    )
 
 @pytest.mark.parametrize(
     "sys_res_iri,maximise",
@@ -87,7 +107,10 @@ def test_getDoEDomain(initialise_triples):
     lst_var = [v.instance_iri for v in doe_domain_instance.hasDesignVariable]
     assert len(lst_var) == len(TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(var in lst_var for var in TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
-    assert all(all([isinstance(var, onto.ContinuousVariable), var.refersTo is not None, var.upperLimit > var.lowerLimit]) for var in doe_domain_instance.hasDesignVariable)
+    assert all(all([isinstance(var, onto.ContinuousVariable),
+                    var.refersTo is not None,
+                    var.refersTo.hasUnit is not None,
+                    var.upperLimit > var.lowerLimit]) for var in doe_domain_instance.hasDesignVariable)
 
 @pytest.mark.parametrize(
     "rxnexp_iri,rxnexp_condition_iri",
@@ -257,7 +280,10 @@ def test_get_doe_instance(initialise_triples):
     lst_var = [v.instance_iri for v in doe_instance.hasDomain.hasDesignVariable]
     assert len(lst_var) == len(TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(var in lst_var for var in TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
-    assert all(all([isinstance(var, onto.ContinuousVariable), var.refersTo is not None, var.upperLimit > var.lowerLimit]) for var in doe_instance.hasDomain.hasDesignVariable)
+    assert all(all([isinstance(var, onto.ContinuousVariable),
+                    var.refersTo is not None,
+                    var.refersTo.hasUnit is not None,
+                    var.upperLimit > var.lowerLimit]) for var in doe_instance.hasDomain.hasDesignVariable)
     # Check SystemResponse
     assert all(all([isinstance(r, onto.SystemResponse), r.refersTo is not None]) for r in doe_instance.hasSystemResponse)
     dct_m = {s.instance_iri:s.maximise for s in doe_instance.hasSystemResponse}
@@ -345,22 +371,21 @@ def test_get_vapourtec_rs400_given_autosampler(initialise_triples):
     assert  response.instance_iri == TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value
 
 @pytest.mark.parametrize(
-    "new_rxn_exp_iri,list_r4_reactor_iri,vapourtec_rs400,agilent_hplc",
+    "new_rxn_exp_iri,vapourtec_rs400,agilent_hplc",
     [
-        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, TargetIRIs.HPLC_DUMMY_IRI.value),
-        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, TargetIRIs.HPLC_DUMMY_IRI.value),
-        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.LIST_DUMMY_R4REACTORS.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, TargetIRIs.HPLC_DUMMY_IRI.value),
+        (TargetIRIs.NEW_RXN_EXP_1_IRI.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, TargetIRIs.HPLC_DUMMY_IRI.value),
+        (TargetIRIs.NEW_RXN_EXP_2_IRI.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, TargetIRIs.HPLC_DUMMY_IRI.value),
+        (TargetIRIs.NEW_RXN_EXP_3_IRI.value, TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, TargetIRIs.HPLC_DUMMY_IRI.value),
     ],
 )
-def test_get_preferred_vapourtec_rs400(initialise_triples, new_rxn_exp_iri, list_r4_reactor_iri, vapourtec_rs400, agilent_hplc):
+def test_get_preferred_vapourtec_rs400(initialise_triples, new_rxn_exp_iri, vapourtec_rs400, agilent_hplc):
     sparql_client = initialise_triples
     response = sparql_client.getReactionExperiment(new_rxn_exp_iri)
     assert len(response) == 1
     assert response[0].instance_iri == new_rxn_exp_iri
-    preferred_rs400, preferred_r4_reactor, associated_agilent_hplc = sparql_client.get_preferred_vapourtec_rs400(response[0])
+    preferred_rs400, associated_agilent_hplc = sparql_client.get_preferred_vapourtec_rs400(response[0])
     # Should return None as none of the digital twin is managed by agent
     assert None == preferred_rs400
-    assert None == preferred_r4_reactor
     assert None == associated_agilent_hplc
 
     # Add agent to manage the digital twin
@@ -369,18 +394,16 @@ def test_get_preferred_vapourtec_rs400(initialise_triples, new_rxn_exp_iri, list
     sparql_client.register_agent_with_hardware(temp_agent_1, vapourtec_rs400)
     sparql_client.register_agent_with_hardware(temp_agent_2, agilent_hplc)
     # Query again, should return digital twin now
-    preferred_rs400, preferred_r4_reactor, associated_agilent_hplc = sparql_client.get_preferred_vapourtec_rs400(response[0])
-    assert preferred_r4_reactor.instance_iri in list_r4_reactor_iri
+    preferred_rs400, associated_agilent_hplc = sparql_client.get_preferred_vapourtec_rs400(response[0])
     assert preferred_rs400.instance_iri == vapourtec_rs400
     assert associated_agilent_hplc.instance_iri == agilent_hplc
 
     # Change the status to Null
     sparql_client.update_vapourtec_rs400_state(vapourtec_rs400, onto.ONTOVAPOURTEC_NULL, 0)
     # Now query again, should return None now
-    new_rs400, new_r4_reactor, new_hplc = sparql_client.get_preferred_vapourtec_rs400(response[0])
+    new_rs400, new_hplc = sparql_client.get_preferred_vapourtec_rs400(response[0])
     # Now perform the same checking, the returned values should be None, None
     assert None == new_rs400
-    assert None == new_r4_reactor
     assert None == new_hplc
 
     # Change back the status to Idle
@@ -432,35 +455,43 @@ def test_get_prior_rxn_exp_in_queue(initialise_triples, rxn_exp_iri, prior_rxn_e
     assert all(item in [*rxn_exp_queue] for item in prior_rxn_exp)
 
 @pytest.mark.parametrize(
-    "rxn_exp_iri,rxn_type,chem_rxn_iri,reactant,product,catalyst,solvent",
+    "rxn_exp_iri,rxn_type,chem_rxn_iri,reactant,product,catalyst,solvent,doe_template_iri",
     [
         (TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
         (TargetIRIs.EXAMPLE_RXN_EXP_2_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
         (TargetIRIs.EXAMPLE_RXN_EXP_3_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
         (TargetIRIs.EXAMPLE_RXN_EXP_4_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
         (TargetIRIs.EXAMPLE_RXN_EXP_5_IRI.value, onto.ONTOREACTION_REACTIONEXPERIMENT, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
         (TargetIRIs.NEW_RXN_EXP_1_IRI.value, onto.ONTOREACTION_REACTIONVARIATION, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
         (TargetIRIs.NEW_RXN_EXP_2_IRI.value, onto.ONTOREACTION_REACTIONVARIATION, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
         (TargetIRIs.NEW_RXN_EXP_3_IRI.value, onto.ONTOREACTION_REACTIONVARIATION, TargetIRIs.CHEMICAL_REACTION_IRI.value,
         TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
-        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value),
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
     ],
 )
-def test_get_chemical_reaction(initialise_triples, rxn_exp_iri, rxn_type, chem_rxn_iri, reactant, product, catalyst, solvent):
+def test_get_chemical_reaction(initialise_triples, rxn_exp_iri, rxn_type, chem_rxn_iri, reactant, product, catalyst, solvent, doe_template_iri):
     """NOTE get_ontokin_species_from_chem_rxn is tested as part of testing get_chemical_reaction."""
     sparql_client = initialise_triples
     if rxn_type == onto.ONTOREACTION_REACTIONEXPERIMENT:
@@ -478,6 +509,31 @@ def test_get_chemical_reaction(initialise_triples, rxn_exp_iri, rxn_type, chem_r
     assert dict_catalyst == catalyst
     dict_solvent = {solvent.instance_iri:solvent.hasUniqueSpecies for solvent in chem_rxn.hasSolvent}
     assert dict_solvent == solvent
+    assert chem_rxn.hasDoETemplate == doe_template_iri
+
+@pytest.mark.parametrize(
+    "chem_rxn_iri,reactant,product,catalyst,solvent,doe_template_iri",
+    [
+        (TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        TargetIRIs.REACTANT_SPECIES_DICTIONARY.value, TargetIRIs.PRODUCT_SPECIES_DICTIONARY.value,
+        TargetIRIs.CATALYST_SPECIES_DICTIONARY.value, TargetIRIs.SOLVENT_SPECIES_DICTIONARY.value,
+        TargetIRIs.DOE_TEMPLATE_IRI.value),
+    ],
+)
+def test_get_chemical_reaction_given_iri(initialise_triples, chem_rxn_iri, reactant, product, catalyst, solvent, doe_template_iri):
+    sparql_client = initialise_triples
+    chem_rxn = sparql_client.get_chemical_reaction_given_iri(chem_rxn_iri)
+
+    assert chem_rxn.instance_iri == chem_rxn_iri
+    dict_reactant = {reactant.instance_iri:reactant.hasUniqueSpecies for reactant in chem_rxn.hasReactant}
+    assert dict_reactant == reactant
+    dict_product = {product.instance_iri:product.hasUniqueSpecies for product in chem_rxn.hasProduct}
+    assert dict_product == product
+    dict_catalyst = {catalyst.instance_iri:catalyst.hasUniqueSpecies for catalyst in chem_rxn.hasCatalyst}
+    assert dict_catalyst == catalyst
+    dict_solvent = {solvent.instance_iri:solvent.hasUniqueSpecies for solvent in chem_rxn.hasSolvent}
+    assert dict_solvent == solvent
+    assert chem_rxn.hasDoETemplate == doe_template_iri
 
 def test_get_internal_standard(initialise_triples):
     sparql_client = initialise_triples
@@ -492,6 +548,7 @@ def test_get_hplc_method(initialise_triples):
     internal_standard = sparql_client.get_internal_standard(TargetIRIs.HPLCMETHOD_DUMMY_IRI.value)
     assert hplc_method.instance_iri == TargetIRIs.HPLCMETHOD_DUMMY_IRI.value
     assert hplc_method.usesInternalStandard == internal_standard
+    assert hplc_method.retentionTimeMatchThreshold >= 0
     assert all(rf.refersToSpecies is not None for rf in hplc_method.hasResponseFactor)
     assert all(rt.refersToSpecies is not None for rt in hplc_method.hasRetentionTime)
 
@@ -501,6 +558,7 @@ def test_get_hplc_method_given_hplc_report(initialise_triples):
     internal_standard = sparql_client.get_internal_standard(TargetIRIs.HPLCMETHOD_DUMMY_IRI.value)
     assert hplc_method.instance_iri == TargetIRIs.HPLCMETHOD_DUMMY_IRI.value
     assert hplc_method.usesInternalStandard == internal_standard
+    assert hplc_method.retentionTimeMatchThreshold >= 0
     assert all(rf.refersToSpecies is not None for rf in hplc_method.hasResponseFactor)
     assert all(rt.refersToSpecies is not None for rt in hplc_method.hasRetentionTime)
 
@@ -510,10 +568,14 @@ def test_get_chromatogram_point_of_hplc_report(initialise_triples):
     assert len(list_chrom_pts) == len(TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value)
     for pt in list_chrom_pts:
         assert pt.instance_iri in TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value
-        assert pt.indicatesComponent.instance_iri is not None
-        assert pt.indicatesComponent.representsOccurenceOf is not None
-        assert isinstance(pt.indicatesComponent.hasProperty, onto.OntoCAPE_PhaseComponentConcentration)
-        assert pt.indicatesComponent.hasProperty.hasValue.numericalValue is not None
+        if pt.indicatesComponent is not None:
+            assert not pt.unidentified
+            assert pt.indicatesComponent.instance_iri is not None
+            assert pt.indicatesComponent.representsOccurenceOf is not None
+            assert isinstance(pt.indicatesComponent.hasProperty, onto.OntoCAPE_PhaseComponentConcentration)
+            assert pt.indicatesComponent.hasProperty.hasValue.numericalValue is not None
+        else:
+            assert pt.unidentified
         assert pt.atRetentionTime.hasValue.hasNumericalValue > 0
         assert pt.atRetentionTime.hasValue.hasUnit is not None
         assert pt.hasPeakArea.hasValue.hasNumericalValue > 0
@@ -526,7 +588,7 @@ def test_get_existing_hplc_report(initialise_triples):
     assert all(pt.instance_iri in TargetIRIs.LIST_CHROMATOGRAMPOINT_IRI.value for pt in list_chrom_pts)
     hplc_report = sparql_client.get_existing_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
     assert all(pt in list_chrom_pts for pt in hplc_report.records)
-    assert hplc_report.generatedFor.instance_iri == TargetIRIs.CHEMICAL_SOLUTION_FOR_OUTPUTCHEMICAL_4_IRI.value
+    assert hplc_report.generatedFor.instance_iri == TargetIRIs.CHEMICAL_SOLUTION_FOR_DUMMY_OUTPUTCHEMICAL_IRI.value
     assert hplc_report.remoteFilePath is not None
     assert hplc_report.localFilePath is not None
     assert hplc_report.lastLocalModifiedAt > 0
@@ -547,7 +609,16 @@ def test_get_hplc_job_given_hplc_report_iri(initialise_triples):
     assert hplc_job_instance.instance_iri == TargetIRIs.HPLCJOB_DUMMY_IRI.value
     assert hplc_job_instance.characterises.instance_iri == TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value
     assert hplc_job_instance.usesMethod.instance_iri == TargetIRIs.HPLCMETHOD_DUMMY_IRI.value
-    assert hplc_job_instance.hasReport == sparql_client.get_existing_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
+    direct_query_hplc_report = sparql_client.get_existing_hplc_report(TargetIRIs.HPLCREPORT_DUMMY_IRI.value)
+    assert hplc_job_instance.hasReport.instance_iri == direct_query_hplc_report.instance_iri
+    assert hplc_job_instance.hasReport.remoteFilePath == direct_query_hplc_report.remoteFilePath
+    assert hplc_job_instance.hasReport.localFilePath == direct_query_hplc_report.localFilePath
+    assert hplc_job_instance.hasReport.lastLocalModifiedAt == direct_query_hplc_report.lastLocalModifiedAt
+    assert hplc_job_instance.hasReport.lastUploadedAt == direct_query_hplc_report.lastUploadedAt
+    assert hplc_job_instance.hasReport.generatedFor.instance_iri == direct_query_hplc_report.generatedFor.instance_iri
+    assert hplc_job_instance.hasReport.generatedFor.refersToMaterial == direct_query_hplc_report.generatedFor.refersToMaterial
+    assert len(hplc_job_instance.hasReport.records) == len(direct_query_hplc_report.records)
+    assert all(pt in direct_query_hplc_report.records for pt in hplc_job_instance.hasReport.records)
 
 def test_get_hplc_job(initialise_triples):
     sparql_client = initialise_triples
@@ -574,6 +645,12 @@ def test_identify_rxn_exp_when_uploading_hplc_report(initialise_triples, hplc_di
     [
         (conftest.HPLC_XLS_REPORT_FILE, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
         (conftest.HPLC_TXT_REPORT_FILE, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_NO_PRODUCT, TargetIRIs.HPLC_1_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_1_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_NO_PRODUCT, TargetIRIs.HPLC_2_POST_PROC_IRI.value, TargetIRIs.CHEMICAL_SOLUTION_2_POST_PROC_IRI.value, TargetIRIs.ONTOSPECIES_INTERNAL_STANDARD_IRI.value, TargetIRIs.MOLARITY_INTERNAL_STANDARD.value, TargetIRIs.HPLCMETHOD_DUMMY_IRI.value),
     ],
 )
 def test_upload_download_process_raw_hplc_report(initialise_triples, generate_random_download_path, local_file_path, hplc_digital_twin, chemical_solution_iri, internal_standard_species, internal_standard_run_conc, hplc_method_iri):
@@ -602,7 +679,12 @@ def test_upload_download_process_raw_hplc_report(initialise_triples, generate_ra
     assert filecmp.cmp(local_file_path,full_downloaded_path)
 
     # Fourth process the raw report (as part of PostProc Agent)
-    hplc_report_instance = sparql_client.process_raw_hplc_report(hplc_report_iri, internal_standard_species, internal_standard_run_conc)
+    hplc_report_instance = sparql_client.process_raw_hplc_report(
+        hplc_report_iri=hplc_report_iri,
+        internal_standard_species=internal_standard_species,
+        internal_standard_run_conc_moleperlitre=internal_standard_run_conc,
+        temp_local_folder=conftest.DOWNLOADED_DIR,
+    )
     assert hplc_report_instance.instance_iri == hplc_report_iri
     assert hplc_report_instance.remoteFilePath == remote_file_path
     assert hplc_report_instance.localFilePath == local_file_path
@@ -611,15 +693,20 @@ def test_upload_download_process_raw_hplc_report(initialise_triples, generate_ra
     list_chrom_pts = hplc_report_instance.records
     for pt in list_chrom_pts:
         assert pt.instance_iri.startswith(pt.namespace_for_init)
-        assert pt.indicatesComponent.instance_iri is not None
-        assert pt.indicatesComponent.representsOccurenceOf is not None
-        assert isinstance(pt.indicatesComponent.hasProperty, onto.OntoCAPE_PhaseComponentConcentration)
-        assert pt.indicatesComponent.hasProperty.hasValue.numericalValue is not None
+        if pt.indicatesComponent is not None:
+            assert not pt.unidentified
+            assert pt.indicatesComponent.instance_iri is not None
+            assert pt.indicatesComponent.representsOccurenceOf is not None
+            assert isinstance(pt.indicatesComponent.hasProperty, onto.OntoCAPE_PhaseComponentConcentration)
+            assert pt.indicatesComponent.hasProperty.hasValue.numericalValue is not None
+        else:
+            assert "unidentified" in pt.rdfs_comment
+            assert pt.unidentified
         assert pt.atRetentionTime.hasValue.hasNumericalValue > 0
         assert pt.atRetentionTime.hasValue.hasUnit is not None
         assert pt.hasPeakArea.hasValue.hasNumericalValue > 0
         assert pt.hasPeakArea.hasValue.hasUnit is not None
-    dct_phase_comp = {pt.indicatesComponent.instance_iri:pt.indicatesComponent for pt in list_chrom_pts}
+    dct_phase_comp = {pt.indicatesComponent.instance_iri:pt.indicatesComponent for pt in list_chrom_pts if not pt.unidentified}
     chemical_solution_instance = hplc_report_instance.generatedFor
     assert chemical_solution_instance.instance_iri == chemical_solution_iri
     dct_phase_comp_chemical_solution = {pc.instance_iri:pc for pc in chemical_solution_instance.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem}
@@ -666,7 +753,23 @@ def test_get_remote_hplc_report_path_given_local_file(initialise_triples, hplc_d
 
 def test_get_vapourtec_rs400(initialise_triples):
     sparql_client = initialise_triples
-    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    # this queries all vapourtec rs400s in the triplestore
+    vapourtec_rs400_list = sparql_client.get_vapourtec_rs400()
+    assert len(vapourtec_rs400_list) >= 1
+
+    # this queries all vapourtec rs400s in the triplestore that are located in a specific lab
+    vapourtec_rs400_list = sparql_client.get_vapourtec_rs400(
+        list_of_labs_as_constraint=[TargetIRIs.DUMMY_LAB_IRI.value]
+    )
+    assert len(vapourtec_rs400_list) >= 1
+    assert TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value in [vapourtec_rs400.instance_iri for vapourtec_rs400 in vapourtec_rs400_list]
+
+    # this queries a specific vapourtec rs400 in the triplestore
+    vapourtec_rs400_list = sparql_client.get_vapourtec_rs400(
+        list_vapourtec_rs400_iri=[TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value]
+    )
+    assert len(vapourtec_rs400_list) == 1
+    vapourtec_rs400 = vapourtec_rs400_list[0]
     assert vapourtec_rs400.instance_iri == TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value
     assert vapourtec_rs400.manufacturer == TargetIRIs.VAPOURTEC_LTD.value
     assert vapourtec_rs400.isContainedIn == TargetIRIs.DUMMY_LAB_IRI.value
@@ -676,11 +779,17 @@ def test_get_vapourtec_rs400(initialise_triples):
         [r.instance_iri for r in vapourtec_rs400.consistsOf])
     assert vapourtec_rs400.hasState.clz == onto.ONTOVAPOURTEC_IDLE
     assert vapourtec_rs400.hasState.stateLastUpdatedAt == 0
+    assert vapourtec_rs400.hasCollectionMethod is not None
+    assert vapourtec_rs400.hasCollectionMethod.instance_iri == TargetIRIs.VAPOURTECRS400_DUMMY_COLLECTION_METHOD_IRI.value
+    assert vapourtec_rs400.hasCollectionMethod.clz == onto.ONTOVAPOURTEC_SINGLERECEPTACLE
+    assert vapourtec_rs400.hasCollectionMethod.toReceptacle == TargetIRIs.VAPOURTECRS400_DUMMY_COLLECTION_METHOD_TO_RECEPTACLE_IRI.value
 
 def test_update_vapourtec_rs400_state(initialise_triples):
     sparql_client = initialise_triples
     # Before update, the state should be Idle
-    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(
+        list_vapourtec_rs400_iri=[TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value]
+    )[0]
     assert vapourtec_rs400.hasState.clz == onto.ONTOVAPOURTEC_IDLE
     assert vapourtec_rs400.hasState.stateLastUpdatedAt == 0
 
@@ -688,7 +797,9 @@ def test_update_vapourtec_rs400_state(initialise_triples):
     chosen_state = random.choice(onto.LIST_ONTOVAPOURTEC_VALIDSTATE)
     sparql_client.update_vapourtec_rs400_state(
         TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, chosen_state, 1)
-    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(
+        list_vapourtec_rs400_iri=[TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value]
+    )[0]
     assert vapourtec_rs400.hasState.clz == chosen_state
     assert vapourtec_rs400.hasState.stateLastUpdatedAt == 1
 
@@ -699,7 +810,9 @@ def test_update_vapourtec_rs400_state(initialise_triples):
         assert "is not recognised as a valid state" in str(e.value)
     sparql_client.update_vapourtec_rs400_state(
         TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value, chosen_state, 1)
-    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
+    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(
+        list_vapourtec_rs400_iri=[TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value]
+    )[0]
     assert vapourtec_rs400.hasState.clz == chosen_state
     assert vapourtec_rs400.hasState.stateLastUpdatedAt == 1
 
@@ -730,6 +843,12 @@ def test_connect_hplc_report_with_chemical_solution(initialise_triples):
     [
         (conftest.HPLC_XLS_REPORT_FILE, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
         (conftest.HPLC_TXT_REPORT_FILE, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_INCOMPLETE, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
+        (conftest.HPLC_XLS_REPORT_FILE_NO_PRODUCT, TargetIRIs.HPLC_1_POST_PROC_IRI.value),
+        (conftest.HPLC_TXT_REPORT_FILE_NO_PRODUCT, TargetIRIs.HPLC_2_POST_PROC_IRI.value),
     ],
 )
 def test_detect_new_hplc_report(initialise_triples, local_file_path, hplc_digital_twin):
@@ -764,6 +883,12 @@ def test_get_autosampler(initialise_triples):
     assert autosampler.instance_iri == TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value
     assert autosampler.isContainedIn == TargetIRIs.DUMMY_LAB_IRI.value
 
+    # Check autosampler sampleLoopVolume is correctly parsed
+    assert autosampler.sampleLoopVolume.instance_iri == TargetIRIs.AUTOSAMPLER_SAMPLE_LOOP_VOLUME_IRI.value
+    assert autosampler.sampleLoopVolume.hasValue.instance_iri == TargetIRIs.AUTOSAMPLER_SAMPLE_LOOP_VOLUME_MEASURE_IRI.value
+    assert autosampler.sampleLoopVolume.hasValue.hasUnit == TargetIRIs.AUTOSAMPLER_SAMPLE_LOOP_VOLUME_MEASURE_UNIT.value
+    assert autosampler.sampleLoopVolume.hasValue.hasNumericalValue == TargetIRIs.AUTOSAMPLER_SAMPLE_LOOP_VOLUME_MEASURE_NUM_VAL.value
+
     # Check all autosampler site is populated correctly
     autosampler_sites = autosampler.hasSite
     assert all([(site.holds.hasFillLevel.hasValue.hasNumericalValue - TargetIRIs.AUTOSAMPLER_LIQUID_LEVEL_DICT.value[site.instance_iri]) < 0.0001 for site in autosampler_sites])
@@ -771,22 +896,17 @@ def test_get_autosampler(initialise_triples):
     assert all([dal.check_if_two_lists_equal([comp.representsOccurenceOf for comp in site.holds.isFilledWith.refersToMaterial.thermodynamicBehaviour.isComposedOfSubsystem],
         TargetIRIs.AUTOSAMPLER_LIQUID_COMPONENT_DICT.value[site.instance_iri]) for site in autosampler_sites if site.holds.isFilledWith is not None])
     assert all([site.locationID == TargetIRIs.AUTOSAMPLER_SITE_LOC_DICT.value[site.instance_iri] for site in autosampler_sites])
+    assert all([site.holds.isFilledWith.containsUnidentifiedComponent == TargetIRIs.AUTOSAMPLER_LIQUID_CONTAINS_UNIDENTIFIED_COMPONENT_DICT.value[site.instance_iri] for site in autosampler_sites if site.holds.isFilledWith is not None])
 
 def test_get_autosampler_site_given_input_chemical(initialise_triples):
+    """This method tests the get_autosampler_site_given_input_chemical method in ontovapourtec.AutoSampler dataclass."""
     sparql_client = initialise_triples
     autosampler = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
     input_chem_lst = sparql_client.get_input_chemical_of_rxn_exp(TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value)
 
     for input_chem in input_chem_lst:
         assert input_chem.instance_iri == TargetIRIs.AUTOSAMPLER_SITE_CHEMICAL_MAPPING_DICT.value[
-            sparql_client.get_autosampler_site_given_input_chemical(autosampler=autosampler, input_chem=input_chem).instance_iri]
-
-def test_get_autosampler_from_vapourtec_rs400(initialise_triples):
-    sparql_client = initialise_triples
-    vapourtec_rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
-    autosampler_from_rs400 = sparql_client.get_autosampler_from_vapourtec_rs400(vapourtec_rs400)
-    autosampler = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
-    assert autosampler_from_rs400 == autosampler
+            autosampler.get_autosampler_site_given_input_chemical(input_chem=input_chem).instance_iri]
 
 def test_update_vapourtec_autosampler_liquid_level_millilitre(initialise_triples):
     sparql_client = initialise_triples
@@ -950,17 +1070,6 @@ def test_get_output_chemical_of_rxn_exp(initialise_triples, rxnexp_iri, output_c
     assert len(list_output_chemical) == len(output_chemical_iri)
     assert len(set(list_output_chemical).difference(set(output_chemical_iri))) == 0
 
-def test_sort_r2_pumps_in_vapourtec_rs400(initialise_triples):
-    sparql_client = initialise_triples
-
-    rs400 = sparql_client.get_vapourtec_rs400(vapourtec_rs400_iri=TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
-    dct_pumps = sparql_client.sort_r2_pumps_in_vapourtec_rs400(rs400)
-    assert len(dct_pumps) == 4
-    assert [key for key in dct_pumps] == ["A", "B", "C", "D"]
-    assert all([dct_pumps[key].locationID == key for key in dct_pumps])
-    assert [dct_pumps[key].instance_iri for key in dct_pumps] == [TargetIRIs.VAPOURTECR2PUMP_1_DUMMY_IRI.value,
-        TargetIRIs.VAPOURTECR2PUMP_2_DUMMY_IRI.value, TargetIRIs.VAPOURTECR2PUMP_3_DUMMY_IRI.value, TargetIRIs.VAPOURTECR2PUMP_4_DUMMY_IRI.value]
-
 @pytest.mark.parametrize(
     "rxn_exp_iri,rxn_con_list,perf_ind_list",
     [
@@ -975,6 +1084,7 @@ def test_sort_r2_pumps_in_vapourtec_rs400(initialise_triples):
     ],
 )
 def test_get_rxn_con_or_perf_ind(initialise_triples, rxn_exp_iri, rxn_con_list, perf_ind_list):
+    """This test tests get_reaction_condition and get_performance_indicator of ontoreaction.ReactionExperiment dataclass."""
     sparql_client = initialise_triples
 
     rxn_exp = sparql_client.getReactionExperiment(rxn_exp_iri)[0]
@@ -983,7 +1093,7 @@ def test_get_rxn_con_or_perf_ind(initialise_triples, rxn_exp_iri, rxn_con_list, 
         onto.ONTOREACTION_REACTIONSCALE, onto.ONTOREACTION_REACTIONTEMPERATURE, onto.ONTOREACTION_STOICHIOMETRYRATIO]:
         positional_id_lst = TargetIRIs.RXN_EXP_REACTION_CONDITION_CLZ_POSITIONAL_ID_DICT.value[rxn_exp_iri][clz]
         for positional_id in positional_id_lst:
-            identified_cond = sparql_client.get_rxn_con_or_perf_ind(list_=rxn_exp.hasReactionCondition, clz=clz, positionalID=positional_id)
+            identified_cond = rxn_exp.get_reaction_condition(clz=clz, positional_id=positional_id)
             assert identified_cond.instance_iri in rxn_con_list
             assert identified_cond.positionalID == positional_id
             assert identified_cond.clz == clz
@@ -992,10 +1102,33 @@ def test_get_rxn_con_or_perf_ind(initialise_triples, rxn_exp_iri, rxn_con_list, 
 
     if perf_ind_list is not None:
         for clz in [onto.ONTOREACTION_YIELD, onto.ONTOREACTION_RUNMATERIALCOST]:
-            identified_ind = sparql_client.get_rxn_con_or_perf_ind(list_=rxn_exp.hasPerformanceIndicator, clz=clz, positionalID=None)
+            identified_ind = rxn_exp.get_performance_indicator(clz=clz, positional_id=None)
             assert identified_ind.instance_iri in perf_ind_list
             assert identified_ind.positionalID == None
             assert identified_ind.clz == clz
+
+def test_get_reagent_bottle(initialise_triples):
+    sparql_client = initialise_triples
+
+    reagent_bottle = sparql_client.get_reagent_bottle(TargetIRIs.REAGENTBOTTLE_1_DUMMY_IRI.value)
+    assert reagent_bottle.instance_iri == TargetIRIs.REAGENTBOTTLE_1_DUMMY_IRI.value
+    assert reagent_bottle.isFilledWith.instance_iri is not None
+    assert reagent_bottle.hasFillLevel.hasValue.hasNumericalValue > 0
+    assert reagent_bottle.hasFillLevel.hasValue.hasUnit == onto.OM_MILLILITRE
+    assert reagent_bottle.hasWarningLevel.hasValue.hasNumericalValue > 0
+    assert reagent_bottle.hasWarningLevel.hasValue.hasUnit == onto.OM_MILLILITRE
+    assert reagent_bottle.hasMaxLevel.hasValue.hasNumericalValue > 0
+    assert reagent_bottle.hasMaxLevel.hasValue.hasUnit == onto.OM_MILLILITRE
+    assert reagent_bottle.hasFillLevel.hasValue.hasNumericalValue <= reagent_bottle.hasMaxLevel.hasValue.hasNumericalValue
+
+def test_get_all_rxn_exp_given_chem_rxn(initialise_triples):
+    sparql_client = initialise_triples
+
+    lst_rxn_exp = sparql_client.get_all_rxn_exp_given_chem_rxn(TargetIRIs.CHEMICAL_REACTION_IRI.value)
+    assert dal.check_if_two_lists_equal(
+        lst_rxn_exp,
+        TargetIRIs.LIST_EXAMPLE_RXN_EXP.value + TargetIRIs.LIST_NEW_RXN_EXP.value + TargetIRIs.LIST_INTENTIONALLY_OUT_OF_RANGE_RXN_EXP.value
+    )
 
 def test_get_r4_reactor_rxn_exp_assigned_to(initialise_triples):
     sparql_client = initialise_triples
@@ -1010,18 +1143,15 @@ def test_get_r4_reactor_rxn_exp_assigned_to(initialise_triples):
     assert reactor_iri == sparql_client.get_r4_reactor_rxn_exp_assigned_to(rxn_exp_iri=rxn_exp_iri)
 
 def test_create_equip_settings_for_rs400_from_rxn_exp(initialise_triples):
+    """This method tests create_equip_settings_for_rs400_from_rxn_exp method of ontovapoutrec.VapourtecRS400 dataclass."""
     sparql_client = initialise_triples
 
-    rxn_exp = sparql_client.getReactionExperiment(TargetIRIs.NEW_RXN_EXP_1_IRI.value)[0]
-    rs400 = sparql_client.get_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
-    lst_reactor = sparql_client.get_r4_reactor_given_vapourtec_rs400(TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
-    preferred_r4_reactor = lst_reactor[0] # Just retrieve the first reactor
+    rxn_exp = sparql_client.getReactionExperiment(TargetIRIs.EXAMPLE_RXN_EXP_1_IRI.value)[0]
+    rs400 = sparql_client.get_vapourtec_rs400(
+        list_vapourtec_rs400_iri=[TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value]
+    )[0]
 
-    lst_equip_settings = sparql_client.create_equip_settings_for_rs400_from_rxn_exp(
-        rxnexp=rxn_exp,
-        rs400=rs400,
-        preferred_r4_reactor=preferred_r4_reactor
-    )
+    lst_equip_settings = rs400.create_equip_settings_for_rs400_from_rxn_exp(rxn_exp=rxn_exp)
 
     # Generated equip settings should be generated for the reaction experiment
     assert all([stg.wasGeneratedFor == rxn_exp.instance_iri for stg in lst_equip_settings])
@@ -1042,6 +1172,12 @@ def test_get_species_molar_mass_kilogrampermole(initialise_triples):
     [
         (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_TXT_REPORT_FILE, onto.TXTFILE_EXTENSION),
         (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_XLS_REPORT_FILE, onto.XLSFILE_EXTENSION),
+        (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_TXT_REPORT_FILE_INCOMPLETE, onto.TXTFILE_EXTENSION),
+        (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_XLS_REPORT_FILE_INCOMPLETE, onto.XLSFILE_EXTENSION),
+        (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_TXT_REPORT_FILE_UNIDENTIFIED_PEAKS, onto.TXTFILE_EXTENSION),
+        (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_XLS_REPORT_FILE_UNIDENTIFIED_PEAKS, onto.XLSFILE_EXTENSION),
+        (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_TXT_REPORT_FILE_NO_PRODUCT, onto.TXTFILE_EXTENSION),
+        (TargetIRIs.HPLCREPORT_DUMMY_IRI.value, conftest.HPLC_XLS_REPORT_FILE_NO_PRODUCT, onto.XLSFILE_EXTENSION),
     ],
 )
 def test_get_matching_species_from_hplc_results(initialise_triples, hplc_report_iri, local_file_path, hplc_report_extension):
@@ -1057,7 +1193,11 @@ def test_get_matching_species_from_hplc_results(initialise_triples, hplc_report_
     hplc_method = sparql_client.get_hplc_method_given_hplc_report(hplc_report_iri)
 
     # map them to chromatogram point (qury phase component based on hplc method, and hplc)
-    dct_points = {sparql_client.get_matching_species_from_hplc_results(pt.get(onto.ONTOHPLC_RETENTIONTIME), hplc_method):pt for pt in list_points}
+    dct_points = {sparql_client.get_matching_species_from_hplc_results(
+        pt.get(onto.ONTOHPLC_RETENTIONTIME), hplc_method
+    ):pt for pt in list_points if sparql_client.get_matching_species_from_hplc_results(
+        pt.get(onto.ONTOHPLC_RETENTIONTIME), hplc_method
+    ) is not None}
 
     assert all([dct_points[key][onto.ONTOHPLC_RETENTIONTIME].hasValue.hasNumericalValue == TargetIRIs.HPLC_DUMMAY_REPORT_FILE_SPECIES_RETENTION_TIME_IDENTIFY.value[key] for key in dct_points])
 
@@ -1221,6 +1361,35 @@ def test_collect_triples_for_chromatogram_point(initialise_triples):
     for pt in lst_chromatogram_point:
         assert (URIRef(hplc_report_iri), URIRef(onto.ONTOHPLC_RECORDS), URIRef(pt.instance_iri)) in g
         assert if_object_collected_in_graph(g, pt)
+
+def test_get_all_laboratories(initialise_triples):
+    sparql_client = initialise_triples
+    labs = sparql_client.get_all_laboratories()
+    assert len(labs) == 1
+    assert labs[0] == TargetIRIs.DUMMY_LAB_IRI.value
+
+@pytest.mark.parametrize(
+    "rxn_con_list,expected_rxn",
+    [
+        (onto.ONTOREACTION_YIELD, TargetIRIs.LIST_EXAMPLE_RXN_EXP.value),
+        ([onto.ONTOREACTION_YIELD], TargetIRIs.LIST_EXAMPLE_RXN_EXP.value),
+        ([onto.ONTOREACTION_YIELD, onto.ONTOREACTION_RUNMATERIALCOST], TargetIRIs.LIST_EXAMPLE_RXN_EXP.value),
+        ([onto.ONTOREACTION_YIELD, onto.ONTOREACTION_SPACETIMEYIELD], []),
+        ([onto.ONTOREACTION_YIELD, onto.ONTOREACTION_SPACETIMEYIELD, onto.ONTOREACTION_RUNMATERIALCOST], []),
+        ([onto.ONTOREACTION_SPACETIMEYIELD], []),
+    ],
+)
+def test_get_all_rxn_exp_with_target_perfind_given_chem_rxn(initialise_triples, rxn_con_list, expected_rxn):
+    sparql_client = initialise_triples
+    res = sparql_client.get_all_rxn_exp_with_target_perfind_given_chem_rxn(
+        TargetIRIs.CHEMICAL_REACTION_IRI.value,
+        rxn_con_list
+    )
+    assert dal.check_if_two_lists_equal(res, expected_rxn)
+
+@pytest.mark.skip(reason="TODO")
+def test_locate_possible_input_chemical(initialise_triples):
+    pass
 
 @pytest.mark.skip(reason="TODO after proper representation of species density")
 def test_get_species_density(initialise_triples):

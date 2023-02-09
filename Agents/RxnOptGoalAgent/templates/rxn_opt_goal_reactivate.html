@@ -1,0 +1,52 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
+        <title>RxnOptGoalAgent</title>
+    </head>
+
+    <body>
+        <h1>RxnOptGoalAgent</h1>
+        <form action="/goal_reactivate" method="post">
+            <!-- goal set -->
+            <fieldset class="goal-set">
+                <legend>Goal Set</legend>
+                <span class="chem-rxn">Please specify the goal set you would like to reactivate:</span><br><br>
+
+                <select name="goal_set" id="goal_set" class="Input">
+                    <option value="" disabled selected>Please select goal set IRI</option>
+                    {% for g in goal_set_iri %}
+                    <option value="{{ g.iri }}">{{ g.display }}</option>
+                    {% endfor %}
+                </select>
+            </fieldset><br><br>
+
+            <br><br>
+
+            <!-- restrictions -->
+            <fieldset class="restrictions">
+                <legend>Restrictions</legend>
+                <span class="restrictions">Please input the new restrictions (restrictions remain unchanged for any one left empty):</span><br><br>
+                <!-- cycleAllowance -->
+                <label for="cycleAllowance">CycleAllowance (between 1 and 150):</label>
+                <input type="number" id="cycleAllowance" name="cycleAllowance" min="1" max="150"><br><br>
+
+                <!-- deadline -->
+                <label for="deadline">Deadline (time at your current time zone)</label>
+                <input type="datetime-local" id="deadline" name="deadline"><br><br>
+            </fieldset><br><br>
+
+            <br><br>
+
+            <!-- laboratories involved -->
+            <div class="laboratories">
+                <span class="laboratories">At the moment, all laboratories involved in the previous campaign are involved by default.
+                    <br>Please contact developers of TheWorldAvatar if more features needed.</span><br><br>
+            </div><br><br>
+
+            <br><br>
+
+            <!-- submit button -->
+            <input type="submit" value="Submit">
+        </form>
+    </body>
+</html>

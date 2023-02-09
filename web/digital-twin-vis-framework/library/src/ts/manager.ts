@@ -59,7 +59,7 @@ class Manager {
     constructor(mapProvider: MapProvider) {
         Manager.PROVIDER = mapProvider;
         this.controlHandler = new ControlHandler();
-        this.panelHandler = new PanelHandler();
+        this.panelHandler = new PanelHandler(this);
 
         // Initialise the map handler instance
         switch(mapProvider) {
@@ -283,11 +283,8 @@ class Manager {
             this.panelHandler.setContent(
                 "<div class='description'>No data is available for this location.</div>"
             );
-        } else {
-            // Simulate click on meta button
-            if(metaTreeButton !== null) metaTreeButton.click();
-        }
-
+        } 
+        
         // Simulate click on general tab
         // @ts-ignore
         $("#sidePanelInner").tabs("option", "active", 0);
@@ -483,9 +480,16 @@ class Manager {
     }
 
     /**
+     * Given a selected feature, this function trys to determine the id of the layer
+     * containing it. If found, this is then used to find the original group housing
+     * the layer and then the stack URL attached to this group.
      * 
-     * @param feature 
-     * @returns 
+     * Note: this is bloated as Cesium does not have a common abstraction for feature
+     * objects, each has its own annoying structure.
+     * 
+     * @param feature selected geographical feature.
+     *  
+     * @returns stack URL (or null) 
      */
     public static findStack(feature, properties) {
         switch(Manager.PROVIDER) {
@@ -508,7 +512,23 @@ class Manager {
                         // No way to determine what layer this feature came from
                         return null;
                     }
+                } else if(feature.hasOwnProperty("primitive") && feature["primitive"] instanceof Cesium.Cesium3DTileset) {
+                     // Feature within 3D tileset, for some reason using a different Cesium data object?
+                     let tileset = feature.primitive;
 
+                    if(tileset.hasOwnProperty("layerID")) {
+                        let layerID = tileset["layerID"];
+
+                        for (let [stack, value] of Object.entries(Manager.STACK_LAYERS)) {
+                            let layers = value as string[];
+                            if(layers.includes(layerID)) {
+                                return stack;
+                            } 
+                        }
+                    } else {
+                        // No way to determine what layer this feature came from
+                        return null;
+                    }
                 } else if(feature instanceof Cesium.ImageryLayerFeatureInfo) {
                     // WMS feature on cesium
                     let layer = feature["imageryLayer"];
@@ -529,6 +549,7 @@ class Manager {
                     }
 
                 } else {
+                    // Something else, try to find the layerID
                     let entity = feature["id"];
 
                     if(entity !== null && entity !== undefined) {

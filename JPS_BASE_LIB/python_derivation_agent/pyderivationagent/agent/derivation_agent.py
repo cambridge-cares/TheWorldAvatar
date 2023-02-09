@@ -11,7 +11,7 @@ import yagmail
 import json
 import time
 
-import agentlogging
+from py4jps import agentlogging
 
 from pyderivationagent.kg_operations import jpsBaseLibGW
 from pyderivationagent.kg_operations import PySparqlClient
@@ -73,7 +73,7 @@ class DerivationAgent(ABC):
                 fs_password - password that set for the fs_user used to access the file server endpoint specified by fs_url
                 flask_config - configuration object for flask app, should be an instance of the class FlaskConfig provided as part of this package
                 register_agent - boolean value, whether to register the agent to the knowledge graph
-                logger_name - logger names for getting correct loggers from agentlogging package, valid logger names: "dev" and "prod", for more information, visit https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/Agents/utils/python-utils/agentlogging/logging.py
+                logger_name - logger names for getting correct loggers from agentlogging package, valid logger names: "dev" and "prod", for more information, visit https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_wrapper/py4jps/agentlogging/logging.py
         """
 
         # create a JVM module view and use it to import the required java classes
@@ -380,9 +380,8 @@ class DerivationAgent(ABC):
                         # If "Finished", do all the clean-up steps
                         elif statusType == 'FINISHED':
                             self.derivation_client.derivation_client.cleanUpFinishedDerivationUpdate(derivation)
-                            self.logger.info("Asynchronous derivation <%s> is now cleand up." % (derivation))
-                            # set flag to false as this cleaning up process is fast and no need to query again
-                            query_again = False
+                            # set flag to true as the cleaning up process can take some time when there are a lot of triples
+                            query_again = True
                             # send email to indicate the derivation is now finished and cleaned up, i.e. up-to-date
                             self.send_email_when_async_derivation_up_to_date(derivation)
 

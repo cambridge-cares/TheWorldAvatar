@@ -25,14 +25,14 @@ from pyderivationagent.data_model import iris
 
 from pyderivationagent.kg_operations import PyDerivationClient
 
-from tests.agents.sparql_client_for_test import PySparqlClientForTest
-from tests.agents.agents_for_test import RNGAgent
-from tests.agents.agents_for_test import MaxValueAgent
-from tests.agents.agents_for_test import MinValueAgent
-from tests.agents.agents_for_test import DifferenceAgent
-from tests.agents.agents_for_test import DiffReverseAgent
-from tests.agents.agents_for_test import UpdateEndpoint
-from tests.agents.agents_for_test import ExceptionThrowAgent
+from .agents.sparql_client_for_test import PySparqlClientForTest
+from .agents.agents_for_test import RNGAgent
+from .agents.agents_for_test import MaxValueAgent
+from .agents.agents_for_test import MinValueAgent
+from .agents.agents_for_test import DifferenceAgent
+from .agents.agents_for_test import DiffReverseAgent
+from .agents.agents_for_test import UpdateEndpoint
+from .agents.agents_for_test import ExceptionThrowAgent
 
 
 # ----------------------------------------------------------------------------------

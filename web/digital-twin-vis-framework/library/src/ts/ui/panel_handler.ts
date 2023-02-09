@@ -9,6 +9,11 @@ class PanelHandler {
     _defaultHTML: string;
 
     /**
+     * 
+     */
+    manager: Manager;
+
+    /**
      * Handles plotting time series data.
      */
     timeseriesHandler: TimeseriesHandler;
@@ -16,7 +21,8 @@ class PanelHandler {
     /**
      * Constructor
      */
-    constructor() {
+    constructor(manager) {
+        this.manager = manager;
         this.timeseriesHandler = new TimeseriesHandler();
     }
 
@@ -197,25 +203,15 @@ class PanelHandler {
 
         // Get required details
         let iri = properties["iri"];
+        let endpoint = properties["endpoint"];
+
         let stack = Manager.findStack(feature, properties);
-        console.log("Attempting to contact agent with stack at '" + stack + "'");
-        console.log("Will submit IRI for query '" + iri + "'");
+        console.log("Attempting to contact agent with stack at '" + stack + "'...");
+        console.log("   ...will submit IRI for query '" + iri + "'");
 
         if(iri == null || stack == null) {
             console.warn("Feature is missing required information to get metadata/timeseries, will show any in-model content instead...");
-            this.prepareMetaContainers(true, false);
-            document.getElementById("metaTreeContainer").innerHTML = "";
-
-            if(Object.keys(properties).length > 0) {
-                // @ts-ignore
-                let metaTree = JsonView.renderJSON(properties, document.getElementById("metaTreeContainer"));
-                // @ts-ignore
-                JsonView.expandChildren(metaTree);
-                // @ts-ignore
-                JsonView.selectiveCollapse(metaTree);
-            } else {
-                document.getElementById("metaTreeContainer").innerHTML = "<i>No available data.</i>";
-            }
+            this.showBuiltInData(properties);
             return;
         }
 
@@ -225,30 +221,63 @@ class PanelHandler {
         
         // Build the request to the FeatureInfoAgent
         let agentURL = stack + "/feature-info-agent/get";
-        let params = { "iri": iri };
+        let params = { 
+            "iri": iri,
+            "endpoint": endpoint
+        };
 
         let self = this;
-        var promise = $.getJSON(agentURL, params, function(json) {
+        var promise = $.getJSON(agentURL, params, function(rawJSON) {
+            if(rawJSON === null || rawJSON === undefined) {
+                self.showBuiltInData(properties);
+                return;
+            }
+            if(Array.isArray(rawJSON) && rawJSON.length == 0) {
+                self.showBuiltInData(properties);
+                return;
+            }
+            if(Object.keys(rawJSON).length == 0) {
+                self.showBuiltInData(properties);
+                return;
+            }
+
             // Get results
-            let meta = json["meta"];
-            let time = json["time"];
+            let meta = rawJSON["meta"];
+            let time = rawJSON["time"];
+
+            if (meta != null) console.log("Got a meta object!");
+            if (time != null) console.log("Got a time object!");
 
             // Render metadata tree
             document.getElementById("metaTreeContainer").innerHTML = "";
 
-            if(meta !== null && meta !== undefined) {
-                // @ts-ignore
-                let metaTree = JsonView.renderJSON(meta, document.getElementById("metaTreeContainer"));
-                // @ts-ignore
-                JsonView.expandChildren(metaTree);
-                // @ts-ignore
-                JsonView.selectiveCollapse(metaTree);
+            if(meta != null) {
+                // Formatting
+                meta = JSONFormatter.formatJSON(meta);
+
+                let treeContainer = document.getElementById("metaTreeContainer");
+                if(treeContainer == null) console.log("TREE CONTAINER IS NULL, WHAT?!");
+
+                if(Array.isArray(meta) && meta.length === 0) {
+                    this.showBuiltInData(properties);
+                } else if (typeof meta === "string" && meta === "") {
+                    this.showBuiltInData(properties);
+                } else {
+                    // @ts-ignore
+                    let metaTree = JsonView.renderJSON(meta, document.getElementById("metaTreeContainer"));
+                    // @ts-ignore
+                    JsonView.expandChildren(metaTree);
+                    // @ts-ignore
+                    JsonView.selectiveCollapse(metaTree);
+                }
+            } else {
+                self.showBuiltInData(properties);
             }
 
             // Render timeseries
             document.getElementById("metaTimeContainer").innerHTML = "";
 
-            if(time !== null && time !== undefined) {
+            if(time != null) {
                 // Plot data
                 self.timeseriesHandler.parseData(time);
                 self.timeseriesHandler.showData("metaTimeContainer");
@@ -256,26 +285,43 @@ class PanelHandler {
                 // Auto-select the first option in the dropdown
                 let select = document.getElementById("time-series-select") as HTMLInputElement;
                 select.onchange(null);
+            } else {
+                console.warn("No 'time' node found, skipping timeseries visualisation.");
             }
+
+            // Set visibility of UI containers
+            self.prepareMetaContainers(true, time != null);
+
         })
         .fail(function() {
-            console.warn("Could not contact the intended agent, will show any in-model content instead...");
-            self.prepareMetaContainers(true, false);
-            document.getElementById("metaTreeContainer").innerHTML = "";
-
-            if(Object.keys(properties).length > 0) {
-                // @ts-ignore
-                let metaTree = JsonView.renderJSON(properties, document.getElementById("metaTreeContainer"));
-                // @ts-ignore
-                JsonView.expandChildren(metaTree);
-                // @ts-ignore
-                JsonView.selectiveCollapse(metaTree);
-            } else {
-                document.getElementById("metaTreeContainer").innerHTML = "<i>No available data.</i>";
-            }
+            console.warn("Could not get valid response from the agent, will show any in-model content instead...");
+            self.showBuiltInData(properties);
             return;
         });
         return promise;
+    }
+
+    /**
+     * Show properties from the feature as metadata rather than something returned
+     * from the remote FeatureInfoAgent.
+     * 
+     * @param properties feature properties
+     */
+    public showBuiltInData(properties) {
+        this.prepareMetaContainers(true, false);
+        document.getElementById("metaTreeContainer").innerHTML = "";
+
+        if(Object.keys(properties).length > 0) {
+            let formattedProps = JSONFormatter.formatJSON(properties);
+            // @ts-ignore
+            let metaTree = JsonView.renderJSON(formattedProps, document.getElementById("metaTreeContainer"));
+            // @ts-ignore
+            JsonView.expandChildren(metaTree);
+            // @ts-ignore
+            JsonView.selectiveCollapse(metaTree);
+        } else {
+            document.getElementById("metaTreeContainer").innerHTML = "<i>No available data.</i>";
+        }
     }
 
     public updateTimeseries(setName) {
@@ -323,12 +369,23 @@ class PanelHandler {
         if(treeButton != null) treeButton.style.display = (addMeta) ? "block" : "none"; 
         if(timeButton != null) timeButton.style.display = (addTime) ? "block" : "none"; 
 
-        if(addMeta && !addTime && treeButton != null) {
+        if(addMeta && !addTime) {
             treeButton.style.width = "100%";
             treeButton.style.borderRadius = "10px";
-        } else if(addMeta && addTime && treeButton != null) {
+
+            this.manager.openMetaTab("treeButton", "metaTreeContainer");
+
+        } else if (!addMeta && addTime) {
+            timeButton.style.width = "100%";
+            timeButton.style.borderRadius = "10px";
+            
+            this.manager.openMetaTab("timeButton", "metaTimeContainer");
+
+        } else if(addMeta && addTime) {
             treeButton.style.width = "50%";
             treeButton.style.borderRadius = "10px 0 0 10px";
+
+            this.manager.openMetaTab("treeButton", "metaTreeContainer");
         }
 
         let footerContent = document.getElementById("footerContainer");

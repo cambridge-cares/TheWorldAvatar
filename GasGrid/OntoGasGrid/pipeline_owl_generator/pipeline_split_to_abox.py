@@ -7,8 +7,10 @@ from EntityRDFizer import *
 import os 
 import uuid 
 import glob
- 
-pipelines = pd.read_csv(r'pipeline_split.csv').to_numpy()[:,:]
+
+# The CSV file read at the following statement is stored on Dropbox under the path of
+# "IRP3 CAPRICORN shared folder/_JPS Development/data/ontogasgrid/pipeline_split.csv" 
+pipelines = pd.read_csv(r'https://www.dropbox.com/s/fbi77hz3316dadv/pipeline_split.csv?dl=1').to_numpy()[:,:]
 
 abox_header = np.array([['Source','Type','Target','Relation','Value']]) 
 abox_full = np.array([['Source','Type','Target','Relation','Value']])

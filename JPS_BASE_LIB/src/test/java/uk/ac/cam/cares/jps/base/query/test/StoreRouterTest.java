@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.MockStoreClient;
 import uk.ac.cam.cares.jps.base.query.StoreRouter;
@@ -204,6 +203,17 @@ class StoreRouterTest {
 		assertTrue(StoreRouter.isRemoteTargetResourceID("citieskg-berlin"));
 		assertTrue(StoreRouter.isRemoteTargetResourceID("kb_ontokin"));
 		assertFalse(StoreRouter.isRemoteTargetResourceID("test/ontokin"));
+	}
+
+	@Test
+	public void testGetRouterStoreClient(){
+
+		StoreRouter storeRouter = StoreRouter.getInstance();
+
+		TripleStoreClientInterface storeClient = storeRouter.getRouterStoreClient();
+
+		assertNotNull(storeClient);
+		assertEquals(StoreRouter.storeRouterEndpoint, storeClient.getQueryEndpoint());
 	}
 
 	///////////////////////////////////////////

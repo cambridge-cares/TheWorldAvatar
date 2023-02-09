@@ -6,22 +6,23 @@ services:
     container_name: hplc_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     build:
       context: .
       dockerfile: ./Dockerfile
-      labels:
-        authors: "jb2197@cam.ac.uk"
-        description: "Monitor the local report folder of the configured HPLC and upload the new reports to knowledge graph."
     ports:
       - 7000:5000
     extra_hosts:
-      - localhost:host-gateway
+      - host.docker.internal:host-gateway
     env_file:
       - ./hplcagent/tests/agent.hplc.env.test
+    secrets:
+      - email_auth
     volumes:
       - type: bind
         source: ./hplcagent/tests/_for_docker_integration_test
         target: /app/CHEM32
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "hplcagent:create_app()", "--preload"]
 
   # Blazegraph
   blazegraph:
@@ -51,3 +52,5 @@ secrets:
     file: ./hplcagent/tests/dummy_services_secrets/blazegraph_passwd.txt
   file_server_password:
     file: ./hplcagent/tests/dummy_services_secrets/fileserver_passwd.txt
+  email_auth:
+    file: hplcagent/tests/dummy_services_secrets/email_auth.json

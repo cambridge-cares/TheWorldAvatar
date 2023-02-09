@@ -4,13 +4,16 @@ services:
   vapourtecagent:
     image: ghcr.io/cambridge-cares/vapourtec_agent:1.0.0-SNAPSHOT
     container_name: vapourtec_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
     build:
       context: .
       dockerfile: ./Dockerfile
     ports:
       - 7000:5000
-    extra_hosts: # NOTE this ensures FlowCommander to be reachable via "localhost"
-      - localhost:host-gateway
+    extra_hosts: # NOTE this ensures FlowCommander to be reachable via "host.docker.internal"
+      - host.docker.internal:host-gateway
     env_file:
       - ./vapourtecagent/tests/agent.vapourtec.env.test
     volumes:
@@ -19,6 +22,9 @@ services:
       - type: bind
         source: ./vapourtecagent/tests/_for_docker_integration_test
         target: /app/vapourtec
+    secrets:
+      - email_auth
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "vapourtecagent:create_app()", "--preload"]
 
   # Blazegraph
   blazegraph:
@@ -48,3 +54,5 @@ secrets:
     file: ./vapourtecagent/tests/dummy_services_secrets/blazegraph_passwd.txt
   file_server_password:
     file: ./vapourtecagent/tests/dummy_services_secrets/fileserver_passwd.txt
+  email_auth:
+    file: vapourtecagent/tests/dummy_services_secrets/email_auth.json

@@ -28,17 +28,17 @@ import uk.ac.cam.cares.jps.base.util.MiscUtil;
  * This agent extends the JPSAgent framework and can be called using methods in the 
  * AccessAgentCaller class in jps_base_lib.
  *  
- * <p> All requests must provide a "targetresourceiri" {@link JPSConstants.TARGETIRI} and 
+ * <p> All requests must provide a "targetresourceiri" {@link JPSConstants#TARGETIRI} and
  * use one of the following HTTP methods with request parameters: 
  * 	<p>HTTP GET: get the entire graph 
- * 		<br> (optional) target graph {@link JPSConstants.TARGETGRAPH}
- * 		<br> (optional) accept {@link JPSConstants.HEADERS}, see {@link MediaType}
+ * 		<br> (optional) target graph {@link JPSConstants#TARGETGRAPH}
+ * 		<br> (optional) accept {@link JPSConstants#HEADERS}, see {@link MediaType}
  * 	<p>HTTP POST: perform a SPARQL update
- * 		<br> sparql update {@link JPSConstants.QUERY_SPARQL_UPDATE}
+ * 		<br> sparql update {@link JPSConstants#QUERY_SPARQL_UPDATE}
  * <p>HTTP PUT: "insert" graph  
- * 		<br> rdf content {@link JPSConstants.CONTENT}
- * 		<br> content type {@link JPSConstants.CONTENTTYPE}
- * 		<br> target graph {@link JPSConstants.TARGETGRAPH}
+ * 		<br> rdf content {@link JPSConstants#CONTENT}
+ * 		<br> content type {@link JPSConstants#CONTENTTYPE}
+ * 		<br> target graph {@link JPSConstants#TARGETGRAPH}
  * 
  * @author csl37
  *

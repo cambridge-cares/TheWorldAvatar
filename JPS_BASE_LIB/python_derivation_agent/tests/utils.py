@@ -5,10 +5,10 @@ from rdflib import RDF
 import uuid
 
 import pyderivationagent.data_model as dm
-from tests.conftest import RESOURCE_DIR
-from tests.conftest import AllInstances
+from .conftest import RESOURCE_DIR
+from .conftest import AllInstances
 
-from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_INPUTPLACEHOLDEREXCEPTIONTHROW
+from .agents.sparql_client_for_test import RANDOM_EXAMPLE_INPUTPLACEHOLDEREXCEPTIONTHROW
 
 # ----------------------------------------------------------------------------------
 # Utility functions

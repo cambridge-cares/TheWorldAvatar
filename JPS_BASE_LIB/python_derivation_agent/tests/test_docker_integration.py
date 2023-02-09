@@ -4,31 +4,31 @@ import pytest
 import random
 import time
 
-from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_DIFFERENCE
-from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_DIFFERENCEREVERSE
-from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_LISTOFPOINTS
-from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_MAXVALUE
-from tests.agents.sparql_client_for_test import RANDOM_EXAMPLE_MINVALUE
-from tests.agents.sparql_client_for_test import RANDOM_STRING_WITH_SPACES
+from .agents.sparql_client_for_test import RANDOM_EXAMPLE_DIFFERENCE
+from .agents.sparql_client_for_test import RANDOM_EXAMPLE_DIFFERENCEREVERSE
+from .agents.sparql_client_for_test import RANDOM_EXAMPLE_LISTOFPOINTS
+from .agents.sparql_client_for_test import RANDOM_EXAMPLE_MAXVALUE
+from .agents.sparql_client_for_test import RANDOM_EXAMPLE_MINVALUE
+from .agents.sparql_client_for_test import RANDOM_STRING_WITH_SPACES
 from pyderivationagent.data_model.iris import ONTODERIVATION_DERIVATION
 
-from tests.conftest import create_rng_agent
-from tests.conftest import create_min_agent
-from tests.conftest import create_max_agent
-from tests.conftest import create_diff_agent
-from tests.conftest import create_diff_reverse_agent
-from tests.conftest import RNGAGENT_ENV
-from tests.conftest import MINAGENT_ENV
-from tests.conftest import MAXAGENT_ENV
-from tests.conftest import DIFFAGENT_ENV
-from tests.conftest import DIFFREVERSEAGENT_ENV
+from .conftest import create_rng_agent
+from .conftest import create_min_agent
+from .conftest import create_max_agent
+from .conftest import create_diff_agent
+from .conftest import create_diff_reverse_agent
+from .conftest import RNGAGENT_ENV
+from .conftest import MINAGENT_ENV
+from .conftest import MAXAGENT_ENV
+from .conftest import DIFFAGENT_ENV
+from .conftest import DIFFREVERSEAGENT_ENV
 
-from tests.conftest import host_docker_internal_to_localhost
+from .conftest import host_docker_internal_to_localhost
 
-import tests.utils as utils
+from . import utils
 
-import logging
-logger = logging.getLogger('test_docker_integration')
+from py4jps import agentlogging
+logger = agentlogging.get_logger('dev')
 
 pytest_plugins = ["docker_compose"]
 

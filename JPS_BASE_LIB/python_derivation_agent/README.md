@@ -1,6 +1,6 @@
 # Description #
 
-The `pyderivationagent` package provides a python wrapper for derivation agents as part of [TheWorldAvatar](https://github.com/cambridge-cares/TheWorldAvatar) project. It is a python equivalent of `uk.ac.cam.cares.jps.base.agent.DerivationAgent.java` but based on [Flask](https://flask.palletsprojects.com/en/2.0.x/) application behind a [gunicorn](https://gunicorn.org/) server, inspired by the [Example: Python agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/examples/python_agent). `pyderivationagent` uses `py4jps>=1.0.21` to access derivation operations provided in `uk.ac.cam.cares.jps.base.derivation.DerivationClient.java`. For technical details, below are a few useful links:
+The `pyderivationagent` package provides a python wrapper for derivation agents as part of [TheWorldAvatar](https://github.com/cambridge-cares/TheWorldAvatar) project. It is a python equivalent of `uk.ac.cam.cares.jps.base.agent.DerivationAgent.java` but based on [Flask](https://flask.palletsprojects.com/en/2.0.x/) application behind a [gunicorn](https://gunicorn.org/) server, inspired by the [Example: Python agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/examples/python_agent). `pyderivationagent` uses `py4jps>=1.0.32` to access derivation operations provided in `uk.ac.cam.cares.jps.base.derivation.DerivationClient.java`. For technical details, below are a few useful links:
 - [`py4jps`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_wrapper) - python wrapper for jps-base-lib
 - [`DerivationClient`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/derivation) - derivation framework
 - [`DerivationAgent.java`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/agent/DerivationAgent.java) - derivation agent java class that uses methods provided in `DerivationClient`
@@ -32,11 +32,10 @@ The above commands will create and activate the virtual environment `<venv_name>
 
 ## Installation via pip
 
-The following command can be used to install the `pyderivationagent` package and `agentlogging` package. This is a workaround as PyPI does NOT allow `install_requires` direct links, so we could NOT add package `agentlogging` from `'agentlogging @ git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils'` as dependency, therefore, in order to make the semi-automated release process working, we here introduce a workaround to install agentlogging to the virtual environment but NOT as dependency in the setup.py of `pyderivationagent`. A long term solution could be that we publish `agentlogging` in PyPI as well.
+The following command can be used to install the `pyderivationagent` package.
 
 ```sh
 (<venv_name>) $ pip install pyderivationagent
-(<venv_name>) $ pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 ```
 
 # How to use #

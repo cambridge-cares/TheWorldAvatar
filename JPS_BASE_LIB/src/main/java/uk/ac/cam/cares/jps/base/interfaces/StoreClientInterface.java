@@ -56,12 +56,6 @@ public interface StoreClientInterface {
 	 * @param update as String
 	 */
 	int executeUpdate(String update);
-	
-	/**
-	 * Executes the update operation supplied by the calling method.
-	 * @param update as UpdateRequest
-	 */
-	int executeUpdate(UpdateRequest update);
 
 	/**
 	 * Sets the query.

@@ -48,7 +48,7 @@ class AccessAgentIntegrationTest {
 	
 	//User defined variables
 	//set the desired access agent version number here
-	static final String ACCESS_AGENT_VERSION = "1.5.0";
+	static final String ACCESS_AGENT_VERSION = "1.6.1";
 	
 	//////////////////////////////////////////////////
 	
