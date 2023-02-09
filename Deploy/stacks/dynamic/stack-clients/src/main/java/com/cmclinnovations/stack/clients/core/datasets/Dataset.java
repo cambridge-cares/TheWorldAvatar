@@ -183,6 +183,46 @@ public class Dataset {
             .andHas(Rdf.iri(SparqlConstants.TITLE), getName())
             .andHas(Rdf.iri(SparqlConstants.DESCRIPTION), getDescription())
             .andHas(Rdf.iri(SparqlConstants.MODIFIED), Rdf.literalOfType(currentTime.toString(), Rdf.iri(SparqlConstants.DATETIME))));
+
+            // blazegraph triples
+            String kgUrl = BlazegraphClient.getInstance().getEndpoint().getUrl(getNamespace());
+            Iri blazegraphService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
+            insertTriples.add(blazegraphService.isA(Rdf.iri(SparqlConstants.BLAZEGRAPH))
+            .andHas(Rdf.iri(SparqlConstants.ENDPOINT_URL), kgUrl)
+            .andHas(Rdf.iri(SparqlConstants.SERVES_DATASET), catalogIri));
+
+            Iri postgisService = null;
+            if (getDataSubsets().stream().anyMatch(DataSubset::usesPostGIS)) {
+                String jdbcUrl = PostGISClient.getInstance().getEndpoint().getJdbcURL(getDatabase());
+
+                // append triples
+                postgisService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
+                insertTriples.add(postgisService.isA(Rdf.iri(SparqlConstants.POSTGIS))
+                .andHas(Rdf.iri(SparqlConstants.ENDPOINT_URL), jdbcUrl)
+                .andHas(Rdf.iri(SparqlConstants.SERVES_DATASET), catalogIri));
+
+                if (hasTimeSeries) {
+                    insertTriples.add(postgisService.has(Rdf.iri(SparqlConstants.HAS_TIMESERIES_SCHEMA), getTimeSeriesSchema()));
+                }
+            } 
+                
+            // implementation not complete until we figure out the external URLs
+            if (getDataSubsets().stream().anyMatch(DataSubset::usesGeoServer)) {
+                Iri geoserverService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
+
+                // append triples
+                insertTriples.add(geoserverService.isA(Rdf.iri(SparqlConstants.GEOSERVER))
+                .andHas(Rdf.iri(SparqlConstants.USES_DATABASE), postgisService)
+                .andHas(Rdf.iri(SparqlConstants.SERVES_DATASET), catalogIri));
+            }
+    
+            if (!getOntopMappings().isEmpty()) {
+                Iri ontopService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
+
+                insertTriples.add(ontopService.isA(Rdf.iri(SparqlConstants.ONTOP))
+                .andHas(Rdf.iri(SparqlConstants.USES_DATABASE), postgisService)
+                .andHas(Rdf.iri(SparqlConstants.SERVES_DATASET), catalogIri));
+            }
         } else {
             catalogIri = Rdf.iri(iri);
             Variable catalogTime = query.var();
@@ -200,51 +240,6 @@ public class Dataset {
                 .andHas(Rdf.iri(SparqlConstants.MODIFIED), Rdf.literalOfType(currentTime.toString(), Rdf.iri(SparqlConstants.DATETIME)))
                 .andHas(Rdf.iri(SparqlConstants.TITLE), dataSubset.getName())
                 .andHas(Rdf.iri(SparqlConstants.DESCRIPTION), dataSubset.getDescription()));
-    
-                String kgUrl = BlazegraphClient.getInstance().getEndpoint().getUrl(getNamespace());
-                Iri blazegraphService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
-    
-                // append triples
-                insertTriples.add(blazegraphService.isA(Rdf.iri(SparqlConstants.BLAZEGRAPH))
-                .andHas(Rdf.iri(SparqlConstants.ENDPOINT_URL), kgUrl));
-                
-                Iri postgisService = null;
-                if (dataSubset.usesPostGIS()) {
-                    String jdbcUrl = PostGISClient.getInstance().getEndpoint().getJdbcURL(getDatabase());
-    
-                    // append triples
-                    postgisService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
-                    insertTriples.add(postgisService.isA(Rdf.iri(SparqlConstants.POSTGIS))
-                    .andHas(Rdf.iri(SparqlConstants.ENDPOINT_URL), jdbcUrl));
-
-                    if (hasTimeSeries) {
-                        insertTriples.add(postgisService.has(Rdf.iri(SparqlConstants.HAS_TIMESERIES_SCHEMA), getTimeSeriesSchema()));
-                    }
-                } 
-                
-                // implementation not complete until we figure out the external URLs
-                if (dataSubset.usesGeoServer()) {
-                    if (postgisService == null) {
-                        throw new RuntimeException("postgisService is null, a datasubset that uses geoserver but does not use postgis?");
-                    } else {
-                        Iri geoserverService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
-    
-                        // append triples
-                        insertTriples.add(geoserverService.isA(Rdf.iri(SparqlConstants.GEOSERVER))
-                        .andHas(Rdf.iri(SparqlConstants.USES_DATABASE), postgisService));
-                    }
-                }
-    
-                if (!getOntopMappings().isEmpty()) {
-                    if (postgisService == null) {
-                        throw new RuntimeException("postgisService is null, a datasubset that uses ontop but does not use postgis?");
-                    } else {
-                        Iri ontopService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
-    
-                        insertTriples.add(ontopService.isA(Rdf.iri(SparqlConstants.ONTOP))
-                        .andHas(Rdf.iri(SparqlConstants.USES_DATABASE), postgisService));
-                    }
-                }
             } else {
                 Variable dataSubsetTime = query.var();
                 deleteTriples.add(Rdf.iri(dataSubset.getIri()).has(Rdf.iri(SparqlConstants.MODIFIED), dataSubsetTime));
@@ -326,5 +321,6 @@ public class Dataset {
         static final String HAS_TIMESERIES_SCHEMA = DEFAULT_NAMESPACE + "hasTimeSeriesSchema";
         static final String USES_DATABASE = DEFAULT_NAMESPACE + "usesDatabase";
         static final String ONTOP = DEFAULT_NAMESPACE + "Ontop";
+        static final String SERVES_DATASET = DCAT_NAMESPACE + "servesDataset";
     }
 }
