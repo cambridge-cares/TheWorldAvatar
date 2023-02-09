@@ -381,7 +381,7 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
                                 epc_endpoint=epc_endpoint, ocgml_endpoint=ocgml_endpoint, 
                                 query_endpoint=query_endpoint, update_endpoint=update_endpoint,
                                 kgclient_epc=kgclient_epc, kgclient_ocgml=kgclient_ocgml,
-                                summarise=True)
+                                summarise=False)
 
         # Update number of amended EPC instances
         all_epcs = tuple([sum(x) for x in zip(all_epcs, epcs)])
