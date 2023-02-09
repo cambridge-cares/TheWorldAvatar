@@ -48,7 +48,8 @@ public class Dataset {
     private final Namespace namespace;
     private final String workspaceName;
 
-    private final List<String> externalDatasets;
+    private final List<String> externalDatasetsString;
+    private List<Dataset> externalDatasets;
     private final List<DataSubset> dataSubsets;
     private final List<GeoServerStyle> geoserverStyles;
     private final List<String> ontopMappings;
@@ -81,7 +82,7 @@ public class Dataset {
         this.database = database;
         this.namespace = namespace;
         this.workspaceName = workspaceName;
-        this.externalDatasets = externalDatasets;
+        this.externalDatasetsString = externalDatasets;
         this.dataSubsets = dataSubsets;
         this.geoserverStyles = geoserverStyles;
         this.ontopMappings = ontopMappings;
@@ -136,8 +137,8 @@ public class Dataset {
         return getName();
     }
 
-    public List<String> getExternalDatasets() {
-        return (null != externalDatasets) ? externalDatasets : Collections.emptyList();
+    public List<String> getExternalDatasetsString() {
+        return (null != externalDatasetsString) ? externalDatasetsString : Collections.emptyList();
     }
 
     public List<DataSubset> getDataSubsets() {
@@ -164,6 +165,20 @@ public class Dataset {
         return (null != timeSeriesSchema) ? timeSeriesSchema : "public";
     }
 
+    public String getIri() {
+        return iri;
+    }
+
+    public void addExternalDataset(Dataset dataset) {
+        if (externalDatasets == null) {
+            externalDatasets = new ArrayList<>();
+        }
+        externalDatasets.add(dataset);
+    }
+    public List<Dataset> getExternalDatasets() {
+        return (null != externalDatasets) ? externalDatasets : Collections.emptyList();
+    }
+
     public String getQueryStringForCataloging() {
         // makes a sparql query and determine which dataset is already initialised
         // sets the iri if it is already initialised so that the timestamp can be modified
@@ -177,7 +192,8 @@ public class Dataset {
         SelectQuery query = Queries.SELECT(); //used to generate variable programmatically
         Iri catalogIri;
         if (!exists) {
-            catalogIri = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
+            iri = SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID();
+            catalogIri = Rdf.iri(iri);
 
             insertTriples.add(catalogIri.isA(Rdf.iri(getRdfType()))
             .andHas(Rdf.iri(SparqlConstants.TITLE), getName())
@@ -246,6 +262,10 @@ public class Dataset {
                 insertTriples.add(Rdf.iri(dataSubset.getIri())
                 .has(Rdf.iri(SparqlConstants.MODIFIED), Rdf.literalOfType(currentTime.toString(), Rdf.iri(SparqlConstants.DATETIME))));
             }
+        });
+
+        getExternalDatasets().stream().forEach(externalDataset -> {
+            insertTriples.add(Rdf.iri(iri).has(Rdf.iri(SparqlConstants.HAS_PART), Rdf.iri(externalDataset.getIri())));
         });
 
         ModifyQuery modify = Queries.MODIFY();

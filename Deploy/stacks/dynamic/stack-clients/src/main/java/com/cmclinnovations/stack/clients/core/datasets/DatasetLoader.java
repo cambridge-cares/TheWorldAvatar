@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.DirectedAcyclicGraph;
+import org.jgrapht.traverse.DepthFirstIterator;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
@@ -52,30 +53,48 @@ public class DatasetLoader {
                     .filter(dataset -> dataset.getName().equals(StackClient.getStackName()))
                     .findAny();
 
+            // Add an edge when one Dataset references another in its "externalDatasets"
+            // node. Throw an exception if the referenced Dataset doesn't exist.
+            graph.vertexSet().forEach(parentDataset -> parentDataset.getExternalDatasetsString()
+                    .forEach(referencedDatasetName -> graph.vertexSet().stream()
+                            .filter(dataset -> dataset.getName().equals(referencedDatasetName))
+                            .findFirst().ifPresentOrElse(
+                                    childDataset -> {
+                                        graph.addEdge(parentDataset, childDataset);
+                                        parentDataset.addExternalDataset(childDataset);
+                                    },
+                                    () -> {
+                                        throw new RuntimeException("Failed to find external dataset '"
+                                                + referencedDatasetName + "' referenced in dataset '"
+                                                + parentDataset.getName() + "'.");
+                                    })));
+            
+            DepthFirstIterator<Dataset, DefaultEdge> depthFirstIterator;
             if (stackSpecificDataset.isPresent()) {
                 // if so only load that one and its children.
-
-                // Add an edge when one Dataset references another in its "externalDatasets"
-                // node. Throw an exception if the referenced Dataset doesn't exist.
-                graph.vertexSet().forEach(parentDataset -> parentDataset.getExternalDatasets()
-                        .forEach(referencedDatasetName -> graph.vertexSet().stream()
-                                .filter(dataset -> dataset.getName().equals(referencedDatasetName))
-                                .findFirst().ifPresentOrElse(
-                                        childDataset -> graph.addEdge(parentDataset, childDataset),
-                                        () -> {
-                                            throw new RuntimeException("Failed to find external dataset '"
-                                                    + referencedDatasetName + "' referenced in dataset '"
-                                                    + parentDataset.getName() + "'.");
-                                        })));
-
-                loadData(stackSpecificDataset.get());
-                graph.getDescendants(stackSpecificDataset.get()).forEach(DatasetLoader::loadData);
+                depthFirstIterator = new DepthFirstIterator<>(graph, stackSpecificDataset.get());
             } else {
                 // Otherwise load all of the Datasets.
-                graph.vertexSet().forEach(DatasetLoader::loadData);
+                depthFirstIterator = new DepthFirstIterator<>(graph);
             }
+            loadDatasetRecursively(depthFirstIterator);
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read in dataset config file(s).", ex);
+        }
+    }
+
+    /**
+     * this ensures the bottom-most dataset in the tree gets loaded first
+     * @param depthFirstIterator
+     */
+    private static void loadDatasetRecursively(DepthFirstIterator<Dataset, DefaultEdge> depthFirstIterator) {
+        Dataset nextDataset = null;
+        while (depthFirstIterator.hasNext()) {
+            nextDataset = depthFirstIterator.next();
+            loadDatasetRecursively(depthFirstIterator);
+        }
+        if (nextDataset != null) {
+            loadData(nextDataset);
         }
     }
 
@@ -94,7 +113,13 @@ public class DatasetLoader {
         try {
             updateInjectableValues(configFile);
 
-            return objectMapper.readValue(configFile.toFile(), Dataset.class);
+            Dataset dataset = objectMapper.readValue(configFile.toFile(), Dataset.class);
+            dataset.getDataSubsets().stream().forEach(dataSubset -> {
+                if (dataSubset.getName() == null) {
+                    throw new RuntimeException("Not all datasets have a name: " + dataSubset.getClass());
+                }
+            });
+            return dataset;
         } catch (IOException ex) {
             throw new RuntimeException("Failed to read in dataset config file '" + configFile + "'.", ex);
         }
