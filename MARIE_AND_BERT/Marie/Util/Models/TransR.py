@@ -74,9 +74,9 @@ class TransR(nn.Module):
         dist_neg = self.distance(neg_triples)
         if mode == "numerical":
             numerical_loss = self.numerical_forward(pos_triples) # numerical loss only requires pos triples
-            return self.loss(dist_pos, dist_neg) + 0.01 * numerical_loss
+            return self.loss(dist_pos, dist_neg).mean() + 0.001 * numerical_loss
         else:
-            return self.loss(dist_pos, dist_neg)
+            return self.loss(dist_pos, dist_neg).mean()
 
     def numerical_forward(self, triples):
         true_value = triples[2].to(self.device)

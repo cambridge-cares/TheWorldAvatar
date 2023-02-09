@@ -188,17 +188,8 @@ class InferenceTrainer:
         """
         self.model.train()
         total_train_loss = 0
-        # total_numerical_loss = 0
-        # for numerical_triples in tqdm(self.train_numerical_dataloader):
-        #     self.optimizer.zero_grad()
-        #     loss = self.model.numerical_forward(numerical_triples).to(self.device)
-        #     loss.backward()
-        #     self.optimizer.step()
-        #     total_numerical_loss += loss.cpu().mean()
-        # print(f"Numerical Loss: {total_numerical_loss}")
 
-        for pos, neg in tqdm(self.train_dataloader):
-
+        for pos, neg in tqdm(self.train_dataloader_small):
             self.optimizer.zero_grad()
             numerical_idx_list = (pos[3] != -999)
             pos = torch.transpose(torch.stack(pos), 0, 1)
@@ -209,7 +200,7 @@ class InferenceTrainer:
             neg_non_numerical = torch.transpose(neg[~numerical_idx_list], 0, 1)
             loss_non_numerical = self.model(pos_non_numerical, neg_non_numerical)
             loss_non_numerical.backward()
-            loss_numerical = self.model(pos_numerical, neg_numerical)
+            loss_numerical = self.model(pos_numerical, neg_numerical, mode="numerical")
             loss_numerical.backward()
             self.optimizer.step()
             total_train_loss += (loss_numerical.cpu().mean() + loss_non_numerical.cpu().mean())
