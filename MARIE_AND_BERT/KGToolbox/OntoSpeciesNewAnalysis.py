@@ -1,7 +1,8 @@
 import json
 import os
 from pprint import pprint
-
+import sys
+sys.path.append("")
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
 from sklearn.model_selection import train_test_split
@@ -17,10 +18,17 @@ class OntoSpeciesNewAnalyzer:
 
     @staticmethod
     def append_to_dict(dictionary, key, value):
-        if key in dictionary:
-            dictionary[key].append(value)
+        if(type(key)==list):
+            for k in key:
+                if k in dictionary:
+                    dictionary[k].append(value)
+                else:
+                    dictionary[k]=[value]
         else:
-            dictionary[key] = [value]
+            if key in dictionary:
+                dictionary[key].append(value)
+            else:
+                dictionary[key] = [value]
         return dictionary
 
     def __init__(self, sub_ontology ):
@@ -121,7 +129,21 @@ class OntoSpeciesNewAnalyzer:
         print(node_value_dict)
 
 
+    def get_chemical_class_tree(self, chemical_class):
 
+        query = """
+        SELECT DISTINCT ?class   
+        WHERE { <"""+ chemical_class+"""> rdf:type  ?class . 
+        } 
+        """
+        sub_classes=[]
+        rst = self.query_blazegraph(query)["results"]["bindings"]
+        for binding in rst:
+            if ("OntoSpecies.owl#ChemicalClass" not in binding["class"]["value"]):
+                sub_classes.append(binding["class"]["value"])
+
+        return sub_classes
+    
     def get_all_chemical_classes(self):
         species_class_dict = {}
         class_species_dict = {}
@@ -130,18 +152,41 @@ class OntoSpeciesNewAnalyzer:
         WHERE {
           
           ?species rdf:type  <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species> . 	
-          ?species <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasChemicalClasses>  ?types . 
+          ?species <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasChemicalClass>  ?types . 
         } 
         """
+        # rst = self.query_blazegraph(GET_CHEMICAL_CLASSES)["results"]["bindings"]
+        # for binding in rst:
+        #     species = binding["species"]["value"].split("/")[-1]
+        #     chemical_classes = binding["types"]["value"].split("/")[-1]
+        #     species_class_dict = self.append_to_dict(species_class_dict, species, chemical_classes)
+        #     class_species_dict = self.append_to_dict(class_species_dict, chemical_classes, species)
+        
         rst = self.query_blazegraph(GET_CHEMICAL_CLASSES)["results"]["bindings"]
         for binding in rst:
+            chemical_class_list = []
+
             species = binding["species"]["value"].split("/")[-1]
-            chemical_classes = binding["types"]["value"].split("/")[-1]
-            species_class_dict = self.append_to_dict(species_class_dict, species, chemical_classes)
-            class_species_dict = self.append_to_dict(class_species_dict, chemical_classes, species)
+            chemical_classes = binding["types"]["value"]
+
+            chemical_class_list.append(chemical_classes)
+
+            sub_classes = self.get_chemical_class_tree(chemical_classes)
+            chemical_class_list.extend(sub_classes)
+
+            for c in sub_classes:
+                chemical_class_list.extend(self.get_chemical_class_tree(c))
+            
+            for i, c in enumerate(chemical_class_list):
+                chemical_class_list[i] = c.split("/")[-1]
+
+            species_class_dict = self.append_to_dict(species_class_dict, species, chemical_class_list)
+            class_species_dict = self.append_to_dict(class_species_dict, chemical_class_list, species)
 
         return species_class_dict, class_species_dict
 
+   
+        
     # def get_all_roles(self):
     #     GET_ALL_ROLES = """
     #     SELECT DISTINCT  ?role ?label
@@ -156,7 +201,7 @@ class OntoSpeciesNewAnalyzer:
     #         label = binding["label"]["value"]
     #         role = binding["role"]["value"].split("/")[-1]
 
-    def query_blazegraph(self, query, namespace="copy_ontospecies_pubchem_1"):
+    def query_blazegraph(self, query, namespace="copy_ontospecies_pubchem_2"):
         sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/" + namespace + "/sparql")
         sparql.setQuery(query)
         sparql.setReturnFormat(JSON)
@@ -200,3 +245,4 @@ class OntoSpeciesNewAnalyzer:
 if __name__ == "__main__":
     my_analyzer = OntoSpeciesNewAnalyzer(sub_ontology="role_with_subclass_mass")
     my_analyzer.run()
+
