@@ -69,10 +69,14 @@ class TransR(nn.Module):
         xavier_uniform_(embeddings.weight.data)
         return embeddings
 
-    def forward(self, pos_triples, neg_triples):
+    def forward(self, pos_triples, neg_triples, mode="non_numerical"):
         dist_pos = self.distance(pos_triples)
         dist_neg = self.distance(neg_triples)
-        return self.loss(dist_pos, dist_neg)  # + 0.01 * self.regularization(pos_triples)
+        if mode == "numerical":
+            numerical_loss = self.numerical_forward(pos_triples) # numerical loss only requires pos triples
+            return self.loss(dist_pos, dist_neg) + 0.01 * numerical_loss
+        else:
+            return self.loss(dist_pos, dist_neg)
 
     def numerical_forward(self, triples):
         true_value = triples[2].to(self.device)
@@ -151,9 +155,9 @@ class TransR(nn.Module):
         :param triples:
         :return:
         """
-        e_h_idx = triples[0].to(self.device)
-        r_idx = triples[1].to(self.device)
-        e_t_idx = triples[2].to(self.device)
+        e_h_idx = torch.LongTensor(triples[0].long() ).to(self.device)
+        r_idx = torch.LongTensor(triples[1].long() ).to(self.device)
+        e_t_idx = torch.LongTensor(triples[2].long() ).to(self.device)
 
         # =============== prepare embeddings =======================
         e_h = normalize(self.ent_embedding(e_h_idx)).to(self.device)

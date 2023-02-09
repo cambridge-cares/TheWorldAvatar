@@ -180,29 +180,40 @@ class InferenceTrainer:
             print(f"filtered infer hit rate: {filtered_hit_rate_list}")
             print("====================================================================")
 
-
-
     def train(self):
+        """
+        Split the the training set into non-numerical and numerical subsets
+        marked by [3] == -999 or not
+        :return:
+        """
         self.model.train()
         total_train_loss = 0
-        total_numerical_loss = 0
-        for numerical_triples in tqdm(self.train_numerical_dataloader):
-            self.optimizer.zero_grad()
-            loss = self.model.numerical_forward(numerical_triples).to(self.device)
-            loss.backward()
-            self.optimizer.step()
-            total_numerical_loss += loss.cpu().mean()
-        print(f"Numerical Loss: {total_numerical_loss}")
+        # total_numerical_loss = 0
+        # for numerical_triples in tqdm(self.train_numerical_dataloader):
+        #     self.optimizer.zero_grad()
+        #     loss = self.model.numerical_forward(numerical_triples).to(self.device)
+        #     loss.backward()
+        #     self.optimizer.step()
+        #     total_numerical_loss += loss.cpu().mean()
+        # print(f"Numerical Loss: {total_numerical_loss}")
 
-        for pos_triples, neg_triples in tqdm(self.train_dataloader):
+        for pos, neg in tqdm(self.train_dataloader):
+
             self.optimizer.zero_grad()
-            loss = self.model(pos_triples, neg_triples)
-            loss.backward()
+            numerical_idx_list = (pos[3] != -999)
+            pos = torch.transpose(torch.stack(pos), 0, 1)
+            pos_numerical = torch.transpose(pos[numerical_idx_list], 0, 1)
+            pos_non_numerical = torch.transpose(pos[~numerical_idx_list], 0, 1)  # create negative index list with ~
+            neg = torch.transpose(torch.stack(neg), 0, 1)
+            neg_numerical = torch.transpose(neg[numerical_idx_list], 0, 1)
+            neg_non_numerical = torch.transpose(neg[~numerical_idx_list], 0, 1)
+            loss_non_numerical = self.model(pos_non_numerical, neg_non_numerical)
+            loss_non_numerical.backward()
+            loss_numerical = self.model(pos_numerical, neg_numerical)
+            loss_numerical.backward()
             self.optimizer.step()
-            total_train_loss += loss.cpu().mean()
+            total_train_loss += (loss_numerical.cpu().mean() + loss_non_numerical.cpu().mean())
             self.model.normalize_parameters()
-
-
 
         print(f"Loss: {total_train_loss}")
 
@@ -231,7 +242,7 @@ if __name__ == "__main__":
     if args.dimension:
         dim = int(args.dimension)
 
-    learning_rate = 0.01
+    learning_rate = 1.0
     if args.learning_rate:
         learning_rate = float(args.learning_rate)
 

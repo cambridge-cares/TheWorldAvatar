@@ -118,12 +118,15 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
             s = self.entity2idx[row[0]]
             p = self.rel2idx[row[1]]
             o = self.entity2idx[row[2]]
-            true_triple = (s, p, o)
-            if row[1] != "hasMolecularWeight":
-                fake_tails = self.create_fake_triple(s, p, o, mode="head")
-                for fake_tail in fake_tails:
-                    fake_triple = (s, p, fake_tail)
-                    triples.append((true_triple, fake_triple))
+            if row[1] == "hasMolecularWeight":
+                true_triple = (s, p, o, self.node_value_dict[row[2]])
+            else:
+                true_triple = (s, p, o, -999)
+
+            fake_tails = self.create_fake_triple(s, p, o, mode="head")
+            for fake_tail in fake_tails:
+                fake_triple = (s, p, fake_tail)
+                triples.append((true_triple, fake_triple))
 
         return triples
 
@@ -159,20 +162,27 @@ if __name__ == "__main__":
     df_test = pd.read_csv(os.path.join(full_dir, f"{sub_ontology}-test.txt"), sep="\t", header=None)
     df_numerical = pd.read_csv(os.path.join(full_dir, f"{sub_ontology}-numerical.txt"), sep="\t", header=None)
     # ===================================================================================================
-    # train_set = TransRInferenceDataset(df_train, full_dataset_dir=full_dir, ontology=sub_ontology, mode="train")
-    test_set = TransRInferenceDataset(df_test, full_dataset_dir=full_dir, ontology=sub_ontology, mode="test")
+    train_set = TransRInferenceDataset(df_train, full_dataset_dir=full_dir, ontology=sub_ontology, mode="train")
+    # test_set = TransRInferenceDataset(df_test, full_dataset_dir=full_dir, ontology=sub_ontology, mode="test")
     # eval_set = TransRInferenceDataset(df_test, full_dataset_dir=full_dir, ontology=sub_ontology, mode="train_eval")
     # numerical_set = TransRInferenceDataset(df_numerical, full_dataset_dir=full_dir, ontology=sub_ontology,
     #                                        mode="numerical")
 
-    test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=test_set.candidate_max, shuffle=False)
-    # train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=32, shuffle=True)
+    # test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=test_set.candidate_max, shuffle=False)
+    train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=32, shuffle=True)
     # numerical_dataloader = torch.utils.data.DataLoader(numerical_set, batch_size=32, shuffle=True)
     # eval_set_dataloader = torch.utils.data.DataLoader(eval_set, batch_size=eval_set.ent_num, shuffle=False)
 
-    for row in test_dataloader:
-        print(row)
-        print("======")
+    for pos, neg in train_dataloader:
+        numerical_idx_list = (pos[3] != -999)
+        pos = torch.transpose(torch.stack(pos), 0, 1)
+        pos_numerical = torch.transpose(pos[numerical_idx_list], 0, 1)
+        pos_non_numerical = torch.transpose(pos[~numerical_idx_list], 0, 1)  # create negative index list with ~
+        neg = torch.transpose(torch.stack(neg), 0, 1)
+        neg_numerical = torch.transpose(neg[numerical_idx_list], 0, 1)
+        neg_non_numerical = torch.transpose(neg[~numerical_idx_list], 0, 1)
+        print(pos_numerical, neg_numerical)
+        x = input()
 
     # for row in eval_set_dataloader:
     #     # print(row)
