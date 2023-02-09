@@ -18,7 +18,7 @@ class TransR(nn.Module):
     Also aim to implement numerical embedding in the embedding
     """
 
-    def __init__(self, rel_dim, rel_num, ent_dim, ent_num, device="cpu"):
+    def __init__(self, rel_dim, rel_num, ent_dim, ent_num, device="cpu", use_projection=False, alpha=0.1):
         super(TransR, self).__init__()
         self.device = device
         self.rel_num = rel_num
@@ -35,6 +35,8 @@ class TransR(nn.Module):
         self.criterion = nn.MarginRankingLoss(margin=6).to(self.device)
         self.normalize_parameters()
         self.msle_loss = MeanSquaredLogError()
+        self.use_projection = use_projection
+        self.alpha = alpha
 
     def loss(self, pos_distance, neg_distance):
         target = torch.tensor([-1], dtype=torch.long).to(self.device)
@@ -74,32 +76,25 @@ class TransR(nn.Module):
         if mode == "non_numerical":
             return self.loss(dist_pos, dist_neg).mean()
         else:
-
             numerical_loss = self.numerical_forward(pos_triples)  # numerical loss only requires pos triples
-            return self.loss(dist_pos, dist_neg).mean() + 0.001 * numerical_loss
+            return (1 - self.alpha) * self.loss(dist_pos, dist_neg).mean() + self.alpha * numerical_loss
 
     def numerical_forward(self, triples):
-        # print("triples", triples)
-        # print("triples length", len(triples))
         true_value = triples[3].to(self.device)
-        rel_idx = triples[1].long()
+        head_idx = triples[0].long().to(self.device)
+        rel_idx = triples[1].long().to(self.device)
         if len(rel_idx) == 0:
             return 0
-        # print("rel idx", rel_idx)
-        head = self.ent_embedding(triples[0].long().to(self.device)).to(self.device)
+        head = self.ent_embedding(rel_idx).to(self.device)
+        if self.use_projection:
+            b_size = len(head_idx)
+            proj_mat = self.proj_matrix(rel_idx).view(b_size, self.rel_dim, self.ent_dim)
+            head = self.project(ent=head, proj_mat=proj_mat).to(self.device)
         attr = self.attr_embedding(rel_idx.to(self.device)).to(self.device)
-        # print("attr", attr)
         bias = self.bias_embedding(rel_idx.to(self.device)).to(self.device)
-        # print("bias", bias)
         aV = torch.sum(head * attr, dim=1).to(self.device)
-        # print("av", aV)
         value = (aV + bias)[0].mean().to(self.device)
-        # print("value", value)
-        # print("true value", true_value)
-
-        # value = torch.clamp(value, max=1000, min=0)
         diff = self.msle_loss(value, true_value.mean()).mean().to(self.device)
-        # print("numerical diff", diff)
         return diff.to(self.device)
 
     def predict(self, triples):

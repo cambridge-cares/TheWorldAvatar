@@ -45,14 +45,16 @@ def hit_rate(true_tail_idx_ranking_list):
 class InferenceTrainer:
 
     def __init__(self, full_dataset_dir, ontology, batch_size=32, epoch_num=100, dim=20, learning_rate=1.0, gamma=1,
-                 test=False):
+                 test=False, use_projection=False, alpha = 0.1):
         self.full_dataset_dir = full_dataset_dir
         self.ontology = ontology
         self.learning_rate = learning_rate
         self.gamma = gamma
         self.dim = dim
         self.test = test
-        # DATA_DIR = "D:\JPS_2022_8_20\TheWorldAvatar\MARIE_AND_BERT\DATA"
+        self.use_projection = use_projection
+        self.alpha = alpha
+
         self.my_extractor = HopExtractor(
             dataset_dir=self.full_dataset_dir,
             dataset_name=self.ontology)
@@ -102,7 +104,8 @@ class InferenceTrainer:
         # ------------------------- Training hyperparameters -----------------------
         self.epoch_num = epoch_num
         self.model = TransR(rel_dim=self.dim, rel_num=len(self.rel2idx.keys()), ent_dim=self.dim,
-                            ent_num=len(self.entity2idx.keys()), device=self.device).to(self.device)
+                            ent_num=len(self.entity2idx.keys()), device=self.device,
+                            use_projection=self.use_projection, alpha = self.alpha).to(self.device)
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
         self.scheduler = ExponentialLR(self.optimizer, gamma=self.gamma)
 
@@ -246,6 +249,8 @@ if __name__ == "__main__":
     parser.add_argument("-so", "--sub_ontology", help="name of the sub ontology")
     parser.add_argument("-bs", "--batch_size", help="size of mini batch")
     parser.add_argument("-test", "--test_mode", help="if true, the training will use a smaller training set")
+    parser.add_argument("-proj", "--use_projection", help="if true, use projection in numerical linear regression")
+    parser.add_argument("-alpha", "--alpha", help="ratio between l_a and l_r")
     args = parser.parse_args()
 
     dim = 20
@@ -255,6 +260,10 @@ if __name__ == "__main__":
     learning_rate = 0.01
     if args.learning_rate:
         learning_rate = float(args.learning_rate)
+
+    alpha = 0.1
+    if args.alpha:
+        alpha = float(args.alpha)
 
     gamma = 1
     if args.gamma:
@@ -277,13 +286,25 @@ if __name__ == "__main__":
         else:
             test = False
 
+    use_projection = False
+    if args.use_projection:
+        if args.use_projection.lower() == "yes":
+            test = True
+        elif args.use_projection.lower() == "no":
+            test = False
+        else:
+            test = False
+
     print(f"Dimension: {dim}")
     print(f"Learning rate: {learning_rate}")
     print(f"Gamma: {gamma}")
     print(f"Test: {test}")
     print(f"Batch size: {batch_size}")
+    print(f"Alpha: {alpha}")
+    print(f"Use projection: {use_projection}")
+    print(f"Test: {test}")
 
     full_dir = os.path.join(DATA_DIR, 'CrossGraph', 'ontospecies_new/role_with_subclass_mass')
     my_trainer = InferenceTrainer(full_dataset_dir=full_dir, ontology=ontology, batch_size=batch_size, dim=dim,
-                                  learning_rate=learning_rate, test=test)
+                                  learning_rate=learning_rate, test=test, use_projection=use_projection, alpha=alpha)
     my_trainer.run()
