@@ -36,6 +36,7 @@ DEFAULT_RESPONSE += "&nbsp&nbsp [this_url] is the host and port currently shown 
 
 SUCCESSFUL_API_RESPONSE = "IFC model has successfully been converted. Please visit the 'data' directory for the outputs"
 INVALID_PARAM_API_RESPONSE = "Missing `assetUrl` parameter in request!"
+
 # ----------------------------------------------------------------------------------
 # Test inputs and expected results
 # ----------------------------------------------------------------------------------
@@ -85,3 +86,10 @@ insertquery3 += "}"
 name_col = "name"
 file_col = "file"
 expected_assets2 = ["building", "asset1", "furniture", "solarpanel"]
+
+invalid_asseturl1 = "./"
+invalid_asseturl2 = "dir"
+invalid_asseturl3 = "/dir/"
+invalid_asseturl4 = "../../"
+invalid_asseturl5 = "www.example.org"
+invalid_asseturl6 = "http://www.example.com/ns/"

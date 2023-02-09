@@ -21,11 +21,9 @@ def validate_asset_url(asset_url):
     Argument:
     asset_url - `assetUrl` request parameter
     Returns:
-    Required url format
+    A boolean indicating if the url is valid
     """
     valid_urlstart = [".", "..", "http://"]
     if any(map(asset_url.startswith, valid_urlstart)) and not asset_url.endswith("/"):
-        return asset_url + "/"
-    else:
-        raise InvalidInputError("`assetUrl` parameter <" + asset_url +
-        "> is invalid. It must start with `.`, `..`, or `http://`, and must not end with `/`")
+        return True
+    return False

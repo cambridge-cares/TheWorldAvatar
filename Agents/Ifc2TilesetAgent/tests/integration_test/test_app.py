@@ -132,11 +132,37 @@ def test_api_wrong_request_type(flaskapp):
 )
 def test_api_invalid_request(expected_response, flaskapp):
     """
-    Tests that invalid requests returns the Method not allowed status code
+    Tests that invalid requests returns the Bad request status code
     """
-     # Inputs
+    # Inputs
     route = "/api"
+    # Send the POST request
     response = flaskapp.post(route, json={"asset url":"./gltf"})
+    # Assert that request has failed with the right status and response
+    assert response.status_code == 400
+    assert response.json["data"] == expected_response
+
+@pytest.mark.parametrize(
+    "asseturl",
+    [
+        (testconsts.invalid_asseturl1),
+        (testconsts.invalid_asseturl2),
+        (testconsts.invalid_asseturl3),
+        (testconsts.invalid_asseturl4),
+        (testconsts.invalid_asseturl5),
+        (testconsts.invalid_asseturl6),
+    ]
+)
+def test_api_invalid_asserturl_param(asseturl, flaskapp):
+    """
+    Tests that invalid assetUrl params returns the Bad request status code
+    """
+    # Inputs
+    route = "/api"
+    expected_response = "`assetUrl` parameter <" + asseturl
+    expected_response += "> is invalid. It must start with `.`, `..`, or `http://`, and must not end with `/`"
+    # Send the POST request
+    response = flaskapp.post(route, json={"assetUrl":asseturl})
     # Assert that request has failed with the right status and response
     assert response.status_code == 400
     assert response.json["data"] == expected_response

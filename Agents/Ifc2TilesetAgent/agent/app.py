@@ -48,8 +48,14 @@ def create_app():
             data = request.get_json(force=True)
             if "assetUrl" in data:
                 global asset_url
-                asset_url = validate_asset_url(data["assetUrl"])
-                logger.debug("assetURL is valid!")
+                if validate_asset_url(data["assetUrl"]):
+                    asset_url = data["assetUrl"] + "/"
+                    logger.debug("assetURL is valid!")
+                else:
+                    url_error_msg = "`assetUrl` parameter <" + data["assetUrl"]
+                    url_error_msg += "> is invalid. It must start with `.`, `..`, or `http://`, and must not end with `/`"
+                    logger.error(url_error_msg)
+                    return jsonify({"data": url_error_msg}), 400
             else:
                 logger.error("Missing `assetUrl` parameter in request!")
                 return jsonify({"data": "Missing `assetUrl` parameter in request!"}), 400
