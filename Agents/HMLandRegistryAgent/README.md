@@ -104,7 +104,7 @@ $ git pull
 ```
 Once the repository clone is obtained, please follow these instructions to [spin up the stack] on the remote machine. In order to access the exposed endpoints, e.g. `http://localhost:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
 
-Before starting development of the dockerized agent remotely, all required VSCode extensions shall be installed on the remote machine (e.g. *augustocdias.tasks-shell-input* or the *Python extension*). As the Docker image requires the [Stack-Clients] `.jar` file to be wrapped by [py4jps], they need to be copied over manually to the respective folders as specified in the [Dockerfile] or can be created remotely by running the *Update JPSRM and Build and Debug* Debug Configuration. In order to build these resources, Java and Maven need to be available on the remote machine. In order to pull TWA specific Maven packages from the [Github package repository], both `settings.xml` and `settings-security.xml` files need to be copied into Maven's `.m2` folder on the remote machine (typically located at user's root directory)
+Before starting development of the dockerized agent remotely, all required VSCode extensions shall be installed on the remote machine (e.g. *augustocdias.tasks-shell-input* or the *Python extension*). 
 
 ```bash
 # Java >= 11
@@ -150,6 +150,9 @@ An overview of all provided API endpoints and their functionality is provided af
 
 - POST request to update transaction records for all instantiated properties, incl. property price indices for instantiated local authorities (i.e. most granular geography for which UK House Price Index is published):
   > `/api/landregistry/update_all`
+
+- GET request to instantiate/update building footprint and elevation information as instantiated for linked OntoCityGml instance according to OntoBuiltEnv for all buildings:
+  > `/api/landregistry/add_ocgml_info`
 
 Example requests are provided in the [resources] folder.
 
