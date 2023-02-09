@@ -54,7 +54,7 @@ class HopExtractor:
             p = self.relation2idx[p]
             o = self.entity2idx[o]
             idx_triples.append('_'.join([str(s), str(p), str(o)]))
-        return idx_triples
+        return set(idx_triples)
 
     def check_triple_existence(self, triple_str):
         return triple_str in self.idx_triples
@@ -129,9 +129,9 @@ class HopExtractor:
 
 if __name__ == "__main__":
     START_TIME = time.time()
-    ontology = "ontokin_reactions_test"
-    # DATA_DIR = "D:\JPS_2022_8_20\TheWorldAvatar\MARIE_AND_BERT\DATA"
-    my_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, f'CrossGraph/{ontology}'),
-                                dataset_name="ontokin_reactions_test")
+    _ontology = "ontospecies_new"
+    _dataset_dir = f"CrossGraph/{_ontology}/role_only"
+    my_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, _dataset_dir),
+                                dataset_name="role_only")
 
     print(time.time() - START_TIME)
