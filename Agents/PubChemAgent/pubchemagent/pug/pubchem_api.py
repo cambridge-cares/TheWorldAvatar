@@ -2,11 +2,15 @@ import requests
 import logging
 from typing import Tuple
 import json
-from unit_parse import parser, logger
+from unit_parse import parser, logger, reduce_quantities
+import pint
 from rdkit import Chem
 from periodictable import elements
 from datetime import date
 import re
+
+ureg = pint.UnitRegistry()
+ureg.define('percent = 1 / 100 = %')
 
 logging.getLogger('urllib3').setLevel(logging.CRITICAL)
 logging.getLogger('pint').setLevel(logging.CRITICAL)
@@ -88,11 +92,13 @@ class pug_api():
       
         # request experimental properties
         exp_prop = {}
+        Qtot = []
         output= 'JSON?heading=Experimental+Properties'
         link = pubchem_domain_full+input_domain+input_identifier+output
-        data={}
+        data = {}
         data = requests.get(link)
         data = json.loads(data.text)
+        prev_key = ''
         if 'Record' in data:
                 Reference=data.get('Record').get('Reference')
                 if 'Section' in data.get('Record').get('Section')[0].get('Section')[0]:
@@ -101,6 +107,18 @@ class pug_api():
                     for prop in data:
                         prop_list = prop.get('Information')
                         key = prop.get('TOCHeading')
+                        if key != prev_key and i != 1 and Qtot != []:
+                            exp_prop[i] = {}
+                            Qrec = reduce_quantities(Qtot)
+                            exp_prop[i]['key'] = prev_key
+                            a , b = pug_api.format_result(Qrec)
+                            exp_prop[i]['value'] = b
+                            exp_prop[i]['description'] = ''
+                            exp_prop[i]['dateofaccess'] = date.today()
+                            exp_prop[i]['reference'] = 'PubChem agent'
+                            exp_prop[i]['is_recommended'] = 'yes'
+                            Qtot = []                 
+                            i=i+1       
                         if key in num_prop_list or key in thermo_list or key in class_list:
                             for item in prop_list:
                                 exp_prop[i]={}
@@ -120,6 +138,8 @@ class pug_api():
                                         ep_unit=''
                                     description = str(ep_string[0]) + ' ' + ep_unit
                                     Q, ep_string = pug_api.string_parser(description)
+                                if Q != None:
+                                    Qtot = Qtot + [Q]
                                 reference_num = item.get('ReferenceNumber')
                                 if item.get('Reference'):
                                         reference='DOI:' + item.get('Reference')[0].partition('DOI:')[2]
@@ -132,6 +152,7 @@ class pug_api():
                                 exp_prop[i]['description'] = description.replace("\'","").replace("\\","/").replace('"','')
                                 exp_prop[i]['reference'] = reference
                                 exp_prop[i]['dateofaccess'] = date.today()
+                                exp_prop[i]['is_recommended'] = ''
                                 if key in class_list: 
                                     exp_prop[i]['key'] = 'ChemicalClass'
                                     if ' -> ' in exp_prop[i]['description']:
@@ -148,51 +169,57 @@ class pug_api():
                                 else:
                                     exp_prop[i]['type']='num_prop'
                                 i=i+1
+                            prev_key = key
         #else:
         #    print("\'Experimental Properties\' do not exist in record")
 
         return exp_prop
 
     def string_parser(str) -> dict:
-        props = {}
-        unit = ''
-        ref_quantity = ''
-        ref_unit = ''
         str=pug_api.preprocess(str)
         try:
             logger.setLevel(logging.CRITICAL)
             result = parser(str)
-            if hasattr(result, 'm'):
-                result = result.to_base_units()
-                quantity = result.m
-                if hasattr(result, 'u'):
-                    unit = result.u
-            else:
-                result = parser(str)[0]
-                a = 0
-                for i in result:
-                    if a == 0:
-                        if hasattr(result[a], 'u'):
-                            result[a] = result[a].to_base_units()
-                            quantity = result[a].m
-                            unit = result[a].u
-                        else:
-                            quantity = result[a] 
-                        a = a+1
-                    else:
-                        result[a] = result[a].to_base_units()
-                        ref_quantity = result[a].m
-                        ref_unit = result[a].u            
-            props ['value'] = quantity
-            props ['unit'] = unit
-            props ['ref_value'] = ref_quantity
-            props ['ref_unit'] = ref_unit  
+            result, props = pug_api.format_result(result)
         except Exception as exc:
             print(exc)
             print(str)
             props = str
-            return props
+            return  None, props
         
+        return result, props
+
+    def format_result(result): 
+        props = {}     
+        unit = ''
+        ref_quantity = ''
+        ref_unit = ''  
+        if hasattr(result, 'm'):
+            result = result.to_base_units()
+            quantity = result.m
+            if hasattr(result, 'u'):
+                unit = result.u
+        else:
+            result = result[0]
+            a = 0
+            for i in result:
+                if a == 0:
+                    if hasattr(result[a], 'u'):
+                        result[a] = result[a].to_base_units()
+                        quantity = result[a].m
+                        unit = result[a].u
+                    else:
+                        quantity = result[a] 
+                    a = a+1
+                else:
+                    result[a] = result[a].to_base_units()
+                    ref_quantity = result[a].m
+                    ref_unit = result[a].u            
+        props ['value'] = quantity
+        props ['unit'] = unit
+        props ['ref_value'] = ref_quantity
+        props ['ref_unit'] = ref_unit  
+
         return result, props
 
     def preprocess(str) -> str:
@@ -210,10 +237,10 @@ class pug_api():
         str=re.sub("±[0-9]{1,10}", "",str)
         str=re.sub("X10-", "e-",str)
         str=re.sub("MHz", "megaHz",str)
-        str=re.sub("(USCG, 1999)","", str)
-        str=re.sub("(NTP, 1992)","", str)
-        str=re.sub("(NIOSH, 2022)","", str)
-        str=re.sub("(EPA, 1998)","", str)
+        str=re.sub("\(USCG, 1999\)","", str)
+        str=re.sub("\(NTP, 1992\)","", str)
+        str=re.sub("\(NIOSH, 2022\)","", str)
+        str=re.sub("\(EPA, 1998\)","", str)
         
         #Flash Point
         str=re.sub("c.c."," ", str)
