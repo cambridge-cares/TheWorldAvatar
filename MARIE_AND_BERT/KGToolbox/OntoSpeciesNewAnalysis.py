@@ -2,6 +2,7 @@ import json
 import os
 from pprint import pprint
 import sys
+
 sys.path.append("")
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
@@ -18,12 +19,12 @@ class OntoSpeciesNewAnalyzer:
 
     @staticmethod
     def append_to_dict(dictionary, key, value):
-        if(type(key)==list):
+        if (type(key) == list):
             for k in key:
                 if k in dictionary:
                     dictionary[k].append(value)
                 else:
-                    dictionary[k]=[value]
+                    dictionary[k] = [value]
         else:
             if key in dictionary:
                 dictionary[key].append(value)
@@ -31,13 +32,44 @@ class OntoSpeciesNewAnalyzer:
                 dictionary[key] = [value]
         return dictionary
 
-    def __init__(self, sub_ontology ):
+    def __init__(self, sub_ontology):
         self.species_role_dictionary, self.role_species_dictionary = self.get_roles_of_species()
         self.species_class_dict, self.class_species_dict = self.get_all_chemical_classes()
+        self.species_molar_mass_dict, self.molar_mass_value_dict = self.get_molecular_weight()
+
         self.ontology = "ontospecies_new"
         self.sub_ontology = sub_ontology
         self.full_dataset_dir = os.path.join(DATA_DIR, "CrossGraph", self.ontology)
         self.sub_ontology_path = os.path.join(self.full_dataset_dir, self.sub_ontology)
+
+    def get_molecular_weight(self):
+        """
+        Splitted into two things, the node and the value it self
+        :return:
+        """
+        species_molar_mass_node_dict = {}
+        node_value_dict = {}
+        GET_MOLECULAR_WEIGHT = """
+        SELECT DISTINCT  ?species   ?node ?value
+
+        WHERE {
+
+            ?species  rdf:type  <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species> . 	
+            ?species <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularWeight> ?node .
+            ?node <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value> ?value
+
+        }   
+        """
+        rst = self.query_blazegraph(GET_MOLECULAR_WEIGHT)["results"]["bindings"]
+
+        for binding in rst:
+            species = binding["species"]["value"].split("/")[-1]
+            node = binding["node"]["value"].split("/")[-1]
+            value = float(binding["value"]["value"])
+            species_molar_mass_node_dict[species] = node
+            node_value_dict[node] = value
+
+        return species_molar_mass_node_dict, node_value_dict
 
     def write_triples_to_tsv(self, all_triples):
         df = pd.DataFrame(all_triples)
@@ -50,6 +82,21 @@ class OntoSpeciesNewAnalyzer:
 
         df_test.to_csv(os.path.join(self.sub_ontology_path, f"{self.sub_ontology}-test.txt"),
                        sep="\t", header=False, index=False)
+
+    def create_numerical_triples(self):
+        numerical_triples = []
+        numerical_node_triples = []
+        for species in self.species_molar_mass_dict:
+            molar_mass = self.species_molar_mass_dict[species]
+            value = self.molar_mass_value_dict[molar_mass]
+            row_numerical = (species, "hasMolecularWeight", value)
+            row_node = (species, "hasMolecularWeight", molar_mass)
+            numerical_triples.append(row_numerical)
+            numerical_node_triples.append(row_node)
+
+
+
+        return numerical_triples, numerical_node_triples
 
     def create_triples_with_subclass(self):
         all_triples = []
@@ -102,48 +149,22 @@ class OntoSpeciesNewAnalyzer:
 
         return species_role_dict, role_species_dict
 
-    def get_molecular_weight(self):
-        """
-        Splitted into two things, the node and the value it self
-        :return:
-        """
-        species_node_dict = {}
-        node_value_dict = {}
-        GET_MOLECULAR_WEIGHT = """
-        SELECT DISTINCT  ?species ?node ?value
-        WHERE {
-            ?species rdf:type  <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species> . 	
-            ?species <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasMolecularWeight> ?node .
-            ?o <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#value> ?value
-        }  
-        """
-        rst = self.query_blazegraph(GET_MOLECULAR_WEIGHT)["results"]["bindings"]
-        for binding in rst:
-            species = binding["species"]["value"].split("/")[-1]
-            node = binding["node"]["value"].split("/")[-1]
-            value = float(binding["value"]["value"])
-            species_node_dict[species] = node
-            node_value_dict[node] = value
-
-        print(species_node_dict)
-        print(node_value_dict)
-
 
     def get_chemical_class_tree(self, chemical_class):
 
         query = """
         SELECT DISTINCT ?class   
-        WHERE { <"""+ chemical_class+"""> rdf:type  ?class . 
+        WHERE { <""" + chemical_class + """> rdf:type  ?class . 
         } 
         """
-        sub_classes=[]
+        sub_classes = []
         rst = self.query_blazegraph(query)["results"]["bindings"]
         for binding in rst:
             if ("OntoSpecies.owl#ChemicalClass" not in binding["class"]["value"]):
                 sub_classes.append(binding["class"]["value"])
 
         return sub_classes
-    
+
     def get_all_chemical_classes(self):
         species_class_dict = {}
         class_species_dict = {}
@@ -161,7 +182,7 @@ class OntoSpeciesNewAnalyzer:
         #     chemical_classes = binding["types"]["value"].split("/")[-1]
         #     species_class_dict = self.append_to_dict(species_class_dict, species, chemical_classes)
         #     class_species_dict = self.append_to_dict(class_species_dict, chemical_classes, species)
-        
+
         rst = self.query_blazegraph(GET_CHEMICAL_CLASSES)["results"]["bindings"]
         for binding in rst:
             chemical_class_list = []
@@ -176,7 +197,7 @@ class OntoSpeciesNewAnalyzer:
 
             for c in sub_classes:
                 chemical_class_list.extend(self.get_chemical_class_tree(c))
-            
+
             for i, c in enumerate(chemical_class_list):
                 chemical_class_list[i] = c.split("/")[-1]
 
@@ -185,8 +206,6 @@ class OntoSpeciesNewAnalyzer:
 
         return species_class_dict, class_species_dict
 
-   
-        
     # def get_all_roles(self):
     #     GET_ALL_ROLES = """
     #     SELECT DISTINCT  ?role ?label
@@ -222,12 +241,19 @@ class OntoSpeciesNewAnalyzer:
             candidate_dict[role_idx] = role_list
         return candidate_dict
 
-    def run(self):
-        # self.get_molecular_weight()
 
+
+    def run(self):
+        numerical_triples, molar_mass_triples = self.create_numerical_triples()
+        df_numerical = pd.DataFrame(numerical_triples)
+        df_numerical.to_csv(os.path.join(self.sub_ontology_path, f"{self.sub_ontology}-numerical.txt"),
+                       sep="\t", header=False, index=False)
+        with open(f"{self.sub_ontology_path}/node_value_dict.json", "w") as f:
+            f.write(json.dumps(self.molar_mass_value_dict))
+            f.close()
         role_triples = self.create_triples_for_roles_of_species()
         chemical_class_triples = self.create_triples_with_subclass()
-        all_triples = role_triples + chemical_class_triples
+        all_triples = role_triples + chemical_class_triples + molar_mass_triples
         self.write_triples_to_tsv(all_triples=all_triples)
         ontology = f"{self.ontology}/{self.sub_ontology}"
         MakeIndex.create_indexing(self.sub_ontology, data_dir=f'CrossGraph/{ontology}')
@@ -245,4 +271,3 @@ class OntoSpeciesNewAnalyzer:
 if __name__ == "__main__":
     my_analyzer = OntoSpeciesNewAnalyzer(sub_ontology="role_with_subclass_mass")
     my_analyzer.run()
-
