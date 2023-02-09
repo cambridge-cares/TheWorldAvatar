@@ -289,11 +289,11 @@ if __name__ == "__main__":
     use_projection = False
     if args.use_projection:
         if args.use_projection.lower() == "yes":
-            test = True
+            use_projection = True
         elif args.use_projection.lower() == "no":
-            test = False
+            use_projection = False
         else:
-            test = False
+            use_projection = False
 
     print(f"Dimension: {dim}")
     print(f"Learning rate: {learning_rate}")
