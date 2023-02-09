@@ -44,17 +44,18 @@ def hit_rate(true_tail_idx_ranking_list):
 
 class InferenceTrainer:
 
-    def __init__(self, full_dataset_dir, ontology, batch_size=32, epoch_num=100, dim=20, learning_rate=1.0, gamma=1):
+    def __init__(self, full_dataset_dir, ontology, batch_size=32, epoch_num=100, dim=20, learning_rate=1.0, gamma=1,
+                 test=False):
         self.full_dataset_dir = full_dataset_dir
         self.ontology = ontology
         self.learning_rate = learning_rate
         self.gamma = gamma
         self.dim = dim
+        self.test = test
         # DATA_DIR = "D:\JPS_2022_8_20\TheWorldAvatar\MARIE_AND_BERT\DATA"
         self.my_extractor = HopExtractor(
             dataset_dir=self.full_dataset_dir,
             dataset_name=self.ontology)
-
         df_train = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-train-2.txt"), sep="\t", header=None)
         df_train_small = df_train.sample(frac=0.01)
         df_test = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-test.txt"), sep="\t", header=None)
@@ -66,8 +67,13 @@ class InferenceTrainer:
         test_set = TransRInferenceDataset(df_test, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology,
                                           mode="test")
 
-        train_set = TransRInferenceDataset(df_train, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology,
-                                           mode="train")
+        # ========================================== CREATE DATASET FOR TRAINING ================================
+        if not self.test:
+            train_set = TransRInferenceDataset(df_train, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology,
+                                               mode="train")
+            self.train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
+        # =========================================================================================================
+
         train_set_small = TransRInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
                                                  ontology=self.ontology,
                                                  mode="train")
@@ -84,7 +90,7 @@ class InferenceTrainer:
         self.test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=test_set.candidate_max, shuffle=False)
         self.train_numerical_dataloader = torch.utils.data.DataLoader(train_numerical_set, batch_size=32,
                                                                       shuffle=True)
-        self.train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
+
         self.train_dataloader_small = torch.utils.data.DataLoader(train_set_small, batch_size=batch_size, shuffle=True)
         self.train_dataloader_eval = torch.utils.data.DataLoader(train_set_eval, batch_size=train_set_eval.ent_num,
                                                                  shuffle=False)
@@ -188,8 +194,11 @@ class InferenceTrainer:
         """
         self.model.train()
         total_train_loss = 0
+        if self.test:
+            self.train_dataloader = self.train_dataloader_small
+            # in test mode, use self.train_dataloader_small
 
-        for pos, neg in tqdm(self.train_dataloader_small):
+        for pos, neg in tqdm(self.train_dataloader):
             self.optimizer.zero_grad()
             numerical_idx_list = (pos[3] != -999)
             pos = torch.transpose(torch.stack(pos), 0, 1)
@@ -199,15 +208,13 @@ class InferenceTrainer:
             neg_numerical = torch.transpose(neg[numerical_idx_list], 0, 1)
             neg_non_numerical = torch.transpose(neg[~numerical_idx_list], 0, 1)
             loss_non_numerical = self.model(pos_non_numerical, neg_non_numerical, mode="non_numerical")
-            print("loss_non_numerical", loss_non_numerical)
+            # print("loss_non_numerical", loss_non_numerical)
             # loss_non_numerical.backward()
             if len(pos_numerical[0]) > 0:
                 loss_numerical = self.model(pos_numerical, neg_numerical, mode="numerical")
-                print("loss_numerical", loss_numerical)
-               #  loss_numerical.backward()
+                # print("loss_numerical", loss_numerical)
                 loss = loss_numerical.mean() + loss_non_numerical.mean()
                 loss.backward()
-                # total_train_loss += ()
             else:
                 loss = loss_non_numerical.mean()
                 loss.backward()
@@ -237,6 +244,8 @@ if __name__ == "__main__":
     parser.add_argument("-lr", "--learning_rate", help="starting learning rate")
     parser.add_argument("-g", "--gamma", help="gamma for scheduler")
     parser.add_argument("-so", "--sub_ontology", help="name of the sub ontology")
+    parser.add_argument("-bs", "--batch_size", help="size of mini batch")
+    parser.add_argument("-test", "--test_mode", help="if true, the training will use a smaller training set")
     args = parser.parse_args()
 
     dim = 20
@@ -251,15 +260,30 @@ if __name__ == "__main__":
     if args.gamma:
         gamma = float(args.gamma)
 
+    batch_size = 256
+    if args.batch_size:
+        batch_size = int(args.batch_size)
+
     ontology = "role_with_subclass_mass"
     if args.sub_ontology:
         ontology = args.sub_ontology
 
+    test = False
+    if args.test_mode:
+        if args.test_mode.lower() == "yes":
+            test = True
+        elif args.test_mode.lower() == "no":
+            test = False
+        else:
+            test = False
+
     print(f"Dimension: {dim}")
     print(f"Learning rate: {learning_rate}")
     print(f"Gamma: {gamma}")
+    print(f"Test: {test}")
+    print(f"Batch size: {batch_size}")
 
     full_dir = os.path.join(DATA_DIR, 'CrossGraph', 'ontospecies_new/role_with_subclass_mass')
-    my_trainer = InferenceTrainer(full_dataset_dir=full_dir, ontology=ontology, batch_size=256, dim=dim,
-                                  learning_rate=learning_rate)
+    my_trainer = InferenceTrainer(full_dataset_dir=full_dir, ontology=ontology, batch_size=batch_size, dim=dim,
+                                  learning_rate=learning_rate, test=test)
     my_trainer.run()
