@@ -461,43 +461,42 @@ def retrieve_ONS_shape_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endp
 '''
 
     # Get query string
-    query = output_query_template('ONS output area', year, iris= False)
+    query = output_query_template('ONS output area', year)
 
     # Construct kg client
     logger.info('Querying ONS output area shape from Knowledge graph...')
     kg_client = KGClient(query_endpoint, update_endpoint)
     result = kg_client.performQuery(query)
 
+    # Parse the result into DataFrame
+    df = pd.DataFrame(columns=['s', 'geom'])
+    df = df.append(result)
+    
     # check if WKT is valid and 
     # uploading polygons to Shapely to reduce precision to 5 DP (1m)
-    for i in range(len(result[:,1])):
-        shape = result[i,1]
+    del_ind = []
+    for i in range(len(df)):
+        shape = df.at[i,'geom']
         try:
             P = shapely.wkt.loads(shape)
-            result[i,1] = shapely.wkt.dumps(P,rounding_precision=5)
+            df.loc[i,'geom'] = shapely.wkt.dumps(P,rounding_precision=5)
         # if shape is invalid do chuff all 
-        except TypeError:
+        except Exception:
             pass
         # if the shape is just a number (basically meaningless)
         # add to index of shapes to be deleted
-        if type(result[i,1]) == int:
-            del_ind = i 
+        if len(shape) < 7:
+            del_ind.append(i)
 
-    # get rid of invalid shapes
-    result = np.delete(result,del_ind,axis=0)
-    # Parse the result into DataFrame
-    df = pd.DataFrame(columns=['s', 'geom'])
-    for i in range(len(result)):
-        df.loc[i,'s']=result[i,0]
-        df.loc[i,'geom']=result[i,1]
-    
+    df = df.drop(df.index[del_ind])
+
     # specifying geodata frame
     df['geometry'] = gpd.GeoSeries.from_wkt(df['geom'])
     df = drop_column(df,'geom')
 
     df = gpd.GeoDataFrame(df, geometry='geometry')
     df = df.set_crs("EPSG:4326")
-    print('Converting to Mercator projection (better than WGS84 for UK)')
+    #print('Converting to Mercator projection (better than WGS84 for UK)')
     df = df.to_crs("EPSG:3395")
     # Enable the func below to save the df to pickle file, save the time for querying and processing :)
     #save_pickle_variable(df_geo = df)
@@ -540,3 +539,5 @@ def retrieve_temp_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint:
 
     logger.info(f'{df.shape[0]/36} number of LSOA of which Climate tempeature data (max, mean, min of each 12 months) have been retrieved')
     return df
+
+

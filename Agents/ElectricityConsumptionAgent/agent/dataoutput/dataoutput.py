@@ -1898,7 +1898,8 @@ plot_multiple_geodistribution('Fuel Cost \n (£/month/household)','household_cos
 '''
 # ----------------------------------------------------------------
 ##########################################################
-
+df_geo = call_pickle('C:/Users/jx309/Documents/TheWorldAvatar/Agents/ElectricityConsumptionAgent/Data/temp_Repo/df_geo in function retrieve_ONS_shape_from_KG')
+print('')
 
 
 
