@@ -56,7 +56,7 @@ class InferenceTrainer:
             dataset_name="role_with_subclass")
 
         df_train = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-train-2.txt"), sep="\t", header=None)
-        df_train_small = df_train.sample(frac=0.001)
+        df_train_small = df_train.sample(frac=0.0001)
         df_test = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-test.txt"), sep="\t", header=None)
         df_numerical = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-numerical.txt"), sep="\t", header=None)
 
@@ -233,7 +233,7 @@ if __name__ == "__main__":
     if args.dimension:
         dim = int(args.dimension)
 
-    learning_rate = 1.0
+    learning_rate = 0.01
     if args.learning_rate:
         learning_rate = float(args.learning_rate)
 
