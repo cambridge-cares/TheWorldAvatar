@@ -34,7 +34,7 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
         self.df = df
         self.ent_num = len(self.entity2idx.keys())
         self.rel_num = len(self.rel2idx.keys())
-        self.use_cached_triples = True
+        self.use_cached_triples = False
 
         cached_triple_path = f"{self.full_dataset_dir}/triple_idx_{self.mode}.json"
         if os.path.exists(cached_triple_path) and self.use_cached_triples:
@@ -54,10 +54,10 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
             else:
                 self.triples = self.create_test_triples()
                 print(f"Number of triples for testing: {len(self.triples)}")
-
-            with open(cached_triple_path, "w") as f:
-                f.write(json.dumps(self.triples))
-                f.close()
+            if self.use_cached_triples:
+                with open(cached_triple_path, "w") as f:
+                    f.write(json.dumps(self.triples))
+                    f.close()
 
     def create_train_small_triples_for_evaluation(self):
         triples = []

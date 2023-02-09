@@ -27,7 +27,6 @@ class TransR(nn.Module):
         self.ent_dim = ent_dim
         self.ent_embedding = self._init_embedding(num=self.ent_num, dim=self.ent_dim).to(self.device)
         self.rel_embedding = self._init_embedding(num=self.rel_num, dim=self.rel_dim).to(self.device)
-        # self.attr_embedding = self._init_embedding(num=self.rel_num, dim=self.rel_dim).to(self.device)
         self.attr_embedding = nn.Embedding(num_embeddings=self.rel_num, embedding_dim=self.rel_dim)
         self.attr_embedding.weight.data.uniform_(-1, 1)
         self.bias_embedding = self._init_embedding(num=self.rel_num, dim=1).to(self.device)
@@ -72,21 +71,35 @@ class TransR(nn.Module):
     def forward(self, pos_triples, neg_triples, mode="non_numerical"):
         dist_pos = self.distance(pos_triples)
         dist_neg = self.distance(neg_triples)
-        if mode == "numerical":
-            numerical_loss = self.numerical_forward(pos_triples) # numerical loss only requires pos triples
-            return self.loss(dist_pos, dist_neg).mean() + 0.001 * numerical_loss
-        else:
+        if mode == "non_numerical":
             return self.loss(dist_pos, dist_neg).mean()
+        else:
+
+            numerical_loss = self.numerical_forward(pos_triples)  # numerical loss only requires pos triples
+            return self.loss(dist_pos, dist_neg).mean() + 0.001 * numerical_loss
 
     def numerical_forward(self, triples):
-        true_value = triples[2].to(self.device)
-        head = self.ent_embedding(triples[0].to(self.device)).to(self.device)
-        attr = self.attr_embedding(triples[1].to(self.device)).to(self.device)
-        bias = self.bias_embedding(triples[1].to(self.device)).to(self.device)
+        # print("triples", triples)
+        # print("triples length", len(triples))
+        true_value = triples[3].to(self.device)
+        rel_idx = triples[1].long()
+        if len(rel_idx) == 0:
+            return 0
+        # print("rel idx", rel_idx)
+        head = self.ent_embedding(triples[0].long().to(self.device)).to(self.device)
+        attr = self.attr_embedding(rel_idx.to(self.device)).to(self.device)
+        # print("attr", attr)
+        bias = self.bias_embedding(rel_idx.to(self.device)).to(self.device)
+        # print("bias", bias)
         aV = torch.sum(head * attr, dim=1).to(self.device)
-        value = (aV + bias)[0].to(self.device)
-        value = torch.clamp(value, max=1000, min=0)
-        diff = self.msle_loss(value, true_value).mean().to(self.device)
+        # print("av", aV)
+        value = (aV + bias)[0].mean().to(self.device)
+        # print("value", value)
+        # print("true value", true_value)
+
+        # value = torch.clamp(value, max=1000, min=0)
+        diff = self.msle_loss(value, true_value.mean()).mean().to(self.device)
+        # print("numerical diff", diff)
         return diff.to(self.device)
 
     def predict(self, triples):
@@ -102,7 +115,7 @@ class TransR(nn.Module):
         tails = triples[2]
 
         test_triples = (heads, rels, tails)
-        return self.distance(test_triples) # , true_tail, candidates_tails
+        return self.distance(test_triples)  # , true_tail, candidates_tails
 
     def project(self, ent, proj_mat):
         proj_e = matmul(proj_mat, ent.view(-1, self.ent_dim, 1))
@@ -155,9 +168,9 @@ class TransR(nn.Module):
         :param triples:
         :return:
         """
-        e_h_idx = torch.LongTensor(triples[0].long() ).to(self.device)
-        r_idx = torch.LongTensor(triples[1].long() ).to(self.device)
-        e_t_idx = torch.LongTensor(triples[2].long() ).to(self.device)
+        e_h_idx = torch.LongTensor(triples[0].long()).to(self.device)
+        r_idx = torch.LongTensor(triples[1].long()).to(self.device)
+        e_t_idx = torch.LongTensor(triples[2].long()).to(self.device)
 
         # =============== prepare embeddings =======================
         e_h = normalize(self.ent_embedding(e_h_idx)).to(self.device)

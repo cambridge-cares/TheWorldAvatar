@@ -52,11 +52,11 @@ class InferenceTrainer:
         self.dim = dim
         # DATA_DIR = "D:\JPS_2022_8_20\TheWorldAvatar\MARIE_AND_BERT\DATA"
         self.my_extractor = HopExtractor(
-            dataset_dir=os.path.join(DATA_DIR, f'CrossGraph/ontospecies_new/role_with_subclass'),
-            dataset_name="role_with_subclass")
+            dataset_dir=self.full_dataset_dir,
+            dataset_name=self.ontology)
 
         df_train = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-train-2.txt"), sep="\t", header=None)
-        df_train_small = df_train.sample(frac=0.0001)
+        df_train_small = df_train.sample(frac=0.01)
         df_test = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-test.txt"), sep="\t", header=None)
         df_numerical = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-numerical.txt"), sep="\t", header=None)
 
@@ -83,9 +83,9 @@ class InferenceTrainer:
         # ================================================================================================================
         self.test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=test_set.candidate_max, shuffle=False)
         self.train_numerical_dataloader = torch.utils.data.DataLoader(train_numerical_set, batch_size=32,
-                                                                      shuffle=False)
-        self.train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=False)
-        self.train_dataloader_small = torch.utils.data.DataLoader(train_set_small, batch_size=batch_size, shuffle=False)
+                                                                      shuffle=True)
+        self.train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
+        self.train_dataloader_small = torch.utils.data.DataLoader(train_set_small, batch_size=batch_size, shuffle=True)
         self.train_dataloader_eval = torch.utils.data.DataLoader(train_set_eval, batch_size=train_set_eval.ent_num,
                                                                  shuffle=False)
 
@@ -198,12 +198,22 @@ class InferenceTrainer:
             neg = torch.transpose(torch.stack(neg), 0, 1)
             neg_numerical = torch.transpose(neg[numerical_idx_list], 0, 1)
             neg_non_numerical = torch.transpose(neg[~numerical_idx_list], 0, 1)
-            loss_non_numerical = self.model(pos_non_numerical, neg_non_numerical)
-            loss_non_numerical.backward()
-            loss_numerical = self.model(pos_numerical, neg_numerical, mode="numerical")
-            loss_numerical.backward()
+            loss_non_numerical = self.model(pos_non_numerical, neg_non_numerical, mode="non_numerical")
+            print("loss_non_numerical", loss_non_numerical)
+            # loss_non_numerical.backward()
+            if len(pos_numerical[0]) > 0:
+                loss_numerical = self.model(pos_numerical, neg_numerical, mode="numerical")
+                print("loss_numerical", loss_numerical)
+               #  loss_numerical.backward()
+                loss = loss_numerical.mean() + loss_non_numerical.mean()
+                loss.backward()
+                # total_train_loss += ()
+            else:
+                loss = loss_non_numerical.mean()
+                loss.backward()
+
+            total_train_loss += loss.cpu().mean()
             self.optimizer.step()
-            total_train_loss += (loss_numerical.cpu().mean() + loss_non_numerical.cpu().mean())
             self.model.normalize_parameters()
 
         print(f"Loss: {total_train_loss}")
