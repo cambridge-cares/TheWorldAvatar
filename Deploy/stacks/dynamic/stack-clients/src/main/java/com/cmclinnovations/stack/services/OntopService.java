@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.cmclinnovations.stack.clients.core.EndpointNames;
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
@@ -27,14 +28,11 @@ public final class OntopService extends ContainerService {
 
     private final OntopEndpointConfig endpointConfig;
 
-    private final String instanceName;
-
     public OntopService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(stackName, serviceManager, config);
 
-        instanceName = config.getName().substring(stackName.length() + 1);
         endpointConfig = new OntopEndpointConfig(
-                instanceName, getHostName(), DEFAULT_PORT,
+                config.getName(), getHostName(), DEFAULT_PORT,
                 "", null);
     }
 
@@ -73,7 +71,7 @@ public final class OntopService extends ContainerService {
 
     @Override
     public void doPostStartUpConfiguration() {
-        OntopClient.getInstance(instanceName).updateOBDA(null);
+        OntopClient.getInstance(StackClient.removeStackName(getConfig().getName())).updateOBDA(null);
 
         writeEndpointConfig(endpointConfig);
     }

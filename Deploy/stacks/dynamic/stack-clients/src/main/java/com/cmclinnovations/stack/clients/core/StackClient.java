@@ -34,6 +34,10 @@ public final class StackClient {
         return stackName + "_" + name;
     }
 
+    public static String removeStackName(String name) {
+        return name.replaceFirst("^/?" + StackClient.getStackName() + "(?:-|_)", "");
+    }
+
     public static Map<String, String> getStackNameLabelMap() {
         return stackNameLabelMap;
     }
