@@ -36,17 +36,24 @@ class NegSamplingCreator:
         s_p_pos_dict = {}
         all_entities = []
         p_list = []
+        p_all_dict = {}
         neighbour_dictionary = {}
         counter = 0
         for triple in self.triples:
             counter += 1
             print(f"{counter} out of {len(self.triples)}")
             s, p, o = [e.strip() for e in triple.split("\t")]
+
             s_idx = self.entity2idx[s]
             o_idx = self.entity2idx[o]
             all_entities.append(s_idx)
             all_entities.append(o_idx)
             p_idx = self.rel2idx[p]
+            p_idx_str = str(p_idx)
+            if p_idx_str in p_all_dict:
+                p_all_dict[p_idx_str].append(o_idx)
+            else:
+                p_all_dict[p_idx_str] = [o_idx]
             s_p_idx_str = f"{s_idx}_{p_idx}"
             s_p_neg_dict[s_p_idx_str] = []
             if s_p_idx_str not in s_p_pos_dict:
@@ -59,14 +66,15 @@ class NegSamplingCreator:
 
         all_entities = list(set(all_entities))
         for s_p_idx in s_p_pos_dict:
+            p_idx = s_p_idx.split("_")[1]
             all_pos_entities = s_p_pos_dict[s_p_idx]
             all_neg_entities = list(set(all_entities) - set(all_pos_entities))
+            # all_neg_entities = list(set(p_all_dict[p_idx]) - set(all_pos_entities))
             s_p_neg_dict[s_p_idx] = all_neg_entities
             print(len(all_entities))
             print(len(set(all_pos_entities)))
             print(len(set(all_neg_entities)))
             print("-------")
-
 
         with open(os.path.join(self.full_dataset_dir, "neg_sample_dict.json"), "w") as f:
             f.write(json.dumps(s_p_neg_dict))
