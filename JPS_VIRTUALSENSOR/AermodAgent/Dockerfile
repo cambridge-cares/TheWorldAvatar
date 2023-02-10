@@ -68,6 +68,7 @@ RUN ./gfortran-aermod.sh
 #==================================================================================================
 FROM tomcat:9 as agent
 
+COPY --from=aermod_builder /root/bpipprm_source/bpipprm /root/aermod/
 COPY --from=aermod_builder /root/aermet_source/aermet /root/aermod/
 COPY --from=aermod_builder /root/aermod_source/aermod /root/aermod/
 
