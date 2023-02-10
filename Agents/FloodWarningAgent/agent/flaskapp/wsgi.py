@@ -15,14 +15,14 @@ from pytz import utc
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from agent.flaskapp import create_app
-from agent.datainstantiation.readings import update_all_stations
+from agent.datainstantiation.warnings import update_warnings
 
 
 # Initialise background scheduler and add recurring background task to 
 # assimilate latest time series data once per day
-sched = BackgroundScheduler(daemon=True)
-sched.add_job(update_all_stations, trigger='cron', hour='3', timezone=utc)
-sched.start()
+#sched = BackgroundScheduler(daemon=True)
+#sched.add_job(update_warnings, trigger='cron', hour='3', timezone=utc)
+#sched.start()
 
 app = create_app()
 

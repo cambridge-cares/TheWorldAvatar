@@ -26,7 +26,5 @@ def update_warnings(county=None):
     Update flood warnings and alerts in the KG
     """
 
-    pass
-
     return None
 

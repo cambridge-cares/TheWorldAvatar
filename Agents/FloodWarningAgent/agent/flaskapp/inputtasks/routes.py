@@ -20,7 +20,7 @@ inputtasks_bp = Blueprint(
 # Define route for API request to update flood alerts/warnings for specific county
 # (i.e. instantiate missing ones, update existing ones, and archive outdated ones)
 @inputtasks_bp.route('/update', methods=['POST'])
-def api_update_all_warnings():
+def api_update_warnings():
     # Check arguments (query parameters)
     #TODO: to be implemented
     
