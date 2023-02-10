@@ -15,8 +15,7 @@ import scala.Tuple2;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -36,11 +35,15 @@ public class Buildings {
 
     private static final Logger LOGGER = LogManager.getLogger(Buildings.class);
 
-    // Class variables accessed in several agent methods
-
-    public static String[] locations = {"Jurong Island"};
+    //TODO: The next 4 variables need to be updated with additional entries for locations other than Jurong Island.
     public static String[] StackQueryEndpoint = {"jibusinessunits"} ;
     public static String[] GeospatialQueryEndpoint = {"jriEPSG24500"} ;
+    public static String[] DatabaseCRS = {"EPSG:24500"};
+
+    //    These values are taken from bboxfinder.com and are in EPSG:4326/WGS84 format.
+    public static List<String> boundaryPolygons = new ArrayList<> (
+            Arrays.asList("POLYGON ((103.650684 1.216988, 103.743038 1.216988, 103.743038 1.308804, 103.650684 1.308804, 103.650684 1.216988))")) ;
+
 
     public static int locindex = -1;
     public static String StackQueryIRI;
@@ -48,7 +51,7 @@ public class Buildings {
 
 
     // Coordinate reference systems used by database (DatabaseCoordSys) and AERMOD(UTMCoordSys)
-    public static String[] DatabaseCRS = {"EPSG:24500"};
+
     public static String DatabaseCoordSys, UTMCoordSys ;
 
     /* Each element of StackProperties contains the (x,y) coordinates of the center of the base polygon of the stack and the stack height.
@@ -64,29 +67,33 @@ public class Buildings {
     public static List<String> BuildingVertices = new ArrayList<>() ;
     public static List<String> BuildingProperties = new ArrayList<>() ;
 
-
-
-
-    //    These values are taken from bboxfinder.com and are in EPSG:4326/WGS84 format.
-    public static List<String> boundaryPolygons = new ArrayList<> (
-            Arrays.asList("POLYGON ((103.650684 1.216988, 103.743038 1.216988, 103.743038 1.308804, 103.650684 1.308804, 103.650684 1.216988))")) ;
-
-
     // Variables used to run AERMOD and its preprocessors
     public static List<String> BPIPPRMBuildingInput = new ArrayList<>();
     public static List<String> BPIPPRMStackInput = new ArrayList<>() ;
 
-    public static String simulationDirectory;
-    public static String bpipprmDirectory;
+    public static Path simulationDirectory;
+    public static Path bpipprmDirectory;
+    public static Path aermodDirectory;
+
+    public static Path aermetDirectory;
 
     public static Polygon scope;
 
-    public void init(String simulationDirectory, Polygon scope, int srid) throws ParseException {
+    public static int nx;
+
+    public static int ny;
+
+    public void init(Path simulationDirectory, Polygon scope, int srid, int nx, int ny) throws ParseException {
 
 
         this.simulationDirectory = simulationDirectory;
-        bpipprmDirectory = simulationDirectory + "bpipprm\\";
+        this.bpipprmDirectory = simulationDirectory.resolve("bpipprm");
+        this.bpipprmDirectory.toFile().mkdir();
+        this.aermodDirectory = simulationDirectory.resolve("aermod");
+        this.aermetDirectory = simulationDirectory.resolve("aermet");
         this.scope = scope;
+        this.nx = nx;
+        this.ny = ny;
 
 
         // Determine namespace to query based on input polygon
@@ -118,23 +125,37 @@ public class Buildings {
         DatabaseCoordSys = DatabaseCRS[locindex];
         UTMCoordSys = "EPSG:" + srid;
 
-//        From this point, all coordinates are in the database coordinate system.
-
 
     }
 
     public static int run() {
         try {
-//            getStacksBuildings();
             getProperties();
-            if (createBPIPPRMInput() == 0) runBPIPPRM(simulationDirectory);
+            if (createBPIPPRMInput() == 0) runBPIPPRM();
             else {
                 LOGGER.error("Failed to create BPIPPRM input file, terminating");
+                return 1;
+            }
+            if (createAERMODBuildingsInput() != 0) {
+                LOGGER.error("Failed to create AERMOD buildings input file, terminating");
+                return 1;
+            }
+            if (createAermetInput() != 0) {
+                LOGGER.error("Failed to create AERMET input file, terminating");
+                return 1;
+            }
+            if (createAERMODSourceInput() != 0) {
+                LOGGER.error("Failed to create AERMOD sources input file, terminating");
+                return 1;
+            }
+            if (createAERMODReceptorInput(nx,ny) != 0) {
+                LOGGER.error("Failed to create AERMOD receptor input file, terminating");
                 return 1;
             }
         } catch (Exception e) {
             return 1;
         }
+
         return 0;
     }
 
@@ -443,6 +464,205 @@ public class Buildings {
 
 
 
+    /* Write out data to BPIPPRM input file and run this program. */
+    public static int createBPIPPRMInput() {
+
+        List<String> frontmatter = new ArrayList<>();
+        frontmatter.add("\'BPIPPRM test run\' \n");
+        frontmatter.add("\'p\' \n");
+        frontmatter.add("\' METERS    \'  1.0  \n");
+        frontmatter.add("\'UTMY \'  0.0 \n");
+
+        StringBuilder sb = new StringBuilder();
+
+        for (String st:frontmatter) {
+            sb.append(st);
+        }
+
+        int numberBuildingLines = BPIPPRMBuildingInput.size() ;
+        sb.append(BPIPPRMBuildingInput.get(numberBuildingLines - 1));
+        for (int i = 0; i < numberBuildingLines-1; i++) {
+            sb.append(BPIPPRMBuildingInput.get(i));
+        }
+        int numberStackLines = BPIPPRMStackInput.size() ;
+        sb.append(BPIPPRMStackInput.get(numberStackLines - 1));
+        for (int i = 0; i < numberStackLines-1; i++) {
+            sb.append(BPIPPRMStackInput.get(i));
+        }
+        return writeToFile(bpipprmDirectory.resolve("bpipprm.inp"), sb.toString());
+
+    }
+
+    private static int writeToFile(Path path, String content) {
+        try (BufferedWriter writer = Files.newBufferedWriter(path)) {
+            LOGGER.info("Writing file: {}", path);
+            writer.write(content);
+            return 0;
+        } catch (IOException e) {
+            String errmsg = "Failed to write " + path.getFileName();
+            LOGGER.error(errmsg);
+            LOGGER.error(e.getMessage());
+            return 1;
+        }
+    }
+
+    public static int runBPIPPRM() {
+        try {
+            Process process = Runtime.getRuntime().exec(new String[]{EnvConfig.BPIPPRM_EXE, "bpipprm.inp","building.dat","buildings_summary.dat"}, null, bpipprmDirectory.toFile());
+            if (process.waitFor() != 0) {
+                return 1;
+            }
+        } catch (IOException e) {
+            return 0;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return 0;
+        }
+        return 0;
+    }
+
+    public static int createAERMODBuildingsInput() {
+
+        BufferedReader reader;
+        StringBuilder sb = new StringBuilder();
+
+        try {
+            reader = new BufferedReader(new FileReader("building.dat"));
+            String line = reader.readLine();
+            while (line != null) {
+                line.stripLeading();
+                if (line.substring(0,2) == "SO") sb.append("line" + "\n");
+                line = reader.readLine();
+            }
+            reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        return writeToFile(aermodDirectory.resolve("buildings.dat"), sb.toString());
+    }
+
+    public static int createAERMODSourceInput() {
+        StringBuilder sb = new StringBuilder();
+        int numberStackLines = BPIPPRMStackInput.size();
+
+        for (int i = 0; i < StackProperties.size(); i++) {
+            String[] avecoord = StackProperties.get(i).split("#");
+            List<Double> inputcoords = Arrays.asList(Double.parseDouble(avecoord[0]), Double.parseDouble(avecoord[1]));
+            List<List<Double>> inputcoordinates = Arrays.asList(inputcoords);
+            List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates, DatabaseCoordSys, UTMCoordSys);
+            double StackEastUTM = outputcoordinates.get(0).get(0);
+            double StackNorthUTM = outputcoordinates.get(0).get(1);
+            double StackHeight = Double.parseDouble(avecoord[2]);
+            double massFlowrateInTonYr = StackEmissions.get(i);
+            double massFlowrateInGs = massFlowrateInTonYr * 1000 * 1000 / (365 * 24 * 60 * 60);
+            double gasTemperatureKelvin = 890.0;
+            double atmosphericPressurePa = 101325;
+            double gasConstantJoulemolKelvin = 8.314;
+            double molarMassCO2gmol = 44.01;
+            double volumetricFlowRatem3s = (massFlowrateInGs / molarMassCO2gmol) * gasConstantJoulemolKelvin * gasTemperatureKelvin / atmosphericPressurePa;
+            double Diameter = StackDiameter.get(i);
+            double stackAream2 = (Math.PI / 4) * Diameter * Diameter;
+            double velocityms = volumetricFlowRatem3s / stackAream2;
+
+            String stkId = "Stk" + (i + 1);
+            sb.append(String.format("SO LOCATION %s POINT %f %f %f \n", stkId, StackEastUTM, StackNorthUTM, 0.0));
+            sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f \n", stkId,
+                    massFlowrateInGs, StackHeight, gasTemperatureKelvin, velocityms, Diameter));
+        }
+
+        return writeToFile(aermodDirectory.resolve("plantSources.dat"),sb.toString());
+
+    }
+
+    public static int createAERMODReceptorInput(int nx, int ny) {
+
+        List<Double> xDoubles = new ArrayList<>();
+        List<Double> yDoubles = new ArrayList<>();
+
+        for (int i = 0; i < scope.getCoordinates().length; i++) {
+
+            double xc = scope.getCoordinates()[i].x;
+            double yc = scope.getCoordinates()[i].y;
+
+
+            List<Double> inputcoords = Arrays.asList(xc, yc);
+            List<List<Double>> inputcoordinates = Arrays.asList(inputcoords);
+            List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates, "EPSG:4326", UTMCoordSys);
+
+            xDoubles.add(outputcoordinates.get(0).get(0));
+            yDoubles.add(outputcoordinates.get(0).get(1));
+        }
+
+        double xlo = Collections.min(xDoubles);
+        double xhi = Collections.max(xDoubles);
+        double ylo = Collections.min(yDoubles);
+        double yhi = Collections.max(yDoubles);
+
+        double dx = (xhi - xlo)/nx;
+        double dy = (yhi - ylo)/ny;
+
+        StringBuilder sb = new StringBuilder("RE GRIDCART POL1 STA \n");
+        String rec = String.format("                 XYINC %f %d %f %f %d %f",xlo, nx, dx, ylo, ny, dy);
+        sb.append(rec + " \n");
+        sb.append("RE GRIDCART POL1 END \n");
+
+        return writeToFile(aermodDirectory.resolve("receptor.dat"),sb.toString());
+    }
+
+
+    public static int createAermetInput() {
+
+        double lat = scope.getCentroid().getCoordinate().getY();
+        double lon = scope.getCentroid().getCoordinate().getX();
+
+        String latSuffix = "N";
+        String lonSuffix = "E";
+        if (lat < 0 ) latSuffix = "S";
+        if (lon < 0) lonSuffix = "W";
+        lat = Math.abs(lat);
+        lon = Math.abs(lon);
+        String location = String.format("%f%s %f%s", lat, latSuffix, lon, lonSuffix);
+        String newLine = System.getProperty("line.separator");
+
+        StringBuilder sb = new StringBuilder("JOB \n");
+        sb.append("   REPORT aermet_report.txt \n")
+                .append("   MESSAGES aermet_message.txt \n")
+                .append(newLine)
+                .append("UPPERAIR \n")
+                .append("   DATA      UpperAirIGRA.txt IGRA \n")
+                .append("   XDATES    2022/12/18 TO 2022/12/18 \n")
+                .append("   LOCATION  00072202  " + location + " \n")
+                .append("   QAOUT aermet_uair_qaout.txt \n")
+                .append(newLine)
+                .append("SURFACE \n")
+                .append("   DATA      SurfaceCD144.txt CD144 \n")
+                .append("   XDATES    2022/12/18 TO 2022/12/18 \n")
+                .append("   LOCATION  00072202  " + location + "\n")
+                .append("   QAOUT aermet_surface_qaout.txt \n")
+                .append(newLine)
+                .append("METPREP \n")
+                .append("   OUTPUT surf.dat \n")
+                .append("   PROFILE upper.dat \n")
+                .append("   NWS_HGT WIND 6.7 \n")
+                .append("   METHOD REFLEVEL SUBNWS \n")
+                .append("   METHOD WIND_DIR RANDOM \n")
+                .append("   XDATES    2022/12/18 TO 2022/12/18 \n")
+                .append("   FREQ_SECT ANNUAL 1 \n")
+                .append("   SECTOR 1 0 360 \n")
+                .append("   SITE_CHAR 1 1 0.16 2.0 1.0 \n");
+
+        return writeToFile(aermetDirectory.resolve("aermet_input.inp"),sb.toString());
+
+    }
+
+
+
+
+    // The following methods are deprecated.
+
+
     /* Query stacks and buildings */
     public static void getStacksBuildings () {
 
@@ -653,186 +873,6 @@ public class Buildings {
         BPIPPRMBuildingInput.add(BuildingsLine);
 
 
-    }
-
-
-
-    /* Write out data to BPIPPRM input file and run this program. */
-    public static int createBPIPPRMInput() {
-
-        List<String> frontmatter = new ArrayList<>();
-        frontmatter.add("\'BPIPPRM test run\' \n");
-        frontmatter.add("\'p\' \n");
-        frontmatter.add("\' METERS    \'  1.0  \n");
-        frontmatter.add("\'UTMY \'  0.0 \n");
-
-        StringBuilder sb = new StringBuilder();
-
-        for (String st:frontmatter) {
-            sb.append(st);
-        }
-
-        int numberBuildingLines = BPIPPRMBuildingInput.size() ;
-        sb.append(BPIPPRMBuildingInput.get(numberBuildingLines - 1));
-        for (int i = 0; i < numberBuildingLines-1; i++) {
-            sb.append(BPIPPRMBuildingInput.get(i));
-        }
-        int numberStackLines = BPIPPRMStackInput.size() ;
-        sb.append(BPIPPRMStackInput.get(numberStackLines - 1));
-        for (int i = 0; i < numberStackLines-1; i++) {
-            sb.append(BPIPPRMStackInput.get(i));
-        }
-        return writeToFile(simulationDirectory + "bpipprm.inp", sb.toString());
-
-    }
-
-    public static int writeToFile(String filename, String content) {
-        try (FileWriter writer = new FileWriter(filename)) {
-            LOGGER.info("Writing file: {}",filename);
-            writer.write(content);
-            return 0;
-        } catch (IOException e) {
-            String errmsg = "Failed to write " + filename;
-            LOGGER.error(errmsg);
-            LOGGER.error(e.getMessage());
-            return 1;
-        }
-    }
-
-    public static int runBPIPPRM(String runDirectory) {
-
-        String execFile = runDirectory + "bpipprm.exe" ;
-        String inputFile = runDirectory + "bpipprm.inp" ;
-        String outputFile1 = runDirectory + "buildings.dat";
-        String outputFile2 = runDirectory + "buildings_summary.dat";
-        try {
-            Process p = new ProcessBuilder(execFile,inputFile,outputFile1,outputFile2).start();
-            p.waitFor();
-        } catch (IOException e) {
-            return 1;
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        return 0;
-    }
-
-
-    public static int createAERMODSourceInput() {
-        StringBuilder sb = new StringBuilder();
-        int numberStackLines = BPIPPRMStackInput.size();
-
-        for (int i = 0; i < StackProperties.size(); i++) {
-            String[] avecoord = StackProperties.get(i).split("#");
-            List<Double> inputcoords = Arrays.asList(Double.parseDouble(avecoord[0]), Double.parseDouble(avecoord[1]));
-            List<List<Double>> inputcoordinates = Arrays.asList(inputcoords);
-            List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates, DatabaseCoordSys, UTMCoordSys);
-            double StackEastUTM = outputcoordinates.get(0).get(0);
-            double StackNorthUTM = outputcoordinates.get(0).get(1);
-            double StackHeight = Double.parseDouble(avecoord[2]);
-            double massFlowrateInTonYr = StackEmissions.get(i);
-            double massFlowrateInGs = massFlowrateInTonYr * 1000 * 1000 / (365 * 24 * 60 * 60);
-            double gasTemperatureKelvin = 890.0;
-            double atmosphericPressurePa = 101325;
-            double gasConstantJoulemolKelvin = 8.314;
-            double molarMassCO2gmol = 44.01;
-            double volumetricFlowRatem3s = (massFlowrateInGs / molarMassCO2gmol) * gasConstantJoulemolKelvin * gasTemperatureKelvin / atmosphericPressurePa;
-            double Diameter = StackDiameter.get(i);
-            double stackAream2 = (Math.PI / 4) * Diameter * Diameter;
-            double velocityms = volumetricFlowRatem3s / stackAream2;
-
-            String stkId = "Stk" + (i + 1);
-            sb.append(String.format("SO LOCATION %s POINT %f %f %f \n", stkId, StackEastUTM, StackNorthUTM, 0.0));
-            sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f \n", stkId,
-                    massFlowrateInGs, StackHeight, gasTemperatureKelvin, velocityms, Diameter));
-        }
-
-        return writeToFile(simulationDirectory + "source.dat",sb.toString());
-
-    }
-
-
-
-    public int createAermetInput() {
-
-        double lat = scope.getCentroid().getCoordinate().getY();
-        double lon = scope.getCentroid().getCoordinate().getX();
-
-        String latSuffix = "N";
-        String lonSuffix = "E";
-        if (lat < 0 ) latSuffix = "S";
-        if (lon < 0) lonSuffix = "W";
-        lat = Math.abs(lat);
-        lon = Math.abs(lon);
-        String location = String.format("%f%s %f%s", lat, latSuffix, lon, lonSuffix);
-        String newLine = System.getProperty("line.separator");
-
-        StringBuilder sb = new StringBuilder("JOB \n");
-        sb.append("   REPORT aermet_report.txt \n")
-                .append("   MESSAGES aermet_message.txt \n")
-                .append(newLine)
-                .append("UPPERAIR \n")
-                .append("   DATA      UpperAirIGRA.txt IGRA \n")
-                .append("   XDATES    2022/12/18 TO 2022/12/18 \n")
-                .append("   LOCATION  00072202  " + location + " \n")
-                .append("   QAOUT aermet_uair_qaout.txt \n")
-                .append(newLine)
-                .append("SURFACE \n")
-                .append("   DATA      SurfaceCD144.txt CD144 \n")
-                .append("   XDATES    2022/12/18 TO 2022/12/18 \n")
-                .append("   LOCATION  00072202  " + location + "\n")
-                .append("   QAOUT aermet_surface_qaout.txt \n")
-                .append(newLine)
-                .append("METPREP \n")
-                .append("   OUTPUT surf.dat \n")
-                .append("   PROFILE upper.dat \n")
-                .append("   NWS_HGT WIND 6.7 \n")
-                .append("   METHOD REFLEVEL SUBNWS \n")
-                .append("   METHOD WIND_DIR RANDOM \n")
-                .append("   XDATES    2022/12/18 TO 2022/12/18 \n")
-                .append("   FREQ_SECT ANNUAL 1 \n")
-                .append("   SECTOR 1 0 360 \n")
-                .append("   SITE_CHAR 1 1 0.16 2.0 1.0 \n");
-
-
-        return writeToFile(simulationDirectory + "aermet.inp",sb.toString());
-
-
-    }
-
-    public static int createAERMODReceptorInput(int nx, int ny) {
-
-        List<Double> xDoubles = new ArrayList<>();
-        List<Double> yDoubles = new ArrayList<>();
-
-        for (int i = 0; i < scope.getCoordinates().length; i++) {
-
-            double xc = scope.getCoordinates()[i].x;
-            double yc = scope.getCoordinates()[i].y;
-
-
-            List<Double> inputcoords = Arrays.asList(xc, yc);
-            List<List<Double>> inputcoordinates = Arrays.asList(inputcoords);
-            List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates, "EPSG:4326", UTMCoordSys);
-
-            xDoubles.add(outputcoordinates.get(0).get(0));
-            yDoubles.add(outputcoordinates.get(0).get(1));
-        }
-
-        double xlo = Collections.min(xDoubles);
-        double xhi = Collections.max(xDoubles);
-        double ylo = Collections.min(yDoubles);
-        double yhi = Collections.max(yDoubles);
-
-        double dx = (xhi - xlo)/nx;
-        double dy = (yhi - ylo)/ny;
-
-        StringBuilder sb = new StringBuilder("RE GRIDCART POL1 STA \n");
-        String rec = String.format("                 XYINC %f %d %f %f %d %f",xlo, nx, dx, ylo, ny, dy);
-        sb.append(rec + " \n");
-        sb.append("RE GRIDCART POL1 END \n");
-
-
-        return writeToFile(simulationDirectory + "receptor.dat",sb.toString());
     }
 
 

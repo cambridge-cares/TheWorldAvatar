@@ -260,8 +260,10 @@ public class Aermod {
 
     String uploadToFileServer() {
         // upload to file server via HTTP POST
+
         MultipartEntityBuilder multipartBuilder = MultipartEntityBuilder.create();
         multipartBuilder.addPart("dispersionMatrix", new FileBody(aermodDirectory.resolve("1HR_PLOTFILE.DAT").toFile()));
+        multipartBuilder.addPart("buildingOutput",new FileBody(aermodDirectory.resolve("buildings.dat").toFile()));
 
         HttpPost httpPost = new HttpPost(EnvConfig.FILE_SERVER + simulationDirectory.getFileName() + "/");
         httpPost.setEntity(multipartBuilder.build());

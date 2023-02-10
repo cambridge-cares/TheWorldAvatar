@@ -18,16 +18,14 @@ CO FINISHED
 SO STARTING
 SO INCLUDED shipSources.dat
 SO INCLUDED plantSources.dat
-   INCLUDED ../bpipprm/buildings.dat
+   INCLUDED buildings.dat
 SO SRCGROUP ALL
 SO FINISHED
 
 
 ** AERMOD Receptor Pathway
 RE STARTING
-   GRIDCART CART1 STA  
-   GRIDCART XYINC REPLACED_BY_AERMOD_AGENT
-   GRIDCART END
+   INCLUDED receptor.dat
 RE FINISHED
 
 ** AERMOD Meteorology Pathway

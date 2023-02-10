@@ -14,6 +14,7 @@ import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,7 +62,7 @@ public class BuildingsTest {
 
         int numStacks = 569;
         int numBuildings = 10;
-        bp.init(simulationDirectory, scope, srid);
+        bp.init(Path.of(simulationDirectory), scope, srid, nx,ny);
         Assertions.assertTrue(bp.locindex > -1);
 //        bp.getStacksBuildings();
         bp.getProperties();
@@ -257,8 +258,8 @@ public class BuildingsTest {
     }
 
     @Test
-    public void testrun() throws IOException {
-        int rds = Buildings.runBPIPPRM(simulationDirectory+"bpipprm\\");
+    public void testrun() {
+        int rds = Buildings.runBPIPPRM();
         Assertions.assertEquals(rds,0);
     }
     @Test

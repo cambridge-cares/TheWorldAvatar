@@ -44,6 +44,13 @@ FROM ubuntu:22.10 as aermod_builder
 RUN apt update
 RUN apt install gfortran dos2unix -y
 
+#build BPIPPRM (buildings preprocessor)
+COPY bpipprm_source /root/bpipprm_source/
+WORKDIR /root/bpipprm_source
+RUN dos2unix gfortran_bpipprm.sh
+RUN ./gfortran_bpipprm.sh
+
+
 # build AERMET (meteorological preprocessor)
 COPY aermet_source /root/aermet_source/
 WORKDIR /root/aermet_source

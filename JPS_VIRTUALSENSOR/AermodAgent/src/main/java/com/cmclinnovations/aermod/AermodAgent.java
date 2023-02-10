@@ -89,11 +89,6 @@ public class AermodAgent extends DerivationAgent {
 
         aermod.create144File(weatherData);
 
-        // run aermet (weather preprocessor)
-        if (aermod.runAermet() != 0) {
-            LOGGER.error("Stopping agent execution");
-            return;
-        }
 
         //compute srid
         int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180)/6);
@@ -110,12 +105,18 @@ public class AermodAgent extends DerivationAgent {
         Buildings bpi;
         try {
             bpi = new Buildings();
-            bpi.init(String.valueOf(simulationDirectory),scope, srid);
+            bpi.init(simulationDirectory,scope, srid, nx, ny);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
         if (bpi.run() != 0) {
             LOGGER.error("Failed to run BPIPPRM, terminating");
+            return;
+        }
+
+        // run aermet (weather preprocessor)
+        if (aermod.runAermet() != 0) {
+            LOGGER.error("Stopping agent execution");
             return;
         }
 

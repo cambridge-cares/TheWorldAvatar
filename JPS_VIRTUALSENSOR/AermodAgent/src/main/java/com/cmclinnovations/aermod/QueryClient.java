@@ -491,7 +491,7 @@ public class QueryClient {
 
         GraphPattern gp = GraphPatterns.and(chemPlant.has(RDF.TYPE,CHEMICALPLANT).andHas(CONTAINS,building),
                 building.has(RDF.TYPE,BUILDING).andHas(OCGML_REP,IRI));
-        query.select(IRI).where(gp).limit(10);
+        query.select(IRI).where(gp).limit(Integer.parseInt(EnvConfig.NUMBER_BUILDINGS));
 
         JSONArray BuildingIRIQueryResult = AccessAgentCaller.queryStore(StackQueryIRI, query.getQueryString());
         return BuildingIRIQueryResult;
