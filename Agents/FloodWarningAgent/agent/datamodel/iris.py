@@ -11,6 +11,8 @@ GEO = 'http://www.opengis.net/ont/geosparql#'
 OM = 'http://www.ontology-of-units-of-measure.org/resource/om-2/'
 OWL = 'http://www.w3.org/2002/07/owl#'
 # CoMo / CARES ontologies
+FLOOD = 'https://www.theworldavatar.com/kg/ontoflood/'
+BUILT = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 TS = 'https://www.theworldavatar.com/kg/ontotimeseries/'
 # Knowledge base
 KB = 'https://www.theworldavatar.com/kg/ontoflood/'
@@ -44,3 +46,12 @@ GEO_ASWKT = GEO + 'asWKT'
 # OWL
 OWL_VERSION = OWL + 'versionInfo'
 OWL_SAMEAS = OWL + 'sameAs'
+
+
+# OM / UOM unit symbols
+OM_GBP = OM + 'poundSterling'
+# NOTE: There are reported issues with encoding of special characters, i.e. Blazegraph
+#       claiming to use utf-8 encoding while actually using iso-8859-1
+#       --> PoundSterling displayed wrongly in GUI but correctly retrieved within code
+# Details: https://github.com/blazegraph/database/issues/224
+GBP_SYMBOL = '£'
