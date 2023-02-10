@@ -14,11 +14,10 @@ setup(
     python_requires='>=3.7',
     include_package_data=True,
     install_requires= [
-        'APScheduler==3.9.1',
-        'docopt==0.6.2',
+        'APScheduler==3.10.0',
         'Flask==2.2.2',
-        'py4jps==1.0.30', 
-        'requests==2.28.1',
+        'py4jps==1.0.33', 
+        'requests==2.28.2',
         'gunicorn==20.1.0',
     ],
     # extras_require={
