@@ -8,18 +8,6 @@
                     "NAMESPACE=excel",
                     "DATABASE=excel"
                 ],
-                "Mounts": [
-					{
-						"Type": "bind",
-						"Source": "/home/caresuser/TWA-git/Agents/ForecastingAgent/forecasting",
-						"Target": "/app/forecasting"
-					},
-					{
-						"Type": "bind",
-						"Source": "/var/run/docker.sock",
-						"Target": "/var/run/docker.sock"
-					}
-				],
                 "Configs": [
                     {
                         "ConfigName": "blazegraph"
