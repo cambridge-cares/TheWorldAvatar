@@ -1,0 +1,277 @@
+{ 
+  "@context" : "http://environment.data.gov.uk/flood-monitoring/meta/context.jsonld" ,
+  "meta" : { 
+    "publisher" : "Environment Agency" ,
+    "licence" : "http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" ,
+    "documentation" : "http://environment.data.gov.uk/flood-monitoring/doc/reference" ,
+    "version" : "0.9" ,
+    "comment" : "Status: Beta service" ,
+    "hasFormat" : [ "http://environment.data.gov.uk/flood-monitoring/id/floods.csv", "http://environment.data.gov.uk/flood-monitoring/id/floods.rdf", "http://environment.data.gov.uk/flood-monitoring/id/floods.ttl", "http://environment.data.gov.uk/flood-monitoring/id/floods.html" ]
+  }
+   ,
+  "items" : [ { 
+    "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/111FAGSPGW" ,
+    "description" : "Groundwater flooding in the Salisbury Plain area" ,
+    "eaAreaName" : "Wessex" ,
+    "eaRegionName" : "No longer used" ,
+    "floodArea" : { 
+      "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/111FAGSPGW" ,
+      "county" : "Hampshire, Wiltshire" ,
+      "notation" : "111FAGSPGW" ,
+      "polygon" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/111FAGSPGW/polygon" ,
+      "riverOrSea" : "Groundwater"
+    }
+     ,
+    "floodAreaID" : "111FAGSPGW" ,
+    "isTidal" : false ,
+    "message" : " " ,
+    "severity" : "Warning no longer in force" ,
+    "severityLevel" : 4 ,
+    "timeMessageChanged" : "2023-02-08T09:31:00" ,
+    "timeRaised" : "2023-02-08T09:31:15" ,
+    "timeSeverityChanged" : "2023-02-08T09:31:00"
+  }
+  , { 
+    "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/111FAGCCGW" ,
+    "description" : "Groundwater flooding in the Cranborne Chase area" ,
+    "eaAreaName" : "Wessex" ,
+    "eaRegionName" : "No longer used" ,
+    "floodArea" : { 
+      "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/111FAGCCGW" ,
+      "county" : "Dorset Council, Hampshire, Wiltshire" ,
+      "notation" : "111FAGCCGW" ,
+      "polygon" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/111FAGCCGW/polygon" ,
+      "riverOrSea" : "Groundwater"
+    }
+     ,
+    "floodAreaID" : "111FAGCCGW" ,
+    "isTidal" : false ,
+    "message" : " " ,
+    "severity" : "Warning no longer in force" ,
+    "severityLevel" : 4 ,
+    "timeMessageChanged" : "2023-02-08T09:31:00" ,
+    "timeRaised" : "2023-02-08T09:31:23" ,
+    "timeSeverityChanged" : "2023-02-08T09:31:00"
+  }
+  , { 
+    "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/065FAG016" ,
+    "description" : "Groundwater flooding in West Dean, Singleton, Charlton, East Dean and Chilgrove" ,
+    "eaAreaName" : "Solent and South Downs" ,
+    "eaRegionName" : "No longer used" ,
+    "floodArea" : { 
+      "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065FAG016" ,
+      "county" : "West Sussex" ,
+      "notation" : "065FAG016" ,
+      "polygon" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065FAG016/polygon" ,
+      "riverOrSea" : "Groundwater"
+    }
+     ,
+    "floodAreaID" : "065FAG016" ,
+    "isTidal" : false ,
+    "message" : "Very little rainfall has been recorded since 17 January 2023. At our indicator borehole at East Dean, groundwater is close to the surface and only falling a few centimetres each day. No rain is currently forecast in the week ahead. The volume of water flowing along roads will continue to reduce, but groundwater flood impacts are expected to continue until at least mid February 2023. With springs appearing, water flowing in fields and on roads and water in basements or under floorboards of properties in East Dean, Charlton, Singleton and West Dean. Groundwater will also continue to impact the ability of the sewage network to operate. Generally settled weather is currently forecast for the remainder of February, which should allow groundwater levels to continue to slowly fall. However, long term weather forecasting is difficult and uncertain. We will continue to monitor levels and forecasts. If you have pumps to help manage water levels in basements, please ensure they are operational. We will update this message by 17:00 13/02/2023." ,
+    "severity" : "Flood alert" ,
+    "severityLevel" : 3 ,
+    "timeMessageChanged" : "2023-02-06T10:12:00" ,
+    "timeRaised" : "2023-02-06T10:12:43" ,
+    "timeSeverityChanged" : "2023-01-07T11:59:00"
+  }
+  , { 
+    "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/111FAGWDGW" ,
+    "description" : "Groundwater flooding in the West of Dorset" ,
+    "eaAreaName" : "Wessex" ,
+    "eaRegionName" : "No longer used" ,
+    "floodArea" : { 
+      "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/111FAGWDGW" ,
+      "county" : "Dorset Council" ,
+      "notation" : "111FAGWDGW" ,
+      "polygon" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/111FAGWDGW/polygon" ,
+      "riverOrSea" : "Groundwater"
+    }
+     ,
+    "floodAreaID" : "111FAGWDGW" ,
+    "isTidal" : false ,
+    "message" : " " ,
+    "severity" : "Warning no longer in force" ,
+    "severityLevel" : 4 ,
+    "timeMessageChanged" : "2023-02-08T09:31:00" ,
+    "timeRaised" : "2023-02-08T09:31:25" ,
+    "timeSeverityChanged" : "2023-02-08T09:31:00"
+  }
+  , { 
+    "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/065FAG012" ,
+    "description" : "Groundwater flooding in the Meon Valley from East Meon to Soberton" ,
+    "eaAreaName" : "Solent and South Downs" ,
+    "eaRegionName" : "No longer used" ,
+    "floodArea" : { 
+      "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065FAG012" ,
+      "county" : "Hampshire" ,
+      "notation" : "065FAG012" ,
+      "polygon" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065FAG012/polygon" ,
+      "riverOrSea" : "Groundwater"
+    }
+     ,
+    "floodAreaID" : "065FAG012" ,
+    "isTidal" : false ,
+    "message" : "In the Meon Valley, groundwater levels are high but continue to slowly fall. Since Friday 27/01/2023, the level at Pound Lane has fallen by 0.82m. Flows continue to reduce in the winterbourne as it flows under Rectory Lane, Meonstoke and behind the Buck\u2019s Head pub. Residual flooding impacts affecting cellars in isolated properties may still be occurring. Over the next 5 days, the weather is forecast to be dry and groundwater levels are expected to continue falling. Long range weather forecasting is difficult, but there is currently an indication that unsettled weather could return in the second half of February. If heavy rain affects the Meon Valley, groundwater flooding impacts could be prolonged or return. However, if favourable weather continues, this Flood Alert could be removed next week. Please remain prepared for potential further flooding impacts this winter. This Flood Alert will be updated or removed by 17:00 on Friday 10/02/2023." ,
+    "severity" : "Flood alert" ,
+    "severityLevel" : 3 ,
+    "timeMessageChanged" : "2023-02-03T16:00:00" ,
+    "timeRaised" : "2023-02-03T16:00:49" ,
+    "timeSeverityChanged" : "2023-01-11T16:46:00"
+  }
+  , { 
+    "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/065FAG015" ,
+    "description" : "Groundwater flooding in Finchdean, Dean Lane End and Rowlands Castle" ,
+    "eaAreaName" : "Solent and South Downs" ,
+    "eaRegionName" : "No longer used" ,
+    "floodArea" : { 
+      "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065FAG015" ,
+      "county" : "Hampshire, West Sussex" ,
+      "notation" : "065FAG015" ,
+      "polygon" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065FAG015/polygon" ,
+      "riverOrSea" : "Groundwater"
+    }
+     ,
+    "floodAreaID" : "065FAG015" ,
+    "isTidal" : false ,
+    "message" : "In Finchdean, Dean Lane End and Rowlands Castle, groundwater levels are very high but continue to very slowly fall. Since Friday 27/01/2023, the level at Finchdean has fallen by 17cm. Ongoing cellar flooding will be occurring in Finchdean, Dean Lane End and Rowlands Castle. Water is affecting roads and fields, and the sewerage network is likely to be impacted. Over the next 5 days, the weather is forecast to be dry and levels are expected to continue falling. Flooding impacts are expected to improve during this time. Long range weather forecasting is difficult, but there is currently an indication that unsettled weather could return in the second half of February. If heavy rain affects the valley, groundwater flooding impacts could be prolonged or return. We continue to monitor the forecast. If you use pumps to help reduce water levels, please ensure they are operating. This Flood Alert will be updated  by 17:00 on Friday 10/02/2023." ,
+    "severity" : "Flood alert" ,
+    "severityLevel" : 3 ,
+    "timeMessageChanged" : "2023-02-03T16:06:00" ,
+    "timeRaised" : "2023-02-03T16:06:18" ,
+    "timeSeverityChanged" : "2023-01-06T11:13:00"
+  }
+  , { 
+    "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/065FAG013" ,
+    "description" : "Groundwater flooding in Hambledon" ,
+    "eaAreaName" : "Solent and South Downs" ,
+    "eaRegionName" : "No longer used" ,
+    "floodArea" : { 
+      "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065FAG013" ,
+      "county" : "Hampshire" ,
+      "notation" : "065FAG013" ,
+      "polygon" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065FAG013/polygon" ,
+      "riverOrSea" : "Groundwater"
+    }
+     ,
+    "floodAreaID" : "065FAG013" ,
+    "isTidal" : false ,
+    "message" : "In Hambledon, groundwater levels are very high but continue to slowly fall. Since Friday 27/01/2023, the level at Whitedale has fallen by 1.46m. Water levels in cellars on East Street and West Street will be reducing, with fewer cellars on East Street experiencing impacts. Groundwater is affecting the sewerage network and Fareham Road is currently flooded. Over the next 5 days, the weather is forecast to be dry and levels are expected to continue falling. Flooding impacts are expected to improve during this time. Long range weather forecasting is difficult, but there is currently an indication that unsettled weather could return in the second half of February. If heavy rain affects Hambledon, groundwater flooding impacts could be prolonged or return. We are liaising with the Flood Action Group. If you use pumps to help to reduce water levels, please ensure that they are operating. This Flood Alert will be updated by 17:00 on Friday 10/02/2023." ,
+    "severity" : "Flood alert" ,
+    "severityLevel" : 3 ,
+    "timeMessageChanged" : "2023-02-03T16:02:00" ,
+    "timeRaised" : "2023-02-03T16:02:41" ,
+    "timeSeverityChanged" : "2023-01-04T15:36:00"
+  }
+  , { 
+    "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/065WAF414" ,
+    "description" : "Upper River Ems Valley" ,
+    "eaAreaName" : "Solent and South Downs" ,
+    "eaRegionName" : "No longer used" ,
+    "floodArea" : { 
+      "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065WAF414" ,
+      "county" : "West Sussex" ,
+      "notation" : "065WAF414" ,
+      "polygon" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065WAF414/polygon" ,
+      "riverOrSea" : "River Ems"
+    }
+     ,
+    "floodAreaID" : "065WAF414" ,
+    "isTidal" : false ,
+    "message" : "Very little rainfall has been recorded since 17 January 2023. Groundwater has continued to fall at our indicator borehole in Compton. However, groundwater is still expected to be close to the surface in the communities of Stoughton and Walderton and only falling by a few centimetres each day. No rain is currently forecast in the week ahead. The volume of water flowing along roads will continue to reduce, but groundwater flood impacts are expected to continue until at least mid February 2023. With springs and minor flooding affecting fields, the village green Stoughton, and rural roads including Stoughton main road and the road from East Marden. Generally settled weather is currently forecast for the remainder of February, which should allow groundwater levels to continue to fall. However, long term weather forecasting is difficult and uncertain. We will continue to monitor levels and forecasts. If you have pumps to help manage water levels in basements, please ensure they are operational. We will update this message by 17:00 13/02/2023." ,
+    "severity" : "Flood alert" ,
+    "severityLevel" : 3 ,
+    "timeMessageChanged" : "2023-02-06T10:12:00" ,
+    "timeRaised" : "2023-02-06T10:12:52" ,
+    "timeSeverityChanged" : "2023-01-07T11:58:00"
+  }
+  , { 
+    "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/063WAT23West" ,
+    "description" : "Tidal Thames riverside from Putney Bridge to Teddington Weir" ,
+    "eaAreaName" : "Kent, South London and East Sussex" ,
+    "eaRegionName" : "No longer used" ,
+    "floodArea" : { 
+      "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/063WAT23West" ,
+      "county" : "Greater London, Hammersmith and Fulham, Hounslow, Richmond upon Thames, Wandsworth" ,
+      "notation" : "063WAT23West" ,
+      "polygon" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/063WAT23West/polygon" ,
+      "riverOrSea" : "River Thames"
+    }
+     ,
+    "floodAreaID" : "063WAT23West" ,
+    "isTidal" : true ,
+    "message" : "River levels are expected to be high as a result of spring tides.\n\nThe forecast high tide at Richmond is 4.60 mAOD at 16:45 on 09/02/23.\n\nFlooding of low-lying roads and footpaths is expected, which may exist for one to two hours either side of high tide. Flooding of properties is not expected.\n\nWe believe there is a possibility of flooding for Putney Embankment (SW15), Chiswick Mall and Strand on the Green (W4), Thames Bank at Mortlake (SW14), Ranelagh Drive (TW1), Friars Lane and Water Lane (TW9), Riverside and The Embankment at Twickenham, and the Towpath below Teddington Lock. \n\nAstronomical tide levels are falling. The river flow at Teddington Weir is normal for this time of year at 62 cubic metres per second and is steady. We anticipate the flows to remain normal for the next 3 days.\n\nWe are closely monitoring the situation.\n\nThis message will be updated by 20:00 on 09/02/23, or as the situation changes." ,
+    "severity" : "Flood alert" ,
+    "severityLevel" : 3 ,
+    "timeMessageChanged" : "2023-02-09T09:14:00" ,
+    "timeRaised" : "2023-02-09T09:14:25" ,
+    "timeSeverityChanged" : "2023-02-09T09:14:00"
+  }
+  , { 
+    "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/065FAG010" ,
+    "description" : "Groundwater flooding in Bramdean and Cheriton" ,
+    "eaAreaName" : "Solent and South Downs" ,
+    "eaRegionName" : "No longer used" ,
+    "floodArea" : { 
+      "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065FAG010" ,
+      "county" : "Hampshire" ,
+      "notation" : "065FAG010" ,
+      "polygon" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065FAG010/polygon" ,
+      "riverOrSea" : "Groundwater"
+    }
+     ,
+    "floodAreaID" : "065FAG010" ,
+    "isTidal" : false ,
+    "message" : "In Bramdean and Cheriton, groundwater levels are high but continue to slowly fall. Since Tuesday 31/01/2023, the level at West Meon Hut has fallen by 50cm. Currently, a small number of cellars in Cheriton will be affected by water. In Bramdean, no flooding impacts are currently expected. Over the next 5 days, dry weather is expected to continue, and groundwater levels will keep falling. Flooding impacts are expected to continue for most of this week. Long range forecasting is difficult, but the current indication is that February 2023 will be mostly dry, allowing groundwater levels to further recover. If dry weather does continue, we may remove this Flood Alert next week. We continue to monitor the weather and groundwater levels. If you use pumps to help reduce water levels, please ensure these are operating. This Flood Alert will be updated or removed by 17:00 on Tuesday 14/02/2023." ,
+    "severity" : "Flood alert" ,
+    "severityLevel" : 3 ,
+    "timeMessageChanged" : "2023-02-07T11:42:00" ,
+    "timeRaised" : "2023-02-07T11:43:10" ,
+    "timeSeverityChanged" : "2023-01-17T14:41:00"
+  }
+  , { 
+    "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/065FAG011" ,
+    "description" : "Groundwater flooding in Twyford and Hensting" ,
+    "eaAreaName" : "Solent and South Downs" ,
+    "eaRegionName" : "No longer used" ,
+    "floodArea" : { 
+      "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065FAG011" ,
+      "county" : "Hampshire" ,
+      "notation" : "065FAG011" ,
+      "polygon" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065FAG011/polygon" ,
+      "riverOrSea" : "Groundwater"
+    }
+     ,
+    "floodAreaID" : "065FAG011" ,
+    "isTidal" : false ,
+    "message" : "In Twyford and Hensting, groundwater levels are high but continue to slowly fall. Since Tuesday, 31/01/2023, the level at West Meon Hut has fallen by 50cm. Currently, an isolated number of cellars in Twyford and Hensting will be affected by water. Road flooding is also expected. Over the next 5 days, dry weather is expected to continue, and groundwater levels will keep falling. Flooding impacts are expected to continue for most of this week. Long range forecasting is difficult, but the current indication is that February 2023 will be mostly dry, allowing groundwater levels to further recover. If dry weather does continue, we may remove this Flood Alert next week. We continue to monitor the weather and groundwater levels. If you use pumps to help reduce water levels, please ensure these are operating. This Flood Alert will be updated or removed by 17:00 on Tuesday 14/02/2023." ,
+    "severity" : "Flood alert" ,
+    "severityLevel" : 3 ,
+    "timeMessageChanged" : "2023-02-07T11:50:00" ,
+    "timeRaised" : "2023-02-07T11:51:01" ,
+    "timeSeverityChanged" : "2023-01-19T17:02:00"
+  }
+  , { 
+    "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/065FAG006" ,
+    "description" : "Groundwater flooding in Hursley" ,
+    "eaAreaName" : "Solent and South Downs" ,
+    "eaRegionName" : "No longer used" ,
+    "floodArea" : { 
+      "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065FAG006" ,
+      "county" : "Hampshire" ,
+      "notation" : "065FAG006" ,
+      "polygon" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065FAG006/polygon" ,
+      "riverOrSea" : "Groundwater"
+    }
+     ,
+    "floodAreaID" : "065FAG006" ,
+    "isTidal" : false ,
+    "message" : "In Hursley, groundwater levels are high but are now slowly falling following 3 weeks of dry weather. Since the level peaked on Wednesday 01/02/2023, it has fallen by 20cm. Currently, cellars in the lower end of the village at South End Close and the Dolphin Inn pub will be experiencing flooding. Ongoing impacts to the sewerage network are also expected. Over the next 5 days, dry weather is expected to continue, and groundwater levels will keep falling. Flooding impacts will slowly improve during this time. Long range forecasting is difficult, but the current indication is that February 2023 will be mostly dry, allowing groundwater levels to further recover. We continue to monitor the forecast. If you use pumps to help reduce water levels, please ensure these are operating. This Flood Alert will be updated by 17:00 on Tuesday 14/02/2023." ,
+    "severity" : "Flood alert" ,
+    "severityLevel" : 3 ,
+    "timeMessageChanged" : "2023-02-07T11:34:00" ,
+    "timeRaised" : "2023-02-07T11:34:17" ,
+    "timeSeverityChanged" : "2023-01-20T16:48:00"
+  }
+   ]
+}
