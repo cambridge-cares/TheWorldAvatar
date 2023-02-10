@@ -1,5 +1,6 @@
 import json
 import os
+import random
 
 from Marie.Util.NHopExtractor import HopExtractor
 from Marie.Util.location import DATA_DIR
@@ -11,6 +12,9 @@ class NegSamplingCreator:
     NegSamplingCreator creates a dictionary mapping all s_p combination to all neighbouring
     entities of s that are fake triples ...
     """
+    @staticmethod
+    def random_sample_by_fraction(dataset, frac):
+        return random.sample(dataset, int(len(dataset) * frac))
 
     def __init__(self, dataset_dir, ontology):
         self.dataset_dir = dataset_dir
@@ -68,13 +72,26 @@ class NegSamplingCreator:
         for s_p_idx in s_p_pos_dict:
             p_idx = s_p_idx.split("_")[1]
             all_pos_entities = s_p_pos_dict[s_p_idx]
-            all_neg_entities = list(set(all_entities) - set(all_pos_entities))
-            # all_neg_entities = list(set(p_all_dict[p_idx]) - set(all_pos_entities))
-            s_p_neg_dict[s_p_idx] = all_neg_entities
-            print(len(all_entities))
-            print(len(set(all_pos_entities)))
-            print(len(set(all_neg_entities)))
-            print("-------")
+            all_neg_entities_different_class = list(set(all_entities) - set(all_pos_entities) - set(p_all_dict[p_idx]))
+            all_neg_entities_same_class = list(set(p_all_dict[p_idx]) - set(all_pos_entities))
+            print(len(all_neg_entities_same_class))
+            print(len(all_neg_entities_different_class))
+            sampled_neg_entities_different_class = self.random_sample_by_fraction(all_neg_entities_different_class, frac=0.2)
+            sampled_neg_entities_same_class = self.random_sample_by_fraction(all_neg_entities_same_class, frac=0.8)
+
+            sampled_eng_entities = list(set(sampled_neg_entities_same_class + sampled_neg_entities_different_class))
+            print(len(sampled_eng_entities))
+            print("=====================")
+
+
+            # use a finer strategy to do the neg sampling
+            # 1. get all
+
+            s_p_neg_dict[s_p_idx] = sampled_eng_entities
+            # print(len(all_entities))
+            # print(len(set(all_pos_entities)))
+            # print(len(set(all_neg_entities)))
+            # print("-------")
 
         with open(os.path.join(self.full_dataset_dir, "neg_sample_dict.json"), "w") as f:
             f.write(json.dumps(s_p_neg_dict))
