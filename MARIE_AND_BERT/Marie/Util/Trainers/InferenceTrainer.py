@@ -45,7 +45,7 @@ def hit_rate(true_tail_idx_ranking_list):
 class InferenceTrainer:
 
     def __init__(self, full_dataset_dir, ontology, batch_size=32, epoch_num=100, dim=20, learning_rate=1.0, gamma=1,
-                 test=False, use_projection=False, alpha = 0.1):
+                 test=False, use_projection=False, alpha=0.1, margin=5):
         self.full_dataset_dir = full_dataset_dir
         self.ontology = ontology
         self.learning_rate = learning_rate
@@ -54,6 +54,7 @@ class InferenceTrainer:
         self.test = test
         self.use_projection = use_projection
         self.alpha = alpha
+        self.margin = margin
 
         self.my_extractor = HopExtractor(
             dataset_dir=self.full_dataset_dir,
@@ -105,7 +106,8 @@ class InferenceTrainer:
         self.epoch_num = epoch_num
         self.model = TransR(rel_dim=self.dim, rel_num=len(self.rel2idx.keys()), ent_dim=self.dim,
                             ent_num=len(self.entity2idx.keys()), device=self.device,
-                            use_projection=self.use_projection, alpha = self.alpha).to(self.device)
+                            use_projection=self.use_projection, alpha=self.alpha,
+                            margin=margin).to(self.device)
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
         self.scheduler = ExponentialLR(self.optimizer, gamma=self.gamma)
 
@@ -251,6 +253,8 @@ if __name__ == "__main__":
     parser.add_argument("-test", "--test_mode", help="if true, the training will use a smaller training set")
     parser.add_argument("-proj", "--use_projection", help="if true, use projection in numerical linear regression")
     parser.add_argument("-alpha", "--alpha", help="ratio between l_a and l_r")
+    parser.add_argument("-margin", "--margin", help="margin for MarginRankLoss")
+    parser.add_argument("-epoch", "--epoch", help="number of epochs")
     args = parser.parse_args()
 
     dim = 20
@@ -265,6 +269,10 @@ if __name__ == "__main__":
     if args.alpha:
         alpha = float(args.alpha)
 
+    margin = 5
+    if args.margin:
+        margin = float(args.margin)
+
     gamma = 1
     if args.gamma:
         gamma = float(args.gamma)
@@ -272,6 +280,10 @@ if __name__ == "__main__":
     batch_size = 256
     if args.batch_size:
         batch_size = int(args.batch_size)
+
+    epoch = 100
+    if args.epoch:
+        epoch = int(args.epoch)
 
     ontology = "role_with_subclass_mass"
     if args.sub_ontology:
@@ -303,8 +315,10 @@ if __name__ == "__main__":
     print(f"Alpha: {alpha}")
     print(f"Use projection: {use_projection}")
     print(f"Test: {test}")
+    print(f"Epoch: {epoch}")
 
     full_dir = os.path.join(DATA_DIR, 'CrossGraph', 'ontospecies_new/role_with_subclass_mass')
     my_trainer = InferenceTrainer(full_dataset_dir=full_dir, ontology=ontology, batch_size=batch_size, dim=dim,
-                                  learning_rate=learning_rate, test=test, use_projection=use_projection, alpha=alpha)
+                                  learning_rate=learning_rate, test=test, use_projection=use_projection, alpha=alpha,
+                                  margin=margin, epoch_num=epoch)
     my_trainer.run()

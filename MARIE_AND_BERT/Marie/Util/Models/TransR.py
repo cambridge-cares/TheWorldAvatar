@@ -18,7 +18,7 @@ class TransR(nn.Module):
     Also aim to implement numerical embedding in the embedding
     """
 
-    def __init__(self, rel_dim, rel_num, ent_dim, ent_num, device="cpu", use_projection=False, alpha=0.1):
+    def __init__(self, rel_dim, rel_num, ent_dim, ent_num, device="cpu", use_projection=False, alpha=0.1, margin=5):
         super(TransR, self).__init__()
         self.device = device
         self.rel_num = rel_num
@@ -32,11 +32,13 @@ class TransR(nn.Module):
         self.bias_embedding = self._init_embedding(num=self.rel_num, dim=1).to(self.device)
         self.proj_matrix = self._init_embedding(num=self.rel_num, dim=self.rel_dim * self.ent_dim).to(self.device)
 
-        self.criterion = nn.MarginRankingLoss(margin=6).to(self.device)
+        self.margin = margin
+        self.criterion = nn.MarginRankingLoss(margin=self.margin).to(self.device)
         self.normalize_parameters()
         self.msle_loss = MeanSquaredLogError()
         self.use_projection = use_projection
         self.alpha = alpha
+
 
     def loss(self, pos_distance, neg_distance):
         target = torch.tensor([-1], dtype=torch.long).to(self.device)
