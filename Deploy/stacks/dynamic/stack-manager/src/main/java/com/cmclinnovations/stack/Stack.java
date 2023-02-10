@@ -2,6 +2,7 @@ package com.cmclinnovations.stack;
 
 import java.net.URL;
 
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.services.ServiceManager;
 
 public class Stack {
@@ -17,7 +18,7 @@ public class Stack {
 
         this.manager = manager;
 
-        manager.initialiseService(name, "docker");
+        manager.initialiseService(name, StackClient.getContainerEngineName());
 
         manager.initialiseService(name, "nginx");
 

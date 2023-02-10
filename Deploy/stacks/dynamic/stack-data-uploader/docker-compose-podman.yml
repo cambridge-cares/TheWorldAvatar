@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  stack-data-uploader:
+    secrets:
+      - source: blazegraph
+        target: /blazegraph
+      - source: postgis
+        target: /postgis
+      - source: geoserver
+        target: /geoserver
+      - source: superset
+        target: /superset
+
+secrets:
+  blazegraph:
+    name: ${STACK_NAME}_blazegraph
+    external: true
+  postgis:
+    name: ${STACK_NAME}_postgis
+    external: true
+  geoserver:
+    name: ${STACK_NAME}_geoserver
+    external: true
+  superset:
+    name: ${STACK_NAME}_superset
+    external: true

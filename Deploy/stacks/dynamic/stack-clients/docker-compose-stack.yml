@@ -8,11 +8,12 @@ services:
         condition: none
     environment:
       - "STACK_NAME=${STACK_NAME}"
+      - "EXECUTABLE=${EXECUTABLE}"
     security_opt:
       - label=disable
     volumes:
       - scratch:/stack_scratch
-      - /var/run/docker.sock:/var/run/docker.sock
+      - $API_SOCK:/var/run/docker.sock
     networks:
       - stack
 
@@ -22,23 +23,6 @@ volumes:
     labels:
       - com.docker.stack.namespace:${STACK_NAME}
 
-configs:
-  blazegraph:
-    name: ${STACK_NAME}_blazegraph
-    external: true
-  ontop:
-    name: ${STACK_NAME}_ontop
-    external: true
-  postgis:
-    name: ${STACK_NAME}_postgis
-    external: true
-  geoserver:
-    name: ${STACK_NAME}_geoserver
-    external: true
-  superset:
-    name: ${STACK_NAME}_superset
-    external: true
-
 networks:
   stack:
     name: ${STACK_NAME}
@@ -46,6 +30,9 @@ networks:
     external: true
 
 secrets:
+  blazegraph_password:
+    name: ${STACK_NAME}_blazegraph_password
+    external: true
   postgis_password:
     name: ${STACK_NAME}_postgis_password
     external: true

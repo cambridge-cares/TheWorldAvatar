@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -107,7 +108,7 @@ public final class ServiceManager {
         if (newService instanceof ContainerService) {
             ContainerService newContainerService = (ContainerService) newService;
 
-            DockerService dockerService = this.<DockerService>getService("docker");
+            DockerService dockerService = this.<DockerService>getService(StackClient.getContainerEngineName());
             if (null != dockerService) {
                 dockerService.doPreStartUpConfiguration(newContainerService);
                 dockerService.startContainer(newContainerService);
