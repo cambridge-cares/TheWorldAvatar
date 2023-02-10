@@ -62,11 +62,6 @@ class InferenceTrainer:
         df_train = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-train-2.txt"), sep="\t", header=None)
         df_train_small = df_train.sample(frac=0.01)
         df_test = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-test.txt"), sep="\t", header=None)
-        df_numerical = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-numerical.txt"), sep="\t", header=None)
-
-        train_numerical_set = TransRInferenceDataset(df_numerical, full_dataset_dir=full_dir, ontology=self.ontology,
-                                                     mode="numerical")
-
         test_set = TransRInferenceDataset(df_test, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology,
                                           mode="test")
 
@@ -91,9 +86,6 @@ class InferenceTrainer:
         print(f"==================== USING {self.device} =====================")
         # ================================================================================================================
         self.test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=test_set.candidate_max, shuffle=False)
-        self.train_numerical_dataloader = torch.utils.data.DataLoader(train_numerical_set, batch_size=32,
-                                                                      shuffle=True)
-
         self.train_dataloader_small = torch.utils.data.DataLoader(train_set_small, batch_size=batch_size, shuffle=True)
         self.train_dataloader_eval = torch.utils.data.DataLoader(train_set_eval, batch_size=train_set_eval.ent_num,
                                                                  shuffle=False)
@@ -114,8 +106,9 @@ class InferenceTrainer:
     def export_embeddings(self):
         self.write_embeddings(self.model.ent_embedding, "ent_embedding")
         self.write_embeddings(self.model.rel_embedding, "rel_embedding")
-        # self.write_embeddings(self.model.attr_embedding, "attr_embedding")
-        # self.write_embeddings(self.model.bias, "bias_embedding")
+        self.write_embeddings(self.model.attr_embedding, "attr_embedding")
+        self.write_embeddings(self.model.bias_embedding, "bias_embedding")
+        self.write_embeddings(self.model.proj_matrix, "proj_matrix")
 
     def write_embeddings(self, embedding, embedding_name):
         lines = []
@@ -320,5 +313,5 @@ if __name__ == "__main__":
     full_dir = os.path.join(DATA_DIR, 'CrossGraph', f'ontospecies_new/{ontology}')
     my_trainer = InferenceTrainer(full_dataset_dir=full_dir, ontology=ontology, batch_size=batch_size, dim=dim,
                                   learning_rate=learning_rate, test=test, use_projection=use_projection, alpha=alpha,
-                                  margin=margin, epoch_num=epoch)
+                                  margin=margin, epoch_num=epoch, gamma=gamma)
     my_trainer.run()
