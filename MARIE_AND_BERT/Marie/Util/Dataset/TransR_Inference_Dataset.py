@@ -128,7 +128,7 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
             s = self.entity2idx[row[0]]
             p = self.rel2idx[row[1]]
             o = self.entity2idx[row[2]]
-            if row[1] == "hasMolecularWeight":
+            if row[2] in self.node_value_dict:
                 true_triple = (s, p, o, self.node_value_dict[row[2]])
             else:
                 true_triple = (s, p, o, -999)

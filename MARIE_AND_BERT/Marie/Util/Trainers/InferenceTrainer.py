@@ -317,7 +317,7 @@ if __name__ == "__main__":
     print(f"Test: {test}")
     print(f"Epoch: {epoch}")
 
-    full_dir = os.path.join(DATA_DIR, 'CrossGraph', 'ontospecies_new/role_with_subclass_mass')
+    full_dir = os.path.join(DATA_DIR, 'CrossGraph', f'ontospecies_new/{ontology}')
     my_trainer = InferenceTrainer(full_dataset_dir=full_dir, ontology=ontology, batch_size=batch_size, dim=dim,
                                   learning_rate=learning_rate, test=test, use_projection=use_projection, alpha=alpha,
                                   margin=margin, epoch_num=epoch)
