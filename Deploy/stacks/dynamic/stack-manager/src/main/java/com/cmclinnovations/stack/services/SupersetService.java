@@ -73,8 +73,10 @@ public class SupersetService extends ContainerService {
         locationBlock.addEntry(new NgxComment("# Subsitution of redirect \"Location\" headder"));
         NgxParam proxyRedirectParam = new NgxParam();
         proxyRedirectParam.addValue("proxy_redirect");
-        proxyRedirectParam.addValue("~^(http://localhost)?/(.*)");
-        proxyRedirectParam.addValue("$scheme://$http_host/analytics/$2");
+        proxyRedirectParam.addValue("~^(http://|https://|)([^/]*/)(?!"
+                + FileUtils.fixSlashs(externalPath.getPath(), false, true) + ")(.*)");
+        proxyRedirectParam
+                .addValue("$scheme://$http_host/" + FileUtils.fixSlashs(externalPath.getPath(), false, true) + "$3");
         locationBlock.addEntry(proxyRedirectParam);
 
         locationBlock.addEntry(new NgxComment("# List of MIME types to filter (text/http incuded by default)"));
