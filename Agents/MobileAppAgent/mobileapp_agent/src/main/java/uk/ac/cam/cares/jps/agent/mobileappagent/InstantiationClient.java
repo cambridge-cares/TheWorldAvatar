@@ -334,9 +334,8 @@ public class InstantiationClient {
     public static class MagneticFluxDensity extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#",innerType = SensorLoggerModel.class,backward = true)
         protected ArrayList<SensorLoggerModel> magneticFluxDensityVariables;
-
-
     }
+
     public static class Speed extends SensorLoggerModel{}
     public static class Bearing extends SensorLoggerModel{}
 
