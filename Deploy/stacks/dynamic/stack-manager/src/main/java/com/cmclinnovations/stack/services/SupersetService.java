@@ -31,7 +31,8 @@ public class SupersetService extends ContainerService {
             "/static", "/chart/", "/dashboard/", "/dataset/", "/savedqueryview/", "/tablemodelview/",
             "/dashboardasync/", "/csstemplatemodelview/", "/csstemplateasyncmodelview/", "api/v1/", "/login", "/logout",
             "/superset/", "/csstemplatemodelview/", "/annotationlayer/", "/logmodelview/",
-            "/rowlevelsecurityfiltersmodelview/", "/roles/", "/users/");
+            "/rowlevelsecurityfiltersmodelview/", "/roles/", "/users/", "/profile/", "/databaseview/",
+            "/tabstateview/");
     protected static final List<String> SUB_FILTER_TYPES_LIST = Arrays.asList(
             "text/css", "text/javascript", "application/javascript", "application/json");
     public static final String LOCATION = "location";
