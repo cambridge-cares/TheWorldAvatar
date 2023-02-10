@@ -1,30 +1,31 @@
 version: "3.8"
 
 services:
-  floodwarning_agent:
-    image: ghcr.io/cambridge-cares/floodwarning_agent:1.0.0-SNAPSHOT
+  floodwarnings_agent:
+    image: ghcr.io/cambridge-cares/floodwarnings_agent:1.0.0-SNAPSHOT
     environment:
-      # Required environment variables for both Stack and "standalone" (i.e. outside stack) deployment
-      - STACK_NAME=TEST         # to be left blank for "standalone" deployment
-      # Additional environment variables required for Stack deployment
-      # (can be left blank for "standalone" deployment)
-      - NAMESPACE=test          # Target Blazegraph namespace
-      - DATABASE=test           # Target PostGIS/PostgreSQL database name
-      # Additional environment variables required for "standalone deployment"
-      # (can be left blank for Stack deployment)
-      - DB_URL=
-      - DB_USER=
-      - DB_PASSWORD=
-      - QUERY_ENDPOINT=
-      - UPDATE_ENDPOINT=
-    build:
-      # Path to dockerfile ('.' represents current directory with .yml file)
-      context: .
-      target: prod
+      - STACK_NAME=${STACK_NAME}
+      # Target Blazegraph namespace
+      - NAMESPACE=stations
+      # Target PostGIS database name
+      # (default name "postgres" required for Ontop to work)
+      - DATABASE=postgres
+      # Target table name in PostGIS (also layer name in Geoserver)
+      - LAYERNAME=floodwarnings
+      - GEOSERVER_WORKSPACE=floodwarnings
+      - ONTOP_FILE=/app/resources/ontop.obda
     ports:
-      - "5001:5000"
+      - "5000:5000"
     volumes:
       - logs:/root/.jps
+    configs:
+      - blazegraph
+      - geoserver
+      - ontop
+      - postgis
+    secrets:
+      - geoserver_password
+      - postgis_password
 
 volumes:
   logs:

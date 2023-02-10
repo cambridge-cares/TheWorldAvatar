@@ -2,7 +2,7 @@
 
 The `FloodWarningAgent` is an input agent which queries data from the UK [Environment Agency Real Time flood-monitoring API] and instantiates it according to the [OntoFlood] ontology in the [TheWorldAvatar] knowledge graph.
 
-The agent can be deployed 1) as "standalone" Docker container or 2) to a Docker stack spun up by the [Stack Manager]. 
+The agent is implemented as Docker container to be deployed to a Docker stack spun up by the [Stack Manager]. 
 
 <!--
 
@@ -24,7 +24,7 @@ API_KEY               # MetOffice DataPoint API key
 STACK_NAME            # Name of stack to which agent shall be deployed
 NAMESPACE             # Blazegraph namespace into which to instantiate data
 DATABASE              # PostGIS/PostgreSQL database name (default: `postgres`)
-LAYERNAME             # Geoserver ayer name, ALSO table name for geospatial features in PostGIS
+LAYERNAME             # Geoserver layer name, ALSO table name for geospatial features in PostGIS
 GEOSERVER_WORKSPACE   
 ONTOP_FILE            # Path to ontop mapping file (i.e. within Docker container)
 ```

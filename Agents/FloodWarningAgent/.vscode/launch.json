@@ -5,42 +5,8 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Debug Flask App",
             "type": "python",
-            "request": "launch",
-            "module": "flask",
-            "env": {
-                "FLASK_APP": "agent:create_app()",
-                "FLASK_ENV": "development",
-                "FLASK_DEBUG": "0"
-            },
-            "args": [
-                "run",
-                //To ensure proper working of VSCodes debugger:
-                //https://flask.palletsprojects.com/en/2.2.x/debugging/#external-debuggers
-                "--no-debugger",
-                "--no-reload"
-            ],
-            "jinja": true
-        },
-        {
-            "name": "Python: Debug Flask within Docker",
-            "type": "python",
-            "request": "attach",
-            "connect": {
-                "host": "127.0.0.1",
-                "port": 5678
-            },
-            "pathMappings": [
-                {
-                    "localRoot": "${workspaceFolder}/agent/",
-                    "remoteRoot": "/app/agent/"
-                }
-            ]
-        },
-        {
-            "type": "python",
-            "name": "Stack: Debug",
+            "name": "Debug",
             "request": "attach",
             "host": "localhost",
             "port": "${input:debug.port}",
@@ -54,7 +20,7 @@
         },
         {
             "type": "python",
-            "name": "Stack: Build and Debug",
+            "name": "Build and Debug",
             "request": "attach",
             "host": "localhost",
             "port": "${input:debug.port}",
@@ -68,7 +34,7 @@
         },
         {
             "type": "python",
-            "name": "Stack: Reattach and Debug",
+            "name": "Reattach and Debug",
             "request": "attach",
             "host": "localhost",
             "port": "${input:debug.port.read}",
