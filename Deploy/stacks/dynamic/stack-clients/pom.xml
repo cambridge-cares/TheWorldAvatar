@@ -24,8 +24,10 @@
     <maven.compiler.target>11</maven.compiler.target>
     <maven.compiler.release>11</maven.compiler.release>
 
-    <!--yaml.file>https://storage.googleapis.com/libpod-master-releases/swagger-v4.3.yaml</yaml.file-->
-    <yaml.file>${project.basedir}/src/main/swagger/podman/swagger-v4.3.yaml</yaml.file>
+    <!--podman.file>https://storage.googleapis.com/libpod-master-releases/swagger-v4.3.yaml</podman.file-->
+    <podman.file>${project.basedir}/src/main/swagger/podman/swagger-v4.3.yaml</podman.file>
+
+    <superset.file>${project.basedir}/src/main/swagger/superset/openapi.yaml</superset.file>
 
   </properties>
 
@@ -252,7 +254,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${yaml.file}</inputSpec>
+              <inputSpec>${podman.file}</inputSpec>
               <language>java</language>
               <modelPackage>${project.groupId}.swagger.podman.model</modelPackage>
               <apiPackage>${project.groupId}.swagger.podman.api</apiPackage>
