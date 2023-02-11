@@ -59,7 +59,7 @@ Once logged in, a remote copy of The World Avatar repository can be cloned using
 ```bash
 $ git clone https://github.com/cambridge-cares/TheWorldAvatar.git <REPO NAME>
 $ cd <REPO NAME>
-$ git checkout dev-MetOfficeAgent-withinStack
+$ git checkout <BRANCH NAME>
 $ git pull
 ```
 Once the repository clone is obtained, please follow the instructions above to spin up the stack on the remote machine. In order to access the exposed endpoints, e.g. `http://<host IP>:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
@@ -156,7 +156,7 @@ Content-Type: application/json
 
 - A KG export after successfully amended by the TSD Agent is provided in `../../Data/99 KG snapshots/2_ontocitygml_tsd`
 
-## 4.2) UPRN Agent (in chunks)
+## 4.2) UPRN Agent (potentially in chunks)
 
 > The following steps refer to commit `68abb0eb4c24438fa46a3acdb2f6a3c3786292a8` on `https://github.com/cambridge-cares/CitiesKG/tree/develop` 
 
@@ -208,7 +208,7 @@ After the Building instances are matched, step 3) from the EPC Agent can be perf
 
 ## MetOffice Agent
 
-> The following description refers to commit `???` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main` using the published Docker image `ghcr.io/cambridge-cares/metoffice_agent:1.0.0`
+> The following description refers to commit `6b3ff32af6df2c356e1a49f0c727ebf6db53a15a` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main` using the published Docker image `ghcr.io/cambridge-cares/metoffice_agent:1.0.0`
 
 The [MetOffice Agent] continuously (i.e. once per day) queries data from the MetOffice API and instantiates it according to the OntoEMS ontology. To deploy the agent to the spun up `KINGS-LYNN` stack, please provide the target Blazegraph namespace, PostGIS/PostgreSQL database name, etc. in the [MetOffice docker-compose file]. Afterwards, simply run the following command from the [MetOffice Agent] repository (i.e. where the [MetOffice docker-compose file] is located) to deploy the agent using its published Docker image from the [Container registry on Github]:
 ```bash
