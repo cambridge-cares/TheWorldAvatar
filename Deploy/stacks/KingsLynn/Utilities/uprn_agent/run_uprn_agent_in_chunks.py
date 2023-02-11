@@ -13,8 +13,15 @@ import time
 from SPARQLWrapper import SPARQLWrapper, JSON
 
 
-# Specify Blazegraph namespace used to prefix named graph IRIs and (newly) instantiated object IRIs
-blazegraph = "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/"
+# Specify SPARQL endpoint to Blazegraph namespace
+# NOTE: This needs to be 
+# 1) uploaded to Access Agent as new routing information
+# 2) specified as uri.route in "config.properties" of CKG agents
+blazegraph = "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql/"
+# Specify initial Blazegraph namespace (i.e. used for instantiation of OntoCityGml
+# used to prefix named graph IRIs and (newly) instantiated object IRIs)
+namespace = "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/"
+
 # Specify UPRN agent endpoint
 uprn_agent = "http://localhost:8080/agents/uprn"
 
@@ -51,7 +58,7 @@ def get_all_building_iris(endpoint):
     SELECT DISTINCT ?bldg
 
     WHERE {{ 
-    GRAPH <{blazegraph}building/>                             
+    GRAPH <{namespace}building/>                             
             {{ ?bldg ocgml:objectClassId 26 . }}
     }}
     ORDER BY ?bldg
@@ -78,17 +85,17 @@ def get_building_iris_w_old_but_wo_new_uprn(endpoint):
     SELECT DISTINCT ?bldg ?uprns_old ?uprns_new
 
     WHERE {{ 
-    GRAPH <{blazegraph}building/>                             
+    GRAPH <{namespace}building/>                             
             {{ ?bldg ocgml:objectClassId 26 .
             BIND(IRI(REPLACE(str(?bldg), "building", "cityobject")) AS ?cityobj) 
             }}
-    GRAPH <{blazegraph}identifiers>
+    GRAPH <{namespace}identifiers>
             {{ FILTER NOT EXISTS {{ ?cityobj ^osid:intersectsFeature/osid:hasValue ?uprns_new }}
             }}
             {{ # UPRNs from FME workflow
             SELECT DISTINCT ?cityobj ?uprns_old
             WHERE {{
-                GRAPH <{blazegraph}cityobjectgenericattrib/>
+                GRAPH <{namespace}cityobjectgenericattrib/>
                     {{ OPTIONAL {{
                         ?attr ocgml:attrName "OS_UPRNs" ;
                             ocgml:cityObjectId ?cityobj ;
@@ -123,11 +130,11 @@ def get_building_iris_wo_new_uprn(endpoint):
     SELECT DISTINCT ?bldg ?uprns_old ?uprns_new
 
     WHERE {{ 
-    GRAPH <{blazegraph}building/>                             
+    GRAPH <{namespace}building/>                             
             {{ ?bldg ocgml:objectClassId 26 .
             BIND(IRI(REPLACE(str(?bldg), "building", "cityobject")) AS ?cityobj) 
             }}
-    GRAPH <{blazegraph}identifiers>
+    GRAPH <{namespace}identifiers>
             {{ FILTER NOT EXISTS {{ ?cityobj ^osid:intersectsFeature/osid:hasValue ?uprns_new }}
             }}
     }}
@@ -192,7 +199,7 @@ if __name__ == '__main__':
     #bldgs = get_building_iris_wo_new_uprn(blazegraph)
 
     # Call UPRN agent in chunks
-    call_uprn_agent_in_batches(uprn_agent, blazegraph, bldgs, t_wait)
+    call_uprn_agent_in_batches(uprn_agent, namespace, bldgs, t_wait)
 
     # Get triples at beginning
     triples2 = get_number_of_triples(blazegraph)

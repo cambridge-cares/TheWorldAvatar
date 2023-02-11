@@ -14,7 +14,10 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 
 
 # Specify SPARQL endpoint to Blazegraph namespace
-blazegraph = "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/"
+blazegraph = "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql/"
+# Specify initial Blazegraph namespace (i.e. used for instantiation of OntoCityGml
+# used to prefix named graph IRIs and (newly) instantiated object IRIs)
+namespace = "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/"
 
 
 def get_fme_uprns(endpoint):
@@ -34,14 +37,14 @@ def get_fme_uprns(endpoint):
     SELECT DISTINCT ?bldg ?cityobj ?uprns
 
     WHERE {{ 
-    GRAPH <{blazegraph}building/>                             
+    GRAPH <{namespace}building/>                             
             {{ ?bldg ocgml:objectClassId 26 .
             BIND(IRI(REPLACE(str(?bldg), "building", "cityobject")) AS ?cityobj) 
             }}
             {{ # UPRNs from FME workflow
             SELECT DISTINCT ?cityobj ?uprns
             WHERE {{
-                GRAPH <{blazegraph}cityobjectgenericattrib/>
+                GRAPH <{namespace}cityobjectgenericattrib/>
                     {{ OPTIONAL {{
                         ?attr ocgml:attrName "OS_UPRNs" ;
                             ocgml:cityObjectId ?cityobj ;
@@ -78,14 +81,14 @@ def get_agent_uprns(endpoint):
     SELECT DISTINCT ?bldg ?cityobj ?uprns
 
     WHERE {{ 
-    GRAPH <{blazegraph}building/>                             
+    GRAPH <{namespace}building/>                             
             {{ ?bldg ocgml:objectClassId 26 .
             BIND(IRI(REPLACE(str(?bldg), "building", "cityobject")) AS ?cityobj) 
             }}
             {{ # UPRNs from UPRN Agent
             SELECT DISTINCT ?cityobj ?uprns
             WHERE {{
-                GRAPH <{blazegraph}identifiers>
+                GRAPH <{namespace}identifiers>
                     {{ OPTIONAL {{
                         ?cityobj ^osid:intersectsFeature/osid:hasValue ?uprns
                         }}

@@ -4,7 +4,7 @@
 ################################################
 
 # This module uploads all triples from an '.nt' file to
-# an online Blazegraph SPARQL endpoint 
+# an online Blazegraph SPARQL endpoint using SPARQLWrapper
 
 
 import os

@@ -15,7 +15,7 @@ def get_all_triples(endpoint, filepath):
 
     sparql = SPARQLWrapper(endpoint)
 
-    # Run Describe queries for all IRIs
+    # Run CONSTRUCT queries for all IRIs
     queryString = 'CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } '
     sparql.setQuery(queryString)
     results = sparql.queryAndConvert()
