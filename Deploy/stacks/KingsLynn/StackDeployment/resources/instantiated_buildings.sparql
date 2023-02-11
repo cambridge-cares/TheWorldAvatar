@@ -11,6 +11,20 @@ WHERE
       { ?bldg  ocgml:objectClassId  26}
   }
 
+# Total number of instantiated UPRNs in OntoCityGml
+
+PREFIX  ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#>
+PREFIX  osid: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoOSID.owl#>
+
+SELECT (count(?uprn) as ?count)
+WHERE
+  { GRAPH <http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/identifiers>
+      { ?cityobj ^osid:intersectsFeature/osid:hasValue ?uprn}
+    BIND(iri(replace(str(?cityobj), "cityobject", "building")) AS ?bldg)
+    GRAPH <http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/building/>
+      { ?bldg  ocgml:objectClassId  26}
+  }
+
 #
 ### Queries to be run in OntoBuiltEnv namespace ###
 #
