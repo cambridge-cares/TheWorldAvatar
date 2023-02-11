@@ -1,5 +1,6 @@
 import json
 import os
+import random
 from pprint import pprint
 import sys
 
@@ -83,14 +84,27 @@ class OntoSpeciesNewAnalyzer:
 
         return species_node_dict, node_value_dict
 
-
-
-    def write_triples_to_tsv(self, all_triples):
-        df = pd.DataFrame(all_triples)
+    def write_triples_to_tsv(self, numerical_triples, other_triples):
+        # only remove triples with hasRole and hasSpecies
+        # 1. sample 200 triples with hasRole and hasSpecies
+        # 2. remove the 200 triples from the other_triples
+        inference_rels = ["hasRole", "hasSpecies"]
+        other_triples_for_inference = [triples for triples in other_triples if triples[1].strip() in inference_rels]
+        test_other_triples = random.sample(other_triples_for_inference, 200)
+        train_other_triples = [triples for triples in other_triples if triples not in test_other_triples]
+        df = pd.DataFrame(numerical_triples + other_triples)
         df.to_csv(os.path.join(self.sub_ontology_path, f"{self.sub_ontology}-train.txt"),
                   sep="\t", header=False, index=False)
 
-        df_train, df_test = train_test_split(df, test_size=0.1)
+        df_train = pd.DataFrame(numerical_triples + train_other_triples)
+        df_test = pd.DataFrame(test_other_triples)
+        # also make sure the train df doesn't loss any numerical triples
+        # df_train, df_test = train_test_split(df, test_size=0.1)
+
+        # remove all the numerical triples from the test set
+        # "hasRole", "hasSpecies"
+        # df_test = df_test[(df_test.iloc[:, 1] == "hasRole") | (df_test.iloc[:, 1] == "hasSpecies")]
+
         df_train.to_csv(os.path.join(self.sub_ontology_path, f"{self.sub_ontology}-train-2.txt"),
                         sep="\t", header=False, index=False)
 
@@ -99,13 +113,17 @@ class OntoSpeciesNewAnalyzer:
 
     def create_numerical_triples(self):
         numerical_triples = []
+        numerical_evaluation_triples = []
         for numerical_attribute in self.numerical_attribute_species_node_dict:
             species_node_dict = self.numerical_attribute_species_node_dict[numerical_attribute]
             for species in species_node_dict:
                 node = species_node_dict[species]
+                value = self.node_value_dict[node]
                 row_node = (species, numerical_attribute, node)
+                row_value = (species, numerical_attribute, float(value))
                 numerical_triples.append(row_node)
-        return numerical_triples
+                numerical_evaluation_triples.append(row_value)
+        return numerical_triples, random.sample(numerical_evaluation_triples, 100)
 
     def create_triples_with_subclass(self):
         all_triples = []
@@ -230,14 +248,21 @@ class OntoSpeciesNewAnalyzer:
         return candidate_dict
 
     def run(self):
-        numerical_triples = self.create_numerical_triples()
+        numerical_triples, numerical_eval_triples = self.create_numerical_triples()
+        df_num_eval = pd.DataFrame(numerical_eval_triples)
+        df_num_eval.to_csv(f"{self.sub_ontology_path}/numerical_eval.tsv", sep="\t", header=False, index=False)
         with open(f"{self.sub_ontology_path}/node_value_dict.json", "w") as f:
             f.write(json.dumps(self.node_value_dict))
             f.close()
         role_triples = self.create_triples_for_roles_of_species()
-        chemical_class_triples = self.create_triples_with_subclass()
-        all_triples = role_triples + chemical_class_triples + numerical_triples
-        self.write_triples_to_tsv(all_triples=all_triples)
+        # chemical_class_triples = self.create_triples_with_subclass()
+        cached_chemical_classes = [line.strip() for line in open(f"{self.full_dataset_dir}/chemical_classes.tsv").readlines()]
+        chemical_class_triples = []
+        for line in cached_chemical_classes:
+            s, p, o = [e.strip() for e in line.split("\t")]
+            chemical_class_triples.append((s, p, o))
+        other_triples = role_triples + chemical_class_triples  # numerical_triples
+        self.write_triples_to_tsv(other_triples=other_triples, numerical_triples=numerical_triples)
         ontology = f"{self.ontology}/{self.sub_ontology}"
         MakeIndex.create_indexing(self.sub_ontology, data_dir=f'CrossGraph/{ontology}')
         my_extractor = HopExtractor(dataset_dir=self.sub_ontology_path, dataset_name=self.sub_ontology)
@@ -252,5 +277,5 @@ class OntoSpeciesNewAnalyzer:
 
 
 if __name__ == "__main__":
-    my_analyzer = OntoSpeciesNewAnalyzer(sub_ontology="role_with_subclass_full_attributes")
+    my_analyzer = OntoSpeciesNewAnalyzer(sub_ontology="role_with_subclass_full_attributes_0.1_with_class")
     my_analyzer.run()
