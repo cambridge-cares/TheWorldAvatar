@@ -35,6 +35,9 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
         self.ent_num = len(self.entity2idx.keys())
         self.rel_num = len(self.rel2idx.keys())
         self.use_cached_triples = False
+        self.p_stop_list = ["hasLogP", "hasDensity", "hasBoilingPoint",
+                                         "hasSolubility", "hasLogP", "hasLogS", "hasMolecularWeight",
+                                         "hasMeltingPoint"]
 
         cached_triple_path = f"{self.full_dataset_dir}/triple_idx_{self.mode}.json"
         if os.path.exists(cached_triple_path) and self.use_cached_triples:
@@ -61,7 +64,8 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
 
     def create_train_small_triples_for_evaluation(self):
         triples = []
-        tail_all = range(0, self.ent_num)
+        # tail_all = range(0, self.ent_num)
+        # instead of random tail all, find tails under the same class
         counter = 0
         for idx, row in self.df.iterrows():
             counter += 1
@@ -69,15 +73,18 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
             s = self.entity2idx[row[0]]
             p = self.rel2idx[row[1]]
             o = self.entity2idx[row[2]]
-            for tail in tail_all:
-                triple_idx_string = f"{s}_{p}_{tail}"
-                if o == tail:
-                    triples.append((s, p, tail, o))
-                elif not self.my_extractor.check_triple_existence(triple_idx_string):
-                    triples.append((s, p, tail, o))
-                else:
-                    triples.append((s, p, -1, o))
-
+            if row[1] not in self.p_stop_list:
+                tail_all = self.my_extractor.extract_neighbour_from_idx(str(s))
+                # tail_all = self
+                if tail_all:
+                    for tail in tail_all:
+                        triple_idx_string = f"{s}_{p}_{tail}"
+                        if o == tail:
+                            triples.append((s, p, tail, o))
+                        elif not self.my_extractor.check_triple_existence(triple_idx_string):
+                            triples.append((s, p, tail, o))
+                        else:
+                            triples.append((s, p, -1, o))
         return triples
 
     def load_numerical_triples(self):
@@ -129,15 +136,19 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
             p = self.rel2idx[row[1]]
             o = self.entity2idx[row[2]]
             if row[2] in self.node_value_dict:
-                true_triple = (s, p, o, self.node_value_dict[row[2]])
+                value = float(self.node_value_dict[row[2]])
+                if 0 < value < 500:
+                # if True:
+                    true_triple = (s, p, o, value)
+                    fake_triple = (s, p, o)
+                    triples.append((true_triple, fake_triple))
             else:
-                true_triple = (s, p, o, -999)
-
-            fake_tails = self.create_fake_triple(s, p, o, mode="head")
-            for fake_tail in fake_tails:
-                fake_triple = (s, p, fake_tail)
-                triples.append((true_triple, fake_triple))
-
+                if row[1] not in self.p_stop_list:
+                    true_triple = (s, p, o, -999)
+                    fake_tails = self.create_fake_triple(s, p, o, mode="head")
+                    for fake_tail in fake_tails:
+                        fake_triple = (s, p, fake_tail)
+                        triples.append((true_triple, fake_triple))
         return triples
 
     def create_inference_test_sample(self, reaction_triples):
