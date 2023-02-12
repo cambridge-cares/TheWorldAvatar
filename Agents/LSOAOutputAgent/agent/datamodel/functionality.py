@@ -404,10 +404,18 @@ def data_treatment(df, arg_name, arg_value_in):
             # Select only the non-NaN values from the array
             val_values = val_values[~mask]
         else:
-            # if still can't find (or data type not applicable) then give a none
-            val_values = np.empty(df_copy.shape[0])
-            val_values[:] = 0
-            print('val_values not applicable to generate an non-nan array, return zero array instead')
+            try:
+                # okay try one last time...
+                val_values = val_values.astype(float)
+                # Create a boolean mask indicating which elements are NaN values
+                mask = np.isnan(val_values)
+                # Select only the non-NaN values from the array
+                val_values = val_values[~mask]
+            except:
+                # if still can't find (or data type not applicable) then give a none
+                val_values = np.empty(df_copy.shape[0])
+                val_values[:] = 0
+                print('val_values not applicable to generate an non-nan array, return zero array instead')
 
 
         return df_copy, val_values
@@ -528,3 +536,15 @@ def convert_df(df, filename: str = 'df'):
   '''
   df.to_csv(f'./Data/{filename}.txt', sep='\t', index=False)
   print(f'Dataframe successfully printed at ./Data/{filename}.txt')
+
+def parse_to_file(query, filepath = "demofile"):
+  '''
+  This module is to parse the result into a file, (default as called demofile.txt) so you can visualise it
+  could be useful when the terminal contain too much annoying logging message
+  '''
+  f = open(f'./Data/{filepath}.txt', "w")
+  f.write(str(query))
+  f.close()
+
+  #open and read the file after the appending:
+  f = open(f"./Data/{filepath}.txt", "r")

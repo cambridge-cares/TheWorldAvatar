@@ -44,6 +44,8 @@ def read_from_web_monthly_distribution_elec(year:str ):
 
   # Download the xlsx file
   try:
+    if not os.path.exists('./downloads'):
+        os.makedirs('./downloads')
     file_name = os.path.basename(link) #'Monthly distribution of natinal electricity/gas consumption'
     response = requests.get(link)
     open('./downloads/'+ file_name, 'wb').write(response.content)
@@ -98,6 +100,8 @@ def read_from_web_monthly_distribution_gas(year:str ):
 
   # Download the xlsx file
   try:
+    if not os.path.exists('./downloads'):
+        os.makedirs('./downloads')
     file_name = os.path.basename(link) #'Monthly distribution of natinal electricity/gas consumption'
     response = requests.get(link)
     open('./downloads/'+ file_name, 'wb').write(response.content)
@@ -152,6 +156,8 @@ def read_from_web_price_elec(year:str ):
 
   # Download the xlsx file
   try:
+    if not os.path.exists('./downloads'):
+        os.makedirs('./downloads')
     file_name = os.path.basename(link) #'Monthly distribution of natinal electricity/gas consumption'
     response = requests.get(link)
     open('./downloads/'+ file_name, 'wb').write(response.content)
@@ -207,6 +213,8 @@ def read_from_web_price_gas(year:str ):
 
   # Download the xlsx file
   try:
+    if not os.path.exists('./downloads'):
+        os.makedirs('./downloads')
     file_name = os.path.basename(link) #'Monthly distribution of natinal electricity/gas consumption'
     response = requests.get(link)
     open('./downloads/'+ file_name, 'wb').write(response.content)

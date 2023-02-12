@@ -229,18 +229,14 @@ def plot_geodistribution(label: str, title:str, df_in: pd.DataFrame, cb_scale: f
         return axs, cax1, color_theme
 
     # Get Geospatial shapes:
-    #df_geo = retrieve_ONS_shape_from_KG()
-    ################### TBD
-    df_geo = call_pickle('./Data/temp_Repo/df_geo in function retrieve_ONS_shape_from_KG')
-    df = copy.deepcopy(df_in)
-    ###########################
+    df_geo = retrieve_ONS_shape_from_KG()
 
     print(f'Beginning plot for geodistribution of {title}...')
     # Initilize the graph
     axs, cax1, color_theme = basic_settings(df_geo)
 
     # Revising the data
-    df_geo, val_values =data_treatment(df_geo, title, df)
+    df_geo, val_values =data_treatment(df_geo, title, df_in)
 
     # Specify the interquartile range (IQR) and the first and third quartiles (q1 and q3)
     divnorm = normalization(val_values, cb_scale)
@@ -304,12 +300,11 @@ def plot_geodistribution_with_cities(label: str, title:str, df_in: pd.DataFrame,
         return axs, cax, color_theme, UK_gdf
 
     # Get Geospatial shapes:
-    #df_geo = retrieve_ONS_shape_from_KG()
-    ################### TBD
-    df_geo = call_pickle('./Data/temp_Repo/df_geo in function retrieve_ONS_shape_from_KG')
-    ###########################
-    print(f'Beginning plot for geodistribution (with city view) of {title}...')
+    df_geo = retrieve_ONS_shape_from_KG()
+
+    # Make a copy of df_in
     df = copy.deepcopy(df_in)
+    
     # Initilize the graph
     axs, cax, color_theme, UK_gdf = basic_settings(df_geo)
     
@@ -656,6 +651,110 @@ for t_max, mean and min senarios
     save_figures(title)
     print(f'{i} number of lines have been plotted')
 
+def plot_geodistribution_with_cities_Jiyingsproject(label: str, title:str, df_in: pd.DataFrame, cb_scale: float = 0):
+    '''
+    This module is aim to plot the input variable as geospatial scale (and DO have specifiy city view)
+    Note: As the LSOA code is the unique identifier, this module accept the DataFrame which have one 
+        column of LSOA code, and another column for the variable to plot
+
+    Arguments:
+    label: the legend label for colorbar
+    title: title of the figure (be stored as file name as well)
+    cb_scale: to adjust the scale of colorbar, sometimes the figure is ugly because the max and min value are too close
+    df: df should be two column pd.DataFrame which have one column of LSOA code, and another column for the variable to plot
+                in a nutshell, the bigger the cb_scale, the larger the gap between max and min for colorbar
+                I suggest start with 0, and then try 1, 1.5 maybe. Need a few try and error.
+    '''
+    def basic_settings(df_geo):
+        # Set the plot
+        color_theme = 'coolwarm'
+        mosaic = '''
+        A
+        A
+        '''
+        fig = plt.figure(figsize=(11,7))
+        axs = fig.subplot_mosaic(mosaic)    
+        UK_gdf = gpd.read_file("GB_shapefile/GBR_adm2.shp")
+        UK_gdf = UK_gdf.to_crs("EPSG:3395")
+        UK_gdf.boundary.plot(ax=axs['A'],color='k',linewidth=0.5)
+        boundary = df_geo.bounds
+        boundary = [min(boundary.values[:,0]),min(boundary.values[:,1]),max(boundary.values[:,2]),max(boundary.values[:,3])]
+        axs['A'].set_ylim([boundary[1]-5E4,boundary[3]+5E4])
+        axs['A'].set_xlim(([boundary[0]-5E4,boundary[2]]))
+        #plt.subplots_adjust(left=0)
+        cax = fig.add_axes([0.9, 0.1, 0.02, 0.8])
+
+        return axs, cax, color_theme, UK_gdf
+
+    # Get Geospatial shapes:
+    df_geo = retrieve_ONS_shape_from_KG()
+
+    # Make a copy of df_in
+    df = copy.deepcopy(df_in)
+    
+    # Initilize the graph
+    axs, cax, color_theme, UK_gdf = basic_settings(df_geo)
+    
+    # Revising the data
+    df_geo, val_values =data_treatment(df_geo, title, df)
+    
+    # Specify the interquartile range (IQR) and the first and third quartiles (q1 and q3)
+    divnorm = normalization(val_values, cb_scale)
+
+    axs_xbounds = [np.array([-2.815E5,-1E5]),np.array([-2.838E5,-1.05E5]),np.array([1.3E5,1.9E5]),np.array([-1.957E5,0.957E5])]
+    axs_ybounds = [np.array([7.107E6,7.2652E6]),np.array([7.206E6,7.41E6]),np.array([6.78E6,6.88E6]),np.array([6.5E6,6.68E6])]
+    
+    tl = df_geo.plot(column=f"{title}",
+                cmap=color_theme,
+                antialiased=False,
+                ax=axs['A'],
+                legend=True,
+                norm=divnorm,
+                cax=cax)
+
+    # Create a colorbar for the plot
+    create_color_bar(color_theme, divnorm, label, axs, cax, df_geo[f"{title}"])
+    cax.ticklabel_format(axis="y", style="sci", scilimits=(0,0))  
+
+    axs['A'].set_xticks([])
+    axs['A'].set_yticks([])
+    axs['A'].spines["top"].set_visible(False)
+    axs['A'].spines["right"].set_visible(False)
+    axs['A'].spines["left"].set_visible(False)
+    axs['A'].spines["bottom"].set_visible(False)
+
+    order = [4,3,2,1]
+    loc1 = [1,2,2,1]
+    loc2 = [3,3,3,4]
+    names = ['A','B','C','D']
+
+    for f in range(4):
+        if f == 0 or f == 1:
+            axins2 = inset_axes(axs['A'], width=4, height=2.5,
+                    bbox_to_anchor=(0.5, 0.3),
+                    bbox_transform=axs['A'].transAxes, loc=order[f], borderpad=6)
+        else:
+            axins2 = inset_axes(axs['A'], width=4, height=2.5,
+                    bbox_to_anchor=(0.5, 0.5),
+                    bbox_transform=axs['A'].transAxes, loc=order[f], borderpad=6)
+        plt.subplots_adjust(bottom = 0.225,left=0.07)
+        plt.setp(axins2.get_xticklabels(), visible=False)
+        plt.setp(axins2.get_yticklabels(), visible=False)
+        UK_gdf.boundary.plot(ax=axins2,color='k',linewidth=0.5)
+        axins2.set_xticks([])
+        axins2.set_title(str(names[f]))
+        axins2.set_yticks([])
+        axins2.set_ylim(axs_ybounds[f])
+        axins2.set_xlim(axs_xbounds[f])
+        df_geo.plot(column=f"{title}",cmap=color_theme,\
+                antialiased=False,\
+                ax = axins2,\
+                norm = divnorm)
+        mark_inset(axs['A'],axins2,loc1=loc1[f],loc2=loc2[f],fc='none',ec='0')
+    
+    # Store the figures
+    save_figures(title)
+
 # ------------------------ Line chart Plot --------------------------------- #
 def plot_line_chart(filename: str, y_label: str, df_in: pd.DataFrame, temproal = True):
     '''
@@ -964,7 +1063,7 @@ print(change_of_elec)
 # ----------------------------------------------------------------
 
 # Test for inequality index agent ----------------------------------
-
+'''
 # Read the temp data
 df_temp = retrieve_temp_from_KG()
 
@@ -1026,13 +1125,19 @@ df_fuel_poor = select_column(df_fuel_poor, ['s','result'])
 url = 'http://localhost:5007/api/lsoacalculationagent_inequality_index/calculation/inequality_index'
 df_inequality_index = call_inequality_index_agent(url, df_cost_total, df_fuel_poor)
 print(df_inequality_index)
+'''
 # ----------------------------------------------------------------
 
 # ----------------------------------------------------------------
 ##########################################################
 
-
-
+df = pd.read_csv('data.csv', usecols=[0,2,3], names=['LSOA_code','lat','lon'], squeeze=True)
+# Read a single column of the CSV file into a pandas Series
+col = pd.read_csv('Index.csv', usecols=[0,1,2], names=['lat','lon','index'], squeeze=True)
+df_total = df.merge(col, left_on=col.columns[0], right_on=df.columns[1], how='inner')
+df_total = select_column(df_total,['LSOA_code','index'])
+df_total['index'] = df_total['index'].astype(float)
+plot_geodistribution_with_cities_Jiyingsproject('index','index',df_total)
 
 
 

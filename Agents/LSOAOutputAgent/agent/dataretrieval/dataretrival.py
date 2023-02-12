@@ -12,7 +12,7 @@ import agentlogging
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.querytemplates import output_query_template
 from agent.errorhandling.exceptions import *
-from agent.datamodel.functionality import drop_column,convert_to_float,convert_to_int,remove_unlocated_data,remove_NaN,convert_to_zero
+from agent.datamodel.functionality import drop_column,convert_to_float,convert_to_int,remove_unlocated_data,remove_NaN,convert_to_zero,parse_to_file
 from agent.utils.env_configs import YEAR
 from agent.utils.stack_configs import (QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
@@ -51,6 +51,8 @@ def read_from_web_monthly_distribution_elec(year:str = YEAR):
 
   # Download the xlsx file
   try:
+    if not os.path.exists('./downloads'):
+        os.makedirs('./downloads')
     file_name = os.path.basename(link) #'Monthly distribution of natinal electricity/gas consumption'
     response = requests.get(link)
     open('./downloads/'+ file_name, 'wb').write(response.content)
@@ -105,6 +107,8 @@ def read_from_web_monthly_distribution_gas(year:str = YEAR):
 
   # Download the xlsx file
   try:
+    if not os.path.exists('./downloads'):
+        os.makedirs('./downloads')
     file_name = os.path.basename(link) #'Monthly distribution of natinal electricity/gas consumption'
     response = requests.get(link)
     open('./downloads/'+ file_name, 'wb').write(response.content)
@@ -161,6 +165,8 @@ def read_from_web_price_elec(year:str = YEAR):
 
   # Download the xlsx file
   try:
+    if not os.path.exists('./downloads'):
+        os.makedirs('./downloads')
     file_name = os.path.basename(link) #'Monthly distribution of natinal electricity/gas consumption'
     response = requests.get(link)
     open('./downloads/'+ file_name, 'wb').write(response.content)
@@ -273,6 +279,8 @@ def read_from_web_carbon_index(var: str, year:str = YEAR):
 
   # Download the xlsx file
   try:
+    if not os.path.exists('./downloads'):
+        os.makedirs('./downloads')
     file_name = os.path.basename(link) #'Monthly distribution of natinal electricity/gas consumption'
     response = requests.get(link)
     open('./downloads/'+ file_name, 'wb').write(response.content)
@@ -336,6 +344,10 @@ def retrieve_elec_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endp
         year: the number of year of which the data you may want to read
         per_household: bool, default as False, which the return value is at national scale. if it is yes, will return the value for per household
     '''
+    if type(year) != str:
+      logger.error('Provided formate of year is not string')
+      raise InvalidInput('Provided formate of year is not string')
+
     # Get query string
     query = output_query_template('Electricity', year)
 
@@ -377,6 +389,10 @@ def retrieve_gas_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpo
     year: the number of year of which the data you may want to read
     per_household: bool, default as False, which the return value is at national scale. if it is yes, will return the value for per household
     '''
+    if type(year) != str:
+      logger.error('Provided formate of year is not string')
+      raise InvalidInput('Provided formate of year is not string')
+      
     # Get query string
     query = output_query_template('Gas', year)
 
@@ -422,6 +438,10 @@ def retrieve_fuel_poor_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endp
     query_endpoint: str = QUERY_ENDPOINT,
     update_endpoint: str = UPDATE_ENDPOINT
 '''
+    if type(year) != str:
+      logger.error('Provided formate of year is not string')
+      raise InvalidInput('Provided formate of year is not string')
+      
     # Get query string
     query = output_query_template('Fuel poverty', year)
 
@@ -459,7 +479,10 @@ def retrieve_ONS_shape_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endp
     query_endpoint: str = QUERY_ENDPOINT,
     update_endpoint: str = UPDATE_ENDPOINT
 '''
-
+    if type(year) != str:
+      logger.error('Provided formate of year is not string')
+      raise InvalidInput('Provided formate of year is not string')
+      
     # Get query string
     query = output_query_template('ONS output area', year)
 
@@ -521,6 +544,10 @@ def retrieve_temp_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint:
     query_endpoint: str = QUERY_ENDPOINT,
     update_endpoint: str = UPDATE_ENDPOINT
 '''
+    if type(year) != str:
+      logger.error('Provided formate of year is not string')
+      raise InvalidInput('Provided formate of year is not string')
+      
     # Get query string
     query = output_query_template('Temperature', year)
 
@@ -540,4 +567,7 @@ def retrieve_temp_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpoint:
     logger.info(f'{df.shape[0]/36} number of LSOA of which Climate tempeature data (max, mean, min of each 12 months) have been retrieved')
     return df
 
+
+query = output_query_template('Temperature')
+parse_to_file(query,'fuel poverty')
 

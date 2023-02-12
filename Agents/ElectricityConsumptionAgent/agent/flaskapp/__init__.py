@@ -21,12 +21,12 @@ def create_app(test_config=None):
     with app.app_context():
         # Import parts of application
         import agent.flaskapp.home.routes as home
-        # import agent.flaskapp.inputtasks.routes as inputtasks
-        # import agent.flaskapp.downloadtasks.routes as downloadtasks
+        import agent.flaskapp.inputtasks.routes as inputtasks
+        import agent.flaskapp.downloadtasks.routes as downloadtasks
         # Register Blueprints
         app.register_blueprint(home.home_bp)
-        # app.register_blueprint(downloadtasks.downloadtasks_bp)
-        # app.register_blueprint(inputtasks.inputtasks_bp)
+        app.register_blueprint(downloadtasks.downloadtasks_bp)
+        app.register_blueprint(inputtasks.inputtasks_bp)
         
     # Create Blazegraph namespace if not exists (on app startup)
     #create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT)

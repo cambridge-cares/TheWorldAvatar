@@ -8,6 +8,10 @@
 
 from agent.datamodel.iris import *
 from agent.utils.env_configs import YEAR
+from agent.errorhandling.exceptions import InvalidInput
+import agentlogging
+
+logger = agentlogging.get_logger('prod')
 
 def output_query_template(keyword: str, year: str = YEAR):
     '''
@@ -19,6 +23,15 @@ def output_query_template(keyword: str, year: str = YEAR):
 
 
     '''
+    # Check if the argument is correct
+    if keyword not in ['Electricity', 'Gas', 'Fuel poverty', 'Temperature', 'ONS output area']:
+        logger.error('Not a valid keyword provided. Please check the spelling/Capitals etc etc...')
+        raise InvalidInput('Not a valid keyword provided. Please check the spelling/Capitals etc etc...')
+    
+    if type(year) != str:
+      logger.error('Provided formate of year is not string')
+      raise InvalidInput('Provided formate of year is not string')
+
     if keyword == 'Temperature' or 'Fuel poverty':
         query = 'PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> '
     else:

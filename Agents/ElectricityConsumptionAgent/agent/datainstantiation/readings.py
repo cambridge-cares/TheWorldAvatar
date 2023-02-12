@@ -53,20 +53,6 @@ def get_key(val, my_dict):
             return key
     return None
 
-def call_pickle(pathname):
-    '''
-  This module is to retrieve the result of the a pickle file under the pathname you specified
-  could be useful to retrieve the result of a pickle file
-  '''
-    try:
-        infile = open(pathname,'rb')
-        results = pickle.load(infile)
-        infile.close()
-    except Exception as ex:
-        raise InvalidInput("filepath can not be read -- check if the file exist") from ex
-        
-    return results
-
 # ------------------------- Read data from source -------------------------------- #
 def read_from_web_elec (year: str = YEAR):
   '''
@@ -79,6 +65,11 @@ def read_from_web_elec (year: str = YEAR):
   Arguments:
         year: the number of year of which the data you may want to read
   '''
+  
+  if type(year) != str:
+      logger.error('Provided formate of year is not string')
+      raise InvalidInput('Provided formate of year is not string')
+
   url = 'https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-electricity-consumption'
 
   # Use requests to get the HTML of the website
@@ -91,6 +82,8 @@ def read_from_web_elec (year: str = YEAR):
 
   # Download the xlsx file
   try:
+    if not os.path.exists('./downloads'):
+        os.makedirs('./downloads')
     file_name = os.path.basename(link)
     response = requests.get(link)
     open('./downloads/'+ file_name, 'wb').write(response.content)
@@ -129,6 +122,10 @@ def read_from_web_gas (year: str = YEAR):
   Arguments:
         year: the number of year of which the data you may want to read
   '''
+  if type(year) != str:
+      logger.error('Provided formate of year is not string')
+      raise InvalidInput('Provided formate of year is not string')
+
   url = 'https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-gas-consumption'
 
   # Use requests to get the HTML of the website
@@ -141,6 +138,8 @@ def read_from_web_gas (year: str = YEAR):
 
   # Download the xlsx file
   try:
+    if not os.path.exists('./downloads'):
+        os.makedirs('./downloads')
     file_name = os.path.basename(link)
     response = requests.get(link)
     open('./downloads/'+ file_name, 'wb').write(response.content)
@@ -181,6 +180,10 @@ def read_from_web_fuel_poverty (year: str = YEAR):
   '''
   # There is a lag between data published time and data time, e.g. the data for 2020 is published on 2022. 
   # And the published date is always 2 years after the data date
+  if type(year) != str:
+      logger.error('Provided formate of year is not string')
+      raise InvalidInput('Provided formate of year is not string')
+
   year_published = str(int(year) + 2)
   
   url = 'https://www.gov.uk/government/statistics/sub-regional-fuel-poverty-data-' + year_published
@@ -195,6 +198,8 @@ def read_from_web_fuel_poverty (year: str = YEAR):
 
   # Download the xlsx file
   try:
+    if not os.path.exists('./downloads'):
+        os.makedirs('./downloads')
     file_name = os.path.basename(link)
     response = requests.get(link)
     open('./downloads/'+ file_name, 'wb').write(response.content)
@@ -235,7 +240,18 @@ def read_from_web_temp (year: str = YEAR, var_name: str = 'tas'):
           var_name: 'tas'/'tasmax'/'tasmin' Select from those three to download file represent mean, max, min temperature, respectively.
     '''
   from agent.utils.CEDA_env_config import retrieve_settings
-  CEDA_USERNAME, CEDA_PASSWORD = retrieve_settings()# Web of interest
+  CEDA_USERNAME, CEDA_PASSWORD = retrieve_settings()
+
+  if type(year) != str:
+      logger.error('Provided formate of year is not string')
+      raise InvalidInput('Provided formate of year is not string')
+
+  # Check if the argument is correct
+  if var_name not in ['tas','tasmax','tasmin']:
+        logger.error('Not a valid var_name provided. Please check the spelling/Capitals etc etc...')
+        raise InvalidInput('Not a valid var_name provided. Please check the spelling/Capitals etc etc...')
+    
+  # Web of interest
   url = f'https://data.ceda.ac.uk/badc/ukmo-hadobs/data/insitu/MOHC/HadOBS/HadUK-Grid/v1.1.0.0/1km/{var_name}/mon/latest'
 
   # Create a session to persist the login
@@ -296,6 +312,8 @@ def read_from_web_temp (year: str = YEAR, var_name: str = 'tas'):
       raise InvalidInput('logging to CEDA Failed!')
   
   try: 
+      if not os.path.exists('./downloads'):
+        os.makedirs('./downloads')
       # Download the nc file
       file_name = os.path.basename(link).split('?')[0]
   except Exception as ex:
@@ -308,7 +326,7 @@ def read_from_web_temp (year: str = YEAR, var_name: str = 'tas'):
   
   return './downloads/'+ file_name
 
-def read_from_pickle(pathname: str = YEAR):
+def read_from_pickle(pathname: str):
     '''
     This function is to read the local pickle file to get the ONS geographic data
 
@@ -746,7 +764,7 @@ def upload_hadUK_climate_to_KG (year: str = YEAR,
       return list containing LSOA code and shape
       '''
       # Get geodata
-      LSOA_codes, wkt_codes = call_pickle('./Data/shapes_array')
+      LSOA_codes, wkt_codes = read_from_pickle('./Data/shapes_array')
       usage_vals = np.column_stack((LSOA_codes, wkt_codes))
       # preassigning centroid array
       centroids = np.zeros((len(usage_vals),1),dtype='object')
@@ -823,7 +841,7 @@ def upload_hadUK_climate_to_KG (year: str = YEAR,
     
     logger.info('Computing associated points for each LSOA area...')
     logger.info('Be patient and get a cuppa tea, this will take long time to run...')
-    for i in tqdm(range(26458, int(len(LSOA)))):
+    for i in tqdm(range(0, int(len(LSOA)))):
       assoc_mask = [full_grid.geoms[j].within(LSOA[i,1]) for j in range(len(grid_loc))]
       if any(assoc_mask) == False:
           assoc_point = nearest_points(full_grid,LSOA[i,2])[0]
@@ -965,11 +983,9 @@ if __name__ == '__main__':
 # years = ['2018','2017','2016','2015']
 # for year in years:
 #         upload_year(year)
-    
-    # num_elec, num_gas, num_shape, num_fuelpoor, num_temp = upload_all()
-    # print(f'Number of LSOA area with instantiated Electricity consumption/meters :{num_elec}')
-    # print(f'Number of LSOA area with instantiated Gas consumption/meters/nonmeters :{num_gas}')
-    # print(f'Number of LSOA area with instantiated Shape data :{num_shape}')
-    # print(f'Number of LSOA area with instantiated Fuel Poverty :{num_fuelpoor}')
-    # print(f'Number of LSOA area with instantiated hadUK climate data :{num_temp}')
-    upload_gas_data_to_KG()
+    num_elec, num_gas, num_shape, num_fuelpoor, num_temp = upload_all()
+    print(f'Number of LSOA area with instantiated Electricity consumption/meters :{num_elec}')
+    print(f'Number of LSOA area with instantiated Gas consumption/meters/nonmeters :{num_gas}')
+    print(f'Number of LSOA area with instantiated Shape data :{num_shape}')
+    print(f'Number of LSOA area with instantiated Fuel Poverty :{num_fuelpoor}')
+    print(f'Number of LSOA area with instantiated hadUK climate data :{num_temp}')
