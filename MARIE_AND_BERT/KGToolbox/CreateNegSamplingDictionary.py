@@ -35,6 +35,9 @@ class NegSamplingCreator:
         For each subject, create a universal neg dictionary, use neighbour extract to check whether the triple existis
         :return:
         """
+        stop_p_list = ["hasLogP", "hasDensity", "hasBoilingPoint",
+                                         "hasSolubility", "hasLogP", "hasLogS", "hasMolecularWeight",
+                                         "hasMeltingPoint"]
         # create the list of tails first
         s_p_neg_dict = {}
         s_p_pos_dict = {}
@@ -47,7 +50,6 @@ class NegSamplingCreator:
             counter += 1
             print(f"{counter} out of {len(self.triples)}")
             s, p, o = [e.strip() for e in triple.split("\t")]
-
             s_idx = self.entity2idx[s]
             o_idx = self.entity2idx[o]
             all_entities.append(s_idx)
@@ -69,6 +71,7 @@ class NegSamplingCreator:
                 p_list.append(str(p_idx))
 
         all_entities = list(set(all_entities))
+        total_neg_number = 0
         for s_p_idx in s_p_pos_dict:
             p_idx = s_p_idx.split("_")[1]
             all_pos_entities = s_p_pos_dict[s_p_idx]
@@ -76,13 +79,18 @@ class NegSamplingCreator:
             all_neg_entities_same_class = list(set(p_all_dict[p_idx]) - set(all_pos_entities))
             print(len(all_neg_entities_same_class))
             print(len(all_neg_entities_different_class))
-            sampled_neg_entities_different_class = self.random_sample_by_fraction(all_neg_entities_different_class, frac=0.2)
-            sampled_neg_entities_same_class = self.random_sample_by_fraction(all_neg_entities_same_class, frac=0.8)
-
+            # 0.1, 0.5 so far best
+            # test 0.05, 0.5         # 0.5, 0.05 , 6430992
+            # test 0.02, 0.2         # 0.2, 0.02 , 2568773
+            sampled_neg_entities_different_class = self.random_sample_by_fraction(all_neg_entities_different_class, frac=0)
+            sampled_neg_entities_same_class = self.random_sample_by_fraction(all_neg_entities_same_class, frac=1)
+            print("--------------------------")
+            print(len(sampled_neg_entities_different_class))
+            print(len(sampled_neg_entities_same_class))
             sampled_eng_entities = list(set(sampled_neg_entities_same_class + sampled_neg_entities_different_class))
             print(len(sampled_eng_entities))
             print("=====================")
-
+            total_neg_number += len(sampled_eng_entities)
 
             # use a finer strategy to do the neg sampling
             # 1. get all
@@ -92,9 +100,14 @@ class NegSamplingCreator:
             # print(len(set(all_pos_entities)))
             # print(len(set(all_neg_entities)))
             # print("-------")
+        print("=========================================")
+        print("total neg sample number", total_neg_number)
 
         with open(os.path.join(self.full_dataset_dir, "neg_sample_dict.json"), "w") as f:
             f.write(json.dumps(s_p_neg_dict))
+            f.close()
+        with open(os.path.join(self.full_dataset_dir, "p_all_dict.json"), "w") as f:
+            f.write(json.dumps(p_all_dict))
             f.close()
 
     def run(self):
