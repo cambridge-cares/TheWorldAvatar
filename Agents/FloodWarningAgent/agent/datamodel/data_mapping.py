@@ -8,19 +8,51 @@
 # (https://environment.data.gov.uk/flood-monitoring/doc/reference#flood-warnings)
 # and corresponding concepts and units as defined in OntoFlood
 
-from agent.utils.javagateway import jpsBaseLibGW
+from .iris import *
+
+#TODO: Undo uncommenting
+#from agent.utils.javagateway import jpsBaseLibGW
 
 
-# Create Java classes for all time series data
-jpsBaseLibView = jpsBaseLibGW.createModuleView()
-# Time entries (Instant)
-Instant = jpsBaseLibView.java.time.Instant
-TIMECLASS = Instant.now().getClass()
-# Data class (i.e. all data as double)
-DOUBLE = jpsBaseLibView.java.lang.Double.TYPE
-STRING = jpsBaseLibView.java.lang.String.TYPE
+# # Create Java classes for all time series data
+# jpsBaseLibView = jpsBaseLibGW.createModuleView()
+# # Time entries (Instant)
+# Instant = jpsBaseLibView.java.time.Instant
+# TIMECLASS = Instant.now().getClass()
+# # Data class (i.e. all data as double)
+# DOUBLE = jpsBaseLibView.java.lang.Double.TYPE
+# STRING = jpsBaseLibView.java.lang.String.TYPE
 
 
 # Times are reported in ISO 8601 dateTime (UTC)
+# NOTE: Potentially to be verified
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
+#
+# Waterbodies associated with flood areas
+#
+# API data mapping
+WATERBODIES_API = {
+    'river': 'river',
+    'brook': 'river',
+    'beck': 'river',
+    'stream': 'river',
+    # frequent river names
+    'thames': 'river',
+    'ouse': 'river',
+    'trent': 'river',
+    'severn': 'river',
+    'lake': 'lake',
+    'canal': 'canal',
+    'sea': 'sea',
+    'channel': 'sea',
+    'harbour': 'sea',
+    } 
+# IRI mapping
+WATERBODIES_IRI = {
+    'waterbody': ENVO_WATER_BODY,
+    'river': ENVO_RIVER,
+    'lake': ENVO_LAKE,
+    'canal': ENVO_CANAL,
+    'sea': ENVO_SEA
+    }

@@ -11,4 +11,4 @@ class StackException(Exception):
     """Raise in case of exception when interacting with the Docker Stack."""
 
 class APIException(Exception):
-    """Raise in case of exception when interacting with Met Office DataPoint API."""
+    """Raise in case of exception when interacting with Environment Agency Real Time flood-monitoring API."""
