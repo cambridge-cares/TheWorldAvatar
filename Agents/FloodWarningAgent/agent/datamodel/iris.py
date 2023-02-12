@@ -15,6 +15,10 @@ RT = 'http://environment.data.gov.uk/flood-monitoring/def/core/'
 ENVO = 'http://purl.obolibrary.org/obo/'
 SOPH = 'http://sweetontology.net/phen/'
 SOPHHY = 'http://sweetontology.net/phenHydro/'
+# Office for National Statistics (ONS) Linked Data
+ONS1 = 'http://statistics.data.gov.uk/def/statistical-geography#'
+ONS2 = 'http://statistics.data.gov.uk/def/geography/collection/'
+ONS3 = 'http://publishmydata.com/def/ontology/foi/'
 # CoMo / CARES ontologies
 FLOOD = 'https://www.theworldavatar.com/kg/ontoflood/'
 BUILT = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
@@ -184,6 +188,12 @@ GEO_ASWKT = GEO + 'asWKT'
 # OWL
 OWL_VERSION = OWL + 'versionInfo'
 OWL_SAMEAS = OWL + 'sameAs'
+
+# Office for National Statistics (ONS)
+ONS_GEOGRAPGY = ONS1 + 'Statistical-Geography'
+ONS_NAME = ONS1 + 'officialname'
+ONS_COUNTIES = ONS2 + 'E10'
+ONS_MEMBER_OF = ONS3 + 'memberOf'
 
 
 # OM / UOM unit symbols
