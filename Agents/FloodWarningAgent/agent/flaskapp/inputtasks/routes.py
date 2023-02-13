@@ -32,12 +32,14 @@ def api_update_all_warnings():
     try:
         # Instantiate stations
         response = update_warnings()
-        logger.info(f"Number of instantiated warnings: {response[0]}")
-        logger.info(f"Number of updated warnings: {response[1]}")
-        logger.info(f"Number of archived warnings: {response[2]}")
-        return jsonify({'Instantiated warnings': response[0], 
-                        'Upddated warnings': response[1], 
-                        'Archived warnings': response[2]}), 200
+        logger.info(f"Number of instantiated areas: {response[0]}")
+        logger.info(f"Number of instantiated warnings: {response[1]}")
+        logger.info(f"Number of updated warnings: {response[2]}")
+        logger.info(f"Number of archived warnings: {response[3]}")
+        return jsonify({'Instantiated areas': response[0],
+                        'Instantiated warnings': response[1], 
+                        'Upddated warnings': response[2], 
+                        'Archived warnings': response[3]}), 200
 
     except Exception as ex:
         logger.error('Update failed: ' + str(ex), ex)
