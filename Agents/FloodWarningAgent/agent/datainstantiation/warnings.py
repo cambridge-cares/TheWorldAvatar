@@ -11,7 +11,8 @@ import uuid
 from datetime import datetime as dt
 
 from agent.datainstantiation.ea_data import retrieve_current_warnings, \
-                                            retrieve_flood_area_data
+                                            retrieve_flood_area_data, \
+                                            retrieve_flood_area_polygon
 from agent.datainstantiation.ons_data import retrieve_ons_county
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.querytemplates import *
@@ -40,52 +41,98 @@ def update_warnings(county=None):
     kgclient = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
     if county:
-        #TODO: Implement county-specific instantiation, see note in agent\flaskapp\inputtasks\routes.py
+        ### Update flood warnings for given county ###
+        #TODO: to be implemented, see note in agent\flaskapp\inputtasks\routes.py
         logger.warning("County-specific instantiation not yet implemented")
     else:
+        ### Update all flood warnings ###
         # 1) Retrieve current flood warnings from API
         logger.info("Retrieving current flood warnings from API ...")
         warnings_data_api = retrieve_current_warnings()
         logger.info("Current flood warnings retrieved.")
-        # Extract (currently) active flood warning and area URIs
-        area_uris = [w.get('area_uri') for w in warnings_data_api]
-        area_uris = [a for a in area_uris if a is not None]
-        warning_uris = [w.get('warning_uri') for w in warnings_data_api]
-        warning_uris = [w for w in warning_uris if w is not None]
-        
+
         # 2) Retrieve instantiated flood warnings and flood areas from KG
         logger.info("Retrieving instantiated flood warnings and areas from KG ...")
         areas_kg = get_instantiated_flood_areas(kgclient=kgclient)  
         warnings_kg = get_instantiated_flood_warnings(kgclient=kgclient)      
         logger.info("Instantiated warnings and areas retrieved.")
 
-        # 3) Extract flood warnings and flood areas to be instantiated
+        # 3) Extract (currently active) flood warnings and flood areas to be instantiated
+        area_uris = [w.get('area_uri') for w in warnings_data_api]
+        area_uris = [a for a in area_uris if a is not None]
         areas_to_instantiate = [a for a in area_uris if a not in areas_kg]
+        warning_uris = [w.get('warning_uri') for w in warnings_data_api]
+        warning_uris = [w for w in warning_uris if w is not None]
         warnings_to_instantiate = [w for w in warning_uris if w not in warnings_kg]
+    
+        # 4) Extract flood warnings to be updated (i.e. outdated information in KG)
+        last_altered = {w['warning_uri']: w['last_altered'] for w in warnings_data_api}
+        warnings_to_update = [w for w in warning_uris if w in warnings_kg]
+        warnings_to_update = [w for w in warnings_to_update if warnings_kg.get(w) < last_altered.get(w)]
 
-        # 4) Retrieve currently active flood areas from API
-        areas_data_to_instantiate = []
-        logger.info("Retrieving missing flood areas from API ...")
-        for area in areas_to_instantiate:
-            areas_data_to_instantiate.append(retrieve_flood_area_data(area))
-        logger.info("Missing flood areas retrieved.")
+        # 5) Instantiate missing flood areas and warnings
+        logger.info("Instantiating flood warnings and areas ...")
+        instantiated_areas, instantiated_warnings = \
+            instantiate_flood_areas_and_warnings(areas_to_instantiate, areas_kg,
+                                                 warnings_to_instantiate, warnings_data_api, 
+                                                 kgclient=kgclient)
+        logger.info("Instantiation finished.")
 
-        # 5) Instantiate missing flood areas
-        instantiated_areas, area_location_map = \
-            instantiate_flood_areas(areas_data_to_instantiate, kgclient=kgclient)
-        # Create overarching mapping between flood areas and location IRIs, i.e.
-        # already instantiated and newly instantiated ones
-        area_location_map.update(areas_kg)
-        
-        # 6) Instantiate missing flood warnings
-        warning_data_to_instantiate = [w for w in warnings_data_api if w.get('warning_uri') in warnings_to_instantiate]
-        # Add location IRIs to warning data
-        for w in warning_data_to_instantiate:
-            w['location_iri'] = area_location_map.get(w.get('area_uri'))
-        instantiated_warnings = instantiate_flood_warnings(warning_data_to_instantiate, kgclient=kgclient)
+        # 6) Update outdated flood warnings
+        logger.info("Updating flood warnings ...")
+        # updated_warnings = \
+        #     instantiate_flood_areas_and_warnings(areas_to_instantiate, areas_kg,
+        #                                          warnings_to_instantiate, warnings_data_api, 
+        #                                          kgclient=kgclient)
+        logger.info("Updating finished.")
+
 
 
     return instantiated_areas, instantiated_warnings, None, None
+
+
+def instantiate_flood_areas_and_warnings(areas_to_instantiate: list, areas_kg: dict,
+                                         warnings_to_instantiate: list, warnings_data_api: list,
+                                         query_endpoint=QUERY_ENDPOINT, kgclient=None):
+    """
+    Instantiate flood areas and warnings in the KG
+
+    Arguments:
+        areas_to_instantiate (list): List of flood area URIs to be instantiated
+        areas_kg (dict): Dictionary with instantiated flood area URIs as keys and flood area IRIs as values
+        warnings_to_instantiate (list): List of flood warning URIs to be instantiated
+        warnings_data_api (list): List of dictionaries with flood warning data from API
+
+    Returns:
+        Number of newly instantiated flood areas and flood warnings as int
+    """
+
+    # Create KG client if not provided
+    if not kgclient:
+        kgclient = KGClient(query_endpoint, query_endpoint)
+
+    # Retrieve data for flood areas from API
+    areas_data_to_instantiate = []
+    logger.info("Retrieving missing flood areas from API ...")
+    for area in areas_to_instantiate:
+        areas_data_to_instantiate.append(retrieve_flood_area_data(area))
+    logger.info("Missing flood areas retrieved.")
+
+    # Instantiate missing flood areas
+    new_areas, area_location_map = \
+        instantiate_flood_areas(areas_data_to_instantiate, kgclient=kgclient)
+    # Create overarching mapping between flood area URIs and location IRIs, i.e.
+    # already instantiated and newly instantiated ones
+    area_location_map.update(areas_kg)
+    
+    # Instantiate missing flood warnings
+    warning_data_to_instantiate = [w for w in warnings_data_api if w.get('warning_uri') in warnings_to_instantiate]
+    # Add location IRIs to warning data
+    for w in warning_data_to_instantiate:
+        w['location_iri'] = area_location_map.get(w.get('area_uri'))
+    new_warnings = instantiate_flood_warnings(warning_data_to_instantiate, kgclient=kgclient)
+
+    return new_areas, new_warnings
 
 
 def get_instantiated_flood_warnings(query_endpoint=QUERY_ENDPOINT,
@@ -169,6 +216,11 @@ def instantiate_flood_areas(areas_data: list=[],
     if not kgclient:
         kgclient = KGClient(query_endpoint, query_endpoint)
 
+    # Initialise relevant Stack Clients and parameters
+    postgis_client = PostGISClient()
+    gdal_client = GdalClient()
+    geoserver_client = GeoserverClient()
+
     triples = ''
     area_location_map = {}
     for area in areas_data:
@@ -183,6 +235,10 @@ def instantiate_flood_areas(areas_data: list=[],
         logger.info("Retrieving county IRI from ONS API ...")
         area['county_iri'] = retrieve_ons_county(area['county'])
 
+        # Retrieve GeoJSON polygon from EA API
+        logger.info("Retrieving FloodArea GeoJSON polygon from EA API ...")
+        geojson = retrieve_flood_area_polygon(area['polygon_uri'])
+
         # Remove dictionary keys not required for instantiation
         area.pop('county', None)
         area.pop('polygon_uri', None) 
@@ -191,6 +247,22 @@ def instantiate_flood_areas(areas_data: list=[],
         triples += flood_area_instantiation_triples(**area)
         
         # 2) Upload polygon to PostGIS
+        # Upload OBDA mapping and create Geoserver layer when first geospatial
+        # data is uploaded to PostGIS
+        if not postgis_client.check_table_exists():
+            logger.info('Uploading OBDA mapping ...')
+            OntopClient.upload_ontop_mapping()
+            # Initial data upload required to create postGIS table and Geoserver layer            
+            logger.info('Uploading GeoJSON to PostGIS ...')
+            gdal_client.uploadGeoJSON(geojson)
+            logger.info('Creating layer in Geoserver ...')
+            geoserver_client.create_workspace()
+            geoserver_client.create_postgis_layer()
+        else:        
+            # Upload new geospatial information
+            if not postgis_client.check_point_feature_exists(lat, lon, station_type):
+                logger.info('Uploading GeoJSON to PostGIS ...')
+                gdal_client.uploadGeoJSON(geojson)
 
     # Create INSERT query and perform update
     query = f"INSERT DATA {{ {triples} }}"

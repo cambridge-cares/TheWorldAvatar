@@ -7,6 +7,7 @@
 # Environment Agency Real Time flood-monitoring API:
 # https://environment.data.gov.uk/flood-monitoring/doc/reference#flood-warnings
 
+import json
 import re
 import requests
 import time
@@ -80,7 +81,7 @@ def retrieve_current_warnings(county: str = None) -> list:
             # Add time of last change
             last_altered = [d['timeRaised'], d['timeMsgChanged'], d['timeSevChanged']]
             last_altered = [dt.strptime(last, TIME_FORMAT) for last in last_altered]
-            d['last_altered'] = max(last_altered).strftime(TIME_FORMAT)
+            d['last_altered'] = max(last_altered)
             
             # Add to list of warnings to instantiate
             to_instantiate.append(d)
@@ -137,7 +138,7 @@ def retrieve_flood_area_data(area_uri: str) -> dict:
     return area
 
 
-def retrieve_flood_area_polygon(polygon_uri: str):
+def retrieve_flood_area_polygon(polygon_uri: str) -> str:
     """
     Retrieve flood area polygon from the Environment Agency API
 
@@ -146,7 +147,7 @@ def retrieve_flood_area_polygon(polygon_uri: str):
                           'http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065FAG013/polygon'
 
     Returns:
-        area (dict): GeoJSON with relevant flood polygon data (in WGS84 coordinates)
+        GeoJSON with relevant flood polygon data (in WGS84 coordinates) as string
     """
 
     # Retrieve boundary of the flood area encoded as a geoJSON polygon
@@ -170,7 +171,7 @@ def retrieve_flood_area_polygon(polygon_uri: str):
         # Assign updated properties to polygon
         poly['features'][0]['properties'] = props_new
 
-    return poly
+    return json.dumps(poly)
 
 
 def retrieve_json_from_api(url, max_attempts=3):
