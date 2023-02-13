@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoBIM,TBox,http://www.theworldavatar.com/ontology/ontobim/ontoBIM.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoBIM,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoBIM,TBox,1.1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoBIM,TBox,"The Building Information Modelling ontology (OntoBIM) is an ontology developed to represent the detailed information and spatial relationships of buildings and their components (walls, doors, roofs, furniture, equipment) that is available in the Industry Foundation Classes (IFC) data schema. Information about their individual characteristics such as material, readings, and dimensions is combined from IFC or other data sources.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoBIM,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#AREA,Class,,,,,,,http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL,
