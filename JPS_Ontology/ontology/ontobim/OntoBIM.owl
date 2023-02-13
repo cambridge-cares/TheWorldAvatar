@@ -270,7 +270,7 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontobim/GeometricVoid"/>
-                    <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontobim/IfcModelRepresentation"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -278,6 +278,21 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an element or void within the space or building and their geometric representation defined according to IFC schema.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has geometric representation of</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontobim/IfcAbstractRepresentation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontobim/IfcModelRepresentation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a zone or element within a building to their representation in the IFC schema.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has IFC representation of</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -303,8 +318,8 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontobim/GeometricVoid"/>
-                    <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
-                    <rdf:Description rdf:about="https://w3id.org/bot#Zone"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontobim/IfcAbstractRepresentation"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontobim/IfcModelRepresentation"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -593,7 +608,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontobim/hasVoid">
-        <rdfs:domain rdf:resource="https://w3id.org/bot#Element"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontobim/IfcModelRepresentation"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontobim/GeometricVoid"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the voids in any element&amp;apos;s geometry.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
@@ -843,8 +858,8 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
-                    <rdf:Description rdf:about="https://w3id.org/bot#Zone"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontobim/IfcAbstractRepresentation"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontobim/IfcModelRepresentation"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -1166,8 +1181,8 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
-                    <rdf:Description rdf:about="https://w3id.org/bot#Zone"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontobim/IfcAbstractRepresentation"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontobim/IfcModelRepresentation"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -1447,10 +1462,32 @@
     
 
 
+    <!-- http://www.theworldavatar.com/kg/ontobim/IfcAbstractRepresentation -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontobim/IfcAbstractRepresentation">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the abstract representation of zones in an IFC model.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ifc Abstract Representation</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/kg/ontobim/IfcBooleanOperator -->
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontobim/IfcBooleanOperator"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontobim/IfcModelRepresentation -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontobim/IfcModelRepresentation">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the geometric representation of an element as an IFC model.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ifc Model Representation</rdfs:label>
+    </owl:Class>
     
 
 
@@ -1649,6 +1686,12 @@
 
 
     <owl:Class rdf:about="https://w3id.org/bot#Element">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontobim/IfcModelRepresentation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Element</rdfs:label>
     </owl:Class>
@@ -1706,6 +1749,12 @@
 
 
     <owl:Class rdf:about="https://w3id.org/bot#Zone">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontobim/IfcAbstractRepresentation"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Zone</rdfs:label>
     </owl:Class>
