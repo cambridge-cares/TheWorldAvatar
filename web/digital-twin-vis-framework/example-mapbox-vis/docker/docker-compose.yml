@@ -5,15 +5,10 @@ services:
 
   # Example DTVF implementation
   example-mapbox-vis:
-    image: example-mapbox-vis:latest
+    image: dtvf-visualisation:latest
     container_name: "example-mapbox-vis"
-    restart: "no"
-    build:
-      context: "../"
-      dockerfile: "./docker/Dockerfile"
-      labels:
-        authors: "support@cmclinnovations"
-        description: "Example implementation of the Digital Twin Visualisation Framework (Mapbox)."
     ports:
       - "80:80"
+    volumes:
+      - ./webspace:/var/www/html
  

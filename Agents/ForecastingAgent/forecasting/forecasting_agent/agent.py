@@ -1,31 +1,42 @@
 ################################################
 # Authors: Magnus Mueller (mm2692@cam.ac.uk)   #
+#          Markus Hofmeister (mh807@cam.ac.uk) # 
 # Date: 30 Nov 2022                            #
 ################################################
-# The this file is the main forecasting agent to forecast a time series using a trained model or Prophet. The forecast is then stored in the KG.
+
+# This module represents the main forecasting agent to forecast a time series using 
+# a trained model or Prophet (as default). The forecast is then stored in the KG.
+
+import os
+import uuid
+import urllib
+from pathlib import Path
+import pandas as pd
 
 from dateutil.parser import isoparse
-import os
-import urllib
-import uuid
+from darts import TimeSeries
+from darts.models import Prophet, TFTModel
+from darts.dataprocessing.transformers import Scaler
 from darts.metrics import mape, mse, rmse, smape
 
-import pandas as pd
-from darts import TimeSeries
-from darts.dataprocessing.transformers import Scaler
-from darts.models import Prophet, TFTModel
-from forecasting.utils.properties import *
-from forecasting.datamodel.data_mapping import *
+from py4jps import agentlogging
+
+from forecasting.utils.tools import *
+from forecasting.utils.default_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT, \
+                                              DB_URL, DB_USER, DB_PASSWORD
 from forecasting.datamodel.iris import *
-from forecasting.errorhandling.exceptions import KGException
+from forecasting.datamodel.data_mapping import *
 from forecasting.kgutils.kgclient import KGClient
 from forecasting.kgutils.tsclient import TSClient
-from forecasting.utils.tools import *
+from forecasting.errorhandling.exceptions import KGException
 
-from py4jps import agentlogging
+# Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
 
-def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=None, data_length=None):
+
+def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=None, data_length=None,
+             query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT, 
+             db_url=DB_URL, db_user=DB_USER, db_password=DB_PASSWORD):
     """
     Forecast a time series using a pre trained model or Prophet.
     returns a dictionary with the forecast and some metadata.
@@ -35,11 +46,17 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     :param forecast_start_date: The date from which you want to start forecasting
     :param use_model_configuration: If you want to force a specific model configuration, you can do so here
     :param data_length: The number of time steps which should be loaded from the DB
+    :param query_endpoint: The endpoint to query the KG
+    :param update_endpoint: The endpoint to update the KG
+    :param db_url: The url to the RDB
+    :param db_user: The user to the RDB
+    :param db_password: The password to the RDB
+    
     :return: The forecast is being returned.
     """
-    # initialise the  client
-    kgClient = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
-    tsClient = TSClient(kg_client=kgClient)
+    # Initialise the KG and TS clients
+    kgClient = KGClient(query_endpoint=query_endpoint, update_endpoint=update_endpoint)
+    tsClient = TSClient(kg_client=kgClient, rdb_url=db_url, rdb_user=db_user, rdb_password=db_password)
 
     covariates, backtest_series = None, None
 
@@ -59,7 +76,7 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     if data_length is not None:
         cfg['data_length'] = data_length
         
-    cfg['dataIRI'] = get_dataIRI(cfg, kgClient)
+    cfg['dataIRI'] = get_data_iri(cfg, kgClient)
     cfg['forecast_start_date'] = get_forecast_start_date(
         forecast_start_date, tsClient, cfg)
     logger.info(f'Using the forecast start date: {cfg["forecast_start_date"]}')
@@ -117,6 +134,11 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
         logger.info('Using Prophet model.')
         model = Prophet()
         cfg['fc_model']['input_length'] = len(series)
+    #TODO: Potentially to be revisited / aligned with other configurations
+    elif 'PIRMASENS' == cfg['model_configuration_name']:
+        logger.info('Using Prophet model.')
+        model = Prophet()
+        cfg['fc_model']['input_length'] = len(series)
     else:
         logger.error('No model configuration found for the given name.')
         raise ValueError(
@@ -136,12 +158,12 @@ def forecast(iri, horizon, forecast_start_date=None, use_model_configuration=Non
     logger.info(f'Input interval: {cfg["model_input_interval"]}')
     cfg['tsIRI'] = get_tsIRI_from_dataIRI(cfg['dataIRI'], kgClient)
     
-    try:
-        # get unit from iri and add to forecast
-        cfg['unit'] = get_unit(cfg['iri'], kgClient)
-    except KGException as e:
-        # no measurement -> no unit
-        pass
+    # Get unit from IRI and add to forecast
+    unit = get_unit(cfg['iri'], kgClient)
+    if unit:
+        cfg['unit'] = unit
+
+    # Get time format from tsIRI
     cfg['time_format'] = get_time_format(cfg['iri'], kgClient)
 
     update = get_forecast_update(cfg=cfg)
@@ -297,7 +319,6 @@ def load_ts_data(cfg, kgClient, tsClient):
     :return: the timeseries and covariates.
     """
 
-
     if 'load_covariates_func' in cfg:
         # load covariates
         logger.info('Loading covariates with function: ' + cfg['load_covariates_func'].__name__)
@@ -316,8 +337,25 @@ def load_ts_data(cfg, kgClient, tsClient):
                       cfg['loaded_data_bounds']['upperbound'], column_name="Series", date_name="Date")
 
     # df to darts timeseries
-    series = TimeSeries.from_dataframe(
-        df, time_col='Date', value_cols="Series")  # , fill_missing_dates =True
+    #NOTE Inlcuded resampling for irregularly spaced time series data to avoid issues
+    #     with Darts being unable to retrieve frequency of time series
+    #     (likely to be refined in the future)
+
+    if cfg.get('resample_data'):
+        df_resampled = df.set_index('Date').copy()
+        df_resampled = df_resampled.resample(cfg.get('resample_data')).mean()
+        df = df_resampled.reset_index()
+
+    try:
+        # Build a deterministic TimeSeries instance from DataFrame as is
+        series = TimeSeries.from_dataframe(df, time_col='Date', value_cols="Series")
+    except ValueError:
+        # Fill missing times with NaN values if processing DataFrame as is fails;
+        # requires possibility to infer the frequency from the provided timestamps
+        series = TimeSeries.from_dataframe(df, time_col='Date', value_cols="Series",
+                                           fill_missing_dates=True, 
+                                           freq=None)
+
     # remove nan values at beginning and end
     series = series.strip()
 
@@ -325,7 +363,7 @@ def load_ts_data(cfg, kgClient, tsClient):
     return series, covariates
 
 
-def get_dataIRI(cfg, kgClient):
+def get_data_iri(cfg, kgClient):
     """
     Retrieves the time series IRI from the KG.
     Either the iri has directly object with 'hasTimeSeries' with 'Measure' in between, 
@@ -378,13 +416,13 @@ def get_ts_lower_upper_bound(cfg):
     return lowerbound.strftime(TIME_FORMAT), upperbound.strftime(TIME_FORMAT)
 
 
-def load_pretrained_model(cfg, ModelClass, forece_download=False):
+def load_pretrained_model(cfg, ModelClass, force_download=False):
     """
     It downloads a model from a link, and then loads it into a Darts model
 
     :param cfg: a dictionary containing the configuration of the model
     :param ModelClass: the class of the model
-    :param forece_download: If you want to download the model again if a folder already exists, set this to True, defaults to False
+    :param force_download: If you want to download the model again if a folder already exists, set this to True, defaults to False
     (optional)
     :return: The model is being returned.
     """
@@ -400,7 +438,7 @@ def load_pretrained_model(cfg, ModelClass, forece_download=False):
     # TODO: until now we need to download both, checkpoint and model file
     # maybe you find a better way to just have one link
 
-    if os.path.exists(path_to_store) and not forece_download:
+    if os.path.exists(path_to_store) and not force_download:
         # model already exists
         path_ckpt = path_to_store / "best-model.ckpt"
         path_pth = ""
@@ -488,13 +526,13 @@ def get_forecast_update(cfg):
     outputTimeInterval_iri = KB + 'Interval_' + str(uuid.uuid4())
     inputTimeInterval_iri = KB + 'Interval_' + str(uuid.uuid4())
 
-    outputEnd_iri, q = get_timeInstant(cfg['model_output_interval'][1])
+    outputEnd_iri, q = get_time_instant(cfg['model_output_interval'][1])
     update += q
-    outputBeginning_iri, q = get_timeInstant(cfg['model_output_interval'][0])
+    outputBeginning_iri, q = get_time_instant(cfg['model_output_interval'][0])
     update += q
-    inputEnd_iri, q = get_timeInstant(cfg['model_input_interval'][1])
+    inputEnd_iri, q = get_time_instant(cfg['model_input_interval'][1])
     update += q
-    inputBeginning_iri, q = get_timeInstant(cfg['model_input_interval'][0])
+    inputBeginning_iri, q = get_time_instant(cfg['model_input_interval'][0])
     update += q
 
     update += get_properties_for_subj(subj=outputTimeInterval_iri, verb_obj={
@@ -545,7 +583,7 @@ def convert_date_to_timestamp(date):
     return int(time_stamp)
 
 
-def get_timeInstant(date):
+def get_time_instant(date):
 
     time_stamp = convert_date_to_timestamp(date)
 

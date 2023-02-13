@@ -1,5 +1,4 @@
-# the purpose of this module is to provide iris for the KG, which can be used to query and update the KG
-### Datamodel ###
+# The purpose of this module is to provide Constants/IRIs, which can be used to query and update the KG
 
  # Namespaces #
 OHN = "https://www.theworldavatar.com/kg/ontoheatnetwork/"
@@ -72,13 +71,11 @@ OHN_DEMANDDRIVENWEARCOST = OHN + "DemandDrivenWearCost"
 OHN_DURATIONINTIMEINTERVAL = OHN + "DurationInTimeInterval"
 OHN_ELECTRICITYSPOTPRICE = OHN + "ElectricitySpotPrice"
 OHN_EMISSIONCOST = OHN + "EmissionCost"
-#OHN_ENERGYINTIMEINTERVAL = OHN + "EnergyInTimeInterval"
 OHN_PROVIDEDHEATAMOUNT = OHN + "ProvidedHeatAmount"
 OHN_HEATDEMAND = OHN + "HeatDemand"
 OHN_CONSUMEDGASAMOUNT = OHN + "ConsumedGasAmount" 
 OHN_GENERATEDHEATAMOUNT = OHN + "GeneratedHeatAmount"
 OHN_COGENELECTRICITYAMOUNT = OHN + "CoGenElectricityAmount"
-
 OHN_FIXEDCOST = OHN + "FixedCost"
 OHN_FIXEDWEARCOST = OHN + "FixedWearCost"
 OHN_FUELCOST = OHN + "FuelCost"
@@ -194,7 +191,7 @@ XSD_BOOLEAN = XSD + 'boolean'
 XSD_DATE = XSD + "date"
 XSD_DATETIMESTAMP = XSD + "dateTimeStamp"
 
-### time interval ###
+### Time interval ###
 TIME_HASBEGINNING = TIME + 'hasBeginning'
 TIME_INTERVAL = TIME + 'Interval'
 TIME_INSTANT = TIME + 'Instant'

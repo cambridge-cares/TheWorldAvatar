@@ -29,7 +29,7 @@
             "geoServerSettings": {
                 "virtualTable": {
                     "name": "cropmap_extended",
-                    "sql": "SELECT fid, prob, county, cromeid, cropmap.lucode, geom, label, colour\nFROM cropmap, cropmap_labels, cropmap_colours\nWHERE cropmap.lucode = cropmap_labels.lucode AND cropmap.lucode = cropmap_colours.lucode\n",
+                    "sql": "@/inputs/config/cropmap.sql",
                     "escapeSql": false,
                     "keyColumn": "label",
                     "geometry": {
