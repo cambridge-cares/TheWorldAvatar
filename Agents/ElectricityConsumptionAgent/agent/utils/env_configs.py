@@ -88,15 +88,4 @@ def retrieve_settings():
         raise ValueError('Invalid "ONTOP_FILE" has been provided in environment variables.')
 
 # Run when module is imported
-#retrieve_settings()
-
-CEDA_USERNAME = 'xjieyang'
-CEDA_PASSWORD = '11111111'
-
-YEAR = '2020'
-
-DATABASE = ''
-ONTOP_FILE = ''
-LAYERNAME =''
-GEOSERVER_WORKSPACE = ''
-NAMESPACE = ''
+retrieve_settings()
