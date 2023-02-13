@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   aermod-agent:
-    image: docker.cmclinnovations.com/aermod-agent:1.1.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/aermod-agent:1.1.0-SNAPSHOT
     deploy:
       mode: replicated
       replicas: 1

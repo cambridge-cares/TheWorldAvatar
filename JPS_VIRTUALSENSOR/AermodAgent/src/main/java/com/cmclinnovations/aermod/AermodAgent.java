@@ -111,7 +111,7 @@ public class AermodAgent extends DerivationAgent {
         }
         if (bpi.run() != 0) {
             LOGGER.error("Failed to run BPIPPRM, terminating");
-            return;
+            throw new RuntimeException();
         }
 
         // run aermet (weather preprocessor)
