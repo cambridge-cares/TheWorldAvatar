@@ -58,8 +58,8 @@ WATERBODIES_IRIS = {
 # Severity of flood warnings
 #
 SEVERITY_IRIS= {
-    'Severe Flood Warning': FLOOD_SEVEREFLOODWARNING,
-    'Flood Warning': FLOOD_FLOODWARNING,
-    'Flood Alert': FLOOD_FLOODALERT,
-    'Warning no Longer in Force': FLOOD_WARNINGNOLONGERINFORCE,
+    'Severe Flood Warning': FLOOD_SEVERE_FLOOD_WARNING,
+    'Flood Warning': FLOOD_FLOOD_WARNING,
+    'Flood Alert': FLOOD_FLOOD_ALERT,
+    'Warning no Longer in Force': FLOOD_WARNING_NO_LONGER_IN_FORCE,
     }

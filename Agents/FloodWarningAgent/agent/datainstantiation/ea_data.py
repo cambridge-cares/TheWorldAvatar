@@ -31,7 +31,7 @@ WARNINGS = 'https://environment.data.gov.uk/flood-monitoring/id/floods'
 #   flood area polygon: stable long term reference identifiers (resolvable URI)
 
 
-def retrieve_current_warnings(county: str = None):
+def retrieve_current_warnings(county: str = None) -> list:
     """
     Retrieve current flood warnings and alerts from the Environment Agency API
 
@@ -61,7 +61,7 @@ def retrieve_current_warnings(county: str = None):
         if w.get('@id'):
             d = {}
             # Transient flood warning identifier (i.e. might not resolve in the future on API)
-            d['iri'] = w['@id']
+            d['warning_uri'] = w['@id']
             # Replace non-UTF-8 narrow space character from some messages
             d['label'] = None if not w.get('description') else w['description'].replace('\n', ' ').replace('\u202F', ' ')
             d['message'] = None if not w.get('message') else w['message'].replace('\n', ' ').replace('\u202F', ' ')
@@ -88,7 +88,7 @@ def retrieve_current_warnings(county: str = None):
     return to_instantiate
 
 
-def retrieve_flood_area_data(area_uri: str):
+def retrieve_flood_area_data(area_uri: str) -> dict:
     """
     Retrieve flood area data from the Environment Agency API
 
@@ -110,7 +110,7 @@ def retrieve_flood_area_data(area_uri: str):
     if data:
         # Extract relevant information
         # Stable long term flood warning identifier (i.e. shall resolve in the future on API)
-        area['iri'] = area_uri
+        area['area_uri'] = area_uri
         # Name of the county intersecting the flood area, as entered by the Flood Incident Management Team
         area['county'] = None if not data.get('county') else data['county']
         descr1 = None if not data.get('label') else data['label'].replace('\n', ' ').replace('\u202F', ' ')
@@ -118,7 +118,7 @@ def retrieve_flood_area_data(area_uri: str):
         area['label']  = descr1 + ': ' + descr2 if descr1 and descr2 else descr1 if descr1 else descr2
         # Identifying code for the corresponding Target Area in Flood Warnings direct
         # (used to link between various external datasets)
-        area['areal_identifier'] = None if not data.get('fwdCode') else data['fwdCode']
+        area['area_identifier'] = None if not data.get('fwdCode') else data['fwdCode']
         # URI for the polygon of the flood area, i.e. boundary of the area encoded as a geoJSON polygon
         area['polygon_uri'] = None if not data.get('polygon') else data['polygon']
         # Name of the river or sea area linked to the flood area (optional)
@@ -131,8 +131,8 @@ def retrieve_flood_area_data(area_uri: str):
         # Extract type information of flood area, i.e. each area is 
         #   1) a rt:FloodArea and either
         #   2) a rt:FloodAlertArea or a rt:FloodWarningArea
-        area['type'] = None if not data.get('type') else data['type']
-        area['type'] = [t.strip() for t in area['type']]
+        area['area_types'] = None if not data.get('type') else data['type']
+        area['area_types'] = [t.strip() for t in area['area_types']]
 
     return area
 

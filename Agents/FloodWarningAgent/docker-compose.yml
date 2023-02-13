@@ -6,7 +6,7 @@ services:
     environment:
       - STACK_NAME=${STACK_NAME}
       # Target Blazegraph namespace
-      - NAMESPACE=stations
+      - NAMESPACE=floodwarnings
       # Target PostGIS database name
       # (default name "postgres" required for Ontop to work)
       - DATABASE=postgres
