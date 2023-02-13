@@ -244,22 +244,3 @@ def assess_waterbody_type(waterbody: str):
         waterbody_type = 'waterbody'
 
     return waterbody_type
-
-
-if __name__ == '__main__':
-
-    import pprint
-
-    # Retrieve current flood warnings
-    warnings = retrieve_current_warnings()
-    pprint.pprint(warnings[0])
-
-    # Retrieve flood area data for first warning
-    area_uri = warnings[0]['area_uri']
-    area = retrieve_flood_area_data(area_uri)
-    pprint.pprint(area)
-
-    # Retrieve flood area polygon data
-    polygon_uri = area['polygon_uri']
-    poly = retrieve_flood_area_polygon(polygon_uri)
-    pprint.pprint(poly)

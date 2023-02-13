@@ -20,7 +20,6 @@ Instant = jpsBaseLibView.java.time.Instant
 TIMECLASS = Instant.now().getClass()
 # Data class (i.e. all data as double)
 DOUBLE = jpsBaseLibView.java.lang.Double.TYPE
-STRING = jpsBaseLibView.java.lang.String.TYPE
 
 # Times are reported in ISO 8601 dateTime (UTC)
 # NOTE: Potentially to be verified

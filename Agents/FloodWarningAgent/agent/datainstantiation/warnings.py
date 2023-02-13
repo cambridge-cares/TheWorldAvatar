@@ -8,6 +8,8 @@
 
 import uuid
 
+from agent.datainstantiation.ea_data import *
+
 from agent.errorhandling.exceptions import APIException
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.querytemplates import *
@@ -27,5 +29,5 @@ def update_warnings(county=None):
     Update flood warnings and alerts in the KG
     """
 
-    return None
 
+    return None, None, None

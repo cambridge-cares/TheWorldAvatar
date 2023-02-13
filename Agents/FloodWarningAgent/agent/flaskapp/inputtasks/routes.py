@@ -32,13 +32,13 @@ def api_update_all_warnings():
         print(f"Number of instantiated warnings: {response[0]}")
         print(f"Number of updated warnings: {response[1]}")
         print(f"Number of archived warnings: {response[2]}")
-        return jsonify({"Instantiated warnings": response[0], 
-                        "Upddated warnings": response[1], 
-                        "Archived warnings": response[2]})
+        return jsonify({'Instantiated warnings': response[0], 
+                        'Upddated warnings': response[1], 
+                        'Archived warnings': response[2]}), 200
 
     except Exception as ex:
         print(ex)
-        return jsonify({"status": '500', 'errormsg': 'Update failed.'})
+        return jsonify({'status': '500', 'msg': 'Update failed.'}), 500
 
 #TODO: to be implemented
 #Potential challenge: secure retrieval of county specific flood warnings from KG to
