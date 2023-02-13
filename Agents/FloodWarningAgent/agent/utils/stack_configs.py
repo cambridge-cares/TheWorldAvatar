@@ -6,10 +6,10 @@
 # The purpose of this module is to retrieve relevant properties and settings 
 # (e.g. for the Time Series Client) from Stack clients
 
-from py4jps import agentlogging
-
-from agent.utils.javagateway import stackClientsGw
 from agent.utils.env_configs import DATABASE, NAMESPACE
+from agent.utils.javagateway import stackClientsGw
+
+from py4jps import agentlogging
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")

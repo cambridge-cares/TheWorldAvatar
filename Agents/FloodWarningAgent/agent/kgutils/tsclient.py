@@ -8,11 +8,12 @@
 
 from contextlib import contextmanager
 
-from py4jps import agentlogging
+from agent.datamodel.data_mapping import TIMECLASS
 from agent.errorhandling.exceptions import TSException
 from agent.utils.javagateway import jpsBaseLibGW
-from agent.datamodel.data_mapping import TIMECLASS
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
+
+from py4jps import agentlogging
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")

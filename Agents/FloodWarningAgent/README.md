@@ -1,6 +1,6 @@
 # Flood Warning Instantiation Agent
 
-The `FloodWarningAgent` is an input agent which queries data from the UK [Environment Agency Real Time flood-monitoring API] and instantiates it according to the [OntoFlood] ontology in the [TheWorldAvatar] knowledge graph.
+The `FloodWarningAgent` is an input agent which queries data from the UK [Environment Agency Real Time flood-monitoring API] and instantiates it according to the [OntoFlood] ontology in the [TheWorldAvatar] knowledge graph. The Environment Agency issue warnings of floods that cover specific warning or alert areas. The floods API provides a listing of all current such warnings and is updated every 15 minutes.
 
 The agent is implemented as Docker container to be deployed to a Docker stack spun up by the [Stack Manager]. 
 

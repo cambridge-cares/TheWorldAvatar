@@ -11,6 +11,8 @@ import re
 import requests
 import time
 
+from datetime import datetime as dt
+
 from py4jps import agentlogging
 from agent.datamodel.data_mapping import *
 from agent.errorhandling.exceptions import APIException
@@ -22,6 +24,11 @@ logger = agentlogging.get_logger("dev")
 
 # Define API URL
 WARNINGS = 'https://environment.data.gov.uk/flood-monitoring/id/floods'
+# API provides URIs for most of its resources (i.e. flood warning, areas, ...)
+# Many of these URIs are stable long term reference identifiers; however, some items may only be transient:
+#   flood alert/warning: URI for an individual flood is only transient, i.e. limited lifetime
+#   flood area: stable long term reference identifiers (resolvable URI)
+#   flood area polygon: stable long term reference identifiers (resolvable URI)
 
 
 def retrieve_current_warnings(county: str = None):
@@ -30,7 +37,7 @@ def retrieve_current_warnings(county: str = None):
 
     Arguments:
         county (str): County name for which to retrieve flood warnings (e.g. 'Hampshire')
-                      Retrieves ALL current warnings if county is None
+                      Retrieves ALL current warnings if no county given
 
     Returns:
         to_instantiate (list): List of dicts with relevant flood warnings/alerts data
@@ -53,20 +60,27 @@ def retrieve_current_warnings(county: str = None):
         # Initialise dict with relevant information for each warning
         if w.get('@id'):
             d = {}
-            # API: Each flood warning and area has an identifier; however lifetime varies
-            #   flood areas: stable long term reference identifiers
-            #   flood alerts: URI for an individual flood is only transient
+            # Transient flood warning identifier (i.e. might not resolve in the future on API)
             d['iri'] = w['@id']
-            # Replace non-utf-8 narrow space character from some messages
+            # Replace non-UTF-8 narrow space character from some messages
             d['label'] = None if not w.get('description') else w['description'].replace('\n', ' ').replace('\u202F', ' ')
             d['message'] = None if not w.get('message') else w['message'].replace('\n', ' ').replace('\u202F', ' ')
+            # The severity of the warning as a text label: 'Flood Alert', 'Flood Warning', 'Severe Flood Warning' or 'Warning no Longer in Force'
+            d['severity'] = None if not w.get('severity') else w['severity']
+            # URI for the flood alert or flood warning area affected
+            d['area_uri'] = None if not w.get('floodArea') else w['floodArea'].get('@id')
+            # Dates and times the warning was last reviewed
             d['timeRaised'] = None if not w.get('timeRaised') else w['timeRaised']
             d['timeMsgChanged'] = None if not w.get('timeMessageChanged') else w['timeMessageChanged']
             d['timeSevChanged'] = None if not w.get('timeSeverityChanged') else w['timeSeverityChanged']
-            d['severity'] = None if not w.get('severity') else w['severity']
-            d['area_uri'] = None if not w.get('floodArea') else w['floodArea'].get('@id')
+            
             # Strip potential whitespace
             d = {k:v.strip() for k, v in d.items() if v}
+
+            # Add time of last change
+            last_altered = [d['timeRaised'], d['timeMsgChanged'], d['timeSevChanged']]
+            last_altered = [dt.strptime(last, '%Y-%m-%dT%H:%M:%S') for last in last_altered]
+            d['last_altered'] = max(last_altered).strftime('%Y-%m-%dT%H:%M:%S')
             
             # Add to list of warnings to instantiate
             to_instantiate.append(d)
@@ -87,13 +101,17 @@ def retrieve_flood_area_data(area_uri: str):
     """
 
     # Retrieve dictionary of flood area data
+    # (API: The flood areas API provide information on the geographic regions to which a given 
+    # flood alert or warning may apply. These comprise Flood Alert Areas and Flood Warning Areas)
     data = retrieve_json_from_api(area_uri)
     data = data.get('items')
 
     area = {}
     if data:
         # Extract relevant information
+        # Stable long term flood warning identifier (i.e. shall resolve in the future on API)
         area['iri'] = area_uri
+        # Name of the county intersecting the flood area, as entered by the Flood Incident Management Team
         area['county'] = None if not data.get('county') else data['county']
         descr1 = None if not data.get('label') else data['label'].replace('\n', ' ').replace('\u202F', ' ')
         descr2 = None if not data.get('description') else data['description'].replace('\n', ' ').replace('\u202F', ' ')
@@ -101,7 +119,7 @@ def retrieve_flood_area_data(area_uri: str):
         # Identifying code for the corresponding Target Area in Flood Warnings direct
         # (used to link between various external datasets)
         area['areal_identifier'] = None if not data.get('fwdCode') else data['fwdCode']
-        # URI for the polygon of the flood area
+        # URI for the polygon of the flood area, i.e. boundary of the area encoded as a geoJSON polygon
         area['polygon_uri'] = None if not data.get('polygon') else data['polygon']
         # Name of the river or sea area linked to the flood area (optional)
         area['water_body_label'] = None if not data.get('riverOrSea') else data['riverOrSea']
@@ -131,7 +149,7 @@ def retrieve_flood_area_polygon(polygon_uri: str):
         area (dict): GeoJSON with relevant flood polygon data (in WGS84 coordinates)
     """
 
-    # Retrieve GeoJSON of flood polygon from API
+    # Retrieve boundary of the flood area encoded as a geoJSON polygon
     # API: Specification of the polygon for each area (as a geoJSON feature in WGS84 coordinates)
     poly = retrieve_json_from_api(polygon_uri)
     
@@ -141,6 +159,7 @@ def retrieve_flood_area_polygon(polygon_uri: str):
     except KeyError:
         pass
     
+    #NOTE: This assumes that the polygon is a single feature
     props = poly.get('features')[0].get('properties')
     if props:
         # Extract relevant information

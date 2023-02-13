@@ -10,11 +10,12 @@ import glob
 import jaydebeapi
 import json
 
-from py4jps import agentlogging
 from agent.errorhandling.exceptions import StackException
 from agent.utils.javagateway import stackClientsGw, jpsBaseLibGW
-from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, ONTOP_URL
 from agent.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, ONTOP_FILE
+from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, ONTOP_URL
+
+from py4jps import agentlogging
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")

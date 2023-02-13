@@ -2,8 +2,8 @@
 
 from flask import Flask
 
-from agent.utils.stack_configs import UPDATE_ENDPOINT
 from agent.kgutils.initialise_kg import create_blazegraph_namespace, upload_ontology
+from agent.utils.stack_configs import UPDATE_ENDPOINT
 
 
 def create_app(test_config=None):

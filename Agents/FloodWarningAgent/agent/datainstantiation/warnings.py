@@ -8,7 +8,6 @@
 
 import uuid
 
-from py4jps import agentlogging
 from agent.errorhandling.exceptions import APIException
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.querytemplates import *
@@ -16,6 +15,8 @@ from agent.utils.stackclients import (GdalClient, GeoserverClient,
                                       OntopClient, PostGISClient,
                                       create_geojson_for_postgis)
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+
+from py4jps import agentlogging
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")

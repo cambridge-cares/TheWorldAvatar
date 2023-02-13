@@ -10,19 +10,17 @@
 
 from .iris import *
 
-#TODO: Undo uncommenting
-#from agent.utils.javagateway import jpsBaseLibGW
+from agent.utils.javagateway import jpsBaseLibGW
 
 
-# # Create Java classes for all time series data
-# jpsBaseLibView = jpsBaseLibGW.createModuleView()
-# # Time entries (Instant)
-# Instant = jpsBaseLibView.java.time.Instant
-# TIMECLASS = Instant.now().getClass()
-# # Data class (i.e. all data as double)
-# DOUBLE = jpsBaseLibView.java.lang.Double.TYPE
-# STRING = jpsBaseLibView.java.lang.String.TYPE
-
+# Create Java classes for all time series data
+jpsBaseLibView = jpsBaseLibGW.createModuleView()
+# Time entries (Instant)
+Instant = jpsBaseLibView.java.time.Instant
+TIMECLASS = Instant.now().getClass()
+# Data class (i.e. all data as double)
+DOUBLE = jpsBaseLibView.java.lang.Double.TYPE
+STRING = jpsBaseLibView.java.lang.String.TYPE
 
 # Times are reported in ISO 8601 dateTime (UTC)
 # NOTE: Potentially to be verified
@@ -49,10 +47,20 @@ WATERBODIES_API = {
     'harbour': 'sea',
     } 
 # IRI mapping
-WATERBODIES_IRI = {
+WATERBODIES_IRIS = {
     'waterbody': ENVO_WATER_BODY,
     'river': ENVO_RIVER,
     'lake': ENVO_LAKE,
     'canal': ENVO_CANAL,
     'sea': ENVO_SEA
+    }
+
+#
+# Severity of flood warnings
+#
+SEVERITY_IRIS= {
+    'Severe Flood Warning': FLOOD_SEVEREFLOODWARNING,
+    'Flood Warning': FLOOD_FLOODWARNING,
+    'Flood Alert': FLOOD_FLOODALERT,
+    'Warning no Longer in Force': FLOOD_WARNINGNOLONGERINFORCE,
     }

@@ -12,14 +12,15 @@ import json
 import requests
 import urllib.parse
 
-from py4jps import agentlogging
 from agent.datamodel.data_mapping import *
 from agent.errorhandling.exceptions import APIException
 from agent.kgutils.querytemplates import ons_county
 
+from py4jps import agentlogging
+
 # Initialise logger
+#TODO: Change to 'prod' logger
 logger = agentlogging.get_logger("dev")
-#logger = agentlogging.get_logger("prod")
 
 
 # Define API URL
@@ -28,14 +29,15 @@ ONS = 'http://statistics.data.gov.uk/sparql'
 
 def retrieve_ons_county(county_name):
     """
-        Retrieves county IRI for given name from ONS API
+        Retrieves county IRI for given county name from ONS API
 
         Arguments:
             county_name (str): County name as used in Flood Warnings and Alerts
                                (as well as FloodArea information)
 
         Returns:
-            county_iri (str): ONS Linked Data IRI for given district
+            county_iri (str): ONS Linked Data IRI for given county
+                              None if no (or no unique) matching county found
     """
 
     # Get query and URL-encode (as required by API)
@@ -45,7 +47,6 @@ def retrieve_ons_county(county_name):
     # Perform GET request
     url = ONS + '.json?query=' + query
     res = requests.get(url)
-
     if res.status_code != 200:
         logger.error('Error retrieving data from ONS API.')
         raise APIException('Error retrieving data from ONS API.')
@@ -64,7 +65,7 @@ def retrieve_ons_county(county_name):
 
 if __name__ == '__main__':
 
-    # Retrieve ONS county IRI for sampel county
+    # Retrieve ONS county IRI for sample county
     county = 'West Sussex'
     county_iri = retrieve_ons_county(county)
     print(county_iri)

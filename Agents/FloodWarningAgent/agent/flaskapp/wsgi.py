@@ -11,11 +11,11 @@
 import logging
 logging.getLogger("py4j").setLevel(logging.ERROR)
 
-from pytz import utc
 from apscheduler.schedulers.background import BackgroundScheduler
+from pytz import utc
 
-from agent.flaskapp import create_app
 from agent.datainstantiation.warnings import update_warnings
+from agent.flaskapp import create_app
 
 
 # Initialise background scheduler and add recurring background task to 

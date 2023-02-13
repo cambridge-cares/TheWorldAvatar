@@ -6,8 +6,9 @@
 # The purpose of this module is to provide templates for (frequently)
 # required SPARQL queries
 
-from py4jps import agentlogging
 from agent.datamodel import *
+
+from py4jps import agentlogging
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
