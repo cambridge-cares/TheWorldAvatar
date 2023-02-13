@@ -8,7 +8,11 @@
 
 import uuid
 
-from agent.datainstantiation.ea_data import retrieve_current_warnings
+from datetime import datetime as dt
+
+from agent.datainstantiation.ea_data import retrieve_current_warnings, \
+                                            retrieve_flood_area_data
+from agent.datainstantiation.ons_data import retrieve_ons_county
 
 from agent.errorhandling.exceptions import APIException
 from agent.kgutils.kgclient import KGClient
@@ -42,13 +46,24 @@ def update_warnings(county=None):
         logger.warning("County-specific instantiation not yet implemented")
     else:
         # Retrieve current flood warnings from API
-        warnings_api = retrieve_current_warnings()
-        # Retrieve instantiated flood warnings and flood areas from KG
-        #areas_kg = get_instantiated_flood_areas(kgclient=kgclient)
-        #warnings_kg = get_instantiated_flood_warnings(kgclient=kgclient)
-        instantiate_flood_warnings(warnings_api)
+        warnings_data_api = retrieve_current_warnings()
+        # Retrieve (currently) active flood warning and area URIs
+        warning_uri = [w.get('warning_uri') for w in warnings_data_api]
+        area_uris = [w.get('area_uri') for w in warnings_data_api]
+        areas_data_api = []
+        for area in area_uris:
+            areas_data_api.append(retrieve_flood_area_data(area))
 
-    return None, None, None
+        # Retrieve instantiated flood warnings and flood areas from KG
+        areas_kg = get_instantiated_flood_areas(kgclient=kgclient)
+        warnings_kg = get_instantiated_flood_warnings(kgclient=kgclient)
+
+        # Instantiate missing flood warnings and flood areas
+        instantiated_areas = instantiate_flood_areas(areas_data_api, kgclient=kgclient)
+        instantiated_warnings = instantiate_flood_warnings(warnings_data_api, kgclient=kgclient)
+
+
+    return instantiated_warnings, None, None
 
 
 def get_instantiated_flood_warnings(query_endpoint=QUERY_ENDPOINT,
@@ -74,14 +89,14 @@ def get_instantiated_flood_warnings(query_endpoint=QUERY_ENDPOINT,
     res = kgclient.performQuery(query)
 
     # Unwrap results
-    # uprns = [r['uprns'] for r in res]
+    warning = [r.pop('warning_iri') for r in res]
+    last_altered = [list(r.values()) for r in res]
+    for i in range(len(last_altered)):
+        last_altered[i] = [dt.strptime(t, BLAZEGRAPH_TIME_FORMAT) for t in last_altered[i]]
+        last_altered[i] = max(last_altered[i])
+    warnings = dict(zip(warning, last_altered))
 
-    # # Extract latest update time stamp
-    # last_altered = [d['timeRaised'], d['timeMsgChanged'], d['timeSevChanged']]
-    # last_altered = [dt.strptime(last, '%Y-%m-%dT%H:%M:%S') for last in last_altered]
-    # d['last_altered'] = max(last_altered).strftime('%Y-%m-%dT%H:%M:%S')
-
-    return res
+    return warnings
 
 
 def get_instantiated_flood_areas(query_endpoint=QUERY_ENDPOINT,
@@ -107,14 +122,9 @@ def get_instantiated_flood_areas(query_endpoint=QUERY_ENDPOINT,
     res = kgclient.performQuery(query)
 
     # Unwrap results
-    # uprns = [r['uprns'] for r in res]
+    areas = {r['area_iri']: r['location_iri'] for r in res}
 
-    # # Extract latest update time stamp
-    # last_altered = [d['timeRaised'], d['timeMsgChanged'], d['timeSevChanged']]
-    # last_altered = [dt.strptime(last, '%Y-%m-%dT%H:%M:%S') for last in last_altered]
-    # d['last_altered'] = max(last_altered).strftime('%Y-%m-%dT%H:%M:%S')
-
-    return res
+    return areas
 
 
 def instantiate_flood_areas(areas_data: list=[],
@@ -138,6 +148,19 @@ def instantiate_flood_areas(areas_data: list=[],
 
     triples = ''
     for area in areas_data:
+        # Create IRIs of Location associated with flood area (and potential flood event)
+        area['location_iri'] = KB + 'Location' + str(uuid.uuid4())
+        area['admin_district_iri'] = KB + 'AdministrativeDistrict' + str(uuid.uuid4())
+        # Create waterbody IRI
+        area['waterbody_iri'] = KB + area['water_body_type'].capitalize() + str(uuid.uuid4())
+
+        # Retrieve county IRI from ONS API
+        area['county_iri'] = retrieve_ons_county(area['county'])
+
+        # Remove dictionary keys not required for instantiation
+        area.pop('county', None)
+        area.pop('polygon_uri', None)
+
         # Prepare instantiation in KG
         triples += flood_area_instantiation_triples(**area)
         # Upload polygon to PostGIS
@@ -153,7 +176,8 @@ def instantiate_flood_warnings(warnings_data: list=[],
                                query_endpoint=QUERY_ENDPOINT,
                                kgclient=None):
     """
-    Instantiate list of flood warning data dicts as retrieved from API by 'retrieve_current_warnings'
+    Instantiate list of flood warning data dicts as retrieved from API by 'retrieve_current_warnings',
+    further enriched with location_iri created by 'flood_area_instantiation_triples'
 
     Arguments:
         warnings_data (list): List of dicts with relevant flood warnings/alerts data
@@ -170,6 +194,13 @@ def instantiate_flood_warnings(warnings_data: list=[],
 
     triples = ''
     for warning in warnings_data:
+        # Create IRI of potential flood event
+        warning['flood_event_iri'] = KB + 'Flood_' + str(uuid.uuid4())
+        #TODO Remove
+        warning['location_iri'] = KB + 'Location' + str(uuid.uuid4())
+        # Remove dictionary keys not required for instantiation
+        warning.pop('last_altered', None)
+
         triples += flood_warning_instantiation_triples(**warning)
 
     # Create INSERT query and perform update

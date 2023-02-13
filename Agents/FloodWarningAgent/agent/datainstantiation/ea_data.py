@@ -79,8 +79,8 @@ def retrieve_current_warnings(county: str = None) -> list:
 
             # Add time of last change
             last_altered = [d['timeRaised'], d['timeMsgChanged'], d['timeSevChanged']]
-            last_altered = [dt.strptime(last, '%Y-%m-%dT%H:%M:%S') for last in last_altered]
-            d['last_altered'] = max(last_altered).strftime('%Y-%m-%dT%H:%M:%S')
+            last_altered = [dt.strptime(last, TIME_FORMAT) for last in last_altered]
+            d['last_altered'] = max(last_altered).strftime(TIME_FORMAT)
             
             # Add to list of warnings to instantiate
             to_instantiate.append(d)

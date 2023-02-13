@@ -70,7 +70,8 @@ def get_all_flood_areas() -> str:
 # INTERNAL SPARQL UPDATES
 #
 def flood_area_instantiation_triples(area_uri: str, area_types: list, county_iri: str,
-                                     water_body_type: str, label: str, 
+                                     location_iri: str, admin_district_iri: str,
+                                     waterbody_iri: str, water_body_type: str, label: str, 
                                      area_identifier: str, water_body_label: str) -> tuple:
     """
     Create INSERT triples to instantiate single flood area (to be placed inside a SPARQL INSERT DATA block)
@@ -79,14 +80,13 @@ def flood_area_instantiation_triples(area_uri: str, area_types: list, county_iri
         area_uri (str): IRI of flood area - use URI provided by EA API
         area_types (str): flood area types - use URIs provided by EA API
         county_iri (str): IRI of county as retrieved from ONS API
+        location_iri (str): IRI of Location associated with flood area (and potential flood event)
+        admin_district_iri (str): IRI of administrative district associated with Location
+        waterbody_iri (str): IRI of water body associated with flood area
     """
 
     if area_uri:
-        # Create IRIs of Location for potential flood event
-        location_iri = KB + 'Location' + str(uuid.uuid4())
-        admin_district_iri = KB + 'AdministrativeDistrict' + str(uuid.uuid4())
-        # Create waterbody IRI and retrieve applicable type
-        waterbody_iri = KB + water_body_type.capitalize() + str(uuid.uuid4())
+        # Retrieve applicable waterbody type
         waterbody_type = WATERBODIES_IRIS[water_body_type]
 
         # Object properties
@@ -94,11 +94,14 @@ def flood_area_instantiation_triples(area_uri: str, area_types: list, county_iri
         triples = f"""
             <{area_uri}> <{RDF_TYPE}> <{RT_FLOOD_AREA}> . 
             <{area_uri}> <{FLOOD_HAS_LOCATION}> <{location_iri}> . 
+            <{location_iri}> <{RDF_TYPE}> <{FLOOD_LOCATION}> . 
             <{location_iri}> <{FLOOD_HAS_ADMINISTRATIVE_DISTRICT}> <{admin_district_iri}> . 
-            <{admin_district_iri}> <{OWL_SAMEAS}> <{county_iri}> . 
+            <{admin_district_iri}> <{RDF_TYPE}> <{FLOOD_ADMINISTRATIVE_DISTRICT}> . 
             <{area_uri}> <{FLOOD_ATTACHED_WATERBODY}> <{waterbody_iri}> . 
             <{waterbody_iri}> <{RDF_TYPE}> <{waterbody_type}> . 
         """
+        # Add ONS county IRI if available (i.e. could be retrieved unambiguously)
+        if county_iri: triples += f"<{admin_district_iri}> <{OWL_SAMEAS}> <{county_iri}> . "
         # Add more specific area types (i.e. AlertArea, WarningArea) as retrieved from EA API
         for t in area_types:
             triples += f"<{area_uri}> <{RDF_TYPE}> <{t}> . "
@@ -113,26 +116,25 @@ def flood_area_instantiation_triples(area_uri: str, area_types: list, county_iri
     # Remove unnecessary whitespaces
     triples = ' '.join(triples.split())
     
-    return triples, location_iri
+    return triples
 
 
-def flood_warning_instantiation_triples(warning_uri: str, area_uri: str, location_iri: str,
-                                        severity: str, label: str, message: str, timeRaised: str,
-                                        timeMsgChanged: str, timeSevChanged: str) -> tuple:
+def flood_warning_instantiation_triples(warning_uri: str, area_uri: str, flood_event_iri: str,
+                                        location_iri: str, severity: str, label: str, message: str, 
+                                        timeRaised: str, timeMsgChanged: str, timeSevChanged: str) -> tuple:
     """
     Create INSERT triples to instantiate single flood warning (to be placed inside a SPARQL INSERT DATA block)
 
     Arguments:
         warning_uri (str): IRI of flood warning - use URI provided by EA API
         area_uri (str): IRI of flood area - use URI provided by EA API
+        flood_event_iri (str): IRI of potential flood event
         location_iri (str): IRI of location of potential flood event
     """
 
     if warning_uri:
         # Get applicable severity IRI from OntoFlood ABox
-        severity_iri = SEVERITY_IRIS[severity]
-        # Create IRI of potential flood event
-        flood_event_iri = KB + 'Flood_' + str(uuid.uuid4())
+        severity_iri = SEVERITY_IRIS[severity.lower()]
         
         # Object properties
         triples = f"""
@@ -158,4 +160,4 @@ def flood_warning_instantiation_triples(warning_uri: str, area_uri: str, locatio
     # Remove unnecessary whitespaces
     triples = ' '.join(triples.split())
     
-    return triples, flood_event_iri
+    return triples

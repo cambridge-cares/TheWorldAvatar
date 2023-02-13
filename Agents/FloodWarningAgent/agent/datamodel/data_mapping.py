@@ -23,7 +23,8 @@ DOUBLE = jpsBaseLibView.java.lang.Double.TYPE
 
 # Times are reported in ISO 8601 dateTime (UTC)
 # NOTE: Potentially to be verified
-TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
+BLAZEGRAPH_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 #
 # Waterbodies associated with flood areas
@@ -58,8 +59,8 @@ WATERBODIES_IRIS = {
 # Severity of flood warnings
 #
 SEVERITY_IRIS= {
-    'Severe Flood Warning': FLOOD_SEVERE_FLOOD_WARNING,
-    'Flood Warning': FLOOD_FLOOD_WARNING,
-    'Flood Alert': FLOOD_FLOOD_ALERT,
-    'Warning no Longer in Force': FLOOD_WARNING_NO_LONGER_IN_FORCE,
+    'severe flood warning': FLOOD_SEVERE_FLOOD_WARNING,
+    'flood warning': FLOOD_FLOOD_WARNING,
+    'flood alert': FLOOD_FLOOD_ALERT,
+    'warning no longer in force': FLOOD_WARNING_NO_LONGER_IN_FORCE,
     }

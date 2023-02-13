@@ -50,7 +50,7 @@ FROM base as debug
 RUN pip install debugpy
 
 # Set flask app and development environment to allow for hot-reloading
-ENV FLASK_APP=app/forecasting/flaskapp/wsgi.py
+ENV FLASK_APP=app/agent/flaskapp/wsgi.py
 ENV FLASK_DEBUG=1
 
 # Launch application in container
@@ -70,6 +70,6 @@ COPY ./agent ./agent
 
 # Set the entrypoint
 # timeout set to 10 min to avoid exceptions for longer API/KG calls
-ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "agent:create_app()" --timeout 600
+ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "agent:flaskapp:create_app()" --timeout 600
 
 #==================================================================================================

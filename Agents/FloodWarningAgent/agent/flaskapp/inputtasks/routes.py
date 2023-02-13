@@ -40,7 +40,7 @@ def api_update_all_warnings():
                         'Archived warnings': response[2]}), 200
 
     except Exception as ex:
-        logger.error("Unable to forecast.", ex)
+        logger.error('Update failed: ' + str(ex), ex)
         #logger.error(traceback.format_exc())
         return jsonify({'status': '500', 'msg': 'Update failed: ' + str(ex)}), 500
 
