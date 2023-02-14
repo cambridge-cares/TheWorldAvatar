@@ -28,8 +28,7 @@ from UK_Power_Grid_Model_Generator.AddModelVariables import AddModelVariable
 from UK_Digital_Twin_Package.GraphStore import LocalGraphStore
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
 import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
-from pyasyncagent.agent.async_agent import AsyncAgent
-from pyasyncagent.kg_operations.sparql_client import PySparqlClient # the import of this agent will need a parckage name werkzeug, install `pip install Werkzeug==2.0.2`, otherwise it will report the error message
+from pyderivationagent.kg_operations.sparql_client import PySparqlClient # the import of this agent will need a parckage name werkzeug, install `pip install Werkzeug==2.0.2`, otherwise it will report the error message
 import uuid
 from py4jps.resources import JpsBaseLib
 

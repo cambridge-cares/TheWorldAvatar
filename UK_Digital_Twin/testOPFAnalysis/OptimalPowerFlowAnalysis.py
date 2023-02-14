@@ -24,8 +24,6 @@ from UK_Digital_Twin_Package.jpsSingletons import jpsBaseLibGW
 from UK_Digital_Twin_Package import demandLoadAllocator as DLA
 from UK_Digital_Twin_Package import BranchPropertyInitialisation as BPI
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
-from UK_Digital_Twin_Package import generatorCluster as genCluster
-import SPARQLQueryUsedInModelInitialiser as queryModelInitialiser
 import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
 from UK_Power_Grid_Model_Generator.costFunctionParameterInitialiser import costFuncPara
 from UK_Power_Grid_Model_Generator import model_EBusABoxGeneration, model_EGenABoxGeneration, model_ELineABoxGeneration
@@ -40,7 +38,7 @@ from UK_Digital_Twin_Package import CO2FactorAndGenCostFactor as ModelFactor
 from SMRSitePreSelection import SitePreSelection as sp
 from SMRSitePreSelection import SitePreSelection_pymoo as sp_pymoo
 from SMRSitePreSelection import rankingTheSite as ranker
-from pypower.api import ppoption, runopf, isload, runuopf
+from pypower.api import ppoption, runopf, isload, runuopf ## numpy <1.23 otherwise will raise error message
 import UK_Digital_Twin_Package.PYPOWER.pypower.runpf as pf
 from numpy import False_, r_, c_, ix_, zeros, pi, ones, exp, union1d, array, linalg, where, logical_or, arange, \
                     ones, sort, exp, pi, diff, min, \
@@ -77,7 +75,7 @@ import shapely.geometry
 import csv
 from pymoo.util import plotting
 from pymoo.visualization.scatter import Scatter
-from sklearn.cluster import DBSCAN
+from sklearn.cluster import DBSCAN ## pip install scikit-learn
 from pyscipopt import Model
 from SMRSitePreSelection.DecommissioningCost import DecommissioningCost as DCost
 import matplotlib.pyplot as plt
@@ -272,13 +270,14 @@ class OptimalPowerFlowAnalysis:
         self.CarbonTaxForOPF = -1 ## the initial carbon tax not for OPF calculation
         self.weatherConditionName = None
         self.time_now = time.strftime("%Y%m%d-%H%M", time.localtime())
-        self.diagramPath = '.\\figFiles\\' + self.time_now + '\\'
-        self.netDemandingJSONPath = '.\\netDemandingGeoJSONFiles\\' + self.time_now + '\\'
-        self.pieChartPath = '.\\regionalEnergyBreakdownPieChart\\' + self.time_now + '\\'
-        self.branchLossJSONPath = '.\\branchLossGeoJSONFiles\\' + self.time_now + '\\'
-        self.majorEnergySourceJSONPath = '.\\majorEnergySourceJSONFiles\\' + self.time_now + '\\'
-        self.outputOfDifferentEnergySourceJSONPath = '.\\outputOfDifferentEnergySourceJSONFiles\\' + self.time_now + '\\'
-        self.regionalOutputJSONPath = '.\\regionalOutputJSONFiles\\' + self.time_now + '\\'
+        localRootFilePath = '/mnt/d/wx243/FromTWA/'
+        self.diagramPath = localRootFilePath + '/figFiles(ParetoFront)/' + self.time_now + '/'
+        self.netDemandingJSONPath = localRootFilePath + '/netDemandingGeoJSONFiles/' + self.time_now + '/'
+        self.pieChartPath = localRootFilePath + '/regionalEnergyBreakdownPieChart/' + self.time_now + '/'
+        self.branchLossJSONPath = localRootFilePath + '/branchLossGeoJSONFiles/' + self.time_now + '/'
+        self.majorEnergySourceJSONPath = localRootFilePath + '/majorEnergySourceJSONFiles/' + self.time_now + '/'
+        self.outputOfDifferentEnergySourceJSONPath = localRootFilePath + '/outputOfDifferentEnergySourceJSONFiles/' + self.time_now + '/'
+        self.regionalOutputJSONPath = localRootFilePath + '/regionalOutputJSONFiles/' + self.time_now + '/'
 
     """Find the power plants located in each demanding areas"""
     def powerPlantAndDemandingAreasMapper(self):
@@ -1312,7 +1311,7 @@ class OptimalPowerFlowAnalysis:
                 ClosedGeneratorLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_ClosedGenerator'
                 DecommissionedLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_DecommissionedGenerator'
 
-                self.filePathForJSON = '.\\JSONFiles\\' +  str(self.numberOfSMRToBeIntroduced) + '_SMRs_' + str(self.CarbonTaxForOPF) +'_CarbonTax' 
+                self.filePathForJSON = './JSONFiles/' +  str(self.numberOfSMRToBeIntroduced) + '_SMRs_' + str(self.CarbonTaxForOPF) +'_CarbonTax' 
                 
                 self.visualisationFileCreator_ExtantGenerator(GeneratorObjectList_EachWeight, ExtantGeneratorLabel) 
                 self.visualisationFileCreator_AddedSMRGenerator(SMRSiteObjectList_EachWeight, SMRIntroducedLabel)
@@ -1957,7 +1956,7 @@ class OptimalPowerFlowAnalysis:
         geojson_file += end_geojson
         # saving as geoJSON
         self.mkdirJSON()
-        geojson_written = open(self.filePathForJSON + '\\' + file_label +'.geojson','w')
+        geojson_written = open(self.filePathForJSON + '/' + file_label +'.geojson','w')
         geojson_written.write(geojson_file)
         geojson_written.close() 
         print('---GeoJSON written successfully: visualisationFileCreator_ExtantGenerator---', file_label)
@@ -2008,7 +2007,7 @@ class OptimalPowerFlowAnalysis:
         geojson_file += end_geojson
         # saving as geoJSON
         self.mkdirJSON()
-        geojson_written = open(self.filePathForJSON + '\\' + file_label +'.geojson','w')
+        geojson_written = open(self.filePathForJSON + '/' + file_label +'.geojson','w')
         geojson_written.write(geojson_file)
         geojson_written.close() 
         print('---GeoJSON written successfully: visualisationFileCreator_ClosedGenerator---', file_label)
@@ -2057,7 +2056,7 @@ class OptimalPowerFlowAnalysis:
         geojson_file += end_geojson
         # saving as geoJSON
         self.mkdirJSON()
-        geojson_written = open(self.filePathForJSON + '\\' + file_label +'.geojson','w')
+        geojson_written = open(self.filePathForJSON + '/' + file_label +'.geojson','w')
         geojson_written.write(geojson_file)
         geojson_written.close() 
         print('---GeoJSON written successfully: visualisationFileCreator_AddedSMRGenerator---', file_label)
@@ -2101,7 +2100,7 @@ class OptimalPowerFlowAnalysis:
         geojson_file += end_geojson
         # saving as geoJSON
         self.mkdirJSON()
-        geojson_written = open(self.filePathForJSON + '\\' + file_label +'.geojson','w')
+        geojson_written = open(self.filePathForJSON + '/' + file_label +'.geojson','w')
         geojson_written.write(geojson_file)
         geojson_written.close() 
         print('---GeoJSON written successfully: visualisationFileCreator_decommissionedGenerator---', file_label)
@@ -2109,9 +2108,10 @@ class OptimalPowerFlowAnalysis:
 
     """This method is to generate the JSON file for creating the visualisation of the net demanding of the small areas"""
     ## This method can be run after the calculation of the simulation, like the other fig creator functions  
+    ## TODO: change the colour picker
     def GeoJSONCreator_netDemandingForSmallArea(self, demandingDataList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):  
         ##check the storage path
-        self.mkdirNetDemandingJSON('SmallAreaNetDemanding\\')
+        self.mkdirNetDemandingJSON('SmallAreaNetDemanding/')
         ## Determine the upper and lower bounds
         netDemanding = []
         for demanding_eachSMRDesign in demandingDataList:
@@ -2127,7 +2127,7 @@ class OptimalPowerFlowAnalysis:
             raise ValueError('Unusual lowerbound or upperbound. Lowerbound should be nagitive numbers and the upper bound should be positive.')
 
         ## create the colour bar legend
-        createColourBarLegend(self.netDemandingJSONPath + 'SmallAreaNetDemanding\\', upperbound, lowerbound, 'Net demanding (GWh/yr)', 'legend-netDemanding', 0, 11)
+        createColourBarLegend(self.netDemandingJSONPath + 'SmallAreaNetDemanding/', upperbound, lowerbound, 'Net demanding (GWh/yr)', 'legend-netDemanding', 0, 11)
 
         weatherNameList = []
         for weather in weatherConditionList:
@@ -2188,7 +2188,7 @@ class OptimalPowerFlowAnalysis:
                         geojson_file += end_geojson
                         # saving as geoJSON
                         file_label = 'SmallAreaNetDemanding_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                        geojson_written = open(self.netDemandingJSONPath + 'SmallAreaNetDemanding\\' + file_label + '.geojson','w')
+                        geojson_written = open(self.netDemandingJSONPath + 'SmallAreaNetDemanding/' + file_label + '.geojson','w')
                         geojson_written.write(geojson_file)
                         geojson_written.close() 
                         print('---GeoJSON written successfully: net Demanding for small areas---', file_label)      
@@ -2244,7 +2244,7 @@ class OptimalPowerFlowAnalysis:
                     geojson_file += end_geojson
                     # saving as geoJSON
                     file_label = 'SmallAreaNetDemanding_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ')'
-                    geojson_written = open(self.netDemandingJSONPath + 'SmallAreaNetDemanding\\' + file_label + '.geojson','w')
+                    geojson_written = open(self.netDemandingJSONPath + 'SmallAreaNetDemanding/' + file_label + '.geojson','w')
                     geojson_written.write(geojson_file)
                     geojson_written.close() 
                     print('---GeoJSON written successfully: net Demanding for small areas---', file_label)
@@ -2287,7 +2287,7 @@ class OptimalPowerFlowAnalysis:
                             geojson_file += end_geojson
                             # saving as geoJSON
                             file_label = 'SmallAreaNetDemanding_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                            geojson_written = open(self.netDemandingJSONPath + 'SmallAreaNetDemanding\\' + file_label + '.geojson','w')
+                            geojson_written = open(self.netDemandingJSONPath + 'SmallAreaNetDemanding/' + file_label + '.geojson','w')
                             geojson_written.write(geojson_file)
                             geojson_written.close() 
                             print('---GeoJSON written successfully: net Demanding for small areas---', file_label)
@@ -2296,9 +2296,10 @@ class OptimalPowerFlowAnalysis:
 
     """This method is to generate the JSON file for creating the visualisation of the net demanding of the regional areas"""
     ## This method can be run after the calculation of the simulation, like the other fig creator functions  
+    ## TODO: change the colour picker 
     def GeoJSONCreator_netDemandingForRegionalArea(self, demandingDataList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):   
         ## check the storage path
-        self.mkdirNetDemandingJSON('RegionalAreaNetDemanding\\')
+        self.mkdirNetDemandingJSON('RegionalAreaNetDemanding/')
         ## Determine the upper and lower bounds
         netDemanding = []
         for demanding_eachSMRDesign in demandingDataList:
@@ -2314,7 +2315,7 @@ class OptimalPowerFlowAnalysis:
             raise ValueError('Unusual lowerbound or upperbound. Lowerbound should be nagitive numbers and the upper bound should be positive.')
 
         ## create the colour bar legend
-        createColourBarLegend(self.netDemandingJSONPath + 'RegionalAreaNetDemanding\\', upperbound, lowerbound, 'Net demanding (GWh/yr)', 'legend-netDemanding', 0, 11)
+        createColourBarLegend(self.netDemandingJSONPath + 'RegionalAreaNetDemanding/', upperbound, lowerbound, 'Net demanding (GWh/yr)', 'legend-netDemanding', 0, 11)
 
         weatherNameList = []
         for weather in weatherConditionList:
@@ -2375,7 +2376,7 @@ class OptimalPowerFlowAnalysis:
                             geojson_file += end_geojson
                             # saving as geoJSON
                             file_label = 'RegionalAreaNetDemanding_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                            geojson_written = open(self.netDemandingJSONPath + 'RegionalAreaNetDemanding\\' + file_label + '.geojson','w')
+                            geojson_written = open(self.netDemandingJSONPath + 'RegionalAreaNetDemanding/' + file_label + '.geojson','w')
                             geojson_written.write(geojson_file)
                             geojson_written.close() 
                             print('---GeoJSON written successfully: net Demanding for regional areas---', file_label)
@@ -2431,7 +2432,7 @@ class OptimalPowerFlowAnalysis:
                         geojson_file += end_geojson
                         # saving as geoJSON
                         file_label = 'RegionalAreaNetDemanding_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ')'
-                        geojson_written = open(self.netDemandingJSONPath + 'RegionalAreaNetDemanding\\' + file_label + '.geojson','w')
+                        geojson_written = open(self.netDemandingJSONPath + 'RegionalAreaNetDemanding/' + file_label + '.geojson','w')
                         geojson_written.write(geojson_file)
                         geojson_written.close() 
                         print('---GeoJSON written successfully: net Demanding for regional areas---', file_label)
@@ -2474,7 +2475,7 @@ class OptimalPowerFlowAnalysis:
                             geojson_file += end_geojson
                             # saving as geoJSON
                             file_label = 'RegionalAreaNetDemanding_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                            geojson_written = open(self.netDemandingJSONPath + 'RegionalAreaNetDemanding\\' + file_label + '.geojson','w')
+                            geojson_written = open(self.netDemandingJSONPath + 'RegionalAreaNetDemanding/' + file_label + '.geojson','w')
                             geojson_written.write(geojson_file)
                             geojson_written.close() 
                             print('---GeoJSON written successfully: net Demanding for regional areas---', file_label)
@@ -2484,7 +2485,7 @@ class OptimalPowerFlowAnalysis:
     """This method is to generate the visulisation GeoJSON file of the branch transmission loss"""
     def GeoJSONCreator_branchGrid(self, branchData, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
         ## check the storage path
-        self.mkdirbranchLossJSON(str(self.numOfBus) + '\\')
+        self.mkdirbranchLossJSON(str(self.numOfBus) + '/')
         ## Determine the upper and lower bounds
         loss = []
         for loss_eachSMRDesign in branchData:
@@ -2506,7 +2507,7 @@ class OptimalPowerFlowAnalysis:
             raise ValueError('Unusual lowerbound. Lowerbound should be non-nagitive numbers.')
 
         ## create the colour bar legend
-        createColourBarLegend(self.branchLossJSONPath + str(self.numOfBus) + '\\', upperbound, lowerbound, 'Transmission loss (MW)', 'legend-transmissionLoss', None, 8)
+        createColourBarLegend(self.branchLossJSONPath + str(self.numOfBus) + '/', upperbound, lowerbound, 'Transmission loss (MW)', 'legend-transmissionLoss', None, 8)
 
         ## weather list 
         weatherNameList = []
@@ -2572,7 +2573,7 @@ class OptimalPowerFlowAnalysis:
                         geojson_file += end_geojson
                         # saving as geoJSON
                         file_label = 'BranchGrid_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                        geojson_written = open(self.branchLossJSONPath + str(self.numOfBus) + '\\' + file_label + '.geojson','w')
+                        geojson_written = open(self.branchLossJSONPath + str(self.numOfBus) + '/' + file_label + '.geojson','w')
                         geojson_written.write(geojson_file)
                         geojson_written.close() 
                         print('---GeoJSON written successfully: GeoJSONCreator_branchGrid---', file_label)
@@ -2630,7 +2631,7 @@ class OptimalPowerFlowAnalysis:
                     geojson_file += end_geojson
                     # saving as geoJSON
                     file_label = 'BranchGrid_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ')'
-                    geojson_written = open(self.branchLossJSONPath + str(self.numOfBus) + '\\' + file_label + '.geojson','w')
+                    geojson_written = open(self.branchLossJSONPath + str(self.numOfBus) + '/' + file_label + '.geojson','w')
                     geojson_written.write(geojson_file)
                     geojson_written.close() 
                     print('---GeoJSON written successfully: GeoJSONCreator_branchGrid---', file_label)
@@ -2675,7 +2676,7 @@ class OptimalPowerFlowAnalysis:
                             geojson_file += end_geojson
                             # saving as geoJSON
                             file_label = 'BranchGrid_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                            geojson_written = open(self.branchLossJSONPath + str(self.numOfBus) + '\\' + file_label + '.geojson','w')
+                            geojson_written = open(self.branchLossJSONPath + str(self.numOfBus) + '/' + file_label + '.geojson','w')
                             geojson_written.write(geojson_file)
                             geojson_written.close() 
                             print('---GeoJSON written successfully: GeoJSONCreator_branchGrid---', file_label)
@@ -2684,7 +2685,7 @@ class OptimalPowerFlowAnalysis:
     """This method is to generate the pie chart for regional energy breakdown"""
     def EnergySupplyBreakDownPieChartCreator_RegionalAreas(self, energyBreakdownList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
         ## check the storage path
-        self.mkdirPieChart('RegionalAreaEnergyBreakdown\\')
+        self.mkdirPieChart('RegionalAreaEnergyBreakdown/')
         
         weatherNameList = []
         for weather in weatherConditionList:
@@ -3090,6 +3091,20 @@ class OptimalPowerFlowAnalysis:
 
         upperbound = round(float(max(regionalTotalOutputList)), 2)
         lowerbound = 0
+
+        counter =  0
+        while upperbound > 10:
+            upperbound = upperbound / 10
+            counter +=  1
+        upperbound = math.ceil(upperbound) * (10**counter)
+
+        ## create the colour bar legend
+        createColourBarLegend(self.branchLossJSONPath + str(self.numOfBus) + '/', upperbound, lowerbound, 'Transmission loss (MW)', 'legend-transmissionLoss', None, 8)
+
+        ##TODO: add colour method 
+
+
+
        
         weatherNameList = []
         for weather in weatherConditionList:
@@ -3275,8 +3290,8 @@ class OptimalPowerFlowAnalysis:
     ## 3D bars
     def GeoJSONCreator_majorEnergySourceForSmallArea(self, energyBreakdownList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
         ## check the storage path
-        self.mkdirmajorEnergySourceJSON('smallAreaMajorEnergySource_fill-extrusion\\')
-        self.mkdirmajorEnergySourceJSON('smallAreaFullBar_fill-extrusion\\')
+        self.mkdirmajorEnergySourceJSON('smallAreaMajorEnergySource_fill-extrusion/')
+        self.mkdirmajorEnergySourceJSON('smallAreaFullBar_fill-extrusion/')
         
         weatherNameList = []
         for weather in weatherConditionList:
@@ -3503,19 +3518,19 @@ class OptimalPowerFlowAnalysis:
                         geojson_file_fullbar += end_geojson
                         # saving as geoJSON
                         file_label_longList = 'SmallAreaMajorEnergySource_longList_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                        geojson_written_longList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion\\' + file_label_longList + '.geojson','w')
+                        geojson_written_longList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion/' + file_label_longList + '.geojson','w')
                         geojson_written_longList.write(geojson_file_longList)
                         geojson_written_longList.close() 
                         print('---GeoJSON written successfully: major enenrgy source for small areas---', file_label_longList)
 
                         file_label_shortList = 'SmallAreaMajorEnergySource_shortList_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                        geojson_written_shortList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion\\' + file_label_shortList + '.geojson','w')
+                        geojson_written_shortList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion/' + file_label_shortList + '.geojson','w')
                         geojson_written_shortList.write(geojson_file_shortList)
                         geojson_written_shortList.close() 
                         print('---GeoJSON written successfully: major enenrgy source for small areas---', file_label_shortList)                            
 
                         file_label_fullbar = 'SmallAreaFullBar_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                        geojson_written_fullbar = open(self.majorEnergySourceJSONPath + 'smallAreaFullBar_fill-extrusion\\' + file_label_fullbar + '.geojson','w')
+                        geojson_written_fullbar = open(self.majorEnergySourceJSONPath + 'smallAreaFullBar_fill-extrusion/' + file_label_fullbar + '.geojson','w')
                         geojson_written_fullbar.write(geojson_file_fullbar)
                         geojson_written_shortList.close() 
                         print('---GeoJSON written successfully: full bar for small areas---', file_label_fullbar)                                         
@@ -3738,19 +3753,19 @@ class OptimalPowerFlowAnalysis:
                     geojson_file_fullbar += end_geojson
                     # saving as geoJSON
                     file_label_longList = 'SmallAreaMajorEnergySource_longList_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ')'
-                    geojson_written_longList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion\\' + file_label_longList + '.geojson','w')
+                    geojson_written_longList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion/' + file_label_longList + '.geojson','w')
                     geojson_written_longList.write(geojson_file_longList)
                     geojson_written_longList.close() 
                     print('---GeoJSON written successfully: major enenrgy source for small areas---', file_label_longList)
 
                     file_label_shortList = 'SmallAreaMajorEnergySource_shortList_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ')'
-                    geojson_written_shortList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion\\' + file_label_shortList + '.geojson','w')
+                    geojson_written_shortList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion/' + file_label_shortList + '.geojson','w')
                     geojson_written_shortList.write(geojson_file_shortList)
                     geojson_written_shortList.close() 
                     print('---GeoJSON written successfully: major enenrgy source for small areas---', file_label_shortList)                            
 
                     file_label_fullbar = 'SmallAreaFullBar_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ')'
-                    geojson_written_fullbar = open(self.majorEnergySourceJSONPath + 'smallAreaFullBar_fill-extrusion\\' + file_label_fullbar + '.geojson','w')
+                    geojson_written_fullbar = open(self.majorEnergySourceJSONPath + 'smallAreaFullBar_fill-extrusion/' + file_label_fullbar + '.geojson','w')
                     geojson_written_fullbar.write(geojson_file_fullbar)
                     geojson_written_shortList.close() 
                     print('---GeoJSON written successfully: full bar for small areas---', file_label_fullbar)                                 
@@ -3960,19 +3975,19 @@ class OptimalPowerFlowAnalysis:
 
                             # saving as geoJSON
                             file_label_longList = 'SmallAreaMajorEnergySource_longList_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                            geojson_written_longList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion\\' + file_label_longList + '.geojson','w')
+                            geojson_written_longList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion/' + file_label_longList + '.geojson','w')
                             geojson_written_longList.write(geojson_file_longList)
                             geojson_written_longList.close() 
                             print('---GeoJSON written successfully: major enenrgy source for small areas---', file_label_longList)
 
                             file_label_shortList = 'SmallAreaMajorEnergySource_shortList_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                            geojson_written_shortList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion\\' + file_label_shortList + '.geojson','w')
+                            geojson_written_shortList = open(self.majorEnergySourceJSONPath + 'smallAreaMajorEnergySource_fill-extrusion/' + file_label_shortList + '.geojson','w')
                             geojson_written_shortList.write(geojson_file_shortList)
                             geojson_written_shortList.close() 
                             print('---GeoJSON written successfully: major enenrgy source for small areas---', file_label_shortList)                            
 
                             file_label_fullbar = 'SmallAreaFullBar_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                            geojson_written_fullbar = open(self.majorEnergySourceJSONPath + 'smallAreaFullBar_fill-extrusion\\' + file_label_fullbar + '.geojson','w')
+                            geojson_written_fullbar = open(self.majorEnergySourceJSONPath + 'smallAreaFullBar_fill-extrusion/' + file_label_fullbar + '.geojson','w')
                             geojson_written_fullbar.write(geojson_file_fullbar)
                             geojson_written_shortList.close() 
                             print('---GeoJSON written successfully: full bar for small areas---', file_label_fullbar)                                   
@@ -3983,7 +3998,7 @@ class OptimalPowerFlowAnalysis:
     def GeoJSONCreator_outputOfDifferentEnergySourceForSmallArea(self, energyBreakdownList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
         ## check the storage path
         for genType in ['Wind', 'Solar', 'NaturalGas', 'Coal', 'Oil', 'ConventionalNuclear', 'SMR', 'Hydro', 'Others']:
-            path = 'outputOfDifferentEnergySourceForSmallArea_fill-extrusion\\' + str(genType) + '\\'
+            path = 'outputOfDifferentEnergySourceForSmallArea_fill-extrusion/' + str(genType) + '/'
             self.mkdiroutputOfDifferentEnergySourceForSmallAreaJSON(path)
 
         weatherNameList = []
@@ -4285,7 +4300,7 @@ class OptimalPowerFlowAnalysis:
                         # saving as geoJSON
                         for i_geojson_file, genType in enumerate(['Wind', 'Solar', 'NaturalGas', 'Coal', 'Oil', 'ConventionalNuclear', 'SMR', 'Hydro', 'Others']):
                             geojson_file = geojson_file_list[i_geojson_file]
-                            path = 'outputOfDifferentEnergySourceForSmallArea_fill-extrusion\\' + str(genType) + '\\'
+                            path = 'outputOfDifferentEnergySourceForSmallArea_fill-extrusion/' + str(genType) + '/'
                             file_label = genType + '_OutputOfDifferentEnergySourceForSmallArea_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
                             geojson_written = open(self.outputOfDifferentEnergySourceJSONPath + path + file_label + '.geojson','w')
                             geojson_written.write(geojson_file)
@@ -4583,7 +4598,7 @@ class OptimalPowerFlowAnalysis:
                     # saving as geoJSON
                     for i_geojson_file, genType in enumerate(['Wind', 'Solar', 'NaturalGas', 'Coal', 'Oil', 'ConventionalNuclear', 'SMR', 'Hydro', 'Others']):
                         geojson_file = geojson_file_list[i_geojson_file]
-                        path = 'outputOfDifferentEnergySourceForSmallArea_fill-extrusion\\' + str(genType) + '\\'
+                        path = 'outputOfDifferentEnergySourceForSmallArea_fill-extrusion/' + str(genType) + '/'
                         file_label = genType + '_OutputOfDifferentEnergySourceForSmallArea_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(cf[3], 2)) + ')'
                         geojson_written = open(self.outputOfDifferentEnergySourceJSONPath + path + file_label + '.geojson','w')
                         geojson_written.write(geojson_file)
@@ -4868,7 +4883,7 @@ class OptimalPowerFlowAnalysis:
                             # saving as geoJSON
                             for i_geojson_file, genType in enumerate(['Wind', 'Solar', 'NaturalGas', 'Coal', 'Oil', 'ConventionalNuclear', 'SMR', 'Hydro', 'Others']):
                                 geojson_file = geojson_file_list[i_geojson_file]
-                                path = 'outputOfDifferentEnergySourceForSmallArea_fill-extrusion\\' + str(genType) + '\\'
+                                path = 'outputOfDifferentEnergySourceForSmallArea_fill-extrusion/' + str(genType) + '/'
                                 file_label = genType + '_OutputOfDifferentEnergySourceForSmallArea_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
                                 geojson_written = open(self.outputOfDifferentEnergySourceJSONPath + path + file_label + '.geojson','w')
                                 geojson_written.write(geojson_file)
@@ -6094,6 +6109,8 @@ if __name__ == '__main__':
 
     ifReadLocalResults = True
 
+    rootPath = '/mnt/d/wx243/FromTWA/npy/'## root path for npu files store
+
     ## Specified net demanding results for GeoJSON creation 
     ifSpecifiedResultsForNetDemanding = True
     specifiedConfig = [[53, 60, "WLSL"], [53, 60, "WHSH"]]
@@ -6111,45 +6128,6 @@ if __name__ == '__main__':
     # testOPF1.CarbonEmissionCalculator()
     # testOPF1.EnergySupplyBreakDownPieChartCreator()
     # testOPF1.ModelPythonObjectOntologiser()0
-
-    def visulasitionOfCluster(list, file_label):
-        geojson_file = """
-        {
-            "type": "FeatureCollection",
-            "features": ["""
-        for extant_gen in list:
-            feature = """{
-                "type": "Feature",
-                "properties": {
-                "marker-color": "#000000",
-                "marker-size": "medium",
-                "marker-symbol": ""
-                },
-                "geometry": {
-                "type": "Point",
-                "coordinates": [
-                    %s,
-                    %s
-                ]
-                }
-                },"""%( extant_gen['LatLon'][1], extant_gen['LatLon'][0])
-            # adding new line 
-            geojson_file += '\n'+feature
-
-        # removing last comma as is last line
-        geojson_file = geojson_file[:-1]
-        # finishing file end 
-        end_geojson = """
-            ]
-        }
-        """
-        geojson_file += end_geojson
-        # saving as geoJSON
-        geojson_written = open(file_label +'.geojson','w')
-        geojson_written.write(geojson_file)
-        geojson_written.close() 
-        print('---GeoJSON written successfully---', file_label)
-        return
 ############29 Bus model##################################################################################################################################################################
     testOPF_29BusModel = OptimalPowerFlowAnalysis(topologyNodeIRI_29Bus, AgentIRI, "2017-01-31", slackBusNodeIRI_29Bus, loadAllocatorName_29Bus, 
         EBusModelVariableInitialisationMethodName_29Bus, ELineInitialisationMethodName_29Bus, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, 
@@ -6319,33 +6297,34 @@ if __name__ == '__main__':
         np_branchRawResult_eachSMRDesign = numpy.array(branchRawResult_eachSMRDesign)
         np_genRawResult_eachSMRDesign = numpy.array(genRawResult_eachSMRDesign)
 
-        numpy.save("np_summary_eachSMRDesign.npy", np_summary_eachSMRDesign)
-        numpy.save("np_SMROutputAndOperationalRatio_eachSMRDesign.npy", np_SMROutputAndOperationalRatio_eachSMRDesign)
-        numpy.save("np_emission_eachSMRDesign.npy", np_emission_eachSMRDesign)
-        numpy.save("np_energyBreakdown_eachSMRDesign.npy", np_energyBreakdown_eachSMRDesign)
-        numpy.save("np_genTypeLabel.npy", np_genTypeLabel)
-        numpy.save("np_netDemanding_smallArea_eachSMRDesign.npy", np_netDemanding_smallArea_eachSMRDesign)
-        numpy.save("np_netDemanding_regionalArea_eachSMRDesign.npy", np_netDemanding_regionalArea_eachSMRDesign)
-        numpy.save("np_transmissionLoss_eachSMRDesign.npy", np_transmissionLoss_eachSMRDesign)
-        numpy.save("np_energyBreakdown_smallArea_eachSMRDesign.npy", np_energyBreakdown_smallArea_eachSMRDesign)
-        numpy.save("np_energyBreakdown_regionalArea_eachSMRDesign.npy", np_energyBreakdown_regionalArea_eachSMRDesign)
-        numpy.save("np_busRawResult_eachSMRDesign.npy", np_busRawResult_eachSMRDesign)
-        numpy.save("np_branchRawResult_eachSMRDesign.npy", np_branchRawResult_eachSMRDesign)
-        numpy.save("np_genRawResult_eachSMRDesign.npy", np_genRawResult_eachSMRDesign)
+        numpy.save(rootPath + "np_summary_eachSMRDesign.npy", np_summary_eachSMRDesign)
+        numpy.save(rootPath + "np_SMROutputAndOperationalRatio_eachSMRDesign.npy", np_SMROutputAndOperationalRatio_eachSMRDesign)
+        numpy.save(rootPath + "np_emission_eachSMRDesign.npy", np_emission_eachSMRDesign)
+        numpy.save(rootPath + "np_energyBreakdown_eachSMRDesign.npy", np_energyBreakdown_eachSMRDesign)
+        numpy.save(rootPath + "np_genTypeLabel.npy", np_genTypeLabel)
+        numpy.save(rootPath + "np_netDemanding_smallArea_eachSMRDesign.npy", np_netDemanding_smallArea_eachSMRDesign)
+        numpy.save(rootPath + "np_netDemanding_regionalArea_eachSMRDesign.npy", np_netDemanding_regionalArea_eachSMRDesign)
+        numpy.save(rootPath + "np_transmissionLoss_eachSMRDesign.npy", np_transmissionLoss_eachSMRDesign)
+        numpy.save(rootPath + "np_energyBreakdown_smallArea_eachSMRDesign.npy", np_energyBreakdown_smallArea_eachSMRDesign)
+        numpy.save(rootPath + "np_energyBreakdown_regionalArea_eachSMRDesign.npy", np_energyBreakdown_regionalArea_eachSMRDesign)
+        numpy.save(rootPath + "np_busRawResult_eachSMRDesign.npy", np_busRawResult_eachSMRDesign)
+        numpy.save(rootPath + "np_branchRawResult_eachSMRDesign.npy", np_branchRawResult_eachSMRDesign)
+        numpy.save(rootPath + "np_genRawResult_eachSMRDesign.npy", np_genRawResult_eachSMRDesign)
     else:
-        summary_eachSMRDesign = numpy.load("np_summary_eachSMRDesign.npy", allow_pickle=True)
-        SMROutputAndOperationalRatio_eachSMRDesign = numpy.load("np_SMROutputAndOperationalRatio_eachSMRDesign.npy", allow_pickle=True)
-        emission_eachSMRDesign = numpy.load("np_emission_eachSMRDesign.npy", allow_pickle=True)
-        energyBreakdown_eachSMRDesign = numpy.load("np_energyBreakdown_eachSMRDesign.npy", allow_pickle=True)
-        genTypeLabel = numpy.load("np_genTypeLabel.npy", allow_pickle=True)
-        netDemanding_smallArea_eachSMRDesign = numpy.load("np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)
-        netDemanding_regionalArea_eachSMRDesign = numpy.load("np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)
-        transmissionLoss_eachSMRDesign = numpy.load("np_transmissionLoss_eachSMRDesign.npy", allow_pickle=True)    
-        energyBreakdown_smallArea_eachSMRDesign = numpy.load("np_energyBreakdown_smallArea_eachSMRDesign.npy", allow_pickle=True)
-        energyBreakdown_regionalArea_eachSMRDesign = numpy.load("np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)
-        busRawResult_eachSMRDesign = numpy.load("np_busRawResult_eachSMRDesign.npy", allow_pickle=True)
-        branchRawResult_eachSMRDesign = numpy.load("np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)
-        genRawResult_eachSMRDesign = numpy.load("np_genRawResult_eachSMRDesign.npy", allow_pickle=True)
+        ##TODO: change the path and change // in other code, change the JSON file saving path to be local
+        summary_eachSMRDesign = numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True)
+        SMROutputAndOperationalRatio_eachSMRDesign = numpy.load(rootPath +"np_SMROutputAndOperationalRatio_eachSMRDesign.npy", allow_pickle=True)
+        emission_eachSMRDesign = numpy.load(rootPath +"np_emission_eachSMRDesign.npy", allow_pickle=True)
+        energyBreakdown_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_eachSMRDesign.npy", allow_pickle=True)
+        genTypeLabel = numpy.load(rootPath +"np_genTypeLabel.npy", allow_pickle=True)
+        netDemanding_smallArea_eachSMRDesign = numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)
+        netDemanding_regionalArea_eachSMRDesign = numpy.load(rootPath +"np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)
+        transmissionLoss_eachSMRDesign = numpy.load(rootPath +"np_transmissionLoss_eachSMRDesign.npy", allow_pickle=True)    
+        energyBreakdown_smallArea_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_smallArea_eachSMRDesign.npy", allow_pickle=True)
+        energyBreakdown_regionalArea_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)
+        busRawResult_eachSMRDesign = numpy.load(rootPath +"np_busRawResult_eachSMRDesign.npy", allow_pickle=True)
+        branchRawResult_eachSMRDesign = numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)
+        genRawResult_eachSMRDesign = numpy.load(rootPath +"np_genRawResult_eachSMRDesign.npy", allow_pickle=True)
 
         summary_eachSMRDesign = summary_eachSMRDesign.tolist()
         SMROutputAndOperationalRatio_eachSMRDesign = SMROutputAndOperationalRatio_eachSMRDesign.tolist()
@@ -6407,7 +6386,7 @@ if __name__ == '__main__':
             #     testOPF_29BusModel.CarbonEmissionCalculator()
             #     generatorNameList.append(testOPF_29BusModel.GeneratorObjectList)
                 
-            #     re = [weighter, CarbonTaxForOPF, weatherCondition, testOPF_29BusModel.totalCost, testOPF_29BusModel.annualisedOPEX, testOPF_29BusModel.retrofittingCost, str(testOPF_29BusModel.totalCO2Emission) + "\\n"]
+            #     re = [weighter, CarbonTaxForOPF, weatherCondition, testOPF_29BusModel.totalCost, testOPF_29BusModel.annualisedOPEX, testOPF_29BusModel.retrofittingCost, str(testOPF_29BusModel.totalCO2Emission) + "\n"]
             #     summary_afterdecommission.append(re)
 
         # fileName_beforeDecommission = 'Results_SMR_' + str(numberOfSMRToBeIntroduced) + '_beforeDecommission.csv'

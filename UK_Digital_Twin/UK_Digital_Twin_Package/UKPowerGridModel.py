@@ -38,7 +38,7 @@ ontopowsys_namespace = dt.baseURL + SLASH + t_box.ontopowsysName + SLASH
 class UKEbusModel:
     
     """Data path"""
-    DataPath = str(Path(__file__).resolve().parent.parent) + "\Data files\PowerGridModelInitialisation\\"
+    DataPath = str(Path(__file__).resolve().parent.parent) + "/Data files/PowerGridModelInitialisation/"
     
     """EBus Node keys"""
     ModelEBusKey = "ElectricalBusModel_"
@@ -110,10 +110,10 @@ class UKEbusModel:
     # {"BUS":"BUS_I", "TYPE": "BUS_TYPE", "PD_INPUT": "PD", "GD_INPUT": "QD", "GS": "GS", "BS": "BS", "AREA": "BUS_AREA", "VM_INPUT": "VM", "VA_INPUT": "VA", "BASEKV": "BASE_KV", "ZONE": "ZONE", "VMAX":"VMAX", "VMIN": "VMIN" }
     
     def __init__(self, numOfBus:int, BusNodeIRI:str):
-        self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EBus\\"
-        self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EBus\\Sleepycat_EBus"
-        self.BusModelInitialisation = UKEbusModel.DataPath + str(numOfBus) + '_bus\\BusModelInitialisation.csv'        
-        self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EBus\\Sleepycat_EBus"
+        self.StoreGeneratedOWLs = "C:/Users/wx243/Desktop/KGB/1 My project/1 Ongoing/4 UK Digital Twin/A_Box/UK_Power_Grid/" + str(numOfBus) + "_bus/EBus/"
+        self.SleepycatStoragePath = "C:/Users/wx243/Desktop/KGB/1 My project/1 Ongoing/4 UK Digital Twin/A_Box/UK_Power_Grid/" + str(numOfBus) + "_bus/EBus/Sleepycat_EBus"
+        self.BusModelInitialisation = UKEbusModel.DataPath + str(numOfBus) + '_bus/BusModelInitialisation.csv'        
+        self.SleepycatStoragePath = "C:/Users/wx243/Desktop/KGB/1 My project/1 Ongoing/4 UK Digital Twin/A_Box/UK_Power_Grid/" + str(numOfBus) + "_bus/EBus/Sleepycat_EBus"
         # self.DUKESVersion = DUKESVersion
         # self.numOfBus = numOfBus
         # self.location = Location
@@ -152,7 +152,7 @@ class UKEbusModel:
 class UKElineModel:
     
     """Data path"""
-    DataPath = str(Path(__file__).resolve().parent.parent) + "\Data files\PowerGridModelInitialisation\\"
+    DataPath = str(Path(__file__).resolve().parent.parent) + "/Data files/PowerGridModelInitialisation/"
     
     """ELine Node keys"""
     ELineKey = "ELine-"
@@ -219,11 +219,11 @@ class UKElineModel:
     
     def __init__(self, numOfBus:int, BranchNodeIRI:str, initialiserMethod = 'defaultBranchInitialiser'):
         
-        self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\ELine\\"
-        self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\ELine\\Sleepycat_EBus"
-        self.BranchProperty =  UKElineModel.DataPath + str(numOfBus) + '_bus\\branch_properties.csv' # the branch prop should be calculated from the raw data
-        self.BranchModelInitialisation = UKElineModel.DataPath + str(numOfBus) + '_bus\\BranchModelInitialisation.csv'             
-        self.BranchInfo = str(Path(__file__).resolve().parent.parent) + "\Data files\PowerGridTopology\\" + str(numOfBus) + '_bus\\branch_topological_info.csv'
+        self.StoreGeneratedOWLs = "C:/Users/wx243/Desktop/KGB/1 My project/1 Ongoing/4 UK Digital Twin/A_Box/UK_Power_Grid/" + str(numOfBus) + "_bus/ELine/"
+        self.SleepycatStoragePath = "C:/Users/wx243/Desktop/KGB/1 My project/1 Ongoing/4 UK Digital Twin/A_Box/UK_Power_Grid/" + str(numOfBus) + "_bus/ELine/Sleepycat_EBus"
+        self.BranchProperty =  UKElineModel.DataPath + str(numOfBus) + '_bus/branch_properties.csv' # the branch prop should be calculated from the raw data
+        self.BranchModelInitialisation = UKElineModel.DataPath + str(numOfBus) + '_bus/BranchModelInitialisation.csv'             
+        self.BranchInfo = str(Path(__file__).resolve().parent.parent) + "/Data files/PowerGridTopology/" + str(numOfBus) + '_bus/branch_topological_info.csv'
         if initialiserMethod == 'defaultBranchInitialiser':
             self.headerBranchProperty = ["voltage_level_kV", "R_MVA/km", "X_MVA/km", "B_MVA/km", "MVA\n"]
         elif initialiserMethod == 'preSpecifiedBranchInitialiser':
@@ -341,8 +341,8 @@ class UKEGenModel:
     OUTPUT_VARIABLE_KEYS = list(OUTPUT_VARIABLE.keys())
     
     def __init__(self, numOfBus:int, generatorNodeIRI:str, fueltype:str, latlon:list, capacity:float, toBeRetrofittedGeneratorNodeIRI:str = None, status:str = 'Extant', smallAreaCode = None, RegionLACode = None):
-        self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EGen\\"
-        self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid\\" + str(numOfBus) + "_bus\\EGen\\Sleepycat_EBus"
+        self.StoreGeneratedOWLs = "C:/Users/wx243/Desktop/KGB/1 My project/1 Ongoing/4 UK Digital Twin/A_Box/UK_Power_Grid/" + str(numOfBus) + "_bus/EGen/"
+        self.SleepycatStoragePath = "C:/Users/wx243/Desktop/KGB/1 My project/1 Ongoing/4 UK Digital Twin/A_Box/UK_Power_Grid/" + str(numOfBus) + "_bus/EGen/Sleepycat_EBus"
         
         self.numOfBus = numOfBus
         self.status = status

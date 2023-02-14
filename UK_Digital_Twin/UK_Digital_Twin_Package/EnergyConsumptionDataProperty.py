@@ -12,9 +12,9 @@ class EnergyConsumptionData:
         SECTION = [ "COAL", "MANUFACTURED_FUELS", "PETROLEUM_PRODUCTS", "GAS", "ELECTRICITY", "BIOENERGY_AND_WASTE"]
         self.VERSION = version
         """ File path """
-        self.DataPath = str(Path(__file__).resolve().parent.parent) + "\Data files\EnergyConsumption\\"
-        self.RegionandAreas = self.DataPath + str(self.VERSION) + '\\' + SECTION[4] + '\official_regions.csv'
-        self.ElectricityConsumptionData = self.DataPath + str(self.VERSION) + '\\' + SECTION[4] + '\\electricityConsumptionData.csv'
+        self.DataPath = str(Path(__file__).resolve().parent.parent) + "/Data files/EnergyConsumption/"
+        self.RegionandAreas = self.DataPath + str(self.VERSION) + '/' + SECTION[4] + '/official_regions.csv'
+        self.ElectricityConsumptionData = self.DataPath + str(self.VERSION) + '/' + SECTION[4] + '/electricityConsumptionData.csv'
         
         """Data file header"""
         self.headerElectricityConsumption = ["RegionAndArea", "LACode", "IndustrialAndCommercial", "Domestic", "Total\n"]
@@ -28,5 +28,5 @@ class EnergyConsumptionData:
         self.startTime_HH = str(self.VERSION)+ '-01-01' # Half Hourly
         
         """Source Data"""
-        self.__ENCONSUMPT_2017 = self.DataPath + str(self.VERSION) + '\\' + "Sub-national-total-final-energy-consumption-statistics_2005-2017.xlsx"
-        self.__ENCONSUMPT_2019 = self.DataPath + str(self.VERSION) + '\\' + "Sub_national_electricity_consumption_statistics_2005-2019.xlsx"
+        self.__ENCONSUMPT_2017 = self.DataPath + str(self.VERSION) + '/' + "Sub-national-total-final-energy-consumption-statistics_2005-2017.xlsx"
+        self.__ENCONSUMPT_2019 = self.DataPath + str(self.VERSION) + '/' + "Sub_national_electricity_consumption_statistics_2005-2019.xlsx"

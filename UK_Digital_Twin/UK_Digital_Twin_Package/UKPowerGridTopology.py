@@ -28,7 +28,7 @@ class UKPowerGridTopology:
     # NumberOfKey = "Number_of_" ## where does this key come from?
 
     def __init__(self, numOfBus = 10, Location = 'http://dbpedia.org/resource/United_Kingdom'):
-            self.StoreGeneratedOWLs = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Grid_Topology\\UK_Power_Grid_Topology_" + str(numOfBus) + "_Bus_KG\\"
-            self.SleepycatStoragePath = "C:\\Users\\wx243\\Desktop\\KGB\\1 My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Energy_Consumption\\Sleepycat_UKec_UKtopo"
+            self.StoreGeneratedOWLs = "C:/Users/wx243/Desktop/KGB/1 My project/1 Ongoing/4 UK Digital Twin/A_Box/UK_Power_Grid_Topology/UK_Power_Grid_Topology_" + str(numOfBus) + "_Bus_KG/"
+            self.SleepycatStoragePath = "C:/Users/wx243/Desktop/KGB/1 My project/1 Ongoing/4 UK Digital Twin/A_Box/UK_Energy_Consumption/Sleepycat_UKec_UKtopo"
             self.numOfBus = numOfBus
             self.location = Location

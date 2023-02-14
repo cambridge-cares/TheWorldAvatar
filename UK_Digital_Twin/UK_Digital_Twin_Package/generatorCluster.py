@@ -54,7 +54,6 @@ class generatorCluster(object):
             # raise Exception("More than one buses located in the same region. This cluster principle cannot deal with this situation.")
         elif len(region) > 12:
             raise Exception('The total number of the region exceeds 12.')
-        # region = sorted(set(region),key=region.index) # remove the duplicated item and keep the order of the list as original
         
         print('****The cluster principle is sameRegionWithBus****')
         powerPlantAndBusPairList = []   

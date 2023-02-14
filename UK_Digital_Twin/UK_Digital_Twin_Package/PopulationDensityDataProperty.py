@@ -12,8 +12,8 @@ class PopulationDensityDataProperty:
         self.VERSION = version
     
         """ File path """
-        self.DataPath = str(Path(__file__).resolve().parent.parent) + "\Data files\PopulationDensity\\"
-        self.PopulationDensityDataPath = self.DataPath + str(self.VERSION) + '\population_gbr.csv'
+        self.DataPath = str(Path(__file__).resolve().parent.parent) + "/Data files/PopulationDensity/"
+        self.PopulationDensityDataPath = self.DataPath + str(self.VERSION) + '/population_gbr.csv'
 
         """Header"""
         self.headerPopulationDensityData = ["Lat", "Lon", "Population\n"]
