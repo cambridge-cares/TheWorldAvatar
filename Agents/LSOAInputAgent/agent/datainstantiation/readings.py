@@ -331,7 +331,7 @@ def read_from_pickle(pathname: str):
     This function is to read the local pickle file to get the ONS geographic data
 
     Argument:
-    pathname: the path of the pickle file, default as .\Data\shape_array
+    pathname: the path of the pickle file, default as .\data\shape_array
     '''
     try: 
           infile = open(pathname,'rb')
@@ -563,7 +563,7 @@ def upload_Geoinfo_to_KG(query_endpoint: str = QUERY_ENDPOINT,
         update_endpoint: str = UPDATE_ENDPOINT
     '''
     logger.info('Retrieving ONS geographic data from local pickle file ...')
-    LSOA_codes, wkt_codes = read_from_pickle('./Data/shapes_array')
+    LSOA_codes, wkt_codes = read_from_pickle('./data/shapes_array')
 
     # Split the queries into Batches
     # Perform SPARQL update query in chunks to avoid heap size/memory issues

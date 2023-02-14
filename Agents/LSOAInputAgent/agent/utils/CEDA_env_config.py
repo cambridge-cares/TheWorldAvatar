@@ -83,6 +83,8 @@ def record_login_info():
 
     statue = login_trival()
     if statue == "Logged in":
+        if not os.path.exists('./downloads'):
+            os.makedirs('./downloads')
         # Save those three env vars into .env file
         with open('./downloads/.env', 'w') as env_file:
             for key in ['CEDA_USERNAME','CEDA_KEY',"CEDA_PASSWORD"]:
