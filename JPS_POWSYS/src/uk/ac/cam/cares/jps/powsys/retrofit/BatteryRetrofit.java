@@ -20,11 +20,15 @@ import uk.ac.cam.cares.jps.base.util.MiscUtil;
 public class BatteryRetrofit extends JPSAgent {
 
 	private static final long serialVersionUID = 1L;
-	private GeneralRetrofitAgent gRA;
+	public GeneralRetrofitAgent gRA;
 	
 	public BatteryRetrofit(){
 		gRA = new GeneralRetrofitAgent();
 	}
+	public BatteryRetrofit(GeneralRetrofitAgent newGRA){
+		gRA = newGRA;
+	}
+
     @Override
     public void setLogger() {
         logger = LoggerFactory.getLogger(BatteryRetrofit.class);
