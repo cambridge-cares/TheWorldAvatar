@@ -42,7 +42,7 @@ This section specifies the minimum requirements to build and deploy the Docker i
 
 ### **1) Registrate an account at CEDA platform**
 
-Retrieving [electricity consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-electricity-consumption), [gas consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-gas-consumption), [fuel poverty](https://www.gov.uk/government/statistics/sub-regional-fuel-poverty-data-2022) data from the GOV.UK do not need any preparation, upon runing the agent, those data will be downloaded automatically to the `./downloads ` folder. However, in order to download the hadUK climate grid files you need to registrate an account at [CEDA platform](https://services.ceda.ac.uk/cedasite/register/info/). 
+Retrieving [electricity consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-electricity-consumption), [gas consumption](https://www.gov.uk/government/statistics/lower-and-middle-super-output-areas-gas-consumption), [fuel poverty](https://www.gov.uk/government/statistics/sub-regional-fuel-poverty-data-2022) data from the GOV.UK do not need any preparation, upon runing the agent, those data will be downloaded automatically to the `./downloads ` folder. However, in order to download the hadUK climate grid files, you need to registrate an account at [CEDA platform](https://services.ceda.ac.uk/cedasite/register/info/).  And create `CEDA_username` and `CEDA_password` files contain username and password under the `./secrets` folder.
 
 ### **2) The environment variables used by the agent container**
 Before building and deploying the Docker image, several key properties need to be set in the [Docker compose file] (further details and defaults are provided in the file):
@@ -110,25 +110,12 @@ bash ./stack.sh start <STACK_NAME>
 
 &nbsp;
 # 2. Using the Agent
-
-## Default value in the code
-
-> YEAR = '2020'  \
-> QUERY_ENDPOINT= UPDATE_ENDPOINT = http://localhost:8080/blazegraph/namespace/ontogasgrid/sparql  \
-> DB_URL = jdbc:postgresql:ts_example  \
-> DB_USER = postgres  \
-> DB_PASSWORD = postgres    
+ 
 
 ## Provided functionality
 
 Agent start-up will automatically register a recurring task to assimilate latest data into the KG, i.e. electricity consumption, gas consumption, fuel poverty, climate (temperature) and geometric shape once per year. Besides those recurring background tasks, additional HTTP requests can be sent (but they might be delayed) to the agent. An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5000/]. All requests are to be sent as GET requests and all available endpoints are listed below:
 
-<center>----------- Prerequisite ------------</center>
-
- **NOTE:** If you want to download or instantiate hadUK climate temperature data, and have registrated the CEDA account as mentioned in [Registrate an account at CEDA platform](#1-registrate-an-account-at-ceda-platform) you will then firstly need go to:
-> /api/lsoainputagent/prerequisite/login
-
-This module will record your CEDA username and password (as Encrypted text) through a popped window, and saved in the `./downloads/.env` path, which can be retrieved as environmental variable.Note that this module will try to login in to CEDA using the username and password you provided, only if the login success, `.env` will be saved. If the login failed for more than 5 times which will raise an `InvalidInputError` and stop the module.
 
 <center>-----------Data Download ------------</center>
 

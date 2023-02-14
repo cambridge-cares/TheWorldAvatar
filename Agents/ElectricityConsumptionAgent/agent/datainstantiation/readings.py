@@ -24,15 +24,17 @@ import agentlogging
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.querytemplates import *
 from agent.errorhandling.exceptions import *
-from agent.utils.env_configs import YEAR
-from agent.utils.stack_configs import (QUERY_ENDPOINT, UPDATE_ENDPOINT)
+#from agent.utils.env_configs import YEAR
+#from agent.utils.stack_configs import (QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
-#from agent.kgutils.tsclient import jpsBaseLibView
-#from agent.kgutils.tsclient import TSClient
-#from agent.utils.readings_mapping import DATACLASS, TIME_FORMAT
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
+YEAR = '2020'
+QUERY_ENDPOINT= UPDATE_ENDPOINT = 'http://localhost:8080/blazegraph/namespace/ontogasgrid/sparql'
+DB_URL = 'jdbc:postgresql:ts_example'  
+DB_USER = 'postgres'  
+DB_PASSWORD = 'postgres'  
 
 # ------------------------- shortcut functions ----------------------------------- #
 def remove_nan_to_NAN(*array_group):

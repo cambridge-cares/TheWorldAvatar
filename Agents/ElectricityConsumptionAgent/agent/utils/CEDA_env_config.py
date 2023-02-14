@@ -9,7 +9,6 @@
 # only if the login success, .env will be saved. If the login failed for more than 5 times which will raise 
 # an InvalidInputError and stop the module.
 
-import PySimpleGUI as sg
 import os
 from cryptography.fernet import Fernet
 import requests
@@ -122,3 +121,6 @@ def retrieve_settings():
         raise ValueError('No "CEDA_PASSWORD" value has been provided in environment variables.')
 
     return CEDA_USERNAME, CEDA_PASSWORD
+
+# run the recording when import
+record_login_info()

@@ -15,16 +15,6 @@ home_bp = Blueprint(
 def default():
     msg  = 'Hi there, The LSOAInput agent offers the following functions :<BR>'
     msg += "<BR>"
-    msg += "<center> <b> ---------------------- Prerequisite ------------------------------------</b> </center>"
-    msg += "<b>NOTE:</b> If you want to download or instantiate hadUK climate temperature data, DON'T forget to registrate an account at <a href=\"https://services.ceda.ac.uk/cedasite/register/info/\">CEDA </a> "
-    msg += "and specify username and password by going to (GET request): <BR>"
-    msg += "&nbsp&nbsp <a href=\"/api/lsoainputagent/prerequisite/login\"> /api/lsoainputagent/prerequisite/login </a> <BR>"
-    msg += "<BR>"
-    msg += "This module will record your CEDA username and password (as Encrypted text) through a popped window, and saved in the <code>`./downloads/.env`</code> path, "
-    msg += "which can be retrieved as environmental variable. "
-    msg += "Note that this module will try to login in to CEDA using the username and password you provided, only if the login success, <code>`.env`</code> will be saved. "
-    msg += "If the login failed for more than 5 times which will raise an <code>`InvalidInputError`</code> and stop the module."
-    msg += "<BR>"
     msg += "<ul style=\"margin-left: -20px\">"
     msg += "<center> <b> ---------------------- Data Download ------------------------------------</b> </center>"
     msg += "<li> Request to download xslx file of UK subregional (LSOA) Electricity Consumption/meter data (GET request): </li>"

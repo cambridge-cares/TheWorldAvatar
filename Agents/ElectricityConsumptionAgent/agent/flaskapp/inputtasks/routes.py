@@ -15,22 +15,6 @@ logger = agentlogging.get_logger("prod")
 inputtasks_bp = Blueprint(
     'inputtasks_bp', __name__
 )
-# Define route for API request to download and instantiate all Electricity Consumption/meter data to KG (GET request)
-@inputtasks_bp.route('/api/lsoainputagent/prerequisite/login', methods=['GET'])
-def api_login():
-    # Check arguments (query parameters)
-    if len(request.args) > 0:
-        #print("Query parameters provided, although not required. " \
-        #      + "Provided arguments will be neglected.")
-        logger.warning("Query parameters provided, although not required. \
-                        Provided arguments will be neglected.")
-    try:
-        record_login_info()
-        return jsonify({"status": '200', "msg": "success"})
-
-    except Exception as ex:
-        print(ex)
-        return jsonify({"status": '500', 'errormsg': 'Instantiation failed'})
 
 # Define route for API request to download and instantiate all Electricity Consumption/meter data to KG (GET request)
 @inputtasks_bp.route('/api/lsoainputagent/instantiate/electricity', methods=['GET'])
