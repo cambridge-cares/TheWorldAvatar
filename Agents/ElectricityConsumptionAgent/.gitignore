@@ -17,6 +17,7 @@ assets
 tmp_base/
 tmp_stack/
 output/*
+data/*
 !.gitignore
 
 ## User defined
