@@ -2,10 +2,7 @@ package uk.ac.cam.cares.jps.powsys.nuclear.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.InputStreamReader;
@@ -63,17 +60,18 @@ public class TestLandlotsKB {
     }
 
     @Test
-    public void testStartConversion() throws Exception {
-        kb.startConversion();
-
-        String outputFilePath = LandlotsKB.baseURL2 + LandlotsKB.filename + ".owl"; // the result of written
-        File file = new File(outputFilePath);
-        assertTrue(file.exists());
-
-        FileInputStream inFile = new FileInputStream(outputFilePath);
+    public void testDoConversion() throws Exception {
+        String baseURL = Util.getResourceDir(this);
+        String filePath = baseURL + "/LotsTemplate.owl"; // the empty owl file
+        FileInputStream inFile = new FileInputStream(filePath);
         Reader in = new InputStreamReader(inFile, "UTF-8");
+
         OntModel jenaOwlModel = ModelFactory.createOntologyModel();
         jenaOwlModel.read(in, null);
+        kb.initOWLClasses(jenaOwlModel);
+
+        kb.doConversion(jenaOwlModel);
+
         initProperty(jenaOwlModel);
 
         String csvFile = Util.getResourceDir(this) + "/Landlots.csv";
