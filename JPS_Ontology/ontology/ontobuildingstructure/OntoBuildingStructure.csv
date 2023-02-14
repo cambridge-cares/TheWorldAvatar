@@ -1,0 +1,5 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoBuildingStructure,TBox,http://www.theworldavatar.com/ontology/ontobuildingstructure/ontoBuildingStructure,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoBuildingStructure,TBox,1.0,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoBuildingStructure,TBox,"The Building Structure ontology (OntoBuildingStructure) is an ontology developed to represent the building structural components (walls, doors, slabs, roofs, stairs) and their individual characteristics such as dimensions and qualities.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoBuildingStructure,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
