@@ -91,7 +91,7 @@ public class WebhookServer {
     }
 
     /**
-     * Timertasks
+     * Timer-tasks
      */
     public static class ScheduledTask extends TimerTask {
         public void run() {
@@ -308,7 +308,7 @@ public class WebhookServer {
     }
 
 
-    /** Initiliaze timeseries if it does not exists,
+    /** Initialize timeseries if it does not exist,
      * @param i table number
      */
     private static void initTimeseriesIfNotExist(int i, HashMap hashMap){
@@ -405,12 +405,12 @@ public class WebhookServer {
         String timeUnit = OffsetDateTime.class.getSimpleName();
         List<Class> dataClass;
 
-        //Add geom class when initilizating location
+        //Add geom class when initializing location
         if (tableHeader==locationHeader) {
             List <Class> dataClassInit = (Collections.nCopies(tableHeader.size()-2,Double.class));
             dataClass = new ArrayList<>(dataClassInit);
             dataClass.add(Point.class);
-        }else //Dont need to initliaze
+        }else //Dont need to initialize
         {
             dataClass = (Collections.nCopies(tableHeader.size()-1,Double.class));
         }
