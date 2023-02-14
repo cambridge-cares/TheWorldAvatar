@@ -40,6 +40,16 @@
     
 
 
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:label xml:lang="en">has value</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasCountry -->
 
     <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasCountry">
@@ -181,6 +191,16 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</hasGUIPosition>
         <rdfs:label xml:lang="en">Name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:label xml:lang="en">Quantity</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -423,6 +443,18 @@
     
 
 
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Measure -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+    
+
+
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Biodegradability -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Biodegradability">
@@ -528,12 +560,33 @@
     
 
 
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Height -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Height">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Dimension"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
+        <rdfs:label xml:lang="en">Height</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Ingredient -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Ingredient">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</hasGUIPosition>
         <rdfs:label xml:lang="en">Ingredient</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Length -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Length">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Dimension"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
+        <rdfs:label xml:lang="en">Length</rdfs:label>
     </owl:Class>
     
 
@@ -557,6 +610,7 @@
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#RecycledContent -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#RecycledContent">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
         <rdfs:label xml:lang="en">Recycled content</rdfs:label>
@@ -617,6 +671,7 @@
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#TemporalProperty -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#TemporalProperty">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
         <rdfs:label xml:lang="en">Temporal property</rdfs:label>
@@ -637,6 +692,7 @@
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ThermalProperty -->
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ThermalProperty">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Thermal property</rdfs:label>
@@ -650,6 +706,16 @@
         <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Weight</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Width -->
+
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Width">
+        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Dimension"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
+        <rdfs:label xml:lang="en">Width</rdfs:label>
     </owl:Class>
     
 
@@ -703,6 +769,7 @@
     <!-- https://w3id.org/mdo/core/PhysicalProperty -->
 
     <owl:Class rdf:about="https://w3id.org/mdo/core/PhysicalProperty">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Physical Property</rdfs:label>
