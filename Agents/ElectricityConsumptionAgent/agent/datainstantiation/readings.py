@@ -24,17 +24,12 @@ import agentlogging
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.querytemplates import *
 from agent.errorhandling.exceptions import *
-#from agent.utils.env_configs import YEAR
-#from agent.utils.stack_configs import (QUERY_ENDPOINT, UPDATE_ENDPOINT)
+from agent.utils.env_configs import YEAR
+from agent.utils.stack_configs import (QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
 
 # Initialise logger
-logger = agentlogging.get_logger("prod")
-YEAR = '2020'
-QUERY_ENDPOINT= UPDATE_ENDPOINT = 'http://localhost:8080/blazegraph/namespace/ontogasgrid/sparql'
-DB_URL = 'jdbc:postgresql:ts_example'  
-DB_USER = 'postgres'  
-DB_PASSWORD = 'postgres'  
+logger = agentlogging.get_logger("prod")  
 
 # ------------------------- shortcut functions ----------------------------------- #
 def remove_nan_to_NAN(*array_group):
@@ -90,6 +85,7 @@ def read_from_web_elec (year: str = YEAR):
     response = requests.get(link)
     open('./downloads/'+ file_name, 'wb').write(response.content)
   except Exception as ex:
+    print(ex)
     logger.error(f"Excel file fail to be downloaded")
     raise InvalidInput(f'Excel file fail to be downloaded, please check if {url} is a valid address and webpage') from ex
   
@@ -106,6 +102,7 @@ def read_from_web_elec (year: str = YEAR):
     logger.info('Electricity consumption/meter data successfully retrieved from web')
   
   except Exception as ex:
+    print(ex)
     logger.error(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
 please check the {file_name} located on the file in ./downloads folder, see if the 'year' sheet exist")
     raise InvalidInput(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
@@ -146,6 +143,7 @@ def read_from_web_gas (year: str = YEAR):
     response = requests.get(link)
     open('./downloads/'+ file_name, 'wb').write(response.content)
   except Exception as ex:
+    print(ex)
     logger.error(f"Excel file fail to be downloaded")
     raise InvalidInput(f'Excel file fail to be downloaded, please check if {url} is a valid address and webpage') from ex
 

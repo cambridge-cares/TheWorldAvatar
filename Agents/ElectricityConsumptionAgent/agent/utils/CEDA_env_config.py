@@ -55,7 +55,6 @@ def login_trival():
     # Make a post request to the login url with the credentials
     response = session.post(url, data=credentials)
     if response.status_code != 200:
-        sg.PopupError(f'Response {response.status_code} CEDA platform fail to connect! -- Try to login later')
         logger.error(f'Response {response.status_code} CEDA platform fail to connect! -- Try to login later')
     if "auth_tkt" in session.cookies:
         statue = "Logged in"
