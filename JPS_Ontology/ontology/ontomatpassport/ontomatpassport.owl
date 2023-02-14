@@ -13,6 +13,25 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasGUIPosition -->
+
+    <owl:AnnotationProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasGUIPosition">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
     // Object Properties
     //
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -42,7 +61,16 @@
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasImage -->
 
     <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasImage">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://purl.org/dc/dcmitype/Image"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">14</hasGUIPosition>
         <rdfs:label xml:lang="en">Image</rdfs:label>
     </owl:ObjectProperty>
     
@@ -51,7 +79,16 @@
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasManufacturer -->
 
     <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasManufacturer">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Manufacturer"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">9</hasGUIPosition>
         <rdfs:label xml:lang="en">Manufacturer</rdfs:label>
     </owl:ObjectProperty>
     
@@ -68,7 +105,14 @@
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasProperty -->
 
     <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasProperty">
-        <rdfs:domain rdf:resource="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
         <rdfs:label xml:lang="en">Property</rdfs:label>
     </owl:ObjectProperty>
@@ -86,11 +130,27 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#isComponentOf -->
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#partOf -->
 
-    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#isComponentOf">
-        <rdfs:range rdf:resource="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-        <rdfs:label xml:lang="en">Component of</rdfs:label>
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#partOf">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">6</hasGUIPosition>
+        <rdfs:label xml:lang="en">Part of</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -109,8 +169,17 @@
     <!-- http://purl.org/goodrelations/v1#name -->
 
     <owl:DatatypeProperty rdf:about="http://purl.org/goodrelations/v1#name">
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Manufacturer"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Manufacturer"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</hasGUIPosition>
         <rdfs:label xml:lang="en">Name</rdfs:label>
     </owl:DatatypeProperty>
     
@@ -119,7 +188,16 @@
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Level -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Level">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">5</hasGUIPosition>
         <rdfs:label xml:lang="en">Level</rdfs:label>
     </owl:DatatypeProperty>
     
@@ -128,7 +206,16 @@
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasAutomaticTrackingOrScanning -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasAutomaticTrackingOrScanning">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">13</hasGUIPosition>
         <rdfs:label xml:lang="en">Automatic tracking/scanning</rdfs:label>
     </owl:DatatypeProperty>
     
@@ -138,7 +225,16 @@
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasBrandName">
         <rdfs:subPropertyOf rdf:resource="http://purl.org/goodrelations/v1#name"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">8</hasGUIPosition>
         <rdfs:label xml:lang="en">Brand name</rdfs:label>
     </owl:DatatypeProperty>
     
@@ -147,7 +243,16 @@
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasCEMarkingDocument -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasCEMarkingDocument">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
         <rdfs:label xml:lang="en">CE marking document</rdfs:label>
     </owl:DatatypeProperty>
     
@@ -156,7 +261,16 @@
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasEAN -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasEAN">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">11</hasGUIPosition>
         <rdfs:label xml:lang="en">EAN</rdfs:label>
     </owl:DatatypeProperty>
     
@@ -165,7 +279,16 @@
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasEPDDocument -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasEPDDocument">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">EPD document</rdfs:label>
     </owl:DatatypeProperty>
     
@@ -174,7 +297,16 @@
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasFunctionality -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasFunctionality">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">12</hasGUIPosition>
         <rdfs:label xml:lang="en">Functionality</rdfs:label>
     </owl:DatatypeProperty>
     
@@ -183,7 +315,16 @@
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasGTIN -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasGTIN">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">10</hasGUIPosition>
         <rdfs:label xml:lang="en">GTIN</rdfs:label>
     </owl:DatatypeProperty>
     
@@ -192,7 +333,16 @@
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasMSDSDocument -->
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasMSDSDocument">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">MSDS document</rdfs:label>
     </owl:DatatypeProperty>
     
@@ -202,16 +352,6 @@
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasNumber">
         <rdfs:label xml:lang="en">Number</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasProductName -->
-
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasProductName">
-        <rdfs:subPropertyOf rdf:resource="http://purl.org/goodrelations/v1#name"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:label xml:lang="en">Product name</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -231,7 +371,16 @@
 
     <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasTradeName">
         <rdfs:subPropertyOf rdf:resource="http://purl.org/goodrelations/v1#name"/>
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">7</hasGUIPosition>
         <rdfs:label xml:lang="en">Trade name</rdfs:label>
     </owl:DatatypeProperty>
     
@@ -268,25 +417,18 @@
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/HeatTransferCoefficient">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ThermalProperty"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Heat transfer coefficient</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Age -->
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Biodegradability -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Age">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#TemporalProperty"/>
-        <rdfs:label xml:lang="en">Age</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Allergenicity -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Allergenicity">
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Biodegradability">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#BiologicalProperty"/>
-        <rdfs:label xml:lang="en">Allergenicity</rdfs:label>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
+        <rdfs:label xml:lang="en">Biodegradability</rdfs:label>
     </owl:Class>
     
 
@@ -295,15 +437,7 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#BiologicalProperty">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#CategoryValuePartition -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#CategoryValuePartition">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ValuePartition"/>
-        <rdfs:label xml:lang="en">Category value partition</rdfs:label>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">5</hasGUIPosition>
     </owl:Class>
     
 
@@ -312,6 +446,7 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalComposition">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Chemical composition</rdfs:label>
     </owl:Class>
     
@@ -321,6 +456,7 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</hasGUIPosition>
         <rdfs:label xml:lang="en">Chemical property</rdfs:label>
     </owl:Class>
     
@@ -328,9 +464,7 @@
 
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#CategoryValuePartition"/>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
     
 
 
@@ -338,6 +472,7 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#CompressiveStrength">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Resistance"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Compressive strength</rdfs:label>
     </owl:Class>
     
@@ -347,6 +482,8 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Decomposability">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#BiologicalProperty"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
+        <rdfs:label xml:lang="en">Decomposability</rdfs:label>
     </owl:Class>
     
 
@@ -355,6 +492,8 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Density">
         <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
+        <rdfs:label xml:lang="en">Density</rdfs:label>
     </owl:Class>
     
 
@@ -363,6 +502,7 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Dimension">
         <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Dimension</rdfs:label>
     </owl:Class>
     
@@ -372,16 +512,18 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ExpectedLifetime">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#TemporalProperty"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Expected lifetime</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#HealthAndSafetyProperty -->
+    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#HealthAndSafetyHazard -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#HealthAndSafetyProperty">
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#HealthAndSafetyHazard">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty"/>
-        <rdfs:label xml:lang="en">Health and safety</rdfs:label>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
+        <rdfs:label xml:lang="en">Health and safety hazard</rdfs:label>
     </owl:Class>
     
 
@@ -390,6 +532,7 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Ingredient">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</hasGUIPosition>
         <rdfs:label xml:lang="en">Ingredient</rdfs:label>
     </owl:Class>
     
@@ -397,15 +540,8 @@
 
     <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Manufacturer -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Manufacturer"/>
-    
-
-
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Product -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Product">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#CategoryValuePartition"/>
-        <rdfs:label xml:lang="en">Product</rdfs:label>
+    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Manufacturer">
+        <rdfs:label xml:lang="en">Manufacturer</rdfs:label>
     </owl:Class>
     
 
@@ -422,6 +558,7 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#RecycledContent">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
         <rdfs:label xml:lang="en">Recycled content</rdfs:label>
     </owl:Class>
     
@@ -431,6 +568,7 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Resistance">
         <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</hasGUIPosition>
         <rdfs:label xml:lang="en">Resistance</rdfs:label>
     </owl:Class>
     
@@ -440,6 +578,8 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity">
         <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">5</hasGUIPosition>
+        <rdfs:label xml:lang="en">Rigidity</rdfs:label>
     </owl:Class>
     
 
@@ -448,6 +588,7 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ServiceLife">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#TemporalProperty"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Service life</rdfs:label>
     </owl:Class>
     
@@ -457,6 +598,7 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ShearModulus">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
         <rdfs:label xml:lang="en">Shear modulus</rdfs:label>
     </owl:Class>
     
@@ -466,6 +608,7 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ShearStrength">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Resistance"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
         <rdfs:label xml:lang="en">Shear strength</rdfs:label>
     </owl:Class>
     
@@ -475,6 +618,7 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#TemporalProperty">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
         <rdfs:label xml:lang="en">Temporal property</rdfs:label>
     </owl:Class>
     
@@ -484,6 +628,7 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#TensileStrength">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Resistance"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Tensile strength</rdfs:label>
     </owl:Class>
     
@@ -493,15 +638,8 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ThermalProperty">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Thermal property</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ValuePartition -->
-
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ValuePartition">
-        <rdfs:label xml:lang="en">Value partition</rdfs:label>
     </owl:Class>
     
 
@@ -510,6 +648,7 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Weight">
         <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Weight</rdfs:label>
     </owl:Class>
     
@@ -519,6 +658,7 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Poisson&apos;sRatio">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Poisson&apos;s ratio</rdfs:label>
     </owl:Class>
     
@@ -528,6 +668,7 @@
 
     <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Young&apos;sModulus">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Young&apos;s modulus</rdfs:label>
     </owl:Class>
     
@@ -537,6 +678,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity">
         <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ThermalProperty"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Thermal conductivity</rdfs:label>
     </owl:Class>
     
@@ -562,6 +704,7 @@
 
     <owl:Class rdf:about="https://w3id.org/mdo/core/PhysicalProperty">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Physical Property</rdfs:label>
     </owl:Class>
 </rdf:RDF>
