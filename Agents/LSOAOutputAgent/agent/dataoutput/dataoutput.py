@@ -27,6 +27,8 @@ import seaborn as sb
 import pandas as pd
 import numpy as np
 import copy
+import scipy.stats as st
+import matplotlib.colors as cl 
 
 
 # Initialise logger
@@ -699,7 +701,9 @@ def plot_geodistribution_with_cities_Jiyingsproject(label: str, title:str, df_in
     df_geo, val_values =data_treatment(df_geo, title, df)
     
     # Specify the interquartile range (IQR) and the first and third quartiles (q1 and q3)
-    divnorm = normalization(val_values, cb_scale)
+    bottom = np.min(val_values)
+    top = np.max(val_values)
+    divnorm = cl.Normalize(vmin=bottom, vmax=top)
 
     axs_xbounds = [np.array([-2.815E5,-1E5]),np.array([-2.838E5,-1.05E5]),np.array([1.3E5,1.9E5]),np.array([-1.957E5,0.957E5])]
     axs_ybounds = [np.array([7.107E6,7.2652E6]),np.array([7.206E6,7.41E6]),np.array([6.78E6,6.88E6]),np.array([6.5E6,6.68E6])]
@@ -965,6 +969,112 @@ def plot_var_versus_result(filename: str, y_label: str, x_label:str, df_in: pd.D
     plt.subplots_adjust(left = 0.127)
     save_figures(filename)
 
+# ------------------------ Routes ------------------------------------------ #
+def output_inequality_index_df(url_cop, url_change_of_fuel, url_fuel_cost, url_inequality_index):
+    # Read the temp data
+    df_temp = retrieve_temp_from_KG()
+
+    # Convert df into tensor
+    unique_LSOA, temp_tensor = convert_to_tensor(input = df_temp)
+
+    # call calculation agent
+    cop = call_cop_agent(url_cop, temp_tensor, OM_DEGREE_C)
+
+    # convert gas/elec consumption into tensor according to unique_LSOA
+    # get gas/elec consumption df
+    df_gas = retrieve_gas_data_from_KG()
+    df_elec = retrieve_elec_data_from_KG()
+    df_gas = select_column(df_gas, ['s','usage'])
+    df_elec = select_column(df_elec, ['s','usage'])
+
+    # get monthly distribution gas/elec
+    gas_monthly_distribution = read_from_web_monthly_distribution_gas()
+    elec_monthly_distribution = read_from_web_monthly_distribution_elec()
+
+    # convert gas/elec df to tensor
+    _, gas_tensor = convert_to_tensor(input = df_gas, monthly_ref= gas_monthly_distribution, LSOA_index_id= unique_LSOA, year=YEAR)
+    _, elec_tensor = convert_to_tensor(input = df_elec, monthly_ref= elec_monthly_distribution, LSOA_index_id= unique_LSOA, year=YEAR)
+
+    # compare the shape, select the shortest one
+    temp_tensor, unique_LSOA, gas_tensor, cop, elec_tensor = compare_tensor(temp_tensor,unique_LSOA,gas_tensor,cop,elec_tensor)
+
+    # call calculation agent
+    uptake = 0.5
+    # call change of fuel agent
+    change_of_gas, change_of_elec = call_change_of_fuel_agent(url_change_of_fuel, uptake, gas_tensor, 0.9, cop)
+
+    # fabricate into df
+    df_change_of_gas = tensor_to_df(-change_of_gas,unique_LSOA,'tas',True)
+    df_change_of_elec = tensor_to_df(change_of_elec,unique_LSOA,'tas',True)
+
+    # calculate change of cost
+    df_cost_total, _, _ = call_fuel_cost_agent(url_fuel_cost ,df_change_of_elec ,df_change_of_gas ,YEAR ,True)
+    df_cost_total = select_column(df_cost_total,[0,1])
+
+    # get the fuel poverty data, convert into tensor according to unique_LSOA
+    df_fuel_poor = retrieve_fuel_poor_from_KG()
+    df_fuel_poor = select_column(df_fuel_poor, ['s','result'])
+
+
+    # calculate inequality index
+    df_inequality_index = call_inequality_index_agent(url_inequality_index, df_cost_total, df_fuel_poor)
+
+    return df_inequality_index
+
+def output_fuel_cost_df(url):
+    # Retrieve consumption data from KG
+    df_elec = retrieve_elec_data_from_KG() 
+    df_elec = select_column(df_elec, ['s','usage']) 
+    # df_gas = retrieve_gas_data_from_KG()
+    # df_gas = select_column(df_gas, ['s','usage']) df_gas_in = df_gas,
+
+    # Call the Calculation agent
+    df_cost, df_ele, df_gas = call_fuel_cost_agent(df_elec_in = df_elec,  url= url,  year = '2020',annual=True)
+
+    return df_cost, df_ele, df_gas
+
+def output_fuel_emission_df(url):
+    # Retrieve consumption data from KG
+    df_elec = retrieve_elec_data_from_KG() 
+    df_elec = select_column(df_elec, ['s','usage']) 
+    df_gas = retrieve_gas_data_from_KG()
+    df_gas = select_column(df_gas, ['s','usage']) 
+
+    # Call the Calculation agent
+    df_emission_total, df_emission_elec, df_emission_gas = call_fuel_emission_agent(df_gas_in = df_gas, df_elec_in = df_elec,  url= url,  year = '2020',annual=True)
+    
+    return df_emission_total, df_emission_elec, df_emission_gas
+
+def output_change_of_fuel_df(url_cop,url_change_of_fuel,):
+    # Read the temp data
+    df_temp = retrieve_temp_from_KG()
+
+    # Convert df into tensor
+    unique_LSOA, temp_tensor = convert_to_tensor(input = df_temp)
+
+    # call calculation agent
+    cop = call_cop_agent(url_cop, temp_tensor, OM_DEGREE_C)
+
+    # call calculation agent
+    uptake = 0.5
+
+    # convert gas consumption into tensor according to unique_LSOA
+    # get gas consumption df
+    df_gas = retrieve_gas_data_from_KG()
+    df_gas = select_column(df_gas, ['s','usage'])
+
+    # get monthly distribution gas
+    gas_monthly_distribution = read_from_web_monthly_distribution_gas()
+
+    # convert gas df to tensor
+    _, gas_tensor = convert_to_tensor(input = df_gas, monthly_ref= gas_monthly_distribution, LSOA_index_id= unique_LSOA, year=YEAR)
+
+    # compare the shape, select the shorther one
+    temp_tensor, unique_LSOA, gas_tensor, cop = compare_tensor(temp_tensor,unique_LSOA,gas_tensor,cop)
+
+    # call agent
+    change_of_gas, change_of_elec = call_change_of_fuel_agent(url_change_of_fuel, uptake, gas_tensor,0.9,cop)
+    return change_of_gas, change_of_elec
 
 '''
 df_full = call_pickle('./Data/temp_Repo/df in function get_all_data')
@@ -1130,16 +1240,6 @@ print(df_inequality_index)
 
 # ----------------------------------------------------------------
 ##########################################################
-
-df = pd.read_csv('data.csv', usecols=[0,2,3], names=['LSOA_code','lat','lon'], squeeze=True)
-# Read a single column of the CSV file into a pandas Series
-col = pd.read_csv('Index.csv', usecols=[0,1,2], names=['lat','lon','index'], squeeze=True)
-df_total = df.merge(col, left_on=col.columns[0], right_on=df.columns[1], how='inner')
-df_total = select_column(df_total,['LSOA_code','index'])
-df_total['index'] = df_total['index'].astype(float)
-plot_geodistribution_with_cities_Jiyingsproject('index','index',df_total)
-
-
 
 ############### Test for plot_geodistribution ############
 # Test for geodistribution_with_cities ---------------------------

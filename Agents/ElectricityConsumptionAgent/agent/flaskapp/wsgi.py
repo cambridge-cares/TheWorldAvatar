@@ -17,9 +17,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from agent.flaskapp import create_app
 from agent.datainstantiation.readings import upload_all
 
-def test_wsgi():
-    print('This is a simple test.')
-
 
 # Initialise background scheduler and add recurring background task to 
 # assimilate latest time series data once per year

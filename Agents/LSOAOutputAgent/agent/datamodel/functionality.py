@@ -461,6 +461,12 @@ def create_color_bar(color_theme: str, divnorm, label: str, axs, cax1, val_df: p
 def add_prefix(x, prefix):
     return prefix + str(x)
 
+def remove_prefix(x, prefix):
+    if x.startswith(prefix):
+        return x[len(prefix):]
+    else:
+        return x
+
 def generate_time_dict(year: str):
 
       time_dict = {f'{year}-01-01 12:00:00':0,\
