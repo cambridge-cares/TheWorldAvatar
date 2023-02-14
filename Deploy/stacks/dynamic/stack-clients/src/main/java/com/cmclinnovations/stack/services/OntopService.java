@@ -76,4 +76,11 @@ public final class OntopService extends ContainerService {
         writeEndpointConfig(endpointConfig);
     }
 
+    /**
+     * used after spinning up a new ontop container
+     * @return
+     */
+    public OntopEndpointConfig getOntopEndpointConfig() {
+        return this.endpointConfig;
+    }
 }

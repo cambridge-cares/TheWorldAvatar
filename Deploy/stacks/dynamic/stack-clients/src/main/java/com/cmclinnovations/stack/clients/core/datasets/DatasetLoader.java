@@ -153,8 +153,9 @@ public class DatasetLoader {
             dataSubsets.forEach(subset -> subset.load(dataset));
 
             List<String> ontopMappings = dataset.getOntopMappings();
-            if (!ontopMappings.isEmpty()) {
 
+            String newOntopEndpoint = null;
+            if (!ontopMappings.isEmpty()) {
                 String newOntopServiceName = EndpointNames.ONTOP + "-" + dataset.getName();
 
                 ServiceConfig newOntopServiceConfig = serviceManager.duplicateServiceConfig(EndpointNames.ONTOP,
@@ -168,7 +169,8 @@ public class DatasetLoader {
                                 URI.create(connection.getExternalPath().toString()
                                         .replace(EndpointNames.ONTOP, newOntopServiceName))));
 
-                serviceManager.initialiseService(StackClient.getStackName(), newOntopServiceName);
+                OntopService ontopService = serviceManager.initialiseService(StackClient.getStackName(), newOntopServiceName);
+                newOntopEndpoint = ontopService.getOntopEndpointConfig().getUrl();
 
                 OntopClient ontopClient = OntopClient.getInstance(newOntopServiceName);
                 Path directory = dataset.getDirectory();
@@ -177,7 +179,7 @@ public class DatasetLoader {
 
             // record added datasets in the default kb namespace
             BlazegraphClient.getInstance().getRemoteStoreClient("kb")
-            .executeUpdate(dataset.getQueryStringForCataloging());
+            .executeUpdate(dataset.getQueryStringForCataloging(newOntopEndpoint));
         }
     }
 

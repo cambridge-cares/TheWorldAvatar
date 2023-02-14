@@ -28,6 +28,7 @@ import org.json.JSONArray;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
+import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -182,7 +183,7 @@ public class Dataset {
         return (null != externalDatasets) ? externalDatasets : Collections.emptyList();
     }
 
-    public String getQueryStringForCataloging() {
+    public String getQueryStringForCataloging(String newOntopEndpoint) {
         // makes a sparql query and determine which dataset is already initialised
         // sets the iri if it is already initialised so that the timestamp can be modified
         setDatasetExistsAndIris();
@@ -235,12 +236,13 @@ public class Dataset {
                 .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri));
             }
     
-            if (!getOntopMappings().isEmpty()) {
+            if (newOntopEndpoint != null) {
                 Iri ontopService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
 
                 insertTriples.add(ontopService.isA(Rdf.iri(SparqlConstants.ONTOP))
                 .andHas(Rdf.iri(SparqlConstants.USES_DATABASE), postgisService)
-                .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri));
+                .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri)
+                .andHas(Rdf.iri(DCAT.ENDPOINT_URL), newOntopEndpoint));
             }
         } else {
             catalogIri = Rdf.iri(iri);
