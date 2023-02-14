@@ -6,10 +6,13 @@
 # The purpose of this module is to provide functionality to interact with the
 # overarching Docker Stack using the Stack Clients wrapped by py4jps
 
+import geojson
 import glob
 import jaydebeapi
 import json
 import re
+
+from shapely.geometry import shape, MultiPolygon
 
 from agent.datainstantiation.ea_data import retrieve_flood_area_polygon
 from agent.errorhandling.exceptions import StackException
@@ -163,6 +166,20 @@ class GdalClient(StackClient):
         try:
             self.client = self.stackClients_view.GDALClient()
             self.orgoptions = self.stackClients_view.Ogr2OgrOptions()
+            # PostGIS "requires" geometry type for newly created layer/column 
+            # --> when new table gets created using 'uploadVectorStringToPostGIS'
+            #     this seems to be set to geometry type of first Feature (likely POLYGON)
+            #     Subsequently, the upload will fail for MULTIPOLYGONS
+            # 
+            # 'orgoptions' can be amended to create table which supports Polygons and MultiPolygons:
+            # self.orgoptions.addOtherOption("-nlt", 'PROMOTE_TO_MULTI')
+            # 
+            # However, calling this method from Python via py4jps doesn't seem to work
+            # (see: https://github.com/cambridge-cares/TheWorldAvatar/issues/609)
+            # 
+            # Further details:
+            # https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
+            # https://gdal.org/programs/ogr2ogr.html#cmdoption-ogr2ogr-nlt
         except Exception as ex:
             logger.error("Unable to initialise GdalClient.")
             raise StackException("Unable to initialise GdalClient.") from ex
@@ -222,7 +239,7 @@ def create_geojson_for_postgis(polygon_uri: str, area_uri: str, kg_endpoint: str
 
     # Retrieve GeoJSON polygon from EA API
     logger.info("Retrieving FloodArea GeoJSON polygon from EA API ...")
-    geojson = retrieve_flood_area_polygon(polygon_uri)
+    ea_geojson = retrieve_flood_area_polygon(polygon_uri)
 
     # Define properties
     props = {
@@ -240,9 +257,24 @@ def create_geojson_for_postgis(polygon_uri: str, area_uri: str, kg_endpoint: str
     if water_body_label: props['waterbody'] = water_body_label
     if county_iri: props['ons_county_iri'] = county_iri
 
-    # Assign additional properties to GeoJSON
+    # Create additional properties for GeoJSON
     #NOTE: This assumes that the polygon is a FeatureCollection with only one feature
     #      (which is in line with design/assumption in 'retrieve_flood_area_polygon')
-    geojson['features'][0]['properties'].update(props)
+    props.update(ea_geojson['features'][0]['properties'])
+
+    #NOTE: Some of the GeoJSON polygons returned from the EA API are of type Polygon,
+    #      while others are of type MultiPolygon. PostGIS (by default) only supports
+    #      one type. Hence, all Polygons are "upgraded" to MultiPolygons.
+    #      This is a workaround as the ogr2ogr options do not seem to work when called
+    #      via py4jps (see NOTE in GDALClient init)
+    # Extract geometry and convert to a Shapely polygon
+    shapely_polygon = shape(ea_geojson['features'][0]['geometry'])
+    if shapely_polygon.geom_type == 'Polygon':
+        # Create a MultiPolygon from the Shapely polygon
+        multipolygon = MultiPolygon([shapely_polygon])
+    else:
+        multipolygon = shapely_polygon
+    # Convert the MultiPolygon to a GeoJSON string
+    postgis_geojson = geojson.dumps(geojson.Feature(geometry=multipolygon, properties=props))
     
-    return json.dumps(geojson)
+    return postgis_geojson

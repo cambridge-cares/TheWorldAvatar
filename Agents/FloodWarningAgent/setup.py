@@ -16,10 +16,12 @@ setup(
     install_requires= [
         'APScheduler==3.10.0',
         'Flask==2.2.2',
+        'geojson==3.0.0',
+        'gunicorn==20.1.0',
         'JayDeBeApi==1.2.3',
         'py4jps==1.0.33', 
         'requests==2.28.2',
-        'gunicorn==20.1.0',
+        'shapely==2.0.1',
     ],
     # extras_require={
     #     "dev": [
