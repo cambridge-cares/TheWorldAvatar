@@ -1,17 +1,12 @@
 package uk.ac.cam.cares.jps.agent.mobileappagent;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.andrewoma.dexx.collection.internal.base.Break;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import java.sql.Connection;
 import java.sql.Statement;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
@@ -36,10 +31,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
-
+import static uk.ac.cam.cares.jps.agent.mobileappagent.InstantiationClient.instantiationMethod;
 public class WebhookServer {
 
     //Accelerometer list
@@ -47,11 +39,6 @@ public class WebhookServer {
     private static List<Double> accelList_x = new ArrayList<>();
     private static List<Double> accelList_y = new ArrayList<>();
     private static List<Double> accelList_z = new ArrayList<>();
-
-    public static synchronized List<List<?>> getAccel_lolValues() {
-        return accel_lolValues;
-    }
-
     private static List<List<?>> accel_lolValues= Arrays.asList(accelList_x,accelList_y,accelList_z);
 
     //Magnetometer list
@@ -85,6 +72,10 @@ public class WebhookServer {
     private static ArrayList<OffsetDateTime> lightValue_tsList = new ArrayList<>();
     private static List<Double> lightValueList = new ArrayList<>();
     private static List<List<?>> lightValue_lolValues= Arrays.asList(lightValueList);
+
+    private static ArrayList<OffsetDateTime> brightness_tsList = new ArrayList<>();
+    private static List<Double> brightnessList = new ArrayList<>();
+    private static List<List<?>> brightness_lolValues= Arrays.asList(brightnessList);
     private static String DEVICEID;
 
     public static void main(String[] args) throws Exception {
@@ -94,25 +85,125 @@ public class WebhookServer {
         server.start();
         System.out.println("Server started on port 8000");
 
-        //Start multithread programme here
+        //Start scheduler
         Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new ScheduledTask(), 5 * 1000, 5 * 1000);
+    }
 
-        timer.scheduleAtFixedRate(new ScheduledTask(), 2 * 1000, 15 * 1000);
+    /**
+     * Timertasks
+     */
+    public static class ScheduledTask extends TimerTask {
+        public void run() {
+            tsInstantiation();
+        }
+    }
 
-        //Step 1: Check if timeseries exists
+    /**
+     * Server that handles HTTP Post requests and parse them into a list
+     */
 
-        //Step 1.1: Create timeseries IRI
+    public static class MyHandler implements HttpHandler {
+
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+
+            String requestMethod = exchange.getRequestMethod();
+            if (requestMethod.equalsIgnoreCase("POST")) {
+                // handle POST request
+                StringBuilder data = new StringBuilder();
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        data.append("[");
+                        data.append(line);
+                        data.append("]");
+                    }
+                    JSONArray dataHTTP = new JSONArray(data.toString());
+                    ObjectMapper mapper = new ObjectMapper();
+                    JsonNode root = mapper.readTree(String.valueOf(dataHTTP));
+
+                    JsonNode payload = null;
+                    for (JsonNode webhook : root) {
+                        Integer messageId = webhook.get("messageId").intValue();
+                        String sessionId = webhook.get("sessionId").textValue();
+                        String deviceId = webhook.get("deviceId").textValue();
+                        DEVICEID=deviceId;
+                        payload = webhook.get("payload");
+                    }
+
+                    for (JsonNode node : payload) {
+
+                        JsonNode timeEPOCH = node.get("time");
+                        JsonNode sensor = node.get("name");
+                        JsonNode values = node.get("values");
+                        Instant instant = Instant.ofEpochSecond(timeEPOCH.longValue() / 1000000000, timeEPOCH.longValue() % 1000000000);
+                        OffsetDateTime timestamp = OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
+
+                        if (sensor.textValue().equals("accelerometer")) {
+                            accel_tsList.add(timestamp);
+                            accelList_x.add(values.get("x").doubleValue());
+                            accelList_y.add(values.get("y").doubleValue());
+                            accelList_z.add(values.get("z").doubleValue());
+                        }
+
+                        if (sensor.textValue().equals("magnetometer")) {
+                            magnetometer_tsList.add(timestamp);
+                            magnetometerList_x.add(values.get("x").doubleValue());
+                            magnetometerList_y.add(values.get("y").doubleValue());
+                            magnetometerList_z.add(values.get("z").doubleValue());
+
+                        }
+
+                        if (sensor.textValue().equals("gravity")) {
+                            gravity_tsList.add(timestamp);
+                            gravityList_x.add(values.get("x").doubleValue());
+                            gravityList_y.add(values.get("y").doubleValue());
+                            gravityList_z.add(values.get("z").doubleValue());
+
+                        }
+
+                        if (sensor.textValue().equals("location")) {
+                            location_tsList.add(timestamp);
+                            bearingList.add(values.get("bearing").doubleValue());
+                            speedList.add(values.get("speed").doubleValue());
+                            altitudeList.add(values.get("altitude").doubleValue());
+
+                            //Parse latitude and longitude into geom_location
+                            double latitude = values.get("latitude").doubleValue();
+                            double longitude = values.get("longitude").doubleValue();
+                            Point point = new Point(longitude, latitude);
+                            point.setSrid(4326);
+
+                            geomLocationList.add(point);
+                        }
+
+                        if (sensor.textValue().equals("microphone")) {
+                            dBFS_tsList.add(timestamp);
+                            dBFSList.add(values.get("dBFS").doubleValue());
+                        }
+
+                        if (sensor.textValue().equals("light")) {
+                            lightValue_tsList.add(timestamp);
+                            lightValueList.add(values.get("lux").doubleValue());
+                        }
+
+                        if (sensor.textValue().equals("brightness")) {
+                            brightness_tsList.add(timestamp);
+                            brightnessList.add(values.get("brightness").doubleValue());
+                        }
 
 
-
-
-        //Step 1.2: Inititailize timeseries
-        //Step 2: Hashmap the dataIRI
-
-        //Step 3: Add timeseries data
-        //Step 3.1: Downsample data instead
-
-
+                    }
+                    String response = "<html><body><pre>" + "The server is listening" + "</pre></body></html>";
+                    exchange.sendResponseHeaders(200, response.length());
+                    try (OutputStream os = exchange.getResponseBody()) {os.write(response.getBytes());}
+                }
+            } else {
+                String response = "<html><body><pre>" + "This is not HTTP Post request" + "</pre></body></html>";
+                try (OutputStream os = exchange.getResponseBody()) {os.write(response.getBytes());}
+            }
+        }
     }
 
     private static final Logger LOGGER = LogManager.getLogger(MobileAppAgent.class);
@@ -131,7 +222,7 @@ public class WebhookServer {
     public static final String location = "location";
     public static final String magnetometer = "magnetometer";
     public static final String microphone = "microphone";
-
+    public static final String screen = "screen";
     //Declare table header as string.
     public static final String timestamp = "timestamp";
     public static final String accel_x = "accel_x";
@@ -149,6 +240,7 @@ public class WebhookServer {
     public static final String magnetometer_y = "magnetometer_y";
     public static final String magnetometer_z = "magnetometer_z";
     public static final String dbfs = "dbfs";
+    public static final String brightness = "brightness";
 
     //Declare tableHeader as list of strings
     public static List<String> accelerometerHeader = Arrays.asList(timestamp, accel_x, accel_y, accel_z);
@@ -157,9 +249,11 @@ public class WebhookServer {
     public static List<String> locationHeader = Arrays.asList(timestamp, bearing, speed, altitude, geom_location);
     public static List<String> magnetometerHeader = Arrays.asList(timestamp, magnetometer_x, magnetometer_y, magnetometer_z);
     public static List<String> microphoneHeader = Arrays.asList(timestamp, dbfs);
-    public static List<List<String>> tableHeaderList= Arrays.asList(accelerometerHeader,gravityHeader,lightHeader,locationHeader,magnetometerHeader,microphoneHeader);
-    public static List<String> tableList = Arrays.asList(accelerometer, gravity,light, location,magnetometer,microphone);
-    public static void testmethod() {
+    public static List<String> screenHeader = Arrays.asList(timestamp, brightness);
+
+    public static List<List<String>> tableHeaderList= Arrays.asList(accelerometerHeader,gravityHeader,lightHeader,locationHeader,magnetometerHeader,microphoneHeader, screenHeader);
+    public static List<String> tableList = Arrays.asList(accelerometer, gravity,light, location,magnetometer,microphone,screen);
+    public static void tsInstantiation() {
         HashMap hashMap = new HashMap();
         Boolean unitsWereInstantiated = false;
 
@@ -186,24 +280,11 @@ public class WebhookServer {
 
             }
         }
-//        if (unitsWereInstantiated==true)
-//        { LOGGER.debug(String.format("Units were instantiated"));}
-//        else{instantiationMethod(hashMap); LOGGER.debug(String.format("Units is now instantiated"));}
+        if (unitsWereInstantiated==true)
+        { LOGGER.debug(String.format("Units were instantiated"));}
+        else{instantiationMethod(hashMap); LOGGER.debug(String.format("Units is now instantiated"));}
     }
 
-    private static void resetList(int tableNumber) {
-        //Declare as newlist to empty the list
-
-        if (tableNumber==0){accel_tsList = new ArrayList<>(); accel_lolValues= new ArrayList<>();}
-    else if (tableNumber==1){gravity_tsList = new ArrayList<>(); gravity_lolValues= new ArrayList<>();}
-    else if (tableNumber==2){lightValue_tsList = new ArrayList<>(); lightValue_lolValues= new ArrayList<>();}
-    else if (tableNumber==3){location_tsList = new ArrayList<>() ; location_lolValues= new ArrayList<>();}
-    else if (tableNumber==4){magnetometer_tsList= new ArrayList<>(); magnetometer_lolValues= new ArrayList<>();}
-    else if (tableNumber==5){dBFS_tsList= new ArrayList<>(); dBFS_lolValues= new ArrayList<>();}
-    else {LOGGER.debug(String.format("Table number not specified correctly"));}
-
-
-    }
 
     /** Boolean operation that checks if timeseries exists by querying the DBTable, if DBTable returns 0 or catch exception, it does not exist
      * @param i
@@ -247,24 +328,56 @@ public class WebhookServer {
         }
     }
 
-    /** Pass in tableNumber, dataArray and dataIRIList, parse dataArray into list of lists. Create timeseries <T> class.
+    /** Pass in tableNumber, use lolvalues, clear it afterwards by initializing it to empty list, add in new lists, Create timeseries <T> class.
      * @param tableNumber
      * @param dataIRIList
      * @return Timeseries
      */
-
-
     private static TimeSeries parseDataToLists(int tableNumber, List<String> dataIRIList) {
-
-
         ArrayList<OffsetDateTime> timesList = null;
         List<List<?>> lolvalues = null;
-        if (tableNumber==0){timesList= accel_tsList; lolvalues=accel_lolValues;}
-        else if (tableNumber==1){timesList= gravity_tsList; lolvalues= gravity_lolValues;}
-        else if (tableNumber==2){timesList= lightValue_tsList; lolvalues= lightValue_lolValues;}
-        else if (tableNumber==3){timesList= location_tsList; lolvalues= location_lolValues;}
-        else if (tableNumber==4){timesList= magnetometer_tsList; lolvalues= magnetometer_lolValues;}
-        else if (tableNumber==5){timesList= dBFS_tsList; lolvalues= dBFS_lolValues;}
+        if (tableNumber==0){
+            timesList= accel_tsList;
+            lolvalues=accel_lolValues;
+            accel_lolValues= new ArrayList<>();
+            accel_lolValues= Arrays.asList(accelList_x,accelList_y,accelList_z);
+        }
+        else if (tableNumber==1){
+            timesList= gravity_tsList;
+            lolvalues= gravity_lolValues;
+            gravity_lolValues= new ArrayList<>();
+            gravity_lolValues= Arrays.asList(gravityList_x,gravityList_y,gravityList_z);
+        }
+        else if (tableNumber==2){
+            timesList= lightValue_tsList;
+            lolvalues= lightValue_lolValues;
+            lightValue_lolValues=new ArrayList<>();
+            lightValue_lolValues= Arrays.asList(lightValueList);
+        }
+        else if (tableNumber==3){
+            timesList= location_tsList;
+            lolvalues= location_lolValues;
+            location_lolValues=new ArrayList<>();
+            location_lolValues= Arrays.asList(bearingList,speedList,altitudeList,geomLocationList);
+        }
+        else if (tableNumber==4){
+            timesList= magnetometer_tsList;
+            lolvalues= magnetometer_lolValues;
+            magnetometer_lolValues=new ArrayList<>();
+            magnetometer_lolValues= Arrays.asList(magnetometerList_x,magnetometerList_y,magnetometerList_z);
+        }
+        else if (tableNumber==5){
+            timesList= dBFS_tsList;
+            lolvalues= dBFS_lolValues;
+            dBFS_lolValues = new ArrayList<>();
+            dBFS_lolValues= Arrays.asList(dBFSList);
+        }
+        else if (tableNumber==6){
+            timesList= brightness_tsList;
+            lolvalues= brightness_lolValues;
+            brightness_lolValues= new ArrayList<>();
+            brightness_lolValues= Arrays.asList(brightnessList);
+        }
         else {LOGGER.debug(String.format("Table number not specified correctly"));}
 
         //Pass time list, dataIRI List - just one, lolvalues, add timeseries to output
@@ -308,7 +421,6 @@ public class WebhookServer {
             String sql = "CREATE EXTENSION IF NOT EXISTS postgis";
             stmt.executeUpdate(sql);
 
-
             TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
             tsClient.initTimeSeries(dataIRIList, dataClass, timeUnit, conn);
         } catch (Exception e) {
@@ -317,8 +429,6 @@ public class WebhookServer {
         }
         return dataIRIList;
     }
-
-
     /** Generate query to retrieve dataIRI from DBTable
      * @param i
      * @return
@@ -355,238 +465,17 @@ public class WebhookServer {
      */
     public static void updateData(TimeSeries<OffsetDateTime> ts) throws IllegalArgumentException {
         // Update each time series
-        // Retrieve current maximum time to avoid duplicate entries (can be null if no data is in the database yet)
         OffsetDateTime endDataTime;
         try (Connection conn = rdbStoreClient.getConnection()) {
             TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
-
-            try {
-                endDataTime = (OffsetDateTime) tsClient.getMaxTime(ts.getDataIRIs().get(0),conn);
-            } catch (Exception e) {
-                throw new JPSRuntimeException("Could not get max time!");
-            }
-
-            if(!ts.getTimes().isEmpty()) {
-                OffsetDateTime startCurrentTime = ts.getTimes().get(0);
-
-
-                // If there is already a maximum time
-                if (endDataTime != null) {
-                    // If the new data overlaps with existing timestamps, prune the new ones
-                    if (startCurrentTime.isBefore(endDataTime)) {
-                        ts = pruneTimeSeries(ts, endDataTime);
-                    }
-                }
-                // Only update if there actually is data
-                if (!ts.getTimes().isEmpty()) {
-                    try {
-                        tsClient.addTimeSeriesData(ts, conn);
-                        LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
-                    } catch (Exception e) {
-                        throw new JPSRuntimeException("Could not add timeseries!");
-                    }
-                }
-            }
+            tsClient.addTimeSeriesData(ts, conn);
+            LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
-
-    }
-
-    /**
-     * Prunes a times series so that all timestamps and corresponding values start after the threshold.
-     * @param timeSeries The times series tp prune
-     * @param timeThreshold The threshold before which no data should occur
-     * @return The resulting datetime object.
-     */
-    private static TimeSeries<OffsetDateTime> pruneTimeSeries(TimeSeries<OffsetDateTime> timeSeries, OffsetDateTime timeThreshold) {
-        // Find the index from which to start
-        List<OffsetDateTime> times = timeSeries.getTimes();
-        int index = 0;
-        while(index < times.size()) {
-            if ((times.get(index)).isAfter(timeThreshold)) {
-                break;
-
-            }
-            index++;
-        }
-        // Prune timestamps
-        List<OffsetDateTime> newTimes = new ArrayList<>();
-        // There are timestamps above the threshold
-        if (index != times.size()) {
-            // Prune the times
-            newTimes = new ArrayList<>(times.subList(index, times.size()));
-        }
-        // Prune data
-        List<List<?>> newValues = new ArrayList<>();
-        // Prune the values
-        for (String iri: timeSeries.getDataIRIs()) {
-            // There are timestamps above the threshold
-            if (index != times.size()) {
-                newValues.add(timeSeries.getValues(iri).subList(index, times.size()));
-            }
-            else {
-                newValues.add(new ArrayList<>());
-            }
-        }
-        return new TimeSeries<>(newTimes, timeSeries.getDataIRIs(), newValues);
     }
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * Timertasks
-     */
-    public static class ScheduledTask extends TimerTask {
-        public void run() {
-            testmethod();
-        }
-    }
-
-
-    /**
-     * Server that handles HTTP Post requests and parse them into a list
-     */
-
-    public static class MyHandler implements HttpHandler {
-
-        @Override
-        public void handle(HttpExchange exchange) throws IOException {
-
-            String requestMethod = exchange.getRequestMethod();
-                if (requestMethod.equalsIgnoreCase("POST")) {
-                    // handle POST request
-                    StringBuilder data = new StringBuilder();
-                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8))) {
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            data.append("[");
-                            data.append(line);
-                            data.append("]");
-                        }
-                            JSONArray dataHTTP = new JSONArray(data.toString());
-                            ObjectMapper mapper = new ObjectMapper();
-                            JsonNode root = mapper.readTree(String.valueOf(dataHTTP));
-
-                            JsonNode payload = null;
-                            for (JsonNode webhook : root) {
-                                Integer messageId = webhook.get("messageId").intValue();
-                                String sessionId = webhook.get("sessionId").textValue();
-                                String deviceId = webhook.get("deviceId").textValue();
-                                DEVICEID=deviceId;
-                                payload = webhook.get("payload");
-                            }
-
-                            for (JsonNode node : payload) {
-
-                                JsonNode timeEPOCH = node.get("time");
-                                JsonNode sensor = node.get("name");
-                                JsonNode values = node.get("values");
-                                Instant instant = Instant.ofEpochSecond(timeEPOCH.longValue() / 1000000000, timeEPOCH.longValue() % 1000000000);
-                                OffsetDateTime timestamp = OffsetDateTime.ofInstant(instant, ZoneOffset.UTC);
-
-                                if (sensor.textValue().equals("accelerometer")) {
-                                    accel_tsList.add(timestamp);
-                                    accelList_x.add(values.get("x").doubleValue());
-                                    accelList_y.add(values.get("y").doubleValue());
-                                    accelList_z.add(values.get("z").doubleValue());
-                                }
-
-                                if (sensor.textValue().equals("magnetometer")) {
-                                    magnetometer_tsList.add(timestamp);
-                                    magnetometerList_x.add(values.get("x").doubleValue());
-                                    magnetometerList_y.add(values.get("y").doubleValue());
-                                    magnetometerList_z.add(values.get("z").doubleValue());
-
-                                }
-
-                                if (sensor.textValue().equals("gravity")) {
-                                    gravity_tsList.add(timestamp);
-                                    gravityList_x.add(values.get("x").doubleValue());
-                                    gravityList_y.add(values.get("y").doubleValue());
-                                    gravityList_z.add(values.get("z").doubleValue());
-
-                                }
-
-                                if (sensor.textValue().equals("location")) {
-                                    location_tsList.add(timestamp);
-                                    bearingList.add(values.get("bearing").doubleValue());
-                                    speedList.add(values.get("speed").doubleValue());
-                                    altitudeList.add(values.get("altitude").doubleValue());
-
-                                    //Parse latitude and longitude into geom_location
-                                    double latitude = values.get("latitude").doubleValue();
-                                    double longitude = values.get("longitude").doubleValue();
-                                    Point point = new Point(longitude, latitude);
-                                    point.setSrid(4326);
-
-                                    geomLocationList.add(point);
-                                }
-
-                                if (sensor.textValue().equals("microphone")) {
-                                    dBFS_tsList.add(timestamp);
-                                    dBFSList.add(values.get("dBFS").doubleValue());
-                                }
-
-                                if (sensor.textValue().equals("light")) {
-                                    lightValue_tsList.add(timestamp);
-                                    lightValueList.add(values.get("lux").doubleValue());
-                                }
-                            }
-                            String response = "<html><body><pre>" + "The server is listening" + "</pre></body></html>";
-                            exchange.sendResponseHeaders(200, response.length());
-                            try (OutputStream os = exchange.getResponseBody()) {os.write(response.getBytes());}
-                    }
-                } else {
-                    String response = "<html><body><pre>" + "This is not HTTP Post request" + "</pre></body></html>";
-                    try (OutputStream os = exchange.getResponseBody()) {os.write(response.getBytes());}
-            }
-        }
-    }
 }
