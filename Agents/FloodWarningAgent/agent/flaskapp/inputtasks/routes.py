@@ -3,8 +3,6 @@
 # Date: 12 Feb 2023                            #
 ################################################
 
-import traceback
-
 from flask import Blueprint, request, jsonify
 
 from agent.datainstantiation.warnings import update_warnings
@@ -43,7 +41,6 @@ def api_update_all_warnings():
 
     except Exception as ex:
         logger.error('Update failed: ' + str(ex), ex)
-        #logger.error(traceback.format_exc())
         return jsonify({'status': '500', 'msg': 'Update failed: ' + str(ex)}), 500
 
 

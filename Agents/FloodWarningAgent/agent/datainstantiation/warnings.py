@@ -11,14 +11,14 @@ import uuid
 from datetime import datetime as dt
 
 from agent.datainstantiation.ea_data import retrieve_current_warnings, \
-                                            retrieve_flood_area_data, \
-                                            retrieve_flood_area_polygon
+                                            retrieve_flood_area_data
 from agent.datainstantiation.ons_data import retrieve_ons_county
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.querytemplates import *
-from agent.utils.stackclients import (GdalClient, GeoserverClient,
-                                      OntopClient, PostGISClient)
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.utils.stackclients import GdalClient, GeoserverClient, \
+                                     OntopClient, PostGISClient, \
+                                     create_geojson_for_postgis
 
 from py4jps import agentlogging
 
@@ -87,7 +87,6 @@ def update_warnings(county=None):
         logger.info("Updating finished.")
 
 
-
     return instantiated_areas, instantiated_warnings, None, None
 
 
@@ -136,7 +135,7 @@ def instantiate_flood_areas_and_warnings(areas_to_instantiate: list, areas_kg: d
 
 
 def get_instantiated_flood_warnings(query_endpoint=QUERY_ENDPOINT,
-                                    kgclient=None):
+                                    kgclient=None) -> dict:
     """
     Retrieve all instantiated flood warnings with latest update timestamp
 
@@ -169,7 +168,7 @@ def get_instantiated_flood_warnings(query_endpoint=QUERY_ENDPOINT,
 
 
 def get_instantiated_flood_areas(query_endpoint=QUERY_ENDPOINT,
-                                 kgclient=None):
+                                 kgclient=None) -> dict:
     """
     Retrieve all instantiated flood areas with associated 'hasLocation' Location IRIs
 
@@ -235,13 +234,15 @@ def instantiate_flood_areas(areas_data: list=[],
         logger.info("Retrieving county IRI from ONS API ...")
         area['county_iri'] = retrieve_ons_county(area['county'])
 
-        # Retrieve GeoJSON polygon from EA API
-        logger.info("Retrieving FloodArea GeoJSON polygon from EA API ...")
-        geojson = retrieve_flood_area_polygon(area['polygon_uri'])
+        # Create GeoJSON string for PostGIS upload
+        logger.info("Create FloodArea GeoJSON string for PostGIS upload ...")
+        props = ['polygon_uri', 'area_uri', 'area_types', 'county_iri', 'water_body_label']
+        props = {p: area[p] for p in props}
+        geojson_str = create_geojson_for_postgis(**props, kg_endpoint=query_endpoint)
 
         # Remove dictionary keys not required for instantiation
         area.pop('county', None)
-        area.pop('polygon_uri', None) 
+        poly_uri = area.pop('polygon_uri', None) 
 
         # 1) Prepare instantiation in KG (done later in bulk)
         triples += flood_area_instantiation_triples(**area)
@@ -254,15 +255,15 @@ def instantiate_flood_areas(areas_data: list=[],
             OntopClient.upload_ontop_mapping()
             # Initial data upload required to create postGIS table and Geoserver layer            
             logger.info('Uploading GeoJSON to PostGIS ...')
-            gdal_client.uploadGeoJSON(geojson)
+            gdal_client.uploadGeoJSON(geojson_str)
             logger.info('Creating layer in Geoserver ...')
             geoserver_client.create_workspace()
             geoserver_client.create_postgis_layer()
         else:        
             # Upload new geospatial information
-            if not postgis_client.check_point_feature_exists(lat, lon, station_type):
+            if not postgis_client.check_flood_area_exists(area['area_uri'], poly_uri):
                 logger.info('Uploading GeoJSON to PostGIS ...')
-                gdal_client.uploadGeoJSON(geojson)
+                gdal_client.uploadGeoJSON(geojson_str)
 
     # Create INSERT query and perform update
     query = f"INSERT DATA {{ {triples} }}"

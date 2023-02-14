@@ -1,6 +1,6 @@
 ################################################
 # Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 09 Sep 2022                            #
+# Date: 14 Feb 2023                            #
 ################################################
 
 # The purpose of this module is to provide functionality to interact with the
@@ -9,10 +9,12 @@
 import glob
 import jaydebeapi
 import json
+import re
 
+from agent.datainstantiation.ea_data import retrieve_flood_area_polygon
 from agent.errorhandling.exceptions import StackException
-from agent.utils.javagateway import stackClientsGw, jpsBaseLibGW
 from agent.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, ONTOP_FILE
+from agent.utils.javagateway import stackClientsGw, jpsBaseLibGW
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, ONTOP_URL
 
 from py4jps import agentlogging
@@ -51,11 +53,11 @@ class OntopClient(StackClient):
 
     def performQuery(self, query):
         """
-            This function performs query to Ontop endpoint.
-            NOTE: Using Blazegraph with SERVICE keyword and ONTOP_URL seems to resolve
-                  several connection issues observed when using Ontop client directly
-            Arguments:
-                query - SPARQL Query string
+        This function performs query to Ontop endpoint.
+        NOTE: Using Blazegraph with SERVICE keyword and ONTOP_URL seems to resolve
+                several connection issues observed when using Ontop client directly
+        Arguments:
+            query - SPARQL Query string
         """
         try:
             response = self.ontop_client.execute(query)
@@ -97,8 +99,8 @@ class PostGISClient:
     
     def connection_properties(self):
         """
-            This function returns dictionary of JDBC connection properties 
-            to PostgreSQL database
+        This function returns dictionary of JDBC connection properties 
+        to PostgreSQL database
         """
         conn = []
         conn.append('org.postgresql.Driver')
@@ -116,7 +118,7 @@ class PostGISClient:
 
     def check_table_exists(self, table=LAYERNAME):
         """
-            This function checks whether a given table exists in the database
+        This function checks whether a given table exists in the database
         """
         try:
             with jaydebeapi.connect(*self.conn_props) as conn:
@@ -132,18 +134,16 @@ class PostGISClient:
             raise StackException('Unsuccessful JDBC interaction.') from ex
 
 
-    def check_point_feature_exists(self, lat, lon, feature_type, table=LAYERNAME):
+    def check_flood_area_exists(self, flood_area_iri, polygon_iri, table=LAYERNAME):
         """
-            This function checks whether an identical geo-feature already exists
-            in PostGIS table
-            Returns True if point already exists, False otherwise
+        This function checks whether the flood area already exists in the database
+        Returns True if area already exists, False otherwise
         """
         try:
-            #TODO: To be reworked for polygons
             with jaydebeapi.connect(*self.conn_props) as conn:
                 with conn.cursor() as curs:
-                    curs.execute(f'SELECT type=\'{feature_type}\' AND \
-                                   ST_Equals(wkb_geometry, ST_SetSRID(ST_POINT({lon},{lat}), 4326)) from {table}')
+                    curs.execute(f'SELECT iri=\'{flood_area_iri}\' AND \
+                                   geom_iri=\'{polygon_iri}\' from {table}')
                     # Fetching the SQL results from the cursor only works on first call
                     # Recurring calls return empty list and curs.execute needs to be run again
                     res = curs.fetchall()
@@ -170,7 +170,7 @@ class GdalClient(StackClient):
 
     def uploadGeoJSON(self, geojson_string, database=DATABASE, table=LAYERNAME):
         """
-            Calls StackClient function with default upload settings
+        Calls StackClient function with default upload settings
         """
         self.client.uploadVectorStringToPostGIS(database, table, geojson_string,
                                                 self.orgoptions, True)
@@ -197,47 +197,52 @@ class GeoserverClient(StackClient):
                                    geoserver_layer=LAYERNAME,
                                    postgis_database=DATABASE):
         """
-            Calls StackClient function with default settings
-            Please note: Postgis database table assumed to have same name as
-                         Geoserver layer
+        Calls StackClient function with default settings
+        Please note: Postgis database table assumed to have same name as
+                     Geoserver layer
         """
         self.client.createPostGISLayer(None, geoserver_workspace, postgis_database,
                                        geoserver_layer, self.vectorsettings)
 
 
-def create_geojson_for_postgis(station_iri: str, station_name: str, station_type: str,
-                               station_subtype: str, lat: float, long: float, kg_endpoint: str):
+def create_geojson_for_postgis(polygon_uri: str, area_uri: str, kg_endpoint: str,
+                               area_types: list =[], county_iri: str = None, 
+                               water_body_label: str = None,) -> str:
     """
-    Create GeoJSON object for upload to PostGIS database
-    Needs to contain at least the following properties for FeatureInfoAgent to work:
-        "name" - human readable name of the feature 
-        "iri" - full IRI of the feature as represented in the knowledge graph
-        "endpoint" - URL of the Blazegraph namespace containing data on the feature,
-                     i.e. from where shall FeatureInfoAgent retrieve data about "iri"
+    Create GeoJSON string for upload to PostGIS database
+
+    Initially, the GeoJSON needed to contain at least ""name", "iri", and "endpoint"
+    for FeatureInfoAgent to work (i.e. be able to retrieve data from PostGIS)
+    This is no longer the case, but these properties are kept for consistency with
+    previous agent implementations, i.e. 
+    https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/MetOfficeAgent/agent/kgutils/stackclients.py
+
     Further properties can be added as needed, i.e. for styling purposes
     """
-    #TODO: To be reworked for flood polygons
-    # Initialise GeoJSON
-    geojson = {'type': 'Feature'}
+
+    # Retrieve GeoJSON polygon from EA API
+    logger.info("Retrieving FloodArea GeoJSON polygon from EA API ...")
+    geojson = retrieve_flood_area_polygon(polygon_uri)
 
     # Define properties
     props = {
-        'iri': station_iri,
-        'name': station_name,
+        'iri': area_uri,
         'endpoint': kg_endpoint,
-        'geom_iri': station_iri + '/geometry',
-        'type': station_type,
-        'subtype': station_subtype,
+        'geom_iri': polygon_uri
     }
+    # Add optional properties
+    area_type = []
+    for t in area_types:
+        area_type.extend(re.findall(r'AlertArea|WarningArea', t, re.IGNORECASE))
+    area_type = list(set(area_type))
+    area_type = None if len(area_type) != 1 else area_type[0]
+    if area_type: props['area_type'] = area_type
+    if water_body_label: props['waterbody'] = water_body_label
+    if county_iri: props['ons_county_iri'] = county_iri
 
-    # Define geometry
-    geom = {
-        'type': 'Point',
-        'coordinates': [float(long), float(lat)]
-    }
-
-    # Construct GeoJSON
-    geojson['properties'] = props
-    geojson['geometry'] = geom
+    # Assign additional properties to GeoJSON
+    #NOTE: This assumes that the polygon is a FeatureCollection with only one feature
+    #      (which is in line with design/assumption in 'retrieve_flood_area_polygon')
+    geojson['features'][0]['properties'].update(props)
     
     return json.dumps(geojson)

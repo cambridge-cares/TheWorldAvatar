@@ -27,7 +27,7 @@ logger = agentlogging.get_logger("dev")
 ONS = 'http://statistics.data.gov.uk/sparql'
 
 
-def retrieve_ons_county(county_name):
+def retrieve_ons_county(county_name) -> str:
     """
         Retrieves county IRI for given county name from ONS API
 

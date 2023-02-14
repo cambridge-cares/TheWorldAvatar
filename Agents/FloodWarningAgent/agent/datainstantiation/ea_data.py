@@ -7,16 +7,16 @@
 # Environment Agency Real Time flood-monitoring API:
 # https://environment.data.gov.uk/flood-monitoring/doc/reference#flood-warnings
 
-import json
 import re
 import requests
 import time
 
 from datetime import datetime as dt
 
-from py4jps import agentlogging
 from agent.datamodel.data_mapping import *
 from agent.errorhandling.exceptions import APIException
+
+from py4jps import agentlogging
 
 # Initialise logger
 logger = agentlogging.get_logger("dev")
@@ -138,16 +138,16 @@ def retrieve_flood_area_data(area_uri: str) -> dict:
     return area
 
 
-def retrieve_flood_area_polygon(polygon_uri: str) -> str:
+def retrieve_flood_area_polygon(polygon_uri: str) -> dict:
     """
-    Retrieve flood area polygon from the Environment Agency API
+    Retrieve flood area polygon GeoJSON from the Environment Agency API
 
     Arguments:
         polygon_uri (str): Stable (and resolvable) long term flood polygon reference, e.g.
                           'http://environment.data.gov.uk/flood-monitoring/id/floodAreas/065FAG013/polygon'
 
     Returns:
-        GeoJSON with relevant flood polygon data (in WGS84 coordinates) as string
+        GeoJSON with relevant flood polygon data (in WGS84 coordinates)
     """
 
     # Retrieve boundary of the flood area encoded as a geoJSON polygon
@@ -165,16 +165,15 @@ def retrieve_flood_area_polygon(polygon_uri: str) -> str:
     if props:
         # Extract relevant information
         props_new = {}
-        descr1 = None if not props.get('AREA') else props['AREA'].replace('\n', ' ').replace('\u202F', ' ')
-        descr2 = None if not props.get('DESCRIP') else props['DESCRIP'].replace('\n', ' ').replace('\u202F', ' ')
-        props_new['label']  = descr1 + ': ' + descr2 if descr1 and descr2 else descr1 if descr1 else descr2
+        props_new['name'] = None if not props.get('AREA') else props['AREA'].replace('\n', ' ').replace('\u202F', ' ')
+        props_new['description'] = None if not props.get('DESCRIP') else props['DESCRIP'].replace('\n', ' ').replace('\u202F', ' ')
         # Assign updated properties to polygon
         poly['features'][0]['properties'] = props_new
 
-    return json.dumps(poly)
+    return poly
 
 
-def retrieve_json_from_api(url, max_attempts=3):
+def retrieve_json_from_api(url, max_attempts=3) -> dict:
     """
     Retrieve data from the Environment Agency API and return as JSON dictionary
 
@@ -205,7 +204,7 @@ def retrieve_json_from_api(url, max_attempts=3):
     return data
 
 
-def assess_waterbody_type(waterbody: str):
+def assess_waterbody_type(waterbody: str) -> str:
     """
     Check if specific water body type can be retrieved from 'riverOrSea' description
     If no specific type can be identified, return 'waterbody'
