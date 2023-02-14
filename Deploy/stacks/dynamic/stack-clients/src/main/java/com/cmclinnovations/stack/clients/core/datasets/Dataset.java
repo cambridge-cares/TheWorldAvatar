@@ -11,6 +11,9 @@ import java.util.Properties;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.eclipse.rdf4j.model.vocabulary.DCAT;
+import org.eclipse.rdf4j.model.vocabulary.DCTERMS;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
@@ -157,8 +160,8 @@ public class Dataset {
         return skip;
     }
 
-    public String getRdfType() {
-        return (null != rdfType) ? rdfType : SparqlConstants.CATALOG;
+    public Iri getRdfType() {
+        return (null != rdfType) ? Rdf.iri(rdfType) : Rdf.iri(DCAT.CATALOG);
     }
 
     public String getTimeSeriesSchema() {
@@ -195,17 +198,17 @@ public class Dataset {
             iri = SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID();
             catalogIri = Rdf.iri(iri);
 
-            insertTriples.add(catalogIri.isA(Rdf.iri(getRdfType()))
-            .andHas(Rdf.iri(SparqlConstants.TITLE), getName())
-            .andHas(Rdf.iri(SparqlConstants.DESCRIPTION), getDescription())
-            .andHas(Rdf.iri(SparqlConstants.MODIFIED), Rdf.literalOfType(currentTime.toString(), Rdf.iri(SparqlConstants.DATETIME))));
+            insertTriples.add(catalogIri.isA(getRdfType())
+            .andHas(Rdf.iri(DCTERMS.TITLE), getName())
+            .andHas(Rdf.iri(DCTERMS.DESCRIPTION), getDescription())
+            .andHas(Rdf.iri(DCTERMS.MODIFIED), Rdf.literalOfType(currentTime.toString(), XSD.DATETIME)));
 
             // blazegraph triples
             String kgUrl = BlazegraphClient.getInstance().getEndpoint().getUrl(getNamespace());
             Iri blazegraphService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
             insertTriples.add(blazegraphService.isA(Rdf.iri(SparqlConstants.BLAZEGRAPH))
-            .andHas(Rdf.iri(SparqlConstants.ENDPOINT_URL), kgUrl)
-            .andHas(Rdf.iri(SparqlConstants.SERVES_DATASET), catalogIri));
+            .andHas(Rdf.iri(DCAT.ENDPOINT_URL), kgUrl)
+            .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri));
 
             Iri postgisService = null;
             if (getDataSubsets().stream().anyMatch(DataSubset::usesPostGIS)) {
@@ -214,8 +217,8 @@ public class Dataset {
                 // append triples
                 postgisService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
                 insertTriples.add(postgisService.isA(Rdf.iri(SparqlConstants.POSTGIS))
-                .andHas(Rdf.iri(SparqlConstants.ENDPOINT_URL), jdbcUrl)
-                .andHas(Rdf.iri(SparqlConstants.SERVES_DATASET), catalogIri));
+                .andHas(Rdf.iri(DCAT.ENDPOINT_URL), jdbcUrl)
+                .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri));
 
                 if (hasTimeSeries) {
                     insertTriples.add(postgisService.has(Rdf.iri(SparqlConstants.HAS_TIMESERIES_SCHEMA), getTimeSeriesSchema()));
@@ -229,7 +232,7 @@ public class Dataset {
                 // append triples
                 insertTriples.add(geoserverService.isA(Rdf.iri(SparqlConstants.GEOSERVER))
                 .andHas(Rdf.iri(SparqlConstants.USES_DATABASE), postgisService)
-                .andHas(Rdf.iri(SparqlConstants.SERVES_DATASET), catalogIri));
+                .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri));
             }
     
             if (!getOntopMappings().isEmpty()) {
@@ -237,35 +240,35 @@ public class Dataset {
 
                 insertTriples.add(ontopService.isA(Rdf.iri(SparqlConstants.ONTOP))
                 .andHas(Rdf.iri(SparqlConstants.USES_DATABASE), postgisService)
-                .andHas(Rdf.iri(SparqlConstants.SERVES_DATASET), catalogIri));
+                .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri));
             }
         } else {
             catalogIri = Rdf.iri(iri);
             Variable catalogTime = query.var();
-            deleteTriples.add(catalogIri.has(Rdf.iri(SparqlConstants.MODIFIED), catalogTime));
+            deleteTriples.add(catalogIri.has(DCTERMS.MODIFIED, catalogTime));
 
             insertTriples.add(catalogIri
-            .has(Rdf.iri(SparqlConstants.MODIFIED), Rdf.literalOfType(currentTime.toString(), Rdf.iri(SparqlConstants.DATETIME))));
+            .has(DCTERMS.MODIFIED, Rdf.literalOfType(currentTime.toString(), XSD.DATETIME)));
         }
 
         getDataSubsets().stream().forEach(dataSubset -> {
             if (!dataSubset.getExists()) {
                 Iri dataSetIri = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
-                insertTriples.add(catalogIri.has(Rdf.iri(SparqlConstants.HAS_PART), dataSetIri)); 
-                insertTriples.add(dataSetIri.isA(Rdf.iri(SparqlConstants.DATASET))
-                .andHas(Rdf.iri(SparqlConstants.MODIFIED), Rdf.literalOfType(currentTime.toString(), Rdf.iri(SparqlConstants.DATETIME)))
-                .andHas(Rdf.iri(SparqlConstants.TITLE), dataSubset.getName())
-                .andHas(Rdf.iri(SparqlConstants.DESCRIPTION), dataSubset.getDescription()));
+                insertTriples.add(catalogIri.has(Rdf.iri(DCTERMS.HAS_PART), dataSetIri)); 
+                insertTriples.add(dataSetIri.isA(Rdf.iri(DCAT.DATASET))
+                .andHas(Rdf.iri(DCTERMS.MODIFIED), Rdf.literalOfType(currentTime.toString(), XSD.DATETIME))
+                .andHas(Rdf.iri(DCTERMS.TITLE), dataSubset.getName())
+                .andHas(Rdf.iri(DCTERMS.DESCRIPTION), dataSubset.getDescription()));
             } else {
                 Variable dataSubsetTime = query.var();
-                deleteTriples.add(Rdf.iri(dataSubset.getIri()).has(Rdf.iri(SparqlConstants.MODIFIED), dataSubsetTime));
+                deleteTriples.add(Rdf.iri(dataSubset.getIri()).has(DCTERMS.MODIFIED, dataSubsetTime));
                 insertTriples.add(Rdf.iri(dataSubset.getIri())
-                .has(Rdf.iri(SparqlConstants.MODIFIED), Rdf.literalOfType(currentTime.toString(), Rdf.iri(SparqlConstants.DATETIME))));
+                .has(DCTERMS.MODIFIED, Rdf.literalOfType(currentTime.toString(), XSD.DATETIME)));
             }
         });
 
         getExternalDatasets().stream().forEach(externalDataset -> {
-            insertTriples.add(Rdf.iri(iri).has(Rdf.iri(SparqlConstants.HAS_PART), Rdf.iri(externalDataset.getIri())));
+            insertTriples.add(Rdf.iri(iri).has(DCTERMS.HAS_PART, Rdf.iri(externalDataset.getIri())));
         });
 
         ModifyQuery modify = Queries.MODIFY();
@@ -292,9 +295,9 @@ public class Dataset {
         Variable dataSubsetVar = query.var();
         Variable dataSubsetNameVar = query.var();
 
-        GraphPattern mainQuery = GraphPatterns.and(catalogVar.has(Rdf.iri(SparqlConstants.HAS_PART), dataSubsetVar)
-        .andHas(Rdf.iri(SparqlConstants.TITLE), catalogNameVar),
-        dataSubsetVar.has(Rdf.iri(SparqlConstants.TITLE), dataSubsetNameVar));
+        GraphPattern mainQuery = GraphPatterns.and(catalogVar.has(DCTERMS.HAS_PART, dataSubsetVar)
+        .andHas(Rdf.iri(DCTERMS.TITLE), catalogNameVar),
+        dataSubsetVar.has(DCTERMS.TITLE, dataSubsetNameVar));
 
         ValuesPattern catalogValuesPattern = new ValuesPattern(catalogNameVar, Rdf.literalOf(getName()));
         ValuesPattern datasetValuesPattern = new ValuesPattern(dataSubsetNameVar, dataSubsetNames.stream().map(Rdf::literalOf).collect(Collectors.toList()));
@@ -325,22 +328,11 @@ public class Dataset {
 
     private class SparqlConstants {
         static final String DEFAULT_NAMESPACE = "http://theworldavatar.com/kg/";
-        static final String DCAT_NAMESPACE = "http://www.w3.org/ns/dcat#";
-        static final String DCTERMS_NAMESPACE = "http://purl.org/dc/terms/";
-        static final String DATASET = DCAT_NAMESPACE + "Dataset";
-        static final String TITLE = DCTERMS_NAMESPACE + "title";
-        static final String DESCRIPTION = DCTERMS_NAMESPACE + "description";
-        static final String CATALOG = DCAT_NAMESPACE + "Catalog";
-        static final String MODIFIED = DCTERMS_NAMESPACE + "modified";
-        static final String HAS_PART = DCTERMS_NAMESPACE + "hasPart";
-        static final String DATETIME = "http://www.w3.org/2001/XMLSchema#dateTime";
         static final String BLAZEGRAPH = DEFAULT_NAMESPACE + "Blazegraph";
         static final String POSTGIS = DEFAULT_NAMESPACE + "PostGIS";
         static final String GEOSERVER = DEFAULT_NAMESPACE + "GeoServer";
-        static final String ENDPOINT_URL = DCAT_NAMESPACE + "endpointURL";
         static final String HAS_TIMESERIES_SCHEMA = DEFAULT_NAMESPACE + "hasTimeSeriesSchema";
         static final String USES_DATABASE = DEFAULT_NAMESPACE + "usesDatabase";
         static final String ONTOP = DEFAULT_NAMESPACE + "Ontop";
-        static final String SERVES_DATASET = DCAT_NAMESPACE + "servesDataset";
     }
 }
