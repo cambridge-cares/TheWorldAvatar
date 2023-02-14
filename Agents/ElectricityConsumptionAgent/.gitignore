@@ -5,11 +5,12 @@ build/
 dist/
 *~*
 .idea/
-*venv/
+py4jps/
 coverage.xml
 .coverage
 *.gv
 *.png
+geckodriver.log
 assets
 
 ## Directories
