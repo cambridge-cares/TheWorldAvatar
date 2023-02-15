@@ -2,9 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name='epcdata',
-    version='0.0.1',
-    author='Markus Hofmeister',
+    version='0.1.0',
+    author='Markus Hofmeister, Srishti Ganguly',
+    author_email='mh807@cam.ac.uk',
     license='MIT',
+    description="The `epcdata` agent retrieves Energy Performance Certificate (EPC) data from three UK EPC API endpoints and instantiates them as part of The World Avatar project.",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=("tests")),

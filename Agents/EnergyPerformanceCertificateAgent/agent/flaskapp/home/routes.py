@@ -49,6 +49,7 @@ def default():
     msg += "<BR>"
     msg += "<BR>"
     msg += "### Miscellaneous Functionality ###"
+    msg += "This functionality is primarily kept for reference and the Stack Data Uploader should be used instead"
     msg += "<BR>"
     msg += "<BR>"
     msg += "Request to create namespace at specified \"OCGML_ENDPOINT\" and upload previously instantiated and exported quads into it:<BR>"

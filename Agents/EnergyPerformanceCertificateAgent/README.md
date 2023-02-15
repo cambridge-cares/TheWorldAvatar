@@ -12,7 +12,6 @@ It is designed to interact with the stack spun up by the stack manager.
 This section specifies the minimum requirements to build and deploy the Docker image. 
 
 &nbsp;
-
 ## 1.1 Prerequisites
 
 Before building and deploying the Docker image, several key properties need to be set in the [Docker compose file] (further details and defaults are provided in the file):
@@ -21,12 +20,11 @@ Before building and deploying the Docker image, several key properties need to b
 
 
 ```bash
-ENCODED_AUTH          # Base64-encoded authentication token for EPC API, composed of your email address and api-key
-                      # Obtained from https://epc.opendatacommunities.org/docs/api/domestic#using_this_api
+ENCODED_AUTH          # Base64-encoded authentication token for EPC API
 STACK_NAME            # Name of stack to which agent shall be deployed
 NAMESPACE             # Blazegraph namespace into which to instantiate data
 DATABASE              # PostGIS/PostgreSQL database name (default: `postgres`)
-LAYERNAME             # Geoserver ayer name, ALSO table name for geospatial features in PostGIS
+LAYERNAME             # Geoserver layer name, ALSO table name for geospatial features in PostGIS
 GEOSERVER_WORKSPACE   
 ONTOP_FILE            # Path to ontop mapping file (i.e. within Docker container)
 OCGML_ENDPOINT        # SPARQL endpoint with instantiated OntoCityGml building instances incl. UPRNs
@@ -34,25 +32,24 @@ OCGML_ENDPOINT        # SPARQL endpoint with instantiated OntoCityGml building i
 
 ### **2) Accessing Github's Container registry**
 
-While building the Docker image of the agent, it also gets pushed to the [Container registry on Github]. Access needs to be ensured beforehand via your github [personal access token], which must have a `scope` that [allows you to publish and install packages]. To log in to the [Container registry on Github] simply run the following command to establish the connection and provide the access token when prompted:
+While building the Docker image of the agent, it also gets pushed to [CARES container registry on Github]. Access needs to be ensured beforehand via your github [personal access token], which must have a `scope` that [allows you to publish and install packages]. To log in to the [Container registry on Github] simply run the following command to establish the connection and provide the access token when prompted:
 ```
   $ docker login ghcr.io -u <github_username>
   $ <github_personal_access_token>
 ```
 
-### **3) Accessing CMCL docker registry**
+### **3) Accessing CMCL Docker registry**
 
-The agent requires building the [Stack-Clients] resource from a Docker image published at the CMCL docker registry. In case you don't have credentials for that, please email `support<at>cmclinnovations.com` with the subject `Docker registry access`. Further information can be found at the [CMCL Docker Registry] wiki page.
+Building the agent requires the [Stack-Clients] resource from a Docker image published at the CMCL docker registry. In case you don't have credentials for that, please email `support<at>cmclinnovations.com` with the subject `Docker registry access`. Further information can be found at the [CMCL Docker Registry] wiki page.
 
 ### **4) VS Code specifics**
 
 In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
 &nbsp;
-
 ## 1.2 Spinning up the core stack
 
-Navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a *bash* terminal. To [spin up the stack], both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance following the provided link). There are several [common stack scripts] provided to manage the stack:
+Navigate to `Deploy/stacks/dynamic/stack-manager` and run the following command there from a *bash* terminal. To spin up the stack, both a `postgis_password` and `geoserver_password` file need to be created in the `stack-manager/inputs/secrets/` directory (see detailed guidance in the [Stack Manager] README). There are several [common stack scripts] provided to manage the stack:
 
 ```bash
 # Start the stack (please note that this might take some time)
@@ -65,17 +62,16 @@ bash ./stack.sh stop <STACK NAME>
 bash ./stack.sh remove <STACK_NAME> -v
 ```
 
-After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The endpoints and required log-in settings can be found in the [spin up the stack] readme.
+After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The endpoints and required log-in settings can be found in the [Stack Manager] README.
 
 &nbsp;
-
 ## 1.3 Deploying the agent to the stack
 
-This agent requires [JPS_BASE_LIB] to be wrapped by [py4jps]. Please note, that compiling requires a [Java Development Kit version >=11]. *Updating the [JPS_BASE_LIB] resource is ONLY required if a pre-release version is needed, which is (currently) not the case for this agent.*.
+This agent requires [JPS_BASE_LIB] and [Stack-Clients] to be wrapped by [py4jps]. To successfully interact with the Java side via py4jps a [Java Runtime Environment version >=11] is required. *Please note, that compiling the Java resources requires a Java Development Kit version >=11. However, updating the [JPS_BASE_LIB] resource is ONLY required if a pre-release version is needed, which is (currently) not the case for this agent.*
 
 Simply execute the following command in the same folder as this `README` to build and spin up the *production version* of the agent (from a bash terminal). The stack `<STACK NAME>` is the name of an already running stack.
 ```bash
-# Buildings the agent Docker image and pushing it
+# Building the agent Docker image and pushing it
 bash ./stack.sh build
 # Deploying the agent (using pulled image)
 bash ./stack.sh start <STACK NAME>
@@ -91,10 +87,8 @@ The *debug version* will run when built and launched through the provided VS Cod
 > **Reattach and Debug**: Simply reattach debugger to running Debug Docker image. In case Debug image needs to be manually started as container, the following command can be used: 
 `bash ./stack.sh start TEST-STACK --debug-port <PORT from .vscode/port.txt>`
 
-> **Update JPSRM and Build and Debug**: Updated py4jps resources and builds the Debug Docker image (incl. pushing to ghcr.io) and deploys it as new container (incl. creation of new `.vscode/port.txt` file) 
 
 &nbsp;
-
 ## 1.4 Spinning up the Stack remotely via SSH
 
 To spin up the stack remotely via SSH, VSCode's in-built SSH support can be used. Simply follow the steps provided here to use [VSCode via SSH] to log in to a remote machine (e.g. Virtual machine running on Digital Ocean) an start developing there. Regular log in relies on username and password. To avoid recurring prompts to provide credentials, one can [Create SSH key] and [Upload SSH key] to the remote machine to allow for automatic authentification.
@@ -107,24 +101,8 @@ $ cd <REPO NAME>
 $ git checkout main
 $ git pull
 ```
-Once the repository clone is obtained, please follow these instructions to [spin up the stack] on the remote machine. In order to access the exposed endpoints, e.g. `http://localhost:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
+Once the repository clone is obtained, please follow the [Stack Manager] README and instructions above to spin up the stack on the remote machine. In order to access the exposed endpoints, e.g. `http://localhost:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first. Before starting development of the dockerized agent remotely, all required VSCode extensions shall be installed on the remote machine (e.g. *augustocdias.tasks-shell-input* or the *Python extension*).
 
-Before starting development of the dockerized agent remotely, all required VSCode extensions shall be installed on the remote machine (e.g. *augustocdias.tasks-shell-input* or the *Python extension*). As the Docker image requires the[JPS_BASE_LIB] and [Stack-Clients] `.jar` files to be wrapped by [py4jps], they need to be copied over manually to the respective folders as specified in the [Dockerfile] or can be created remotely by running the *Update JPSRM and Build and Debug* Debug Configuration. In order to build these resources, Java and Maven need to be available on the remote machine. In order to pull TWA specific Maven packages from the [Github package repository], `settings.xml` and `settings-security.xml` files need to be copied into Maven's `.m2` folder on the remote machine (typically located at user's root directory)
-
-```bash
-# Java >= 11
-# Test installation
-java -version
-javac -verison
-# Install in case it is missing
-sudo apt install openjdk-11-jdk-headless
-
-# MAVEN 
-# Test installation
-mvn -version
-# Install in case it is missing
-sudo apt install maven
-```
 To prevent and identify potential permission issues on Linux machines (i.e. for executable permission), the following commands can be used to verify and manage permissions:
 
 ```bash
@@ -135,14 +113,13 @@ chmod -R +rwx <REPO NAME>
 # To prevent git from identifying all files as changed (due to changed permission rights), exclude file permission (chmod) changes from git
 git config core.fileMode false
 ```
-&nbsp;
 
+&nbsp;
 # 2. Using the Agent
 
-Agent start-up will automatically register a recurring task to assimilate latest EPC data for all instantiated UPRNs every 4 weeks (i.e. new data is published 3-4 times a year). Besides this recurring background task, additional HTTP requests can be sent to the agent. The blazegraph namespace as specified in the `docker-compose` file is created upon agent startup and the OntoBuiltEnv TBox and ABox owl files are uploaded to it.
+Agent start-up will automatically register a recurring task to assimilate latest EPC data for all instantiated UPRNs every 4 weeks (i.e. new data is published 3-4 times a year). Besides this recurring background task, additional HTTP requests can be sent to the agent. The Blazegraph namespace as specified in the `docker-compose` file is created upon agent startup and the [OntoBuiltEnv] ontology as well as all required unit symbols are uploaded to it (if not already existing).
 
 &nbsp;
-
 ## Provided functionality
 
 An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5001/]. All requests are to be sent as POST requests and all available endpoints are listed below. Example requests are provided in the [resources] folder.
@@ -159,11 +136,13 @@ An overview of all provided API endpoints and their functionality is provided af
 - GET request to instantiate/update building footprint and elevation information as instantiated for linked OntoCityGml instance according to OntoBuiltEnv for all buildings:
 > `/api/epcagent/add/ocgml_info`
 
-&nbsp;
+- GET request to initialise the OntoCityGml knowledge base at specified OCGML_ENDPOINT and upload previously instantiated and exported quads into it (this functionality is mainly kept for reference and the [Stack Data Uploader] should be used instead):
+> `/api/ocgml/initialise`
 
+&nbsp;
 # 3. Current EPC data instantiation workflow
 
-The following workflow refers to the state of the agent as of commit 05ce9c5bc20ad306d7ccfe81645c7e51fac06fac.
+The following workflow refers to the state of the agent as of commit `0f647a0348d8bbd682917df5e9671dc3c4f91e51`, but is unlikely to change soon:
 
 ### **1) Ensure instantiated OntoCityGml building data is available**
 The agent requires an available SPARQL endpoint to retrieve instantiated OntoCityGml building data (i.e. EPC data will only be instantiated for buildings with an OntoCityGml representation). This endpoint is specified as `OCGML_ENDPOINT` in the [docker compose file]. The instantiated data needs to contain a coordinate reference system definition in the following form:
@@ -176,31 +155,33 @@ PREFIX ocgml: <http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoC
 
 In case the quad data is not already available via a SPARQL endpoint, the following steps can be used:
 
-1) Export OntoCityGml quads from local Blazegraph and unzip file. Rename file to `data.nq` and place it into the `data` folder within this agent.
-2) Spin up a remotely hosted Docker container with a Blazegraph image. Using SSH in VSCode (as described in section 1.4), this can be achied using the provided `./resources/blazegraph_ocgml/docker-compose.yml` file and the following command:
+1) Export OntoCityGml quads from local Blazegraph and unzip file. 
+2) Use [Stack Data Uploader] to upload quads (**preferred**) or follow steps below:
+3) Rename file to `data.nq` and place it into the `data` folder within this agent.
+4) Spin up a remotely hosted Docker container with a Blazegraph image. Using SSH in VSCode (as described in section 1.4), this can be achieved using the provided `./resources/blazegraph_ocgml/docker-compose.yml` file and the following command:
     ```bash
     docker-compose -f "docker-compose.yml" up
     ```
-    This shall bring up Blazegraph at endpoint http://128.199.197.40:4999/blazegraph/ .
-3) Send a `GET` request to `/api/ocgml/initialise` to create the `ocgml` namespace and upload the quad data
+    This shall bring up Blazegraph at endpoint `http://<HOST IP>:4999/blazegraph/`. Please make sure that this matches the provided `OCGML_ENDPOINT` in the [docker compose file]. Alternatively, this endpoint can refer to a new namespace within the Stack's Blazegraph.
+5) Send a `GET` request to `/api/ocgml/initialise` to create the `ocgml` namespace and upload the quad data
 
 ### **2) Instantiate relevant postcode instances**
 
-Instantiate all relevant postcode instances by sending `POST` request to `/api/epcagent/instantiate/postcodes`
+Instantiate all relevant postcodes for provided local authority code by sending `POST` request to `/api/epcagent/instantiate/postcodes`
 
 ### **3) Instantiate all EPC building data**
 
-Instantiate EPC data for all instantiated UPRNs (and postcodes) send `POST` request to `/api/epcagent/instantiate/certificates/all`
+Instantiate EPC data for all instantiated UPRNs (and postcodes) by sending `POST` request to `/api/epcagent/instantiate/certificates/all`
 
 ### **4) Run Building Matching Agent**
 
-The following steps refer to the Building Matching agent (on branch `1376-dev-building-matching-agent`) as of commit 79b13971aff9c0ccbd0cdd69db71c04ff9c80fd2. More details can be found in the [Building Matching Readme]:
+The following steps refer to the Building Matching agent (on branch `1376-dev-building-matching-agent`) as of commit `79b13971aff9c0ccbd0cdd69db71c04ff9c80fd2`. More details can be found in the [Building Matching Readme]:
 
 1) Ensure both SPARQL endpoints, i.e. one containing buildings instantiated in OntoCityGML (`ocgml_endpoint`) and one with their OntoBuiltEnv counterparts (`epc_endpoint`), are available. In the following, let's assume the endpoints are:
 
-    > ocgml endpoint: http://128.199.197.40:4999/blazegraph/namespace/ocgml/sparql
+    > ocgml endpoint: http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql
 
-    > epc_endpoint: http://128.199.197.40:3838/blazegraph/namespace/buildings/sparql
+    > epc_endpoint: http://165.232.172.16:3838/blazegraph/namespace/buildings/sparql
 
 2) Build and start the agent as Docker container by running the following command within the directory where the [Building Matching Readme] is located. Please note that your github username and access token need to be provided as single-word text files `repo_username.txt` and `repo_password.txt` in the [credentials] folder of the Building Matching agent. (Maybe a `--build` flag needs to be added to the docker compose command to force agent rebuild in case a previous version has been used before.)
     ```bash
@@ -211,8 +192,8 @@ The following steps refer to the Building Matching agent (on branch `1376-dev-bu
 
 3) Once the agent is available at its endpoint `http://localhost:58085/BuildingMatchingAgent/match`, it accepts PUT requests with a JSON object as follows:
     ```json
-    { "ocgml": "http://128.199.197.40:4999/blazegraph/namespace/ocgml/sparql",
-      "obe": "http://128.199.197.40:3838/blazegraph/namespace/buildings/sparql",
+    { "ocgml": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql",
+      "obe": "http://165.232.172.16:3838/blazegraph/namespace/buildings/sparql",
       "prefixIRI": "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/"
     }
     ```
@@ -224,22 +205,22 @@ To allow for visualisation using the [Digital Twin Visualisation Framework], the
 
 
 &nbsp;
-
 # Authors #
-Markus Hofmeister (mh807@cam.ac.uk), September 2022
+Markus Hofmeister (mh807@cam.ac.uk), February 2023
 
 
 <!-- Links -->
 <!-- websites -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
-[Container registry on Github]: ghcr.io
+[Container registry on Github]: http://ghcr.io
+[CARES container registry on Github]: https://github.com/orgs/cambridge-cares/packages
 [EPC APIs]: https://epc.opendatacommunities.org/docs/api
 [Github package repository]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
 [http://localhost:5001/]: http://localhost:5001/
 [Java Runtime Environment version >=11]: https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot
 [JDBC driver]: https://jdbc.postgresql.org/download/ 
-[OntoBuiltEnv]: http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl
+[OntoBuiltEnv]: https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [py4jps]: https://pypi.org/project/py4jps/#description
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
@@ -250,9 +231,10 @@ Markus Hofmeister (mh807@cam.ac.uk), September 2022
 [Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/README.md
 [Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
 [credentials]: https://github.com/cambridge-cares/TheWorldAvatar/tree/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/credentials
-[Digital Twin Visualisation Framework]:https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-dtvf-cesium/web/digital-twin-vis-framework/example-mapbox-vis
+[Digital Twin Visualisation Framework]:https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
-[spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
+[Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
+[Stack Data Uploader]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-data-uploader/README.md
 [Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
 [CMCL Docker registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
