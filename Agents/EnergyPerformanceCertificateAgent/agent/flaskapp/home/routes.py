@@ -48,7 +48,7 @@ def default():
     msg += "<BR>"
     msg += "<BR>"
     msg += "<BR>"
-    msg += "### Miscellaneous Functionality ###"
+    msg += "### Miscellaneous Functionality ###<BR>"
     msg += "This functionality is primarily kept for reference and the Stack Data Uploader should be used instead"
     msg += "<BR>"
     msg += "<BR>"

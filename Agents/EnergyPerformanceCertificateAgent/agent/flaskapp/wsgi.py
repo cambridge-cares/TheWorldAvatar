@@ -16,7 +16,9 @@ from apscheduler.schedulers.background import BackgroundScheduler
 # and DECs or where the status of the EPC or DEC has changed" 
 # (https://epc.opendatacommunities.org/docs/guidance#faq-updates)
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(instantiate_epc_data_for_all_postcodes, trigger='interval', weeks=6)
+sched.add_job(instantiate_epc_data_for_all_postcodes, trigger='interval', weeks=6,
+              kwargs={'epc_endpoint': None})
+
 sched.start()
 
 app = create_app()
