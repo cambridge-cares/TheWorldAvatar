@@ -21,8 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 
 public class TestBatteryRetrofit {
@@ -74,26 +73,31 @@ public class TestBatteryRetrofit {
     }
 
     /**
-     * We mock the behaviour of a GeneralRetrofitAgent to avoid a complete setup of the environment while still being able to unit test
+     * JPSRuntimeException is expected to be thrown as the unit test cannot be done without a complete setup of POWSYS
      */
-    @Test
-    public void testRetrofitEnergyStorage() throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
-        GeneralRetrofitAgent graClass = mock(GeneralRetrofitAgent.class);
-        BatteryRetrofit br = new BatteryRetrofit(graClass);
+    @Test(expected = JPSRuntimeException.class)
+    public void testRetrofitEnergyStorage() {
+        BatteryRetrofit br = new BatteryRetrofit();
         br.retrofitEnergyStorage(ENIRI, batteryList);
     }
 
     /**
-     * We mock the behaviour of a GeneralRetrofitAgent to avoid a complete setup of the environment while still being able to unit test
+     * The retrofitEnergyStorage() method does not run without proper setup of the application.
+     * We mock the behaviour of retrofitEnergyStorage() to do nothing so we can complete the unit test for the rest.
      */
     @Test
     public void testProcessRequestParameters() {
         JSONObject joValid = new JSONObject();
         joValid.put("electricalnetwork",ENIRI);
         joValid.put("batterylist", batteryiris);
-        GeneralRetrofitAgent graClass = mock(GeneralRetrofitAgent.class);
-        BatteryRetrofit br = new BatteryRetrofit(graClass);
-        br.processRequestParameters(joValid);
+        JSONObject joInValid = new JSONObject();
+        joInValid.put("electricalnetwork",ENIRI + "&*(&)(^(*");
+        joInValid.put("batterylist", batteryiris);
+        BatteryRetrofit br = spy(BatteryRetrofit.class);
+        doNothing().when(br).retrofitEnergyStorage(any(), any());
+        JSONObject returnedValue = br.processRequestParameters(joValid);
+        assertEquals(returnedValue, joValid);
+        assertNotEquals(returnedValue, joInValid);
     }
 
 }
