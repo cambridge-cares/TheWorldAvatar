@@ -5544,7 +5544,13 @@ class OptimalPowerFlowAnalysis:
         ay1.tick_params(direction='in')
         ay1.axes.xaxis.set_ticklabels([])
 
+        ## plot 0 SMR base line 
+        zeroList = [0 for i in range(len(CarbonTaxForOPFList))]
+        ax1.plot(CarbonTaxForOPFList, zeroList, linestyle = lineStyleList[2], label = 'Base case', color = 'black', alpha=0.85)
+        ax2.plot(CarbonTaxForOPFList, zeroList, color = 'black', alpha=0)
+        ay1.plot(CarbonTaxForOPFList, zeroList, color = 'black', alpha=0)
 
+        ## plot each weather condition
         for i in range(len(bestSMRNumberResult)):
             ax1.plot(CarbonTaxForOPFList, bestSMRNumberResult[i], marker = markersList[i], label = weatherConditionList[i][2], color = colors[i])
             ax2.plot(CarbonTaxForOPFList, bestSMRNumberResult[i], color = colors[i], alpha=0)
@@ -5553,21 +5559,24 @@ class OptimalPowerFlowAnalysis:
             for x, y, label in zip(CarbonTaxForOPFList, bestSMRNumberResult[i], bestSMRNumberResult[i]):
                 ax1.text(x, y, label, fontsize = dotLabel, alpha = 0.85)  
         
-        ax1.vlines(10, 0, 55, color = '#808080', alpha=0.5, linestyle = lineStyleList[1]) ## vertical line
+        ## vertical line
+        ax1.vlines(10, 0, 55, color = '#808080', alpha=0.5, linestyle = lineStyleList[1]) 
         ax2.vlines(10, 0, 55, color = '#808080', alpha=0, linestyle = lineStyleList[1])
         ax1.vlines(40, 0, 55, color = '#808080', alpha=0.5, linestyle = lineStyleList[1])
         ax2.vlines(40, 0, 55, color = '#808080', alpha=0, linestyle = lineStyleList[1])
         
-        plt.annotate('(a)', (0, 35), fontsize = annotateSize, xycoords='data', color='#636363')  ## label the zones 
+        ## label the zones 
+        plt.annotate('(a)', (0, 35), fontsize = annotateSize, xycoords='data', color='#636363')  
         plt.annotate('(b)', (20, 35), fontsize = annotateSize, xycoords='data', color='#636363') 
         plt.annotate('(c)', (50, 35), fontsize = annotateSize, xycoords='data', color='#636363') 
 
-        pos = ax1.get_position() ## set legend
+        ## set legend
+        pos = ax1.get_position() 
         ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
         ax1.legend(
             loc="upper center",
             fontsize = legendFontSize,
-            ncol=4,
+            ncol=5,
             bbox_to_anchor=(0.5, 0.065),
             frameon=False,
             bbox_transform=fig.transFigure 
@@ -5757,7 +5766,14 @@ class OptimalPowerFlowAnalysis:
             ax2.axes.yaxis.set_ticklabels([])
             ay1.tick_params(direction='in')
             ay1.axes.xaxis.set_ticklabels([])
-       
+
+            ## plot 0 SMR base line 
+            zeroList = [0 for i in range(len(CarbonTaxForOPFList))]
+            ax1.plot(CarbonTaxForOPFList, zeroList, linestyle = lineStyleList[2], label = 'Base case', color = 'black', alpha=0.85)
+            ax2.plot(CarbonTaxForOPFList, zeroList, color = 'black', alpha=0)
+            ay1.plot(CarbonTaxForOPFList, zeroList, color = 'black', alpha=0)
+
+            ## plot each weight at the same weather condition
             for i in range(len(bestSMRNumber_UnderSameWeatherCondition)):
                 weightLabel = 'weight: ' + str(round(self.weighterList[i], 2))
                 ax1.plot(CarbonTaxForOPFList, bestSMRNumber_UnderSameWeatherCondition[i], marker = markersList[i], label = weightLabel, color = colors[i])
@@ -5767,6 +5783,7 @@ class OptimalPowerFlowAnalysis:
                 for x, y, label in zip(CarbonTaxForOPFList, bestSMRNumber_UnderSameWeatherCondition[i], bestSMRNumber_UnderSameWeatherCondition[i]):
                     ax1.text(x, y, label, fontsize = 10, alpha = 0.85)  
 
+            ## set legend
             pos = ax1.get_position()
             ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
             ax1.legend(
