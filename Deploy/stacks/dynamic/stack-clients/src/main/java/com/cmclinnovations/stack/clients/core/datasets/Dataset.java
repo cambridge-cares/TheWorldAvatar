@@ -329,7 +329,7 @@ public class Dataset {
     }
 
     private class SparqlConstants {
-        static final String DEFAULT_NAMESPACE = "http://theworldavatar.com/kg/";
+        static final String DEFAULT_NAMESPACE = "https://www.theworldavatar.com/kg/";
         static final String BLAZEGRAPH = DEFAULT_NAMESPACE + "Blazegraph";
         static final String POSTGIS = DEFAULT_NAMESPACE + "PostGIS";
         static final String GEOSERVER = DEFAULT_NAMESPACE + "GeoServer";
