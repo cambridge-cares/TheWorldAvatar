@@ -11,16 +11,16 @@
 // { "query": {
 //      "lmk_key": "54715380002011092111465010400280",
 //      "epc_endpoint": "non-domestic",
-//      "ocgml_endpoint": "http://10.0.101.64:9999/blazegraph/namespace/ocgml/sparql"
+//      "ocgml_endpoint": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql"
 //   }
 //}
 
-POST http://165.232.172.16:5001/api/epcagent/instantiate/certificates/single
+POST http://165.232.172.16:5001/epcagent/instantiate/certificates/single
 Content-Type: application/json
 
 { "query": {
       "lmk_key": "260808730062009040611251270078171",
       "epc_endpoint": "domestic",
-      "ocgml_endpoint": "http://128.199.197.40:4999/blazegraph/namespace/ocgml/sparql"
+      "ocgml_endpoint": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql"
     }
 }

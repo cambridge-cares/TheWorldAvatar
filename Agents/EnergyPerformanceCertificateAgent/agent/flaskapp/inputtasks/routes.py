@@ -27,7 +27,7 @@ inputtasks_bp = Blueprint(
 )
 
 # Define route for API request to initialise knowledge base with ontology
-@inputtasks_bp.route('/api/epcagent/initialise', methods=['GET'])
+@inputtasks_bp.route('/epcagent/initialise', methods=['GET'])
 def api_initialise_kb():
     # Check arguments (query parameters)
     if len(request.args) > 0:
@@ -50,7 +50,7 @@ def api_initialise_kb():
 
 # Define route for API request to initialise OntoCityGml knowledge base with 
 # previously instantiated and exported quads
-@inputtasks_bp.route('/api/ocgml/initialise', methods=['GET'])
+@inputtasks_bp.route('/ocgml/initialise', methods=['GET'])
 def api_initialise_ocgml():
     # Check arguments (query parameters)
     if len(request.args) > 0:
@@ -72,7 +72,7 @@ def api_initialise_ocgml():
 
 # Define route for API request to initialise postcodes for provided local
 # authority district
-@inputtasks_bp.route('/api/epcagent/instantiate/postcodes', methods=['POST'])
+@inputtasks_bp.route('/epcagent/instantiate/postcodes', methods=['POST'])
 def api_initialise_postcodes():
     #
     # Check arguments (query parameters)
@@ -103,7 +103,7 @@ def api_initialise_postcodes():
 
 
 # Define route for API request to instantiate single EPC data (i.e. for one UPRN)
-@inputtasks_bp.route('/api/epcagent/instantiate/certificates/single', methods=['POST'])
+@inputtasks_bp.route('/epcagent/instantiate/certificates/single', methods=['POST'])
 def api_instantiate_epc_data_for_certificate():
     #
     # Check arguments (query parameters)
@@ -158,7 +158,7 @@ def api_instantiate_epc_data_for_certificate():
 
 # Define route for API request to instantiate all latest EPC data for all 
 # instantiated postcodes (i.e. latest available data for all UPRNs)
-@inputtasks_bp.route('/api/epcagent/instantiate/certificates/all', methods=['POST'])
+@inputtasks_bp.route('/epcagent/instantiate/certificates/all', methods=['POST'])
 def api_instantiate_epc_data_for_all_uprns():
     #
     # Check arguments (query parameters)
@@ -212,7 +212,7 @@ def api_instantiate_epc_data_for_all_uprns():
 
 # Define route for API request to retrieve relevant building information from OCGML and 
 # instantiate according to OntoBuiltEnv
-@inputtasks_bp.route('/api/epcagent/add/ocgml_info', methods=['GET'])
+@inputtasks_bp.route('/epcagent/add/ocgml_info', methods=['GET'])
 def api_add_ocgml_building_data():
     # Check arguments (query parameters)
     if len(request.args) > 0:

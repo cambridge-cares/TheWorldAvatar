@@ -122,22 +122,22 @@ Agent start-up will automatically register a recurring task to assimilate latest
 &nbsp;
 ## Provided functionality
 
-An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5001/]. All requests are to be sent as POST requests and all available endpoints are listed below. Example requests are provided in the [resources] folder.
+An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root http://localhost:5001/epcagent. All requests are to be sent as POST requests and all available endpoints are listed below. Example requests are provided in the [resources] folder.
 
 - POST request to instantiate all postcodes in a given local authority:
-> `/api/epcagent/instantiate/postcodes`
+> `/epcagent/instantiate/postcodes`
 
 - POST request to instantiate EPC building data for given single certificate:
-> `/api/epcagent/instantiate/certificates/single`
+> `/epcagent/instantiate/certificates/single`
 
 - POST request to instantiate latest EPC building data for all instantiated UPRNs in all instantiated postcodes:
-> `/api/epcagent/instantiate/certificates/all`
+> `/epcagent/instantiate/certificates/all`
 
 - GET request to instantiate/update building footprint and elevation information as instantiated for linked OntoCityGml instance according to OntoBuiltEnv for all buildings:
-> `/api/epcagent/add/ocgml_info`
+> `/epcagent/add/ocgml_info`
 
 - GET request to initialise the OntoCityGml knowledge base at specified OCGML_ENDPOINT and upload previously instantiated and exported quads into it (this functionality is mainly kept for reference and the [Stack Data Uploader] should be used instead):
-> `/api/ocgml/initialise`
+> `/ocgml/initialise`
 
 &nbsp;
 # 3. Current EPC data instantiation workflow
@@ -163,15 +163,15 @@ In case the quad data is not already available via a SPARQL endpoint, the follow
     docker-compose -f "docker-compose.yml" up
     ```
     This shall bring up Blazegraph at endpoint `http://<HOST IP>:4999/blazegraph/`. Please make sure that this matches the provided `OCGML_ENDPOINT` in the [docker compose file]. Alternatively, this endpoint can refer to a new namespace within the Stack's Blazegraph.
-5) Send a `GET` request to `/api/ocgml/initialise` to create the `ocgml` namespace and upload the quad data
+5) Send a `GET` request to `/ocgml/initialise` to create the `ocgml` namespace and upload the quad data
 
 ### **2) Instantiate relevant postcode instances**
 
-Instantiate all relevant postcodes for provided local authority code by sending `POST` request to `/api/epcagent/instantiate/postcodes`
+Instantiate all relevant postcodes for provided local authority code by sending `POST` request to `/epcagent/instantiate/postcodes`
 
 ### **3) Instantiate all EPC building data**
 
-Instantiate EPC data for all instantiated UPRNs (and postcodes) by sending `POST` request to `/api/epcagent/instantiate/certificates/all`
+Instantiate EPC data for all instantiated UPRNs (and postcodes) by sending `POST` request to `/epcagent/instantiate/certificates/all`
 
 ### **4) Run Building Matching Agent**
 
@@ -201,7 +201,7 @@ An [example request] to match the building instances in the previously introduce
 
 ### **5) Update geospatial representation of buildings in OntoBuiltEnv namespace**
 
-To allow for visualisation using the [Digital Twin Visualisation Framework], the geospatial representation of the buildings (i.e. their 2D footprints) needs to be uploaded to PostGIS using the Stack architecture. Running a GET request to the `/api/epcagent/add/ocgml_info` endpoint, queries the building footprints as well as elevations and instantiates them as required by OntoBuiltEnv.
+To allow for visualisation using the [Digital Twin Visualisation Framework], the geospatial representation of the buildings (i.e. their 2D footprints) needs to be uploaded to PostGIS using the Stack architecture. Running a GET request to the `/epcagent/add/ocgml_info` endpoint, queries the building footprints as well as elevations and instantiates them as required by OntoBuiltEnv.
 
 
 &nbsp;
@@ -224,7 +224,6 @@ Markus Hofmeister (mh807@cam.ac.uk), February 2023
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [py4jps]: https://pypi.org/project/py4jps/#description
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
-[virtual environment]: https://docs.python.org/3/tutorial/venv.html
 [VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
 
 <!-- github -->
