@@ -272,8 +272,8 @@ class OptimalPowerFlowAnalysis:
         self.time_now = time.strftime("%Y%m%d-%H%M", time.localtime())
         self.localRootFilePath = '/mnt/d/wx243/FromTWA'
         
+        self.diagramPath = self.localRootFilePath + '/figFiles(LineChartANDHeatmapGrid)/' + self.time_now + '/'
         self.diagramPathParetoFront = self.localRootFilePath + '/ParetoFront/' + self.time_now + '/'
-        self.diagramPath = self.localRootFilePath + '/figFiles(LineChart)/' + self.time_now + '/'
         self.netDemandingJSONPath = self.localRootFilePath + '/netDemandingGeoJSONFiles/' + self.time_now + '/'
         self.pieChartPath = self.localRootFilePath + '/regionalEnergyBreakdownPieChart/' + self.time_now + '/'
         self.branchLossJSONPath = self.localRootFilePath + '/branchLossGeoJSONFiles/' + self.time_now + '/'
@@ -5021,8 +5021,8 @@ class OptimalPowerFlowAnalysis:
             plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
             plt.ylabel("SMR Number", fontsize = labelFontSize) 
             plt.tight_layout()
-            self.mkdirFig()
-            plt.savefig(self.diagramPath + 'TotalCost_Heatmap_%s.pdf' % str(weatherConditionList[k][2]), dpi = 1200)
+            self.mkdirFig('Heatmap_Cost/')
+            plt.savefig(self.diagramPath + 'Heatmap_Cost/' + 'TotalCost_Heatmap_%s.pdf' % str(weatherConditionList[k][2]), dpi = 1200)
             # plt.show()
             # plt.close()
             plt.clf()
@@ -5034,8 +5034,8 @@ class OptimalPowerFlowAnalysis:
             plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
             plt.ylabel("SMR Number", fontsize = labelFontSize) 
             plt.tight_layout()
-            self.mkdirFig()
-            plt.savefig(self.diagramPath + 'CarbonEmission_Heatmap_%s.pdf' % str(weatherConditionList[k][2]), dpi = 1200, bbox_inches='tight')
+            self.mkdirFig('Heatmap_Cost/')
+            plt.savefig(self.diagramPath + 'Heatmap_Cost/' + 'CarbonEmission_Heatmap_%s.pdf' % str(weatherConditionList[k][2]), dpi = 1200, bbox_inches='tight')
             ## plt.savefig('CarbonEmission_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
             # plt.show()
             # plt.close()
@@ -5048,8 +5048,8 @@ class OptimalPowerFlowAnalysis:
             plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
             plt.ylabel("SMR Number", fontsize = labelFontSize) 
             plt.tight_layout()
-            self.mkdirFig()
-            plt.savefig(self.diagramPath + 'weight_Heatmap_%s.pdf' % str(weatherConditionList[k][2]), dpi = 1200, bbox_inches='tight')
+            self.mkdirFig('Heatmap_Cost/')
+            plt.savefig(self.diagramPath + 'Heatmap_Cost/' + 'weight_Heatmap_%s.pdf' % str(weatherConditionList[k][2]), dpi = 1200, bbox_inches='tight')
             ## plt.savefig('weight_Heatmap_%s.svg' % str(weatherConditionList[k][2]))
             # plt.show()
             # plt.close()
@@ -5081,8 +5081,8 @@ class OptimalPowerFlowAnalysis:
                 plt.tight_layout()
                 label_png = 'TotalCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
                 ## label_svg = 'TotalCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
-                self.mkdirFig()
-                plt.savefig(self.diagramPath + label_png, dpi = 1200, bbox_inches='tight')
+                self.mkdirFig('Heatmap_Cost/')
+                plt.savefig(self.diagramPath + 'Heatmap_Cost/' + label_png, dpi = 1200, bbox_inches='tight')
                 ## plt.savefig(label_svg)
                 # plt.show()
                 # plt.close()
@@ -5098,8 +5098,8 @@ class OptimalPowerFlowAnalysis:
                 plt.tight_layout()
                 label_png = 'CarbonEmission_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
                 ## label_svg = 'CarbonEmission_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
-                self.mkdirFig()
-                plt.savefig(self.diagramPath + label_png, dpi = 1200, bbox_inches='tight')
+                self.mkdirFig('Heatmap_Cost/')
+                plt.savefig(self.diagramPath + 'Heatmap_Cost/' +  label_png, dpi = 1200, bbox_inches='tight')
                 # plt.show()
                 # plt.close()
                 plt.clf()
@@ -5558,9 +5558,9 @@ class OptimalPowerFlowAnalysis:
         ax1.vlines(40, 0, 55, color = '#808080', alpha=0.5, linestyle = lineStyleList[1])
         ax2.vlines(40, 0, 55, color = '#808080', alpha=0, linestyle = lineStyleList[1])
         
-        plt.annotate('(a)', (0, 35), fontsize = annotateSize, xycoords='data')  ## label the zones 
-        plt.annotate('(b)', (20, 35), fontsize = annotateSize, xycoords='data') 
-        plt.annotate('(c)', (50, 35), fontsize = annotateSize, xycoords='data') 
+        plt.annotate('(a)', (0, 35), fontsize = annotateSize, xycoords='data', color='#636363')  ## label the zones 
+        plt.annotate('(b)', (20, 35), fontsize = annotateSize, xycoords='data', color='#636363') 
+        plt.annotate('(c)', (50, 35), fontsize = annotateSize, xycoords='data', color='#636363') 
 
         pos = ax1.get_position() ## set legend
         ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
@@ -5610,9 +5610,9 @@ class OptimalPowerFlowAnalysis:
         ax2.vlines(10, 1E10, 2.2E10, color = '#808080', alpha=0, linestyle = lineStyleList[1])
         ax2.vlines(40, 1E10, 2.2E10, color = '#808080', alpha=0, linestyle = lineStyleList[1])
 
-        plt.annotate('(a)', (-2, 2E10), fontsize = annotateSize, xycoords='data')  ## label the zones 
-        plt.annotate('(b)', (22, 2E10), fontsize = annotateSize, xycoords='data') 
-        plt.annotate('(c)', (48, 2E10), fontsize = annotateSize, xycoords='data') 
+        plt.annotate('(a)', (-2, 2E10), fontsize = annotateSize, xycoords='data', color='#636363')  ## label the zones 
+        plt.annotate('(b)', (22, 2E10), fontsize = annotateSize, xycoords='data', color='#636363') 
+        plt.annotate('(c)', (48, 2E10), fontsize = annotateSize, xycoords='data', color='#636363') 
 
         pos = ax1.get_position()
         ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
@@ -5664,9 +5664,9 @@ class OptimalPowerFlowAnalysis:
         ax2.vlines(10, 0, 6000, color = '#808080', alpha=0, linestyle = lineStyleList[1])
         ax2.vlines(40, 0, 6000, color = '#808080', alpha=0, linestyle = lineStyleList[1])
 
-        plt.annotate('(a)', (-3, 4500), fontsize = annotateSize, xycoords='data')  ## label the zones 
-        plt.annotate('(b)', (22, 4500), fontsize = annotateSize, xycoords='data') 
-        plt.annotate('(c)', (50, 4500), fontsize = annotateSize, xycoords='data') 
+        plt.annotate('(a)', (-3, 4500), fontsize = annotateSize, xycoords='data', color='#636363')  ## label the zones 
+        plt.annotate('(b)', (22, 4500), fontsize = annotateSize, xycoords='data', color='#636363') 
+        plt.annotate('(c)', (50, 4500), fontsize = annotateSize, xycoords='data', color='#636363') 
 
         pos = ax1.get_position() ## set up the legend position
         ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
@@ -5749,16 +5749,23 @@ class OptimalPowerFlowAnalysis:
             ##-- Plot the multiple line chart of the SMR number vs carbon tax of each weight under the same weather condition --##
             fig, ax1 = plt.subplots()
             ax2 = ax1.twinx()
-            ax1.set_xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
-            ax1.set_ylabel("Nunmber of SMR", fontsize = labelFontSize)
+            ay1 = ax1.twiny()
+            ax1.set_xlabel("Carbon tax (£/t)", fontsize = labelFontSize)
+            ax1.set_ylabel("Nunmber of SMR (-)", fontsize = labelFontSize)
             ax1.tick_params(direction='in')
             ax2.tick_params(direction='in')
             ax2.axes.yaxis.set_ticklabels([])
+            ay1.tick_params(direction='in')
+            ay1.axes.xaxis.set_ticklabels([])
        
             for i in range(len(bestSMRNumber_UnderSameWeatherCondition)):
                 weightLabel = 'weight: ' + str(round(self.weighterList[i], 2))
                 ax1.plot(CarbonTaxForOPFList, bestSMRNumber_UnderSameWeatherCondition[i], marker = markersList[i], label = weightLabel, color = colors[i])
                 ax2.plot(CarbonTaxForOPFList, bestSMRNumber_UnderSameWeatherCondition[i], color = colors[i], alpha=0)
+                ay1.plot(CarbonTaxForOPFList, bestSMRNumber_UnderSameWeatherCondition[i], color = colors[i], alpha=0)
+
+                for x, y, label in zip(CarbonTaxForOPFList, bestSMRNumber_UnderSameWeatherCondition[i], bestSMRNumber_UnderSameWeatherCondition[i]):
+                    ax1.text(x, y, label, fontsize = 10, alpha = 0.85)  
 
             pos = ax1.get_position()
             ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
@@ -5771,8 +5778,8 @@ class OptimalPowerFlowAnalysis:
                 bbox_transform=fig.transFigure 
                 ) 
             plt.tight_layout()
-            self.mkdirFig() 
-            plt.savefig(self.diagramPath + 'SMRvsCarbonTax_(weightImpact)_weather_%s.pdf' % (weatherConditionList[w][2]), dpi = 1200, bbox_inches='tight')
+            self.mkdirFig('weightImapct/') 
+            plt.savefig(self.diagramPath + 'weightImapct/' + 'SMRvsCarbonTax_(weightImpact)_weather_%s.pdf' % (weatherConditionList[w][2]), dpi = 1200, bbox_inches='tight')
             # plt.show() ## show must come after the savefig
             # plt.close()
             plt.clf()
@@ -5781,23 +5788,29 @@ class OptimalPowerFlowAnalysis:
             ##-- Plot the multiple line chart of the Annualised Total Cost vs carbon tax of each weight under the same weather condition --##
             fig, ax1 = plt.subplots()
             ax2 = ax1.twinx()
-            ax1.set_xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
-            ax1.set_ylabel("Annualised Total Cost (£)", fontsize = labelFontSize)
+            ay1 = ax1.twiny()
+            ax1.set_xlabel("Carbon tax (£/t)", fontsize = labelFontSize)
+            ax1.set_ylabel("Levelised total cost (£/yr)", fontsize = labelFontSize)
             
             ax1.tick_params(direction='in')
             ax2.tick_params(direction='in')
             ax2.axes.yaxis.set_ticklabels([])
 
+            ay1.tick_params(direction='in')
+            ay1.axes.xaxis.set_ticklabels([])
+
             ## base case for the current weather condition, the base case is not changed with the weight
             ax1.plot(CarbonTaxForOPFList, baseCost_UnderSameWeatherCondition[0], label = 'Base case', color = 'red', linestyle = lineStyleList[1], alpha=0.6, linewidth = 1.7)
             ax2.plot(CarbonTaxForOPFList, baseCost_UnderSameWeatherCondition[0], alpha=0)
+            ay1.plot(CarbonTaxForOPFList, baseCost_UnderSameWeatherCondition[0], alpha=0)
 
             for i in range(len(bestCost_UnderSameWeatherCondition)):
                 weightLabel = 'weight: ' + str(round(self.weighterList[i], 2))
                 ax1.plot(CarbonTaxForOPFList, bestCost_UnderSameWeatherCondition[i], marker = markersList[i], label = weightLabel, color = colors[i], linestyle = lineStyleList[i])
-                ax2.plot(CarbonTaxForOPFList, bestCost_UnderSameWeatherCondition[i], color = colors[i], alpha=0)        
-                for x, y, label in zip(CarbonTaxForOPFList, bestCost_UnderSameWeatherCondition[i], bestSMRNumber_UnderSameWeatherCondition[i]):
-                    ax1.text(x, y, label, fontsize = dotLabel, alpha = 0.85)
+                ax2.plot(CarbonTaxForOPFList, bestCost_UnderSameWeatherCondition[i], color = colors[i], alpha=0)      
+                ay1.plot(CarbonTaxForOPFList, bestCost_UnderSameWeatherCondition[i], color = colors[i], alpha=0)  
+                # for x, y, label in zip(CarbonTaxForOPFList, bestCost_UnderSameWeatherCondition[i], bestSMRNumber_UnderSameWeatherCondition[i]):
+                #     ax1.text(x, y, label, fontsize = 10, alpha = 0.85)
             
             pos = ax1.get_position()
             ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
@@ -5810,8 +5823,8 @@ class OptimalPowerFlowAnalysis:
                 bbox_transform=fig.transFigure 
                 ) 
             plt.tight_layout()
-            self.mkdirFig()
-            plt.savefig(self.diagramPath + 'CostvsCarbonTax_(weightImpact)_weather_%s.pdf' % (weatherConditionList[w][2]), dpi = 1200, bbox_inches='tight')
+            self.mkdirFig('weightImapct/')
+            plt.savefig(self.diagramPath + 'weightImapct/' + 'CostvsCarbonTax_(weightImpact)_weather_%s.pdf' % (weatherConditionList[w][2]), dpi = 1200, bbox_inches='tight')
             # plt.show() ## show must come after the savefig
             # plt.close()
             plt.clf()
@@ -5820,22 +5833,27 @@ class OptimalPowerFlowAnalysis:
             ##-- Plot the multiple line chart of the CO2 emission vs carbon tax --##
             fig, ax1 = plt.subplots()
             ax2 = ax1.twinx()
-            ax1.set_xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
-            ax1.set_ylabel("Annualised CO${_2}$ emission (t)", fontsize = labelFontSize)
+            ay1 = ax1.twiny()
+            ax1.set_xlabel("Carbon tax (£/t)", fontsize = labelFontSize)
+            ax1.set_ylabel("Levelised CO${_2}$ emission (t/yr)", fontsize = labelFontSize)
             
             ax1.tick_params(direction='in')
             ax2.tick_params(direction='in')
             ax2.axes.yaxis.set_ticklabels([])
+            ay1.tick_params(direction='in')
+            ay1.axes.xaxis.set_ticklabels([])
 
             ax1.plot(CarbonTaxForOPFList, baseCO2Emission_UnderSameWeatherCondition[0], label = 'Base case', color = 'red', linestyle = lineStyleList[1], alpha=0.6, linewidth = 1.7)
             ax2.plot(CarbonTaxForOPFList, baseCO2Emission_UnderSameWeatherCondition[0], alpha=0)
+            ay1.plot(CarbonTaxForOPFList, baseCO2Emission_UnderSameWeatherCondition[0], alpha=0)
 
             for i in range(len(bestCO2Emission_UnderSameWeatherCondition)):
                 weightLabel = 'weight: ' + str(round(self.weighterList[i], 2))
                 ax1.plot(CarbonTaxForOPFList, bestCO2Emission_UnderSameWeatherCondition[i], marker = markersList[i], label = weightLabel, color = colors[i], linestyle = lineStyleList[i])
-                ax2.plot(CarbonTaxForOPFList, bestCO2Emission_UnderSameWeatherCondition[i], color = colors[i], alpha=0)        
-                for x, y, label in zip(CarbonTaxForOPFList, bestCO2Emission_UnderSameWeatherCondition[i], bestSMRNumber_UnderSameWeatherCondition[i]):
-                    ax1.text(x, y, label, fontsize = dotLabel, alpha = 0.85)
+                ax2.plot(CarbonTaxForOPFList, bestCO2Emission_UnderSameWeatherCondition[i], color = colors[i], alpha=0)  
+                ay1.plot(CarbonTaxForOPFList, bestCO2Emission_UnderSameWeatherCondition[i], color = colors[i], alpha=0)        
+                # for x, y, label in zip(CarbonTaxForOPFList, bestCO2Emission_UnderSameWeatherCondition[i], bestSMRNumber_UnderSameWeatherCondition[i]):
+                #     ax1.text(x, y, label, fontsize = 10, alpha = 0.85)
     
             pos = ax1.get_position()
             ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
@@ -5848,8 +5866,8 @@ class OptimalPowerFlowAnalysis:
                 bbox_transform=fig.transFigure 
                 ) 
             plt.tight_layout()
-            self.mkdirFig()
-            plt.savefig(self.diagramPath + 'CO2EmissionvsCarbonTax_(weightImpact)_weather_%s.pdf' % (weatherConditionList[w][2]), dpi = 1200, bbox_inches='tight')
+            self.mkdirFig('weightImapct/')
+            plt.savefig(self.diagramPath + 'weightImapct/' + 'CO2EmissionvsCarbonTax_(weightImpact)_weather_%s.pdf' % (weatherConditionList[w][2]), dpi = 1200, bbox_inches='tight')
             # plt.show() ## show must come after the savefig
             # plt.close()
             plt.clf()
@@ -6131,7 +6149,8 @@ if __name__ == '__main__':
 
 ## TODO: change the picked weight 
     pickedWeight = 0.9
-
+    
+    ## Be careful with the NumberOfSMRUnitList: while study the impact of the weight, it will require more SMR unit number 
     NumberOfSMRUnitList = [0, 5, 10, 25, 30, 40, 45, 46, 50, 51, 52, 53, 54] #[0, 5, 10, 25, 30, 40, 46, 48, 52] #[0, 1, 5, 10, 15, 20, 22, 24, 25, 28, 30, 35, 40, 45, 47, 50, 54, 60]
     weighterList = [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
     CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 70, 80, 100]
