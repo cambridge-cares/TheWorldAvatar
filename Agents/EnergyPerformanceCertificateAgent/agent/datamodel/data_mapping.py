@@ -3,9 +3,8 @@
 # Date: 15 Sep 2022                            #
 ################################################
 
-# The purpose of this module is to provide a mapping between retrieved 
-# observation variables from Met Office (via metoffer) to corresponding
-# concepts and units as defined in OntoEMS
+# The purpose of this module is to provide a mapping between retrieved data
+# from EPC APIs and corresponding concepts and units as defined in OntoBuiltEnv
 
 from agent.datamodel.iris import *
 
@@ -146,7 +145,6 @@ EPC_DATA = {
     'Hotels': OBE_HOTEL,
     'General Assembly and Leisure, Night Clubs, and Theatres': OBE_DRINKINGESTABLISHMENT,
     'Residential Institutions: Hospitals and Care Homes': OBE_HOSPITAL,
-
     
     ### Display EPC data 
     # Building category codes (explanation in comments)    
@@ -206,8 +204,8 @@ USAGE_MAPPING = {
 
 # Mapping of units to OM units and symbols
 UNITS_MAPPING = {
-     OM_AREA: (OM_M2, 'm2'),
-     OM_HEIGHT: (OM_M, 'm'),
+     OM_AREA: (OM_M2, METRE_SQ),
+     OM_HEIGHT: (OM_M, METRE),
      OM_AMOUNT_MONEY: (OM_GBP, GBP)
 }
 
@@ -220,8 +218,8 @@ CRSs = {'EPSG:27700': 'urn:ogc:def:crs:EPSG::27700',
 # Define typical unit, property and street names (required for address extraction from EPC data)
 NAMES_UNITS = ['flat', 'apartment']
 NAMES_BLDGS = ['house', 'bungalow', 'farm', 'lodge', 'cottage', 'villa', 
-                'chalet', 'barn', 'cabin', 'hall', 'court', 'hotel', 'grange',
-                'annex']
+               'chalet', 'barn', 'cabin', 'hall', 'court', 'hotel', 'grange',
+               'annex']
 NAMES_STREET = ['road', 'street', 'avenue', 'lane', 'close', 'way', 'court',
                 'drive', 'drove', 'walk', 'square', 'place', 'lane', 'bank',
                 'highway']

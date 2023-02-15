@@ -23,11 +23,11 @@ from agent.utils.env_configs import OCGML_ENDPOINT
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from agent.kgutils.querytemplates import *
 from agent.utils.geo_utils import initialise_pyproj_transformer, get_coordinates, \
-                                    create_geojson_feature
+                                  create_geojson_feature
 from agent.datainstantiation.epc_retrieval import obtain_data_for_certificate, \
-                                                    obtain_latest_data_for_postcodes
+                                                  obtain_latest_data_for_postcodes
 from agent.kgutils.stackclients import OntopClient, PostGISClient, GdalClient, \
-                                         GeoserverClient
+                                       GeoserverClient
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")

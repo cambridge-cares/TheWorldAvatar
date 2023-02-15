@@ -24,7 +24,7 @@ def create_app(test_config=None):
 
     # Create Blazegraph namespace if not exists (on app startup)
     create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT, quads=False, geospatial=False)
-
+    # Upload ontology and units to Blazegraph
     upload_ontology()
 
     return app

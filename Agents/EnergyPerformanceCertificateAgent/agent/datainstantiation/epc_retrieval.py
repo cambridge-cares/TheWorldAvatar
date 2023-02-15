@@ -20,7 +20,6 @@ from agent.utils.api_endpoints import *
 from agent.utils.env_configs import ENCODED_AUTH
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
-
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 

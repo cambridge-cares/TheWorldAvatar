@@ -69,7 +69,7 @@ def create_blazegraph_namespace(endpoint=OCGML_ENDPOINT,
 
 def instantiate_all_units():
     """
-        Return SPARQL update to instantiate required all (both ascii and non-ascii) units
+        Return SPARQL update to instantiate all required units (both ascii and non-ascii)
     """
 
     # NOTE: There are reported issues with encoding of special characters, i.e. Blazegraph
@@ -86,9 +86,10 @@ def instantiate_all_units():
 
     return query
 
+
 def upload_ontology():
     """
-        Uploads TBox and ABox from TWA to KG namespace
+        Uploads TBox from github and all units KG namespace
     """
     # URL to .owl files
     tbox = TBOX_URL
