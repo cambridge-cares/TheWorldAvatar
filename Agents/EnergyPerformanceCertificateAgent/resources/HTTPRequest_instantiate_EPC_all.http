@@ -9,8 +9,23 @@
 POST http://165.232.172.16:5001/epcagent/instantiate/certificates/all
 Content-Type: application/json
 
+# # Domestic API
+# { "query": {
+#       "epc_endpoint": "domestic",
+#       "ocgml_endpoint": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql"
+#     }
+# }
+
+# # Non-domestic API
+# { "query": {
+#       "epc_endpoint": "non-domestic",
+#       "ocgml_endpoint": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql"
+#     }
+# }
+
+# Non-domestic API
 { "query": {
-      "epc_endpoint": "domestic",
+      "epc_endpoint": "display",
       "ocgml_endpoint": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql"
     }
 }

@@ -157,9 +157,9 @@ def obtain_latest_data_for_postcodes(postcodes: list, endpoint='domestic'):
                         'postcode', 'local-authority', 'uprn', 'property-type',
                         'operational-rating-band', 'total-floor-area', 'lodgement-datetime',
                         'building-category']         
-        epc_data = df_all[relevant]
+        epc_data = df_all[relevant].copy()
 
-        # Keep only latest EPD data per UPRN
+        # Keep only latest EPC data per UPRN
         epc_data['date'] = pd.to_datetime(epc_data['lodgement-datetime'], yearfirst=True, dayfirst=False)
         epc_data.sort_values(by='date', ascending=False, inplace=True)
         epc_data[~epc_data['uprn'].duplicated()]

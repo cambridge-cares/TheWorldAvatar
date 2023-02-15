@@ -97,11 +97,11 @@ EPC_DATA = {
     'C2 Residential Institutions - Residential schools': OBE_SCHOOL,
     'C2 Residential Institutions - Universities and colleges': OBE_UNIVERSITYFACILITY,
     'D1 Non-residential Institutions - Community/Day Centre': OBE_CULTURALFACILITY,
+    'D1 Non-residential Institutions - Crown and County Courts': OBE_CULTURALFACILITY,
     'D1 Non-residential Institutions - Education': OBE_EDUCATION,
     'D1 Non-residential Institutions - Libraries Museums and Galleries': OBE_CULTURALFACILITY,
     'D1 Non-residential Institutions - Primary Health Care Building': OBE_CLINIC,
     'D2 General Assembly and Leisure plus Night Clubs and Theatres': OBE_DRINKINGESTABLISHMENT,
-    'D1 Non-residential Institutions - Crown and County Courts': OBE_CULTURALFACILITY,
     'Emergency services': OBE_EMERGENCYSERVICE,
     'Further education universities': OBE_UNIVERSITYFACILITY,
     'Hospital': OBE_HOSPITAL,
@@ -177,7 +177,6 @@ EPC_DATA = {
     'W3': OBE_NON_DOMESTIC,                 # Workshop
     'W4': OBE_NON_DOMESTIC,                 # Storage Facility
     'W5': OBE_RETAILESTABLISHMENT           # Cold Storage
-
 }
 
 # Usage mapping for PostGIS

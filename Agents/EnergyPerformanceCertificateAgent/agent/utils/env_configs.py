@@ -29,7 +29,7 @@ def retrieve_settings():
     global DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE, \
            OCGML_ENDPOINT, NAMESPACE, ENCODED_AUTH
 
-    # Retrieve ONTOP mapping file
+    # Retrieve OCGML_ENDPOINT with instantiated OntoCityGml data
     OCGML_ENDPOINT = os.getenv('OCGML_ENDPOINT')
     if OCGML_ENDPOINT is None:
         logger.error('"OCGML_ENDPOINT" is missing in environment variables.')
@@ -87,7 +87,7 @@ def retrieve_settings():
         logger.error('No "NAMESPACE" value has been provided in environment variables.')
         raise ValueError('No "NAMESPACE" value has been provided in environment variables.')
 
-    # Retrieve MetOffice encoded API key
+    # Retrieve encoded key for EPC API
     ENCODED_AUTH = os.getenv('ENCODED_AUTH')    
     if ENCODED_AUTH is None:
         logger.error('"ENCODED_AUTH" is missing in environment variables.')
