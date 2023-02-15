@@ -2,13 +2,13 @@ version: "3.8"
 
 services:
   epc_agent:
-    image: ghcr.io/cambridge-cares/epc_agent:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/epc_agent:1.0.0
     environment:
       - STACK_NAME=${STACK_NAME}
       # Base64-encoded authentication token for EPC API (identifier composed of your email address and api-key)
       # Obtained from https://epc.opendatacommunities.org/docs/api/domestic when signed in 
       - ENCODED_AUTH=
-      # Layer name in geoserver, also table name in PostGIS
+      # Table name in PostGIS, also Layer name in Geoserver
       - LAYERNAME=buildings
       # Target Blazegraph namespace
       - NAMESPACE=buildings
