@@ -18,7 +18,6 @@ class GeomConstructBuilderMediatorTest {
     private static Model sampleModel;
     private static List<RDFNode> nodeList;
     private static final String ifcClass = "Ifc";// This class does not matter, it's only a placeholder
-    private static final String bimUri = "http://www.theworldavatar.com/ontology/ontobim/ontoBIM#";
     private static final String booleanClippingResInst = "IfcBooleanClippingResult_50140";
     private static final String polyHalfSpaceInst = "IfcPolygonalBoundedHalfSpace_150";
     private static final String facetedBrepInst = "IfcFacetedBrep_992";
@@ -130,81 +129,81 @@ class GeomConstructBuilderMediatorTest {
 
     private void genSampleRdfNodeForBooleanClippingResult() {
         // In generating test nodes, ensure that the Object node must include the test IfcClass
-        sampleModel.createResource(bimUri + ifcClass)
+        sampleModel.createResource(JunitTestUtils.bimUri + ifcClass)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + booleanClippingResInst));
+                        sampleModel.createResource(JunitTestUtils.bimUri + booleanClippingResInst));
         retrieveNodeFromModel(sampleModel);
     }
 
     private void genSampleRdfNodeForPolygonalBoundedHalfSpace() {
         // In generating test nodes, ensure that the Object node must include the test IfcClass
-        sampleModel.createResource(bimUri + ifcClass)
+        sampleModel.createResource(JunitTestUtils.bimUri + ifcClass)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + polyHalfSpaceInst));
+                        sampleModel.createResource(JunitTestUtils.bimUri + polyHalfSpaceInst));
         retrieveNodeFromModel(sampleModel);
     }
 
     private void genSampleRdfNodeForFacetedBrep() {
         // In generating test nodes, ensure that the Object node must include the test IfcClass
-        sampleModel.createResource(bimUri + ifcClass)
+        sampleModel.createResource(JunitTestUtils.bimUri + ifcClass)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + facetedBrepInst));
+                        sampleModel.createResource(JunitTestUtils.bimUri + facetedBrepInst));
         retrieveNodeFromModel(sampleModel);
     }
 
     private void genSampleRdfNodeForExtrudedSolidArea() {
         // In generating test nodes, ensure that the Object node must include the test IfcClass
-        sampleModel.createResource(bimUri + ifcClass)
+        sampleModel.createResource(JunitTestUtils.bimUri + ifcClass)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + extrudedAreaSolidInst));
+                        sampleModel.createResource(JunitTestUtils.bimUri + extrudedAreaSolidInst));
         retrieveNodeFromModel(sampleModel);
     }
 
     private void genSampleRdfNodeForPolyline() {
         // In generating test nodes, ensure that the Object node must include the test IfcClass
-        sampleModel.createResource(bimUri + ifcClass)
+        sampleModel.createResource(JunitTestUtils.bimUri + ifcClass)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + polylineInst));
+                        sampleModel.createResource(JunitTestUtils.bimUri + polylineInst));
         retrieveNodeFromModel(sampleModel);
     }
 
     private void genSampleRdfNodeForGeometricRepresentationSubContext() {
         // In generating test nodes, ensure that the Object node must include the test IfcClass
-        sampleModel.createResource(bimUri + ifcClass)
+        sampleModel.createResource(JunitTestUtils.bimUri + ifcClass)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + geomRepSubContextInst));
+                        sampleModel.createResource(JunitTestUtils.bimUri + geomRepSubContextInst));
         retrieveNodeFromModel(sampleModel);
     }
 
     private void genSampleRdfNodeForLocalPlacement() {
         // In generating test nodes, ensure that the Object node must include the test IfcClass
-        sampleModel.createResource(bimUri + ifcClass)
+        sampleModel.createResource(JunitTestUtils.bimUri + ifcClass)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + localPlacementInst));
+                        sampleModel.createResource(JunitTestUtils.bimUri + localPlacementInst));
         retrieveNodeFromModel(sampleModel);
     }
 
     private void genSampleRdfNodeForCartesianTransformer() {
         // In generating test nodes, ensure that the Object node must include the test IfcClass
-        sampleModel.createResource(bimUri + ifcClass)
+        sampleModel.createResource(JunitTestUtils.bimUri + ifcClass)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + cartTransformerInst));
+                        sampleModel.createResource(JunitTestUtils.bimUri + cartTransformerInst));
         retrieveNodeFromModel(sampleModel);
     }
 
     private void genSampleRdfNodeForDirectionVector() {
         // In generating test nodes, ensure that the Object node must include the test IfcClass
-        sampleModel.createResource(bimUri + ifcClass)
+        sampleModel.createResource(JunitTestUtils.bimUri + ifcClass)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + directionVectorInst));
+                        sampleModel.createResource(JunitTestUtils.bimUri + directionVectorInst));
         retrieveNodeFromModel(sampleModel);
     }
 
     private void genSampleRdfNodeForCartesianPoint() {
         // In generating test nodes, ensure that the Object node must include the test IfcClass
-        sampleModel.createResource(bimUri + ifcClass)
+        sampleModel.createResource(JunitTestUtils.bimUri + ifcClass)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + cartPointInst));
+                        sampleModel.createResource(JunitTestUtils.bimUri + cartPointInst));
         retrieveNodeFromModel(sampleModel);
     }
 

@@ -6,6 +6,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Test;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -15,7 +16,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SlabClassifierTest {
     private static LinkedHashSet<Statement> testSet;
-    private static final String bimUri = "http://www.theworldavatar.com/ontology/ontobim/ontoBIM#";
     private static final String inst = "IfcSlab_1634";
     private static final String secondInst = "IfcSlab_156";
     private static final String floorClass = "Floor";
@@ -53,24 +53,24 @@ class SlabClassifierTest {
     private void genSampleFloorStatements() {
         Model sampleModel = ModelFactory.createDefaultModel();
         // Generate the statements in the model
-        sampleModel.createResource(bimUri + inst)
+        sampleModel.createResource(JunitTestUtils.bimUri + inst)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + floorClass));
-        sampleModel.createResource(bimUri + secondInst)
+                        sampleModel.createResource(JunitTestUtils.bimUri + floorClass));
+        sampleModel.createResource(JunitTestUtils.bimUri + secondInst)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + floorClass));
+                        sampleModel.createResource(JunitTestUtils.bimUri + floorClass));
         addStatementToSet(sampleModel);
     }
 
     private void genSampleRoofStatements() {
         Model sampleModel = ModelFactory.createDefaultModel();
         // Generate the statements in the model
-        sampleModel.createResource(bimUri + inst)
+        sampleModel.createResource(JunitTestUtils.bimUri + inst)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + roofClass));
-        sampleModel.createResource(bimUri + secondInst)
+                        sampleModel.createResource(JunitTestUtils.bimUri + roofClass));
+        sampleModel.createResource(JunitTestUtils.bimUri + secondInst)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + roofClass));
+                        sampleModel.createResource(JunitTestUtils.bimUri + roofClass));
         addStatementToSet(sampleModel);
     }
 

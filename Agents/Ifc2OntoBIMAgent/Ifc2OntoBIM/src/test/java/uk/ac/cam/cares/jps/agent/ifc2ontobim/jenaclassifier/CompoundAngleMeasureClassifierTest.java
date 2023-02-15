@@ -7,6 +7,7 @@ import org.apache.jena.rdf.model.StmtIterator;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -17,8 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class CompoundAngleMeasureClassifierTest {
     private static LinkedHashSet<Statement> testSet;
     private static final String baseIRI = "http://www.theworldavatar.com/test/";
-    private static final String bimUri = "http://www.theworldavatar.com/ontology/ontobim/ontoBIM#";
-    private static final String botUri = "https://w3id.org/bot#";
     private static final String latInst = "IfcCompoundAngleMeasure_1634";
     private static final String longInst = "IfcCompoundAngleMeasure_156";
     private static final String compoundAngleClass = "CompoundPlaneAngle";
@@ -31,17 +30,17 @@ class CompoundAngleMeasureClassifierTest {
         // Generate the statements in the model
         sampleModel.createResource(baseIRI + "Site_16")
                 .addProperty(RDF.type,
-                        sampleModel.createResource(botUri + "Site"))
-                .addProperty(sampleModel.createProperty(bimUri + "hasRefLatitude"),
+                        sampleModel.createResource(JunitTestUtils.botUri + "Site"))
+                .addProperty(sampleModel.createProperty(JunitTestUtils.bimUri + "hasRefLatitude"),
                         sampleModel.createResource(baseIRI + latInst))
-                .addProperty(sampleModel.createProperty(bimUri + "hasRefLongitude"),
+                .addProperty(sampleModel.createProperty(JunitTestUtils.bimUri + "hasRefLongitude"),
                         sampleModel.createResource(baseIRI + longInst));
         sampleModel.createResource(baseIRI + latInst)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + compoundAngleClass));
+                        sampleModel.createResource(JunitTestUtils.bimUri + compoundAngleClass));
         sampleModel.createResource(baseIRI + longInst)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + compoundAngleClass));
+                        sampleModel.createResource(JunitTestUtils.bimUri + compoundAngleClass));
         // Extract the statements into a LinkedHashSet
         testSet = new LinkedHashSet<>();
         StmtIterator iter = sampleModel.listStatements();

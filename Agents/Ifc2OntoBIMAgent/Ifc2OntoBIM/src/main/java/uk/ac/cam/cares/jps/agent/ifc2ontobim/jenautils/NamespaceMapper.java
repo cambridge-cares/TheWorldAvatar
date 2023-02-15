@@ -46,7 +46,7 @@ public class NamespaceMapper {
         // Additional namespaces present in OntoBIM
         nsMapping.put("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
         nsMapping.put("om", "http://www.ontology-of-units-of-measure.org/resource/om-2/");
-        nsMapping.put("bim", "http://www.theworldavatar.com/ontology/ontobim/ontoBIM#");
+        nsMapping.put("bim", "http://www.theworldavatar.com/kg/ontobim/");
         nsMapping.put("bot", "https://w3id.org/bot#");
 
         // Duplicate IfcOwl namespaces for sub-queries - require bim as well

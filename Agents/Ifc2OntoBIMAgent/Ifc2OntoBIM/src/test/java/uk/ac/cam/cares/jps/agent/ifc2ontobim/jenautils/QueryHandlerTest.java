@@ -10,6 +10,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Test;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 
 
 import java.util.ArrayList;
@@ -19,7 +20,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class QueryHandlerTest {
-    private static final String bimUri = "http://www.theworldavatar.com/ontology/ontobim/ontoBIM#";
     private static final String inst = "Storey_514";
     private static final String secondInst = "Storey_654";
     private static final String testClass = "Storey";
@@ -42,8 +42,8 @@ class QueryHandlerTest {
             QuerySolution soln = results.nextSolution();
             expected.add(soln.get("storey").toString());
         }
-        assertTrue(expected.contains(bimUri + inst));
-        assertTrue(expected.contains(bimUri + secondInst));
+        assertTrue(expected.contains(JunitTestUtils.bimUri + inst));
+        assertTrue(expected.contains(JunitTestUtils.bimUri + secondInst));
     }
 
     @Test
@@ -55,8 +55,8 @@ class QueryHandlerTest {
         List<String> strResults = new ArrayList<>();
         results.forEach(statement -> strResults.add(statement.toString()));
         // Generate the expected statements
-        String firstStatement = "[" + bimUri + inst + ", " + RDF.type + ", " + bimUri + testConstructClass + "]";
-        String secondStatement = "[" + bimUri + secondInst + ", " + RDF.type + ", " + bimUri + testConstructClass + "]";
+        String firstStatement = "[" + JunitTestUtils.bimUri + inst + ", " + RDF.type + ", " + JunitTestUtils.bimUri + testConstructClass + "]";
+        String secondStatement = "[" + JunitTestUtils.bimUri + secondInst + ", " + RDF.type + ", " + JunitTestUtils.bimUri + testConstructClass + "]";
         assertTrue(strResults.contains(firstStatement));
         assertTrue(strResults.contains(secondStatement));
     }
@@ -65,7 +65,7 @@ class QueryHandlerTest {
         List<String> expected = new ArrayList<>();
         expected.add("PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
         expected.add("PREFIX  bot:  <https://w3id.org/bot#>");
-        expected.add("PREFIX  bim:  <http://www.theworldavatar.com/ontology/ontobim/ontoBIM#>");
+        expected.add("PREFIX  bim:  <http://www.theworldavatar.com/kg/ontobim/>");
         expected.add("PREFIX  ifc:  <http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#>");
         expected.add("PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>");
         expected.add("PREFIX  express: <https://w3id.org/express#>");
@@ -78,25 +78,25 @@ class QueryHandlerTest {
 
     private Model genSampleModel() {
         Model sampleModel = ModelFactory.createDefaultModel();
-        sampleModel.createResource(bimUri + inst)
+        sampleModel.createResource(JunitTestUtils.bimUri + inst)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + testClass));
-        sampleModel.createResource(bimUri + secondInst)
+                        sampleModel.createResource(JunitTestUtils.bimUri + testClass));
+        sampleModel.createResource(JunitTestUtils.bimUri + secondInst)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + testClass));
+                        sampleModel.createResource(JunitTestUtils.bimUri + testClass));
         return sampleModel;
     }
 
     private String genSampleSelectQuery() {
         SelectBuilder builder = new SelectBuilder();
-        builder.addPrefix("bim", bimUri);
+        builder.addPrefix("bim", JunitTestUtils.bimUri);
         builder.addVar("?storey").addWhere("?storey", RDF.type, "bim:" + testClass);
         return builder.buildString();
     }
 
     private String genSampleConstructQuery() {
         ConstructBuilder builder = new ConstructBuilder();
-        builder.addPrefix("bim", bimUri);
+        builder.addPrefix("bim", JunitTestUtils.bimUri);
         builder.addConstruct("?storey", RDF.type, "bim:" + testConstructClass)
                 .addWhere("?storey", RDF.type, "bim:" + testClass);
         return builder.buildString();

@@ -31,8 +31,8 @@ class OntoBimConverterTest {
     static void init() throws IOException {
         sampleTtl = tempDir.resolve("test.ttl");
         List<String> lines = new ArrayList<>();
-        lines.add("@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .");
-        lines.add("@prefix bim: <http://www.theworldavatar.com/ontology/ontobim/ontoBIM#> .");
+        lines.add("@prefix rdf: <"+ JunitTestUtils.rdfUri +"> .");
+        lines.add("@prefix bim: <"+ JunitTestUtils.bimUri +"> .");
         lines.add("");
         lines.add("bim:Zone_19 rdf:type bim:Zone .");
         Files.write(sampleTtl, lines);

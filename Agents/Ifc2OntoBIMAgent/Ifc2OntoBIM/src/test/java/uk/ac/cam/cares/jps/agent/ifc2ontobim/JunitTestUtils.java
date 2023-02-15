@@ -6,15 +6,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class JunitTestUtils {
+    public static final String bimUri = "http://www.theworldavatar.com/kg/ontobim/";
+    public static final String botUri = "https://w3id.org/bot#";
+    public static final String expressUri = "https://w3id.org/express#";
+    public static final String ifc2x3Uri = "http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#";
+    public static final String listUri = "https://w3id.org/list#";
+    public static final String rdfUri = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    public static final String rdfsUri = "http://www.w3.org/2000/01/rdf-schema#";
+
     public static void addPrefix(ConstructBuilder builder) {
         Map<String, String> nsMapping = new HashMap<>();
-        nsMapping.put("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
-        nsMapping.put("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-        nsMapping.put("bim", "http://www.theworldavatar.com/ontology/ontobim/ontoBIM#");
-        nsMapping.put("bot", "https://w3id.org/bot#");
-        nsMapping.put("ifc", "http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#");
-        nsMapping.put("list", "https://w3id.org/list#");
-        nsMapping.put("express", "https://w3id.org/express#");
+        nsMapping.put("rdfs", rdfsUri);
+        nsMapping.put("rdf", rdfUri);
+        nsMapping.put("bim", bimUri);
+        nsMapping.put("bot", botUri);
+        nsMapping.put("ifc", ifc2x3Uri);
+        nsMapping.put("list", listUri);
+        nsMapping.put("express", expressUri);
         builder.addPrefixes(nsMapping);
     }
 }

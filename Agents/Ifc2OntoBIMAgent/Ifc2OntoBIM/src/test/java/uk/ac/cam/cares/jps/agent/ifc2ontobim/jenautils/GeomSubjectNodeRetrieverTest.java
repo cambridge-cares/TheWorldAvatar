@@ -4,6 +4,7 @@ import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -12,7 +13,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GeomSubjectNodeRetrieverTest {
     private static LinkedHashSet<Statement> testSet;
-    private static final String bimUri = "http://www.theworldavatar.com/ontology/ontobim/ontoBIM#";
     private static final String inst = "CartesianPoint_50140";
     private static final String pointClass = "CartesianPoint";
     private static final String wrongClass = "WrongClass";
@@ -21,12 +21,12 @@ class GeomSubjectNodeRetrieverTest {
     void genSampleStatement() {
         Model sampleModel = ModelFactory.createDefaultModel();
         // Generate the statements in the model
-        sampleModel.createResource(bimUri + inst)
+        sampleModel.createResource(JunitTestUtils.bimUri + inst)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + pointClass));
-        sampleModel.createResource(bimUri + wrongClass)
+                        sampleModel.createResource(JunitTestUtils.bimUri + pointClass));
+        sampleModel.createResource(JunitTestUtils.bimUri + wrongClass)
                 .addProperty(RDF.type,
-                        sampleModel.createResource(bimUri + wrongClass));
+                        sampleModel.createResource(JunitTestUtils.bimUri + wrongClass));
         // Extract the statements into a LinkedHashSet
         testSet = new LinkedHashSet<>();
         StmtIterator iter = sampleModel.listStatements();
