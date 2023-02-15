@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.powsys.retrofit.test;
 
-import org.apache.jena.ontology.OntModel;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -29,7 +28,6 @@ public class TestRenewableGeneratorRetrofit {
     private String ENIRI;
     private JSONArray pvgeniris = new JSONArray();
     private List<String> renewableGeneratorList = new ArrayList<>();
-    private final Logger LOGGER = LoggerFactory.getLogger(TestRenewableGeneratorRetrofit.class);
 
     @Before
     public void setUp(){
@@ -62,7 +60,7 @@ public class TestRenewableGeneratorRetrofit {
     @Test
     public void testProcessRequestParameters() {
 
-        RenewableGeneratorRetrofit rgr = spy(RenewableGeneratorRetrofit.class);  //use spy() to only mock one method, whereas mock() will mock the entire class and all methods will by default return null
+        RenewableGeneratorRetrofit rgr = spy(RenewableGeneratorRetrofit.class);
         doNothing().when(rgr).retrofitGenerator(any(), any());
         JSONObject joValid = new JSONObject();
         joValid.put("electricalnetwork",ENIRI);
@@ -93,7 +91,7 @@ public class TestRenewableGeneratorRetrofit {
 
 
     /**
-     * We were unable to do unit test without a complete setup of POWSYS
+     * JPSRuntimeException is expected to throw as the unit test cannot be done without a complete setup of POWSYS
      */
     @Test(expected = JPSRuntimeException.class)
     public void testRetrofitGenerator() {
