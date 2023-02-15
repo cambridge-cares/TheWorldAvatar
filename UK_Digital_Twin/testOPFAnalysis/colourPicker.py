@@ -62,7 +62,7 @@ colourHEXList_11class = [ ## eliminate the first colour, 6class
     '#31a354',
     '#006d2c']
 
-colourHEXListForBranch_8class = [
+colourHEXListForBranch_8class = [ ## Yellow for grid 
     '#ffffcc',
     '#ffeda0',
     '#fed976',
@@ -71,6 +71,17 @@ colourHEXListForBranch_8class = [
     '#fc4e2a',
     '#e31a1c',
     '#b10026']
+
+colourHEXListForBranch_7class = [ ## Green for output
+    '#f7fcf5',
+    '#e5f5e0',
+    '#c7e9c0',
+    '#a1d99b',
+    '#74c476',
+    '#41ab5d',
+    '#238b45',
+    '#005a32'
+]
 
 # colourHEXListForBranch_8class = [
 #     '#fde0dd',
@@ -91,8 +102,11 @@ def sequentialHEXColourCodePicker(dataValue, upperBound, lowerBound, middle = No
     elif colourClassNumber == 8:
         colourHEXList = colourHEXListForBranch_8class
         dividend = 8
+    elif colourClassNumber == 7:
+        colourHEXList = colourHEXListForBranch_7class
+        dividend = 8
     else:
-        raise ValueError('Invalid colourClassNumber. colourClassNumber should be either 11 or 6, while picking 11, the middle should be specified.')
+        raise ValueError('Invalid colourClassNumber. colourClassNumber should be either 11, 8 or 7, while picking 11, the middle should be specified.')
 
     if upperBound < lowerBound:
         raise ValueError('Invalid upper bound. Expected lower bound should be smaller than upper bound.')
@@ -185,8 +199,18 @@ def createColourBarLegend(filepath, upperBound, lowerBound, lebel:str, fileName:
                 bounds.append(lowerBound)
             else: 
                 bounds.append(round(lowerBound + (i * interval), 2))
+    elif colourClassNumber == 7:
+        colourHEXList = colourHEXListForBranch_7class
+        dividend = 8
+        interval =  round((upperBound - lowerBound) / dividend, 2)
+        bounds = []
+        for i in range(len(colourHEXList)):
+            if i == 0:
+                bounds.append(lowerBound)
+            else: 
+                bounds.append(round(lowerBound + (i * interval), 2))
     else:
-        raise ValueError('Invalid colourClassNumber. colourClassNumber should be either 11 or 6, while picking 11, the middle should be specified.')
+        raise ValueError('Invalid colourClassNumber. colourClassNumber should be either 11, 8 or 7, while picking 11, the middle should be specified.')
     
     cmap = mpl.colors.ListedColormap(colourHEXList)
     norm = mpl.colors.BoundaryNorm(bounds, cmap.N)

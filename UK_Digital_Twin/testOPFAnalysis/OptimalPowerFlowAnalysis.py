@@ -270,14 +270,15 @@ class OptimalPowerFlowAnalysis:
         self.CarbonTaxForOPF = -1 ## the initial carbon tax not for OPF calculation
         self.weatherConditionName = None
         self.time_now = time.strftime("%Y%m%d-%H%M", time.localtime())
-        localRootFilePath = '/mnt/d/wx243/FromTWA/'
-        self.diagramPath = localRootFilePath + '/figFiles(ParetoFront)/' + self.time_now + '/'
-        self.netDemandingJSONPath = localRootFilePath + '/netDemandingGeoJSONFiles/' + self.time_now + '/'
-        self.pieChartPath = localRootFilePath + '/regionalEnergyBreakdownPieChart/' + self.time_now + '/'
-        self.branchLossJSONPath = localRootFilePath + '/branchLossGeoJSONFiles/' + self.time_now + '/'
-        self.majorEnergySourceJSONPath = localRootFilePath + '/majorEnergySourceJSONFiles/' + self.time_now + '/'
-        self.outputOfDifferentEnergySourceJSONPath = localRootFilePath + '/outputOfDifferentEnergySourceJSONFiles/' + self.time_now + '/'
-        self.regionalOutputJSONPath = localRootFilePath + '/regionalOutputJSONFiles/' + self.time_now + '/'
+        self.localRootFilePath = '/mnt/d/wx243/FromTWA'
+        
+        self.diagramPath = self.localRootFilePath + '/figFiles(ParetoFront)/' + self.time_now + '/'
+        self.netDemandingJSONPath = self.localRootFilePath + '/netDemandingGeoJSONFiles/' + self.time_now + '/'
+        self.pieChartPath = self.localRootFilePath + '/regionalEnergyBreakdownPieChart/' + self.time_now + '/'
+        self.branchLossJSONPath = self.localRootFilePath + '/branchLossGeoJSONFiles/' + self.time_now + '/'
+        self.majorEnergySourceJSONPath = self.localRootFilePath + '/majorEnergySourceJSONFiles/' + self.time_now + '/'
+        self.outputOfDifferentEnergySourceJSONPath = self.localRootFilePath + '/outputOfDifferentEnergySourceJSONFiles/' + self.time_now + '/'
+        self.regionalOutputJSONPath = self.localRootFilePath + '/regionalOutputJSONFiles/' + self.time_now + '/'
 
     """Find the power plants located in each demanding areas"""
     def powerPlantAndDemandingAreasMapper(self):
@@ -1311,8 +1312,8 @@ class OptimalPowerFlowAnalysis:
                 ClosedGeneratorLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_ClosedGenerator'
                 DecommissionedLabel = str(self.numOfBus) + 'BusModel_' + str(self.numberOfSMRToBeIntroduced) + '_SMRs_Introduced_CarbonTax' + str(self.CarbonTaxForOPF) + "_WeatherCondition_" + str(self.weatherConditionName) + "_weighter_" + str(weightForObjective1) + '_DecommissionedGenerator'
 
-                self.filePathForJSON = './JSONFiles/' +  str(self.numberOfSMRToBeIntroduced) + '_SMRs_' + str(self.CarbonTaxForOPF) +'_CarbonTax' 
-                
+                self.filePathForJSON = self.localRootFilePath + '/GeneratorJSONFiles/' +  str(self.numberOfSMRToBeIntroduced) + '_SMRs_' + str(self.CarbonTaxForOPF) +'_CarbonTax' 
+
                 self.visualisationFileCreator_ExtantGenerator(GeneratorObjectList_EachWeight, ExtantGeneratorLabel) 
                 self.visualisationFileCreator_AddedSMRGenerator(SMRSiteObjectList_EachWeight, SMRIntroducedLabel)
                 self.visualisationFileCreator_ClosedGenerator(GeneratorObjectList_EachWeight, ClosedGeneratorLabel)
@@ -1855,8 +1856,8 @@ class OptimalPowerFlowAnalysis:
                 totalOutputOfSMR = 0
                 if self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0:
                     for SMRName in SMRNameList:
-                        smallAreaCode = str(self.ObjectSet[SMRName].RegionLACode)
-                        if smallAreaCode == Area_LACode or smallAreaCode in Area_LACode:
+                        regionalAreaCode = str(self.ObjectSet[SMRName].RegionLACode)
+                        if regionalAreaCode == Region_LACode or regionalAreaCode in Region_LACode:
                             totalOutputOfSMR += self.ObjectSet[SMRName].PG_OUTPUT
                     genTypeLabel.append(self.newGeneratorType)
                     outPutData.append(totalOutputOfSMR) 
@@ -2007,7 +2008,7 @@ class OptimalPowerFlowAnalysis:
         geojson_file += end_geojson
         # saving as geoJSON
         self.mkdirJSON()
-        geojson_written = open(self.filePathForJSON + '/' + file_label +'.geojson','w')
+        geojson_written = open( self.filePathForJSON + '/' + file_label +'.geojson','w')
         geojson_written.write(geojson_file)
         geojson_written.close() 
         print('---GeoJSON written successfully: visualisationFileCreator_ClosedGenerator---', file_label)
@@ -3074,7 +3075,7 @@ class OptimalPowerFlowAnalysis:
     """This method is to generate the GeoJSON files demonstrate total energy output of each region"""
     def GeoJSONCreator_totalOutputOfRegionalAreas(self, energyBreakdownList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):
         ## check the storage path
-        self.mkdirRegionalOutputJSON()
+        self.mkdirRegionalOutputJSON(str(self.numOfBus) + '/')
 
         ## Determine the upper and lower bounds
         regionalTotalOutputList = []
@@ -3082,11 +3083,13 @@ class OptimalPowerFlowAnalysis:
             for energyBreakdown_eachCarbonTax in energyBreakdown_eachSMRDesign:
                 for energyBreakdown_eachWeather in energyBreakdown_eachCarbonTax:
                     for energyBreakdown_eachWeight in energyBreakdown_eachWeather:
+                        nationalTotalGeneration = 0
                         for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
                             regionalTotalOutput = 0
                             for output in energyBreakdown_eachRegion['outputBreakdown']:
                                 regionalTotalOutput += float(output) 
                             energyBreakdown_eachRegion['totalOutput'] = round(regionalTotalOutput,2)
+                            nationalTotalGeneration += regionalTotalOutput
                             regionalTotalOutputList.append(regionalTotalOutput)
 
         upperbound = round(float(max(regionalTotalOutputList)), 2)
@@ -3099,13 +3102,8 @@ class OptimalPowerFlowAnalysis:
         upperbound = math.ceil(upperbound) * (10**counter)
 
         ## create the colour bar legend
-        createColourBarLegend(self.branchLossJSONPath + str(self.numOfBus) + '/', upperbound, lowerbound, 'Transmission loss (MW)', 'legend-transmissionLoss', None, 8)
-
-        ##TODO: add colour method 
-
-
-
-       
+        createColourBarLegend(self.regionalOutputJSONPath + str(self.numOfBus) + '/', upperbound, lowerbound, 'Total output (MW)', 'legend-regionalTotalOutput', None, 7)
+ 
         weatherNameList = []
         for weather in weatherConditionList:
             weatherNameList.append(weather[2])
@@ -3139,7 +3137,7 @@ class OptimalPowerFlowAnalysis:
                             "features": ["""
                         # iterating over features (rows in results array)
                         for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
-                            boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
+                            boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['regionalAreaBoundary'])))
                             ## Total energy generation
                             regionalTotalOutput = 0
                             for output in energyBreakdown_eachRegion['outputBreakdown']:
@@ -3157,7 +3155,10 @@ class OptimalPowerFlowAnalysis:
                                 "stroke-opacity" : 0.7
                                 },
                                 "geometry":  %s             
-                            },"""%(energyBreakdown_eachRegion['regionalAreaBoundary'], regionalTotalOutput, outPut * 100, outPut * 100, str(boundary).replace("\'", "\""))         
+                            },"""%(energyBreakdown_eachRegion['ReginalLACode'], regionalTotalOutput, 
+                            sequentialHEXColourCodePicker(regionalTotalOutput, upperbound, lowerbound, None, 7), 
+                            sequentialHEXColourCodePicker(regionalTotalOutput, upperbound, lowerbound, None, 7), 
+                            str(boundary).replace("\'", "\""))         
                             # adding new line 
                             geojson_file += '\n' + feature
                             
@@ -3170,7 +3171,7 @@ class OptimalPowerFlowAnalysis:
                         geojson_file += end_geojson
                         # saving as geoJSON
                         file_label = 'TotalOutputForRegionalArea_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                        geojson_written = open(self.outputOfDifferentEnergySourceJSONPath + file_label + '.geojson','w')
+                        geojson_written = open(self.regionalOutputJSONPath + str(self.numOfBus) + '/' + file_label + '.geojson','w')
                         geojson_written.write(geojson_file)
                         geojson_written.close() 
                         print('---GeoJSON written successfully: total output of regional area---', file_label)                                        
@@ -3200,7 +3201,7 @@ class OptimalPowerFlowAnalysis:
                         "features": ["""
                     # iterating over features (rows in results array)
                     for energyBreakdown_eachRegion in specifiedEnergyBreakdownList:
-                        boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
+                        boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['regionalAreaBoundary'])))
                         ## Total energy generation
                         regionalTotalOutput = 0
                         for output in energyBreakdown_eachRegion['outputBreakdown']:
@@ -3218,7 +3219,10 @@ class OptimalPowerFlowAnalysis:
                             "stroke-opacity" : 0.7
                             },
                             "geometry":  %s             
-                        },"""%(energyBreakdown_eachRegion['regionalAreaBoundary'], regionalTotalOutput, outPut * 100, outPut * 100, str(boundary).replace("\'", "\""))         
+                        },"""%(energyBreakdown_eachRegion['ReginalLACode'], regionalTotalOutput, 
+                            sequentialHEXColourCodePicker(regionalTotalOutput, upperbound, lowerbound, None, 7), 
+                            sequentialHEXColourCodePicker(regionalTotalOutput, upperbound, lowerbound, None, 7), 
+                            str(boundary).replace("\'", "\"")) 
                         # adding new line 
                         geojson_file += '\n' + feature
                         
@@ -3231,7 +3235,7 @@ class OptimalPowerFlowAnalysis:
                     geojson_file += end_geojson
                     # saving as geoJSON
                     file_label = 'TotalOutputForRegionalArea_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) +'_weight_' + str(round(cf[3], 2)) + ')'
-                    geojson_written = open(self.outputOfDifferentEnergySourceJSONPath + file_label + '.geojson','w')
+                    geojson_written = open(self.regionalOutputJSONPath + str(self.numOfBus) + '/' +  file_label + '.geojson','w')
                     geojson_written.write(geojson_file)
                     geojson_written.close() 
                     print('---GeoJSON written successfully: total output of regional area---', file_label)                                                     
@@ -3248,7 +3252,7 @@ class OptimalPowerFlowAnalysis:
                                 "features": ["""
                             # iterating over features (rows in results array)
                             for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
-                                boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['smallAreaBoundary'])))
+                                boundary =  ast.literal_eval(geojson.dumps(mapping(energyBreakdown_eachRegion['regionalAreaBoundary'])))
                                 ## Total energy generation
                                 regionalTotalOutput = 0
                                 for output in energyBreakdown_eachRegion['outputBreakdown']:
@@ -3266,7 +3270,10 @@ class OptimalPowerFlowAnalysis:
                                     "stroke-opacity" : 0.7
                                     },
                                     "geometry":  %s             
-                                },"""%(energyBreakdown_eachRegion['regionalAreaBoundary'], regionalTotalOutput, outPut * 100, outPut * 100, str(boundary).replace("\'", "\""))         
+                                },"""%(energyBreakdown_eachRegion['ReginalLACode'], regionalTotalOutput, 
+                                sequentialHEXColourCodePicker(regionalTotalOutput, upperbound, lowerbound, None, 7), 
+                                sequentialHEXColourCodePicker(regionalTotalOutput, upperbound, lowerbound, None, 7), 
+                                str(boundary).replace("\'", "\"")) 
                                 # adding new line 
                                 geojson_file += '\n' + feature
                                 
@@ -3279,7 +3286,7 @@ class OptimalPowerFlowAnalysis:
                             geojson_file += end_geojson
                             # saving as geoJSON
                             file_label = 'TotalOutputForRegionalArea_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ')'
-                            geojson_written = open(self.outputOfDifferentEnergySourceJSONPath + file_label + '.geojson','w')
+                            geojson_written = open(self.regionalOutputJSONPath + str(self.numOfBus) + '/' +  file_label + '.geojson','w')
                             geojson_written.write(geojson_file)
                             geojson_written.close() 
                             print('---GeoJSON written successfully: total output of regional area---', file_label)                                  
@@ -4947,11 +4954,11 @@ class OptimalPowerFlowAnalysis:
         else:
             print("---  There has this folder!  ---")
 
-    def mkdirRegionalOutputJSON(self):
-        folder = os.path.exists(self.regionalOutputJSONPath)
+    def mkdirRegionalOutputJSON(self, addingPath):
+        folder = os.path.exists(self.regionalOutputJSONPath + addingPath)
         if not folder:                
-            os.makedirs(self.regionalOutputJSONPath)           
-            print("---  new folder %s...  ---" % self.regionalOutputJSONPath)
+            os.makedirs(self.regionalOutputJSONPath + addingPath)           
+            print("---  new folder %s...  ---" % self.regionalOutputJSONPath + addingPath)
         else:
             print("---  There has this folder!  ---")
 
@@ -6085,29 +6092,29 @@ if __name__ == '__main__':
     ## TODO: stop generating the JSON files
     generateVisualisationJSON = True
    
-    pop_size = 1000
-    n_offsprings = 1000
-    numberOfGenerations = 400
+    # pop_size = 1000
+    # n_offsprings = 1000
+    # numberOfGenerations = 400
 # ## TODO: for testing 
-    # pop_size = 500
-    # n_offsprings = 100
-    # numberOfGenerations = 100
+    pop_size = 500
+    n_offsprings = 100
+    numberOfGenerations = 100
 
 ## TODO: change the picked weight 
     pickedWeight = 0.9
 
-    NumberOfSMRUnitList = [0, 5, 10, 25, 30, 40, 45, 46, 50, 51, 52, 53, 54] #[0, 1, 5, 10, 15, 20, 22, 24, 25, 28, 30, 35, 40, 45, 47, 50, 54, 60]
-    weighterList = [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
-    CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 70, 80, 100]
-    weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
+    # NumberOfSMRUnitList = [0, 5, 10, 25, 30, 40, 45, 46, 50, 51, 52, 53, 54] #[0, 1, 5, 10, 15, 20, 22, 24, 25, 28, 30, 35, 40, 45, 47, 50, 54, 60]
+    # weighterList = [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
+    # CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 70, 80, 100]
+    # weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
 
     ###FORTEST###
-    # NumberOfSMRUnitList = [25] 
-    # weighterList = [0.5]
-    # CarbonTaxForOPFList = [60]
-    # weatherConditionList = [[0.67, 0.74, "WHSH"]] #, [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
+    NumberOfSMRUnitList = [25] 
+    weighterList = [0.5]
+    CarbonTaxForOPFList = [60]
+    weatherConditionList = [[0.67, 0.74, "WHSH"]] #, [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
 
-    ifReadLocalResults = True
+    ifReadLocalResults = False
 
     rootPath = '/mnt/d/wx243/FromTWA/npy/'## root path for npu files store
 
@@ -6311,34 +6318,43 @@ if __name__ == '__main__':
         numpy.save(rootPath + "np_branchRawResult_eachSMRDesign.npy", np_branchRawResult_eachSMRDesign)
         numpy.save(rootPath + "np_genRawResult_eachSMRDesign.npy", np_genRawResult_eachSMRDesign)
     else:
-        ##TODO: change the path and change // in other code, change the JSON file saving path to be local
-        summary_eachSMRDesign = numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True)
-        SMROutputAndOperationalRatio_eachSMRDesign = numpy.load(rootPath +"np_SMROutputAndOperationalRatio_eachSMRDesign.npy", allow_pickle=True)
-        emission_eachSMRDesign = numpy.load(rootPath +"np_emission_eachSMRDesign.npy", allow_pickle=True)
-        energyBreakdown_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_eachSMRDesign.npy", allow_pickle=True)
-        genTypeLabel = numpy.load(rootPath +"np_genTypeLabel.npy", allow_pickle=True)
-        netDemanding_smallArea_eachSMRDesign = numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)
-        netDemanding_regionalArea_eachSMRDesign = numpy.load(rootPath +"np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)
-        transmissionLoss_eachSMRDesign = numpy.load(rootPath +"np_transmissionLoss_eachSMRDesign.npy", allow_pickle=True)    
-        energyBreakdown_smallArea_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_smallArea_eachSMRDesign.npy", allow_pickle=True)
+        # summary_eachSMRDesign = numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True)
+        # SMROutputAndOperationalRatio_eachSMRDesign = numpy.load(rootPath +"np_SMROutputAndOperationalRatio_eachSMRDesign.npy", allow_pickle=True)
+        # emission_eachSMRDesign = numpy.load(rootPath +"np_emission_eachSMRDesign.npy", allow_pickle=True)
+        # energyBreakdown_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_eachSMRDesign.npy", allow_pickle=True)
+        # genTypeLabel = numpy.load(rootPath +"np_genTypeLabel.npy", allow_pickle=True)
+        # netDemanding_smallArea_eachSMRDesign = numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)
+        # netDemanding_regionalArea_eachSMRDesign = numpy.load(rootPath +"np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)
+        # transmissionLoss_eachSMRDesign = numpy.load(rootPath +"np_transmissionLoss_eachSMRDesign.npy", allow_pickle=True)    
+        # energyBreakdown_smallArea_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_smallArea_eachSMRDesign.npy", allow_pickle=True)
         energyBreakdown_regionalArea_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)
-        busRawResult_eachSMRDesign = numpy.load(rootPath +"np_busRawResult_eachSMRDesign.npy", allow_pickle=True)
-        branchRawResult_eachSMRDesign = numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)
-        genRawResult_eachSMRDesign = numpy.load(rootPath +"np_genRawResult_eachSMRDesign.npy", allow_pickle=True)
+        # busRawResult_eachSMRDesign = numpy.load(rootPath +"np_busRawResult_eachSMRDesign.npy", allow_pickle=True)
+        # branchRawResult_eachSMRDesign = numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)
+        # genRawResult_eachSMRDesign = numpy.load(rootPath +"np_genRawResult_eachSMRDesign.npy", allow_pickle=True)
 
-        summary_eachSMRDesign = summary_eachSMRDesign.tolist()
-        SMROutputAndOperationalRatio_eachSMRDesign = SMROutputAndOperationalRatio_eachSMRDesign.tolist()
-        emission_eachSMRDesign = emission_eachSMRDesign.tolist()
-        energyBreakdown_eachSMRDesign = energyBreakdown_eachSMRDesign.tolist()
-        genTypeLabel = genTypeLabel.tolist()  
-        netDemanding_smallArea_eachSMRDesign = netDemanding_smallArea_eachSMRDesign.tolist()
-        netDemanding_regionalArea_eachSMRDesign = netDemanding_regionalArea_eachSMRDesign.tolist()
-        transmissionLoss_eachSMRDesign = transmissionLoss_eachSMRDesign.tolist()
-        energyBreakdown_smallArea_eachSMRDesign = energyBreakdown_smallArea_eachSMRDesign.tolist()
+        # summary_eachSMRDesign = summary_eachSMRDesign.tolist()
+        # SMROutputAndOperationalRatio_eachSMRDesign = SMROutputAndOperationalRatio_eachSMRDesign.tolist()
+        # emission_eachSMRDesign = emission_eachSMRDesign.tolist()
+        # energyBreakdown_eachSMRDesign = energyBreakdown_eachSMRDesign.tolist()
+        # genTypeLabel = genTypeLabel.tolist()  
+        # netDemanding_smallArea_eachSMRDesign = netDemanding_smallArea_eachSMRDesign.tolist()
+        # netDemanding_regionalArea_eachSMRDesign = netDemanding_regionalArea_eachSMRDesign.tolist()
+        # transmissionLoss_eachSMRDesign = transmissionLoss_eachSMRDesign.tolist()
+        # energyBreakdown_smallArea_eachSMRDesign = energyBreakdown_smallArea_eachSMRDesign.tolist()
         energyBreakdown_regionalArea_eachSMRDesign = energyBreakdown_regionalArea_eachSMRDesign.tolist()
-        busRawResult_eachSMRDesign = busRawResult_eachSMRDesign.tolist()
-        branchRawResult_eachSMRDesign = branchRawResult_eachSMRDesign.tolist()
-        genRawResult_eachSMRDesign = genRawResult_eachSMRDesign.tolist()
+        # busRawResult_eachSMRDesign = busRawResult_eachSMRDesign.tolist()
+        # branchRawResult_eachSMRDesign = branchRawResult_eachSMRDesign.tolist()
+        # genRawResult_eachSMRDesign = genRawResult_eachSMRDesign.tolist()
+
+
+        ### TODO: to be deleted  
+        for eb_eachCarbonTax in energyBreakdown_regionalArea_eachSMRDesign[8]:
+            for eb_eachWeather in eb_eachCarbonTax:
+                for eb_eachWeight in eb_eachWeather:
+                    for eb_eachRegion in eb_eachWeight:
+                        if 'SMR' in eb_eachRegion['genTypeLabel']:
+                            print(eb_eachRegion)
+
 
     # testOPF_29BusModel.resultsSheetCreator(NumberOfSMRUnitList, weatherConditionList, CarbonTaxForOPFList, summary_eachSMRDesign)
     # testOPF_29BusModel.dataHeatmapCreator_totalCostAndEmission(summary_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
