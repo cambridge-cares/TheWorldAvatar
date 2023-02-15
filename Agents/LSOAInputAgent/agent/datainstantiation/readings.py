@@ -239,8 +239,14 @@ def read_from_web_temp (year: str = YEAR, var_name: str = 'tas'):
           year: the number of year of which the data you may want to read
           var_name: 'tas'/'tasmax'/'tasmin' Select from those three to download file represent mean, max, min temperature, respectively.
     '''
-  from agent.utils.CEDA_env_config import retrieve_settings
-  CEDA_USERNAME, CEDA_PASSWORD = retrieve_settings()
+  try:
+    from agent.utils.CEDA_env_config import retrieve_settings, record_login_info
+    if not os.path.exists('./downloads/.env'):
+        record_login_info()
+    CEDA_USERNAME, CEDA_PASSWORD = retrieve_settings()
+  except Exception as ex:
+    print(ex)
+    raise InvalidInput('Fail to retrieve CEDA_USERNAME, CEDA_PASSWORD! Check if they have been placed under ./secrets folder')
 
   if type(year) != str:
       logger.error('Provided formate of year is not string')
@@ -764,7 +770,7 @@ def upload_hadUK_climate_to_KG (year: str = YEAR,
       return list containing LSOA code and shape
       '''
       # Get geodata
-      LSOA_codes, wkt_codes = read_from_pickle('./Data/shapes_array')
+      LSOA_codes, wkt_codes = read_from_pickle('./data/shapes_array')
       usage_vals = np.column_stack((LSOA_codes, wkt_codes))
       # preassigning centroid array
       centroids = np.zeros((len(usage_vals),1),dtype='object')
