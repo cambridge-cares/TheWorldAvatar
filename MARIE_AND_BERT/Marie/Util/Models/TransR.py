@@ -23,6 +23,7 @@ class TransR(nn.Module):
                  margin=5, resume_training=False, dataset_path=None):
         super(TransR, self).__init__()
         self.device = device
+        print(f"========= Device used in TransR model {self.device} ==============")
         self.rel_num = rel_num
         self.ent_num = ent_num
         self.rel_dim = rel_dim
@@ -93,16 +94,19 @@ class TransR(nn.Module):
         return embeddings
 
     def forward(self, pos_triples, neg_triples, mode="non_numerical"):
-        dist_pos = self.distance(pos_triples)
-        dist_neg = self.distance(neg_triples)
+        pos_triples = pos_triples.cuda()
+        neg_triples = neg_triples.cuda()
+        dist_pos = self.distance(pos_triples).cuda()
+        dist_neg = self.distance(neg_triples).cuda()
         if mode == "non_numerical":
-            return self.loss(dist_pos, dist_neg).mean()
+            return self.loss(dist_pos, dist_neg).mean().cuda()
         else:
-            numerical_loss = self.numerical_forward(pos_triples)  # numerical loss only requires pos triples
+            numerical_loss = self.numerical_forward(
+                pos_triples.cuda()).cuda()  # numerical loss only requires pos triples
             # return (1 - self.alpha) * self.loss(dist_pos, dist_neg).mean() + self.alpha * numerical_loss
             # return self.alpha * numerical_loss
             # return torch.clamp(numerical_loss, max=10)
-            return numerical_loss
+            return numerical_loss.cuda()
 
     def numerical_predict(self, triples):
         true_value = triples[2].to(self.device) / 1000
@@ -119,6 +123,27 @@ class TransR(nn.Module):
         value = (aV + bias).to(self.device)
         print(true_value, value)
 
+    def calculate_tail_embedding(self, triples):
+        head_idx, rel_idx, tail_idx = triples
+        head_idx = head_idx.to(self.device)
+        tail_idx = tail_idx.to(self.device)
+        rel_idx = rel_idx.to(self.device)
+
+        head = self.ent_embedding(head_idx).to(self.device)
+        rel = self.rel_embedding(rel_idx).to(self.device)
+        b_size = len(head_idx)
+        proj_mat = self.proj_matrix(rel_idx).view(b_size, self.rel_dim, self.ent_dim)
+        projected_e_h = self.project(ent=head, proj_mat=proj_mat).to(self.device)
+        calculated_tail = projected_e_h + rel
+        inversed_tail = self.inverse_project(ent=calculated_tail, r_idx=rel_idx)
+        with torch.no_grad():
+            self.ent_embedding.weight[tail_idx] = inversed_tail
+            # print(calculated_tail.shape)
+            # print(self.ent_embedding.weight[tail_idx].shape)
+            # print(self.ent_embedding.weight[tail_idx])
+
+
+
     def numerical_forward(self, triples):
         true_value = triples[3].to(self.device) / 1000
         head_idx = triples[0].long().to(self.device)
@@ -132,19 +157,9 @@ class TransR(nn.Module):
             head = self.project(ent=head, proj_mat=proj_mat).to(self.device)
         attr = self.attr_embedding(rel_idx.to(self.device)).to(self.device)
         bias = self.bias_embedding(rel_idx.to(self.device)).to(self.device)
-        aV = torch.sum(head * attr, dim=1) .to(self.device)
-        # print("-------------")
-        # print(head * attr)
-        # print("aV", aV)
-        # print("bias", bias)
-        # print("true value", true_value)
-        # print("value raw", aV + bias)
+        aV = torch.sum(head * attr, dim=1).to(self.device)
         value = (aV + bias[0]).to(self.device)
-        # diff = self.msle_loss(value, true_value).mean().to(self.device)
         diff = torch.nn.functional.mse_loss(value.to(self.device), true_value.to(torch.float32).to(self.device))
-        # diff = torch.abs(value - true_value).mean()
-        # diff = torch.clamp(diff, max=100)
-        # print(diff)
         return diff.to(self.device)
 
     def predict(self, triples):
@@ -161,6 +176,21 @@ class TransR(nn.Module):
 
         test_triples = (heads, rels, tails)
         return self.distance(test_triples)  # , true_tail, candidates_tails
+
+    def inverse_project(self, ent, r_idx):
+        """
+        Original_ent * Proj_Mat = Proj_ent
+        Proj_ent * (Proj_Mat)^-1 = Original_ent
+        Given the projected_embedding, use the inverse projection matrix to get the original embedding
+        :param ent:
+        :param proj_mat:
+        :return:
+        """
+        b_size = len(ent)
+        proj_mat = self.proj_matrix(r_idx).view(b_size, self.rel_dim, self.ent_dim).to(self.device)
+        proj_mat_inverse = proj_mat.inverse()
+        original_ent = matmul(proj_mat_inverse, ent.view(-1, self.ent_dim, 1))
+        return original_ent.view(-1, self.rel_dim)
 
     def project(self, ent, proj_mat):
         proj_e = matmul(proj_mat, ent.view(-1, self.ent_dim, 1))
@@ -213,13 +243,17 @@ class TransR(nn.Module):
         :param triples:
         :return:
         """
-        e_h_idx = torch.LongTensor(triples[0].long()).to(self.device)
-        r_idx = torch.LongTensor(triples[1].long()).to(self.device)
-        e_t_idx = torch.LongTensor(triples[2].long()).to(self.device)
+        # =============== Copy the input tensors to GPU ======================
+        e_h_idx = triples[0].type(torch.LongTensor).to(self.device)
+        r_idx = triples[1].type(torch.LongTensor).to(self.device)
+        e_t_idx = triples[2].type(torch.LongTensor).to(self.device)
+        # ====================================================================
 
         # =============== prepare embeddings =======================
-        e_h = normalize(self.ent_embedding(e_h_idx)).to(self.device)
-        e_t = normalize(self.ent_embedding(e_t_idx)).to(self.device)
+        # e_h = normalize(self.ent_embedding(e_h_idx)).to(self.device)
+        # e_t = normalize(self.ent_embedding(e_t_idx)).to(self.device)
+        e_h = self.ent_embedding(e_h_idx).to(self.device)
+        e_t = self.ent_embedding(e_t_idx).to(self.device)
         r = self.rel_embedding(r_idx).to(self.device)
         # ==========================================================
 

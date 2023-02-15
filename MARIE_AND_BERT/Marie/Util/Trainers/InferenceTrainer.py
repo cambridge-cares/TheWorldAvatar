@@ -1,7 +1,7 @@
 import random
 import sys
 
-from torch import no_grad
+from torch import no_grad, nn
 from torch.optim.lr_scheduler import ExponentialLR
 from tqdm import tqdm
 
@@ -42,6 +42,19 @@ def hit_rate(true_tail_idx_ranking_list):
     return hit_1, hit_5, hit_10
 
 
+def evaluate_ranking(distances, all_tails, true_tail):
+    _, B = torch.topk(distances, k=len(distances), largest=False)
+    B = B.tolist()
+    selected_candidates = [all_tails.tolist()[idx] for idx in B]
+    if true_tail in selected_candidates:
+        f_ranking_idx = selected_candidates.index(true_tail)
+        f_ranking = 1 / (f_ranking_idx + 1)
+    else:
+        f_ranking = 0
+        f_ranking_idx = -1
+    return f_ranking, f_ranking_idx
+
+
 class InferenceTrainer:
 
     def __init__(self, full_dataset_dir, ontology, batch_size=32, epoch_num=100, dim=20, learning_rate=1.0, gamma=1,
@@ -51,6 +64,7 @@ class InferenceTrainer:
         self.learning_rate = learning_rate
         self.gamma = gamma
         self.dim = dim
+        self.batch_size = batch_size
         self.test = test
         self.use_projection = use_projection
         self.alpha = alpha
@@ -60,11 +74,18 @@ class InferenceTrainer:
             dataset_dir=self.full_dataset_dir,
             dataset_name=self.ontology)
         df_train = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-train-2.txt"), sep="\t", header=None)
-        df_train_small = df_train.sample(frac=0.1)
+        self.df_train = df_train
+        df_train_small = df_train.sample(frac=0.01)
         df_test = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-test.txt"), sep="\t", header=None)
         df_numerical = pd.read_csv(os.path.join(full_dir, f"numerical_eval.tsv"), sep="\t", header=None)
-        test_set = TransRInferenceDataset(df_test, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology,
-                                          mode="test")
+
+        value_node_set = TransRInferenceDataset(df=self.df_train, full_dataset_dir=self.full_dataset_dir,
+                                                ontology=self.ontology,
+                                                mode="value_node")
+
+        value_node_eval_set = TransRInferenceDataset(df= df_train_small, full_dataset_dir=self.full_dataset_dir,
+                                                     ontology=self.ontology,
+                                                     mode="value_node_eval")
 
         numerical_eval_set = TransRInferenceDataset(df_numerical, full_dataset_dir=self.full_dataset_dir,
                                                     ontology=self.ontology,
@@ -72,9 +93,16 @@ class InferenceTrainer:
 
         # ========================================== CREATE DATASET FOR TRAINING ================================
         if not self.test:
+            test_set = TransRInferenceDataset(df_test, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology,
+                                              mode="test")
+
             train_set = TransRInferenceDataset(df_train, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology,
                                                mode="train")
             self.train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
+        else:
+            test_set = TransRInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
+                                              ontology=self.ontology,
+                                              mode="test")
         # =========================================================================================================
 
         train_set_small = TransRInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
@@ -92,10 +120,18 @@ class InferenceTrainer:
         # ================================================================================================================
         self.test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=test_set.candidate_max, shuffle=False)
         self.train_dataloader_small = torch.utils.data.DataLoader(train_set_small, batch_size=batch_size, shuffle=True)
-        self.train_dataloader_eval = torch.utils.data.DataLoader(train_set_eval, batch_size=train_set_eval.ent_num,
+
+        self.train_dataloader_eval = torch.utils.data.DataLoader(train_set_eval,
+                                                                 batch_size=train_set_eval.candidate_max,
                                                                  shuffle=False)
         self.numerical_eval_set_dataloader = torch.utils.data.DataLoader(numerical_eval_set, batch_size=1,
                                                                          shuffle=True)
+
+        self.dataloader_value_node = torch.utils.data.DataLoader(value_node_set, batch_size=self.batch_size,
+                                                                 shuffle=True)
+        self.dataloader_value_node_eval = torch.utils.data.DataLoader(value_node_eval_set,
+                                                                      batch_size=value_node_eval_set.ent_num,
+                                                                      shuffle=False)
         # ===========================================================================================================
         self.file_loader = FileLoader(full_dataset_dir=self.full_dataset_dir, dataset_name=self.ontology)
         self.entity2idx, self.idx2entity, self.rel2idx, self.idx2rel = self.file_loader.load_index_files()
@@ -105,17 +141,20 @@ class InferenceTrainer:
         self.model = TransR(rel_dim=self.dim, rel_num=len(self.rel2idx.keys()), ent_dim=self.dim,
                             ent_num=len(self.entity2idx.keys()), device=self.device,
                             use_projection=self.use_projection, alpha=self.alpha,
-                            margin=margin, resume_training=self.resume, dataset_path=self.full_dataset_dir).to(
-            self.device)
+                            margin=margin, resume_training=self.resume, dataset_path=self.full_dataset_dir)
+
+        self.model = nn.DataParallel(self.model)
+        self.model.cuda()
+
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
         self.scheduler = ExponentialLR(self.optimizer, gamma=self.gamma)
 
     def export_embeddings(self):
-        self.write_embeddings(self.model.ent_embedding, "ent_embedding")
-        self.write_embeddings(self.model.rel_embedding, "rel_embedding")
-        self.write_embeddings(self.model.attr_embedding, "attr_embedding")
-        self.write_embeddings(self.model.bias_embedding, "bias_embedding")
-        self.write_embeddings(self.model.proj_matrix, "proj_matrix")
+        self.write_embeddings(self.model.module.ent_embedding, "ent_embedding")
+        self.write_embeddings(self.model.module.rel_embedding, "rel_embedding")
+        self.write_embeddings(self.model.module.attr_embedding, "attr_embedding")
+        self.write_embeddings(self.model.module.bias_embedding, "bias_embedding")
+        self.write_embeddings(self.model.module.proj_matrix, "proj_matrix")
 
     def write_embeddings(self, embedding, embedding_name):
         lines = []
@@ -138,20 +177,12 @@ class InferenceTrainer:
                 selected_idx = (all_tails >= 0)
                 heads, rels, all_tails = heads[selected_idx], rels[selected_idx], all_tails[selected_idx]
                 triples = torch.stack((heads, rels, all_tails)).type(torch.LongTensor)
-                distances = self.model.predict(triples=triples)
-                _, B = torch.topk(distances, k=len(distances), largest=False)
-                B = B.tolist()
-                selected_candidates = [all_tails.tolist()[idx] for idx in B]
-                if true_tail in selected_candidates:
-                    ranking_idx = selected_candidates.index(true_tail)
-                    ranking = 1 / (ranking_idx + 1)
-                else:
-                    ranking = 0
-                    ranking_idx = -1
-
-                filtered_hit_rate_list.append(ranking_idx)
+                distances = self.model.module.predict(triples=triples)
+                f_ranking, f_ranking_idx = evaluate_ranking(distances=distances, all_tails=all_tails, true_tail=true_tail)
+                filtered_hit_rate_list.append(f_ranking_idx)
                 counter += 1
-                total_mrr += ranking
+                total_mrr += f_ranking
+
             total_mrr = total_mrr / counter
             filtered_hit_rate_list = hit_rate(filtered_hit_rate_list)
             print("=================== Training set evaluation ===================")
@@ -167,25 +198,16 @@ class InferenceTrainer:
                 selected_idx = (all_tails >= 0)
                 heads, rels, all_tails = heads[selected_idx], rels[selected_idx], all_tails[selected_idx]
                 triples = torch.stack((heads, rels, all_tails)).type(torch.LongTensor)
-                distances = self.model.infer(triples)
-                _, B = torch.topk(distances, k=len(distances), largest=False)
-                B = B.tolist()
-                selected_candidates = [all_tails.tolist()[idx] for idx in B]
-
-                if true_tail in selected_candidates:
-                    f_ranking_idx = selected_candidates.index(true_tail)
-                    f_ranking = 1 / (f_ranking_idx + 1)
-                else:
-                    f_ranking = 0
-                    f_ranking_idx = -1
+                distances = self.model.module.infer(triples)
+                f_ranking, f_ranking_idx = evaluate_ranking(distances=distances, all_tails=all_tails, true_tail=true_tail)
                 filtered_counter += 1
                 counter += 1
                 total_fmrr += f_ranking
-                hit_rate_list.append(ranking_idx)
+                hit_rate_list.append(f_ranking_idx)
                 filtered_hit_rate_list.append(f_ranking_idx)
 
             for numerical_eval_triples in self.numerical_eval_set_dataloader:
-                self.model.numerical_predict(numerical_eval_triples)
+                self.model.module.numerical_predict(numerical_eval_triples)
 
             filtered_hit_rate_list = hit_rate(filtered_hit_rate_list)
             total_fmrr = total_fmrr / filtered_counter
@@ -212,11 +234,12 @@ class InferenceTrainer:
             self.optimizer.zero_grad()
             numerical_idx_list = (pos[3] != -999)
             pos = torch.transpose(torch.stack(pos), 0, 1)
-            pos_numerical = torch.transpose(pos[numerical_idx_list], 0, 1)
-            pos_non_numerical = torch.transpose(pos[~numerical_idx_list], 0, 1)  # create negative index list with ~
+            pos_numerical = torch.transpose(pos[numerical_idx_list], 0, 1).cuda()
+            pos_non_numerical = torch.transpose(pos[~numerical_idx_list], 0,
+                                                1).cuda()  # create negative index list with ~
             neg = torch.transpose(torch.stack(neg), 0, 1)
-            neg_numerical = torch.transpose(neg[numerical_idx_list], 0, 1)
-            neg_non_numerical = torch.transpose(neg[~numerical_idx_list], 0, 1)
+            neg_numerical = torch.transpose(neg[numerical_idx_list], 0, 1).cuda()
+            neg_non_numerical = torch.transpose(neg[~numerical_idx_list], 0, 1).cuda()
             loss_non_numerical = self.model(pos_non_numerical, neg_non_numerical, mode="non_numerical")
             if len(pos_numerical[0]) > 0:
                 loss_numerical = self.model(pos_numerical, neg_numerical, mode="numerical")
@@ -229,7 +252,7 @@ class InferenceTrainer:
                 total_train_loss += loss_non_numerical.cpu().mean()
             total_non_numerical_loss += loss_non_numerical.cpu().mean()
 
-            # self.model.normalize_parameters()
+            self.model.module.normalize_parameters()
             self.optimizer.step()
 
         print(f"Loss: {total_train_loss}")
@@ -245,6 +268,36 @@ class InferenceTrainer:
                 self.evaluate()
                 self.export_embeddings()
                 print(f"Current learning rate: {self.scheduler.get_lr()}")
+
+        self.calculate_value_node_embedding()
+        self.evaluate_value_node_embedding()
+        self.export_embeddings()
+
+    def calculate_value_node_embedding(self):
+        with no_grad():
+            for triple in tqdm(self.dataloader_value_node):
+                self.model.module.calculate_tail_embedding(triple)
+
+    def evaluate_value_node_embedding(self):
+        with no_grad():
+            filtered_hit_rate_list = []
+            counter = 0
+            total_mrr = 0
+            for triple in tqdm(self.dataloader_value_node_eval):
+                true_tail = triple[3][0].item()
+                all_tails = triple[2]
+                distances = self.model.module.distance(triple)
+                f_ranking, f_ranking_idx = evaluate_ranking(distances=distances, all_tails=all_tails, true_tail=true_tail)
+                filtered_hit_rate_list.append(f_ranking_idx)
+                counter += 1
+                total_mrr += f_ranking
+            total_mrr = total_mrr / counter
+            filtered_hit_rate_list = hit_rate(filtered_hit_rate_list)
+            print("=================== Node value set evaluation ===================")
+            print(f"total value node mrr: {total_mrr}")
+            print(f"the value node hit rate list is : {filtered_hit_rate_list}")
+            print("===============================================================")
+
 
 
 if __name__ == "__main__":
@@ -292,7 +345,7 @@ if __name__ == "__main__":
     if args.epoch:
         epoch = int(args.epoch)
 
-    ontology = "role_with_subclass_full_attributes_0.1_with_class"
+    ontology = "test"
     if args.sub_ontology:
         ontology = args.sub_ontology
 
