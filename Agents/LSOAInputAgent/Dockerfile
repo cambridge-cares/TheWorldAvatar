@@ -65,8 +65,13 @@ FROM base as prod
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
 COPY ./agent ./agent
+COPY ./downloads ./downloads
+COPY ./secrets ./secrets
+COPY ./data ./data
 COPY ./app_entry_point.sh .
 
+# Set permission 
+RUN chmod +x app_entry_point.sh
 # Set the entrypoint
 ENTRYPOINT ./app_entry_point.sh
 #==================================================================================================

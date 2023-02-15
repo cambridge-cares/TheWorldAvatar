@@ -50,7 +50,7 @@ def test_reading_temp_from_web(year, var_name, expectedfilepath):
 
 @pytest.mark.parametrize("expectedfilepath", \
 [
-('./Data/shapes_array')
+('./data/shapes_array')
 ]
 )
 def test_shape_file_location(expectedfilepath):

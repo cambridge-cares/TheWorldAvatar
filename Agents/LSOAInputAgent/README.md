@@ -7,7 +7,7 @@ Currently this agent is focusing on the data of electricity consumption, gas con
 The agent is implemented as Docker container to be deployed to a Docker stack spun up by the [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager). 
 
 &nbsp;
-# Environment setup
+# Environment setup (Optional)
 
 For development and testing reasons, follow instructions below to get started.
 

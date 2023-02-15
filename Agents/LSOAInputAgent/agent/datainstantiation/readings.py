@@ -160,6 +160,7 @@ def read_from_web_gas (year: str = YEAR):
     logger.info('Gas consumption/meter data successfully retrieved from web')
   
   except Exception as ex:
+    print(ex)
     logger.error(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
 please check the {file_name} located on the file in ./downloads folder, see if the 'year' sheet exist")
     raise InvalidInput(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
@@ -204,6 +205,7 @@ def read_from_web_fuel_poverty (year: str = YEAR):
     response = requests.get(link)
     open('./downloads/'+ file_name, 'wb').write(response.content)
   except Exception as ex:
+    print(ex)
     logger.error(f"Excel file fail to be downloaded")
     raise InvalidInput(f'Excel file fail to be downloaded, please check if {url} is a valid address and webpage') from ex
   
@@ -220,6 +222,7 @@ def read_from_web_fuel_poverty (year: str = YEAR):
     logger.info('Fuel poverty data successfully retrieved from web')
   
   except Exception as ex:
+    print(ex)
     logger.error(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
 please check the {file_name} located on the file in ./downloads folder, see if the 'Table 3' sheet contains desireable datasets")
     raise InvalidInput(f"Excel file fail to be read -- potentially there are changes of structure of the xlsx. \n \
@@ -323,6 +326,7 @@ def read_from_web_temp (year: str = YEAR, var_name: str = 'tas'):
       # Download the nc file
       file_name = os.path.basename(link).split('?')[0]
   except Exception as ex:
+      print(ex)
       logger.error(f'The hadUK climate data for {year} can not be found, please check the webpage: {url} to see if that year of data file exist')
       raise InvalidInput(f'The hadUK climate data for {year} can not be found, please check the webpage:{url} to see if that year of data file exist') from ex
   
@@ -342,6 +346,7 @@ def read_from_pickle(pathname: str):
     try: 
           infile = open(pathname,'rb')
     except Exception as ex:
+      print(ex)
       logger.error(f"can not find the pickle file, check {pathname} if which is there")
       raise InvalidInput(f'can not find the pickle file, check {pathname} if which is there') from ex
     

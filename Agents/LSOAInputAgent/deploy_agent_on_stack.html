@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+</html>
+<html>
+
+<head>
+</head>
+
+<style>
+    .code-block {
+        font-family: monospace;
+        font-size: 14px;
+        background-color: #f7f7f7;
+        padding: 1px;
+        border-radius: 5px;
+      }
+</style>
+
+<!------------------------------------------------------------------------------------------------------------------------------->
+
+<body>
+    <h1>
+        <b>Deploy the agent on the stack</b>
+    </h1>
+    <h2>
+        <b>Prerequisites: <br></b>
+    </h2>
+    <h3>
+        <li>Accessing Github's Container registry</li>
+    </h3>
+    While building the Docker image of the agent, 
+    it also gets pushed to the <a href="https://ghcr.io"> Github container registry</a>. 
+    Access needs to be ensured beforehand via your 
+    github <a href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token">personal access token</a>, which must have a scope 
+    that <a href="https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages">allows you to publish and install packages</a>. 
+    To log in to the <a href="https://ghcr.io/">Github container registry</a> 
+    simply run the following command to establish the connection 
+    and provide the access token when prompted:</br></br>
+    
+    <code class="code-block">
+        docker login ghcr.io -u &lt;github_username&gt; </br>
+        &nbsp;&lt;github_personal_access_token&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </code>
+
+    <h3>
+        <li>VS Code specifics</li>
+    </h3>
+    In order to avoid potential launching issues using the provided 
+    <code class="code-block">tasks.json</code> shell commands, please ensure the 
+    <code class="code-block">augustocdias.tasks-shell-input</code> plugin is installed.
+    
+    <h2>
+        Spinning up the stack
+    </h2>
+    <h3>
+        <li>Access to Docker registry</li>
+    </h3>
+    To store the Docker images used to test and deploy TWA code, 
+    we're using a private registry at docker.cmclinnovations.com. 
+    You can request login details by emailing 
+    <code class="code-block">
+    support@cmclinnovations.com 
+    </code>
+    with the subject <em>'Docker registry access'</em>. Note that, for now, 
+    developers only have pull access; if you want to push an image, you'll need to contact one of the administrators at CMCL, either using the same email address, or by contacting them directly.
+    <br><br>If you haven't already, test your access to the CMCL Docker registry, simply run </br>
+    <br>
+    <code class="code-block">
+        docker login docker.cmclinnovations.com
+    </code></br><br>
+    If you are not already logged in then, when prompted, enter the username and password you were given.</br>
+
+<h3>
+    <li>Build the stack</li>
+</h3>
+    Navigate to <code class="code-block"> Deploy/stacks/dynamic/stack-manager</code> 
+    and run the following command there from a <b>bash</b> terminal. 
+    <a href="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md">To spin up the stack</a>, both a <code class="code-block">postgis_password</code> and <code class="code-block">geoserver_password</code> file need to be created 
+    in the <code class="code-block">stack-manager/inputs/secrets/</code> directory 
+    (see detailed guidance following the provided link). 
+    There are several <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts">common stack scripts  </a> provided to manage the stack:
+    
+    <code class="code-block">
+        <p style="color: gray;">
+        # Start the stack (please note that this might take some time) - the port is optional and defaults to 3838 </br>
+        </p>
+        bash ./stack.sh start &lt;STACK_NAME&gt; &lt;PORT&gt;
+
+        <p style="color: gray;">
+        # Stop the stack
+        </p>
+        bash ./stack.sh stop &lt;STACK_NAME&gt;
+
+        <p style="color: gray;">
+        # Remove stack services (incl. volumes)</br>
+        </p>
+        bash ./stack.sh remove &lt;STACK_NAME&gt; -v</br></br>
+    </code>
+    After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). 
+    The endpoints and required log-in settings can be found in the <a href="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md">spin up the stack readme  </a>.
+    <h2>
+        Deploying the agent to the stack
+    </h2>
+    This agent requires <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB">JPS_BASE_LIB</a> and <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-MetOfficeAgent-withinStack/Deploy/stacks/dynamic/stack-clients">Stack-Clients</a> 
+    to be wrapped by py4jps. Therefore, after installation of all required packages (incl. <code class="code-block">py4jps >= 1.0.26</code>), 
+    the <code class="code-block">StackClients</code> resource needs to be added to allow for access through <code class="code-block">py4jps</code>. 
+    All required steps are detailed in the <a href="https://pypi.org/project/py4jps/#description">py4jps</a> documentation. However, the commands provided below shall 
+    suffice to compile the latest <code class="code-block">StackClients</code>  resource locally and install it inside the Docker container using the provided <a href="https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-2/Agents/LSOAInputAgent/Dockerfile">Dockerfile</a>. Please note, that compiling requires a <a href="https://adoptium.net/en-GB/temurin/releases/?version=11">Java Development Kit version >=11</a>. Updating the <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB">JPS_BASE_LIB</a> resource is ONLY required if a pre-release version is needed, 
+    which is (currently) not the case for this agent.
+    <br><br>
+    Simply execute the following command in the same folder as this <code class="code-block">README</code> to 
+    build the required <a href="https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-MetOfficeAgent-withinStack/Deploy/stacks/dynamic/stack-clients">Stack-Clients</a> resource and spin up the 
+    production version of the agent (from a bash terminal). 
+    The stack <code class="code-block"> &lt;STACK NAME&gt;</code> is the name of an already running stack.
+    
+    <code class="code-block">
+        <p style="color: gray;">
+        #  Compiling latest StackClient py4jps resource </br>
+        </p>
+        bash ./build_py4jps_stackclient_resource.sh <STACK_NAME> <PORT>
+
+        <p style="color: gray;">
+        # Buildings the agent Docker image and pushing it
+        </p>
+        bash ./stack.sh build &lt;STACK_NAME&gt;
+
+        <p style="color: gray;">
+        # Deploying the agent (using pulled image)</br>
+        </p>
+        bash ./stack.sh start <STACK_NAME></br></br>
+    </code>
+
+</body>
+<a href="">  </a>
+<code class="code-block"></code>
