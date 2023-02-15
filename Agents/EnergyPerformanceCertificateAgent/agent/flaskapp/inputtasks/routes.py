@@ -129,8 +129,11 @@ def api_instantiate_epc_data_for_all_uprns():
         raise InvalidInput('No JSON "query" object could be identified.') from ex
     # Retrieve EPC API endpoint
     try:
-        endpoint = str(query['epc_endpoint'])
-        if endpoint in ['domestic', 'non-domestic', 'display']:
+        endpoint = query.get('epc_endpoint')
+        if not endpoint:
+            # If no endpoint is specified, defaults to query all endpoints
+            pass
+        elif endpoint in ['domestic', 'non-domestic', 'display']:
             inputs['epc_endpoint'] = endpoint
         else:
             raise InvalidInput('Invalid EPC API endpoint provided.')

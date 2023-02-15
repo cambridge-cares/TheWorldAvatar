@@ -117,7 +117,7 @@ def obtain_latest_data_for_postcodes(postcodes: list, endpoint='domestic'):
 
     for pc in postcodes:
         i += 1
-        print(f'Retrieving EPC {i:>4}/{len(postcodes):>4}')
+        logger.info(f'Retrieving EPC {i:>4}/{len(postcodes):>4}')
         url_epc = url + '?postcode=' + str(pc)
         r = requests.get(url=url_epc, headers=headers)
         if r.status_code == 200:
@@ -224,7 +224,7 @@ def download_all_data(endpoint='domestic', rel_file_path='../../data/',
 
     for pc in postcodes:
         i += 1
-        print(f'Retrieving EPC {i:>4}/{len(postcodes):>4}')
+        logger.info(f'Retrieving EPC {i:>4}/{len(postcodes):>4}')
         url_epc = url + '?postcode=' + str(pc)
         r = requests.get(url=url_epc, headers=headers)
         if r.status_code == 200:

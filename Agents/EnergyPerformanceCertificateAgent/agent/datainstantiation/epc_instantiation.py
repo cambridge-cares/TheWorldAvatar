@@ -151,10 +151,10 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
                     # potentially include instantiation of previously not available data
                     if (epc_endpoint == 'domestic'):
                         data_to_update = ['epc_lmkkey', 'built_form_iri', 
-                                      'property_type_iri','usage_iri', 'usage_label',
-                                      'construction_end','floor_description', 
-                                      'roof_description','wall_description', 
-                                      'windows_description','floor_area', 'epc_rating', 'rooms', 'weightage']
+                                          'property_type_iri','usage_iri', 'usage_label',
+                                          'construction_end','floor_description', 
+                                          'roof_description','wall_description', 
+                                          'windows_description','floor_area', 'epc_rating', 'rooms', 'weightage']
                     elif (epc_endpoint == 'non-domestic'):
                         data_to_update = ['epc_lmkkey','property_type_iri','usage_iri', 'usage_label',
                                           'floor_area', 'epc_rating', 'weightage']
@@ -344,14 +344,22 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
     """
     Retrieves EPC data for all instantiated postcodes from given endpoint and 
     instantiates them in the KG according to OntoBuiltEnv
+    (if no 'epc_endpoint' is specified, data is retrieved from all endpoints)
 
     Arguments:
         epc_endpoint (str) - EPC endpoint from which to retrieve data
                              ['domestic', 'non-domestic', 'display']
+                             (None --> retrieve data from all endpoints)
         ocgml_endpoint - SPARQL endpoint with instantiated OntoCityGml buildings
     Returns:
         Tuple of newly instantiated and updated EPCs (new, updated)
     """
+
+    # Retrieve EPC data from all endpoints subsequently if none explicitly specified
+    if not epc_endpoint:
+        epc_endpoints = ['domestic', 'non-domestic', 'display']
+    else:
+        epc_endpoints = [epc_endpoint]
 
     # Initialise return values
     all_epcs = (0, 0)
@@ -370,25 +378,30 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
     # Split list of postcodes in chunks of max. size n
     n = 500
     postcodes = [postcodes[i:i + n] for i in range(0, len(postcodes), n)]
-    
-    i = 0
-    for pc in postcodes:
-        i += 1
-        print(f'Instantiating EPC data chunk {i:>4}/{len(postcodes):>4}')
 
-        # Instantiate EPC data for postcodes
-        epcs, _ = instantiate_epc_data_for_postcodes(postcodes=pc,
-                                epc_endpoint=epc_endpoint, ocgml_endpoint=ocgml_endpoint, 
-                                query_endpoint=query_endpoint, update_endpoint=update_endpoint,
-                                kgclient_epc=kgclient_epc, kgclient_ocgml=kgclient_ocgml,
-                                summarise=False)
+    # Instantiate EPC data for each API endpoint
+    for epc_endpoint in epc_endpoints:
+        logger.info(f'Instantiating EPC data for \"{epc_endpoint}\" endpoint ... ')
 
-        # Update number of amended EPC instances
-        all_epcs = tuple([sum(x) for x in zip(all_epcs, epcs)])
+        i = 0
+        for pc in postcodes:
+            i += 1
+            logger.info(f'Instantiating EPC data chunk {i:>4}/{len(postcodes):>4}')
 
-    # Summarise EPCs for parent building
-    summaries = instantiate_epcs_for_parent_buildings(kgclient=kgclient_epc, epc_endpoint=epc_endpoint)  
-    all_summaries = tuple([sum(x) for x in zip(all_summaries, summaries)])
+            # Instantiate EPC data for postcodes
+            epcs, _ = instantiate_epc_data_for_postcodes(postcodes=pc,
+                                    epc_endpoint=epc_endpoint, ocgml_endpoint=ocgml_endpoint, 
+                                    query_endpoint=query_endpoint, update_endpoint=update_endpoint,
+                                    kgclient_epc=kgclient_epc, kgclient_ocgml=kgclient_ocgml,
+                                    summarise=False)
+
+            # Update number of amended EPC instances
+            all_epcs = tuple([sum(x) for x in zip(all_epcs, epcs)])
+
+        # Summarise EPCs for parent building
+        summaries = instantiate_epcs_for_parent_buildings(kgclient=kgclient_epc, epc_endpoint=epc_endpoint)  
+        all_summaries = tuple([sum(x) for x in zip(all_summaries, summaries)])
+
     # Return number of newly instantiated and updated EPCs (single and summaries)
     return (all_epcs, all_summaries)
 
@@ -654,7 +667,7 @@ def extract_address_information(line1, line2, line3, prop_type, epc_endpoint):
     names_street = [i.upper() for i in NAMES_STREET]
 
     # This mapping is only relevant for domestic EPC endpoint
-    # Mapping of detailed property types to simpler high level calssification
+    # Mapping of detailed property types to simpler high level classification
     if (epc_endpoint == 'domestic'):
         BUILDING = 'bldg'
         UNIT = 'unit'
@@ -998,7 +1011,6 @@ def retrieve_epcs_child_and_parent_buildings(query_endpoint=QUERY_ENDPOINT,
     res = kgclient.performQuery(query)
 
     # Unwrap results and create DataFrame
-
     if (epc_endpoint == 'domestic'):
         cols = ['addr_number', 'addr_street', 'addr_bldg_name', 'addr_unit_name', 'address_iri', 
                 'built_form_iri', 'construction_end', 'construction_start', 'district_iri', 
