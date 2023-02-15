@@ -17,7 +17,6 @@ from agent.datainstantiation.epc_instantiation import instantiate_epc_data_for_c
                                                         instantiate_epc_data_for_all_postcodes, \
                                                         add_ocgml_building_data
 
-
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
@@ -25,49 +24,6 @@ logger = agentlogging.get_logger("prod")
 inputtasks_bp = Blueprint(
     'inputtasks_bp', __name__
 )
-
-# Define route for API request to initialise knowledge base with ontology
-@inputtasks_bp.route('/epcagent/initialise', methods=['GET'])
-def api_initialise_kb():
-    # Check arguments (query parameters)
-    if len(request.args) > 0:
-        print("Query parameters provided, although not required. " \
-              + "Provided arguments will be neglected.")
-        logger.warning("Query parameters provided, although not required. \
-                        Provided arguments will be neglected.")
-    try:
-        # Create OntoBuiltEnv namespace
-        create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT, 
-                                    quads=False, geospatial=False)
-        # Initialise KB
-        upload_ontology()
-        return jsonify({'status': '200', 'msg': 'Initialisation successful'})
-
-    except Exception as ex:
-        logger.error("Unable to initialise knowledge base with TBox and ABox.", ex)
-        return jsonify({'status': '500', 'msg': f'Initialisation failed'})
-
-
-# Define route for API request to initialise OntoCityGml knowledge base with 
-# previously instantiated and exported quads
-@inputtasks_bp.route('/ocgml/initialise', methods=['GET'])
-def api_initialise_ocgml():
-    # Check arguments (query parameters)
-    if len(request.args) > 0:
-        print("Query parameters provided, although not required. " \
-              + "Provided arguments will be neglected.")
-        logger.warning("Query parameters provided, although not required. \
-                        Provided arguments will be neglected.")
-    try:
-        # Create OntoCityGml namespace
-        create_blazegraph_namespace()
-        # Upload OntoCityGml quads
-        upload_ocgml_quads()
-        return jsonify({'status': '200', 'msg': 'OntoCityGml quad upload successful'})
-
-    except Exception as ex:
-        logger.error("Unable to upload OntoCityGml quads.", ex)
-        return jsonify({'status': '500', 'msg': f'Initialisation failed'})
 
 
 # Define route for API request to initialise postcodes for provided local
@@ -94,12 +50,12 @@ def api_initialise_postcodes():
         # Instantiate postcodes
         response = initialise_postcodes(**inputs)
         if not response:
-            return jsonify({"status": '200', 'msg': 'Local authority code already instantiated'})
+            return jsonify({'msg': 'Local authority code already instantiated'}), 200
         else:
-            return jsonify({"Postcodes": response})
+            return jsonify({'Postcodes': response}), 200
     except Exception as ex:
-        logger.error("Unable to instantiate local authority with postcodes.", ex)
-        return jsonify({"status": '500', 'msg': 'Postcode instantiation failed'})
+        logger.error('Unable to instantiate local authority with postcodes.', ex)
+        return jsonify({'msg': 'Postcode instantiation failed: ' + str(ex)}), 500
 
 
 # Define route for API request to instantiate single EPC data (i.e. for one UPRN)
@@ -137,10 +93,10 @@ def api_instantiate_epc_data_for_certificate():
     # Retrieve endpoint to instantiated OntoCityGml instances
     ocgml_endpoint = None
     try:
-        ocgml_endpoint = str(query['ocgml_endpoint'])
+        ocgml_endpoint = str(query.get('ocgml_endpoint'))
     except Exception as ex:
+        # In case missing or not string castable endpoint is provided
         logger.error('Invalid OntoCityGml endpoint provided.')
-        raise InvalidInput('Invalid OntoCityGml endpoint provided.') from ex
     if not ocgml_endpoint:
         ocgml_endpoint = OCGML_ENDPOINT
         logger.info('Using default OntoCityGml endpoint.')
@@ -148,12 +104,11 @@ def api_instantiate_epc_data_for_certificate():
     try:
         # Instantiate EPC
         response = instantiate_epc_data_for_certificate(**inputs)
-        return jsonify({'status': '200', 
-                        'Newly instantiated EPCs': response[0],
-                        'Updated EPCs': response[1]})
+        return jsonify({'Newly instantiated EPCs': response[0],
+                        'Updated EPCs': response[1]}), 200
     except Exception as ex:
-        logger.error("Unable to instantiate EPC data.", ex)
-        return jsonify({"status": '500', 'msg': 'EPC data instantiation failed'})
+        logger.error('Unable to instantiate EPC data.', ex)
+        return jsonify({'msg': 'EPC data instantiation failed: ' + str(ex)}), 500
 
 
 # Define route for API request to instantiate all latest EPC data for all 
@@ -185,25 +140,24 @@ def api_instantiate_epc_data_for_all_uprns():
     # Retrieve endpoint to instantiated OntoCityGml instances
     ocgml_endpoint = None
     try:
-        ocgml_endpoint = str(query['ocgml_endpoint'])
+        ocgml_endpoint = str(query.get('ocgml_endpoint'))
     except Exception as ex:
+        # In case missing or not string castable endpoint is provided
         logger.error('Invalid OntoCityGml endpoint provided.')
-        raise InvalidInput('Invalid OntoCityGml endpoint provided.') from ex
     if not ocgml_endpoint:
         ocgml_endpoint = OCGML_ENDPOINT
         logger.info('Using default OntoCityGml endpoint.')
     inputs['ocgml_endpoint'] = ocgml_endpoint
     try:
-        # Instantiate EPC
+        # Instantiate EPCs
         response = instantiate_epc_data_for_all_postcodes(**inputs)
-        return jsonify({'status': '200', 
-                        'Newly instantiated EPCs': response[0][0],
+        return jsonify({'Newly instantiated EPCs': response[0][0],
                         'Updated EPCs': response[0][1],
                         'Newly instantiated parent buildings': response[1][0],
-                        'Updated parent buildings': response[1][1]})
+                        'Updated parent buildings': response[1][1]}), 200
     except Exception as ex:
-        logger.error("Unable to instantiate EPC data.", ex)
-        return jsonify({"status": '500', 'msg': 'EPC data instantiation failed'})
+        logger.error('Unable to instantiate EPC data.', ex)
+        return jsonify({'msg': 'EPC data instantiation failed: ' + str(ex)}), 500
 
 #
 # HTTP requests to be run after Building Matching Agent has linked
@@ -216,19 +170,61 @@ def api_instantiate_epc_data_for_all_uprns():
 def api_add_ocgml_building_data():
     # Check arguments (query parameters)
     if len(request.args) > 0:
-        print("Query parameters provided, although not required. " \
-              + "Provided arguments will be neglected.")
         logger.warning("Query parameters provided, although not required. \
                         Provided arguments will be neglected.")
     try:
         # Retrieve and instantiate building elevation
         res = add_ocgml_building_data()
-        return jsonify({'status': '200', 
-                        'Instantiated PostGIS footprints': res[0],
+        return jsonify({'Instantiated PostGIS footprints': res[0],
                         'Already instantiated PostGIS footprints': res[1],
                         'Deleted building elevations': res[2],
-                        'Instantiated building elevations': res[3]})
+                        'Instantiated building elevations': res[3]}), 200
 
     except Exception as ex:
-        logger.error("Unable to instantiate PostGIS features and/or OntoBuiltEnv building elevations.", ex)
-        return jsonify({'status': '500', 'msg': f'Instantiating OntoCityGml data failed.'})
+        logger.error('Unable to instantiate PostGIS features and/or OntoBuiltEnv building elevations.', ex)
+        return jsonify({'msg': 'Instantiating OntoCityGml data failed: ' + str(ex)}), 500
+
+#
+# DEPRECATED ENDPOINTS
+#
+
+# Define route for API request to initialise knowledge base with ontology
+#NOTE: kept for reference, but knowledge graph now initialised automatically on agent startup
+@inputtasks_bp.route('/epcagent/initialise', methods=['GET'])
+def api_initialise_kb():
+    # Check arguments (query parameters)
+    if len(request.args) > 0:
+        logger.warning("Query parameters provided, although not required. \
+                        Provided arguments will be neglected.")
+    try:
+        # Create OntoBuiltEnv namespace
+        create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT, 
+                                    quads=False, geospatial=False)
+        # Initialise KG with ontology
+        upload_ontology()
+        return jsonify({'msg': 'Initialisation successful.'}), 200
+
+    except Exception as ex:
+        logger.error("Unable to initialise knowledge base with TBox and ABox.", ex)
+        return jsonify({'msg': 'Initialisation failed: ' + str(ex)}), 500
+
+
+# Define route for API request to initialise OntoCityGml knowledge base with 
+# previously instantiated and exported quads
+#NOTE: kept for reference, but now preferably done using Stack-Data-Uploader
+@inputtasks_bp.route('/ocgml/initialise', methods=['GET'])
+def api_initialise_ocgml():
+    # Check arguments (query parameters)
+    if len(request.args) > 0:
+        logger.warning("Query parameters provided, although not required. \
+                        Provided arguments will be neglected.")
+    try:
+        # Create OntoCityGml namespace
+        create_blazegraph_namespace()
+        # Upload OntoCityGml quads
+        upload_ocgml_quads()
+        return jsonify({'msg': 'OntoCityGml quad upload successful'}), 200
+
+    except Exception as ex:
+        logger.error("Unable to upload OntoCityGml quads.", ex)
+        return jsonify({'msg': 'Initialisation failed: ' + str(ex)}), 500
