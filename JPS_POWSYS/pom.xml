@@ -83,6 +83,14 @@
 			<scope>test</scope>
 		</dependency>
 
+		<!-- Used to mock environment variables in testing -->
+		<dependency>
+			<groupId>com.github.stefanbirkner</groupId>
+			<artifactId>system-lambda</artifactId>
+			<version>1.2.0</version>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
