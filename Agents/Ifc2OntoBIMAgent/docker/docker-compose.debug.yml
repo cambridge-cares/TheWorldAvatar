@@ -14,3 +14,16 @@ services:
       - "3025:8080"
     volumes:
       - ../data:/usr/local/tomcat/data
+    networks:
+      - agent_network
+  ifcowlconverter:
+    container_name: ifcowlconverter
+    image: ifcowlconverter-agent:1.0.0
+    volumes:
+      - ../data:/usr/local/tomcat/data
+    networks:
+      - agent_network
+
+networks:
+  agent_network:
+    driver: bridge
