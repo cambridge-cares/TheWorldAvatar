@@ -274,6 +274,7 @@ class OptimalPowerFlowAnalysis:
         
         self.diagramPath = self.localRootFilePath + '/figFiles(LineChartANDHeatmapGrid)/' + self.time_now + '/'
         self.diagramPathParetoFront = self.localRootFilePath + '/ParetoFront/' + self.time_now + '/'
+        self.diagramPathStack = self.localRootFilePath + '/figFiles(StackAreaGraph)/' + self.time_now + '/'
         self.netDemandingJSONPath = self.localRootFilePath + '/netDemandingGeoJSONFiles/' + self.time_now + '/'
         self.pieChartPath = self.localRootFilePath + '/regionalEnergyBreakdownPieChart/' + self.time_now + '/'
         self.branchLossJSONPath = self.localRootFilePath + '/branchLossGeoJSONFiles/' + self.time_now + '/'
@@ -1672,16 +1673,16 @@ class OptimalPowerFlowAnalysis:
                     totalOutputOfSMR += self.ObjectSet[regen].PG_OUTPUT
                 genTypeLabel.append(self.newGeneratorType)
                 outPutData.append(totalOutputOfSMR) 
+            else:
+                genTypeLabel.append(self.newGeneratorType)
+                outPutData.append(0) 
 
+            ## convert to the percentage
             percentage = []
             sum_up = sum(outPutData)
             for output in outPutData:
                 p = round(output/sum_up, 2)
                 percentage.append(p * 100)
-
-            print(genTypeLabel)
-            print(percentage)
-            print(outPutData)
 
             ## Old code for generating the pie chart
             otherCapa = 0
@@ -1708,20 +1709,20 @@ class OptimalPowerFlowAnalysis:
             outPutData.append(otherCapa)
             genTypeLabel.append('Others')
 
-            print(genTypeLabel)
-            print(outPutData)
+            if len(genTypeLabel) != len(outPutData) or len(genTypeLabel)!= 9:
+                raise Exception('The length of genTypeLabel should be equal to the length of outPutData.')
 
-            plt.pie(outPutData, labels=genTypeLabel, autopct='%1.1f%%', startangle=90)
-            plt.title('Energy Supply BreakDown')
-            plt.axis('equal')
-            plt.tight_layout()
-            path = 'EnergyBreakdown_PieChart_' + str(numberOfSMRToBeIntroduced) + 'SMR_weight_' + str(round(self.weighterList[w],2)) + '_weather_' + str(weatherCondition[2]) + '_carbonTax_' + str(CarbonTaxForOPF) + '.pdf' 
-            self.mkdirFig()
-            plt.savefig(self.diagramPath + path, dpi = 1200, bbox_inches='tight')
-            # plt.show()
-            # plt.close()
-            plt.clf()
-            plt.cla()
+            # plt.pie(outPutData, labels=genTypeLabel, autopct='%1.1f%%', startangle=90)
+            # plt.title('Energy Supply BreakDown')
+            # plt.axis('equal')
+            # plt.tight_layout()
+            # path = 'EnergyBreakdown_PieChart_' + str(numberOfSMRToBeIntroduced) + 'SMR_weight_' + str(round(self.weighterList[w],2)) + '_weather_' + str(weatherCondition[2]) + '_carbonTax_' + str(CarbonTaxForOPF) + '.pdf' 
+            # self.mkdirFig()
+            # plt.savefig(self.diagramPath + path, dpi = 1200, bbox_inches='tight')
+            # # plt.show()
+            # # plt.close()
+            # plt.clf()
+            # plt.cla()
             energyBreakdownList.append(outPutData)    
         return energyBreakdownList, genTypeLabel
 
@@ -4972,7 +4973,14 @@ class OptimalPowerFlowAnalysis:
             print("---  new folder %s...  ---" % self.regionalOutputJSONPath + addingPath)
         else:
             print("---  There has this folder!  ---")
-
+    
+    def mkdirStackAreaGraph(self, addingPath):
+        folder = os.path.exists(self.diagramPathStack + addingPath)
+        if not folder:                
+            os.makedirs(self.diagramPathStack + addingPath)           
+            print("---  new folder %s...  ---" % self.diagramPathStack + addingPath)
+        else:
+            print("---  There has this folder!  ---")
 
     """Create the heatmap for total cost and CO2 emission"""
     ## TODO: remove the title
@@ -5918,16 +5926,20 @@ class OptimalPowerFlowAnalysis:
                 ##-- Plot the multiple line chart of the CO2 emission vs carbon tax of different SMR numbers at differnt Weight and different weather condition --##
                 fig, ax1 = plt.subplots()
                 ax2 = ax1.twinx()
-                ax1.set_xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
-                ax1.set_ylabel("Annualised CO${_2}$ emission (t)", fontsize = labelFontSize)
+                ay1 = ax1.twiny()
+                ax1.set_xlabel("Carbon tax (£/t)", fontsize = labelFontSize)
+                ax1.set_ylabel("Levelised CO${_2}$ emission (t/yr)", fontsize = labelFontSize)
                 ax1.tick_params(direction='in')
                 ax2.tick_params(direction='in')
                 ax2.axes.yaxis.set_ticklabels([])
+                ay1.tick_params(direction='in')
+                ay1.axes.xaxis.set_ticklabels([])
 
-                text = weatherConditionList[w][2] + " (" + str(self.weighterList[weight_index]) + ")"
+                text = weatherConditionList[w][2] + "_weight(" + str(self.weighterList[weight_index]) + ")"
                 for i in range(len(CO2Emission_sameWeatherSameWeight)):   
                     ax1.plot(CarbonTaxForOPFList, CO2Emission_sameWeatherSameWeight[i], color = colors[i], label = str(NumberOfSMRUnitList[i]) + " SMRs")
                     ax2.plot(CarbonTaxForOPFList, CO2Emission_sameWeatherSameWeight[i], color = colors[i], alpha=0) 
+                    ay1.plot(CarbonTaxForOPFList, CO2Emission_sameWeatherSameWeight[i], color = colors[i], alpha=0) 
                 ## ax1.legend(fontsize = legendFontSize, loc='upper left')
                 ax1.legend(
                     loc="upper center",
@@ -5938,8 +5950,8 @@ class OptimalPowerFlowAnalysis:
                     bbox_transform=fig.transFigure 
                 )   
                 plt.tight_layout()
-                self.mkdirFig()
-                plt.savefig(self.diagramPath + 'EmissionvsCarbonTaxOfDifferentSMRNumber_(SMRImpact)_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
+                self.mkdirFig('SMRImpactInEmission/')
+                plt.savefig(self.diagramPath + 'SMRImpactInEmission/' + 'EmissionvsCarbonTaxOfDifferentSMRNumber_(SMRImpact)_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
                 # plt.show() ## show must come after the savefig
                 # plt.close()
                 plt.clf()
@@ -5951,12 +5963,9 @@ class OptimalPowerFlowAnalysis:
         if len(energyBreakdown_eachSMRDesign) != len(NumberOfSMRUnitList):
             raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
         ## set up the clourmap
-        cmap = mpl.cm.get_cmap("viridis", len(genTypeLabel))
-        colorList = cmap(numpy.linspace(0, 1, len(genTypeLabel)))
-        colorList = ["#13bef2", "#ffcc33", "#1B2631", "#99A3A4", "#873600", "#cc3300", "#1e8700", "#873600"] ## "#285400" nuclear
-
-        # cmap = mpl.cm.get_cmap("twilight", len(genTypeLabel))
+        # cmap = mpl.cm.get_cmap("viridis", len(genTypeLabel))
         # colorList = cmap(numpy.linspace(0, 1, len(genTypeLabel)))
+        colorList = ["#13bef2", "#ffcc33", "#1B2631", "#99A3A4", "#873600", "#cc3300", "#1e8700", "#873600"] ## "#285400" nuclear
 
         for w in range(len(weatherConditionList)):
             for weight_index in range(len(self.weighterList)):
@@ -5968,14 +5977,19 @@ class OptimalPowerFlowAnalysis:
                             energyBreakdown_sameSMRNumber[eb_index].append(eb)
 
                     fig, ax1 = plt.subplots()
-                    #ax2 = ax1.twinx()
-                    ax1.set_xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
-                    ax1.set_ylabel("Generation Breakdown (kW)", fontsize = labelFontSize)
-                    #ax2.set_ylabel("Generation Breakdown (-)", fontsize = labelFontSize)
+                    ax2 = ax1.twinx()
+                    ay1 = ax1.twiny()
+                    ax1.set_xlabel("Carbon tax (£/t)", fontsize = labelFontSize)
+                    ax1.set_ylabel("Generation output (MW)", fontsize = labelFontSize)
                     ax1.tick_params(direction='in')
+                    ax2.tick_params(direction='in')
+                    ax2.axes.yaxis.set_ticklabels([])
+                    ay1.tick_params(direction='in') 
+                    ay1.axes.xaxis.set_ticklabels([])
 
                     ax1.stackplot(CarbonTaxForOPFList, energyBreakdown_sameSMRNumber, labels = genTypeLabel, colors = colorList, alpha=0.8)
-                    #ax2.stackplot(CarbonTaxForOPFList, energyBreakdown_sameSMRNumber, alpha=0) 
+                    ax2.stackplot(CarbonTaxForOPFList, energyBreakdown_sameSMRNumber, alpha=0) 
+                    ay1.stackplot(CarbonTaxForOPFList, energyBreakdown_sameSMRNumber, alpha=0) 
                     # def to_percent(temp, position):
                     #     return '%1.0f'%(10*temp) + '%'
                     # plt.gca().yaxis.set_major_formatter(ticker.FuncFormatter(to_percent))
@@ -5985,16 +5999,16 @@ class OptimalPowerFlowAnalysis:
                     ax1.legend(
                         loc="upper center",
                         fontsize = legendFontSize,
-                        ncol=4,
-                        bbox_to_anchor=(0.5, 0.072),
+                        ncol=5,
+                        bbox_to_anchor=(0.5, 0.1),
                         frameon=False,
                         bbox_transform=fig.transFigure 
                         ) 
                     plt.tight_layout()
 
-                    self.mkdirFig()
+                    self.mkdirStackAreaGraph('EachSMRDesignEnergyBreakDown/')
                     text = 'SMR_' + str(smrNumber) + '_' + weatherConditionList[w][2] + " (" + str(self.weighterList[weight_index]) + ")"        
-                    plt.savefig(self.diagramPath + 'EnergyBreakdown_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
+                    plt.savefig(self.diagramPathStack + 'EachSMRDesignEnergyBreakDown/' + 'EnergyBreakdown_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
                     # plt.show() ## show must come after the savefig
                     # plt.close()
                     plt.clf()
@@ -6002,110 +6016,113 @@ class OptimalPowerFlowAnalysis:
         return
 
     """Energy breakdown graph for optimised SMR design vs carbon tax at each weight level"""
-    def stackAreaGraph_EnergyBreakDownForOptimisedDesign(self, summary_eachSMRDesign, energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList):
+    def stackAreaGraph_EnergyBreakDownForOptimisedDesign(self, summary_eachSMRDesign, energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, pickedWeightList):
         if len(energyBreakdown_eachSMRDesign) != len(NumberOfSMRUnitList):
             raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
         ## set up the clourmap
         colorList = ["#13bef2", "#ffcc33", "#1B2631", "#99A3A4", "#873600", "#cc3300", "#1e8700", "#873600"]
 
-        # for w in range(len(weatherConditionList)):
-        #     for weight_index in range(len(self.weighterList)):
-        #         bestSMRNumberIndex_UnderSameWeatherAndSameWeight = []
-        #         for c in range(len(CarbonTaxForOPFList)):
-        #             costResult_sameCarbonTaxDifferentSMRNumber = []
-        #             for result_sameSMR in summary_eachSMRDesign:
-        #                 cost = result_sameSMR[c][w][0][weight_index] ## the index 0 refers to the the cost and 1 refers to the CO2 emission 
-        #                 costResult_sameCarbonTaxDifferentSMRNumber.append(cost)
-        #             ## pick the minimum 
-        #             bestCost_underSameCarbonTax = min(costResult_sameCarbonTaxDifferentSMRNumber)
-        #             index_ = costResult_sameCarbonTaxDifferentSMRNumber.index(bestCost_underSameCarbonTax)
-        #             bestSMRNumberIndex_UnderSameWeatherAndSameWeight.append(index_)
-
-        #         energyBreakdown_sameWeatherAndSameWeight = [ [] for i in range(len(genTypeLabel))]
-        #         for eb in range(len(energyBreakdown_sameWeatherAndSameWeight)):
-        #             for c in range(len(CarbonTaxForOPFList)):
-        #                 smrIndex = bestSMRNumberIndex_UnderSameWeatherAndSameWeight[c]
-        #                 energyBreakdown_singleSource = energyBreakdown_eachSMRDesign[smrIndex][c][w][weight_index][eb]
-        #                 energyBreakdown_sameWeatherAndSameWeight[eb].append(energyBreakdown_singleSource)
-              
-        #         fig, ax1 = plt.subplots()
-        #         #ax2 = ax1.twinx()
-        #         ax1.set_xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
-        #         ax1.set_ylabel("Generation Breakdown (kW)", fontsize = labelFontSize)
-        #         #ax2.set_ylabel("Generation Breakdown (-)", fontsize = labelFontSize)
-        #         ax1.tick_params(direction = 'in')
-
-        #         ax1.stackplot(CarbonTaxForOPFList, energyBreakdown_sameWeatherAndSameWeight, labels = genTypeLabel, colors = colorList, alpha=0.8)
-        #         #ax2.stackplot(CarbonTaxForOPFList, energyBreakdown_sameSMRNumber, alpha=0) 
-        #         # def to_percent(temp, position):
-        #         #     return '%1.0f'%(10*temp) + '%'
-        #         # plt.gca().yaxis.set_major_formatter(ticker.FuncFormatter(to_percent))
-                
-        #         pos = ax1.get_position()
-        #         ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
-        #         ax1.legend(
-        #             loc="upper center",
-        #             fontsize = legendFontSize,
-        #             ncol=4,
-        #             bbox_to_anchor=(0.5, 0.072),
-        #             frameon=False,
-        #             bbox_transform=fig.transFigure 
-        #             ) 
-        #         plt.tight_layout()
-
-        #         self.mkdirFig()
-        #         text = weatherConditionList[w][2] + " (" + str(self.weighterList[weight_index]) + ")"        
-        #         plt.savefig(self.diagramPath + 'OptimisedEnergyBreakdown_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
-        #         # plt.show() ## show must come after the savefig
-        #         # plt.close()
-        #         plt.clf()
-        #         plt.cla()
-
-        ##-- Create the fig including 4 subfigures for the weight 0.5 --##
-        plt.figure() ## set up a fig frame
         for w in range(len(weatherConditionList)):
-            weight_index = self.weighterList.index(0.5)           
-            bestSMRNumberIndex_UnderSameWeatherAndSameWeight = []
-            for c in range(len(CarbonTaxForOPFList)):
-                costResult_sameCarbonTaxDifferentSMRNumber = []
-                for result_sameSMR in summary_eachSMRDesign:
-                    cost = result_sameSMR[c][w][0][weight_index] ## the index 0 refers to the the cost and 1 refers to the CO2 emission 
-                    costResult_sameCarbonTaxDifferentSMRNumber.append(cost)
-                ## pick the minimum 
-                bestCost_underSameCarbonTax = min(costResult_sameCarbonTaxDifferentSMRNumber)
-                index_ = costResult_sameCarbonTaxDifferentSMRNumber.index(bestCost_underSameCarbonTax)
-                bestSMRNumberIndex_UnderSameWeatherAndSameWeight.append(index_)
-
-            energyBreakdown_sameWeatherAndSameWeight = [ [] for i in range(len(genTypeLabel))]
-            for eb in range(len(energyBreakdown_sameWeatherAndSameWeight)):
+            for pickedWeight in pickedWeightList:
+                weight_index = self.weighterList.index(pickedWeight)           
+                bestSMRNumberIndex_UnderSameWeatherAndSameWeight = []
                 for c in range(len(CarbonTaxForOPFList)):
-                    smrIndex = bestSMRNumberIndex_UnderSameWeatherAndSameWeight[c]
-                    energyBreakdown_singleSource = energyBreakdown_eachSMRDesign[smrIndex][c][w][weight_index][eb]
-                    energyBreakdown_sameWeatherAndSameWeight[eb].append(energyBreakdown_singleSource)
+                    costResult_sameCarbonTaxDifferentSMRNumber = []
+                    for result_sameSMR in summary_eachSMRDesign:
+                        cost = result_sameSMR[c][w][0][weight_index] ## the index 0 refers to the the cost and 1 refers to the CO2 emission 
+                        costResult_sameCarbonTaxDifferentSMRNumber.append(cost)
+                    ## pick the minimum 
+                    bestCost_underSameCarbonTax = min(costResult_sameCarbonTaxDifferentSMRNumber)
+                    index_ = costResult_sameCarbonTaxDifferentSMRNumber.index(bestCost_underSameCarbonTax)
+                    bestSMRNumberIndex_UnderSameWeatherAndSameWeight.append(index_)
+
+                energyBreakdown_sameWeatherAndSameWeight = [ [] for i in range(len(genTypeLabel))]
+                for eb in range(len(energyBreakdown_sameWeatherAndSameWeight)):
+                    for c in range(len(CarbonTaxForOPFList)):
+                        smrIndex = bestSMRNumberIndex_UnderSameWeatherAndSameWeight[c]
+                        energyBreakdown_singleSource = energyBreakdown_eachSMRDesign[smrIndex][c][w][weight_index][eb]
+                        energyBreakdown_sameWeatherAndSameWeight[eb].append(energyBreakdown_singleSource)
+              
+                fig, ax1 = plt.subplots()
+                ax2 = ax1.twinx()
+                ay1 = ax1.twiny()
+                ax1.set_xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
+                ax1.set_ylabel("Generation Breakdown (MW)", fontsize = labelFontSize)
+                ax1.tick_params(direction = 'in')
+                ax2.tick_params(direction='in')
+                ax2.axes.yaxis.set_ticklabels([])
+                ay1.tick_params(direction='in') 
+                ay1.axes.xaxis.set_ticklabels([])
+
+                ax1.stackplot(CarbonTaxForOPFList, energyBreakdown_sameWeatherAndSameWeight, labels = genTypeLabel, colors = colorList, alpha=0.8)
+                ax2.stackplot(CarbonTaxForOPFList, energyBreakdown_sameWeatherAndSameWeight, alpha=0) 
+                ay1.stackplot(CarbonTaxForOPFList, energyBreakdown_sameWeatherAndSameWeight, alpha=0) 
+                
+                pos = ax1.get_position()
+                ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
+                ax1.legend(
+                    loc="upper center",
+                    fontsize = legendFontSize,
+                    ncol=5,
+                    bbox_to_anchor=(0.5, 0.1),
+                    frameon=False,
+                    bbox_transform=fig.transFigure 
+                    ) 
+                plt.tight_layout()
+
+                self.mkdirStackAreaGraph('OptimisedEnergyBreakdownEnergyBreakDown/')  
+                text = weatherConditionList[w][2] + "_weight(" + str(pickedWeight) + ")"        
+                plt.savefig(self.diagramPathStack + 'OptimisedEnergyBreakdownEnergyBreakDown/' + 'OptimisedEnergyBreakdown_%s.pdf' % text, dpi = 1200, bbox_inches='tight')
+                # plt.show() ## show must come after the savefig
+                # plt.close()
+                plt.clf()
+                plt.cla()
+
+        # ##-- Create the fig including 4 subfigures for the pickedWeight --##
+        # plt.figure() ## set up a fig frame
+        # for w in range(len(weatherConditionList)):
+        #     weight_index = self.weighterList.index(pickedWeight)           
+        #     bestSMRNumberIndex_UnderSameWeatherAndSameWeight = []
+        #     for c in range(len(CarbonTaxForOPFList)):
+        #         costResult_sameCarbonTaxDifferentSMRNumber = []
+        #         for result_sameSMR in summary_eachSMRDesign:
+        #             cost = result_sameSMR[c][w][0][weight_index] ## the index 0 refers to the the cost and 1 refers to the CO2 emission 
+        #             costResult_sameCarbonTaxDifferentSMRNumber.append(cost)
+        #         ## pick the minimum 
+        #         bestCost_underSameCarbonTax = min(costResult_sameCarbonTaxDifferentSMRNumber)
+        #         index_ = costResult_sameCarbonTaxDifferentSMRNumber.index(bestCost_underSameCarbonTax)
+        #         bestSMRNumberIndex_UnderSameWeatherAndSameWeight.append(index_)
+
+        #     energyBreakdown_sameWeatherAndSameWeight = [ [] for i in range(len(genTypeLabel))]
+        #     for eb in range(len(energyBreakdown_sameWeatherAndSameWeight)):
+        #         for c in range(len(CarbonTaxForOPFList)):
+        #             smrIndex = bestSMRNumberIndex_UnderSameWeatherAndSameWeight[c]
+        #             energyBreakdown_singleSource = energyBreakdown_eachSMRDesign[smrIndex][c][w][weight_index][eb]
+        #             energyBreakdown_sameWeatherAndSameWeight[eb].append(energyBreakdown_singleSource)
             
             
-            plt.subplot(2, 2, int(w) + 1)
-            plt.title(weatherConditionList[w][2], fontsize = legendFontSize)
-            plt.xlabel("Carbon Tax (£/t)", fontsize = labelFontSize)
-            plt.ylabel("Generation Output (MW)", fontsize = labelFontSize) 
-            plt.tick_params(direction = 'in')
-            plt.stackplot(CarbonTaxForOPFList, energyBreakdown_sameWeatherAndSameWeight, labels = genTypeLabel, colors = colorList, alpha=0.8)
+        #     plt.subplot(2, 2, int(w) + 1)
+        #     plt.title(weatherConditionList[w][2], fontsize = legendFontSize)
+        #     plt.xlabel("Carbon tax (£/t)", fontsize = labelFontSize)
+        #     plt.ylabel("Generation output (MW)", fontsize = labelFontSize) 
+        #     plt.tick_params(direction = 'in')
+        #     plt.stackplot(CarbonTaxForOPFList, energyBreakdown_sameWeatherAndSameWeight, labels = genTypeLabel, colors = colorList, alpha=0.8)
             
-        plt.legend(
-            loc="upper center",
-            fontsize = labelFontSize,
-            ncol=len(genTypeLabel),
-            bbox_to_anchor=(-0.13, -0.15),
-            frameon=False
-            ) 
-        plt.tight_layout()
-        plt.subplots_adjust(wspace = 0.2, hspace = 0.28)
-        self.mkdirFig()        
-        plt.savefig(self.diagramPath + 'OptimisedEnergyBreakdown_FourSeasons_(weight0.5).pdf', dpi = 1200)#, bbox_inches='tight')
-        plt.show() ## show must come after the savefig
-        plt.close()
-        plt.clf()
-        plt.cla()
+        # plt.legend(
+        #     loc="upper center",
+        #     fontsize = labelFontSize,
+        #     ncol=len(genTypeLabel),
+        #     bbox_to_anchor=(-0.13, -0.15),
+        #     frameon=False
+        #     ) 
+        # plt.tight_layout()
+        # plt.subplots_adjust(wspace = 0.2, hspace = 0.28)
+        # self.mkdirStackAreaGraph('OptimisedEnergyBreakdownEnergyBreakDown/')       
+        # plt.savefig(self.diagramPathStack + 'OptimisedEnergyBreakdownEnergyBreakDown/' + 'OptimisedEnergyBreakdown_FourSeasons_(weight0.5).pdf', dpi = 1200)#, bbox_inches='tight')
+        # plt.show() ## show must come after the savefig
+        # plt.close()
+        # plt.clf()
+        # plt.cla()
         return
 
 
@@ -6179,64 +6196,19 @@ if __name__ == '__main__':
     # CarbonTaxForOPFList = [60]
     # weatherConditionList = [[0.67, 0.74, "WHSH"]] #, [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
 
-    ifReadLocalResults = True
+    ifReadLocalResults = False
 
     rootPath = '/mnt/d/wx243/FromTWA/npy/'## root path for npu files store
 
     ## Specified net demanding results for GeoJSON creation 
     ifSpecifiedResultsForNetDemanding = True
     specifiedConfig = [[53, 60, "WLSL"], [53, 60, "WHSH"]]
-#############10 BUS Model#################################################################################################################################################################
-    # testOPF1 = OptimalPowerFlowAnalysis(topologyNodeIRI_10Bus, AgentIRI, "2017-01-31", slackBusNodeIRI, loadAllocatorName, EBusModelVariableInitialisationMethodName, ELineInitialisationMethodName,
-    #     piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, newGeneratorType, discountRate, bankRate, 
-    #     projectLifeSpan, SMRCapitalCost, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, SMRIntergratedDiscount,
-    #     DecommissioningCostEstimatedLevel, queryEndpointLabel, geospatialQueryEndpointLabel, updateEndPointURL)
-    
-    # testOPF1.retrofitGeneratorInstanceFinder()
-    # testOPF1.ModelPythonObjectInputInitialiser(CarbonTaxForOPF)
-    # testOPF1.OPFModelInputFormatter()
-    # testOPF1.OptimalPowerFlowAnalysisSimulation()
-    # testOPF1.ModelOutputFormatter()
-    # testOPF1.CarbonEmissionCalculator()
-    # testOPF1.EnergySupplyBreakDownPieChartCreator()
-    # testOPF1.ModelPythonObjectOntologiser()0
 ############29 Bus model##################################################################################################################################################################
     testOPF_29BusModel = OptimalPowerFlowAnalysis(topologyNodeIRI_29Bus, AgentIRI, "2017-01-31", slackBusNodeIRI_29Bus, loadAllocatorName_29Bus, 
         EBusModelVariableInitialisationMethodName_29Bus, ELineInitialisationMethodName_29Bus, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, 
         baseMVA, withRetrofit, retrofitGenerator, retrofitGenerationFuelOrTechType, newGeneratorType, weighterList, discountRate, bankRate, projectLifeSpan, 
         SMRCapitalCost, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, 
         SMRIntergratedDiscount, DecommissioningCostEstimatedLevel, safeDistance, pop_size, n_offsprings, numberOfGenerations, ifReadLocalResults, updateEndPointURL)  
-        
-####================NEW demanding assessment method Pre-OPF method================####
-    # ## Pre-OPF to determing the demanding indicator of each area without retrofitting
-    # testOPF_29BusModel.powerPlantAndDemandingAreasMapper()
-    # testOPF_29BusModel.ModelPythonObjectInputInitialiser_BusAndBranch()
-    # testOPF_29BusModel.ModelPythonObjectInputInitialiser_Generator(CarbonTaxForOPF, False)
-    # testOPF_29BusModel.OPFModelInputFormatter()
-    # testOPF_29BusModel.OptimalPowerFlowAnalysisSimulation()
-    # testOPF_29BusModel.ModelOutputFormatter()
-    # testOPF_29BusModel.CarbonEmissionCalculator()
-    # testOPF_29BusModel.netDemandingCalculator()
-    # re = [CarbonTaxForOPF, testOPF_29BusModel.totalCost, testOPF_29BusModel.annualisedOPEX, testOPF_29BusModel.retrofittingCost, testOPF_29BusModel.totalCO2Emission]
-    # summary.append(re)
-    # print(summary)
-    # ## Initialising the site selection
-    # testOPF_29BusModel.retrofitGeneratorInstanceFinder()
-    # for smrUnit in NumberOfSMRUnitList:
-    #     testOPF_29BusModel.siteSelector(int(smrUnit))
-    #     testOPF_29BusModel.ModelPythonObjectInputInitialiser_Generator(CarbonTaxForOPF, True)
-    #     testOPF_29BusModel.OPFModelInputFormatter()
-    #     testOPF_29BusModel.OptimalPowerFlowAnalysisSimulation()
-    #     testOPF_29BusModel.ModelOutputFormatter()
-    #     testOPF_29BusModel.CarbonEmissionCalculator()
-    #     re = [CarbonTaxForOPF, testOPF_29BusModel.totalCost, testOPF_29BusModel.annualisedOPEX, testOPF_29BusModel.retrofittingCost, testOPF_29BusModel.totalCO2Emission]
-    #     summary.append(re)
-    #     ## testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator()
-    #     testOPF_29BusModel.visualisationFileCreator_ExtantGenerator('pre-opf_29BusModel_' + str(smrUnit) + '_SMRs_retrofitted_ExtantGenerator_CarbonTax' + str(CarbonTaxForOPF))
-    #     testOPF_29BusModel.visualisationFileCreator_AddedGenerator('pre-opf_29BusModel_' + str(smrUnit) + '_SMRs_retrofitted_SMR_CarbonTax' + str(CarbonTaxForOPF))   
-    #     testOPF_29BusModel.visualisationFileCreator_ClosedGenerator('pre-opf_29BusModel_' + str(smrUnit) + '_SMRs_retrofitted_ClosedPlants_CarbonTax' + str(CarbonTaxForOPF))
-    #     print(summary)
-    # print(summary)
 
 ####================ OLD demanding assessment method: without pre-OPF ================####
     if not ifReadLocalResults:
@@ -6386,8 +6358,8 @@ if __name__ == '__main__':
         summary_eachSMRDesign = numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True) ## total cost and total emission
         # SMROutputAndOperationalRatio_eachSMRDesign = numpy.load(rootPath +"np_SMROutputAndOperationalRatio_eachSMRDesign.npy", allow_pickle=True)
         # emission_eachSMRDesign = numpy.load(rootPath +"np_emission_eachSMRDesign.npy", allow_pickle=True)
-        # energyBreakdown_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_eachSMRDesign.npy", allow_pickle=True)
-        # genTypeLabel = numpy.load(rootPath +"np_genTypeLabel.npy", allow_pickle=True)
+        energyBreakdown_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_eachSMRDesign.npy", allow_pickle=True)
+        genTypeLabel = numpy.load(rootPath +"np_genTypeLabel.npy", allow_pickle=True)
         # netDemanding_smallArea_eachSMRDesign = numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)
         # netDemanding_regionalArea_eachSMRDesign = numpy.load(rootPath +"np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)
         # transmissionLoss_eachSMRDesign = numpy.load(rootPath +"np_transmissionLoss_eachSMRDesign.npy", allow_pickle=True)    
@@ -6400,8 +6372,8 @@ if __name__ == '__main__':
         summary_eachSMRDesign = summary_eachSMRDesign.tolist()
         # SMROutputAndOperationalRatio_eachSMRDesign = SMROutputAndOperationalRatio_eachSMRDesign.tolist()
         # emission_eachSMRDesign = emission_eachSMRDesign.tolist()
-        # energyBreakdown_eachSMRDesign = energyBreakdown_eachSMRDesign.tolist()
-        # genTypeLabel = genTypeLabel.tolist()  
+        energyBreakdown_eachSMRDesign = energyBreakdown_eachSMRDesign.tolist()
+        genTypeLabel = genTypeLabel.tolist()  
         # netDemanding_smallArea_eachSMRDesign = netDemanding_smallArea_eachSMRDesign.tolist()
         # netDemanding_regionalArea_eachSMRDesign = netDemanding_regionalArea_eachSMRDesign.tolist()
         # transmissionLoss_eachSMRDesign = transmissionLoss_eachSMRDesign.tolist()
@@ -6419,10 +6391,10 @@ if __name__ == '__main__':
      
     ##-- The line charts showing the procesed results --##
     ## testOPF_29BusModel.lineGraph_weatherImpact(pickedWeight, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)    
-    testOPF_29BusModel.lineGraph_weightImpact(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
-    # testOPF_29BusModel.lineGraph_SMRImpactForCO2Emission(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
-    # testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForEachSMRDesign(energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
-    # testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForOptimisedDesign(summary_eachSMRDesign, energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
+    ## testOPF_29BusModel.lineGraph_weightImpact(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
+    ## testOPF_29BusModel.lineGraph_SMRImpactForCO2Emission(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
+    ## testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForEachSMRDesign(energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
+    testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForOptimisedDesign(summary_eachSMRDesign, energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, [0.5])
 
     # netDemanding_smallArea_eachSMRDesign, netDemanding_regionalArea_eachSMRDesign = testOPF_29BusModel.netDemandingCalculator(ifReadLocalResults, genRawResult_eachSMRDesign)
 
@@ -6488,4 +6460,3 @@ if __name__ == '__main__':
     # print("*****This are EGen toberetrofitted results*****")
     # for attr in testOPF1.ObjectSet.get('EGenRetrofit-11').__dir__():
     #     print(attr, getattr(testOPF1.ObjectSet.get('EGenRetrofit-11'), attr)) 
-# %%
