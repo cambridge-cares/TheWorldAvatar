@@ -400,11 +400,14 @@ services:
 
   # Blazegraph
   blazegraph:
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
     container_name: "blazegraph_test"
     ports:
       - 27149:8080
     environment:
+      # Use BLAZEGRAPH_USER and BLAZEGRAPH_PASSWORD_FILE if you would like to add authentication
+      # Otherwise, you may wish to comment them out
+      BLAZEGRAPH_USER: bg_user
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
     # Add a secret to set the password for BASIC authentication
     secrets:
@@ -466,7 +469,6 @@ The release procedure is currently semi-automated and requires a few items:
 - The version number x.x.x for the release
 - Clone of `TheWorldAvatar` repository on your local machine
 - Docker-desktop is installed and running on your local machine
-- You have access to the docker.cmclinnovations.com registry on your local machine, for more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 
 ## Stable version release
 For a stable version release, please create and checkout to a new branch from your feature branch once you are happy with the feature and above details are ready. The release process can then be started by using the commands below, depending on the operating system you're using. (REMEMBER TO CHANGE THE CORRECT VALUES FOR `<absolute_path_to>` IN THE COMMANDS BELOW!)
