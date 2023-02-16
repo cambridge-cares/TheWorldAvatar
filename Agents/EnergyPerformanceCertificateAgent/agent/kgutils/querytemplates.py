@@ -145,7 +145,7 @@ def get_children_and_parent_building_properties():
     query = f"""
         SELECT DISTINCT ?parent_iri ?parent_id ?property_iri ?address_iri ?postcode_iri ?district_iri
                         ?addr_street ?addr_number ?addr_bldg_name ?addr_unit_name ?epc_rating ?rooms 
-                        ?usage_iri ?usage_label ?property_type_iri ?built_form_iri ?construction_start
+                        ?usage_iri ?property_type_iri ?built_form_iri ?construction_start
                         ?construction_end ?floor_area ?floor_description ?roof_description 
                         ?wall_description  ?windows_description
         WHERE {{
@@ -161,7 +161,6 @@ def get_children_and_parent_building_properties():
             OPTIONAL {{ ?property_iri <{OBE_HAS_NUMBER_ROOMS}> ?rooms }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_PROPERTY_USAGE}> ?usage .
                         ?usage <{RDF_TYPE}> ?usage_iri }}
-            OPTIONAL {{ ?property_iri <{RDFS_LABEL}> ?usage_label }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_PROPERTY_TYPE}> ?property_type .
                         ?property_type <{RDF_TYPE}> ?property_type_iri }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_BUILT_FORM}> ?built_form .
@@ -199,7 +198,7 @@ def get_children_and_parent_building_properties_non_domestic():
     query = f"""
         SELECT DISTINCT ?parent_iri ?parent_id ?property_iri ?address_iri ?postcode_iri ?district_iri
                         ?addr_street ?addr_number ?addr_bldg_name ?addr_unit_name ?epc_rating  
-                        ?usage_iri ?usage_label ?property_type_iri ?floor_area
+                        ?usage_iri ?property_type_iri ?floor_area
         WHERE {{
             ?property_iri <{OBE_IS_IN}> ?parent_iri ;
                       <{OBE_HAS_ADDRESS}> ?address_iri .
@@ -212,7 +211,6 @@ def get_children_and_parent_building_properties_non_domestic():
             OPTIONAL {{ ?property_iri <{OBE_HAS_ENERGYRATING}> ?epc_rating }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_PROPERTY_USAGE}> ?usage .
                         ?usage <{RDF_TYPE}> ?usage_iri }}
-            OPTIONAL {{ ?property_iri <{RDFS_LABEL}> ?usage_label }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_TOTAL_FLOOR_AREA}>/<{OM_HAS_VALUE}>/<{OM_NUM_VALUE}> ?floor_area }}
             OPTIONAL {{ ?parent_iri <{OBE_HAS_IDENTIFIER}> ?parent_id }}
             
@@ -355,12 +353,12 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
                          addr_bldg_name: str = None, addr_unit_name: str = None,
                          postcode_iri:str = None, district_iri: str = None,
                          built_form_iri: str = None, property_type_iri: str = None,
-                         usage_iri: str = None, usage_label: str = None,
+                         usage_iri = None, usage_label: str = None,
                          construction_start: str = None, construction_end: str = None,
                          floor_description: str = None, roof_description: str = None, 
                          wall_description: str = None, windows_description: str = None,  
                          floor_area: float = None, rooms: int = None,
-                         epc_rating: str = None, epc_lmkkey: str = None, weightage: float = None) -> str:
+                         epc_rating: str = None, epc_lmkkey: str = None, weightage = None) -> str:
     # Returns triples to instantiate EPC data for single property
     
     if property_iri and uprn:
@@ -482,12 +480,12 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
 
 def update_epc_data(property_iri: str = None,
                     built_form_iri: str = None, property_type_iri: str = None,
-                    usage_iri: str = None, usage_label: str = None,
+                    usage_iri = None, usage_label: str = None,
                     construction_end: str = None, 
                     floor_description: str = None, roof_description: str = None, 
                     wall_description: str = None, windows_description: str = None,  
                     floor_area: float = None, rooms: int = None,
-                    epc_rating: str = None, epc_lmkkey: str = None, weightage: str = None) -> str:
+                    epc_rating: str = None, epc_lmkkey: str = None, weightage = None) -> str:
     # Returns DELETE / INSERT query to update instantiated EPC data
 
     # Not all building data is assumed to be "updatable", i.e. assumed constant:
@@ -505,7 +503,9 @@ def update_epc_data(property_iri: str = None,
                                  <{OBE_HAS_PROPERTY_USAGE}> ?usage_iri ;
                                  <{OBE_HAS_PROPERTY_TYPE}> ?property_type_iri ;
                                  <{OBE_HAS_BUILT_FORM}> ?built_form_iri .
-                ?usage_iri <{RDF_TYPE}> ?usage .
+                ?usage_iri <{RDF_TYPE}> ?usage ;
+                           <{RDFS_LABEL}> ?usage_label ;
+                           <{OBE_HAS_USAGE_SHARE}> ?usage_share .
                 ?built_form_iri <{RDF_TYPE}> ?built_form .
                 ?property_type_iri <{RDF_TYPE}> ?property_type .
                 ?end_iri <{TIME_IN_DATETIME_STAMP}> ?end_time .
@@ -524,18 +524,17 @@ def update_epc_data(property_iri: str = None,
         if epc_rating: insert += f"<{property_iri}> <{OBE_HAS_ENERGYRATING}> \"{epc_rating}\"^^<{XSD_STRING}> ."
         if rooms: insert += f"<{property_iri}> <{OBE_HAS_NUMBER_ROOMS}> \"{rooms}\"^^<{XSD_INTEGER}> . "
         if usage_iri:
-            if usage_iri:
-                if (isinstance(usage_iri, list)):                      
-                    for item, weight in zip(usage_iri, weightage):
-                        us_iri = item + '_' + str(uuid.uuid4())
-                        insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
-                        insert += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
-                        insert += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
-                else:
-                    us_iri = usage_iri + '_' + str(uuid.uuid4())
+            if (isinstance(usage_iri, list)):                      
+                for item, weight in zip(usage_iri, weightage):
+                    us_iri = item + '_' + str(uuid.uuid4())
                     insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
-                    insert += f"<{us_iri}> <{RDF_TYPE}> <{usage_iri}> . "
-                    if usage_label: insert += f"<{us_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
+                    insert += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
+                    insert += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
+            else:
+                us_iri = usage_iri + '_' + str(uuid.uuid4())
+                insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
+                insert += f"<{us_iri}> <{RDF_TYPE}> <{usage_iri}> . "
+                if usage_label: insert += f"<{us_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
         if property_type_iri: 
             prop_iri = property_type_iri + '_' + str(uuid.uuid4())
             insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> <{prop_iri}> . "
@@ -562,7 +561,10 @@ def update_epc_data(property_iri: str = None,
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_BUILT_FORM}> ?built_form_iri .
                             ?built_form_iri <{RDF_TYPE}> ?built_form . }}
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> ?usage_iri .
-                            ?usage_iri <{RDF_TYPE}> ?usage . }}
+                            ?usage_iri <{RDF_TYPE}> ?usage . 
+                            OPTIONAL {{ ?usage_iri <{RDFS_LABEL}> ?usage_label ;
+                                                   <{OBE_HAS_USAGE_SHARE}> ?usage_share .
+                            }} }}
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_CONSTRUCTION_DATE}>/<{TIME_HAS_END}> ?end_iri . 
                             ?end_iri <{TIME_IN_DATETIME_STAMP}> ?end_time . }}
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> ?floor .
