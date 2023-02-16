@@ -4,9 +4,11 @@ import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 
 import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.QuerySolutionMap;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.Test;
@@ -24,6 +26,10 @@ class QueryHandlerTest {
     private static final String secondInst = "Storey_654";
     private static final String testClass = "Storey";
     private static final String testConstructClass = "Building";
+    private static final String testVar = "name";
+    private static final String testLiteral = "Building1";
+    private static final String testHeightVar = "height";
+    private static final String testDoubleLiteral = "102";
 
 
     @Test
@@ -59,6 +65,19 @@ class QueryHandlerTest {
         String secondStatement = "[" + JunitTestUtils.bimUri + secondInst + ", " + RDF.type + ", " + JunitTestUtils.bimUri + testConstructClass + "]";
         assertTrue(strResults.contains(firstStatement));
         assertTrue(strResults.contains(secondStatement));
+    }
+
+    @Test
+    void testRetrieveLiteral() {
+        // Create a sample query solution for testing
+        QuerySolutionMap solution = new QuerySolutionMap();
+        solution.add(testVar, ResourceFactory.createPlainLiteral(testLiteral));
+        solution.add(testHeightVar, ResourceFactory.createTypedLiteral(testDoubleLiteral));
+        // Execute the method and ensure results are string
+        assertEquals(testLiteral, QueryHandler.retrieveLiteral(solution, testVar));
+        assertEquals(testDoubleLiteral, QueryHandler.retrieveLiteral(solution, testHeightVar));
+        // If the variable does not exist, ensure that null is return
+        assertNull(QueryHandler.retrieveLiteral(solution, "nonExisting"));
     }
 
     private List<String> genInitQuery() {

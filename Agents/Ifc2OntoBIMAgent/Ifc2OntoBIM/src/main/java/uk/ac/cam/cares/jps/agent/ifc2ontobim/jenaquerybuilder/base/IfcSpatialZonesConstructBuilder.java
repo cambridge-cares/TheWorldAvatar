@@ -1,7 +1,13 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base;
 
+import com.hp.hpl.jena.shared.uuid.JenaUUID;
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.sparql.lang.sparql_11.ParseException;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.UUID;
 
@@ -21,12 +27,7 @@ public class IfcSpatialZonesConstructBuilder extends IfcConstructBuilderTemplate
     public static final String LONG_MIN_VAR = "?longminute";
     public static final String LONG_SEC_VAR = "?longsecond";
     public static final String LONG_MILSEC_VAR = "?longmilsecond";
-    public static final String BIM_PREFIX = "bim:";
     public static final String IFC_SITE_REPRESENTATION_CLASS = "IfcSiteRepresentation";
-    public static final String IFC_BUILDING_REPRESENTATION = "IfcBuildingRepresentation";
-    public static final String IFC_STOREY_REPRESENTATION = "IfcStoreyRepresentation";
-    public static final String IFC_ROOM_REPRESENTATION = "IfcRoomRepresentation";
-
 
     /**
      * Create the SPARQL query syntax for Construct queries.
@@ -55,12 +56,9 @@ public class IfcSpatialZonesConstructBuilder extends IfcConstructBuilderTemplate
                 addReferenceSystemParamQueryComponents(builder);
                 break;
             case "ifc:IfcBuilding":
+            case "ifc:IfcBuildingStorey":
             case "ifc:IfcSpace":
                 addSpatialLocationQueryComponents(builder, ifcClass);
-                break;
-            case "ifc:IfcBuildingStorey":
-                addSpatialLocationQueryComponents(builder, ifcClass);
-                addBuildingStoreyQueryComponents(builder);
                 break;
         }
     }
@@ -89,34 +87,23 @@ public class IfcSpatialZonesConstructBuilder extends IfcConstructBuilderTemplate
     }
 
     /**
-     * Add the statements specifically for building storeys.
-     *
-     * @param builder Construct Builder object to add Construct query statements.
-     */
-    private void addBuildingStoreyQueryComponents(ConstructBuilder builder) {
-        builder.addConstruct(ELEMENT_VAR, "bim:hasRefElevation", ELEVATION_VAR);
-        builder.addWhere(ELEMENT_VAR, "ifc:elevation_IfcBuildingStorey/express:hasDouble", ELEVATION_VAR);
-    }
-
-    /**
      * Add the statements for querying the reference system parameters like Latitude, longitude, elevation into the builder.
      *
      * @param builder Construct Builder object to add Construct query statements.
      */
     private void addReferenceSystemParamQueryComponents(ConstructBuilder builder) {
-        builder.addConstruct(ELEMENT_VAR, "bim:hasRefElevation", ELEVATION_VAR)
-                .addConstruct(ELEMENT_VAR, "bim:hasRefLatitude", LAT_ANGLE_VAR)
+        builder.addConstruct(ELEMENT_VAR, BIM_PREFIX + "hasRefLatitude", LAT_ANGLE_VAR)
                 .addConstruct(LAT_ANGLE_VAR, QueryHandler.RDF_TYPE, "bim:CompoundPlaneAngle")
-                .addConstruct(LAT_ANGLE_VAR, "bim:hasDegree", LAT_DEGREE_VAR)
-                .addConstruct(LAT_ANGLE_VAR, "bim:hasMinute", LAT_MIN_VAR)
-                .addConstruct(LAT_ANGLE_VAR, "bim:hasSecond", LAT_SEC_VAR)
-                .addConstruct(LAT_ANGLE_VAR, "bim:hasMillionthSecond", LAT_MILSEC_VAR)
-                .addConstruct(ELEMENT_VAR, "bim:hasRefLongitude", LONG_ANGLE_VAR)
+                .addConstruct(LAT_ANGLE_VAR, BIM_PREFIX + "hasDegree", LAT_DEGREE_VAR)
+                .addConstruct(LAT_ANGLE_VAR, BIM_PREFIX + "hasMinute", LAT_MIN_VAR)
+                .addConstruct(LAT_ANGLE_VAR, BIM_PREFIX + "hasSecond", LAT_SEC_VAR)
+                .addConstruct(LAT_ANGLE_VAR, BIM_PREFIX + "hasMillionthSecond", LAT_MILSEC_VAR)
+                .addConstruct(ELEMENT_VAR, BIM_PREFIX + "hasRefLongitude", LONG_ANGLE_VAR)
                 .addConstruct(LONG_ANGLE_VAR, QueryHandler.RDF_TYPE, "bim:CompoundPlaneAngle")
-                .addConstruct(LONG_ANGLE_VAR, "bim:hasDegree", LONG_DEGREE_VAR)
-                .addConstruct(LONG_ANGLE_VAR, "bim:hasMinute", LONG_MIN_VAR)
-                .addConstruct(LONG_ANGLE_VAR, "bim:hasSecond", LONG_SEC_VAR)
-                .addConstruct(LONG_ANGLE_VAR, "bim:hasMillionthSecond", LONG_MILSEC_VAR);
+                .addConstruct(LONG_ANGLE_VAR, BIM_PREFIX + "hasDegree", LONG_DEGREE_VAR)
+                .addConstruct(LONG_ANGLE_VAR, BIM_PREFIX + "hasMinute", LONG_MIN_VAR)
+                .addConstruct(LONG_ANGLE_VAR, BIM_PREFIX + "hasSecond", LONG_SEC_VAR)
+                .addConstruct(LONG_ANGLE_VAR, BIM_PREFIX + "hasMillionthSecond", LONG_MILSEC_VAR);
 
         builder.addWhere(ELEMENT_VAR, "ifc:refLatitude_IfcSite", LAT_ANGLE_VAR)
                 .addWhere(LAT_ANGLE_VAR, QueryHandler.RDF_TYPE, "ifc:IfcCompoundPlaneAngleMeasure")
@@ -129,7 +116,6 @@ public class IfcSpatialZonesConstructBuilder extends IfcConstructBuilderTemplate
                 .addWhere(LONG_ANGLE_VAR, "list:hasContents/express:hasInteger", LONG_DEGREE_VAR)
                 .addWhere(LONG_ANGLE_VAR, "list:hasNext/list:hasContents/express:hasInteger", LONG_MIN_VAR)
                 .addWhere(LONG_ANGLE_VAR, "list:hasNext/list:hasNext/list:hasContents/express:hasInteger", LONG_SEC_VAR)
-                .addOptional(LONG_ANGLE_VAR, "list:hasNext/list:hasNext/list:hasNext/list:hasContents/express:hasInteger", LONG_MILSEC_VAR)
-                .addWhere(ELEMENT_VAR, "ifc:refElevation_IfcSite/express:hasDouble", ELEVATION_VAR);
+                .addOptional(LONG_ANGLE_VAR, "list:hasNext/list:hasNext/list:hasNext/list:hasContents/express:hasInteger", LONG_MILSEC_VAR);
     }
 }

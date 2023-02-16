@@ -1,9 +1,17 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
+import org.apache.jena.rdf.model.Statement;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class JunitTestUtils {
     public static final String bimUri = "http://www.theworldavatar.com/kg/ontobim/";
@@ -24,5 +32,25 @@ public class JunitTestUtils {
         nsMapping.put("list", listUri);
         nsMapping.put("express", expressUri);
         builder.addPrefixes(nsMapping);
+    }
+
+    public static String appendStatementsAsString(LinkedHashSet<Statement> statementSet) {
+        StringBuilder builder = new StringBuilder();
+        statementSet.forEach(statement -> builder.append(statement.toString()));
+        return builder.toString();
+    }
+
+    public static void doesExpectedListExist(List<String> expected, String result) {
+        expected.forEach(statement -> {
+                    Matcher matcher = Pattern.compile(statement).matcher(result);
+                    assertTrue(matcher.find());
+        });
+    }
+
+    public static void doesExpectedListNotExist(List<String> expected, String result) {
+        expected.forEach(statement -> {
+            Matcher matcher = Pattern.compile(statement).matcher(result);
+            assertFalse(matcher.find());
+        });
     }
 }

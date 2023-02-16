@@ -33,6 +33,7 @@ class OntoBimConverterTest {
         List<String> lines = new ArrayList<>();
         lines.add("@prefix rdf: <"+ JunitTestUtils.rdfUri +"> .");
         lines.add("@prefix bim: <"+ JunitTestUtils.bimUri +"> .");
+        lines.add("@prefix inst: <"+ JunitTestUtils.bimUri +"> .");
         lines.add("");
         lines.add("bim:Zone_19 rdf:type bim:Zone .");
         Files.write(sampleTtl, lines);

@@ -56,4 +56,20 @@ public class QueryHandler {
             results.listStatements().forEach(statementSet::add);
         }
     }
+
+    /**
+     * Retrieves literal as a string from a row of Jena Result Set if it exists.
+     *
+     * @param soln     The row of Jena result set to retrieve information from.
+     * @param variable The variable name of interest.
+     * @return The value of interest as a string.
+     */
+    public static String retrieveLiteral(QuerySolution soln, String variable) {
+        if (soln.contains(variable)) {
+            // Retrieve only the literal value with getString(), do not retrieve the namespace
+            return soln.getLiteral(variable).getString();
+        } else {
+            return null;
+        }
+    }
 }

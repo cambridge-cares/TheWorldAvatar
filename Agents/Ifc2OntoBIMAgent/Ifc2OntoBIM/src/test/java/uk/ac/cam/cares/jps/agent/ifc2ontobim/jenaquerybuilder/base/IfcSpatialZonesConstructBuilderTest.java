@@ -7,6 +7,7 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -48,14 +49,17 @@ class IfcSpatialZonesConstructBuilderTest {
         String query = new IfcSpatialZonesConstructBuilder().createSparqlQuery(builder, "ifc:IfcSite", "bim:IfcSiteRepresentation");
         // Check for statements specific to site
         List<String> expected = this.genExpectedResultsForSite();
-        expected.forEach(line -> assertTrue(query.contains(line)));
+        expected.forEach(line -> {
+            System.out.println(line);
+            assertTrue(query.contains(line));
+        });
     }
 
     @Test
     void testCreateSparqlQueryFail() {
         ConstructBuilder failBuilder = new ConstructBuilder();
         IllegalArgumentException thrownError = assertThrows(IllegalArgumentException.class,
-                () -> new IfcSpatialZonesConstructBuilder().createSparqlQuery(failBuilder, "ifc:IfcSite", "bot:Site"));
+                () -> new IfcSpatialZonesConstructBuilder().createSparqlQuery(failBuilder, "ifc:IfcSite", "bim:Site"));
         assertTrue(thrownError.getMessage().contains("Predicate"));
         assertTrue(thrownError.getMessage().contains("must be a Path, URI , variable, or a wildcard."));
     }
@@ -92,8 +96,6 @@ class IfcSpatialZonesConstructBuilderTest {
         expected.add("?zone bot:hasStorey ?element .");
         // Where statements
         expected.add("?element  rdf:type  ifc:IfcBuildingStorey .");
-        expected.add("?element bim:hasRefElevation ?elevation");
-        expected.add("?element ifc:elevation_IfcBuildingStorey/express:hasDouble ?elevation");
         return expected;
 
     }
@@ -112,7 +114,6 @@ class IfcSpatialZonesConstructBuilderTest {
         List<String> expected = new ArrayList<>();
         // Construct statements
         expected.add("?element rdf:type bim:IfcSiteRepresentation .");
-        expected.add("?element bim:hasRefElevation ?elevation .");
         expected.add("?element bim:hasRefLatitude ?latcompoundangle .");
         expected.add("?latcompoundangle rdf:type bim:CompoundPlaneAngle .");
         expected.add("?latcompoundangle bim:hasDegree ?latdegree .");
@@ -137,7 +138,6 @@ class IfcSpatialZonesConstructBuilderTest {
         expected.add("?longcompoundangle (list:hasNext/list:hasContents)/express:hasInteger ?longminute .");
         expected.add("?longcompoundangle ((list:hasNext/list:hasNext)/list:hasContents)/express:hasInteger ?longsecond");
         expected.add("?longcompoundangle (((list:hasNext/list:hasNext)/list:hasNext)/list:hasContents)/express:hasInteger ?longmilsecond");
-        expected.add("?element ifc:refElevation_IfcSite/express:hasDouble ?elevation");
         return expected;
     }
 }

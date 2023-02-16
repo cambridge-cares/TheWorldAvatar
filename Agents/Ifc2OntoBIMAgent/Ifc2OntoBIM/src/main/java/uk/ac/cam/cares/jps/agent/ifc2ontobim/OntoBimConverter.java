@@ -5,6 +5,7 @@ import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.riot.RDFParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.SpatialZoneFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaclassifier.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement.IfcElementConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base.IfcProjectConstructBuilder;
@@ -133,6 +134,7 @@ public class OntoBimConverter {
             LOGGER.info("Retrieved statements related to spatial zones for " + ifcZones);
         }
         CompoundAngleMeasureClassifier.addClassMapping(statementSet, classMapping);
+        SpatialZoneFacade.genZoneTriples(this.owlModel, statementSet);
         this.storeInTempFiles(statementSet);
         LOGGER.info("Stored statements for spatial zones in temporary file");
     }

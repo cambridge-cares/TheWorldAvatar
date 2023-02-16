@@ -15,7 +15,8 @@ abstract public class IfcConstructBuilderTemplate {
     public static final String UID_VAR = "?uid";
     public static final String RELAGGR_VAR = "?relaggregates";
     public static final String PLACEMENT_VAR = "?localplacement";
-    public static final String ELEVATION_VAR = "?elevation";
+    public static final String BIM_PREFIX = "bim:";
+    public static final String BASE_PREFIX = "inst:";
 
     protected abstract void switchFunctionDependingOnInput(ConstructBuilder builder, String ifcClass, String botClass);
 
@@ -56,7 +57,7 @@ abstract public class IfcConstructBuilderTemplate {
      */
     private void addBaseQueryComponents(ConstructBuilder builder, String ifcClass, String bimClass) {
         builder.addConstruct(ELEMENT_VAR, QueryHandler.RDF_TYPE, bimClass)
-                .addConstruct(ELEMENT_VAR, "bim:hasIfcId", UID_VAR)
+                .addConstruct(ELEMENT_VAR, BIM_PREFIX + "hasIfcId", UID_VAR)
                 .addConstruct(ELEMENT_VAR, QueryHandler.RDFS_LABEL, NAME_VAR);
 
         builder.addWhere(ELEMENT_VAR, QueryHandler.RDF_TYPE, ifcClass)
@@ -71,8 +72,8 @@ abstract public class IfcConstructBuilderTemplate {
      * @param builder Construct Builder object to add Construct query statements.
      */
     private void addModelPositionQueryComponents(ConstructBuilder builder) {
-        builder.addConstruct(ELEMENT_VAR, "bim:hasLocalPosition", PLACEMENT_VAR)
-                .addConstruct(PLACEMENT_VAR, QueryHandler.RDF_TYPE, "bim:LocalPlacement");
+        builder.addConstruct(ELEMENT_VAR, BIM_PREFIX + "hasLocalPosition", PLACEMENT_VAR)
+                .addConstruct(PLACEMENT_VAR, QueryHandler.RDF_TYPE, BIM_PREFIX + "LocalPlacement");
 
         // Ifc Placement query structure
         builder.addWhere(ELEMENT_VAR, "ifc:objectPlacement_IfcProduct", PLACEMENT_VAR)
