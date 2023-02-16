@@ -6,6 +6,7 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Statement;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base.IfcSpatialZonesConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.StringUtils;
 
@@ -39,7 +40,7 @@ public class CompoundAngleMeasureClassifier {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         selectBuilder.addVar("?latitude")
                 .addVar("?longitude");
-        selectBuilder.addWhere("?site", "rdf:type", "bot:Site")
+        selectBuilder.addWhere("?site", "rdf:type", IfcSpatialZonesConstructBuilder.BIM_PREFIX+IfcSpatialZonesConstructBuilder.IFC_SITE_REPRESENTATION_CLASS)
                 .addWhere("?site", "bim:hasRefLatitude", "?latitude")
                 .addWhere("?site", "bim:hasRefLongitude", "?longitude")
                 .addWhere("?latitude", "rdf:type", "bim:CompoundPlaneAngle")

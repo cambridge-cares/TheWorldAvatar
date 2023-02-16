@@ -30,7 +30,7 @@ class CompoundAngleMeasureClassifierTest {
         // Generate the statements in the model
         sampleModel.createResource(baseIRI + "Site_16")
                 .addProperty(RDF.type,
-                        sampleModel.createResource(JunitTestUtils.botUri + "Site"))
+                        sampleModel.createResource(JunitTestUtils.bimUri + "IfcSiteRepresentation"))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.bimUri + "hasRefLatitude"),
                         sampleModel.createResource(baseIRI + latInst))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.bimUri + "hasRefLongitude"),

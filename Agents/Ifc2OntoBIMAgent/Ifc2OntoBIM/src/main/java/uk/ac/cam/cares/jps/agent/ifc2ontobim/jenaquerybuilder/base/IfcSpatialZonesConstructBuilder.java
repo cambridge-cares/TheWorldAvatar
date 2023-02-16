@@ -3,6 +3,8 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base;
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 
+import java.util.UUID;
+
 /**
  * Provides query statements specific to the spatial zones such as Site, Building, Building Storey, and Spaces.
  *
@@ -19,6 +21,11 @@ public class IfcSpatialZonesConstructBuilder extends IfcConstructBuilderTemplate
     public static final String LONG_MIN_VAR = "?longminute";
     public static final String LONG_SEC_VAR = "?longsecond";
     public static final String LONG_MILSEC_VAR = "?longmilsecond";
+    public static final String BIM_PREFIX = "bim:";
+    public static final String IFC_SITE_REPRESENTATION_CLASS = "IfcSiteRepresentation";
+    public static final String IFC_BUILDING_REPRESENTATION = "IfcBuildingRepresentation";
+    public static final String IFC_STOREY_REPRESENTATION = "IfcStoreyRepresentation";
+    public static final String IFC_ROOM_REPRESENTATION = "IfcRoomRepresentation";
 
 
     /**
@@ -26,15 +33,15 @@ public class IfcSpatialZonesConstructBuilder extends IfcConstructBuilderTemplate
      *
      * @param builder  Construct Builder object to add Construct query statements.
      * @param ifcClass The IfcOwl ontology's class name for the spatial structure element.
-     * @param botClass The bot ontology's class name for the spatial structure element.
+     * @param bimClass The OntoBIM ontology's class name for the spatial structure element.
      * @return The SPARQL query string for spatial zones
      */
-    public String createSparqlQuery(ConstructBuilder builder, String ifcClass, String botClass) {
+    public String createSparqlQuery(ConstructBuilder builder, String ifcClass, String bimClass) {
         // Calls the template method to generate the base SPARQL query statements
-        this.createTemplateSparqlQuery(builder, ifcClass, botClass);
+        this.createTemplateSparqlQuery(builder, ifcClass, bimClass);
 
         // Calls methods specific to each input to generate additional SPARQL query statements
-        this.switchFunctionDependingOnInput(builder, ifcClass, botClass);
+        this.switchFunctionDependingOnInput(builder, ifcClass, bimClass);
         return builder.buildString();
     }
 
@@ -42,7 +49,7 @@ public class IfcSpatialZonesConstructBuilder extends IfcConstructBuilderTemplate
      * A utility method to call other functions that generate additional SPARQL query statements based on the inputs.
      */
     @Override
-    protected void switchFunctionDependingOnInput(ConstructBuilder builder, String ifcClass, String botClass) {
+    protected void switchFunctionDependingOnInput(ConstructBuilder builder, String ifcClass, String bimClass) {
         switch (ifcClass) {
             case "ifc:IfcSite":
                 addReferenceSystemParamQueryComponents(builder);
@@ -87,8 +94,8 @@ public class IfcSpatialZonesConstructBuilder extends IfcConstructBuilderTemplate
      * @param builder Construct Builder object to add Construct query statements.
      */
     private void addBuildingStoreyQueryComponents(ConstructBuilder builder) {
-        builder.addConstruct(ELEMENT_VAR, "bim:hasRefElevation", "?refelevation");
-        builder.addWhere(ELEMENT_VAR, "ifc:elevation_IfcBuildingStorey/express:hasDouble", "?refelevation");
+        builder.addConstruct(ELEMENT_VAR, "bim:hasRefElevation", ELEVATION_VAR);
+        builder.addWhere(ELEMENT_VAR, "ifc:elevation_IfcBuildingStorey/express:hasDouble", ELEVATION_VAR);
     }
 
     /**

@@ -68,8 +68,8 @@ class JenaStatementParserTest {
                 // Ensure that all statements have been parsed without any ignored
                 () -> assertTrue(testSet.isEmpty()),
                 // Ensure IFC instance name are replaced
-                () -> assertTrue(result.contains("eg:Site_123 rdf:type eg:Site")),
-                () -> assertTrue(result.contains("eg:Element_123 rdf:type eg:IfcDoor")),
+                () -> assertTrue(result.contains("eg:IfcSiteRepresentation_123 rdf:type eg:IfcSiteRepresentation")),
+                () -> assertTrue(result.contains("eg:IfcModelRepresentation_123 rdf:type eg:IfcModelRepresentation")),
                 () -> assertTrue(result.contains("eg:LineVertex_3523 rdf:type eg:LineVertex")),
                 // Ensure List predicates are renamed
                 () -> assertTrue(result.contains("eg:LineVertex_3523 bim:hasNextVertex eg:LineVertex_5555")),

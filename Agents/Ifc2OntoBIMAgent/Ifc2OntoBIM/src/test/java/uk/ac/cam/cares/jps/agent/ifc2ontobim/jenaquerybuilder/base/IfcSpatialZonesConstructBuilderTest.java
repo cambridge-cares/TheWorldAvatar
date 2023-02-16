@@ -20,16 +20,16 @@ class IfcSpatialZonesConstructBuilderTest {
     }
 
     @Test
-    void testCreateSparqlQueryForSpace() {
-        String query = new IfcSpatialZonesConstructBuilder().createSparqlQuery(builder, "ifc:IfcSpace", "bot:Space");
+    void testCreateSparqlQueryForRoom() {
+        String query = new IfcSpatialZonesConstructBuilder().createSparqlQuery(builder, "ifc:IfcSpace", "bim:IfcRoomRepresentation");
         // In the first test, check all query statements are included
-        String expected = this.genExpectedResultsForSpace();
+        String expected = this.genExpectedResultsForRoom();
         assertTrue(query.contains(expected));
     }
 
     @Test
     void testCreateSparqlQueryForBuildingStorey() {
-        String query = new IfcSpatialZonesConstructBuilder().createSparqlQuery(builder, "ifc:IfcBuildingStorey", "bot:Storey");
+        String query = new IfcSpatialZonesConstructBuilder().createSparqlQuery(builder, "ifc:IfcBuildingStorey", "bim:IfcStoreyRepresentation");
         // Check for statements specific to building storey
         List<String> expected = this.genExpectedResultsForBuildingStorey();
         expected.forEach(line -> assertTrue(query.contains(line)));
@@ -37,7 +37,7 @@ class IfcSpatialZonesConstructBuilderTest {
 
     @Test
     void testCreateSparqlQueryForBuilding() {
-        String query = new IfcSpatialZonesConstructBuilder().createSparqlQuery(builder, "ifc:IfcBuilding", "bot:Building");
+        String query = new IfcSpatialZonesConstructBuilder().createSparqlQuery(builder, "ifc:IfcBuilding", "bim:IfcBuildingRepresentation");
         // Check for statements specific to building
         List<String> expected = this.genExpectedResultsForBuilding();
         expected.forEach(line -> assertTrue(query.contains(line)));
@@ -45,7 +45,7 @@ class IfcSpatialZonesConstructBuilderTest {
 
     @Test
     void testCreateSparqlQueryForSite() {
-        String query = new IfcSpatialZonesConstructBuilder().createSparqlQuery(builder, "ifc:IfcSite", "bot:Site");
+        String query = new IfcSpatialZonesConstructBuilder().createSparqlQuery(builder, "ifc:IfcSite", "bim:IfcSiteRepresentation");
         // Check for statements specific to site
         List<String> expected = this.genExpectedResultsForSite();
         expected.forEach(line -> assertTrue(query.contains(line)));
@@ -60,11 +60,11 @@ class IfcSpatialZonesConstructBuilderTest {
         assertTrue(thrownError.getMessage().contains("must be a Path, URI , variable, or a wildcard."));
     }
 
-    private String genExpectedResultsForSpace() {
+    private String genExpectedResultsForRoom() {
         StringBuilder expected = new StringBuilder();
         expected.append("CONSTRUCT \n")
                 .append("  { \n")
-                .append("    ?element rdf:type bot:Space .\n")
+                .append("    ?element rdf:type bim:IfcRoomRepresentation .\n")
                 .append("    ?element bim:hasIfcId ?uid .\n")
                 .append("    ?element rdfs:label ?name .\n")
                 .append("    ?element bim:hasLocalPosition ?localplacement .\n")
@@ -87,20 +87,23 @@ class IfcSpatialZonesConstructBuilderTest {
 
     private List<String> genExpectedResultsForBuildingStorey() {
         List<String> expected = new ArrayList<>();
-        expected.add("?element rdf:type bot:Storey .");
+        // Construct statements
+        expected.add("?element rdf:type bim:IfcStoreyRepresentation .");
         expected.add("?zone bot:hasStorey ?element .");
+        // Where statements
         expected.add("?element  rdf:type  ifc:IfcBuildingStorey .");
-
-        expected.add("?element bim:hasRefElevation ?refelevation");
-        expected.add("?element ifc:elevation_IfcBuildingStorey/express:hasDouble ?refelevation");
+        expected.add("?element bim:hasRefElevation ?elevation");
+        expected.add("?element ifc:elevation_IfcBuildingStorey/express:hasDouble ?elevation");
         return expected;
 
     }
 
     private List<String> genExpectedResultsForBuilding() {
         List<String> expected = new ArrayList<>();
-        expected.add("?element rdf:type bot:Building .");
+        // Construct statements
+        expected.add("?element rdf:type bim:IfcBuildingRepresentation .");
         expected.add("?zone bot:hasBuilding ?element ");
+        // Where statements
         expected.add("?element  rdf:type  ifc:IfcBuilding .");
         return expected;
     }
@@ -108,7 +111,7 @@ class IfcSpatialZonesConstructBuilderTest {
     private List<String> genExpectedResultsForSite() {
         List<String> expected = new ArrayList<>();
         // Construct statements
-        expected.add("?element rdf:type bot:Site .");
+        expected.add("?element rdf:type bim:IfcSiteRepresentation .");
         expected.add("?element bim:hasRefElevation ?elevation .");
         expected.add("?element bim:hasRefLatitude ?latcompoundangle .");
         expected.add("?latcompoundangle rdf:type bim:CompoundPlaneAngle .");

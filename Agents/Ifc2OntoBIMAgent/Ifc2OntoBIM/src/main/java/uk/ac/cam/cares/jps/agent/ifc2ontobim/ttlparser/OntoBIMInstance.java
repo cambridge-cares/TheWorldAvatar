@@ -16,19 +16,19 @@ class OntoBIMInstance {
         switch (ifcClass) {
             // Zones
             case "IfcProject":
-                replacementName = "Project";
+                replacementName = "IfcProjectRepresentation";
                 break;
             case "IfcSite":
-                replacementName = "Site";
+                replacementName = "IfcSiteRepresentation";
                 break;
             case "IfcBuilding":
-                replacementName = "Building";
+                replacementName = "IfcBuildingRepresentation";
                 break;
             case "IfcBuildingStorey":
-                replacementName = "Storey";
+                replacementName = "IfcStoreyRepresentation";
                 break;
             case "IfcSpace":
-                replacementName = "Space";
+                replacementName = "IfcRoomRepresentation";
                 break;
             // Elements
             case "IfcRoof":
@@ -44,7 +44,7 @@ class OntoBIMInstance {
             case "IfcBuildingElementProxy":
             case "IfcFlowTerminal":
             case "IfcMember":
-                replacementName = "Element";
+                replacementName = "IfcModelRepresentation";
                 break;
             case "IfcOpeningElement":
                 replacementName = "GeometryVoid";

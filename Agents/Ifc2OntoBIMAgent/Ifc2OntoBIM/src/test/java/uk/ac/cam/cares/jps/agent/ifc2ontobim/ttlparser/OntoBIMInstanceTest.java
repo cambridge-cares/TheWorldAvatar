@@ -7,8 +7,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class OntoBIMInstanceTest {
     @Test
     void testRetrieveOntoBimName() {
-        assertEquals("Project", OntoBIMInstance.retrieveOntoBimName("IfcProject"));
-        assertEquals("Element", OntoBIMInstance.retrieveOntoBimName("IfcRoof"));
+        assertEquals("IfcProjectRepresentation", OntoBIMInstance.retrieveOntoBimName("IfcProject"));
+        assertEquals("IfcSiteRepresentation", OntoBIMInstance.retrieveOntoBimName("IfcSite"));
+        assertEquals("IfcBuildingRepresentation", OntoBIMInstance.retrieveOntoBimName("IfcBuilding"));
+        assertEquals("IfcStoreyRepresentation", OntoBIMInstance.retrieveOntoBimName("IfcBuildingStorey"));
+        assertEquals("IfcRoomRepresentation", OntoBIMInstance.retrieveOntoBimName("IfcSpace"));
+        assertEquals("IfcModelRepresentation", OntoBIMInstance.retrieveOntoBimName("IfcRoof"));
         assertEquals("GeometricRepresentationContext", OntoBIMInstance.retrieveOntoBimName("IfcGeometricRepresentationContext"));
         assertEquals("Polyline", OntoBIMInstance.retrieveOntoBimName("IfcPolyline"));
         assertEquals("CartesianPoint", OntoBIMInstance.retrieveOntoBimName("IfcCartesianPoint"));
