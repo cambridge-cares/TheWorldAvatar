@@ -439,22 +439,22 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
                                <{instant_iri}> <{RDF_TYPE}> <{TIME_INSTANT}> . 
                                <{instant_iri}> <{TIME_IN_DATETIME_STAMP}> \"{construction_end}\"^^<{XSD_DATETIMESTAMP}> . """
         if floor_description: 
-            floor_iri = OBE_FLOOR + '_' + str(uuid.uuid4())
+            floor_iri = KB + 'Floor_' + str(uuid.uuid4())
             triples += f"""<{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> <{floor_iri}> . 
                            <{floor_iri}> <{RDF_TYPE}> <{OBE_FLOOR}> . 
                            <{floor_iri}> <{RDFS_COMMENT}> \"{floor_description}\"^^<{XSD_STRING}> . """
         if roof_description: 
-            roof_iri = OBE_ROOF + '_' + str(uuid.uuid4())
+            roof_iri = KB + 'Roof_' + str(uuid.uuid4())
             triples += f"""<{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> <{roof_iri}> . 
                            <{roof_iri}> <{RDF_TYPE}> <{OBE_ROOF}> . 
                            <{roof_iri}> <{RDFS_COMMENT}> \"{roof_description}\"^^<{XSD_STRING}> . """
         if wall_description: 
-            wall_iri = OBE_WALL + '_' + str(uuid.uuid4())
+            wall_iri = KB + 'Wall_' + str(uuid.uuid4())
             triples += f"""<{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> <{wall_iri}> . 
                            <{wall_iri}> <{RDF_TYPE}> <{OBE_WALL}> . 
                            <{wall_iri}> <{RDFS_COMMENT}> \"{wall_description}\"^^<{XSD_STRING}> . """
         if windows_description: 
-            windows_iri = OBE_WINDOWS + '_' + str(uuid.uuid4())
+            windows_iri = KB + 'Windows_' + str(uuid.uuid4())
             triples += f"""<{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> <{windows_iri}> . 
                            <{windows_iri}> <{RDF_TYPE}> <{OBE_WINDOWS}> . 
                            <{windows_iri}> <{RDFS_COMMENT}> \"{windows_description}\"^^<{XSD_STRING}> . """
