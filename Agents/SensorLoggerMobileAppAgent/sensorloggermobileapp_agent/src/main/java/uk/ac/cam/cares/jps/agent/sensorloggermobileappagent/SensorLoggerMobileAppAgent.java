@@ -1,19 +1,21 @@
 package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-
-import java.sql.Connection;
-import java.sql.Statement;
-import java.util.*;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.postgis.Point;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,18 +23,17 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.*;
 
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.downsampling;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.InstantiationClient.instantiationMethod;
-public class SensorLoggerMobileAppAgent {
+public class SensorLoggerMobileAppAgent extends JPSAgent {
 
     //Accelerometer list
     private static ArrayList<OffsetDateTime> accel_tsList = new ArrayList<>();
@@ -87,7 +88,7 @@ public class SensorLoggerMobileAppAgent {
 
         //Start scheduler
         Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new ScheduledTask(), 5 * 1000, 5 * 1000);
+        timer.scheduleAtFixedRate(new ScheduledTask(), 0, 5 * 1000);
     }
 
     /**
@@ -95,7 +96,11 @@ public class SensorLoggerMobileAppAgent {
      */
     public static class ScheduledTask extends TimerTask {
         public void run() {
-            tsInstantiation();
+            try {
+                tsInstantiation();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -206,7 +211,7 @@ public class SensorLoggerMobileAppAgent {
         }
     }
 
-    private static final Logger LOGGER = LogManager.getLogger(MobileAppAgent.class);
+    private static final Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppAgent.class);
     private static final String BASEURI = "https://www.theworldavatar.com/kg/measure_";
     private static final String dbURL = "jdbc:postgresql://localhost:5432/develop";
     private static final String user = "postgres";
@@ -253,7 +258,7 @@ public class SensorLoggerMobileAppAgent {
 
     public static List<List<String>> tableHeaderList= Arrays.asList(accelerometerHeader,gravityHeader,lightHeader,locationHeader,magnetometerHeader,microphoneHeader, screenHeader);
     public static List<String> tableList = Arrays.asList(accelerometer, gravity,light, location,magnetometer,microphone,screen);
-    public static void tsInstantiation() {
+    public static void tsInstantiation() throws Exception {
         HashMap hashMap = new HashMap();
         Boolean unitsWereInstantiated = false;
 
@@ -271,7 +276,10 @@ public class SensorLoggerMobileAppAgent {
 
                 //Get the newest timeseries
                 TimeSeries getTimeSeries = parseDataToLists(i, parseJSONArrayToList(dataIRIArray));
+                if (i!=3) {getTimeSeries = downsampling.instantaneous((getTimeSeries), 1L, 3);}
                 updateData(getTimeSeries);
+                System.out.println("Timeseries has been updated");
+
                 unitsWereInstantiated=true;
             }
             else  //When time series does not exist create timeseries
@@ -311,12 +319,13 @@ public class SensorLoggerMobileAppAgent {
     /** Initialize timeseries if it does not exist,
      * @param i table number
      */
-    private static void initTimeseriesIfNotExist(int i, HashMap hashMap){
+    private static void initTimeseriesIfNotExist(int i, HashMap hashMap) throws Exception {
         //Create Timeseries
         List<String> dataIRIList = createTimeSeries(i, hashMap);
 
         //GetTimeSeries
         TimeSeries getTimeSeries = parseDataToLists(i, dataIRIList);
+        getTimeSeries=downsampling.instantaneous((getTimeSeries), 1L,3);
 
         //Add timeseries data with tsList
         try (Connection conn = rdbStoreClient.getConnection()) {
