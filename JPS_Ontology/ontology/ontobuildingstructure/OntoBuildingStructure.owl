@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontobuildingstructure/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">15 February 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">16 February 2023</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Building Structure ontology (OntoBuildingStructure) is an ontology developed to represent the building structural components (walls, doors, slabs, roofs, stairs) and their individual characteristics such as dimensions and qualities.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
@@ -140,38 +140,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a roof and its slope angle.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has slope</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontobuildingstructure/isPartOf -->
-
-
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontobuildingstructure/isPartOf">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontobuildingstructure/Door"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontobuildingstructure/Window"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontobuildingstructure/Landing"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontobuildingstructure/Railing"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontobuildingstructure/StairFlight"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontobuildingstructure/StairStructuralComponent"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/Stair"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/Wall"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that links a component to their assembly. An example is that railing, landing, stair flights, and stair structural components are part of stair.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">is part of </rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -420,12 +388,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontobuildingstructure/Door">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/BuildingStructureComponent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/isPartOf"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/Wall"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Construction for closing an opening, intended primarily for access with hinged, pivoted or sliding operation.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Door</rdfs:label>
@@ -474,12 +436,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontobuildingstructure/Landing">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/BuildingStructureComponent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/isPartOf"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/Stair"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A floor section that is connected to one or more stair flights or ramp flights.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Landing</rdfs:label>
@@ -492,12 +448,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontobuildingstructure/Railing">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/BuildingStructureComponent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/isPartOf"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/Stair"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A frame assembly that is adjacent to human circulation spaces and at some space boundaries, in which it is used in lieu of walls or to complement walls. It is usually designed to aid humans, either as an optional physical support, or to prevent injury by falling.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Railing</rdfs:label>
@@ -573,12 +523,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontobuildingstructure/StairFlight">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/BuildingStructureComponent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/isPartOf"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/Stair"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An assembly of building components in a single &amp;quot;run&amp;quot; of stair steps that are not interrupted by a landing.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Stair Flight</rdfs:label>
@@ -591,12 +535,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontobuildingstructure/StairStructuralComponent">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/BuildingStructureComponent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/isPartOf"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/Stair"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A structural member designed to carry loads between or beyond points of support for a staircase.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Stair Structural Component </rdfs:label>
@@ -646,12 +584,6 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontobuildingstructure/Window">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/BuildingStructureComponent"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/isPartOf"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/kg/ontobuildingstructure/Wall"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Construction for closing a vertical or near vertical opening in a wall or pitched roof that will admit light and may admit fresh air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontobuildingstructure/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Window</rdfs:label>
