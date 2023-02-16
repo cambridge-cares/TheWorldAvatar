@@ -20,3 +20,13 @@ Details about the routes on the stack establishment, and how to deploy the agent
 An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root http://localhost:5020/. All requests are to be sent as GET requests 
 
 Details about how to use the agent please see the [home page](https://htmlpreview.github.io/?https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-heat-pump-migration-to-stack-2/Agents/LSOACalculationAgent_fuel_cost/agent/flaskapp/templates/index.html) of this agent
+
+
+<!-- files -->
+[Dockerfile]: Dockerfile
+[docker compose file]: docker-compose.yml
+[docker-compose.test.yml]: tests\docker-compose.test.yml
+[example retrieve all request]: resources\HTTPRequest_retrieve_all.http
+[resources]: resources
+[stack.sh]: stack.sh
+[tests]: tests
