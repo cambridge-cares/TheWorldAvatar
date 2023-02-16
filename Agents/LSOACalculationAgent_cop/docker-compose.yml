@@ -6,16 +6,16 @@ services:
     environment:
       - STACK_NAME=${STACK_NAME}
       # Target Blazegraph namespace
-      - NAMESPACE= ontogasgrid
+      - NAMESPACE=ontogasgrid
       # Target layer name in geoserver, also table name in PostGIS
-      - LAYERNAME= lsoacalculationagent_cop
+      - LAYERNAME=lsoacalculationagent_cop
       # Target PostGIS/PostgreSQL database name
       # (default name "postgres" required for Ontop to work)
       - DATABASE=postgres
       - GEOSERVER_WORKSPACE=lsoacalculationagent_cop
       - ONTOP_FILE=/app/resources/ontop.obda
     ports:
-      - "5000:5000"
+      - "5010:5000"
     volumes:
       # Link container output directory to local directory to access output files
       # (i.e. only required for creation of output geojson files)
