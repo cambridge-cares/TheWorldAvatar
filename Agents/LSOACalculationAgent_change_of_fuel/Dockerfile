@@ -4,7 +4,7 @@
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
-FROM python:3.8.10-slim-buster as base
+FROM python:3.9.14-slim-buster as base
 # Meta data
 LABEL authors = "jx309@cam.ac.uk"
 LABEL description = "LSOA (Lower-layer Super Output Area in the UK) Calculation agent for the change of fuel (Gas & Electricity)"

@@ -1076,6 +1076,17 @@ def output_change_of_fuel_df(url_cop,url_change_of_fuel,):
     change_of_gas, change_of_elec = call_change_of_fuel_agent(url_change_of_fuel, uptake, gas_tensor,0.9,cop)
     return change_of_gas, change_of_elec
 
+df_inequality_index = output_inequality_index_df('http://localhost:5010/api/lsoacalculationagent_cop/calculation/cop',\
+                           'http://localhost:5040/api/lsoacalculationagent_change_of_fuel/calculation/change_of_fuel',\
+                           'http://localhost:5020/api/lsoacalculationagent_fuel_cost/calculation/fuel_cost',\
+                           'http://localhost:5050/api/lsoacalculationagent_inequality_index/calculation/inequality_index',\
+                           )
+print(df_inequality_index)
+
+
+
+
+
 '''
 df_full = call_pickle('./Data/temp_Repo/df in function get_all_data')
 df_full['LSOA_code'] = df_full['LSOA_code'].apply(lambda x: add_prefix(x, prefix = ONS_ID))
@@ -1099,9 +1110,8 @@ df_temp = retrieve_temp_from_KG()
 unique_LSOA, results_tensor = convert_to_tensor(input = df_temp)
 
 # call calculation agent
-url = 'http://localhost:5003/api/lsoacalculationagent_cop/calculation/cop'
+url = 'http://localhost:5010/api/lsoacalculationagent_cop/calculation/cop'
 cop = call_cop_agent(url, results_tensor, OM_DEGREE_C)
-
 print(cop)
 '''
 # ----------------------------------------------------------------
