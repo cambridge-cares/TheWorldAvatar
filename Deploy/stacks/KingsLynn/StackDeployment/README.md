@@ -212,7 +212,18 @@ As the agent tends to fail when processing an entire namespace on particular mac
 
 > The following description refers to commit `79b13971aff9c0ccbd0cdd69db71c04ff9c80fd2` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/1376-dev-building-matching-agent`
 
-The Building Matching Agent links buildings instantiated according to OntoBuiltEnv using the EPC Agent with their OntoCityGml representations. General details on how to use the agent can be found in the [Building Matching Readme]; however, all relevant steps are also described in section 3.4. in the [EPC Agent README].
+The Building Matching Agent links buildings instantiated according to OntoBuiltEnv using the EPC Agent with their OntoCityGml representations. General details on how to use the agent can be found in the [Building Matching Readme]; however, all relevant steps are also described in section 3.4. in the [EPC Agent README]. The following request shall match buildings in the `ocgml` and `buildings` namespace:
+
+```
+PUT http://localhost:58085/BuildingMatchingAgent/match
+Content-Type: application/json
+
+{ 
+  "ocgml": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql",
+  "obe": "http://165.232.172.16:3838/blazegraph/namespace/buildings/sparql",
+  "prefixIRI": "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/"
+}
+```
 
 After the Building instances are matched, step 3) from the EPC Agent can be performed.
 
