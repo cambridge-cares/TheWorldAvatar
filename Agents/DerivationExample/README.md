@@ -17,7 +17,7 @@ This example uses a docker stack with three containers:
 3. blazegraph
 
 The example is set up to use the Maven repository at https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/ (in addition to Maven central).
-You'll need to provide  your credentials in single-word text files in the `credentials` folder
+You'll need to provide your credentials in single-word text files in the `credentials` folder
 ```
   credentials/
       repo_username.txt
@@ -36,6 +36,8 @@ db.password = [YOUR_POSTGRES_PASSWORD]
 kg.password = [YOUR_BLAZEGRAPH_PASSWORD]
 ```
 You should leave the other fields unchanged.
+
+> NOTE: if the `postgres_data` volume was initialised for previous docker containers, it is required to remove it using: `docker volume rm postgres_data`
 
 To build and start the service, you need to spin up the stack using the docker-compose.yml file provided.
 In Visual Studio Code, ensure the Docker extension is installed, then right-click docker-compose.yml and select 'Compose Up'.
