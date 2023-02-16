@@ -390,25 +390,25 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
         if district_iri: triples += f"<{property_iri}> <{OBE_LOCATEDIN}> <{district_iri}> . "
         
         # Instances        
-        if property_type_iri: 
-            prop_iri = property_type_iri + '_' + str(uuid.uuid4())
+        if property_type_iri:
+            prop_iri = KB + property_type_iri[property_type_iri.rfind('/')+1:] + '_' + str(uuid.uuid4())
             triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> <{prop_iri}> . "
             triples += f"<{prop_iri}> <{RDF_TYPE}> <{property_type_iri}> . "
-        if built_form_iri: 
-            built_iri = built_form_iri + '_' + str(uuid.uuid4())
+        if built_form_iri:
+            built_iri = KB + built_form_iri[built_form_iri.rfind('/')+1:] + '_' + str(uuid.uuid4())
             triples += f"<{property_iri}> <{OBE_HAS_BUILT_FORM}> <{built_iri}> . "
             triples += f"<{built_iri}> <{RDF_TYPE}> <{built_form_iri}> . "
         if usage_iri:
             # For multiple usages: Usage weight is instantiated for each usage
             if (isinstance(usage_iri, list)):                      
                 for item, weight in zip(usage_iri, weightage):
-                    us_iri = item + '_' + str(uuid.uuid4())
+                    us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
                     triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
                     triples += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
                     triples += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
             else:
                 # For single usage: Usage weight is assumed 1 and not instantiated
-                us_iri = usage_iri + '_' + str(uuid.uuid4())
+                us_iri = KB + usage_iri[usage_iri.rfind('/')+1:] + '_' + str(uuid.uuid4())
                 triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
                 triples += f"<{us_iri}> <{RDF_TYPE}> <{usage_iri}> . "
                 if usage_label: triples += f"<{us_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
@@ -526,21 +526,21 @@ def update_epc_data(property_iri: str = None,
         if usage_iri:
             if (isinstance(usage_iri, list)):                      
                 for item, weight in zip(usage_iri, weightage):
-                    us_iri = item + '_' + str(uuid.uuid4())
+                    us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
                     insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
                     insert += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
                     insert += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
             else:
-                us_iri = usage_iri + '_' + str(uuid.uuid4())
+                us_iri = KB + usage_iri[usage_iri.rfind('/')+1:] + '_' + str(uuid.uuid4())
                 insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
                 insert += f"<{us_iri}> <{RDF_TYPE}> <{usage_iri}> . "
                 if usage_label: insert += f"<{us_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
         if property_type_iri: 
-            prop_iri = property_type_iri + '_' + str(uuid.uuid4())
+            prop_iri = KB + property_type_iri[property_type_iri.rfind('/')+1:] + '_' + str(uuid.uuid4())
             insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> <{prop_iri}> . "
             insert += f"<{prop_iri}> <{RDF_TYPE}> <{property_type_iri}> . "
         if built_form_iri: 
-            built_iri = built_form_iri + '_' + str(uuid.uuid4())
+            built_iri = KB + built_form_iri[built_form_iri.rfind('/')+1:] + '_' + str(uuid.uuid4())
             insert += f"<{property_iri}> <{OBE_HAS_BUILT_FORM}> <{built_iri}> . "
             insert += f"<{built_iri}> <{RDF_TYPE}> <{built_form_iri}> . "
         if construction_end: insert += f"?end_iri <{TIME_IN_DATETIME_STAMP}> \"{construction_end}\"^^<{XSD_DATETIMESTAMP}> . "
