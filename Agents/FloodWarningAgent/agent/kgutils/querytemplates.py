@@ -72,7 +72,8 @@ def get_all_flood_areas() -> str:
 def flood_area_instantiation_triples(area_uri: str, area_types: list, county_iri: str,
                                      location_iri: str, admin_district_iri: str,
                                      waterbody_iri: str, water_body_type: str, label: str, 
-                                     area_identifier: str, water_body_label: str) -> tuple:
+                                     area_identifier: str, water_body_label: str,
+                                     history_iri: str) -> tuple:
     """
     Create INSERT triples to instantiate single flood area (to be placed inside a SPARQL INSERT DATA block)
 
@@ -94,6 +95,8 @@ def flood_area_instantiation_triples(area_uri: str, area_types: list, county_iri
         triples = f"""
             <{area_uri}> <{RDF_TYPE}> <{RT_FLOOD_AREA}> . 
             <{area_uri}> <{FLOOD_HAS_LOCATION}> <{location_iri}> . 
+            <{area_uri}> <{FLOOD_HAS_ALERT_OR_WARNING_HISTORY}> <{history_iri}> . 
+            <{history_iri}> <{RDF_TYPE}> <{FLOOD_FLOOD_ALERT_OR_WARNING_HISTORY}> . 
             <{location_iri}> <{RDF_TYPE}> <{FLOOD_LOCATION}> . 
             <{location_iri}> <{FLOOD_HAS_ADMINISTRATIVE_DISTRICT}> <{admin_district_iri}> . 
             <{admin_district_iri}> <{RDF_TYPE}> <{FLOOD_ADMINISTRATIVE_DISTRICT}> . 

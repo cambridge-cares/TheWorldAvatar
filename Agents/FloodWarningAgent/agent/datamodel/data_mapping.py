@@ -18,6 +18,7 @@ jpsBaseLibView = jpsBaseLibGW.createModuleView()
 # Time entries (Instant)
 Instant = jpsBaseLibView.java.time.Instant
 TIMECLASS = Instant.now().getClass()
+#TODO: Remove unnecessary classes
 # Data class (i.e. all data as double)
 DOUBLE = jpsBaseLibView.java.lang.Double.TYPE
 

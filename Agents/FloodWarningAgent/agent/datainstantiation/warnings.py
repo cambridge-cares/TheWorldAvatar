@@ -10,10 +10,12 @@ import uuid
 
 from datetime import datetime as dt
 
+from agent.datamodel.data_mapping import TIMECLASS, DOUBLE
 from agent.datainstantiation.ea_data import retrieve_current_warnings, \
                                             retrieve_flood_area_data
 from agent.datainstantiation.ons_data import retrieve_ons_county
 from agent.kgutils.kgclient import KGClient
+from agent.kgutils.tsclient import TSClient
 from agent.kgutils.querytemplates import *
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from agent.utils.stackclients import GdalClient, GeoserverClient, \
@@ -37,8 +39,12 @@ def update_warnings(county=None):
                   Instantiates ALL current warnings if no county given
     """
 
-    # Create KG client 
-    kgclient = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
+    # Initialise return values
+    instantiated_areas = 0
+    instantiated_warnings = 0
+
+    # Initialise KG Client
+    kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
     if county:
         ### Update flood warnings for given county ###
@@ -53,8 +59,8 @@ def update_warnings(county=None):
 
         # 2) Retrieve instantiated flood warnings and flood areas from KG
         logger.info("Retrieving instantiated flood warnings and areas from KG ...")
-        areas_kg = get_instantiated_flood_areas(kgclient=kgclient)  
-        warnings_kg = get_instantiated_flood_warnings(kgclient=kgclient)      
+        areas_kg = get_instantiated_flood_areas(kgclient=kg_client)  
+        warnings_kg = get_instantiated_flood_warnings(kgclient=kg_client)      
         logger.info("Instantiated warnings and areas retrieved.")
 
         # 3) Extract (currently active) flood warnings and flood areas to be instantiated
@@ -71,12 +77,13 @@ def update_warnings(county=None):
         warnings_to_update = [w for w in warnings_to_update if warnings_kg.get(w) < last_altered.get(w)]
 
         # 5) Instantiate missing flood areas and warnings
-        logger.info("Instantiating flood warnings and areas ...")
-        instantiated_areas, instantiated_warnings = \
-            instantiate_flood_areas_and_warnings(areas_to_instantiate, areas_kg,
-                                                 warnings_to_instantiate, warnings_data_api, 
-                                                 kgclient=kgclient)
-        logger.info("Instantiation finished.")
+        if warnings_to_instantiate or areas_to_instantiate:
+            logger.info("Instantiating flood warnings and areas ...")
+            instantiated_areas, instantiated_warnings = \
+                instantiate_flood_areas_and_warnings(areas_to_instantiate, areas_kg,
+                                                     warnings_to_instantiate, warnings_data_api, 
+                                                     kgclient=kg_client)
+            logger.info("Instantiation finished.")
 
         # 6) Update outdated flood warnings
         logger.info("Updating flood warnings ...")
@@ -106,20 +113,56 @@ def instantiate_flood_areas_and_warnings(areas_to_instantiate: list, areas_kg: d
         Number of newly instantiated flood areas and flood warnings as int
     """
 
+    # Initialise return values
+    new_areas = 0
+    new_warnings = 0
+
     # Create KG client if not provided
     if not kgclient:
         kgclient = KGClient(query_endpoint, query_endpoint)
 
-    # Retrieve data for flood areas from API
-    areas_data_to_instantiate = []
-    logger.info("Retrieving missing flood areas from API ...")
-    for area in areas_to_instantiate:
-        areas_data_to_instantiate.append(retrieve_flood_area_data(area))
-    logger.info("Missing flood areas retrieved.")
+    # Instantiate (potentially) missing flood areas
+    if areas_to_instantiate:
+        # Initialise TimeSeries Client
+        #TODO: Uncomment once a solution for Java String class retrieval has been found
+        ts_client = TSClient(kg_client=kgclient, timeclass=TIMECLASS)
 
-    # Instantiate missing flood areas
-    new_areas, area_location_map = \
-        instantiate_flood_areas(areas_data_to_instantiate, kgclient=kgclient)
+        # Retrieve data for flood areas from API
+        areas_data_to_instantiate = []
+        logger.info("Retrieving missing flood areas from API ...")
+        for area in areas_to_instantiate:
+            areas_data_to_instantiate.append(retrieve_flood_area_data(area))
+        logger.info("Missing flood areas retrieved.")
+
+        # Instantiate Blazegraph triples
+        new_areas, area_location_map, area_history_map = \
+            instantiate_flood_areas(areas_data_to_instantiate, kgclient=kgclient)
+        
+        # Initialise time series to store history of key characteristics of flood 
+        # area's warnings and alerts, i.e. timestamp of change, severity, message, 
+        # type of flood, attached water body, total number of affected people & 
+        # buildings, total value of affected buildings
+        #NOTE: Idea is to store all of these information as ONE string delimited by
+        #      a special character, e.g. '|' --> available for later analysis without
+        #      too much time series overhead
+        #      --> currently facing issues to initialise time series with String column
+        #          type via py4jps
+        #TODO: Finalise implementation once a solution for declaring Java String class
+        #       in Python via py4jps has been found
+        # Initialise FloodArea's warning and alert history time series
+        with ts_client.connect() as conn:
+            ### List of lists
+            dataIRIs = [[datairi] for datairi in area_history_map.values()]
+            # Example for declaring Java class --> equivalent for String required
+            data_class = DOUBLE
+            dataClasses = [[data_class] for i in dataIRIs]
+            ### Lists
+            timeFormats = [TIME_FORMAT] * len(dataIRIs)
+            # Initialise time series
+            ts_client.tsclient.bulkInitTimeSeries(dataIRIs, dataClasses, timeFormats, conn)
+    else:
+        area_location_map = {}
+
     # Create overarching mapping between flood area URIs and location IRIs, i.e.
     # already instantiated and newly instantiated ones
     area_location_map.update(areas_kg)
@@ -208,7 +251,8 @@ def instantiate_flood_areas(areas_data: list=[],
 
     Returns:
         Number (int) of instantiated flood areas
-        Dict with instantiated area IRIs as keys and Location IRIs as values
+        Dict with newly instantiated area IRIs as keys and Location IRIs as values
+        Dict with newly instantiated area IRIs as keys and History IRIs as values
     """
 
     # Create KG client if not provided
@@ -222,13 +266,19 @@ def instantiate_flood_areas(areas_data: list=[],
 
     triples = ''
     area_location_map = {}
+    area_history_map = {}
     for area in areas_data:
         # Create IRIs for Location associated with flood area (and potential flood event)
-        area['location_iri'] = KB + 'Location' + str(uuid.uuid4())
-        area_location_map[area['area_uri']] = area['location_iri']
-        area['admin_district_iri'] = KB + 'AdministrativeDistrict' + str(uuid.uuid4())
+        area['location_iri'] = KB + 'Location_' + str(uuid.uuid4())
+        area['admin_district_iri'] = KB + 'AdministrativeDistrict_' + str(uuid.uuid4())
         # Create waterbody IRI
-        area['waterbody_iri'] = KB + area['water_body_type'].capitalize() + str(uuid.uuid4())
+        area['waterbody_iri'] = KB + area['water_body_type'].capitalize() + '_' + str(uuid.uuid4())
+        # Create history iri
+        area['history_iri'] = KB + 'FloodAlertOrWarningHistory_' + str(uuid.uuid4())
+        
+        # Create dicts for newly created IRIs per flood area
+        area_location_map[area['area_uri']] = area['location_iri']
+        area_history_map[area['area_uri']] = area['history_iri']
 
         # Retrieve county IRI from ONS API
         logger.info("Retrieving county IRI from ONS API ...")
@@ -269,7 +319,7 @@ def instantiate_flood_areas(areas_data: list=[],
     query = f"INSERT DATA {{ {triples} }}"
     kgclient.performUpdate(query)
 
-    return len(areas_data), area_location_map
+    return len(areas_data), area_location_map, area_history_map
 
 
 def instantiate_flood_warnings(warnings_data: list=[],
