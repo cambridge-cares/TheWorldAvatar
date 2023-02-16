@@ -353,7 +353,7 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
                          addr_bldg_name: str = None, addr_unit_name: str = None,
                          postcode_iri:str = None, district_iri: str = None,
                          built_form_iri: str = None, property_type_iri: str = None,
-                         usage_iri = None, usage_label: str = None,
+                         usage_iri = None, usage_label = None,
                          construction_start: str = None, construction_end: str = None,
                          floor_description: str = None, roof_description: str = None, 
                          wall_description: str = None, windows_description: str = None,  
@@ -400,18 +400,29 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
             triples += f"<{built_iri}> <{RDF_TYPE}> <{built_form_iri}> . "
         if usage_iri:
             # For multiple usages: Usage weight is instantiated for each usage
-            if (isinstance(usage_iri, list)):                      
-                for item, weight in zip(usage_iri, weightage):
-                    us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
-                    triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
-                    triples += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
-                    triples += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
+            if (isinstance(usage_iri, list)):
+                # Instantiate usage labels if present 
+                if usage_label:
+                    for item, weight, label in zip(usage_iri, weightage, usage_label):
+                        us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
+                        triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
+                        triples += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
+                        triples += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
+                        triples += f"<{us_iri}> <{RDFS_LABEL}> \"{label}\"^^<{XSD_STRING}> . "
+                # Usage labels not present
+                else:
+                    for item, weight in zip(usage_iri, weightage):
+                        us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
+                        triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
+                        triples += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
+                        triples += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
             else:
                 # For single usage: Usage weight is assumed 1 and not instantiated
                 us_iri = KB + usage_iri[usage_iri.rfind('/')+1:] + '_' + str(uuid.uuid4())
                 triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
                 triples += f"<{us_iri}> <{RDF_TYPE}> <{usage_iri}> . "
                 if usage_label: triples += f"<{us_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
+
         if construction_start or construction_end:
             #TODO: Potentially include relevant construction time bands in ABox
             interval_iri = KB + 'Interval_' + str(uuid.uuid4())
@@ -480,7 +491,7 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
 
 def update_epc_data(property_iri: str = None,
                     built_form_iri: str = None, property_type_iri: str = None,
-                    usage_iri = None, usage_label: str = None,
+                    usage_iri = None, usage_label = None,
                     construction_end: str = None, 
                     floor_description: str = None, roof_description: str = None, 
                     wall_description: str = None, windows_description: str = None,  
@@ -524,17 +535,28 @@ def update_epc_data(property_iri: str = None,
         if epc_rating: insert += f"<{property_iri}> <{OBE_HAS_ENERGYRATING}> \"{epc_rating}\"^^<{XSD_STRING}> ."
         if rooms: insert += f"<{property_iri}> <{OBE_HAS_NUMBER_ROOMS}> \"{rooms}\"^^<{XSD_INTEGER}> . "
         if usage_iri:
-            if (isinstance(usage_iri, list)):                      
-                for item, weight in zip(usage_iri, weightage):
-                    us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
-                    insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
-                    insert += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
-                    insert += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
+            if (isinstance(usage_iri, list)):
+                # Instantiate usage labels if present 
+                if usage_label:                      
+                    for item, weight, label in zip(usage_iri, weightage, usage_label):
+                        us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
+                        insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
+                        insert += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
+                        insert += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
+                        insert += f"<{us_iri}> <{RDFS_LABEL}> \"{label}\"^^<{XSD_STRING}> . "
+                # Usage labels not present
+                else:
+                    for item, weight in zip(usage_iri, weightage):
+                        us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
+                        insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
+                        insert += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
+                        insert += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
             else:
                 us_iri = KB + usage_iri[usage_iri.rfind('/')+1:] + '_' + str(uuid.uuid4())
                 insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
                 insert += f"<{us_iri}> <{RDF_TYPE}> <{usage_iri}> . "
                 if usage_label: insert += f"<{us_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
+
         if property_type_iri: 
             prop_iri = KB + property_type_iri[property_type_iri.rfind('/')+1:] + '_' + str(uuid.uuid4())
             insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> <{prop_iri}> . "

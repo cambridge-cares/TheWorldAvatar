@@ -610,7 +610,10 @@ def condition_epc_display_data(data):
     len_usage = len(usage_list)
 
     # Only calculate weights if there are multiple usages
-    if len_usage > 1:            
+    if len_usage > 1:
+        usage_label_list = (data.get('property-type')).replace(" ", "").split(';')
+        if '' in usage_label_list : usage_label_list.remove('')
+
         for item in usage_list:
             count = usage_list.count(item)
             weight = count/len_usage
@@ -620,14 +623,17 @@ def condition_epc_display_data(data):
 
         # Usage_iri here is a list of usages
         data_to_instantiate['usage_iri'] = usage 
-        # Usage Share (weights)
+        # Usage Share (list of weights)
         data_to_instantiate['weightage'] = weightage
+
+        # Labels instantiated only if usages are not aggregated
+        if len(usage_label_list) == len(usage):
+            data_to_instantiate['usage_label'] = usage_label_list
 
     else:            
         # Usage_iri for single usage
         data_to_instantiate['usage_iri'] = EPC_DATA.get(usage_list[0]) 
-
-    data_to_instantiate['usage_label'] = data.get('property-type')
+        data_to_instantiate['usage_label'] = data.get('property-type')
 
     # Energy rating 
     data_to_instantiate['epc_rating'] = data.get('operational-rating-band')
