@@ -177,14 +177,33 @@ As the agent tends to fail when processing an entire namespace on particular mac
 
 ## 4.3) Energy Performance Certificate (EPC) Agent
 
-> The following steps refer to commit `9f432c74d09bd790251ad0e1b5d8273b81f9fecc` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-EPCInstantiationAgent`
+> The following steps refer to commit `???` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main` using the published Docker image `ghcr.io/cambridge-cares/epc_agent:1.0.0`
 
-Build and deploy the EPC Agent as described in the [EPC Agent README], i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack. Follow the described instantiation workflow by sending the respective HTTP requests to the agent. The subsequent recurring updating of instantiated data occurs automatically.
+(Build and) deploy the EPC Agent as described in the [EPC Agent README], i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack. Follow the described instantiation workflow by sending the respective HTTP requests to the agent. The subsequent recurring updating of instantiated data occurs automatically.
 
-1) Initialise namespace for EPC building data (i.e. namespace `buildings` created upon initialisation to host all building related data)
-2) Instantiate all EPC building data
-3) Update geospatial representation of buildings in OntoBuiltEnv namespace
-   (**Please note:** This requires the Building Matching Agent to be run first!)
+0) New namespace (i.e. `buildings`) to host all building related data created automatically upon agent startup (incl. upload of ontology and all required unit symbols)
+1) Instantiate all postcodes in King's Lynn local authority:
+    ```
+    POST http://165.232.172.16:5001/epcagent/instantiate/postcodes
+    Content-Type: application/json
+
+    { "query": {
+        "district": "E07000146"
+        }
+    }
+    ```
+2) Instantiate all EPC building data (for all buildings and from all 3 APIs):
+    ```
+    POST http://165.232.172.16:5001/epcagent/instantiate/certificates/all
+    Content-Type: application/json
+
+    { "query": {
+        "ocgml_endpoint": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql"
+        }
+    }
+    ```
+3) Run Building Matching Agent (details see below)
+4) Update geospatial representation of buildings and insert additional OntoCityGml information in OntoBuiltEnv namespace (required for DTVF and Geoserver styling)
 
 - A KG export of successfully instantiated EPC data (steps 1 & 2) is provided in `../../Data/99 KG snapshots/4_epc_data_before_matching`
 
@@ -264,7 +283,7 @@ The `resources` folder contains an `instantiated_buildings.sparql` file which co
 [CityImportAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
 [TSDAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
 [AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#readme
-[EPC Agent README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-EPCInstantiationAgent/Agents/EnergyPerformanceCertificateAgent/README.md
+[EPC Agent README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/EnergyPerformanceCertificateAgent/README.md
 [Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/README.md
 [RiverLevelsAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAgent
 
