@@ -67,6 +67,8 @@ WORKDIR /app
 COPY ./agent ./agent
 COPY ./app_entry_point.sh .
 
+# Set permission 
+RUN chmod +x app_entry_point.sh
 # Set the entrypoint
 ENTRYPOINT ./app_entry_point.sh
 #==================================================================================================
