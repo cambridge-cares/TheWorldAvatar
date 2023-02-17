@@ -102,6 +102,7 @@ public class AermodAgent extends DerivationAgent {
 
         // Query buildings and plant items.
         //Run BPIPPRM
+        /*
         Buildings bpi;
         try {
             bpi = new Buildings();
@@ -113,6 +114,8 @@ public class AermodAgent extends DerivationAgent {
             LOGGER.error("Failed to run BPIPPRM, terminating");
             throw new RuntimeException();
         }
+
+         */
 
         // run aermet (weather preprocessor)
         if (aermod.runAermet() != 0) {
