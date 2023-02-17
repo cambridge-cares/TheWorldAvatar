@@ -1438,14 +1438,18 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                     logger.error('Unable to retrieve building usage category.')
                     raise KGException('Unable to retrieve building usage category.') from ex
                 
-                usage_list = []
-                # Map usage
+                usages = []
+                # Map usage(s)
                 if len(retrieved_usage) == 1:
-                    usage = USAGE_MAPPING.get(retrieved_usage[0].get('usage'))
+                    primary_usage = retrieved_usage[0].get('usage')
+                    usages.append(primary_usage)
+                    # Get usage category for detailed primary usage; in case primary usage
+                    # is already "general" (i.e. not a key in mapping dict), use it directly
+                    usage_category = USAGE_MAPPING.get(primary_usage, primary_usage)
                 else:
                     max_weight = 0
                     for u in retrieved_usage:
-                        usage_list.append(u.get('usage'))
+                        usages.append(u.get('usage'))
                         query = get_usage_share(u.get('usage_iri'))
                         try:
                             weight = (kgclient_epc.performQuery(query))
@@ -1453,9 +1457,12 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                             logger.error('Unable to retrieve usage share.')
                             raise KGException('Unable to retrieve usage share.') from ex
                         if float(weight[0].get('share')) > max_weight:
+                            #NOTE: In case of equal usage weights, the first usage is used
                             max_weight = float(weight[0].get('share'))
                             primary_usage = u.get('usage')
-                    usage = USAGE_MAPPING.get(primary_usage)
+                    usage_category = USAGE_MAPPING.get(primary_usage, primary_usage)
+                # Convert list of usages to concatenated string (to be JSON compatible)
+                usages = ';'.join(usages)
 
                 # Extract all floor surface geometries for this building
                 surf = data[data['obe_bldg'] == b]
@@ -1495,7 +1502,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
 
                 # Define GeoJSON properties
                 props = {
-                    # Required by DTVF
+                    # Initially required by DTVF (potentially outdated, but kept for reference)
                     'iri': b,
                     'name': b.split('/')[-1].replace('>',''),
                     'endpoint': QUERY_ENDPOINT,
@@ -1503,8 +1510,9 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                     'geom_iri': b + '/geometry',
                     # Optional (for styling)
                     'type': feature_type,
-                    'usage': usage,
-                    'usage_categories': usage_list,
+                    'primary_usage': primary_usage,
+                    'primary_usage_category': usage_category,
+                    'usages': usages,
                 }
                 if surf.get('height').any():
                     props['building height'] = float(surf['height'].iloc[0])

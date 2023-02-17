@@ -7,17 +7,21 @@
 # requests to actual application and initialise recurring tasks
 
 from agent.flaskapp import create_app
-from agent.datainstantiation.epc_instantiation import instantiate_epc_data_for_all_postcodes
+from agent.datainstantiation.epc_instantiation import instantiate_epc_data_for_all_postcodes, \
+                                                      add_ocgml_building_data
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
-# Add recurring background task to assimilate latest EPC data every 6 weeks
+# Add recurring background task to assimilate latest EPC data
 # "The department will publish register data every four to six months for new EPCs
 # and DECs or where the status of the EPC or DEC has changed" 
 # (https://epc.opendatacommunities.org/docs/guidance#faq-updates)
 sched = BackgroundScheduler(daemon=True)
-sched.add_job(instantiate_epc_data_for_all_postcodes, trigger='interval', weeks=6,
+# Update EPC data every first of the month
+sched.add_job(instantiate_epc_data_for_all_postcodes, trigger='cron', day=1,
               kwargs={'epc_endpoint': None})
+# Update PostGIS database (i.e. changed usages) every second of the month
+sched.add_job(add_ocgml_building_data, trigger='cron', day=2)
 
 sched.start()
 
