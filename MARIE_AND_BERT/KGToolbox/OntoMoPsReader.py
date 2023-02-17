@@ -55,14 +55,26 @@ class OntoMopsReader:
     def filter_singular_nodes(self, triples):
         node_count_dict = {}
         singular_node_list = []
+        non_singular_triples = []
+        singular_triples = []
+
         for s, p, o in triples:
             self.update_count_dict(node_count_dict, s)
             self.update_count_dict(node_count_dict, o)
 
         for node in node_count_dict:
             if node_count_dict[node] == 1:
-                print(node)
                 singular_node_list.append(node)
+
+        for s, p, o in triples:
+            row = (s,p,o)
+            if o in singular_node_list:
+                singular_triples.append(row)
+            else:
+                non_singular_triples.append(row)
+
+
+
 
     def get_all_triples(self):
         # 14348 triples in total
