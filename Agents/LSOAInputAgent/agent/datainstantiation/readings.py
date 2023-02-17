@@ -19,6 +19,7 @@ from bs4 import BeautifulSoup
 import requests
 from requests.exceptions import HTTPError
 from urllib.parse import urlsplit, urlunsplit
+import json
 
 import agentlogging
 from agent.kgutils.kgclient import KGClient
@@ -358,7 +359,8 @@ def read_from_pickle(pathname: str):
 # ------------------------- Upload data to KG ------------------------------------ #
 def upload_elec_data_to_KG (year: str = YEAR,
                 query_endpoint: str = QUERY_ENDPOINT,
-                update_endpoint: str = UPDATE_ENDPOINT):
+                update_endpoint: str = UPDATE_ENDPOINT,
+                path: str = None):
     '''
         perform SPARQL update to upload the Electricity consumption/meters data into Blazegraph
         
@@ -366,10 +368,17 @@ def upload_elec_data_to_KG (year: str = YEAR,
         year: the number of year of which the data you may want to read
         query_endpoint: str = QUERY_ENDPOINT,
         update_endpoint: str = UPDATE_ENDPOINT
+        path: mainly for testing reason, provide an path to a json file which can be read and upload to knowledge graph
+              example json files can be seen in ./tests/data folder
     '''
 # Retrieve reading from web
     logger.info('Retrieving Electricity consumption data from Excel ...')
-    data = read_from_web_elec(year)
+    if path is None:
+        data = read_from_web_elec(year)
+    else:
+        with open(path, 'r') as file:
+            data = json.load(file)
+
     LSOA_codes = data["LSOA code"].values
     met_num = data["Number\nof meters\n"].values
     consump = data["Total \nconsumption\n(kWh)"].values

@@ -15,7 +15,7 @@ from agent.datacalculation.datacalculation import *
 from agent.datamodel.iris import OM_DEGREE_C
 from agent.datamodel.functionality import T_from_COP ,call_pickle, data_treatment, \
                     normalization, create_color_bar,save_figures,convert_to_tensor, \
-                    select_column, get_median, compare_tensor, tensor_to_df
+                    select_column, get_median, compare_tensor, tensor_to_df, convert_df
 
 import matplotlib.pyplot as plt
 import geopandas as gpd
@@ -1081,7 +1081,8 @@ df_inequality_index = output_inequality_index_df('http://localhost:5010/api/lsoa
                            'http://localhost:5020/api/lsoacalculationagent_fuel_cost/calculation/fuel_cost',\
                            'http://localhost:5050/api/lsoacalculationagent_inequality_index/calculation/inequality_index',\
                            )
-print(df_inequality_index)
+convert_df(df_inequality_index)
+plot_geodistribution('inequality index', 'inequality index', df_inequality_index, 0)
 
 
 

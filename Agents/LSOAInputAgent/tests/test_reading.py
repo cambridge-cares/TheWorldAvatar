@@ -95,3 +95,16 @@ def test_temperature_var_format(var_name, expectedMsg):
       read_from_web_temp('2020', var_name)
     # Check correct exception message
     assert expectedMsg in str(excinfo.value)
+
+
+@pytest.mark.skip(reason="Only works as integration test with Blazegraph running at endpoint specified in `stack_configs_mock.py` file.\
+                          Default settings in `stack_configs_mock.py` match provided `docker-compose.test.yml`")
+def test_upload_elec_data_to_KG(clear_triple_store, mocker):
+    # Mock call to uuid function
+    mocker.patch('uuid.uuid4', side_effect=[str(1), str(2), str(3)])
+
+    # Retrieve SPARQL endpoint from `stack_configs_mock.py` file and create namespace (if not exists)
+    endpoint = QUERY_ENDPOINT
+    create_blazegraph_namespace(endpoint)
+
+    # Verify that knowledge base is empty
