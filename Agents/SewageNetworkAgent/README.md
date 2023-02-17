@@ -1,10 +1,8 @@
-# Sewerage Network Agent
-This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the sewerage network located in a midsize town in Germany. Its purpose is to instantiate instances of the sewerage network. 
+# Sewage Network Agent
+This agent is for maintaining data and the corresponding instances in the knowledge graph (KG) regarding the sewage network located in a midsize town in Germany. Its purpose is to instantiate the sewage network. 
 
 ## Usage 
-This part of the README describes the usage of the sewerage network agent. The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. Sending the appropriate request to the correct URL will initiate the agent. 
-
-The next section explains the requirements to run the agent.
+The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. Sending the appropriate request to the correct URL will initiate the agent. 
 
 ### Requirements
 - It is required to have access to a knowledge graph SPARQL endpoint. This can be either in form of a Docker container or natively running on a machine. It is not in the scope of this README to explain the set-up of a knowledge graph triple store. 
@@ -21,9 +19,9 @@ If running within a stack, use e.g.
 http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/sewagenetwork/sparql
 ```
 
-#### Building the Sewerage Network Agent
+#### Building the agent
 
-Sewerage Network Agent is set up to use the Maven repository. Credentials in single-word text files located like this are required:
+The agent is set up to use the Maven repository. Credentials in single-word text files located like this are required:
 ```
 ./credentials/
     repo_username.txt
@@ -36,8 +34,6 @@ To build and start the agent, open up the command prompt in the same directory a
 ```
 docker-compose up -d
 ```
-
-This agent is reachable at "seweragenetwork-agent/performsewageupdate" on localhost port 1080.
 
 #### Stack Deployment
 
