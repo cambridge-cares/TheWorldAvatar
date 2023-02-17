@@ -1,10 +1,12 @@
-# **Primasens Sewage Data Instantiation**
+# **Sewage Data Preprocessing**
 
-This project provides functionality to instantiate data for the sewage network in Pirmasens. This repository provides tools to analyze the XML data structure and clean the provided data for further process; However, the data itself is confidential information and not available on GitHub!
+This project provides functionality to preprocess data required for instantiating a sewage network. It provides tools to analyze the XML data structure and clean the provided data for further processing.
 
 ## **Description of modules**
 
-The `./Data` directory should exist before running the project. The `./Data/raw/` directory contains all the required input files including `dictionary.csv`, `main_datamodel.ttl`, `sub_datamodel.ttl`, `priority_tags_in_ontology.csv`, `sub_network_connections_consolidated_wo_geodata.csv`, and `HALTUNGEN-ALLE-5-2022.xml`. The `./Data/results/` directory contains all the output files generated during the running of scripts. 
+The `./Data/raw/` directory must contain all the required input files including `dictionary.csv`, `main_datamodel.ttl`, `sub_datamodel.ttl`, `priority_tags_in_ontology.csv`, `sub_network_connections_consolidated_wo_geodata.csv`, and `HALTUNGEN-ALLE-5-2022.xml`. Note that `main_datamodel.ttl`, `sub_datamodel.ttl`, and `sub_network_connections_consolidated_wo_geodata.csv` are created as output files by the scripts `instantiate_main_network.py`, `instantiate_sub_network.py`, and `assess_geospatial_sub_network.py` in a private git repository.
+
+The `./Data/results/` directory contains all the output files generated during the running of scripts. It is worth noting that the number of columns inside the CSV files should not exceed 7500, otherwise this can cause index-out-of-bound errors elsewhere. Therefore, such files are split into several smaller ones.
 
 Available scripts:
 
