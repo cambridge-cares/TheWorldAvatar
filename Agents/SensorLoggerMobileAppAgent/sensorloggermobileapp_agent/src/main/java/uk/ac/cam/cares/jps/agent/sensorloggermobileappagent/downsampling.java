@@ -13,11 +13,6 @@ import java.time.Instant;
 
 public class downsampling {
 
-    /** Instantaneous
-     *  Time series where the data is the measurement value at each time step
-     */
-
-
     public static TimeSeries aggregation(TimeSeries ts, Long resolution, int type) throws Exception {
         //Parsing timseries into list of list values and time list;
         List TSDataIRIS = ts.getDataIRIs();
@@ -48,7 +43,8 @@ public class downsampling {
         OffsetDateTime startTime = originalTimeList.get(0).truncatedTo(ChronoUnit.SECONDS);
         OffsetDateTime endTime = originalTimeList.get(originalTimeList.size() - 1).truncatedTo(ChronoUnit.SECONDS);
         if(startTime==endTime){throw new Exception("The start time and endtime is the same, timeseries is called too often than it can downsample");}
-
+        
+        int instantaneousCounter=0;
         for (OffsetDateTime currentTime = startTime; currentTime.isBefore(endTime); currentTime = currentTime.plusSeconds(intervalInSeconds)) {
             OffsetDateTime intervalEndTime = currentTime.plusSeconds(intervalInSeconds);
 
@@ -155,74 +151,117 @@ public class downsampling {
                             break;
                         }
                         if (originalTimeList.get(i).isAfter(currentTime)){
-                            sum = originalValueList.get(i);
+                            sum += originalValueList.get(i);
                             count++;
                         }
                     }
                     resampledValueList.add(sum/count);
                 }
             }
-            resampledTimeList.add(currentTime);
-        }
-
-        List result = new ArrayList();
-        result.add(resampledTimeList);
-        result.add(resampledValueLists);
-
-        return result;
-    }
-
-
-    //Instantaneous
-    public static List resampledClosest(List<OffsetDateTime> originalTimeList, List<List<Double>> originalValueLists, long intervalInSeconds) throws Exception {
-        List<List<Double>> resampledValueLists = new ArrayList<>();
-
-        // Initialize size of resampledValueLists for iterator purpose
-        for (int i = 0; i < originalValueLists.size(); i++) {
-            resampledValueLists.add(new ArrayList<>());
-        }
-        List<OffsetDateTime> resampledTimeList = new ArrayList<>();
-
-        OffsetDateTime startTime = originalTimeList.get(0).truncatedTo(ChronoUnit.SECONDS);
-        OffsetDateTime endTime = originalTimeList.get(originalTimeList.size() - 1).truncatedTo(ChronoUnit.SECONDS);
-        if(startTime == endTime) {
-            throw new Exception("The start time and end time are the same. The time series is called too often than it can downsample");
-        }
-
-        int i = 0;
-        for (OffsetDateTime currentTime = startTime; currentTime.isBefore(endTime); currentTime = currentTime.plusSeconds(intervalInSeconds)) {
-            // Find the closest originalTime to the current resampled time
-            while (i < originalTimeList.size() - 1 && originalTimeList.get(i + 1).isBefore(currentTime.plusSeconds(intervalInSeconds / 2))) {
-                i++;
-            }
-            OffsetDateTime closestTime = originalTimeList.get(i);
-            OffsetDateTime intervalEndTime = currentTime.plusSeconds(intervalInSeconds);
-
-            Iterator<List<Double>> it1 = originalValueLists.iterator();
-            Iterator<List<Double>> it2 = resampledValueLists.iterator();
-
-            while (it1.hasNext() && it2.hasNext()) {
-                List<Double> originalValueList = it1.next();
-                List<Double> resampledValueList = it2.next();
-                double closestValue = originalValueList.get(i);
-                for (int j = i + 1; j < originalTimeList.size(); j++) {
-                    if (originalTimeList.get(j).isAfter(intervalEndTime)) {
-                        break;
+            //Count
+            else if (type==6){
+                while (it1.hasNext() && it2.hasNext()) {
+                    List<Double> originalValueList = it1.next();
+                    List<Double> resampledValueList = it2.next();
+                    int count = 0;
+                    for (int i = 0; i < originalTimeList.size(); i++) {
+                        if (originalTimeList.get(i).isAfter(intervalEndTime)) {
+                            break;
+                        }
+                        if (originalTimeList.get(i).isAfter(currentTime)){
+                            count++;
+                        }
                     }
-                    if (Math.abs(originalTimeList.get(j).toEpochSecond() - closestTime.toEpochSecond())
-                            < Math.abs(originalTimeList.get(j).toEpochSecond() - currentTime.toEpochSecond())) {
-                        closestTime = originalTimeList.get(j);
-                        closestValue = originalValueList.get(j);
-                    }
+                    resampledValueList.add((double) count);
                 }
-                resampledValueList.add(closestValue);
+            }
+
+            //Instantaneous
+            else if (type == 7) {
+                // Find the closest originalTime to the current resampled time
+                while (instantaneousCounter < originalTimeList.size() - 1 && originalTimeList.get(instantaneousCounter + 1).isBefore(currentTime.plusSeconds(intervalInSeconds / 2))) {
+                    instantaneousCounter++;
+                }
+                OffsetDateTime closestTime = originalTimeList.get(instantaneousCounter);
+
+                while (it1.hasNext() && it2.hasNext()) {
+                    List<Double> originalValueList = it1.next();
+                    List<Double> resampledValueList = it2.next();
+                    double closestValue = originalValueList.get(instantaneousCounter);
+                    for (int j = instantaneousCounter + 1; j < originalTimeList.size(); j++) {
+                        if (originalTimeList.get(j).isAfter(intervalEndTime)) {
+                            break;
+                        }
+                        if (Math.abs(originalTimeList.get(j).toEpochSecond() - closestTime.toEpochSecond())
+                                < Math.abs(originalTimeList.get(j).toEpochSecond() - currentTime.toEpochSecond())) {
+                            closestTime = originalTimeList.get(j);
+                            closestValue = originalValueList.get(j);
+                        }
+                    }
+                    resampledValueList.add(closestValue);
+                }
             }
             resampledTimeList.add(currentTime);
         }
+
         List result = new ArrayList();
         result.add(resampledTimeList);
         result.add(resampledValueLists);
 
         return result;
     }
+
+
+//    //Instantaneous
+//    public static List resampledClosest(List<OffsetDateTime> originalTimeList, List<List<Double>> originalValueLists, long intervalInSeconds) throws Exception {
+//        List<List<Double>> resampledValueLists = new ArrayList<>();
+//
+//        // Initialize size of resampledValueLists for iterator purpose
+//        for (int i = 0; i < originalValueLists.size(); i++) {
+//            resampledValueLists.add(new ArrayList<>());
+//        }
+//        List<OffsetDateTime> resampledTimeList = new ArrayList<>();
+//
+//        OffsetDateTime startTime = originalTimeList.get(0).truncatedTo(ChronoUnit.SECONDS);
+//        OffsetDateTime endTime = originalTimeList.get(originalTimeList.size() - 1).truncatedTo(ChronoUnit.SECONDS);
+//        if(startTime == endTime) {
+//            throw new Exception("The start time and end time are the same. The time series is called too often than it can downsample");
+//        }
+//
+//        int i = 0;
+//        for (OffsetDateTime currentTime = startTime; currentTime.isBefore(endTime); currentTime = currentTime.plusSeconds(intervalInSeconds)) {
+//            // Find the closest originalTime to the current resampled time
+//            while (i < originalTimeList.size() - 1 && originalTimeList.get(i + 1).isBefore(currentTime.plusSeconds(intervalInSeconds / 2))) {
+//                i++;
+//            }
+//            OffsetDateTime closestTime = originalTimeList.get(i);
+//            OffsetDateTime intervalEndTime = currentTime.plusSeconds(intervalInSeconds);
+//
+//            Iterator<List<Double>> it1 = originalValueLists.iterator();
+//            Iterator<List<Double>> it2 = resampledValueLists.iterator();
+//
+//            while (it1.hasNext() && it2.hasNext()) {
+//                List<Double> originalValueList = it1.next();
+//                List<Double> resampledValueList = it2.next();
+//                double closestValue = originalValueList.get(i);
+//                for (int j = i + 1; j < originalTimeList.size(); j++) {
+//                    if (originalTimeList.get(j).isAfter(intervalEndTime)) {
+//                        break;
+//                    }
+//                    if (Math.abs(originalTimeList.get(j).toEpochSecond() - closestTime.toEpochSecond())
+//                            < Math.abs(originalTimeList.get(j).toEpochSecond() - currentTime.toEpochSecond())) {
+//                        closestTime = originalTimeList.get(j);
+//                        closestValue = originalValueList.get(j);
+//                    }
+//                }
+//                resampledValueList.add(closestValue);
+//            }
+//            resampledTimeList.add(currentTime);
+//        }
+//        List result = new ArrayList();
+//        result.add(resampledTimeList);
+//        result.add(resampledValueLists);
+//
+//        return result;
+//    }
 }

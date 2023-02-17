@@ -30,9 +30,9 @@ public class downsamplingTest {
      * Create sample timseries object through parsing a sample CSV data
      * @return
      */
-    public static TimeSeries getCSV(){
+    public static TimeSeries getCSV(String csvStringName){
         // Get the path of the CSV file in the resources folder
-        String filePath = downsamplingTest.class.getClassLoader().getResource("sampleDataSet.csv").getPath();
+        String filePath = downsamplingTest.class.getClassLoader().getResource(csvStringName).getPath();
 
 
         // Create a CSVReader object
@@ -79,8 +79,8 @@ public class downsamplingTest {
     }
 
     @Test
-    public void aggregationMethodMax () throws Exception {
-        ts= downsamplingTest.getCSV();
+    public void aggregationMethodMaxTest () throws Exception {
+        ts= downsamplingTest.getCSV("sampleDataSet.csv");
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,1);
         List List1=resampledTS.getValues(randomDATAIRI1);
         List List2=resampledTS.getValues(randomDATAIRI2);
@@ -90,8 +90,8 @@ public class downsamplingTest {
     }
 
     @Test
-    public void aggregationMethodMedian () throws Exception {
-        ts= downsamplingTest.getCSV();
+    public void aggregationMethodMedianTest () throws Exception {
+        ts= downsamplingTest.getCSV("sampleDataSet.csv");
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,2);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
@@ -102,8 +102,8 @@ public class downsamplingTest {
     }
 
     @Test
-    public void aggregationMethodMin () throws Exception {
-        ts= downsamplingTest.getCSV();
+    public void aggregationMethodMinTest () throws Exception {
+        ts= downsamplingTest.getCSV("sampleDataSet.csv");
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,3);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
@@ -114,8 +114,8 @@ public class downsamplingTest {
     }
 
     @Test
-    public void aggregationMethodSum () throws Exception {
-        ts= downsamplingTest.getCSV();
+    public void aggregationMethodSumTest () throws Exception {
+        ts= downsamplingTest.getCSV("sampleDataSet.csv");
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,4);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
@@ -126,8 +126,8 @@ public class downsamplingTest {
     }
 
     @Test
-    public void aggregationMethodAverage () throws Exception {
-        ts= downsamplingTest.getCSV();
+    public void aggregationMethodAverageTest () throws Exception {
+        ts= downsamplingTest.getCSV("sampleDataSet.csv");
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,5);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
@@ -137,12 +137,34 @@ public class downsamplingTest {
         assertEquals((double) 13,List1.get(2));
     }
 
+    @Test
+    public void aggregationCountTest () throws Exception {
+        ts= downsamplingTest.getCSV("sampleDataSet.csv");
+        TimeSeries resampledTS= downsampling.aggregation(ts,5L,6);
 
+        List List1=resampledTS.getValues(randomDATAIRI1);
 
+        assertEquals((double) 7,List1.get(0));
+        assertEquals((double) 7,List1.get(1));
+        //The 15th point out of bound
+        try{
+            assertEquals((double) 7,List1.get(2));
+        }catch (Exception e) {
+            assertEquals(IndexOutOfBoundsException.class, e.getClass());
+        }
+    }
 
+    @Test
+    public void instantaneousTest () throws Exception {
+        ts= downsamplingTest.getCSV("sampleDataSet2.csv");
+        TimeSeries resampledTS= downsampling.aggregation(ts,5L,7);
 
+        List List1=resampledTS.getValues(randomDATAIRI1);
 
-
+        assertEquals((double) 5.00000000001,List1.get(0));
+        assertEquals((double) 10.05,List1.get(1));
+        assertEquals((double) 15,List1.get(2));
+    }
 
 }
 
