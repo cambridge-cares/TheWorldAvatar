@@ -190,14 +190,14 @@ The following steps refer to the Building Matching agent (on branch `1376-dev-bu
     docker-compose up --build -d
     ```
 
-3) Once the agent is available at its endpoint `http://localhost:58085/BuildingMatchingAgent/match`, it accepts PUT requests with a JSON object as follows:
+3) Once the agent is available at its endpoint `http://localhost:58085/BuildingMatchingAgent/match`, it accepts PUT requests with a JSON object as follows (an [example request] to match the building instances in the previously introduced SPARQL endpoints is also provided):
     ```json
-    { "ocgml": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql",
+    { 
+      "ocgml": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql",
       "obe": "http://165.232.172.16:3838/blazegraph/namespace/buildings/sparql",
       "prefixIRI": "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/"
     }
     ```
-An [example request] to match the building instances in the previously introduced SPARQL endpoints is also provided.
 
 ### **5) Update geospatial representation of buildings in OntoBuiltEnv namespace**
 
