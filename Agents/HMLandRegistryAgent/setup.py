@@ -2,13 +2,14 @@ from setuptools import setup, find_packages
 
 setup(
     name='landregistry',
-    version='0.0.1',
+    version='1.0.0',
     author='Markus Hofmeister',
+    author_email='mh807@cam.ac.uk',
     license='MIT',
+    description="The `landregistry` agent retrieves data about previous property transactions from the HM Land Registry API and instantiates it as part of The World Avatar project.",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_packages(exclude=("tests")),
-    url="",
     python_requires='>=3.7',
     include_package_data=True,
     install_requires= [

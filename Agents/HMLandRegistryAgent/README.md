@@ -86,8 +86,6 @@ The *debug version* will run when built and launched through the provided VS Cod
 > **Reattach and Debug**: Simply reattach debugger to running Debug Docker image. In case Debug image needs to be manually started as container, the following command can be used: 
 `bash ./stack.sh start TEST-STACK --debug-port <PORT from .vscode/port.txt>`
 
-> **Update JPSRM and Build and Debug**: Updates py4jps resources and builds the Debug Docker image (incl. pushing to ghcr.io) and deploys it as new container (incl. creation of new `.vscode/port.txt` file) 
-
 
 &nbsp;
 ## 1.4 Spinning up the Stack remotely via SSH
