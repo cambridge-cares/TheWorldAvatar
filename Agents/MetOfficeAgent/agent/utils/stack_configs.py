@@ -6,7 +6,7 @@
 # The purpose of this module is to retrieve relevant properties and settings 
 # (e.g. for the Time Series Client) from Stack clients
 
-import agentlogging
+from py4jps import agentlogging
 
 from agent.kgutils.javagateway import stackClientsGw
 from agent.utils.env_configs import DATABASE, NAMESPACE

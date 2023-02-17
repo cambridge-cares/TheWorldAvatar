@@ -87,6 +87,10 @@ public class TimeSeriesClient<T> {
     	this.rdfClient.setKBClient(kbClient);
     }
 
+	public void setRDBSchema(String schema) {
+		this.rdbClient.setSchema(schema);
+	}
+
 	/**
 	 * Initialise time series in triple store and relational database
 	 * @param dataIRIs list of dataIRIs as Strings

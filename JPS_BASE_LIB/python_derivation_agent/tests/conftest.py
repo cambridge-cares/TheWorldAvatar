@@ -39,6 +39,7 @@ from .agents.agents_for_test import ExceptionThrowAgent
 # Constant and configuration
 # ----------------------------------------------------------------------------------
 
+BLAZEGRAPH_DOCKER_INTERNAL_PORT = 8080
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 RESOURCE_DIR = os.path.join(str(Path(__file__).absolute().parent),'resources')
 ENV_FILES_DIR = os.path.join(THIS_DIR,'env_files')
@@ -235,12 +236,9 @@ def initialise_clients_and_agents(get_service_url, get_service_auth):
 
 @pytest.fixture(scope="module")
 def initialise_triple_store():
-    # NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
-    # For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
-    blazegraph = DockerContainer(
-        'docker.cmclinnovations.com/blazegraph_for_tests:1.0.0')
-    # the port is set as 9999 to match with the value set in the docker image
-    blazegraph.with_exposed_ports(9999)
+    blazegraph = DockerContainer('ghcr.io/cambridge-cares/blazegraph:1.1.0')
+    # the port is set as BLAZEGRAPH_DOCKER_INTERNAL_PORT to match with the value set in the docker image
+    blazegraph.with_exposed_ports(BLAZEGRAPH_DOCKER_INTERNAL_PORT)
     yield blazegraph
 
 
@@ -248,7 +246,7 @@ def initialise_triple_store():
 def initialise_test_triples(initialise_triple_store):
     with initialise_triple_store as container:
         # Wait some arbitrary time until container is reachable
-        time.sleep(3)
+        time.sleep(10)
 
         # Retrieve SPARQL endpoint
         endpoint = get_endpoint(container)
@@ -274,7 +272,7 @@ def initialise_test_triples(initialise_triple_store):
 def initialise_agent(initialise_triple_store):
     with initialise_triple_store as container:
         # Wait some arbitrary time until container is reachable
-        time.sleep(3)
+        time.sleep(10)
 
         # Retrieve SPARQL endpoint
         endpoint = get_endpoint(container)
@@ -529,8 +527,8 @@ def create_exception_throw_agent(
         time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
         derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
         kg_url=sparql_endpoint if sparql_endpoint is not None else agent_config.SPARQL_QUERY_ENDPOINT if in_docker else host_docker_internal_to_localhost(agent_config.SPARQL_UPDATE_ENDPOINT),
-        kg_user=None if sparql_endpoint is not None else agent_config.KG_USERNAME,
-        kg_password=None if sparql_endpoint is not None else agent_config.KG_PASSWORD,
+        kg_user=agent_config.KG_USERNAME,
+        kg_password=agent_config.KG_PASSWORD,
         agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
         register_agent=register_agent if register_agent is not None else agent_config.REGISTER_AGENT,
         app=Flask(__name__),
@@ -552,7 +550,7 @@ def get_endpoint(docker_container):
     # Retrieve SPARQL endpoint for temporary testcontainer
     # endpoint acts as both Query and Update endpoint
     endpoint = 'http://' + docker_container.get_container_host_ip().replace('localnpipe', 'localhost') + ':' \
-               + docker_container.get_exposed_port(9999)
+               + docker_container.get_exposed_port(BLAZEGRAPH_DOCKER_INTERNAL_PORT)
     # 'kb' is default namespace in Blazegraph
     endpoint += '/blazegraph/namespace/kb/sparql'
     return endpoint
