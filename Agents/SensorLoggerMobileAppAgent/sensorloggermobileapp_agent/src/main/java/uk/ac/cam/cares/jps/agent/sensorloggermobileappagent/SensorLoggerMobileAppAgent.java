@@ -88,7 +88,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
         //Start scheduler
         Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new ScheduledTask(), 0, 5 * 1000);
+        timer.scheduleAtFixedRate(new ScheduledTask(), 0, 10 * 1000);
     }
 
     /**
@@ -276,7 +276,11 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
                 //Get the newest timeseries
                 TimeSeries getTimeSeries = parseDataToLists(i, parseJSONArrayToList(dataIRIArray));
-                if (i!=3) {getTimeSeries = downsampling.instantaneous((getTimeSeries), 1L, 3);}
+
+
+                //Skip location table
+                if (i!=3) {getTimeSeries = downsampling.aggregation((getTimeSeries), 5L, 1);}
+//                if (i!=3) {getTimeSeries = downsampling.cumulativeTotal((getTimeSeries));}
                 updateData(getTimeSeries);
                 System.out.println("Timeseries has been updated");
 
@@ -325,7 +329,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
         //GetTimeSeries
         TimeSeries getTimeSeries = parseDataToLists(i, dataIRIList);
-        getTimeSeries=downsampling.instantaneous((getTimeSeries), 1L,3);
+        getTimeSeries=downsampling.aggregation((getTimeSeries), 1L,3);
 
         //Add timeseries data with tsList
         try (Connection conn = rdbStoreClient.getConnection()) {
