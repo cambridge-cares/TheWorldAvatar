@@ -62,7 +62,7 @@ CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.
 #------------------------------------------------------
 FROM base as prod
 # Install additional dependencies
-RUN pip install gunicorn
+RUN pip install gunicorn==20.1.0
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app

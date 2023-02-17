@@ -381,12 +381,14 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
 
     # Instantiate EPC data for each API endpoint
     for epc_endpoint in epc_endpoints:
-        logger.info(f'Instantiating EPC data for \"{epc_endpoint}\" endpoint ... ')
+        print(f'Instantiating EPC data for \"{epc_endpoint}\" endpoint ... ')
+        #logger.info(f'Instantiating EPC data for \"{epc_endpoint}\" endpoint ... ')
 
         i = 0
         for pc in postcodes:
             i += 1
-            logger.info(f'Instantiating EPC data chunk {i:>4}/{len(postcodes):>4}')
+            print(f'Instantiating EPC data chunk {i:>4}/{len(postcodes):>4}')
+            #logger.info(f'Instantiating EPC data chunk {i:>4}/{len(postcodes):>4}')
 
             # Instantiate EPC data for postcodes
             epcs, _ = instantiate_epc_data_for_postcodes(postcodes=pc,
