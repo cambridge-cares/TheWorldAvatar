@@ -7,9 +7,19 @@ This part of the README describes the usage of the sewerage network agent. The m
 The next section explains the requirements to run the agent.
 
 ### Requirements
-It is required to have access to a knowledge graph SPARQL endpoint. A namespace "ontosewage" is required to be set up in the blazegraph workbench. Access-agent-dev-stack is also required in the Docker container for uploading the data triples into the blazegraph.
+- It is required to have access to a knowledge graph SPARQL endpoint. This can be either in form of a Docker container or natively running on a machine. It is not in the scope of this README to explain the set-up of a knowledge graph triple store. 
+- The required input data files need to be preprocessed before running this agent. A dockerised Python code is available in the Preprocessing folder to generate all the required CSV files. Please consult the readme file in that folder on how to do this. Please refer to the environment variables section in the Dockerfile for the exact list of CSV files. Running the preprocessing code will automatically put the files in the correct place.
+- This agent requires a running instance of the Access Agent. Once this has been spun up, appropriate routing information needs to be uploaded, mapping the `sewagenetwork` label (or equivalent) to the query and update endpoints of the relevant blazegraph namespace (examples see below). Please consult the Access Agent documentation on how to do this.
 
-This can be either in form of a Docker container or natively running on a machine. It is not in the scope of this README to explain the set-up of a knowledge graph triple store. 
+#### Routing setup for local Blazegraph
+The query endpoint and update endpoint for routing information has to be set as, e.g.
+```
+http://blazegraph-access-agent:8080/blazegraph/namespace/ontosewage/sparql
+```
+If running within a stack, use e.g.
+```
+http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/sewagenetwork/sparql
+```
 
 #### Building the Sewerage Network Agent
 
@@ -37,7 +47,7 @@ If you want to spin up this agent as part of a stack, instead of `docker-compose
 - Start the stack manager as usual. This should start the container.
 
 #### Run the agent
-To run the agent, a POST request must be sent to http://localhost:1080/sewage-network-agent/performsewageupdate with a JSON Object. In this agent, it contains the URL for sparql endpoint. Follow the sample request shown below.
+To run the agent, a POST request must be sent to http://localhost:1080/sewage-network-agent/performsewageupdate with a JSON Object. In this agent, it contains the URL for the SPARQL endpoint. You must make sure that the namespace appearing in this URL exists before sending the request. Follow the sample request shown below.
 ```
 
 POST http://localhost:1080/sewage-network-agent/performsewageupdate
@@ -51,10 +61,13 @@ curl -X POST --header "Content-Type: application/json" -d "{
 \"endpoint\":\"http://host.docker.internal:48888/ontosewage\"}"  http://localhost:1080/sewage-network-agent/performsewageupdate
 ```
 
+If running the agent within a stack:
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"endpoint\":\"http://<STACK NAME>-access-agent:8080/sewagenetwork\"}"  http://localhost:3838/sewage-network-agent/performsewageupdate
+```
+
 If the agent runs successfully, you should see a returned JSON Object that is similar to the one shown below.
 ```
 {"Result":"Data has been instantiated."}
 ```
 
-#### Import the CSV data file into the agent
-A dockerised python code is available under the DataEngineering folder to generate all the required CSV data files. The number of columns inside the imported CSV data files should not exceed 7500, otherwise it will throw an index-out-of-bound error. Therefore, it is recommended to separate the whole data into few CSV files to instantiate the sewage network. Please refer to set the required environment variables section in the Dockerfile for importing different CSV files into the agent. All the CSV files have to be put under the resources folder. It is able to take in all the CSV files and instantiate them all at once. 
