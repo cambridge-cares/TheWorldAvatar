@@ -999,7 +999,7 @@ def output_inequality_index_df(url_cop, url_change_of_fuel, url_fuel_cost, url_i
     temp_tensor, unique_LSOA, gas_tensor, cop, elec_tensor = compare_tensor(temp_tensor,unique_LSOA,gas_tensor,cop,elec_tensor)
 
     # call calculation agent
-    uptake = 0.5
+    uptake = 1
     # call change of fuel agent
     change_of_gas, change_of_elec = call_change_of_fuel_agent(url_change_of_fuel, uptake, gas_tensor, 0.9, cop)
 

@@ -11,7 +11,7 @@ import pandas as pd
 def calculate_inequality_index(row, min_fp, max_fp, min_dc, max_dc):
     poverty_values = row[2]
     change_values = row[1]
-    a = ((poverty_values-min_fp*100)/(max_fp*100-min_fp*100))
+    a = ((poverty_values-min_fp)/(max_fp-min_fp))
     b = ((2*(change_values-min_dc))/(max_dc-min_dc))-1
     inequality_index = a*b
     
