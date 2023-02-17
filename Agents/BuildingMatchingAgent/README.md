@@ -1,19 +1,19 @@
 # Building Matching Agent
 
 ### Introduction
-The building matching agent is used to link a building instantiated in OntoBuiltEnv to its corresponding instance instantiated in OntoCityGML. The link is created by using UPRNs as the identifiers.
+The Building Matching Agent is used to link a building instantiated in [OntoBuiltEnv](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl) to its corresponding instance instantiated in [OntoCityGML](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontocitygml/OntoCityGML.owl). The link is created by using UPRNs as the identifiers.
 
 ### Input
-The agent accepts 3 input parameters in a JSONObject format with the keys: "ocgml", "obe" and "prefixIRI" where,<br/>
-"ocgml" is the endpoint containing buildings instantiated in OntoCityGML, "obe" is the endpoint containing buildings instantiated in OntoBuiltEnv and "prefixIRI" 
-is the complete IRI of the OntoCityGML namespace. 
+The agent accepts 3 input parameters in a JSONObject format with the keys: "ocgml", "obe" and "prefixIRI" where, "ocgml" is the endpoint containing buildings instantiated in OntoCityGML, "obe" is the endpoint containing buildings instantiated in OntoBuiltEnv and "prefixIRI" is the complete IRI of the OntoCityGML namespace (i.e. the IRI string used to prefix all OntoCityGml instances at creation). 
 
-Example input: <br/>
-{<br/>
-&emsp; "ocgml": "http:<span></span>//127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql", <br/>
-&emsp; "obe": "http:<span></span>//127.0.0.1:9999/blazegraph/namespace/ontobuiltenv/sparql", <br/>
-&emsp; "prefixIRI": "http:<span></span>//127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/" <br/>
+Example input:
+```
+{
+"ocgml": "http://localhost:9999/blazegraph/namespace/kings-lynn/sparql", 
+"obe": "http://localhost:9999/blazegraph/namespace/ontobuiltenv/sparql",
+"prefixIRI": "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/" 
 }
+```
 
 ### Output
 The relationship/link between the OntoBuiltEnv and OntoCityGML buildings is written to the knowledge graph in the OntoBuilEnv namespace. <br/>
@@ -27,8 +27,7 @@ The newly added triples have the form <br/>
 The following prerequisites are required before running the Building Matching Agent
 1. 2 SPARQL endpoints containing buildings instantiated in OntoCityGML and OntoBuiltEnv respectively
 2. On the OntoCityGML namespace, run the [Thematic Surface Discovery Agent](https://github.com/cambridge-cares/CitiesKG/blob/develop/agents/README.md#thematic-surface-discovery-agent-user-guide) in the restructure mode followed 
-by the [UPRN agent](https://github.com/cambridge-cares/CitiesKG/blob/uprn-agent/agents/src/main/resources/uprn_HTTPRequest.http). <br/>
-This step is used to link a building in OntoCityGML to its corresponding UPRN(s).
+by the [UPRN agent](https://github.com/cambridge-cares/CitiesKG/tree/develop/agents#uprn-agent-user-guide). These steps are required to link a building in OntoCityGML to its corresponding UPRN(s).
 
 
 ### Building the <i>Building Matching Agent</i>
