@@ -52,12 +52,11 @@ def api_update_transaction_records():
     try:
         # Update sales transaction record for (list of) property IRIs
         res = update_transaction_records(property_iris=iris, min_conf_score=min_match)
-        return jsonify({'status': '200', 
-                        'Instantiated property transactions': res[0],
-                        'Updated property transactions': res[1]})
+        return jsonify({'Instantiated property transactions': res[0],
+                        'Updated property transactions': res[1]}), 200
     except Exception as ex:
-        logger.error("Unable to update property sales transactions.", ex)
-        return jsonify({'status': '500', 'msg': 'Updating property sales transactions failed.'})
+        logger.error('Unable to update property sales transactions.', ex)
+        return jsonify({'msg': 'Updating property sales transactions failed: ' + str(ex)}), 500
 
 
 # Define route for API request to update transaction records for all instantiated properties 
@@ -88,14 +87,13 @@ def api_update_all_transaction_records():
     try:
         # Update sales transaction record for all instantiated property IRIs
         res = update_all_transaction_records(min_conf_score=min_match)
-        return jsonify({'status': '200', 
-                        'Instantiated property transactions': res[0],
+        return jsonify({'Instantiated property transactions': res[0],
                         'Updated property transactions': res[1],
                         'Instantiated property price indices': res[2],
-                        'Updated property price indices': res[3]})
+                        'Updated property price indices': res[3]}), 200
     except Exception as ex:
-        logger.error("Unable to update property sales transactions.", ex)
-        return jsonify({'status': '500', 'msg': 'Updating property sales transactions failed.'})
+        logger.error('Unable to update property sales transactions.', ex)
+        return jsonify({'msg': 'Updating property sales transactions failed: ' + str(ex)}), 500
 
 
 # Define route for API request to retrieve relevant building information from OCGML and 
