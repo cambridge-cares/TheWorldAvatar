@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='epcdata',
-    version='0.1.0',
+    version='1.0.0',
     author='Markus Hofmeister, Srishti Ganguly',
     author_email='mh807@cam.ac.uk',
     license='MIT',
