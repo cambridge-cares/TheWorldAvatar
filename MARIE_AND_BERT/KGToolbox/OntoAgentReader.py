@@ -2,9 +2,13 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 import pandas as pd
 import os
 import sys
-
+from sklearn.model_selection import train_test_split
 sys.path.append("")
+from KGToolbox.CreateNegSamplingDictionary import NegSamplingCreator
 from Marie.CandidateSelection.location import DATA_DIR
+from Marie.Util.CommonTools.FileLoader import FileLoader
+from Marie.Util.NHopExtractor import HopExtractor
+from KGToolbox import MakeIndex
 
 class OntoAgentReader:
 
@@ -192,6 +196,18 @@ class OntoAgentReader:
         
         return triples    
     
+    def write_triples_to_tsv(self, all_triples):
+        df = pd.DataFrame(all_triples)
+        df.to_csv(os.path.join(self.full_dataset_dir, f"{self.agent}-train.txt"),
+                  sep="\t", header=False, index=False)
+
+        df_train, df_test = train_test_split(df, test_size=0.1)
+        df_train.to_csv(os.path.join(self.full_dataset_dir, f"{self.agent}-train-2.txt"),
+                        sep="\t", header=False, index=False)
+
+        df_test.to_csv(os.path.join(self.full_dataset_dir, f"{self.agent}-test.txt"),
+                       sep="\t", header=False, index=False)
+        
     def run(self):
         triples=self.get_operation_output()+\
         self.get_operation_input()+\
@@ -203,9 +219,11 @@ class OntoAgentReader:
         if self.qualifier:
             triples += self.get_qualifier_for_output()
 
-        df = pd.DataFrame(triples)
-        df.to_csv(os.path.join(self.full_dataset_dir, f"{self.agent}-train.txt"),
-                        sep="\t", header=False, index=False)
+        self.write_triples_to_tsv(triples)
+        MakeIndex.create_indexing(self.agent, data_dir=f'CrossGraph/{self.agent}')
+        my_extractor = HopExtractor(dataset_dir=f'CrossGraph/{self.agent}', dataset_name=self.agent)
+        my_creator = NegSamplingCreator(dataset_dir=f'CrossGraph/{self.agent}', ontology=self.agent)
+        my_creator.create_full_neg_dictionary()
         
 if __name__ == "__main__":
     reader1 = OntoAgentReader('ontopceagent', False, namespace='ontopceagent')
