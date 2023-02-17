@@ -21,7 +21,7 @@ class NEL_ELQ():
         }
         self.args = argparse.Namespace(**config)
         self.models = main_dense.load_models(self.args, logger=None)
-
+        print('EL loading finished')
 
     def infer(self,  test_samples):
         predictions = main_dense.run(self.args, None, *self.models, test_data=test_samples)
