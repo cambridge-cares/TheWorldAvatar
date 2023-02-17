@@ -664,7 +664,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 				.addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(OM_HAS_UNIT), NodeFactory.createURI(KB + Unit))
 				.addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_UNIT))
 				.addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(OM_SYMBOL), Unit)
-				.addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI("OM_Has_NUMERICAL_VALUE"), NumericalValue);
+				.addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(OM_Has_NUMERICAL_VALUE), NumericalValue);
 		UpdateRequest omHasValue_ur = omHasValue_ub.buildRequest();
 		AccessAgentCaller.updateStore(sparqlendpoint, omHasValue_ur.toString());
 	}
