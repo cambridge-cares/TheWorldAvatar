@@ -7,7 +7,7 @@
 //                 transaction data [0 ... 100] (matching done based on address string via fuzzywuzzy)
 //                 (default: 90)
 
-POST http://165.232.172.16:5002/api/landregistry/update
+POST http://165.232.172.16:5002/landregistry/update
 Content-Type: application/json
 
 { "query": {

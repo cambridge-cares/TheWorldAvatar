@@ -8,8 +8,9 @@ from flask import Blueprint, request, jsonify
 from py4jps import agentlogging
 
 from agent.errorhandling.exceptions import InvalidInput
-from agent.datainstantiation.sales_instantiation import add_ocgml_building_data, update_transaction_records, \
-                                                               update_all_transaction_records
+from agent.datainstantiation.sales_instantiation import add_ocgml_building_data, \
+                                                        update_transaction_records, \
+                                                        update_all_transaction_records
 
 
 # Initialise logger
@@ -23,7 +24,7 @@ inputtasks_bp = Blueprint(
 
 # Define route for API request to update transaction record for single property
 # or list of provided properties
-@inputtasks_bp.route('/api/landregistry/update', methods=['POST'])
+@inputtasks_bp.route('/landregistry/update', methods=['POST'])
 def api_update_transaction_records():
     # Get received 'query' JSON object which holds all HTTP parameters
     try:
@@ -61,7 +62,7 @@ def api_update_transaction_records():
 
 # Define route for API request to update transaction records for all instantiated properties 
 # (also updates associated property price indices)
-@inputtasks_bp.route('/api/landregistry/update_all', methods=['POST'])
+@inputtasks_bp.route('/landregistry/update_all', methods=['POST'])
 def api_update_all_transaction_records():
     # Check arguments (query parameters)
     if len(request.get_data()) == 0:
@@ -99,7 +100,7 @@ def api_update_all_transaction_records():
 
 # Define route for API request to retrieve relevant building information from OCGML and 
 # instantiate according to OntoBuiltEnv
-@inputtasks_bp.route('/api/landregistry/add_ocgml_info', methods=['GET'])
+@inputtasks_bp.route('/landregistry/add_ocgml_info', methods=['GET'])
 def api_add_ocgml_building_data():
     # Check arguments (query parameters)
     if len(request.args) > 0:

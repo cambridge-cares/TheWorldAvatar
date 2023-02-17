@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   landregistry_agent:
-    image: ghcr.io/cambridge-cares/landregistry_agent:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/landregistry_agent:1.0.0
     environment:
       - STACK_NAME=${STACK_NAME}
       # Specify PostGIS/PostgreSQL database name
@@ -10,7 +10,7 @@ services:
       # Target Blazegraph namespace
       - NAMESPACE=buildings
       # Layer name in geoserver, also table name in PostGIS
-      - LAYERNAME=buildings
+      - LAYERNAME=building_sales
       - GEOSERVER_WORKSPACE=buildings
       - OCGML_ENDPOINT=
       - ONTOP_FILE=/app/resources/ontop.obda

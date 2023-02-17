@@ -144,13 +144,13 @@ The default SPARQL endpoint, i.e. namespace, used to assimilate the sales data i
 An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5002/]. All requests are to be sent as POST requests and all available endpoints are listed below. Example requests are provided in the [resources] folder.
 
 - POST request to update transaction record(s) for single property/list of properties:
-  > `/api/landregistry/update`
+  > `/landregistry/update`
 
 - POST request to update transaction records for all instantiated properties, incl. property price indices for instantiated local authorities (i.e. most granular geography for which UK House Price Index is published):
-  > `/api/landregistry/update_all`
+  > `/landregistry/update_all`
 
 - GET request to instantiate/update building footprint and elevation information as instantiated for linked OntoCityGml instance according to OntoBuiltEnv for all buildings:
-  > `/api/landregistry/add_ocgml_info`
+  > `/landregistry/add_ocgml_info`
 
 Example requests are provided in the [resources] folder.
 
