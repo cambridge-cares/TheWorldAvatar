@@ -982,10 +982,11 @@ def output_inequality_index_df(url_cop, url_change_of_fuel, url_fuel_cost, url_i
 
     # convert gas/elec consumption into tensor according to unique_LSOA
     # get gas/elec consumption df
-    df_gas = retrieve_gas_data_from_KG()
-    df_elec = retrieve_elec_data_from_KG()
-    df_gas = select_column(df_gas, ['s','usage'])
-    df_elec = select_column(df_elec, ['s','usage'])
+    df_gas = retrieve_gas_data_from_KG(per_household=True)
+    df_elec = retrieve_elec_data_from_KG(per_household=True)
+    
+    df_gas = select_column(df_gas, ['s','gas_consump_perhousehold'])
+    df_elec = select_column(df_elec, ['s','elec_consump_perhousehold'])
 
     # get monthly distribution gas/elec
     gas_monthly_distribution = read_from_web_monthly_distribution_gas()

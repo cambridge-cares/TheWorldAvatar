@@ -7,6 +7,7 @@ import pytest
 import os
 
 from agent.datainstantiation.readings import *
+from tests.conftest import *
 
 
 
@@ -107,4 +108,8 @@ def test_upload_elec_data_to_KG(clear_triple_store, mocker):
     endpoint = QUERY_ENDPOINT
     create_blazegraph_namespace(endpoint)
 
-    # Verify that knowledge base is empty
+    # Instantiate electricity data
+    route = '/api/lsoainputagent/instantiate/electricity'
+    response = create_testing_agent.get(route)
+    new_stations = response.json['stations']
+    assert new_stations == 3

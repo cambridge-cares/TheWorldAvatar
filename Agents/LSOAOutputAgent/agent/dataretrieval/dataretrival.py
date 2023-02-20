@@ -419,7 +419,7 @@ def retrieve_gas_data_from_KG(query_endpoint: str = QUERY_ENDPOINT, update_endpo
     df = drop_column(df,['meter','nonmeter'])
 
     if per_household == True:
-        df['gas_consump_perhousehold'] = df["usage"].to_numpy() / df["meter"].to_numpy() 
+        df['gas_consump_perhousehold'] = df["usage"].to_numpy() / df["consuming meter"].to_numpy() 
     
     logger.info(f'{df.shape[0]} number of LSOA of which gas consumption/consuming meter data have been retrieved')
     return df
