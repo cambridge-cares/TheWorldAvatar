@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#"
-     xml:base="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15"
+<rdf:RDF xmlns="http://www.theworldavatar.com/kg/ontomatpassport#"
+     xml:base="http://www.theworldavatar.com/kg/ontomatpassport"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:om-2="http://www.ontology-of-units-of-measure.org/resource/om-2/"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-    <owl:Ontology rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15"/>
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontomatpassport"/>
     
 
 
@@ -21,9 +22,17 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasGUIPosition -->
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/symbol -->
 
-    <owl:AnnotationProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasGUIPosition">
+    <owl:AnnotationProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/symbol">
+        <rdfs:label xml:lang="en">symbol</rdfs:label>
+    </owl:AnnotationProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasGUIPosition -->
+
+    <owl:AnnotationProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasGUIPosition">
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
     </owl:AnnotationProperty>
     
@@ -60,32 +69,22 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasCountry -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasCountry -->
 
-    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasCountry">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasCountry">
         <rdfs:label xml:lang="en">Country</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasIdentifier -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasImage -->
 
-    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasIdentifier">
-        <rdfs:domain rdf:resource="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-        <rdfs:range rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ProductIdentifier"/>
-        <rdfs:label xml:lang="en">Identifier</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasImage -->
-
-    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasImage">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasImage">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -96,40 +95,40 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasManufacturer -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasManufacturer -->
 
-    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasManufacturer">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasManufacturer">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
-        <rdfs:range rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Manufacturer"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Manufacturer"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">9</hasGUIPosition>
         <rdfs:label xml:lang="en">Manufacturer</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasProductType -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasProductType -->
 
-    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasProductType">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasProductType">
         <rdfs:label xml:lang="en">Product type</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasProperty -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasProperty -->
 
-    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasProperty">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasProperty">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -139,25 +138,26 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasRegistrationCountry -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasRegistrationCountry -->
 
-    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasRegistrationCountry">
-        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasCountry"/>
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Manufacturer"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasRegistrationCountry">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#hasCountry"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Manufacturer"/>
         <rdfs:range rdf:resource="https://dbpedia.org/ontology/Country"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
         <rdfs:label xml:lang="en">Registration country</rdfs:label>
     </owl:ObjectProperty>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#partOf -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#partOf -->
 
-    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#partOf">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#partOf">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -165,7 +165,7 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:range>
@@ -186,6 +186,17 @@
     
 
 
+    <!-- http://purl.org/dc/terms/URI -->
+
+    <owl:DatatypeProperty rdf:about="http://purl.org/dc/terms/URI">
+        <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
+        <rdfs:domain rdf:resource="http://purl.org/dc/dcmitype/Image"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#anyURI"/>
+        <rdfs:label xml:lang="en">has URL</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://purl.org/goodrelations/v1#name -->
 
     <owl:DatatypeProperty rdf:about="http://purl.org/goodrelations/v1#name">
@@ -193,8 +204,7 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Manufacturer"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -210,37 +220,19 @@
     <owl:DatatypeProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
-        <rdfs:label xml:lang="en">Quantity</rdfs:label>
+        <rdfs:label xml:lang="en">hasNumericalValue</rdfs:label>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Level -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasAutomaticTrackingOrScanning -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Level">
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasAutomaticTrackingOrScanning">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
-        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">5</hasGUIPosition>
-        <rdfs:label xml:lang="en">Level</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasAutomaticTrackingOrScanning -->
-
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasAutomaticTrackingOrScanning">
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -251,15 +243,15 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasBrandName -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasBrandName -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasBrandName">
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasBrandName">
         <rdfs:subPropertyOf rdf:resource="http://purl.org/goodrelations/v1#name"/>
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -270,14 +262,14 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasCEMarkingDocument -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasCEMarkingDocument -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasCEMarkingDocument">
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasCEMarkingDocument">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -288,14 +280,14 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasEAN -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasEAN -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasEAN">
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasEAN">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -306,14 +298,14 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasEPDDocument -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasEPDDocument -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasEPDDocument">
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasEPDDocument">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -324,14 +316,14 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasFunctionality -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasFunctionality -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasFunctionality">
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasFunctionality">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -342,14 +334,14 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasGTIN -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasGTIN -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasGTIN">
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasGTIN">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -360,14 +352,14 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasMSDSDocument -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasMSDSDocument -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasMSDSDocument">
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasMSDSDocument">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -378,40 +370,71 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasNumber -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasManufacturerName -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasNumber">
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasManufacturerName">
+        <rdfs:subPropertyOf rdf:resource="http://purl.org/goodrelations/v1#name"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Manufacturer"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
+        <rdfs:label xml:lang="en">Manufacturer name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasNumber -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasNumber">
         <rdfs:label xml:lang="en">Number</rdfs:label>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasRegistrationNumber -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasRegistrationNumber -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasRegistrationNumber">
-        <rdfs:subPropertyOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasNumber"/>
-        <rdfs:domain rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Manufacturer"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasRegistrationNumber">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#hasNumber"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Manufacturer"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Registration number</rdfs:label>
     </owl:DatatypeProperty>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasTradeName -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#hasTradeName -->
 
-    <owl:DatatypeProperty rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#hasTradeName">
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasTradeName">
         <rdfs:subPropertyOf rdf:resource="http://purl.org/goodrelations/v1#name"/>
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
-                    <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">7</hasGUIPosition>
         <rdfs:label xml:lang="en">Trade name</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#level -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#level">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="http://www.heppnetz.de/ontologies/goodrelations/v1#ProductOrService"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">5</hasGUIPosition>
+        <rdfs:label xml:lang="en">Level</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -429,9 +452,7 @@
 
     <!-- http://purl.org/dc/dcmitype/Image -->
 
-    <owl:Class rdf:about="http://purl.org/dc/dcmitype/Image">
-        <rdfs:label xml:lang="en">Image</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://purl.org/dc/dcmitype/Image"/>
     
 
 
@@ -446,7 +467,7 @@
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/HeatTransferCoefficient -->
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/HeatTransferCoefficient">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ThermalProperty"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Heat transfer coefficient</rdfs:label>
     </owl:Class>
@@ -467,44 +488,43 @@
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Unit -->
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Biodegradability -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Biodegradability -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Biodegradability">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#BiologicalProperty"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Biodegradability">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#BiologicalProperty"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Biodegradability</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#BiologicalProperty -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#BiologicalProperty -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#BiologicalProperty">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#BiologicalProperty">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">5</hasGUIPosition>
+        <rdfs:label xml:lang="en">Biological property</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalComposition -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ChemicalComposition -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalComposition">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ChemicalComposition">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ChemicalProperty"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Chemical composition</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ChemicalProperty -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ChemicalProperty">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</hasGUIPosition>
         <rdfs:label xml:lang="en">Chemical property</rdfs:label>
@@ -512,35 +532,35 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Component -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Component"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component"/>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#CompressiveStrength -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#CompressiveStrength -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#CompressiveStrength">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Resistance"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#CompressiveStrength">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Resistance"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Compressive strength</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Decomposability -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Decomposability -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Decomposability">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#BiologicalProperty"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Decomposability">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#BiologicalProperty"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Decomposability</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Density -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Density -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Density">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Density">
         <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
         <rdfs:label xml:lang="en">Density</rdfs:label>
@@ -548,51 +568,66 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Dimension -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Dimension -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Dimension">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Dimension">
         <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/metre"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Dimension</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ExpectedLifetime -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#DimensionLessQuantity -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ExpectedLifetime">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#TemporalProperty"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#DimensionLessQuantity">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:label xml:lang="en">Dimensionless Quantity</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ExpectedLifetime -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ExpectedLifetime">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#TemporalProperty"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Expected lifetime</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#HealthAndSafetyHazard -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#HealthAndSafetyHazard -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#HealthAndSafetyHazard">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#HealthAndSafetyHazard">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ChemicalProperty"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Health and safety hazard</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Height -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Height -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Height">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Dimension"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Height">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Dimension"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Height</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Ingredient -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Ingredient -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Ingredient">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Ingredient">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ChemicalProperty"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
@@ -611,37 +646,37 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Length -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Length -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Length">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Dimension"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Length">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Dimension"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Length</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Manufacturer -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Manufacturer -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Manufacturer">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Manufacturer">
         <rdfs:label xml:lang="en">Manufacturer</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ProductIdentifier -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ProductIdentifier -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ProductIdentifier">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ProductIdentifier">
         <rdfs:label xml:lang="en">Identifier</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#RecycledContent -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#RecycledContent -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#RecycledContent">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#RecycledContent">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ChemicalProperty"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
@@ -660,19 +695,25 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Resistance -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Resistance -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Resistance">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Resistance">
         <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/pascal"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</hasGUIPosition>
         <rdfs:label xml:lang="en">Resistance</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Rigidity -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Rigidity">
         <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">5</hasGUIPosition>
         <rdfs:label xml:lang="en">Rigidity</rdfs:label>
@@ -680,39 +721,39 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ServiceLife -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ServiceLife -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ServiceLife">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#TemporalProperty"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ServiceLife">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#TemporalProperty"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Service life</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ShearModulus -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ShearModulus -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ShearModulus">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ShearModulus">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Rigidity"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
         <rdfs:label xml:lang="en">Shear modulus</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ShearStrength -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ShearStrength -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ShearStrength">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Resistance"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ShearStrength">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Resistance"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
         <rdfs:label xml:lang="en">Shear strength</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#TemporalProperty -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#TemporalProperty -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#TemporalProperty">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#TemporalProperty">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
         <rdfs:subClassOf>
@@ -733,19 +774,19 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#TensileStrength -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#TensileStrength -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#TensileStrength">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Resistance"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#TensileStrength">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Resistance"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Tensile strength</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ThermalProperty -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ThermalProperty">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
         <rdfs:subClassOf>
@@ -766,9 +807,9 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Weight -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Weight -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Weight">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Weight">
         <rdfs:subClassOf rdf:resource="https://w3id.org/mdo/core/PhysicalProperty"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Weight</rdfs:label>
@@ -776,30 +817,30 @@
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Width -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Width -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Width">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Dimension"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Width">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Dimension"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
         <rdfs:label xml:lang="en">Width</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Poisson&apos;sRatio -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Poisson&apos;sRatio -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Poisson&apos;sRatio">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Poisson&apos;sRatio">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Rigidity"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Poisson&apos;s ratio</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Young&apos;sModulus -->
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#Young&apos;sModulus -->
 
-    <owl:Class rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Young&apos;sModulus">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#Rigidity"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Young&apos;sModulus">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#Rigidity"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Young&apos;s modulus</rdfs:label>
     </owl:Class>
@@ -809,7 +850,7 @@
     <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermalConductivity">
-        <rdfs:subClassOf rdf:resource="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ThermalProperty"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty"/>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Thermal conductivity</rdfs:label>
     </owl:Class>
@@ -858,6 +899,46 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/metre -->
+
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/metre">
+        <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+        <om-2:symbol>m</om-2:symbol>
+        <rdfs:comment xml:lang="en">The metre is a unit of length defined as the length of the path travelled by light in vacuum during a time interval of 1/299 792 458 of a second.</rdfs:comment>
+        <rdfs:label xml:lang="en">meter</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/pascal -->
+
+    <owl:NamedIndividual rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/pascal">
+        <om-2:symbol>Pa</om-2:symbol>
+        <rdfs:comment xml:lang="en">The pascal is a unit of pressure and stress defined as newton divided by square metre = joule divided by cubic metre = kilogram divided by metre second squared.</rdfs:comment>
+        <rdfs:label xml:lang="en">pascal</rdfs:label>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.twa.com/chassis-1.png -->
+
+    <owl:NamedIndividual rdf:about="http://www.twa.com/chassis-1.png">
+        <rdf:type rdf:resource="http://purl.org/dc/dcmitype/Image"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
     // General axioms
     //
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -866,10 +947,10 @@
     <rdf:Description>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#BiologicalProperty"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ChemicalProperty"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#TemporalProperty"/>
-            <rdf:Description rdf:about="http://www.semanticweb.org/msff2/ontologies/2023/1/untitled-ontology-15#ThermalProperty"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#BiologicalProperty"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ChemicalProperty"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#TemporalProperty"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty"/>
             <rdf:Description rdf:about="https://w3id.org/mdo/core/PhysicalProperty"/>
         </owl:members>
     </rdf:Description>
