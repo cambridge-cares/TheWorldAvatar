@@ -154,10 +154,13 @@ def api_instantiate_epc_data_for_all_uprns():
     try:
         # Instantiate EPCs
         response = instantiate_epc_data_for_all_postcodes(**inputs)
-        return jsonify({'Newly instantiated EPCs': response[0][0],
-                        'Updated EPCs': response[0][1],
-                        'Newly instantiated parent buildings': response[1][0],
-                        'Updated parent buildings': response[1][1]}), 200
+        return_dict = {'Newly instantiated EPCs': response[0][0],
+                       'Updated EPCs': response[0][1],
+                       'Newly instantiated parent buildings': response[1][0],
+                       'Updated parent buildings': response[1][1]}
+        for key, value in return_dict.items():
+            print(key, ' : ', value)
+        return jsonify(return_dict), 200
     except Exception as ex:
         logger.error('Unable to instantiate EPC data.', ex)
         return jsonify({'msg': 'EPC data instantiation failed: ' + str(ex)}), 500
@@ -178,10 +181,13 @@ def api_add_ocgml_building_data():
     try:
         # Retrieve and instantiate building elevation
         res = add_ocgml_building_data()
-        return jsonify({'Instantiated PostGIS footprints': res[0],
-                        'Already instantiated PostGIS footprints': res[1],
-                        'Deleted building elevations': res[2],
-                        'Instantiated building elevations': res[3]}), 200
+        return_dict = {'Instantiated PostGIS footprints': res[0],
+                       'Already instantiated PostGIS footprints': res[1],
+                       'Deleted building elevations': res[2],
+                       'Instantiated building elevations': res[3]}
+        for key, value in return_dict.items():
+            print(key, ' : ', value)
+        return jsonify(return_dict), 200
 
     except Exception as ex:
         logger.error('Unable to instantiate PostGIS features and/or OntoBuiltEnv building elevations.', ex)

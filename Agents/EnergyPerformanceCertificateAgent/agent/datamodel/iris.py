@@ -19,7 +19,7 @@ XSD = 'http://www.w3.org/2001/XMLSchema#'
 # CoMo / CARES ontologies
 OBE = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 TS = 'https://www.theworldavatar.com/kg/ontotimeseries/'
-UOM = 'https://www.theworldavatar.com/kg/ontouom/'
+UOM = 'http://theworldavatar.com/resource/ontouom/'
 OCGML = 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoCityGML.owl#'
 OSID = 'http://www.theworldavatar.com/ontology/ontocitygml/citieskg/OntoOSID.owl#'
 # Knowledge base
@@ -114,6 +114,7 @@ OSID_HAS_VALUE = OSID + 'hasValue'
 
 # Concepts
 RDF_TYPE = RDF + 'type'
+RDFS_SUBCLASS_OF = RDFS + 'subClassOf'
 RDFS_COMMENT = RDFS + 'comment'
 RDFS_LABEL = RDFS + 'label'
 OWL_VERSION = OWL + 'versionInfo'

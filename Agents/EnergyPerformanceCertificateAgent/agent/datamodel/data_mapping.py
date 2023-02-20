@@ -216,9 +216,9 @@ USAGE_MAPPING = {
 
 # Mapping of units to OM units and symbols
 UNITS_MAPPING = {
-     OM_AREA: (OM_M2, METRE_SQ),
-     OM_HEIGHT: (OM_M, METRE),
-     OM_AMOUNT_MONEY: (OM_GBP, GBP)
+     OM_AREA: OM_M2,
+     OM_HEIGHT: OM_M,
+     OM_AMOUNT_MONEY: OM_GBP
 }
 
 # Define full coordinate reference systems (CRS) for pyproj

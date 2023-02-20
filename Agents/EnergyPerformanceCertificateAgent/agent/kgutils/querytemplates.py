@@ -161,10 +161,8 @@ def get_children_and_parent_building_properties():
             OPTIONAL {{ ?property_iri <{OBE_HAS_NUMBER_ROOMS}> ?rooms }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_PROPERTY_USAGE}> ?usage .
                         ?usage <{RDF_TYPE}> ?usage_iri }}
-            OPTIONAL {{ ?property_iri <{OBE_HAS_PROPERTY_TYPE}> ?property_type .
-                        ?property_type <{RDF_TYPE}> ?property_type_iri }}
-            OPTIONAL {{ ?property_iri <{OBE_HAS_BUILT_FORM}> ?built_form .
-                        ?built_form <{RDF_TYPE}> ?built_form_iri }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_PROPERTY_TYPE}>/<{RDF_TYPE}> ?property_type_iri }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_BUILT_FORM}>/<{RDF_TYPE}> ?built_form_iri }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_CONSTRUCTION_DATE}>/<{TIME_HAS_BEGINNING}>/<{TIME_IN_DATETIME_STAMP}> ?construction_start }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_CONSTRUCTION_DATE}>/<{TIME_HAS_END}>/<{TIME_IN_DATETIME_STAMP}> ?construction_end }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_CONSTRUCTION_COMPONENT}> ?component1 .
@@ -221,6 +219,7 @@ def get_children_and_parent_building_properties_non_domestic():
 
     return query
 
+
 def get_matched_buildings() -> str:
     # Retrieve all OntoBuiltEnv building with a OntoCityGml representations
     query = f"""
@@ -232,6 +231,7 @@ def get_matched_buildings() -> str:
     # Remove unnecessary whitespaces
     query = ' '.join(query.split())
     return query
+
 
 def get_buildings_usage(bldg_iri: str):
     # Retrieve usages of OntoBuiltEnv buildings 
@@ -245,6 +245,7 @@ def get_buildings_usage(bldg_iri: str):
     # Remove unnecessary whitespaces
     query = ' '.join(query.split())
     return query
+
 
 def get_usage_share(usage_iri: str):
     # Retrieve usage share of a given building usage
@@ -457,15 +458,13 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
         if floor_area:
             area_iri = KB + 'FloorArea_' + str(uuid.uuid4())
             measure_iri = KB + 'Measure_' + str(uuid.uuid4())
-            unit_iri = UNITS_MAPPING[OM_AREA][0]
-            unit_symbol = UNITS_MAPPING[OM_AREA][1]
+            unit_iri = UNITS_MAPPING[OM_AREA]
             triples += f"""<{property_iri}> <{OBE_HAS_TOTAL_FLOOR_AREA}> <{area_iri}> . 
                            <{area_iri}> <{RDF_TYPE}> <{OM_AREA}> . 
                            <{area_iri}> <{OM_HAS_VALUE}> <{measure_iri}> . 
                            <{measure_iri}> <{RDF_TYPE}> <{OM_MEASURE}> . 
                            <{measure_iri}> <{OM_NUM_VALUE}> \"{floor_area}\"^^<{XSD_FLOAT}> .
                            <{measure_iri}> <{OM_HAS_UNIT}> <{unit_iri}> . 
-                           <{unit_iri}> <{OM_SYMBOL}> \"{unit_symbol}\"^^<{XSD_STRING}> .
                            """
 
         # Literals
@@ -572,9 +571,8 @@ def update_epc_data(property_iri: str = None,
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_BUILT_FORM}> ?built_form_iri . }}
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> ?usage_iri .
                             ?usage_iri <{RDF_TYPE}> ?usage . 
-                            OPTIONAL {{ ?usage_iri <{RDFS_LABEL}> ?usage_label ;
-                                                   <{OBE_HAS_USAGE_SHARE}> ?usage_share .
-                            }} }}
+                            OPTIONAL {{ ?usage_iri <{RDFS_LABEL}> ?usage_label . }}
+                            OPTIONAL {{ ?usage_iri <{OBE_HAS_USAGE_SHARE}> ?usage_share . }} }}
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_CONSTRUCTION_DATE}>/<{TIME_HAS_END}> ?end_iri . 
                             ?end_iri <{TIME_IN_DATETIME_STAMP}> ?end_time . }}
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> ?floor .
@@ -618,8 +616,7 @@ def delete_old_building_elevation(obe_bldg_iris):
             ?old_measure <{RDF_TYPE}> ?old_measure_type ; 
                             <{OM_NUM_VALUE}> ?old_value ;
                             <{OM_HAS_UNIT}> ?old_unit .
-            ?old_unit <{RDF_TYPE}> ?old_unit_type ;
-                        <{OM_SYMBOL}> ?old_unit_symbol 
+            ?old_unit <{RDF_TYPE}> ?old_unit_type . 
         }}
         WHERE {{
                 VALUES ?bldg_iri {{ {values} }}
@@ -630,8 +627,7 @@ def delete_old_building_elevation(obe_bldg_iris):
                             ?old_measure <{RDF_TYPE}> ?old_measure_type ;
                                          <{OM_NUM_VALUE}> ?old_value }}
                 OPTIONAL {{ ?old_measure <{OM_HAS_UNIT}> ?old_unit .
-                            ?old_unit <{RDF_TYPE}> ?old_unit_type ;
-                                      <{OM_SYMBOL}> ?old_unit_symbol }}
+                            ?old_unit <{RDF_TYPE}> ?old_unit_type }}
                 }}
         }}
     """
@@ -672,7 +668,6 @@ def instantiate_building_elevation(elevation_data):
             query += f"""
                 <{measure}> <{OM_HAS_UNIT}> <{unit}> . 
                 <{unit}> <{RDF_TYPE}> <{OM_UNIT}> . 
-                <{unit}> <{OM_SYMBOL}> "{d['unit']}"^^<{XSD_STRING}> . 
             """
 
     # Close query

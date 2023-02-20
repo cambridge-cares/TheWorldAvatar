@@ -78,10 +78,17 @@ def instantiate_all_units():
 
     query = f"""
         INSERT DATA {{
+            <{UOM_GBP_M2}> <{RDFS_SUBCLASS_OF}> <{OM_UNIT}> . 
             <{UOM_GBP_M2}> <{OM_SYMBOL}> \"{GBP_PER_SM}\"^^<{XSD_STRING}> . 
-            <{OM_GBP}> <{OM_SYMBOL}> \"{GBP}\"^^<{XSD_STRING}> .
-            <{OM_HEIGHT}> <{OM_SYMBOL}> \"{METRE}\"^^<{XSD_STRING}> .
-            <{OM_AREA}> <{OM_SYMBOL}> \"{METRE_SQ}\"^^<{XSD_STRING}> .
+            <{OM_GBP}> <{RDFS_SUBCLASS_OF}> <{OM_UNIT}> . 
+            <{OM_GBP}> <{OM_SYMBOL}> \"{GBP}\"^^<{XSD_STRING}> . 
+            <{OM_M}> <{RDF_TYPE}> <{OM + 'SingularUnit'}> . 
+            <{OM + 'SingularUnit'}> <{RDFS_SUBCLASS_OF}> <{OM_UNIT}> .
+            <{OM_M}> <{OM_SYMBOL}> \"{METRE}\"^^<{XSD_STRING}> .             
+            <{OM_M2}> <{RDF_TYPE}> <{OM + 'UnitExponentiation'}> . 
+            <{OM + 'UnitExponentiation'}> <{RDFS_SUBCLASS_OF}> <{OM + 'CompoundUnit'}> . 
+            <{OM + 'CompoundUnit'}> <{RDFS_SUBCLASS_OF}> <{OM_UNIT}> . 
+            <{OM_M2}> <{OM_SYMBOL}> \"{METRE_SQ}\"^^<{XSD_STRING}> .
     }}"""
 
     return query
