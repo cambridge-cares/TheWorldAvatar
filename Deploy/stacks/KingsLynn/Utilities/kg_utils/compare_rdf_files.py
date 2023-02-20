@@ -12,6 +12,9 @@ from rdflib import Graph
 from rdflib.compare import to_isomorphic, graph_diff
 
 
+# Define UUID regex
+UUID_REGEX = r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+
 def rdf_diff(old, new):
     """
         Compares provided rdf files and creates two new rdf files with all differences:
@@ -20,30 +23,11 @@ def rdf_diff(old, new):
         ONLY WORKS FOR TRIPLES, NOT QUADS
     """
 
-    def _align_uuid(rdf_file, replace_with='123'):
-        # Define UUID regex
-        uuid_regex = r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
-        with open(rdf_file, 'r') as file:
-            contents = file.read()
-        contents = re.sub(uuid_regex, replace_with, contents)
-        # Adjust rdf file name
-        to_keep = rdf_file[:rdf_file.rfind('.')]
-        adj = rdf_file[rdf_file.rfind('.'):]
-        adj = '_adj' + adj
-        rdf_adj = to_keep + adj
-        with open(rdf_adj, 'w') as file:
-            file.write(contents)
-        return rdf_adj
-
-    # Align UUIDs in both files
-    old_adj = _align_uuid(old)
-    new_adj = _align_uuid(new)
-
     # Construct both triple graphs from rdf files
     graph1 = Graph()
-    graph1.parse(old_adj)
+    graph1.parse(old)
     graph2 = Graph()
-    graph2.parse(new_adj)
+    graph2.parse(new)
 
     # Make isomorphic
     iso1 = to_isomorphic(graph1)
@@ -66,20 +50,33 @@ def rdf_diff(old, new):
     in_second.serialize(fp3, format="ttl")
 
 
-def get_unique_predicates_with_counts(nt_file_path):
+def get_unique_predicates_with_counts(nt_file_path, include_subjects=False):
     # Load the .nt file into a graph
     g = Graph()
     g.parse(nt_file_path, format="nt")
 
     # Execute SPARQL query on the graph
     result = g.query("""
-        SELECT ?s ?p ?o
+        SELECT ?s ?p ?o ?type
         WHERE {
-            ?s ?p ?o .
+            ?s ?p ?o . 
+            OPTIONAL { ?s a ?type . }
         }
     """)
-    # Get all predicates
-    res = [str(row.p) for row in result]
+    if include_subjects:
+        res = []
+        for row in result:
+            # Get all predicates and subjects
+            if row.type:
+                subj_pred = str(row.type) + '_' + str(row.p)
+            else:
+                subj = str(row.s)
+                subj = re.sub(UUID_REGEX, '', subj)
+                subj_pred = subj + '_' + str(row.p)
+            res.append(subj_pred)
+    else:
+        # Get all predicates
+        res = [str(row.p) for row in result]
     # Create a dictionary with unique predicates and counts
     d = create_dict_with_counts(res)
     return d
@@ -92,6 +89,21 @@ def create_dict_with_counts(lst):
     return dict(count_dict)
 
 
+def align_uuids(rdf_file, replace_with='123'):
+
+    with open(rdf_file, 'r') as file:
+        contents = file.read()
+    contents = re.sub(UUID_REGEX, replace_with, contents)
+    # Adjust rdf file name
+    to_keep = rdf_file[:rdf_file.rfind('.')]
+    adj = rdf_file[rdf_file.rfind('.'):]
+    adj = '_adj' + adj
+    rdf_adj = to_keep + adj
+    with open(rdf_adj, 'w') as file:
+        file.write(contents)
+    return rdf_adj
+
+
 if __name__ == '__main__':
 
     # Specify input file paths (relative path)
@@ -99,22 +111,41 @@ if __name__ == '__main__':
     fp2 = r'..\data\outputs\run2.nt'
     # Specify output file paths
     fp3 = r'..\data\outputs\predicates.txt'
+    fp4 = r'..\data\outputs\subject_predicate_pairs.txt'
 
     # Create actual file paths
-    old_triples = os.path.join(Path(__file__).parent, fp1)
-    new_triples = os.path.join(Path(__file__).parent, fp2)
+    triples1 = os.path.join(Path(__file__).parent, fp1)
+    triples2 = os.path.join(Path(__file__).parent, fp2)
 
     #
     # 1) Compare instantiated predicates
     #
     # NOTE: Done before IRI alignment to avoid distortion of counts for each predicate
-    pred_h = get_unique_predicates_with_counts(old_triples)
-    pred_m = get_unique_predicates_with_counts(new_triples)
+    pred_1 = get_unique_predicates_with_counts(triples1)
+    pred_2 = get_unique_predicates_with_counts(triples2)
     with open(os.path.join(Path(__file__).parent, fp3), 'w') as f:
-        for diff in list(dictdiffer.diff(pred_h, pred_m)):
+        for diff in list(dictdiffer.diff(pred_1, pred_2)):
             print(diff, file=f)
 
     #
-    # 2) Compare instantiated triples
+    # 2) Compare instantiated subject-predicates pairs
     #
-    rdf_diff(old_triples, new_triples)
+    sub_pred1 = get_unique_predicates_with_counts(triples1, include_subjects=True)
+    sub_pred2 = get_unique_predicates_with_counts(triples2, include_subjects=True)
+    with open(os.path.join(Path(__file__).parent, fp4), 'w') as f:
+        for diff in list(dictdiffer.diff(sub_pred1, sub_pred2)):
+            print(diff, file=f)
+    # Reformat file
+    with open(os.path.join(Path(__file__).parent, fp4), 'r') as f:
+        contents = f.read()
+    with open(os.path.join(Path(__file__).parent, fp4), 'w') as f:
+        f.writelines(contents.replace('), (', '),\n('))
+
+    # Align UUIDs in both files
+    triples1_adj = align_uuids(triples1, replace_with='')
+    triples2_adj = align_uuids(triples2, replace_with='')
+
+    #
+    # 3) Compare instantiated triples
+    #
+    rdf_diff(triples1_adj, triples2_adj)
