@@ -1,0 +1,18 @@
+# This file is provided in order to upload an image to the github Docker registry
+version: "3.8"
+
+services:
+  # Change the name of the service to the name of your image
+  toyagent:
+    # Change the name of the image to the name of your image
+    image: ghcr.io/cambridge-cares/toyagent:1.0.0-SNAPSHOT
+    # Change the name of the container to the name of your image
+    container_name: toyagent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    build:
+      context: .
+      target: prod
+      args:
+        # Build argument used to construct paths in Dockerfile (needs to match name in setup.py)
+        agentdir: toyagent

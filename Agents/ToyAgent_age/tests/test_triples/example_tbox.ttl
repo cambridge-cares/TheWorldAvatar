@@ -1,0 +1,13 @@
+@prefix xsd:            <http://www.w3.org/2001/XMLSchema#> .
+@prefix :			    <http://www.example.org/derivationagentpythonexample#> .
+
+##########################################
+## Derivation Agent Python Example TBox ##
+##########################################
+:MaxValue :hasValue :Value .
+
+:MinValue :hasValue :Value .
+
+:Difference :hasValue :Value .
+
+:Value :numVal xsd:double.
