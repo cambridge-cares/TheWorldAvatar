@@ -86,6 +86,9 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
                 triples.append((s, p, o))
         return triples
 
+
+
+
     def create_train_small_triples_for_evaluation(self):
         triples = []
         # tail_all = range(0, self.ent_num)
@@ -232,10 +235,10 @@ if __name__ == "__main__":
     # for triple in dataloader_value_node:
     #     print(triple)
 
-    value_node_eval_set = TransRInferenceDataset(df=df_train, full_dataset_dir=full_dir,
-                                                 ontology=sub_ontology,
-                                                 mode="value_node_eval")
-
-    dataloader_value_node_eval = torch.utils.data.DataLoader(value_node_eval_set, batch_size=value_node_eval_set.ent_num, shuffle=False)
-    for row in dataloader_value_node_eval:
-        print(row)
+    # value_node_eval_set = TransRInferenceDataset(df=df_train, full_dataset_dir=full_dir,
+    #                                              ontology=sub_ontology,
+    #                                              mode="value_node_eval")
+    #
+    # dataloader_value_node_eval = torch.utils.data.DataLoader(value_node_eval_set, batch_size=value_node_eval_set.ent_num, shuffle=False)
+    # for row in dataloader_value_node_eval:
+    #     print(row)
