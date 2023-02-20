@@ -5,7 +5,7 @@ from torch import no_grad, nn
 from torch.optim.lr_scheduler import ExponentialLR
 from tqdm import tqdm
 
-sys.path.append("../../..")
+sys.path.append("")
 
 import json
 import os
@@ -58,7 +58,7 @@ def evaluate_ranking(distances, all_tails, true_tail):
 class InferenceTrainer:
 
     def __init__(self, full_dataset_dir, ontology, batch_size=32, epoch_num=100, dim=20, learning_rate=1.0, gamma=1,
-                 test=False, use_projection=False, alpha=0.1, margin=5, resume=False):
+                 test=False, use_projection=False, alpha=0.1, margin=5, resume=False, inference=True):
         self.full_dataset_dir = full_dataset_dir
         self.ontology = ontology
         self.learning_rate = learning_rate
@@ -70,6 +70,7 @@ class InferenceTrainer:
         self.alpha = alpha
         self.margin = margin
         self.resume = resume
+        self.inference = inference
         self.my_extractor = HopExtractor(
             dataset_dir=self.full_dataset_dir,
             dataset_name=self.ontology)
@@ -77,65 +78,75 @@ class InferenceTrainer:
         self.df_train = df_train
         df_train_small = df_train.sample(frac=0.01)
         df_test = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-test.txt"), sep="\t", header=None)
-        df_numerical = pd.read_csv(os.path.join(full_dir, f"numerical_eval.tsv"), sep="\t", header=None)
+        self.file_loader = FileLoader(full_dataset_dir=self.full_dataset_dir, dataset_name=self.ontology)
+        self.entity2idx, self.idx2entity, self.rel2idx, self.idx2rel = self.file_loader.load_index_files()
+        
+        if inference:
+            df_numerical = pd.read_csv(os.path.join(full_dir, f"numerical_eval.tsv"), sep="\t", header=None)
 
-        value_node_set = TransRInferenceDataset(df=self.df_train, full_dataset_dir=self.full_dataset_dir,
-                                                ontology=self.ontology,
-                                                mode="value_node")
-
-        value_node_eval_set = TransRInferenceDataset(df= df_train_small, full_dataset_dir=self.full_dataset_dir,
-                                                     ontology=self.ontology,
-                                                     mode="value_node_eval")
-
-        numerical_eval_set = TransRInferenceDataset(df_numerical, full_dataset_dir=self.full_dataset_dir,
+            value_node_set = TransRInferenceDataset(df=self.df_train, full_dataset_dir=self.full_dataset_dir,
                                                     ontology=self.ontology,
-                                                    mode="numerical")
+                                                    mode="value_node")
+
+            value_node_eval_set = TransRInferenceDataset(df= df_train_small, full_dataset_dir=self.full_dataset_dir,
+                                                        ontology=self.ontology,
+                                                        mode="value_node_eval")
+
+            numerical_eval_set = TransRInferenceDataset(df_numerical, full_dataset_dir=self.full_dataset_dir,
+                                                        ontology=self.ontology,
+                                                        mode="numerical")
 
         # ========================================== CREATE DATASET FOR TRAINING ================================
-        if not self.test:
-            test_set = TransRInferenceDataset(df_test, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology,
-                                              mode="test")
+            if not self.test:
+                test_set = TransRInferenceDataset(df_test, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology,
+                                                mode="test")
 
-            train_set = TransRInferenceDataset(df_train, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology,
-                                               mode="train")
-            self.train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
-        else:
-            test_set = TransRInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
-                                              ontology=self.ontology,
-                                              mode="test")
-        # =========================================================================================================
-
-        train_set_small = TransRInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
+                train_set = TransRInferenceDataset(df_train, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology,
+                                                mode="train")
+                self.train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
+            else:
+                test_set = TransRInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
+                                                ontology=self.ontology,
+                                                mode="test")
+            
+            train_set_small = TransRInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
                                                  ontology=self.ontology,
                                                  mode="train")
 
-        train_set_eval = TransRInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
+            train_set_eval = TransRInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
                                                 ontology=self.ontology,
                                                 mode="train_eval")
-        self.use_cuda = torch.cuda.is_available()
+            self.test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=test_set.candidate_max * 2, shuffle=False)
+            self.train_dataloader_small = torch.utils.data.DataLoader(train_set_small, batch_size=batch_size, shuffle=True)
 
+            self.train_dataloader_eval = torch.utils.data.DataLoader(train_set_eval,
+                                                                 batch_size=train_set_eval.candidate_max * 2,
+                                                                 shuffle=False)
+            self.numerical_eval_set_dataloader = torch.utils.data.DataLoader(numerical_eval_set, batch_size=1,
+                                                                         shuffle=True)
+
+            self.dataloader_value_node = torch.utils.data.DataLoader(value_node_set, batch_size=self.batch_size,
+                                                                    shuffle=True)
+            self.dataloader_value_node_eval = torch.utils.data.DataLoader(value_node_eval_set,
+                                                                        batch_size=value_node_eval_set.ent_num * 2,
+                                                                      shuffle=False)
+        else:
+            train_set = TransRInferenceDataset(df_train, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology, mode="agent_train", inference=False)
+            test_set = TransRInferenceDataset(df_test, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology, mode="agent_test", inference=False)
+            train_set_eval = TransRInferenceDataset(df_train, full_dataset_dir=self.full_dataset_dir,
+                                                ontology=self.ontology,
+                                                mode="agent_train_eval", inference=False)
+            self.train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
+            self.train_dataloader_eval = torch.utils.data.DataLoader(train_set_eval,
+                                                                 batch_size=len(self.entity2idx.keys()),
+                                                                 shuffle=False)
+            self.test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=len(self.entity2idx.keys()), shuffle=False)
+        # =========================================================================================================    
+        self.use_cuda = torch.cuda.is_available()
+        # self.use_cuda = False
         device = torch.device("cuda" if self.use_cuda else "cpu")
         self.device = device
         print(f"==================== USING {self.device} =====================")
-        # ================================================================================================================
-        self.test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=test_set.candidate_max, shuffle=False)
-        self.train_dataloader_small = torch.utils.data.DataLoader(train_set_small, batch_size=batch_size, shuffle=True)
-
-        self.train_dataloader_eval = torch.utils.data.DataLoader(train_set_eval,
-                                                                 batch_size=train_set_eval.candidate_max,
-                                                                 shuffle=False)
-        self.numerical_eval_set_dataloader = torch.utils.data.DataLoader(numerical_eval_set, batch_size=1,
-                                                                         shuffle=True)
-
-        self.dataloader_value_node = torch.utils.data.DataLoader(value_node_set, batch_size=self.batch_size,
-                                                                 shuffle=True)
-        self.dataloader_value_node_eval = torch.utils.data.DataLoader(value_node_eval_set,
-                                                                      batch_size=value_node_eval_set.ent_num,
-                                                                      shuffle=False)
-        # ===========================================================================================================
-        self.file_loader = FileLoader(full_dataset_dir=self.full_dataset_dir, dataset_name=self.ontology)
-        self.entity2idx, self.idx2entity, self.rel2idx, self.idx2rel = self.file_loader.load_index_files()
-
         # ------------------------- Training hyperparameters -----------------------
         self.epoch_num = epoch_num
         self.model = TransR(rel_dim=self.dim, rel_num=len(self.rel2idx.keys()), ent_dim=self.dim,
@@ -206,8 +217,9 @@ class InferenceTrainer:
                 hit_rate_list.append(f_ranking_idx)
                 filtered_hit_rate_list.append(f_ranking_idx)
 
-            for numerical_eval_triples in self.numerical_eval_set_dataloader:
-                self.model.module.numerical_predict(numerical_eval_triples)
+            if self.inference:
+                for numerical_eval_triples in self.numerical_eval_set_dataloader:
+                    self.model.module.numerical_predict(numerical_eval_triples)
 
             filtered_hit_rate_list = hit_rate(filtered_hit_rate_list)
             total_fmrr = total_fmrr / filtered_counter
@@ -269,8 +281,9 @@ class InferenceTrainer:
                 self.export_embeddings()
                 print(f"Current learning rate: {self.scheduler.get_lr()}")
 
-        self.calculate_value_node_embedding()
-        self.evaluate_value_node_embedding()
+        if self.inference:
+            self.calculate_value_node_embedding()
+            self.evaluate_value_node_embedding()
         self.export_embeddings()
 
     def calculate_value_node_embedding(self):
@@ -345,7 +358,7 @@ if __name__ == "__main__":
     if args.epoch:
         epoch = int(args.epoch)
 
-    ontology = "test"
+    ontology = "ontothermoagent"
     if args.sub_ontology:
         ontology = args.sub_ontology
 
@@ -387,10 +400,10 @@ if __name__ == "__main__":
     print(f"Epoch: {epoch}")
     print(f"Resume training: {resume}")
 
-    full_dir = os.path.join(DATA_DIR, 'CrossGraph', f'ontospecies_new/{ontology}')
-    my_trainer = InferenceTrainer(full_dataset_dir=full_dir, ontology=ontology, batch_size=batch_size, dim=dim,
+    full_dir = os.path.join(DATA_DIR, 'CrossGraph', f'{ontology}')
+    my_trainer = InferenceTrainer(full_dataset_dir=full_dir, ontology=ontology, batch_size=32, dim=dim,
                                   learning_rate=learning_rate, test=test, use_projection=use_projection, alpha=alpha,
-                                  margin=margin, epoch_num=epoch, gamma=gamma, resume=resume)
+                                  margin=margin, epoch_num=epoch, gamma=gamma, resume=resume, inference=False)
     my_trainer.run()
 # role_with_subclass_full_attributes_0.1
 # role_with_subclass_full_attributes_with_class
