@@ -23,15 +23,15 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
         self.neg_sample_dict_path = os.path.join(self.full_dataset_dir, "neg_sample_dict.json")
         self.neg_sample_dict = json.loads(open(self.neg_sample_dict_path).read())
 
-        if(inference):
+        if (inference):
             self.candidate_dict_path = os.path.join(self.full_dataset_dir, "candidate_dict.json")
             self.candidate_dict = json.loads(open(self.candidate_dict_path).read())
             self.candidate_max = max([len(v) for k, v in self.candidate_dict.items()])
             self.node_value_dict_path = os.path.join(self.full_dataset_dir, "node_value_dict.json")
             self.node_value_dict = json.loads(open(self.node_value_dict_path).read())
             self.p_stop_list = ["hasLogP", "hasDensity", "hasBoilingPoint",
-                            "hasSolubility", "hasLogP", "hasLogS", "hasMolecularWeight",
-                            "hasMeltingPoint"]
+                                "hasSolubility", "hasLogP", "hasLogS", "hasMolecularWeight",
+                                "hasMeltingPoint"]
 
         self.my_extractor = HopExtractor(
             dataset_dir=full_dataset_dir,
@@ -81,7 +81,6 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
                     triples.append((s, p, tail, o))
         return triples
 
-
     def create_value_node_triples(self):
         triples = []
         for idx, row in self.df.iterrows():
@@ -91,9 +90,6 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
             if row[1] in self.p_stop_list:
                 triples.append((s, p, o))
         return triples
-
-
-
 
     def create_train_small_triples_for_evaluation(self):
         triples = []
@@ -141,38 +137,37 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
         return fake_candidates
 
     def create_triples_for_agent_train(self):
-        triples=[]
+        triples = []
         for idx, row in self.df.iterrows():
             s = self.entity2idx[row[0]]
             p = self.rel2idx[row[1]]
             o = self.entity2idx[row[2]]
-            true_triple = (s,p,o,-999)
+            true_triple = (s, p, o, -999)
             for i in range(0, self.ent_num):
                 triple_idx_string = f"{s}_{p}_{i}"
                 if not self.my_extractor.check_triple_existence(triple_idx_string):
-                    fake_triple = (s,p,i,-999)
+                    fake_triple = (s, p, i, -999)
                     triples.append((true_triple, fake_triple))
         return triples
 
     def create_triples_for_agent_test(self):
-        triples=[]
+        triples = []
         for idx, row in self.df.iterrows():
-            counter=0
+            counter = 0
             s = self.entity2idx[row[0]]
             p = self.rel2idx[row[1]]
             o = self.entity2idx[row[2]]
-            triples.append((s,p,o,-999))
+            triples.append((s, p, o, o))
             for i in range(self.ent_num):
                 triple_idx_string = f"{s}_{p}_{i}"
                 if not self.my_extractor.check_triple_existence(triple_idx_string):
-                    triples.append((s,p,i,-999))
-                    counter+=1
-            length_diff = (self.ent_num -1) - counter
+                    triples.append((s, p, i, o))
+                    counter += 1
+            length_diff = (self.ent_num - 1) - counter
             for i in range(length_diff):
-                triples.append((s,p,-1,-999))
+                triples.append((s, p, -1, o))
 
         return triples
-
 
     def create_test_triples(self):
         triples = []
