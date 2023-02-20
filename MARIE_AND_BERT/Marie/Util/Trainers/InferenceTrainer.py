@@ -5,7 +5,7 @@ from torch import no_grad, nn
 from torch.optim.lr_scheduler import ExponentialLR
 from tqdm import tqdm
 
-sys.path.append("")
+sys.path.append("../../..")
 
 import json
 import os
