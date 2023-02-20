@@ -52,9 +52,9 @@
 :Strategy_1
     rdf:type OntoDoE:TSEMO;
     OntoDoE:nRetries "10"^^xsd:integer;
-    OntoDoE:nSpectralPoints "30"^^xsd:integer;
-    OntoDoE:nGenerations "20"^^xsd:integer;
-    OntoDoE:populationSize "20"^^xsd:integer;
+    OntoDoE:nSpectralPoints "4000"^^xsd:integer; # increased for better performance
+    OntoDoE:nGenerations "1000"^^xsd:integer; # increased for better performance
+    OntoDoE:populationSize "100"^^xsd:integer;
 .
 
 # This statement is actually part of OntoDoE TBox

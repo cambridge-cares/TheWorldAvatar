@@ -52,8 +52,8 @@
 :Strategy_1
     rdf:type OntoDoE:TSEMO;
     OntoDoE:nRetries "10"^^xsd:integer;
-    OntoDoE:nSpectralPoints "1500"^^xsd:integer;
-    OntoDoE:nGenerations "100"^^xsd:integer;
+    OntoDoE:nSpectralPoints "4000"^^xsd:integer; # increased for better performance
+    OntoDoE:nGenerations "1000"^^xsd:integer; # increased for better performance
     OntoDoE:populationSize "100"^^xsd:integer;
 .
 
