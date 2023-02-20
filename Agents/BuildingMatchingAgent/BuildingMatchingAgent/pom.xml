@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>uk.ac.cam.cares.jps</groupId>
+  <artifactId>BuildingMatchingAgent</artifactId>
+  <version>1.0.0</version>
+  <packaging>war</packaging>
+
+    <!--  Project properties  -->
+    <properties>
+        <maven.compiler.release>11</maven.compiler.release>
+    </properties>
+    <!--  Parent POM  -->
+    <parent>
+        <groupId>uk.ac.cam.cares.jps</groupId>
+        <artifactId>jps-parent-pom</artifactId>
+        <version>2.2.0</version>
+    </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>3.1.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>uk.ac.cam.cares.jps</groupId>
+      <artifactId>jps-base-lib</artifactId>
+      <version>1.34.0</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>uk.ac.cam.cares.ogm</groupId>
+      <artifactId>ogm</artifactId>
+      <version>1.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.9.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>jena-querybuilder</artifactId>
+      <version>3.16.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.jena</groupId>
+      <artifactId>jena-arq</artifactId>
+      <version>3.16.0</version>
+    </dependency>
+  </dependencies>
+
+
+  <build>
+    <sourceDirectory>src/main/java</sourceDirectory>
+    <testSourceDirectory>src/test/java</testSourceDirectory>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>3.10.0</version>
+          <configuration>
+              <release>11</release>
+          </configuration>
+        </plugin>
+
+
+        <!-- Maven plugin for unit tests -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.22.0</version>
+        </plugin>
+
+        <!-- Maven plugin for packaging -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>3.3.1</version>
+        </plugin>
+
+        <!-- Downloads and extracts ZIP archives from Maven repository -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>3.2.0</version>
+          <!-- Version, configuration, and executions should be pulled from the
+          parent POM unless overridden here. -->
+
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>
