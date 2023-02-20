@@ -28,7 +28,6 @@ import org.json.JSONArray;
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphClient;
 import com.cmclinnovations.stack.clients.blazegraph.Namespace;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerStyle;
-import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.fasterxml.jackson.annotation.JacksonInject;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -60,8 +59,6 @@ public class Dataset {
 
     private final boolean skip;
     private String rdfType;
-    private boolean hasTimeSeries;
-    private String timeSeriesSchema;
 
     // for dcat cataloging
     private boolean exists; // used to determine whether this dataset exists in the catalog
@@ -78,9 +75,7 @@ public class Dataset {
             @JsonProperty(value = "styles") List<GeoServerStyle> geoserverStyles,
             @JsonProperty(value = "mappings") List<String> ontopMappings,
             @JsonProperty(value = "skip") boolean skip,
-            @JsonProperty(value = "rdfType") String rdfType,
-            @JsonProperty(value = "hasTimeSeries") boolean hasTimeSeries,
-            @JsonProperty(value = "timeSeriesSchema") String timeSeriesSchema) {
+            @JsonProperty(value = "rdfType") String rdfType) {
         this.name = name;
         this.datasetDirectory = datasetDirectory;
         this.database = database;
@@ -92,8 +87,6 @@ public class Dataset {
         this.ontopMappings = ontopMappings;
         this.skip = skip;
         this.rdfType = rdfType;
-        this.hasTimeSeries = hasTimeSeries;
-        this.timeSeriesSchema = timeSeriesSchema;
     }
 
     public String getName() {
@@ -165,10 +158,6 @@ public class Dataset {
         return (null != rdfType) ? Rdf.iri(rdfType) : Rdf.iri(DCAT.CATALOG);
     }
 
-    public String getTimeSeriesSchema() {
-        return (null != timeSeriesSchema) ? timeSeriesSchema : "public";
-    }
-
     public String getIri() {
         return iri;
     }
@@ -220,10 +209,6 @@ public class Dataset {
                 insertTriples.add(postgisService.isA(Rdf.iri(SparqlConstants.POSTGIS))
                 .andHas(Rdf.iri(DCAT.ENDPOINT_URL), jdbcUrl)
                 .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri));
-
-                if (hasTimeSeries) {
-                    insertTriples.add(postgisService.has(Rdf.iri(SparqlConstants.HAS_TIMESERIES_SCHEMA), getTimeSeriesSchema()));
-                }
             } 
                 
             // implementation not complete until we figure out the external URLs
@@ -333,7 +318,6 @@ public class Dataset {
         static final String BLAZEGRAPH = DEFAULT_NAMESPACE + "Blazegraph";
         static final String POSTGIS = DEFAULT_NAMESPACE + "PostGIS";
         static final String GEOSERVER = DEFAULT_NAMESPACE + "GeoServer";
-        static final String HAS_TIMESERIES_SCHEMA = DEFAULT_NAMESPACE + "hasTimeSeriesSchema";
         static final String USES_DATABASE = DEFAULT_NAMESPACE + "usesDatabase";
         static final String ONTOP = DEFAULT_NAMESPACE + "Ontop";
     }
