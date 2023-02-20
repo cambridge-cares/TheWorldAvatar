@@ -55,3 +55,4 @@ PUBCHEM500_JSONL_PATH = os.path.join(ENTITY_LINKING_DATA_DIR, r'pubchem5000_trim
 # print("JAVA_PATH", JAVA_PATH)
 # print("JAVA_DIR", JAVA_DIR)
 print(DATA_DIR)
+TOKENIZER_DIR = os.path.join(ROOT_DIR, r'tokenizerFast')
