@@ -209,15 +209,6 @@ public class BuildingMatchingAgent extends JPSAgent {
     }
 
     private static SelectBuilder ocgmlQueryBuilder() throws ParseException {
-//        WhereBuilder where = new WhereBuilder().addPrefix(KEY_OCGML, ocgmlUri).addWhere(QM+BLDG, KEY_OCGML+":objectClassId",  "26");
-//
-//        return new SelectBuilder().setDistinct(true)
-//                .addPrefix(KEY_OCGML, ocgmlUri).addPrefix("osid", osidUri)
-//                .addVar(QM+BLDG).addVar(QM+uprn)
-//                .addGraph(NodeFactory.createURI(bldgGraph), where)
-//                .addBind("IRI(REPLACE(str("+QM+BLDG+"), \"building\", \"cityobject\"))", QM+CITYOBJ)
-//                .addWhere(QM+ATTR, "osid:intersectsFeature" , QM+CITYOBJ)
-//                .addWhere(QM+ATTR, "osid:hasValue", QM+uprn).addOrderBy(QM+BLDG);
         WhereBuilder where = new WhereBuilder().addPrefix(KEY_OSID, osidUri).addWhere(QM+CITYOBJ, "^"+KEY_OSID+":intersectsFeature/"+KEY_OSID+":hasValue",  QM+uprn);
 
         return   new SelectBuilder().setDistinct(true)
