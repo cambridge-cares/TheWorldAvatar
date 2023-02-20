@@ -16,30 +16,26 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.json.JSONArray;
 
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 class MockWeatherQueryClient extends WeatherQueryClient{
-
-	MockWeatherQueryClient(StoreClientInterface storeClient) {
-		super(storeClient);
-	}
 	
-	MockWeatherQueryClient(StoreClientInterface storeClient, TimeSeriesClient<Instant> tsClient) {
-		super(storeClient, tsClient);
+	MockWeatherQueryClient(RemoteStoreClient kgClient, TimeSeriesClient<Instant> tsClient, RemoteStoreClient ontopClient) {
+		super(kgClient, tsClient, ontopClient);
 	}
 
 	@Override 
-	void updateStation(String station_iri) {
+	void updateStation(String stationIri, String timestamp) {
 		// construct time series object
 		// first query all data values
 		SelectQuery query = Queries.SELECT();
 		Variable measure = query.var();
-		GraphPattern queryPattern = iri(station_iri).has(PropertyPaths.path(reports,hasValue),measure);
+		GraphPattern queryPattern = iri(stationIri).has(PropertyPaths.path(reports,hasValue),measure);
 		query.select(measure).where(queryPattern).prefix(p_ems,p_om);
 		
-		JSONArray queryResult = this.storeClient.executeQuery(query.getQueryString());
+		JSONArray queryResult = this.kgClient.executeQuery(query.getQueryString());
 		List<String> datavalue_list = queryResult.toList().stream()
 				.map(iri -> ((HashMap<String,String>) iri).get(measure.getQueryString().substring(1)))
 				.collect(Collectors.toList()); 

@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  historical-aqmesh-agent:
+    image: historical-aqmesh-agent:1.3.0
+    build: .
+    container_name: historical-aqmesh-agent
+    pull_policy: if_not_present
+    ports:
+      - "1025:8080"

@@ -58,9 +58,10 @@ public interface ITBoxManagement {
 	 * @param relation
 	 * @param domain
 	 * @param range
+	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	public void createOWLDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range) throws JPSRuntimeException;
+	public void createOWLDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException;
 	/**
 	 * Creates an ontological object property.
 	 * 

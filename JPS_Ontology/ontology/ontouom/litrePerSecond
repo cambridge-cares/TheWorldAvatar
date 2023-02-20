@@ -30,7 +30,7 @@
 
   <!-- Litre Per Second Ontology -->
 
-  <om:UnitDivision rdf:about="http://theworldavatar.com/resource/ontouom/litrePerSecond">
+  <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/litrePerSecond">
     <rdfs:label xml:lang="en">litre per second</rdfs:label>
     <om:symbol>l/s</om:symbol>
     <om:alternativeSymbol>l s-1</om:alternativeSymbol>

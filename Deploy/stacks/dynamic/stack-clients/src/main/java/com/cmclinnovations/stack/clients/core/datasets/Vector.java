@@ -8,27 +8,25 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Vector extends DataSubset {
+public class Vector extends GeoServerDataSubset {
 
+    @JsonProperty
     private Ogr2OgrOptions ogr2ogrOptions = new Ogr2OgrOptions();
 
     @JsonProperty
     private GeoServerVectorSettings geoServerSettings = new GeoServerVectorSettings();
 
-    public Ogr2OgrOptions getOgr2ogrOptions() {
-        return ogr2ogrOptions;
+    @Override
+    public void loadData(Path dirPath, String database) {
+        GDALClient.getInstance()
+                .uploadVectorFilesToPostGIS(database, getTable(), dirPath.toString(), ogr2ogrOptions, false);
     }
 
     @Override
-    public void loadData(GDALClient gdalClient, String datasetDir, String database) {
-        Path dirPath = Path.of(datasetDir, getSubdirectory());
-        gdalClient.uploadVectorFilesToPostGIS(database, getTable(), dirPath.toString(), ogr2ogrOptions, false);
-    }
-
-    @Override
-    public void createLayer(GeoServerClient geoServerClient, String dataSubsetDir, String workspaceName,
-            String database) {
-        geoServerClient.createPostGISLayer(dataSubsetDir, workspaceName, database, getName(), geoServerSettings);
+    public void createLayer(String workspaceName, String database) {
+        geoServerSettings.getVirtualTable().setSql(handleFileValues(geoServerSettings.getVirtualTable().getSql()));
+        GeoServerClient.getInstance()
+                .createPostGISLayer(workspaceName, database, getName(), geoServerSettings);
     }
 
 }

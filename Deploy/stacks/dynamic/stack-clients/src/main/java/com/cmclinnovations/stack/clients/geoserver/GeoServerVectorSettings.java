@@ -11,4 +11,7 @@ public class GeoServerVectorSettings extends GSLayerEncoder {
         return virtualTable;
     }
 
+    public void setVirtualTable(UpdatedGSVirtualTableEncoder virtualTable) {
+        this.virtualTable = virtualTable;
+    }
 }

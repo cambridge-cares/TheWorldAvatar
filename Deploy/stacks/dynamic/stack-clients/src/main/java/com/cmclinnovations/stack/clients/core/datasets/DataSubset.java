@@ -1,49 +1,57 @@
 package com.cmclinnovations.stack.clients.core.datasets;
 
-import com.cmclinnovations.stack.clients.gdal.GDALClient;
-import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import java.nio.file.Path;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes({ @Type(Tabular.class), @Type(Vector.class), @Type(Raster.class) })
+@JsonSubTypes({
+        @Type(value = Tabular.class, names = { "Tabular", "tabular" }),
+        @Type(value = Vector.class, names = { "Vector", "vector" }),
+        @Type(value = Raster.class, names = { "Raster", "raster" }),
+        @Type(value = RDF.class, names = { "Triples", "triples", "RDF", "rdf", "Quads", "quads" }),
+        @Type(value = TBoxCSV.class, names = { "TBoxCSV", "TboxCSV", "tboxcsv", }) })
 public abstract class DataSubset {
 
     private String name;
-    private String subdirectory;
-
-    @JsonProperty(defaultValue = "public")
-    private String schema;
-    private String table;
+    @JsonProperty
+    private Path subdirectory;
 
     @JsonProperty
     private boolean skip;
 
     public String getName() {
-        return (null != name) ? name : table;
+        return name;
     }
 
-    public String getSubdirectory() {
-        return null != subdirectory ? subdirectory : "";
+    public Path getSubdirectory() {
+        return (null != subdirectory) ? subdirectory : Path.of("");
     }
 
-    public String getSchema() {
-        return schema;
-    }
-
-    public String getTable() {
-        return (null != table) ? table : name;
-    }
-
-    public boolean getSkip() {
+    public boolean isSkip() {
         return skip;
     }
 
-    public abstract void loadData(GDALClient gdalClient, String dataSubsetDir, String database);
+    public boolean usesPostGIS() {
+        return false;
+    }
 
-    public abstract void createLayer(GeoServerClient geoServerClient, String dataSubsetDir, String workspaceName,
-            String database);
+    public boolean usesBlazegraph() {
+        return false;
+    }
 
+    public boolean usesGeoServer() {
+        return false;
+    }
+
+    public void load(Dataset dataset) {
+        if (!skip) {
+            loadInternal(dataset);
+        }
+    }
+
+    abstract void loadInternal(Dataset dataset);
 }

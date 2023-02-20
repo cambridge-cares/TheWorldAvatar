@@ -9,8 +9,14 @@ class Agent():
         savelocsrc = params['dataset']['src']
         saveloctgt = params['dataset']['tgt']
         if 'deu' in saveloctgt.lower():
-            downloadDataKg(savelocsrc,"http://kwl")
-            downloadDataKg(saveloctgt,"http://Germany")
+            endpoint_label = 'powerplants'
+            downloadDataKg(savelocsrc,endpoint_label,"http://kwl")
+            downloadDataKg(saveloctgt,endpoint_label,"http://Germany")
+        if 'gbr' in saveloctgt.lower():
+            endpoint_label = 'ukpowerplants'
+            downloadDataKg(savelocsrc,'powerplants', "http://dukes")
+            downloadDataKg(saveloctgt,endpoint_label,None)
+
 
     def upload(self, config_handle):
         config_json = ontomatch.utils.util.call_agent_blackboard_for_reading(config_handle, False)

@@ -1,5 +1,5 @@
-requests~=2.27
-pandas~=1.3
-SPARQLWrapper~=1.8
-beautifulsoup4~=4.10
-selenium~=4.1
+requests
+pandas
+SPARQLWrapper
+beautifulsoup4
+selenium

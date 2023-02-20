@@ -1,0 +1,13 @@
+#######################################
+## The World Avatar related packages ##
+#######################################
+pyderivationagent==1.4.1
+py4jps==1.0.30
+
+##########################
+## Third-party packages ##
+##########################
+flask==2.1.0
+JayDeBeApi==1.2.3
+pandas==1.5.1
+requests==2.28.1

@@ -1,12 +1,17 @@
 [
 	{
-		"label": "test1",
-		"queryEndpoint": "http://docker.host.internal:48889/blazegraph/namespace/test1/sparql",
-		"updateEndpoint": "http://docker.host.internal:48889/blazegraph/namespace/test1/sparql"
+		"label": "example",
+		"queryEndpoint": "http://host.docker.internal:48889/blazegraph/namespace/example/sparql",
+		"updateEndpoint": "http://host.docker.internal:48889/blazegraph/namespace/example/sparql"
 	},
 	{
-		"label": "test2",
-		"queryEndpoint": "http://docker.host.internal:48889/blazegraph/namespace/test2/sparql",
-		"updateEndpoint": "http://docker.host.internal:48889/blazegraph/namespace/test2/sparql"
-	}
+		"label": "ontokin",
+		"queryEndpoint": "http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql",
+		"updateEndpoint": "http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql"
+	},
+        {
+                "label": "examplestack",
+                "queryEndpoint": "http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/examplestack/sparql",
+                "updateEndpoint": "http://<STACK NAME>-blazegraph:8080/blazegraph/namespace/examplestack/sparql"
+        }
 ]

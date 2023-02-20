@@ -6,7 +6,6 @@ import uk.ac.cam.cares.ogm.models.FieldAnnotation;
 import uk.ac.cam.cares.ogm.models.Model;
 import uk.ac.cam.cares.ogm.models.ModelAnnotation;
 import uk.ac.cam.cares.ogm.models.ModelContext;
-import uk.ac.cam.cares.ogm.models.geo.GeometryType;
 
 import java.math.BigInteger;
 import java.net.URI;
@@ -23,7 +22,6 @@ public class TestModel extends Model {
   @Getter @Setter @FieldAnnotation("dbpediao:doubleprop") private Double doubleProp;
   @Getter @Setter @FieldAnnotation("dbpediao:uriprop") private URI uriProp;
   @Getter @Setter @FieldAnnotation("dbpediao:modelprop") private TestModel modelProp;
-  @Getter @Setter @FieldAnnotation("JPSLAND:geometryprop") private GeometryType geometryProp;
 
   @Getter @Setter @FieldAnnotation("JPSLAND:stringpropnull") private String stringNullProp;
   @Getter @Setter @FieldAnnotation("dbpediao:intpropnull") private Integer intNullProp;

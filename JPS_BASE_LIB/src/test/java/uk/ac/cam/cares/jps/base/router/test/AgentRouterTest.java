@@ -15,7 +15,7 @@ import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.CacheInterface;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.MockStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.router.AgentRouter;
@@ -31,7 +31,7 @@ class AgentRouterTest {
 	private static String agentName3 = "Agent3";
 	private static String agentURL3 = "http://www.example.com/agent3/location3";
 	
-	private static StoreClientInterface createMockStore() {
+	private static TripleStoreClientInterface createMockStore() {
 		
 		MockStoreClient mockStore = new MockStoreClient();
 		mockStore.addTriple(		
@@ -106,24 +106,24 @@ class AgentRouterTest {
 	}
 	
 	@Test
-	void testGetStoreClient() {
+	void testGetRouterStoreClient() {
 		
 		AgentRouter agentRouter = AgentRouter.getInstance();
 		agentRouter.resetRouterEndpoint();
 		
-	    Object obj = agentRouter.getStoreClient();
+	    Object obj = agentRouter.getRouterStoreClient();
 		assertNotNull(obj);
 		assertTrue(obj.getClass().getClass().isInstance(RemoteStoreClient.class));
-		
-		StoreClientInterface storeClient = (RemoteStoreClient) obj;
+
+		TripleStoreClientInterface storeClient = (RemoteStoreClient) obj;
 		assertEquals(defaultEndpoint, storeClient.getQueryEndpoint());
 		assertEquals(null, storeClient.getUpdateEndpoint());
 	}
 	
 	@Test
 	void testGetFromStore() {
-		
-		StoreClientInterface mockStoreClient = createMockStore();
+
+		TripleStoreClientInterface mockStoreClient = createMockStore();
 				
 		AgentRouter agentRouter = AgentRouter.getInstance();
 		
@@ -142,8 +142,8 @@ class AgentRouterTest {
 	
 	@Test
 	void testGetFromStoreException() {
-		
-		StoreClientInterface storeClient = null;
+
+		TripleStoreClientInterface storeClient = null;
 	
 		AgentRouter agentRouter = AgentRouter.getInstance();
 		
@@ -153,8 +153,8 @@ class AgentRouterTest {
 	
 	@Test
 	void testGetFromStoreWithNull() {
-		
-		StoreClientInterface mockStoreClient = createMockStore();
+
+		TripleStoreClientInterface mockStoreClient = createMockStore();
 				
 		AgentRouter agentRouter = AgentRouter.getInstance();
 		
@@ -165,38 +165,38 @@ class AgentRouterTest {
 	
 	@Test
 	void testGet() {
-		
-		StoreClientInterface mockStoreClient = createMockStore();
+
+		TripleStoreClientInterface mockStoreClient = createMockStore();
 		
 		AgentRouter agentRouter = AgentRouter.getInstance();
 		
 		//Use mocked StoreClient as triple store
 		AgentRouter spyAgentRouter = Mockito.spy(agentRouter);
-		Mockito.doReturn(mockStoreClient).when(spyAgentRouter).getStoreClient();
+		Mockito.doReturn(mockStoreClient).when(spyAgentRouter).getRouterStoreClient();
 		
 		//Not in cache
 		assertEquals(agentURL1, spyAgentRouter.get(agentName1));
-		Mockito.verify(spyAgentRouter, Mockito.times(1)).getStoreClient();
+		Mockito.verify(spyAgentRouter, Mockito.times(1)).getRouterStoreClient();
 		Mockito.verify(spyAgentRouter, Mockito.times(1)).getFromStore(agentName1, mockStoreClient);
 		
 		//In cache
 		//Agent1 in cache so getFromStore not called again
 		assertEquals(agentURL1, spyAgentRouter.get(agentName1));
-		Mockito.verify(spyAgentRouter, Mockito.times(1)).getStoreClient();
+		Mockito.verify(spyAgentRouter, Mockito.times(1)).getRouterStoreClient();
 		Mockito.verify(spyAgentRouter, Mockito.times(1)).getFromStore(agentName1, mockStoreClient);
 
 		//Not in cache
 		assertEquals(agentURL2, spyAgentRouter.get(agentName2));
-		Mockito.verify(spyAgentRouter, Mockito.times(2)).getStoreClient();
+		Mockito.verify(spyAgentRouter, Mockito.times(2)).getRouterStoreClient();
 		Mockito.verify(spyAgentRouter, Mockito.times(1)).getFromStore(agentName2, mockStoreClient);
 		
 		//Test Exception
 		//Does not exist
 		Assertions.assertThrows(JPSRuntimeException.class, ()->{spyAgentRouter.get("Agent4");});
-		Mockito.verify(spyAgentRouter, Mockito.times(3)).getStoreClient();
+		Mockito.verify(spyAgentRouter, Mockito.times(3)).getRouterStoreClient();
 		//Should try store again if null and called again
 		Assertions.assertThrows(JPSRuntimeException.class, ()->{spyAgentRouter.get("Agent4");});
-		Mockito.verify(spyAgentRouter, Mockito.times(4)).getStoreClient();
+		Mockito.verify(spyAgentRouter, Mockito.times(4)).getRouterStoreClient();
 	}
 	
 	

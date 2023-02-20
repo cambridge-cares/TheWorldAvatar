@@ -5,9 +5,14 @@
     "datasetDirectory": "elevation",
     "dataSubsets": [
         {
-            "type": "Raster",
+            "type": "raster",
             "name": "elevation",
-            "skip": false
+            "skip": false,
+            "geoServerSettings": {
+                "layerSettings": {
+                    "defaultStyle": "dem"
+                }
+            }
         }
     ]
 }

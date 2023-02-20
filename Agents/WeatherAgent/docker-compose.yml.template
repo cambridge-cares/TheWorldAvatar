@@ -2,61 +2,32 @@ version: "3.8"
 
 services:
   weatheragent:
-    container_name: weatheragent
-    image: weatheragent:1.0.0
+    image: docker.cmclinnovations.com/weatheragent:1.1.0-SNAPSHOT
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
     environment:
-      JPDA_ADDRESS: 0.0.0.0:8000
-      JPDA_TRANSPORT: "dt_socket"
-      KG_URL: "http://blazegraph:8080/blazegraph/namespace/weather/sparql"
-      POSTGRES_URL: "jdbc:postgresql://postgres:5432/postgres"
-      POSTGRES_USER: "postgres"
-      POSTGRES_PASSWORD: ""
-      API_KEY: ""
-    build:
-      context: ./
+      - STACK_NAME=${STACK_NAME}
+      - API_KEY=
+      - LAYERNAME=weatherstations # also name of the table in PostGIS
+      - DATABASE=postgres # currently ontop reads from the default database
+      - GEOSERVER_WORKSPACE=weatherstations
+    configs:
+      - postgis
+      - blazegraph
+      - geoserver
+      - ontop
+    secrets:
+      - postgis_password
+      - geoserver_password
     ports:
-      - "8081:8080"
-      - "8001:8000"
+      - "8086:8080"
     volumes:
       - logs:/root/.jps
-
-  blazegraph:
-    container_name: "blazegraph"
-    environment:
-      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
-    restart: unless-stopped
-    # Add a secret to set the password for BASIC authentication
-    secrets: # username is bg_user
-      - blazegraph_password
-    ports:
-      - "8889:8080"
-    volumes:
-      - blazegraph_data:/data
-
-  postgres:
-    container_name: "postgres"
-    environment:
-      POSTGRES_PASSWORD: postgres_password
-    image: postgres:14.4-alpine
-    restart: unless-stopped
-    secrets: # username is postgres
-      - postgres_password
-    ports:
-      - "7432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
-secrets:
-  blazegraph_password:
-    file: credentials/blazegraph_password
-  postgres_password:
-    file: credentials/postgres_password
-
+    networks:
+      - stack
 volumes:
-  blazegraph_data:
-    name: "blazegraph_data"
-  postgres_data:
-    name: "postgres_data"
   logs:
     name: "logs"

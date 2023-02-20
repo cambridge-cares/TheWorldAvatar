@@ -31,6 +31,12 @@ public class Ogr2OgrOptions extends CommonOptions<Ogr2OgrOptions> {
     }
 
     String[] appendToArgs(String layerName, String... args) {
+
+        // Setting this option prevents GDAL from "cleaning" the table and column
+        // names for Postgres, as described here:
+        // https://gdal.org/drivers/vector/pg.html#layer-creation-options
+        layerCreationOptions.put("LAUNDER", "NO");
+
         List<String> allArgs = appendCommonToArgs(args);
         if (null != layerName) {
             allArgs.add("-nln");

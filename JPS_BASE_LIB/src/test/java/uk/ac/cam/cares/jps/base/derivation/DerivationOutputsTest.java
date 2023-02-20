@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.json.JSONArray;
@@ -329,13 +330,14 @@ public class DerivationOutputsTest {
 	}
 
 	@Test
-	public void testGetAddTriple()
+	public void testGetAddTripleAndLiteral()
 			throws Exception {
 		DerivationOutputs devOutputs = new DerivationOutputs();
 		Field outputs = devOutputs.getClass().getDeclaredField("outputTriples");
 		outputs.setAccessible(true);
 
 		// prepare the triples
+		// IRI referent as object
 		String s0 = "http://" + UUID.randomUUID().toString();
 		String p0 = "http://" + UUID.randomUUID().toString();
 		String o0 = UUID.randomUUID().toString();
@@ -346,76 +348,132 @@ public class DerivationOutputsTest {
 
 		String s2 = "http://" + UUID.randomUUID().toString();
 		String p2 = "http://" + UUID.randomUUID().toString();
-		String o2 = UUID.randomUUID().toString();
+		String o2 = "ftp://" + UUID.randomUUID().toString();
 
 		String s3 = "http://" + UUID.randomUUID().toString();
 		String p3 = "http://" + UUID.randomUUID().toString();
-		long o3 = Instant.now().getEpochSecond();
+		String o3 = "file://" + UUID.randomUUID().toString();
 
+		// literal value as object
 		String s4 = "http://" + UUID.randomUUID().toString();
 		String p4 = "http://" + UUID.randomUUID().toString();
-		int o4 = 0;
+		String o4 = UUID.randomUUID().toString();
 
 		String s5 = "http://" + UUID.randomUUID().toString();
 		String p5 = "http://" + UUID.randomUUID().toString();
-		boolean o5 = true;
+		long o5 = Instant.now().getEpochSecond();
 
 		String s6 = "http://" + UUID.randomUUID().toString();
 		String p6 = "http://" + UUID.randomUUID().toString();
-		boolean o6 = false;
+		int o6 = 0;
 
 		String s7 = "http://" + UUID.randomUUID().toString();
 		String p7 = "http://" + UUID.randomUUID().toString();
-		String o7 = "48.13188#11.54965#1379714400";
-		String dataType = "http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon-time";
+		boolean o7 = true;
 
 		String s8 = "http://" + UUID.randomUUID().toString();
 		String p8 = "http://" + UUID.randomUUID().toString();
-		String o8 = "ftp://" + UUID.randomUUID().toString();
+		boolean o8 = false;
 
 		String s9 = "http://" + UUID.randomUUID().toString();
 		String p9 = "http://" + UUID.randomUUID().toString();
-		String o9 = "file://" + UUID.randomUUID().toString();
+		String o9 = "48.13188#11.54965#1379714400";
+		String dataType = "http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon-time";
+
+		String s10 = "http://" + UUID.randomUUID().toString();
+		String p10 = "http://" + UUID.randomUUID().toString();
+		String o10 = "this is a string with space"; // test string with space are correctly handled when adding as literal
+
+		// add literal numbers, including special cases
+		String s11 = "http://" + UUID.randomUUID().toString();
+		String p11 = "http://" + UUID.randomUUID().toString();
+		Double o11 = Double.NaN; // test NaN
+
+		String s12 = "http://" + UUID.randomUUID().toString();
+		String p12 = "http://" + UUID.randomUUID().toString();
+		Double o12 = Double.POSITIVE_INFINITY; // test positive infinity INF
+
+		String s13 = "http://" + UUID.randomUUID().toString();
+		String p13 = "http://" + UUID.randomUUID().toString();
+		Double o13 = Double.NEGATIVE_INFINITY; // test negative infinity -INF
+
+		String s14 = "http://" + UUID.randomUUID().toString();
+		String p14 = "http://" + UUID.randomUUID().toString();
+		Double o14 = 2.3; // test a normal number
 
 		// addTriple(List<TriplePattern>) is tested automatically
-		devOutputs.addTriple(Rdf.iri(s0).has(Rdf.iri(p0), o0));
+		devOutputs.addTriple(Rdf.iri(s0).has(Rdf.iri(p0), Rdf.iri(o0)));
 		devOutputs.addTriple("<" + s1, p1 + ">", o1);
 		devOutputs.addTriple(s2, "<" + p2, o2 + ">");
-		devOutputs.addTriple(s3 + ">", p3, o3);
-		devOutputs.addTriple("<" + s4 + ">", "<" + p4 + ">", o4);
-		devOutputs.addTriple("<" + s5 + ">", "<" + p5 + ">", o5);
-		devOutputs.addTriple(s6 + ">", "<" + p6 + ">", o6);
-		devOutputs.addTriple(s7, p7, o7, dataType);
-		devOutputs.addTriple(s8, "<" + p8, o8 + ">");
-		devOutputs.addTriple(s9, "<" + p9, o9 + ">");
+		devOutputs.addTriple(s3, "<" + p3, o3 + ">");
+
+		// addLiteral
+		devOutputs.addLiteral(s4, "<" + p4 + ">", o4);
+		devOutputs.addLiteral(s5 + ">", p5, o5);
+		devOutputs.addLiteral("<" + s6 + ">", "<" + p6 + ">", o6);
+		devOutputs.addLiteral("<" + s7 + ">", "<" + p7 + ">", o7);
+		devOutputs.addLiteral(s8 + ">", "<" + p8 + ">", o8);
+		devOutputs.addLiteral(s9, p9, o9, dataType);
+		devOutputs.addLiteral(s10, p10, o10);
+		devOutputs.addLiteral(s11, p11, o11);
+		devOutputs.addLiteral(s12, p12, o12);
+		devOutputs.addLiteral(s13, p13, o13);
+		devOutputs.addLiteral(s14, p14, o14);
 
 		List<TriplePattern> triples = (List<TriplePattern>) outputs.get(devOutputs);
 		// the amount of triples added must be correct, also the content must be correct
-		Assert.assertEquals(10, triples.size());
+		Assert.assertEquals(15, triples.size());
 		Assert.assertEquals(formulateTripleString(s0, p0, o0), triples.get(0).getQueryString());
 		Assert.assertEquals(formulateTripleString(s1, p1, o1), triples.get(1).getQueryString());
 		Assert.assertEquals(formulateTripleString(s2, p2, o2), triples.get(2).getQueryString());
 		Assert.assertEquals(formulateTripleString(s3, p3, o3), triples.get(3).getQueryString());
-		Assert.assertEquals(formulateTripleString(s4, p4, o4), triples.get(4).getQueryString());
-		Assert.assertEquals(formulateTripleString(s5, p5, o5), triples.get(5).getQueryString());
-		Assert.assertEquals(formulateTripleString(s6, p6, o6), triples.get(6).getQueryString());
-		Assert.assertEquals(formulateTripleString(s7, p7, o7, dataType), triples.get(7).getQueryString());
-		Assert.assertEquals(formulateTripleString(s8, p8, o8), triples.get(8).getQueryString());
-		Assert.assertEquals(formulateTripleString(s9, p9, o9), triples.get(9).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s4, p4, o4), triples.get(4).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s5, p5, o5), triples.get(5).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s6, p6, o6), triples.get(6).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s7, p7, o7), triples.get(7).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s8, p8, o8), triples.get(8).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s9, p9, o9, dataType), triples.get(9).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s10, p10, o10), triples.get(10).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s11, p11, o11), triples.get(11).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s12, p12, o12), triples.get(12).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s13, p13, o13), triples.get(13).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s14, p14, o14), triples.get(14).getQueryString());
 
 		// test the getter
 		List<TriplePattern> triplesFromGetter = devOutputs.getOutputTriples();
-		Assert.assertEquals(10, triplesFromGetter.size());
+		Assert.assertEquals(15, triplesFromGetter.size());
 		Assert.assertEquals(formulateTripleString(s0, p0, o0), triplesFromGetter.get(0).getQueryString());
 		Assert.assertEquals(formulateTripleString(s1, p1, o1), triplesFromGetter.get(1).getQueryString());
 		Assert.assertEquals(formulateTripleString(s2, p2, o2), triplesFromGetter.get(2).getQueryString());
 		Assert.assertEquals(formulateTripleString(s3, p3, o3), triplesFromGetter.get(3).getQueryString());
-		Assert.assertEquals(formulateTripleString(s4, p4, o4), triplesFromGetter.get(4).getQueryString());
-		Assert.assertEquals(formulateTripleString(s5, p5, o5), triplesFromGetter.get(5).getQueryString());
-		Assert.assertEquals(formulateTripleString(s6, p6, o6), triplesFromGetter.get(6).getQueryString());
-		Assert.assertEquals(formulateTripleString(s7, p7, o7, dataType), triplesFromGetter.get(7).getQueryString());
-		Assert.assertEquals(formulateTripleString(s8, p8, o8), triplesFromGetter.get(8).getQueryString());
-		Assert.assertEquals(formulateTripleString(s9, p9, o9), triplesFromGetter.get(9).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s4, p4, o4), triplesFromGetter.get(4).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s5, p5, o5), triplesFromGetter.get(5).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s6, p6, o6), triplesFromGetter.get(6).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s7, p7, o7), triplesFromGetter.get(7).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s8, p8, o8), triplesFromGetter.get(8).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s9, p9, o9, dataType), triplesFromGetter.get(9).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s10, p10, o10), triplesFromGetter.get(10).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s11, p11, o11), triplesFromGetter.get(11).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s12, p12, o12), triplesFromGetter.get(12).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s13, p13, o13), triplesFromGetter.get(13).getQueryString());
+		Assert.assertEquals(formulateLiteralTripleString(s14, p14, o14), triplesFromGetter.get(14).getQueryString());
+
+		// now we add triples/literals that with invalid IRIs
+		// should throw an error
+		String sInvalidIRI = "http://" + "this string contains space therefore invalid" + UUID.randomUUID().toString();
+		String pInvalidIRI = "http://" + "this string contains space therefore invalid" + UUID.randomUUID().toString();
+		String oInvalidIRI = "http://" + "this string contains space therefore invalid" + UUID.randomUUID().toString();
+		JPSRuntimeException e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devOutputs.addTriple(sInvalidIRI, pInvalidIRI, oInvalidIRI));
+		Assert.assertTrue(e.getMessage()
+				.contains(DerivationOutputs.INVALID_IRI_FOR_ADDING_TRIPLE));
+		e = Assert.assertThrows(JPSRuntimeException.class,
+				() -> devOutputs.addLiteral(sInvalidIRI, pInvalidIRI, oInvalidIRI));
+		Assert.assertTrue(e.getMessage()
+				.contains(DerivationOutputs.INVALID_IRI_FOR_ADDING_LITERAL));
+
+		// if the subject and preficate are valid, then it should be able to be added as literal even the object is not valid IRI
+		devOutputs.addLiteral(sInvalidIRI.replace(" ", ""), pInvalidIRI.replace(" ", ""), oInvalidIRI);
 	}
 
 	@Test
@@ -510,15 +568,29 @@ public class DerivationOutputsTest {
 		return a.equals(b);
 	}
 
-	public String formulateTripleString(String s, String p, Object o) throws Exception {
+	public String formulateTripleString(String s, String p, String o) {
+		return "<" + s + "> <" + p + "> <" + o + "> .";
+	}
+
+	public String formulateLiteralTripleString(String s, String p, Object o) {
 		if (o instanceof String) {
-			if (new URI((String) o).isAbsolute()) {
-				return "<" + s + "> <" + p + "> <" + o + "> .";
-			} else {
-				return "<" + s + "> <" + p + "> \"" + o + "\" .";
-			}
+			return "<" + s + "> <" + p + "> \"" + o + "\" .";
 		} else if (o instanceof Number) {
-			return "<" + s + "> <" + p + "> " + o + " .";
+			if (o instanceof Double) {
+				if (((Double) o).isInfinite()) {
+					if (((Double) o) > 0) {
+						return "<" + s + "> <" + p + "> \"Infinity\"^^<" + XSD.DOUBLE.toString() + "> .";
+					} else {
+						return "<" + s + "> <" + p + "> \"-Infinity\"^^<" + XSD.DOUBLE.toString() + "> .";
+					}
+				} else if (((Double) o).isNaN()) {
+					return "<" + s + "> <" + p + "> \"NaN\"^^<" + XSD.DOUBLE.toString() + "> .";
+				} else {
+					return "<" + s + "> <" + p + "> " + o + " .";
+				}
+			} else {
+				return "<" + s + "> <" + p + "> " + o + " .";
+			}
 		} else if (o instanceof Boolean) {
 			return "<" + s + "> <" + p + "> " + String.valueOf(o) + " .";
 		} else {
@@ -526,7 +598,7 @@ public class DerivationOutputsTest {
 		}
 	}
 
-	public String formulateTripleString(String s, String p, String o, String dataType) {
+	public String formulateLiteralTripleString(String s, String p, String o, String dataType) {
 		return "<" + s + "> <" + p + "> \"" + o + "\"^^<" + dataType + "> .";
 	}
 }

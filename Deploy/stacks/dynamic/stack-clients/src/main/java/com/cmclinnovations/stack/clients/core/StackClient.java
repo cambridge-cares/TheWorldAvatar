@@ -1,18 +1,12 @@
 package com.cmclinnovations.stack.clients.core;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Map;
-import java.util.stream.Stream;
-
-import com.cmclinnovations.stack.clients.core.datasets.Dataset;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public final class StackClient {
 
     public static final String STACK_NAME_KEY = "STACK_NAME";
     public static final String STACK_NAME_LABEL = "com.docker.stack.namespace";
+    public static final String PROJECT_NAME_LABEL = "com.docker.compose.project";
     public static final String SCRATCH_DIR = "/stack_scratch";
     public static final String GEOTIFFS_DIR = "/geotiffs";
 
@@ -26,7 +20,7 @@ public final class StackClient {
         String envVarStackName = System.getenv(StackClient.STACK_NAME_KEY);
         stackName = (null != envVarStackName) ? envVarStackName : "Test_Stack";
 
-        stackNameLabelMap = Map.of(STACK_NAME_LABEL, stackName);
+        stackNameLabelMap = Map.of(STACK_NAME_LABEL, stackName, PROJECT_NAME_LABEL, stackName);
     }
 
     private StackClient() {
@@ -52,26 +46,8 @@ public final class StackClient {
         StackClient.inStack = inStack;
     }
 
-    public static void uploadInputDatasets() {
-        try (Stream<Path> files = Files.list(Path.of("/inputs/config"))) {
-            files.filter(Files::isRegularFile)
-                    .filter(path -> path.toString().endsWith(".json"))
-                    .forEach(StackClient::uploadInputDataset);
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to read in dataset config file(s).", ex);
-        }
-    }
-
-    public static void uploadInputDataset(Path configFile) {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        try {
-            Dataset dataset = objectMapper.readValue(configFile.toFile(), Dataset.class);
-            dataset.loadData();
-        } catch (IOException ex) {
-            throw new RuntimeException("Failed to read in dataset config file '" + configFile + "'.", ex);
-        }
+    public static String getContainerEngineName() {
+        return System.getenv().getOrDefault("EXECUTABLE", "docker");
     }
 
 }

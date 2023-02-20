@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.derivation.asynexample;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.http.client.ClientProtocolException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -27,7 +25,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  */
 @WebServlet(urlPatterns = { InitialiseInstances.API_PATTERN_1, InitialiseInstances.API_PATTERN_2,
 		InitialiseInstances.API_PATTERN_3, InitialiseInstances.API_PATTERN_4, InitialiseInstances.API_PATTERN_5,
-		InitialiseInstances.API_PATTERN_6 })
+		InitialiseInstances.API_PATTERN_6, InitialiseInstances.API_PATTERN_EXC_THROW })
 public class InitialiseInstances extends JPSAgent {
 
 	private static final long serialVersionUID = 1L;
@@ -40,6 +38,7 @@ public class InitialiseInstances extends JPSAgent {
 	static final String API_PATTERN_4 = "/InitialiseInstances_4";
 	static final String API_PATTERN_5 = "/InitialiseInstances_5";
 	static final String API_PATTERN_6 = "/InitialiseInstances_6";
+	static final String API_PATTERN_EXC_THROW = "/InitialiseInstances_ExceptionThrow";
 
 	public static final int upper_limit_value = 20;
 	public static final int lower_limit_value = 3;
@@ -56,6 +55,8 @@ public class InitialiseInstances extends JPSAgent {
 	public static final String max_dev_key = "MaxValue Derivation";
 	public static final String min_dev_key = "MinValue Derivation";
 	public static final String diff_dev_key = "Difference Derivation";
+	public static final String input_placeholder_exc_throw_key = "InputPlaceholderExceptionThrow instance";
+	public static final String output_placeholder_exc_throw_key = "OutputPlaceholderExceptionThrow instance";
 
 	private static final String PATTERN_NOT_SUPPORTED_KEY = "Pattern not supported";
 
@@ -68,38 +69,40 @@ public class InitialiseInstances extends JPSAgent {
 
 		JSONObject response = new JSONObject();
 		String path = request.getServletPath();
-		try {
-			switch (path) {
-				case API_PATTERN_1:
-					response = initialise1(sparqlClient, devClient);
-					break;
-				case API_PATTERN_2:
-					response = initialise2(sparqlClient, devClient);
-					break;
-				case API_PATTERN_3:
-					response = initialise3(sparqlClient, devClient);
-					break;
-				case API_PATTERN_4:
-					response = initialise4(sparqlClient, devClient);
-					break;
-				case API_PATTERN_5:
-					response = initialise5(sparqlClient, devClient);
-					break;
-				case API_PATTERN_6:
-					response = initialise6(sparqlClient, devClient);
-					break;
-				default:
-					response.put(PATTERN_NOT_SUPPORTED_KEY, "Servlet pattern NOT supported.");
-			}
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		switch (path) {
+			case API_PATTERN_1:
+				response = initialise1(sparqlClient, devClient);
+				break;
+			case API_PATTERN_2:
+				response = initialise2(sparqlClient, devClient);
+				break;
+			case API_PATTERN_3:
+				response = initialise3(sparqlClient, devClient);
+				break;
+			case API_PATTERN_4:
+				response = initialise4(sparqlClient, devClient);
+				break;
+			case API_PATTERN_5:
+				response = initialise5(sparqlClient, devClient);
+				break;
+			case API_PATTERN_6:
+				response = initialise6(sparqlClient, devClient);
+				break;
+			case API_PATTERN_EXC_THROW:
+				response = initialiseExceptionThrow(sparqlClient, devClient);
+				break;
+			default:
+				response.put(PATTERN_NOT_SUPPORTED_KEY, "Servlet pattern NOT supported.");
 		}
 
 		// check all connections between all derivations
 		// the method validateDerivations() validates all derivations in the KG
-		LOGGER.info(
-				"Validating derivations: " + response.getString(rng_dev_key) + ", " + response.getString(max_dev_key)
-						+ ", " + response.getString(min_dev_key) + ", and " + response.getString(diff_dev_key));
+		if (!path.contentEquals(API_PATTERN_EXC_THROW)) {
+			// only log if it's not API_PATTERN_EXC_THROW
+			LOGGER.info("Validating derivations: " + response.getString(rng_dev_key) + ", " + response.getString(max_dev_key)
+					+ ", " + response.getString(min_dev_key) + ", and " + response.getString(diff_dev_key));
+		}
+
 		try {
 			devClient.validateDerivations();
 			LOGGER.info("Validated chain of derivations successfully");
@@ -112,38 +115,55 @@ public class InitialiseInstances extends JPSAgent {
 		return response;
 	}
 
-	JSONObject initialise1(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise1(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, true, true, true, true);
 	}
 
-	JSONObject initialise2(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise2(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, true, true, true, false);
 	}
 
-	JSONObject initialise3(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise3(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, true, false, true, false);
 	}
 
-	JSONObject initialise4(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise4(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, true, true, false, false);
 	}
 
-	JSONObject initialise5(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise5(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, true, false, false, false);
 	}
 
-	JSONObject initialise6(SparqlClient sparqlClient, DerivationClient devClient)
-			throws ClientProtocolException, IOException {
+	JSONObject initialise6(SparqlClient sparqlClient, DerivationClient devClient) {
 		return basicInitialisation(sparqlClient, devClient, false, false, false, false);
 	}
 
+	JSONObject initialiseExceptionThrow(SparqlClient sparqlClient, DerivationClient devClient) {
+		JSONObject response = new JSONObject();
+
+		// clear KG when initialising
+		LOGGER.info("Initialising new instances, all existing instances will get deleted");
+		sparqlClient.clearKG();
+
+		// get the IRIs
+		String inputPlaceholderRdfType = SparqlClient.getRdfTypeString(SparqlClient.InputPlaceholderExceptionThrow);
+		String outputPlaceholderRdfType = SparqlClient.getRdfTypeString(SparqlClient.OutputPlaceholderExceptionThrow);
+
+		// create ontoagent instances
+		devClient.createOntoAgentInstance(Config.agentIriExceptionThrow, Config.agentHttpUrlExceptionThrow,
+				Arrays.asList(inputPlaceholderRdfType), Arrays.asList(outputPlaceholderRdfType));
+
+		// create upperlimit, lowerlimit, numberofpoints
+		String inputPlaceholder = sparqlClient.createInputPlaceholderExceptionThrow();
+		LOGGER.info("Created InputPlaceholderExceptionThrow instance <" + inputPlaceholder + ">");
+		response.put(input_placeholder_exc_throw_key, inputPlaceholder);
+
+		return response;
+	}
+
 	JSONObject basicInitialisation(SparqlClient sparqlClient, DerivationClient devClient, boolean listPt, boolean max,
-			boolean min, boolean diff) throws ClientProtocolException, IOException {
+			boolean min, boolean diff) {
 		JSONObject response = new JSONObject();
 
 		// clear KG when initialising
@@ -158,36 +178,33 @@ public class InitialiseInstances extends JPSAgent {
 		String maxv_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.MaxValue);
 		String minv_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.MinValue);
 		String diff_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.Difference);
+		String diff_reverse_rdf_type = SparqlClient.getRdfTypeString(SparqlClient.DifferenceReverse);
 
 		// create ontoagent instances
-		sparqlClient.createOntoAgentInstance(Config.agentIriRNG, Config.agentHttpUrlRNG,
+		devClient.createOntoAgentInstance(Config.agentIriRNG, Config.agentHttpUrlRNG,
 				Arrays.asList(ul_rdf_type, ll_rdf_type, np_rdf_type), Arrays.asList(lp_rdf_type));
-		sparqlClient.createOntoAgentInstance(Config.agentIriMaxValue, Config.agentHttpUrlMaxValue,
+		devClient.createOntoAgentInstance(Config.agentIriMaxValue, Config.agentHttpUrlMaxValue,
 				Arrays.asList(lp_rdf_type), Arrays.asList(maxv_rdf_type));
-		sparqlClient.createOntoAgentInstance(Config.agentIriMinValue, Config.agentHttpUrlMinValue,
+		devClient.createOntoAgentInstance(Config.agentIriMinValue, Config.agentHttpUrlMinValue,
 				Arrays.asList(lp_rdf_type), Arrays.asList(minv_rdf_type));
-		sparqlClient.createOntoAgentInstance(Config.agentIriDifference, Config.agentHttpUrlDifference,
+		devClient.createOntoAgentInstance(Config.agentIriDifference, Config.agentHttpUrlDifference,
 				Arrays.asList(maxv_rdf_type, minv_rdf_type), Arrays.asList(diff_rdf_type));
+		devClient.createOntoAgentInstance(Config.agentIriDiffReverse, Config.agentHttpUrlDiffReverse,
+				Arrays.asList(maxv_rdf_type, minv_rdf_type), Arrays.asList(diff_reverse_rdf_type));
 
 		// create upperlimit, lowerlimit, numberofpoints
 		String upperLimit = sparqlClient.createUpperLimit();
 		String ul_value = sparqlClient.addValueInstance(upperLimit, upper_limit_value);
-		devClient.addTimeInstance(upperLimit);
-		devClient.updateTimestamp(upperLimit);
 		LOGGER.info("Created UpperLimit instance <" + upperLimit + ">");
 		response.put(upper_limit_instance_key, upperLimit);
 
 		String lowerLimit = sparqlClient.createLowerLimit();
 		String ll_value = sparqlClient.addValueInstance(lowerLimit, lower_limit_value);
-		devClient.addTimeInstance(lowerLimit);
-		devClient.updateTimestamp(lowerLimit);
 		LOGGER.info("Created LowerLimit instance <" + lowerLimit + ">");
 		response.put(lower_limit_instance_key, lowerLimit);
 
 		String numOfPoints = sparqlClient.createNumberOfPoints();
 		String np_value = sparqlClient.addValueInstance(numOfPoints, number_of_points);
-		devClient.addTimeInstance(numOfPoints);
-		devClient.updateTimestamp(numOfPoints);
 		LOGGER.info("Created NumberOfPoints instance <" + numOfPoints + ">");
 		response.put(num_of_pts_instance_key, numOfPoints);
 

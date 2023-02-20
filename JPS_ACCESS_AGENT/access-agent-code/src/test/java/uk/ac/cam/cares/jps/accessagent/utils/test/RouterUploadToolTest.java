@@ -85,8 +85,8 @@ class RouterUploadToolTest {
 				+"<http://www.w3.org/2000/01/rdf-schema#label>"
 				+"\""+label1+"\".}";
 		
-		UpdateBuilder update = uploader.createInsertTriplesUpdate(label1,RouterUploadTestHelper.getEndpoint(label1),RouterUploadTestHelper.getEndpoint(label1));
-		String result = update.build().toString();
+		UpdateBuilder updateBuilder = uploader.createInsertTriplesUpdate(label1,RouterUploadTestHelper.getEndpoint(label1),RouterUploadTestHelper.getEndpoint(label1));
+		String result = updateBuilder.buildRequest().toString();
 		
 		assertEquals(RouterUploadTestHelper.removeWhiteSpace(expected),RouterUploadTestHelper.removeWhiteSpace(result));
 	}
