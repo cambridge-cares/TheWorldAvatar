@@ -7,7 +7,7 @@ chemistry_and_robots==1.3.0
 ##########################
 ## Third-party packages ##
 ##########################
-summit==0.8.7
+summit==0.8.9
 pandas==1.3.5
 pydantic==1.9.0
 testcontainers==3.4.2
