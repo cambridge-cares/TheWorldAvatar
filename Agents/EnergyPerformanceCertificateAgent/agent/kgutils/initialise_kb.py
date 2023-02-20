@@ -12,7 +12,7 @@ import requests
 from py4jps import agentlogging
 
 from agent.datamodel.iris import *
-from agent.datamodel.data_mapping import GBP, GBP_PER_SM, METRE, METRE_SQ
+from agent.datamodel.data_mapping import GBP, GBP_PER_SM, METRE, METRE_SQ, ABOX
 from agent.errorhandling.exceptions import KGException
 from agent.kgutils.javagateway import jpsBaseLibGW
 from agent.kgutils.kgclient import KGClient
@@ -87,6 +87,18 @@ def instantiate_all_units():
     return query
 
 
+def instantiate_abox():
+    """
+        Return SPARQL update to instantiate all recurring built forms and property types
+    """
+    triples = ''
+    for key, item in ABOX.items():
+        triples += f'<{item}> <{RDF_TYPE}> <{key}> . '
+    query = f"INSERT DATA {{ {triples} }} "
+
+    return query
+
+
 def upload_ontology():
     """
         Uploads TBox from github and all units KG namespace
@@ -142,4 +154,13 @@ def upload_ontology():
         except Exception as ex:
             logger.error("Unable to initialise all units in KG.")
             raise KGException("Unable to initialise all units in KG.") from ex
+
+        # Upload recurring built forms and property types to KG
+        logger.info('Instantiating recurring types ...')
+        query = instantiate_abox()
+        try:
+            kg_client.performUpdate(query)
+        except Exception as ex:
+            logger.error("Unable to instantiate recurring types.")
+            raise KGException("Unable to instantiate recurring types.") from ex
 

@@ -15,6 +15,19 @@ GBP = '£'
 METRE = 'm'
 METRE_SQ = 'm2'
 
+# Create IRIs for recurring property types and built forms
+ABOX_UUID = '_b5997912-1035-4284-ad40-cde44e438485'
+ABOX = {# Built forms
+        OBE_DETACHED: OBE_DETACHED + ABOX_UUID,
+        OBE_SEMI_DETACHED : OBE_SEMI_DETACHED + ABOX_UUID,
+        OBE_TERRACED: OBE_TERRACED + ABOX_UUID,
+        # Property types
+        OBE_HOUSE: OBE_HOUSE + ABOX_UUID,
+        OBE_BUNGALOW: OBE_BUNGALOW + ABOX_UUID,
+        OBE_PARKHOME: OBE_PARKHOME + ABOX_UUID,
+        OBE_MAISONETTE: OBE_MAISONETTE + ABOX_UUID,
+}
+
 # Mapping of EPC data keys: {key from api : key mapping}
 EPC_KEYS = {
     ### Domestic EPC data
