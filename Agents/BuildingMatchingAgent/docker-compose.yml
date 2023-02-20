@@ -1,17 +1,9 @@
 version: "3.8"
 
 services:
-  java_agent_eg:
+  building_matching_agent:
     image: building_matching_agent:1.0.0
     build: .
     container_name: building_matching_agent
     ports:
       - "58085:8080"
-
-    volumes:
-      - external_maven_repo:/root/.m2
-
-
-volumes:
-  external_maven_repo:
-    name: "external_maven_repo"
