@@ -2,18 +2,19 @@ version: '3.8'
 
 services:
   # Blazegraph
-  blazegraph:
+  blazegraph_agent_test:
     image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
-    container_name: "blazegraph_dape_test"
+    container_name: blazegraph_agent_test
     ports:
       - 27149:8080
-    environment:
-      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
-    # Add a secret to set the password for BASIC authentication
-    secrets:
-      - blazegraph_password
 
-# Secrets used to set runtime passwords
-secrets:
-  blazegraph_password:
-    file: ./tests/dummy_services_secrets/blazegraph_passwd.txt
+  # PostgreSQL
+  postgres_agent_test:
+    container_name: postgres_agent_test
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    image: postgres:13.3
+    restart: unless-stopped
+    ports:
+      - 7432:5432

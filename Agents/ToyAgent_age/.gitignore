@@ -1,20 +1,18 @@
-*.jar
-*.war
-
-*.pyc
 __pycache__/
 .mypy_cache/
+.pytest_cache
 build/
 dist/
 *~*
+.vscode/
 .idea/
 *venv/
+coverage.xml
+.coverage
+*.gv
+*.png
+assets
 
-.vscode/
-
-# Miscellaneous files/folders:
-.pytest_cache
+## User defined
+*.egg-info
 *.env
-
-# email_auth
-email_auth.json

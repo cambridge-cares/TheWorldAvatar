@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  toyagent:
+    build:
+      context: .
+      target: prod
+      args:
+        # Build argument used to construct paths in Dockerfile (needs to match name in setup.py)
+        agentdir: toyagent

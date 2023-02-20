@@ -1,17 +1,13 @@
-# Install the Derivation Agent Python Example in Docker container
-# This Dockerfile has been adapted from the VS Code example at https://code.visualstudio.com/docs/containers/quickstart-python
+# Install the Property Market Value Estimation Agent in Docker container
 #==================================================================================================
 
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
-# Base image is a lightweight version of Python
-FROM python:3.8-slim-buster as base
-
+FROM python:3.9.14-slim-buster as base
 # Meta data
-# NOTE change the label to your email and description
-LABEL authors = "jx309@cam.ac.uk"
-LABEL description = "A simple toy agent to calculate the age based on birthday."
+LABEL authors = "mh807@cam.ac.uk"
+LABEL description = "Assess market value estimate for instantiated properties (i.e. buildings, flats)."
 
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -19,25 +15,12 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 # Install required software: git and openjdk-11
-USER root
-RUN apt update && apt install -y git openjdk-11-jdk-headless
+RUN apt update && apt install -y openjdk-11-jdk-headless git
 
-# Expose the port on which our server will run
-EXPOSE 5000
+# Copy stack-clients resource to be wrapped by py4jps
+COPY ./tmp_stack ./tmp_stack
 
-# Install the required Python libraries
-COPY requirements.txt .
-RUN python -m pip install -r requirements.txt
-
-# # Re-install the version of JPS_BASE_LIB that is been developing
-# # (this will be required if the new features are not merged back to main)
-# RUN jpsrm uninstall JpsBaseLib
-# RUN mkdir /jpstemp
-# COPY /_temp/jps-base-lib.jar ./jpstemp/jps-base-lib.jar
-# COPY /_temp/lib ./jpstemp/lib
-# RUN jpsrm install JpsBaseLib ./jpstemp/
-
-# Set the default working directory, then copy files for python package install
+# Set the default working directory & copy files to install Python
 WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
@@ -51,45 +34,58 @@ ENV AGENTDIR=${agentdir}
 RUN python -m pip install --upgrade pip
 RUN python -m pip install -e .
 
+# Add StackClients py4jps resources
+RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
+    jpsrm install StackClients ../tmp_stack --jar $stack_clients_jar
+
+# Expose port
+EXPOSE 5000
+
+#------------------------------------------------------
+# Debugging image reusing the base
+#------------------------------------------------------
+FROM base as debug
+# Install additional dependencies for debugging
+RUN pip install debugpy
+
+# Set flask app and development environment to allow for hot-reloading
+ENV FLASK_APP=app/${AGENTDIR}:create_app()
+ENV FLASK_DEBUG=1
+
+# Launch application in container
+WORKDIR /app/$AGENTDIR
+ENTRYPOINT python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
+
 
 #------------------------------------------------------
 # Production image reusing the base
 #------------------------------------------------------
 FROM base as prod
+# Install additional dependencies
+RUN pip install gunicorn
 
-# Set the default working directory, then copy the Python source code into it
-# As here folder path is generic, it is not required to change the name
+# Copy required source code (as code is not attached as volume)
 WORKDIR /app
 COPY ./$AGENTDIR ./$AGENTDIR
 
-# Switch to a non-root user before running the server, for security reasons
-# (See https://code.visualstudio.com/docs/containers/python-user-rights)
-RUN useradd appuser && chown -R appuser /app
-
-# Creating the user doesn't create their home directory for some reason, so create it now
-RUN mkdir /home/appuser
-RUN chown -R appuser:appuser /home/appuser
-RUN chmod -R 755 /home/appuser
-
-# Start the gunicorn server on port 5000, using a Flask object called 'app' imported from the agent module
-# Note that port 5000 is *inside the container*; this can be mapped to a port on the host when running the container on the command line or in docker-compose.yml
-USER appuser
+# Set the entrypoint
+# Use shell form to enable variable substitution (https://stackoverflow.com/a/37904830)
 ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "${AGENTDIR}:create_app()"
 
 
 #------------------------------------------------------
 # Debug testing image reusing the base
 #------------------------------------------------------
-FROM base as test_dockerised_debug
+FROM base as debug_test
 # Install additional dependencies
+RUN apt-get update
+RUN apt install libpq-dev python3-dev gcc -y
 RUN python -m pip install -e .[dev]
 RUN pip install debugpy
 
 # Set flask app and development environment to allow for hot-reloading
 ENV FLASK_APP=app/${AGENTDIR}:create_app()
 ENV FLASK_DEBUG=1
-# Set the environment variable DOCKERISED_TEST as true to enable dockerised testing
-ENV DOCKERISED_TEST=true
 
 # Copy docker-compose-file to spin up testcontainers (agent code and tests are mounted as volumes)
 COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
@@ -98,30 +94,41 @@ COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
 WORKDIR /app
 # Start dockerised agent app as well as pytest
 # (combining commands using & ensures they are started in parallel in background)
-CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000 & pytest -s
-
+#CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000 & pytest -s
+CMD python -m debugpy --listen 0.0.0.0:5678 -m flask run -h 0.0.0.0 -p 5000 & pytest -s
 
 #------------------------------------------------------
 # Testing image reusing the base
 #------------------------------------------------------
-FROM base as test_dockerised
-
-# Install agent package as editable
+FROM base as test
+# Install additional dependencies
+RUN apt-get update
+RUN apt install libpq-dev python3-dev gcc -y
 RUN python -m pip install -e .[dev]
+RUN pip install gunicorn
 
-# Set the default working directory, then copy the Python source code into it
-# As here folder path is generic, it is not required to change the name
+# Copy required source code (as code is not attached as volume)
 WORKDIR /app
 COPY ./$AGENTDIR ./$AGENTDIR
 COPY ./tests ./tests
 # Copy docker-compose-file to spin up testcontainers
 COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
 
-# Set the environment variable DOCKERISED_TEST as true to enable dockerised testing
-ENV DOCKERISED_TEST=true
+# Ensure SPARQL endpoints contain 'host.docker.internal' instead of 'localhost' for dockerised agent tests
+RUN sed -i "s|localhost|host.docker.internal|g" ./tests/mockutils/env_configs_mock.py
+RUN sed -i "s|localhost|host.docker.internal|g" ./tests/mockutils/stack_configs_mock.py
+# Ensure flag for Dockerised tests is set to True
+RUN sed -i "s|False|True|g" ./tests/mockutils/env_configs_mock.py
+
+# Overwrite/Mock all stack interactions with pre-defined settings from testing Docker stack
+RUN cp ./tests/mockutils/env_configs_mock.py ./$AGENTDIR/utils/env_configs.py
+RUN cp ./tests/mockutils/stack_configs_mock.py ./$AGENTDIR/utils/stack_configs.py
+# Adjust relative import statement
+RUN sed -i "s|env_configs_mock|env_configs |g" ./$AGENTDIR/utils/stack_configs.py
 
 # Start dockerised agent app as well as pytest
 # (combining commands using & ensures they are started in parallel in background)
 CMD gunicorn --bind 0.0.0.0:5000 "${AGENTDIR}:create_app()" & pytest
+
 
 #==================================================================================================

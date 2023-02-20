@@ -1,35 +1,34 @@
 from setuptools import setup, find_namespace_packages
 
-# This file is used to install the agent as a python package
-# For more information, see https://docs.python.org/3/distutils/setupscript.html
-
 setup(
-    # NOTE Ideally, the package name should be the same as the name of the directory containing source codes
-    # NOTE Avoid using hyphens in the package name, as it will cause problems when importing the package
-    # NOTE Make package name to be specific enough to avoid name conflicts with other packages
-    name='derivationagentpythonexample',
+    name='propertyvalueestimation',
     version='0.0.1',
-    author='Jiaru Bai',
-    author_email='jb2197@cam.ac.uk',
+    author='Markus Hofmeister',
+    author_email='mh807@cam.ac.uk',
     license='MIT',
     python_requires='>=3.8',
-    description="derivationagentpythonexample is an example of derivation agent in python as part of The World Avatar project.",
-    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/DerivationAgentPythonExample",
+    description="The `propertyvalueestimation` agent calculates the latest market value estimation for a particular property and populates the result to knowledge graph as part of The World Avatar project.",
+    url="https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-PropertyValueEstimationAgent/Agents/PropertyValueEstimationAgent",
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
-    # NOTE find_namespace_packages() is recommended for all python3 projects
     packages=find_namespace_packages(exclude=['tests','tests.*']),
-    # NOTE install_requires is used to specify the dependencies of the package, their versions should be kept as loose as possible
-    # NOTE The dependencies should be specified in the requirements.txt file, see README.md for more information
-    install_requires=['pyderivationagent>=1.4.1', 'pydantic==1.9.0'],
+    include_package_data=True,
+    install_requires= [
+        'flask==2.1.0',
+        'JayDeBeApi==1.2.3',
+        'pandas==1.5.1',
+        'py4jps==1.0.29', 
+        'requests==2.28.1',
+        'pyderivationagent==1.4.1'
+    ],
     extras_require={
         "dev": [
-            "testcontainers>=3.4.2",
-            "pytest>=6.2.3",
-            "pytest-docker-compose>=3.2.1",
-            "pytest-rerunfailures>=10.2"
+            "testcontainers==3.7.0",
+            "pytest==7.2.0",
+            "pytest-docker-compose==3.2.1",
+            "pytest-rerunfailures==10.2",
+            "pytest-mock==3.10.0",
+            "psycopg2==2.9.5"
         ],
-    },
-    # NOTE use include_package_data to include non-python files in the package, this should be used with MANIFEST.in and find_namespace_packages() above
-    include_package_data=True
+    }
 )

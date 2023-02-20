@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  toyagent:
-    image: ghcr.io/cambridge-cares/toyagent:1.0.0-SNAPSHOT
+  propertyvalue_agent:
+    image: ghcr.io/cambridge-cares/propertyvalue_agent:1.0.0-SNAPSHOT
     environment:
       #--- Stack & Stack Client parameters ---#
       - STACK_NAME=${STACK_NAME}
