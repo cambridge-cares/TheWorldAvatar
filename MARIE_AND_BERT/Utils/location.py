@@ -18,5 +18,5 @@ DATA_DIR = os.path.join(ROOT_DIR, 'DATA')
 DATASET_DIR = os.path.join(ROOT_DIR, r'Dataset')
 PUBCHEMMEDIUM_PATH = os.path.join(DATASET_DIR, r'PubChemMedium')
 RESULT_DIR = os.path.join(PUBCHEMMEDIUM_PATH, r'results/TransE')
-
+TOKENIZER_DIR = os.path.join(ROOT_DIR, r'tokenizerFast')
 print(RESULT_DIR)
