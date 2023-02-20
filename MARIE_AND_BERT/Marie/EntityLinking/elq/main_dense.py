@@ -616,6 +616,7 @@ def display_metrics(
 def load_models(args, logger):
     # load biencoder model
     if logger: logger.info("Loading biencoder model")
+    else: print("Loading biencoder model")
     try:
         with open(args.biencoder_config) as json_file:
             biencoder_params = json.load(json_file)
@@ -645,7 +646,7 @@ def load_models(args, logger):
 
     # load candidate entities
     if logger: logger.info("Loading candidate entities")
-
+    else: print("Loading candidate entities")
     (
         candidate_encoding,
         indexer,

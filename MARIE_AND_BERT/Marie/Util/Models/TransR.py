@@ -94,19 +94,19 @@ class TransR(nn.Module):
         return embeddings
 
     def forward(self, pos_triples, neg_triples, mode="non_numerical"):
-        pos_triples = pos_triples.cuda()
-        neg_triples = neg_triples.cuda()
-        dist_pos = self.distance(pos_triples).cuda()
-        dist_neg = self.distance(neg_triples).cuda()
+        pos_triples = pos_triples.to(self.device)
+        neg_triples = neg_triples.to(self.device)
+        dist_pos = self.distance(pos_triples).to(self.device)
+        dist_neg = self.distance(neg_triples).to(self.device)
         if mode == "non_numerical":
-            return self.loss(dist_pos, dist_neg).mean().cuda()
+            return self.loss(dist_pos, dist_neg).mean().to(self.device)
         else:
             numerical_loss = self.numerical_forward(
-                pos_triples.cuda()).cuda()  # numerical loss only requires pos triples
+                pos_triples.to(self.device)).to(self.device)  # numerical loss only requires pos triples
             # return (1 - self.alpha) * self.loss(dist_pos, dist_neg).mean() + self.alpha * numerical_loss
             # return self.alpha * numerical_loss
             # return torch.clamp(numerical_loss, max=10)
-            return numerical_loss.cuda()
+            return numerical_loss.to(self.device)
 
     def numerical_predict(self, triples):
         true_value = triples[2].to(self.device) / 1000
@@ -269,19 +269,19 @@ class TransR(nn.Module):
         return (projected_e_h + r - projected_e_t).norm(p=2, dim=-1).to(self.device)
 
 
-if __name__ == '__main__':
-    train_triplets = [line.split('\t') for line in
-                      open(os.path.join(DATA_DIR, 'pubchem100-train.txt')).read().splitlines()]
-
-    test_triplets = [line.split('\t') for line in
-                     open(os.path.join(DATA_DIR, 'pubchem100-test.txt')).read().splitlines()]
-
-    train_set = Dataset(train_triplets)
-    test_set = Dataset(test_triplets)
-    rel_dim = 50
-    ent_dim = 50
-    rel_num = train_set.rel_num
-    ent_num = train_set.ent_num
-    model = TransR(rel_dim, rel_num, ent_dim, ent_num)
-    my_trainer = Trainer(model=model, dataset_name='pubchem100', epochs=5000, learning_rate=0.00001)
-    my_trainer.train()
+# if __name__ == '__main__':
+#     train_triplets = [line.split('\t') for line in
+#                       open(os.path.join(DATA_DIR, 'pubchem100-train.txt')).read().splitlines()]
+#
+#     test_triplets = [line.split('\t') for line in
+#                      open(os.path.join(DATA_DIR, 'pubchem100-test.txt')).read().splitlines()]
+#
+#     train_set = Dataset(train_triplets)
+#     test_set = Dataset(test_triplets)
+#     rel_dim = 50
+#     ent_dim = 50
+#     rel_num = train_set.rel_num
+#     ent_num = train_set.ent_num
+#     model = TransR(rel_dim, rel_num, ent_dim, ent_num)
+#     my_trainer = Trainer(model=model, dataset_name='pubchem100', epochs=5000, learning_rate=0.00001)
+#     my_trainer.train()

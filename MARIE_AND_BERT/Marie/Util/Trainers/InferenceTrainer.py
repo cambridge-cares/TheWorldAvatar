@@ -80,7 +80,7 @@ class InferenceTrainer:
         df_test = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-test.txt"), sep="\t", header=None)
         self.file_loader = FileLoader(full_dataset_dir=self.full_dataset_dir, dataset_name=self.ontology)
         self.entity2idx, self.idx2entity, self.rel2idx, self.idx2rel = self.file_loader.load_index_files()
-        
+
         if inference:
             df_numerical = pd.read_csv(os.path.join(full_dir, f"numerical_eval.tsv"), sep="\t", header=None)
 
@@ -108,7 +108,7 @@ class InferenceTrainer:
                 test_set = TransRInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
                                                 ontology=self.ontology,
                                                 mode="test")
-            
+
             train_set_small = TransRInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
                                                  ontology=self.ontology,
                                                  mode="train")
@@ -141,7 +141,7 @@ class InferenceTrainer:
                                                                  batch_size=len(self.entity2idx.keys()),
                                                                  shuffle=False)
             self.test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=len(self.entity2idx.keys()), shuffle=False)
-        # =========================================================================================================    
+        # =========================================================================================================
         self.use_cuda = torch.cuda.is_available()
         # self.use_cuda = False
         device = torch.device("cuda" if self.use_cuda else "cpu")
@@ -154,18 +154,27 @@ class InferenceTrainer:
                             use_projection=self.use_projection, alpha=self.alpha,
                             margin=margin, resume_training=self.resume, dataset_path=self.full_dataset_dir)
 
-        self.model = nn.DataParallel(self.model)
-        self.model.cuda()
+        if self.use_cuda:
+            self.model = nn.DataParallel(self.model)
+        self.model.to(self.device)
 
         self.optimizer = torch.optim.SGD(self.model.parameters(), lr=self.learning_rate)
         self.scheduler = ExponentialLR(self.optimizer, gamma=self.gamma)
 
     def export_embeddings(self):
-        self.write_embeddings(self.model.module.ent_embedding, "ent_embedding")
-        self.write_embeddings(self.model.module.rel_embedding, "rel_embedding")
-        self.write_embeddings(self.model.module.attr_embedding, "attr_embedding")
-        self.write_embeddings(self.model.module.bias_embedding, "bias_embedding")
-        self.write_embeddings(self.model.module.proj_matrix, "proj_matrix")
+        if self.use_cuda:
+            self.write_embeddings(self.model.module.ent_embedding, "ent_embedding")
+            self.write_embeddings(self.model.module.rel_embedding, "rel_embedding")
+            self.write_embeddings(self.model.module.attr_embedding, "attr_embedding")
+            self.write_embeddings(self.model.module.bias_embedding, "bias_embedding")
+            self.write_embeddings(self.model.module.proj_matrix, "proj_matrix")
+        else:
+            self.write_embeddings(self.model.ent_embedding, "ent_embedding")
+            self.write_embeddings(self.model.rel_embedding, "rel_embedding")
+            self.write_embeddings(self.model.attr_embedding, "attr_embedding")
+            self.write_embeddings(self.model.bias_embedding, "bias_embedding")
+            self.write_embeddings(self.model.proj_matrix, "proj_matrix")
+
 
     def write_embeddings(self, embedding, embedding_name):
         lines = []
@@ -188,7 +197,10 @@ class InferenceTrainer:
                 selected_idx = (all_tails >= 0)
                 heads, rels, all_tails = heads[selected_idx], rels[selected_idx], all_tails[selected_idx]
                 triples = torch.stack((heads, rels, all_tails)).type(torch.LongTensor)
-                distances = self.model.module.predict(triples=triples)
+                if self.use_cuda:
+                    distances = self.model.module.predict(triples=triples)
+                else:
+                    distances = self.model.predict(triples=triples)
                 f_ranking, f_ranking_idx = evaluate_ranking(distances=distances, all_tails=all_tails, true_tail=true_tail)
                 filtered_hit_rate_list.append(f_ranking_idx)
                 counter += 1
@@ -209,7 +221,10 @@ class InferenceTrainer:
                 selected_idx = (all_tails >= 0)
                 heads, rels, all_tails = heads[selected_idx], rels[selected_idx], all_tails[selected_idx]
                 triples = torch.stack((heads, rels, all_tails)).type(torch.LongTensor)
-                distances = self.model.module.infer(triples)
+                if self.use_cuda:
+                    distances = self.model.module.infer(triples)
+                else:
+                    distances = self.model.infer(triples)
                 f_ranking, f_ranking_idx = evaluate_ranking(distances=distances, all_tails=all_tails, true_tail=true_tail)
                 filtered_counter += 1
                 counter += 1
@@ -219,7 +234,10 @@ class InferenceTrainer:
 
             if self.inference:
                 for numerical_eval_triples in self.numerical_eval_set_dataloader:
-                    self.model.module.numerical_predict(numerical_eval_triples)
+                    if self.use_cuda:
+                        self.model.module.numerical_predict(numerical_eval_triples)
+                    else:
+                        self.model.numerical_predict(numerical_eval_triples)
 
             filtered_hit_rate_list = hit_rate(filtered_hit_rate_list)
             total_fmrr = total_fmrr / filtered_counter
@@ -246,12 +264,12 @@ class InferenceTrainer:
             self.optimizer.zero_grad()
             numerical_idx_list = (pos[3] != -999)
             pos = torch.transpose(torch.stack(pos), 0, 1)
-            pos_numerical = torch.transpose(pos[numerical_idx_list], 0, 1).cuda()
+            pos_numerical = torch.transpose(pos[numerical_idx_list], 0, 1).to(self.device)
             pos_non_numerical = torch.transpose(pos[~numerical_idx_list], 0,
-                                                1).cuda()  # create negative index list with ~
+                                                1).to(self.device)  # create negative index list with ~
             neg = torch.transpose(torch.stack(neg), 0, 1)
-            neg_numerical = torch.transpose(neg[numerical_idx_list], 0, 1).cuda()
-            neg_non_numerical = torch.transpose(neg[~numerical_idx_list], 0, 1).cuda()
+            neg_numerical = torch.transpose(neg[numerical_idx_list], 0, 1).to(self.device)
+            neg_non_numerical = torch.transpose(neg[~numerical_idx_list], 0, 1).to(self.device)
             loss_non_numerical = self.model(pos_non_numerical, neg_non_numerical, mode="non_numerical")
             if len(pos_numerical[0]) > 0:
                 loss_numerical = self.model(pos_numerical, neg_numerical, mode="numerical")
@@ -264,7 +282,10 @@ class InferenceTrainer:
                 total_train_loss += loss_non_numerical.cpu().mean()
             total_non_numerical_loss += loss_non_numerical.cpu().mean()
 
-            self.model.module.normalize_parameters()
+            if self.use_cuda:
+                self.model.module.normalize_parameters()
+            else:
+                self.model.normalize_parameters()
             self.optimizer.step()
 
         print(f"Loss: {total_train_loss}")
@@ -289,7 +310,10 @@ class InferenceTrainer:
     def calculate_value_node_embedding(self):
         with no_grad():
             for triple in tqdm(self.dataloader_value_node):
-                self.model.module.calculate_tail_embedding(triple)
+                if self.use_cuda:
+                    self.model.module.calculate_tail_embedding(triple)
+                else:
+                    self.model.calculate_tail_embedding(triple)
 
     def evaluate_value_node_embedding(self):
         with no_grad():
@@ -299,7 +323,10 @@ class InferenceTrainer:
             for triple in tqdm(self.dataloader_value_node_eval):
                 true_tail = triple[3][0].item()
                 all_tails = triple[2]
-                distances = self.model.module.distance(triple)
+                if self.use_cuda:
+                    distances = self.model.module.distance(triple)
+                else:
+                    distances = self.model.distance(triple)
                 f_ranking, f_ranking_idx = evaluate_ranking(distances=distances, all_tails=all_tails, true_tail=true_tail)
                 filtered_hit_rate_list.append(f_ranking_idx)
                 counter += 1
@@ -358,7 +385,7 @@ if __name__ == "__main__":
     if args.epoch:
         epoch = int(args.epoch)
 
-    ontology = "ontothermoagent"
+    ontology = "test"
     if args.sub_ontology:
         ontology = args.sub_ontology
 

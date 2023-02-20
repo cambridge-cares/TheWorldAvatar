@@ -9,6 +9,7 @@ import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
 from sklearn.model_selection import train_test_split
 
+from KGToolbox.IntegratedTrainingFileCreator import IntegratedTrainingFileCreator
 from KGToolbox import MakeIndex
 from KGToolbox.CreateNegSamplingDictionary import NegSamplingCreator
 from Marie.CandidateSelection.location import DATA_DIR
@@ -34,11 +35,15 @@ class OntoSpeciesNewAnalyzer:
         return dictionary
 
     def __init__(self, sub_ontology):
+        self.class_stop_list = ["rdf-schema#Resource", "rdf-schema#Class"]
+        self.file_creator = IntegratedTrainingFileCreator(sparql_namespace="copy_ontospecies_pubchem")
+        self.query_blazegraph = self.file_creator.query_blazegraph
         self.species_role_dictionary, self.role_species_dictionary = self.get_roles_of_species()
         self.species_class_dict, self.class_species_dict = self.get_all_chemical_classes()
         self.numerical_attribute_list = ["hasLogP", "hasDensity", "hasBoilingPoint",
                                          "hasSolubility", "hasLogP", "hasLogS", "hasMolecularWeight",
                                          "hasMeltingPoint"]
+
         self.numerical_attribute_species_node_dict, self.node_value_dict = self.get_all_numerical_attributes()
 
         self.ontology = "ontospecies_new"
@@ -84,27 +89,58 @@ class OntoSpeciesNewAnalyzer:
 
         return species_node_dict, node_value_dict
 
+    def filter_inference_triples(self, triples_for_inference, sample_num=100):
+        """
+        Given all the triples selected for inference, create a sample of sample_num
+        This function also makes sure that for each species-hasRole-Use, the Use-hasSpecies-Species are
+        also removed from the
+        :param triples_for_inference:
+        :param sample_num:
+        :return:
+        """
+        # 1. make a list of species_role pair
+        species_role_pair = []
+        for triple in triples_for_inference:
+            s, p, o = triple
+            if p.strip() == "hasRole":
+                pair_str = f"{s}_{o}"
+                if pair_str not in species_role_pair:
+                    species_role_pair.append(pair_str)
+
+        selected_species_role_pair = random.sample(species_role_pair, sample_num)
+        selected_triples_for_inference = []
+        selected_triples_for_training = []
+        for triple in triples_for_inference:
+            s, p, o = triple
+            if p.strip() == "hasRole":
+                pair_str = f"{s}_{o}"  # species_use
+            else:
+                pair_str = f"{o}_{s}"  # species_use
+            if pair_str in selected_species_role_pair:
+                selected_triples_for_inference.append(triple)
+            else:
+                selected_triples_for_training.append(triple)
+        return selected_triples_for_inference, selected_triples_for_training
+
+        # random choose 100 pairs
+
     def write_triples_to_tsv(self, numerical_triples, other_triples):
         # only remove triples with hasRole and hasSpecies
         # 1. sample 200 triples with hasRole and hasSpecies
         # 2. remove the 200 triples from the other_triples
         inference_rels = ["hasRole", "hasSpecies"]
         other_triples_for_inference = [triples for triples in other_triples if triples[1].strip() in inference_rels]
-        test_other_triples = random.sample(other_triples_for_inference, 200)
-        train_other_triples = [triples for triples in other_triples if triples not in test_other_triples]
+        # if you remove the hasRole between a species and a use, the hasSpecies
+
+        test_other_triples, train_other_triples = self.filter_inference_triples(other_triples_for_inference,
+                                                                                sample_num=100)
+        # train_other_triples = [triples for triples in other_triples if triples not in test_other_triples]
         df = pd.DataFrame(numerical_triples + other_triples)
         df.to_csv(os.path.join(self.sub_ontology_path, f"{self.sub_ontology}-train.txt"),
                   sep="\t", header=False, index=False)
 
         df_train = pd.DataFrame(numerical_triples + train_other_triples)
         df_test = pd.DataFrame(test_other_triples)
-        # also make sure the train df doesn't loss any numerical triples
-        # df_train, df_test = train_test_split(df, test_size=0.1)
-
-        # remove all the numerical triples from the test set
-        # "hasRole", "hasSpecies"
-        # df_test = df_test[(df_test.iloc[:, 1] == "hasRole") | (df_test.iloc[:, 1] == "hasSpecies")]
-
         df_train.to_csv(os.path.join(self.sub_ontology_path, f"{self.sub_ontology}-train-2.txt"),
                         sep="\t", header=False, index=False)
 
@@ -128,16 +164,19 @@ class OntoSpeciesNewAnalyzer:
     def create_triples_with_subclass(self):
         all_triples = []
         for species in self.species_class_dict:
-            class_list = self.species_class_dict[species]
-            for _class in class_list:
-                row = (species, "hasChemicalClass", _class)
-                all_triples.append(row)
+            full_class_list = self.species_class_dict[species]
+            for class_list in full_class_list:
+                for _class in class_list:
+                    if _class not in self.class_stop_list:
+                        row = (species, "hasChemicalClass", _class)
+                        all_triples.append(row)
 
         for _class in self.class_species_dict:
-            species_list = self.class_species_dict[_class]
-            for species in species_list:
-                row = (_class, "hasInstance", species)
-                all_triples.append(row)
+            if _class not in self.class_stop_list:
+                species_list = self.class_species_dict[_class]
+                for species in species_list:
+                    row = (_class, "hasInstance", species)
+                    all_triples.append(row)
         return all_triples
 
     def create_triples_for_roles_of_species(self):
@@ -186,7 +225,7 @@ class OntoSpeciesNewAnalyzer:
         sub_classes = []
         rst = self.query_blazegraph(query)["results"]["bindings"]
         for binding in rst:
-            if ("OntoSpecies.owl#ChemicalClass" not in binding["class"]["value"]):
+            if "OntoSpecies.owl#ChemicalClass" not in binding["class"]["value"]:
                 sub_classes.append(binding["class"]["value"])
 
         return sub_classes
@@ -199,7 +238,7 @@ class OntoSpeciesNewAnalyzer:
         WHERE {
           
           ?species rdf:type  <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species> . 	
-          ?species <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasChemicalClass>  ?types . 
+          ?species <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasChemicalClasses>  ?types . 
         } 
         """
 
@@ -209,29 +248,19 @@ class OntoSpeciesNewAnalyzer:
 
             species = binding["species"]["value"].split("/")[-1]
             chemical_classes = binding["types"]["value"]
-
+            # if chemical_classes not in self.class_stop_list:
             chemical_class_list.append(chemical_classes)
-
             sub_classes = self.get_chemical_class_tree(chemical_classes)
             chemical_class_list.extend(sub_classes)
-
             for c in sub_classes:
                 chemical_class_list.extend(self.get_chemical_class_tree(c))
-
             for i, c in enumerate(chemical_class_list):
                 chemical_class_list[i] = c.split("/")[-1]
-
             species_class_dict = self.append_to_dict(species_class_dict, species, chemical_class_list)
             class_species_dict = self.append_to_dict(class_species_dict, chemical_class_list, species)
 
         return species_class_dict, class_species_dict
 
-    def query_blazegraph(self, query, namespace="copy_ontospecies_pubchem_1"):
-        sparql = SPARQLWrapper("http://www.theworldavatar.com/blazegraph/namespace/" + namespace + "/sparql")
-        sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)
-        results = sparql.query().convert()
-        return results
 
     def create_inference_candidate_dict(self, entity2idx):
         """
@@ -255,14 +284,21 @@ class OntoSpeciesNewAnalyzer:
             f.write(json.dumps(self.node_value_dict))
             f.close()
         role_triples = self.create_triples_for_roles_of_species()
-        # chemical_class_triples = self.create_triples_with_subclass()
-        cached_chemical_classes = [line.strip() for line in open(f"{self.full_dataset_dir}/chemical_classes.tsv").readlines()]
-        chemical_class_triples = []
-        for line in cached_chemical_classes:
-            s, p, o = [e.strip() for e in line.split("\t")]
-            chemical_class_triples.append((s, p, o))
+
+        cached_chemical_classes_path = f"{self.full_dataset_dir}/chemical_classes.tsv"
+        if os.path.exists(cached_chemical_classes_path):
+            cached_chemical_classes = [line.strip() for line in open(cached_chemical_classes_path).readlines()]
+            chemical_class_triples = []
+            for line in cached_chemical_classes:
+                s, p, o = [e.strip() for e in line.split("\t")]
+                chemical_class_triples.append((s, p, o))
+        else:
+            chemical_class_triples = self.create_triples_with_subclass()
+
         other_triples = role_triples + chemical_class_triples  # numerical_triples
         self.write_triples_to_tsv(other_triples=other_triples, numerical_triples=numerical_triples)
+
+        # =================== STANDARD PACKAGE FOR FILES NEEDED ========================================
         ontology = f"{self.ontology}/{self.sub_ontology}"
         MakeIndex.create_indexing(self.sub_ontology, data_dir=f'CrossGraph/{ontology}')
         my_extractor = HopExtractor(dataset_dir=self.sub_ontology_path, dataset_name=self.sub_ontology)
@@ -274,8 +310,9 @@ class OntoSpeciesNewAnalyzer:
             f.close()
         my_creator = NegSamplingCreator(dataset_dir=self.sub_ontology_path, ontology=self.sub_ontology)
         my_creator.create_full_neg_dictionary()
+        # ==============================================================================================
 
 
 if __name__ == "__main__":
-    my_analyzer = OntoSpeciesNewAnalyzer(sub_ontology="role_with_subclass_full_attributes_0.1_with_class")
+    my_analyzer = OntoSpeciesNewAnalyzer(sub_ontology="test")
     my_analyzer.run()

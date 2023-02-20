@@ -22,8 +22,8 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
         self.entity2idx, self.idx2entity, self.rel2idx, self.idx2rel = self.file_loader.load_index_files()
         self.neg_sample_dict_path = os.path.join(self.full_dataset_dir, "neg_sample_dict.json")
         self.neg_sample_dict = json.loads(open(self.neg_sample_dict_path).read())
-        
-        if(inference): 
+
+        if(inference):
             self.candidate_dict_path = os.path.join(self.full_dataset_dir, "candidate_dict.json")
             self.candidate_dict = json.loads(open(self.candidate_dict_path).read())
             self.candidate_max = max([len(v) for k, v in self.candidate_dict.items()])
@@ -139,7 +139,7 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
         s_p_str = f'{s}_{p}'
         fake_candidates = self.neg_sample_dict[s_p_str]
         return fake_candidates
-    
+
     def create_triples_for_agent_train(self):
         triples=[]
         for idx, row in self.df.iterrows():
@@ -278,7 +278,7 @@ if __name__ == "__main__":
     # value_node_eval_set = TransRInferenceDataset(df=df_train, full_dataset_dir=full_dir,
     #                                              ontology=sub_ontology,
     #                                              mode="value_node_eval")
-
+    #
     # dataloader_value_node_eval = torch.utils.data.DataLoader(value_node_eval_set, batch_size=value_node_eval_set.ent_num, shuffle=False)
     # for row in dataloader_value_node_eval:
     #     print(row)
