@@ -250,10 +250,14 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             namespace_for_init=getNameSpace(goal_set.instance_iri),
             # TODO [nice-to-have] add support for Strategy defined by user
-            # NOTE at the moment, we use TSEMO and its default parameters
+            # NOTE at the moment, we use TSEMO and the parameters provided by the template
             usesStrategy=TSEMO(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=getNameSpace(goal_set.instance_iri),
+                nRetries=doe_template.usesStrategy.nRetries,
+                nSpectralPoints=doe_template.usesStrategy.nSpectralPoints,
+                nGenerations=doe_template.usesStrategy.nGenerations,
+                populationSize=doe_template.usesStrategy.populationSize,
             ),
             hasDomain=constructed_domain,
             hasSystemResponse=list_system_responses,
