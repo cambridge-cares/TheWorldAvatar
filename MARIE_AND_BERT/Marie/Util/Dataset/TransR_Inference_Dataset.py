@@ -14,7 +14,7 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
 
     """
 
-    def __init__(self, df, full_dataset_dir, ontology, mode="train"):
+    def __init__(self, df, full_dataset_dir, ontology, mode="train", inference=True):
         super(TransRInferenceDataset, self).__init__()
         self.full_dataset_dir = full_dataset_dir
         self.ontology = ontology
@@ -22,11 +22,17 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
         self.entity2idx, self.idx2entity, self.rel2idx, self.idx2rel = self.file_loader.load_index_files()
         self.neg_sample_dict_path = os.path.join(self.full_dataset_dir, "neg_sample_dict.json")
         self.neg_sample_dict = json.loads(open(self.neg_sample_dict_path).read())
-        self.candidate_dict_path = os.path.join(self.full_dataset_dir, "candidate_dict.json")
-        self.candidate_dict = json.loads(open(self.candidate_dict_path).read())
-        self.candidate_max = max([len(v) for k, v in self.candidate_dict.items()])
-        self.node_value_dict_path = os.path.join(self.full_dataset_dir, "node_value_dict.json")
-        self.node_value_dict = json.loads(open(self.node_value_dict_path).read())
+        
+        if(inference): 
+            self.candidate_dict_path = os.path.join(self.full_dataset_dir, "candidate_dict.json")
+            self.candidate_dict = json.loads(open(self.candidate_dict_path).read())
+            self.candidate_max = max([len(v) for k, v in self.candidate_dict.items()])
+            self.node_value_dict_path = os.path.join(self.full_dataset_dir, "node_value_dict.json")
+            self.node_value_dict = json.loads(open(self.node_value_dict_path).read())
+            self.p_stop_list = ["hasLogP", "hasDensity", "hasBoilingPoint",
+                            "hasSolubility", "hasLogP", "hasLogS", "hasMolecularWeight",
+                            "hasMeltingPoint"]
+
         self.my_extractor = HopExtractor(
             dataset_dir=full_dataset_dir,
             dataset_name=ontology)
@@ -35,16 +41,11 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
         self.ent_num = len(self.entity2idx.keys())
         self.rel_num = len(self.rel2idx.keys())
         self.use_cached_triples = False
-        self.p_stop_list = ["hasLogP", "hasDensity", "hasBoilingPoint",
-                            "hasSolubility", "hasLogP", "hasLogS", "hasMolecularWeight",
-                            "hasMeltingPoint"]
-
         cached_triple_path = f"{self.full_dataset_dir}/triple_idx_{self.mode}.json"
         if os.path.exists(cached_triple_path) and self.use_cached_triples:
             # the triples are already cached
             self.triples = json.loads(open(cached_triple_path).read())
         else:
-
             if self.mode == "train":
                 self.triples = self.create_all_triples()
             elif self.mode == "numerical":
@@ -53,9 +54,14 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
                 self.triples = self.create_train_small_triples_for_evaluation()
             elif self.mode == "value_node":
                 self.triples = self.create_value_node_triples()
-
             elif self.mode == "value_node_eval":
                 self.triples = self.create_value_node_evaluation_triples()
+            elif self.mode == "agent_train":
+                self.triples = self.create_triples_for_agent_train()
+            elif self.mode == "agent_test":
+                self.triples = self.create_triples_for_agent_test()
+            elif self.mode == "agent_train_eval":
+                self.triples = self.create_triples_for_agent_test()
             else:
                 self.triples = self.create_test_triples()
             if self.use_cached_triples:
@@ -85,6 +91,9 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
             if row[1] in self.p_stop_list:
                 triples.append((s, p, o))
         return triples
+
+
+
 
     def create_train_small_triples_for_evaluation(self):
         triples = []
@@ -130,6 +139,40 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
         s_p_str = f'{s}_{p}'
         fake_candidates = self.neg_sample_dict[s_p_str]
         return fake_candidates
+    
+    def create_triples_for_agent_train(self):
+        triples=[]
+        for idx, row in self.df.iterrows():
+            s = self.entity2idx[row[0]]
+            p = self.rel2idx[row[1]]
+            o = self.entity2idx[row[2]]
+            true_triple = (s,p,o,-999)
+            for i in range(0, self.ent_num):
+                triple_idx_string = f"{s}_{p}_{i}"
+                if not self.my_extractor.check_triple_existence(triple_idx_string):
+                    fake_triple = (s,p,i,-999)
+                    triples.append((true_triple, fake_triple))
+        return triples
+
+    def create_triples_for_agent_test(self):
+        triples=[]
+        for idx, row in self.df.iterrows():
+            counter=0
+            s = self.entity2idx[row[0]]
+            p = self.rel2idx[row[1]]
+            o = self.entity2idx[row[2]]
+            triples.append((s,p,o,-999))
+            for i in range(self.ent_num):
+                triple_idx_string = f"{s}_{p}_{i}"
+                if not self.my_extractor.check_triple_existence(triple_idx_string):
+                    triples.append((s,p,i,-999))
+                    counter+=1
+            length_diff = (self.ent_num -1) - counter
+            for i in range(length_diff):
+                triples.append((s,p,-1,-999))
+
+        return triples
+
 
     def create_test_triples(self):
         triples = []
@@ -232,10 +275,10 @@ if __name__ == "__main__":
     # for triple in dataloader_value_node:
     #     print(triple)
 
-    value_node_eval_set = TransRInferenceDataset(df=df_train, full_dataset_dir=full_dir,
-                                                 ontology=sub_ontology,
-                                                 mode="value_node_eval")
+    # value_node_eval_set = TransRInferenceDataset(df=df_train, full_dataset_dir=full_dir,
+    #                                              ontology=sub_ontology,
+    #                                              mode="value_node_eval")
 
-    dataloader_value_node_eval = torch.utils.data.DataLoader(value_node_eval_set, batch_size=value_node_eval_set.ent_num, shuffle=False)
-    for row in dataloader_value_node_eval:
-        print(row)
+    # dataloader_value_node_eval = torch.utils.data.DataLoader(value_node_eval_set, batch_size=value_node_eval_set.ent_num, shuffle=False)
+    # for row in dataloader_value_node_eval:
+    #     print(row)
