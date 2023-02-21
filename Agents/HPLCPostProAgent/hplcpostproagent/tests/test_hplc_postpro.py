@@ -1,5 +1,6 @@
 import hplcpostproagent.tests.conftest as conftest
 from rdflib import Graph
+from pathlib import Path
 import pkgutil
 import pytest
 import time
@@ -13,6 +14,8 @@ pytest_plugins = ["docker_compose"]
 @pytest.mark.parametrize(
     "rxn_exp_iri,report_path_in_pkg,hplc_digital_twin,chemical_amount_iri,hplc_method_iri,local_agent_test",
     [
+        (conftest.RXN_EXP_6_SAME_COST, conftest.HPLC_REPORT_XLS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_AMOUNT_1, conftest.HPLC_METHOD_IRI, True),
+        (conftest.RXN_EXP_7_SAME_COST, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_AMOUNT_2, conftest.HPLC_METHOD_IRI, True),
         (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_AMOUNT_1, conftest.HPLC_METHOD_IRI, True),
         (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_AMOUNT_2, conftest.HPLC_METHOD_IRI, True),
         (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_AMOUNT_1, conftest.HPLC_METHOD_IRI, False),
@@ -123,6 +126,10 @@ def test_hplc_postpro_agent(
                 assert pi.hasValue.hasNumericalValue == 0
             elif pi.clz in [conftest.ONTOREACTION_ENVIRONMENTALFACTOR, conftest.ONTOREACTION_RUNMATERIALCOSTPERKILOGRAMPRODUCT]:
                 assert pi.hasValue.hasNumericalValue == float("inf")
+        if rxn_exp_iri == conftest.RXN_EXP_6_SAME_COST or rxn_exp_iri == conftest.RXN_EXP_7_SAME_COST:
+            if pi.clz == conftest.ONTOREACTION_RUNMATERIALCOST:
+                print(pi.hasValue.hasNumericalValue)
+                assert (pi.hasValue.hasNumericalValue - 8.87) < 0.01
     reload_output_chemical_lst = reload_rxn_rxp_instance.hasOutputChemical
     for oc in reload_output_chemical_lst:
         assert oc.clz == conftest.ONTOREACTION_OUTPUTCHEMICAL
@@ -154,4 +161,11 @@ def initialise_triples(sparql_client):
         'sample_data/dummy_lab.ttl', 'sample_data/rxn_data.ttl', 'sample_data/dummy_post_proc.ttl']:
         data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
         g = Graph().parse(data=data)
+        sparql_client.uploadGraph(g)
+
+    # Upload the example triples for testing
+    pathlist = Path(conftest.TEST_TRIPLES_DIR).glob('*.ttl')
+    for path in pathlist:
+        g = Graph()
+        g.parse(str(path), format='turtle')
         sparql_client.uploadGraph(g)

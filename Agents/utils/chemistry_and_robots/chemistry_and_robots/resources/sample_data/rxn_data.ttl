@@ -61,12 +61,12 @@ OntoRxn:hasRunMaterialCostPerKilogramProduct rdfs:subPropertyOf OntoRxn:hasPerfo
 # https://pubchem.ncbi.nlm.nih.gov/compound/240#section=Density&fullscreen=true
 <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b> placeholder:hasDensity placeholder:Density_Species_240.
 placeholder:Density_Species_240 a om:Density; om:hasValue placeholder:D_S_240_V;.
-placeholder:D_S_240_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "1.050"^^xsd:double;.
+placeholder:D_S_240_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "1.04"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
 
 # https://pubchem.ncbi.nlm.nih.gov/compound/180#section=Density&fullscreen=true
 <http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3> placeholder:hasDensity placeholder:Density_Species_180.
 placeholder:Density_Species_180 a om:Density; om:hasValue placeholder:D_S_180_V;.
-placeholder:D_S_180_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "0.8"^^xsd:double;.
+placeholder:D_S_180_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "0.784"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
 
 # NO experimental data available at https://pubchem.ncbi.nlm.nih.gov/compound/637759
 # Data (mean value) from "Predicted - ACD/Labs" at http://www.chemspider.com/Chemical-Structure.21106584.html
@@ -83,56 +83,58 @@ placeholder:D_S_640180_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNum
 # Value taken as the solid density of NaOH at 68 F (20 C) in https://pubchem.ncbi.nlm.nih.gov/compound/14798#section=Density&fullscreen=true
 <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d> placeholder:hasDensity placeholder:Density_Species_14798.
 placeholder:Density_Species_14798 a om:Density; om:hasValue placeholder:D_S_14798_V;.
-placeholder:D_S_14798_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "2.13"^^xsd:double;.
+placeholder:D_S_14798_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "2.13"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
 
 # https://pubchem.ncbi.nlm.nih.gov/compound/6342#section=Density&fullscreen=true
 <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb> placeholder:hasDensity placeholder:Density_Species_6342.
 placeholder:Density_Species_6342 a om:Density; om:hasValue placeholder:D_S_6342_V;.
-placeholder:D_S_6342_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "0.78745"^^xsd:double;.
+placeholder:D_S_6342_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "0.786"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
 
 # https://pubchem.ncbi.nlm.nih.gov/compound/702#section=Density&fullscreen=true
 <http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983> placeholder:hasDensity placeholder:Density_Species_702.
 placeholder:Density_Species_702 a om:Density; om:hasValue placeholder:D_S_702_V;.
-placeholder:D_S_702_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "0.79"^^xsd:double;.
+placeholder:D_S_702_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "0.789"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
 
 # https://pubchem.ncbi.nlm.nih.gov/compound/931#section=Density&fullscreen=true
 <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340> placeholder:hasDensity placeholder:Density_Species_931.
 placeholder:Density_Species_931 a om:Density; om:hasValue placeholder:D_S_931_V;.
-placeholder:D_S_931_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "1.162"^^xsd:double;.
+placeholder:D_S_931_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "1.14"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
 
 ####################################################################################
 ## Placeholder Material Cost data -- TODO to find a proper way of representing it ##
 ####################################################################################
-# NOTE all below cost data are dummy data
 
 <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b> placeholder:hasMaterialCost placeholder:MaterialCost_Species_240.
 placeholder:MaterialCost_Species_240 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_240_V;.
-placeholder:M_C_S_240_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "20"^^xsd:double;.
+placeholder:M_C_S_240_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "18.0024"^^xsd:double;. # calculated from https://doi.org/10.1002/cmtd.202000044
 
 <http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3> placeholder:hasMaterialCost placeholder:MaterialCost_Species_180.
 placeholder:MaterialCost_Species_180 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_180_V;.
-placeholder:M_C_S_180_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "700"^^xsd:double;.
+placeholder:M_C_S_180_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "6.38176"^^xsd:double;. # calculated from https://doi.org/10.1002/cmtd.202000044
 
+# dummy data
 ChemRxn:Species_placeholder_pubchemcid_637759 placeholder:hasMaterialCost placeholder:MaterialCost_Species_637759.
 placeholder:MaterialCost_Species_637759 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_637759_V;.
 placeholder:M_C_S_637759_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "500"^^xsd:double;.
 
+# dummy data
 ChemRxn:Species_placeholder_pubchemcid_640180 placeholder:hasMaterialCost placeholder:MaterialCost_Species_640180.
 placeholder:MaterialCost_Species_640180 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_640180_V;.
 placeholder:M_C_S_640180_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "10"^^xsd:double;.
 
 <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d> placeholder:hasMaterialCost placeholder:MaterialCost_Species_14798.
 placeholder:MaterialCost_Species_14798 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_14798_V;.
-placeholder:M_C_S_14798_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "200"^^xsd:double;.
+placeholder:M_C_S_14798_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "58.575"^^xsd:double;. # calculated from https://doi.org/10.1002/cmtd.202000044
 
 <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb> placeholder:hasMaterialCost placeholder:MaterialCost_Species_6342.
 placeholder:MaterialCost_Species_6342 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_6342_V;.
-placeholder:M_C_S_6342_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "600"^^xsd:double;.
+placeholder:M_C_S_6342_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "8.83"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
 
 <http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983> placeholder:hasMaterialCost placeholder:MaterialCost_Species_702.
 placeholder:MaterialCost_Species_702 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_702_V;.
-placeholder:M_C_S_702_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "300"^^xsd:double;.
+placeholder:M_C_S_702_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "8.83"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
 
+# dummy data
 <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340> placeholder:hasMaterialCost placeholder:MaterialCost_Species_931.
 placeholder:MaterialCost_Species_931 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_931_V;.
 placeholder:M_C_S_931_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "400"^^xsd:double;.

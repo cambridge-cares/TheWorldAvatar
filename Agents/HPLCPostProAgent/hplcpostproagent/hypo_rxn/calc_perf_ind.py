@@ -153,15 +153,15 @@ def calculate_run_material_cost(rxn_exp_instance: ReactionExperiment, hypo_react
     """This method calculates the reaction material cost for a single run, which commonly has (pound sterling per litre) as its unit."""
 
     # Calculate the total cost of all the reactants and solvents
-    all_reactant = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute if s._is_reactant]
+    all_reactant_catalyst = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute if s._is_reactant or s._is_catalyst]
     all_solvent = [inlet.solvent for inlet in hypo_reactor.inlet_run_stream]
-    reactant_and_solvent = all_reactant + all_solvent
+    reactant_catalyst_solvent = all_reactant_catalyst + all_solvent
     # NOTE here the unit of the _run_volume and def_cost should already be standardised at creation of each HypoStreamSpecies instance
     # NOTE therefore the unit conversion is omitted
-    _total_material_cost = sum([s._run_volume.hasNumericalValue * s.def_cost.hasNumericalValue for s in reactant_and_solvent])
+    _total_material_cost = sum([s._run_volume.hasNumericalValue * s.def_cost.hasNumericalValue for s in reactant_catalyst_solvent])
 
     # Obtain the total run volume of all the reactants and solvents
-    _total_run_volume = sum([s._run_volume.hasNumericalValue for s in reactant_and_solvent])
+    _total_run_volume = sum([s._run_volume.hasNumericalValue for s in reactant_catalyst_solvent])
 
     # Calculate the cost per unit volume of the inlet stream
     _run_material_cost = round(_total_material_cost / _total_run_volume, 2) # Round the decimal place
@@ -178,12 +178,12 @@ def calculate_run_material_cost_per_kg_product(rxn_exp_instance: ReactionExperim
         _run_material_cost_per_kg_product = float("inf")
     else:
         # Calculate the total cost of all the reactants and solvents
-        all_reactant = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute if s._is_reactant]
+        all_reactant_catalyst = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute if s._is_reactant or s._is_catalyst]
         all_solvent = [inlet.solvent for inlet in hypo_reactor.inlet_run_stream]
-        reactant_and_solvent = all_reactant + all_solvent
+        reactant_catalyst_solvent = all_reactant_catalyst + all_solvent
         # NOTE here the unit of the _run_volume and def_cost should already be standardised at creation of each HypoStreamSpecies instance
         # NOTE therefore the unit conversion is omitted
-        _total_material_cost = sum([s._run_volume.hasNumericalValue * s.def_cost.hasNumericalValue for s in reactant_and_solvent])
+        _total_material_cost = sum([s._run_volume.hasNumericalValue * s.def_cost.hasNumericalValue for s in reactant_catalyst_solvent])
 
         # Obtain the amount of product produced
         prod_run_mass = unit_conv.unit_conversion_return_value_dq(target_product_species._run_mass, unit_conv.UNIFIED_MASS_UNIT)
