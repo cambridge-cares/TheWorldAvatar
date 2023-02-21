@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='floodwarnings',
-    version='0.1.0',
+    version='1.0.0',
     author='Markus Hofmeister',
     author_email='mh807@cam.ac.uk',
     license='MIT',
@@ -22,13 +22,5 @@ setup(
         'py4jps==1.0.33', 
         'requests==2.28.2',
         'shapely==2.0.1',
-    ],
-    # extras_require={
-    #     "dev": [
-    #         "pytest==7.2.0",
-    #         "pytest-mock==3.10.0",
-    #         "testcontainers==3.7.0",
-    #         "psycopg2==2.9.5"
-    #     ]
-    #}
+    ]
 )

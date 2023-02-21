@@ -21,27 +21,26 @@ inputtasks_bp = Blueprint(
 
 # Define route for API request to update all flood alerts/warnings 
 # (i.e. instantiate missing ones, update existing ones, and archive outdated ones)
-@inputtasks_bp.route('/update/all', methods=['POST'])
+@inputtasks_bp.route('/floodwarnings/update/all', methods=['POST'])
 def api_update_all_warnings():
     # Check arguments (query parameters)
     if len(request.args) > 0:
-        logger.warning("Query parameters provided, although not required. \
-                        Provided arguments will be neglected.")
+        logger.warning('Query parameters provided, although not required. \
+                        Provided arguments will be neglected.')
     try:
-        # Instantiate stations
+        # Instantiate flood warnings
         response = update_warnings()
-        logger.info(f"Number of instantiated areas: {response[0]}")
-        logger.info(f"Number of instantiated warnings: {response[1]}")
-        logger.info(f"Number of updated warnings: {response[2]}")
-        logger.info(f"Number of archived warnings: {response[3]}")
-        return jsonify({'Instantiated areas': response[0],
-                        'Instantiated warnings': response[1], 
-                        'Upddated warnings': response[2], 
-                        'Archived warnings': response[3]}), 200
+        return_dict = {'Instantiated areas': response[0],
+                       'Instantiated warnings': response[1],
+                       'Updated warnings': response[2],
+                       'Archived warnings': response[3] }
+        for key, value in return_dict.items():
+            print(f'Number of {key.lower()}' , ' : ', value)
+        return jsonify(return_dict), 200
 
     except Exception as ex:
         logger.error('Update failed: ' + str(ex), ex)
-        return jsonify({'status': '500', 'msg': 'Update failed: ' + str(ex)}), 500
+        return jsonify({'msg': 'Update failed: ' + str(ex)}), 500
 
 
 #TODO: to be implemented
