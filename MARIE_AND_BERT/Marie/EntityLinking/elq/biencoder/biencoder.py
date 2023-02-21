@@ -230,7 +230,7 @@ class BiEncoderModule(torch.nn.Module):
         else:
             bert_model = params['bert_model']
         cand_bert = BertModel.from_pretrained(
-            bert_model,
+            PRETRAINED_DIR,
             output_hidden_states=True,
         )
         self.context_encoder = BertEncoder(
