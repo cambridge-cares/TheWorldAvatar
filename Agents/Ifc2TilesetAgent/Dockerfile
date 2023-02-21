@@ -61,7 +61,24 @@ CMD pytest
 
 #==================================================================================================
 
-# Third stage: Build production image
+# Third stage: Build development image
+#==================================================================================================
+FROM builder as develop
+
+# Install additional dependencies for debugging
+RUN pip install debugpy
+
+# Set flask app and development environment to allow for hot-reloading
+ENV FLASK_APP=agent:create_app()
+ENV FLASK_DEBUG=1
+
+# Launch application in container   
+ENTRYPOINT ["python", "-m", "debugpy", "--wait-for-client", "--listen", "0.0.0.0:5678","-m", "flask", "run", "--host", "0.0.0.0", "--port", "5105"]
+#==================================================================================================
+
+#==================================================================================================
+
+# Forth stage: Build production image
 #==================================================================================================
 FROM builder as prod
 

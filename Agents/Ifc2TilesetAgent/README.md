@@ -63,11 +63,15 @@ docker compose -f "./docker/docker-compose.test.yml" up -d --build
 - Verified that all tests have passed by looking at the container logs 
 -- Container must be built (regardless of failure) to ensure services are running for tests.
 
-**DEBUGGER ENVIRONMENT**
-- Deploy the agent for debugging by running the following code in the CLI at the `<root>` directory. The debugger will be available at port 5678.
+**DEVELOPMENT ENVIRONMENT**
+- Deploy the agent for development by running the following code in the CLI at the `<root>` directory. Developers can attach the debugger running at port 5678.
 ```
 docker compose -f "./docker/docker-compose.debug.yml" up -d --build 
 ```
+- **Visual Studio Code**: 
+    - Developers will navigate to the `Run and Debug` tab and click the button. 
+    - If there is a missing launch.json, please open the `Command Palette` in any `.py` file, and run “Debug: Start Debugging”. Choose “Remote Attach”, and select `localhost` and `5678` as host and port. This should create a file at `<root>/.vscode/launch.json`
+    - Once the container has been built and the `launch.json` is available, click the green arrow at the top left corner to run the debugger. Debugging capabilities should now be available.
 
 **PRODUCTION ENVIRONMENT**
 - Deploy the agent and its dependencies by running the following code in the command prompt at the `<root>` directory:
