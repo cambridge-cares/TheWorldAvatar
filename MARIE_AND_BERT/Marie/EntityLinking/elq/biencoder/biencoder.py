@@ -224,7 +224,7 @@ class GetContextEmbedsHead(nn.Module):
 class BiEncoderModule(torch.nn.Module):
     def __init__(self, params):
         super(BiEncoderModule, self).__init__()
-        ctxt_bert = BertModel.from_pretrained(PRETRAINED_DIR, output_hidden_states=True,local_files_only=True)
+        ctxt_bert = BertModel.from_pretrained(PRETRAINED_DIR, output_hidden_states=True)
         if params["load_cand_enc_only"]:
             bert_model = params['bert_model']
         else:
