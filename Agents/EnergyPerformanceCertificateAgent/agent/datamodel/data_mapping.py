@@ -26,6 +26,7 @@ ABOX = {# Built forms
         OBE_BUNGALOW: OBE_BUNGALOW + ABOX_UUID,
         OBE_PARKHOME: OBE_PARKHOME + ABOX_UUID,
         OBE_MAISONETTE: OBE_MAISONETTE + ABOX_UUID,
+        OBE_FLAT: OBE_FLAT + ABOX_UUID
 }
 
 # Mapping of EPC data keys: {key from api : key mapping}
