@@ -1,4 +1,4 @@
-prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#>unit
+prefix rdfs:      <http://www.w3.org/2000/01/rdf-schema#>
 prefix rdf:       <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix obe:       <https://www.theworldavatar.com/kg/ontobuiltenv/>
 prefix dabgeo:    <http://www.purl.org/oema/infrastructure/>
@@ -17,7 +17,7 @@ WHERE {
     BIND ("Postcode" AS ?label )
     [IRI] obe:hasAddress/obe:hasPostalCode/rdfs:label ?value .
   } UNION { 
-    BIND ("Building" AS ?label )
+    BIND ("Building name" AS ?label )
     [IRI] obe:hasAddress/icontact:hasBuilding ?value . 
   } UNION { 
     BIND ("Address" AS ?label )
@@ -35,9 +35,6 @@ WHERE {
   { BIND ("Type" AS ?label )
     [IRI] rdf:type ?value_ini .
     BIND (replace(replace(str(?value_ini), str(dabgeo:), ''), str(obe:), '') as ?value)
-  } UNION { 
-    BIND ("Name" AS ?label )
-    [IRI] rdfs:label ?value .
   } UNION { 
     BIND ("Identifier" AS ?label )
     BIND ("(i.e. UPRN where available)" AS ?unit )
@@ -58,9 +55,12 @@ WHERE {
     [IRI] obe:hasBuiltForm/rdf:type ?value_ini .
     BIND (replace(str(?value_ini), str(obe:), '') as ?value)
   } UNION { 
-    BIND ("Usage category" AS ?label )
-    [IRI] obe:hasUsageCategory/rdf:type ?value_ini .
+    BIND ("Property usage" AS ?label )
+    [IRI] obe:hasPropertyUsage ?usage .
+    ?usage rdf:type ?value_ini .
+    OPTIONAL { ?usage obe:hasUsageShare ?unit_ini . }
     BIND (replace(str(?value_ini), str(obe:), '') as ?value)
+    BIND (concat(str(?unit_ini*100), ' %') as ?unit)
   }
   # Numerical building information
   UNION { 
