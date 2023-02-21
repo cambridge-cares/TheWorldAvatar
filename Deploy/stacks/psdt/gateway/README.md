@@ -18,3 +18,5 @@ tilesets for Cesium visualisations:
 - Copy the Hugo Ball, Leibniz, measurement station, and house 45 tilesets into `/gateway/static/ps/buildings/lod3/`.
 
 Don't forget to redeploy the container after updating the static folder.
+
+Check the nginx configuration file for the port number on which the server is listening.
