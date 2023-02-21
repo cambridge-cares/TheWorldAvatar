@@ -261,7 +261,6 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
             if instantiated and instantiated[0].get('certificate') == row.get('lmk-key'):
                 # 1) EPC data up to date --> Do nothing
                 logger.info('EPC data for UPRN still up to date. No update needed.')
-                new_epcs = 0
             else:
                 # 2) & 3) Data not instantiated at all or outdated --> condition data
                 if (epc_endpoint=='domestic'):
@@ -1090,7 +1089,7 @@ def summarize_epc_data(data, epc_endpoint):
         most_common = ['epc_rating', 'built_form_iri', 'property_type_iri']
         # 3) Aggregate / concatenate distinct values
         agg = ['usage_iri',  'floor_description', 'roof_description',
-            'wall_description', 'windows_description']
+               'wall_description', 'windows_description']
 
         # Summarize data per parent building
         parents = data['parent_iri'].unique()
@@ -1216,7 +1215,7 @@ def summarize_epc_data(data, epc_endpoint):
         # Initialise return DataFrame
         cols = ['uprn', 'address_iri', 'addr_street', 'addr_number', 'addr_bldg_name', 'postcode_iri', 
                 'district_iri', 'property_type_iri', 'usage_iri',
-                 'floor_area', 'epc_rating', 'created', 'weightage']
+                'floor_area', 'epc_rating', 'created', 'weightage']
         df = pd.DataFrame(columns=cols)
 
         #
