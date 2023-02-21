@@ -25,7 +25,7 @@ from Marie.EntityLinking.elq.common.ranker_base import BertEncoder, get_model_ob
 from Marie.EntityLinking.blink.common.optimizer import get_bert_optimizer
 from Marie.EntityLinking.elq.biencoder.allennlp_span_utils import batched_span_select, batched_index_select
 from Marie.EntityLinking.elq.biencoder.utils import batch_reshape_mask_left
-from Marie.Util.location import TOKENIZER_DIR
+from Marie.Util.location import PRETRAINED_DIR
 
 
 def load_biencoder(params):
@@ -224,7 +224,7 @@ class GetContextEmbedsHead(nn.Module):
 class BiEncoderModule(torch.nn.Module):
     def __init__(self, params):
         super(BiEncoderModule, self).__init__()
-        ctxt_bert = BertModel.from_pretrained(params["bert_model"], output_hidden_states=True)
+        ctxt_bert = BertModel.from_pretrained(PRETRAINED_DIR, output_hidden_states=True,local_files_only=True)
         if params["load_cand_enc_only"]:
             bert_model = params['bert_model']
         else:
@@ -561,7 +561,7 @@ class BiEncoderRanker(torch.nn.Module):
         self.START_TOKEN = "[CLS]"
         self.END_TOKEN = "[SEP]"
         self.tokenizer = BertTokenizerFast.from_pretrained(
-            TOKENIZER_DIR, do_lower_case=params["lowercase"],local_files_only=True
+            params["bert_model"], do_lower_case=params["lowercase"]
         )
         # init model
         self.build_model()
