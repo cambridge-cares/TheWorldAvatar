@@ -142,17 +142,23 @@ def get_children_and_parent_building_properties():
     # 
     # usage = actual usage iri (individual instance)
     # usage_iri = usage type (concept)
+    #NOTE: Usage labels and weightages of children not explicitly queried as
+    #      1) weightage will be assessed for parent building based on count
+    #      2) usage labels for usage instances won't be instantiated for parent
+    #         buildings, as same usage could refer to multiple children , i.e. multiple 
+    #         labels --> parent buildings only provide high level summary
+
     query = f"""
         SELECT DISTINCT ?parent_iri ?parent_id ?property_iri ?address_iri ?postcode_iri ?district_iri
                         ?addr_street ?addr_number ?addr_bldg_name ?addr_unit_name ?epc_rating ?rooms 
-                        ?usage_iri ?property_type_iri ?built_form_iri ?construction_start
+                        ?usage_iri ?usage_label ?property_type_iri ?built_form_iri ?construction_start
                         ?construction_end ?floor_area ?floor_description ?roof_description 
                         ?wall_description  ?windows_description
         WHERE {{
             ?property_iri <{OBE_IS_IN}> ?parent_iri ;
-                      <{OBE_HAS_ADDRESS}> ?address_iri .
+                          <{OBE_HAS_ADDRESS}> ?address_iri .
             ?address_iri <{OBE_HAS_POSTALCODE}> ?postcode_iri ;
-                     <{OBE_HAS_ADMIN_DISTRICT}> ?district_iri .
+                         <{OBE_HAS_ADMIN_DISTRICT}> ?district_iri .
             OPTIONAL {{ ?address_iri <{ICONTACT_HAS_STREET}> ?addr_street }}
             OPTIONAL {{ ?address_iri <{ICONTACT_HAS_STREET_NUMBER}> ?addr_number }}
             OPTIONAL {{ ?address_iri <{ICONTACT_HAS_BUILDING}> ?addr_bldg_name }}
@@ -160,7 +166,7 @@ def get_children_and_parent_building_properties():
             OPTIONAL {{ ?property_iri <{OBE_HAS_ENERGYRATING}> ?epc_rating }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_NUMBER_ROOMS}> ?rooms }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_PROPERTY_USAGE}> ?usage .
-                        ?usage <{RDF_TYPE}> ?usage_iri }}
+                        ?usage <{RDF_TYPE}> ?usage_iri . }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_PROPERTY_TYPE}>/<{RDF_TYPE}> ?property_type_iri }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_BUILT_FORM}>/<{RDF_TYPE}> ?built_form_iri }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_CONSTRUCTION_DATE}>/<{TIME_HAS_BEGINNING}>/<{TIME_IN_DATETIME_STAMP}> ?construction_start }}
@@ -179,39 +185,6 @@ def get_children_and_parent_building_properties():
                                     <{RDFS_COMMENT}> ?windows_description }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_TOTAL_FLOOR_AREA}>/<{OM_HAS_VALUE}>/<{OM_NUM_VALUE}> ?floor_area }}
             OPTIONAL {{ ?parent_iri <{OBE_HAS_IDENTIFIER}> ?parent_id }}
-        }}
-    """
-    # Remove unnecessary whitespaces
-    query = ' '.join(query.split())
-
-    return query
-
-
-def get_children_and_parent_building_properties_non_domestic():
-    # Get IRIs of instantiated properties and parent buildings as well as
-    # key information of properties to "summarize"
-    # 
-    # usage = actual usage iri (individual instance)
-    # usage_iri = usage type (concept)
-    query = f"""
-        SELECT DISTINCT ?parent_iri ?parent_id ?property_iri ?address_iri ?postcode_iri ?district_iri
-                        ?addr_street ?addr_number ?addr_bldg_name ?addr_unit_name ?epc_rating  
-                        ?usage_iri ?floor_area
-        WHERE {{
-            ?property_iri <{OBE_IS_IN}> ?parent_iri ;
-                      <{OBE_HAS_ADDRESS}> ?address_iri .
-            ?address_iri <{OBE_HAS_POSTALCODE}> ?postcode_iri ;
-                     <{OBE_HAS_ADMIN_DISTRICT}> ?district_iri .
-            OPTIONAL {{ ?address_iri <{ICONTACT_HAS_STREET}> ?addr_street }}
-            OPTIONAL {{ ?address_iri <{ICONTACT_HAS_STREET_NUMBER}> ?addr_number }}
-            OPTIONAL {{ ?address_iri <{ICONTACT_HAS_BUILDING}> ?addr_bldg_name }}
-            OPTIONAL {{ ?address_iri <{OBE_HAS_UNIT_NAME}> ?addr_unit_name }}
-            OPTIONAL {{ ?property_iri <{OBE_HAS_ENERGYRATING}> ?epc_rating }}
-            OPTIONAL {{ ?property_iri <{OBE_HAS_PROPERTY_USAGE}> ?usage .
-                        ?usage <{RDF_TYPE}> ?usage_iri }}
-            OPTIONAL {{ ?property_iri <{OBE_HAS_TOTAL_FLOOR_AREA}>/<{OM_HAS_VALUE}>/<{OM_NUM_VALUE}> ?floor_area }}
-            OPTIONAL {{ ?parent_iri <{OBE_HAS_IDENTIFIER}> ?parent_id }}
-            
         }}
     """
     # Remove unnecessary whitespaces
@@ -396,23 +369,24 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
         if built_form_iri:
             triples += f"<{property_iri}> <{OBE_HAS_BUILT_FORM}> <{ABOX[built_form_iri]}> . "
         if usage_iri:
-            # For multiple usages: Usage weight is instantiated for each usage
-            if (isinstance(usage_iri, list)):
-                # Instantiate usage labels if present 
-                if usage_label:
-                    for item, weight, label in zip(usage_iri, weightage, usage_label):
-                        us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
-                        triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
-                        triples += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
-                        triples += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
-                        triples += f"<{us_iri}> <{RDFS_LABEL}> \"{label}\"^^<{XSD_STRING}> . "
-                # Usage labels not present
-                else:
-                    for item, weight in zip(usage_iri, weightage):
-                        us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
-                        triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
-                        triples += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
-                        triples += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
+            if isinstance(usage_iri, list):
+                # For multiple usages: Usage weight is instantiated for each usage
+                if isinstance(weightage, list) and (len(weightage) == len(usage_iri)):
+                    # Instantiate usage labels if present 
+                    if isinstance(usage_label, list) and (len(usage_label) == len(usage_iri)):
+                        for item, weight, label in zip(usage_iri, weightage, usage_label):
+                            us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
+                            triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
+                            triples += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
+                            triples += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
+                            triples += f"<{us_iri}> <{RDFS_LABEL}> \"{label}\"^^<{XSD_STRING}> . "
+                    # Usage labels not present
+                    else:
+                        for item, weight in zip(usage_iri, weightage):
+                            us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
+                            triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
+                            triples += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
+                            triples += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
             else:
                 # For single usage: Usage weight is assumed 1 and not instantiated
                 us_iri = KB + usage_iri[usage_iri.rfind('/')+1:] + '_' + str(uuid.uuid4())
@@ -528,22 +502,24 @@ def update_epc_data(property_iri: str = None,
         if epc_rating: insert += f"<{property_iri}> <{OBE_HAS_ENERGYRATING}> \"{epc_rating}\"^^<{XSD_STRING}> ."
         if rooms: insert += f"<{property_iri}> <{OBE_HAS_NUMBER_ROOMS}> \"{rooms}\"^^<{XSD_INTEGER}> . "
         if usage_iri:
-            if (isinstance(usage_iri, list)):
-                # Instantiate usage labels if present 
-                if usage_label:                      
-                    for item, weight, label in zip(usage_iri, weightage, usage_label):
-                        us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
-                        insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
-                        insert += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
-                        insert += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
-                        insert += f"<{us_iri}> <{RDFS_LABEL}> \"{label}\"^^<{XSD_STRING}> . "
-                # Usage labels not present
-                else:
-                    for item, weight in zip(usage_iri, weightage):
-                        us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
-                        insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
-                        insert += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
-                        insert += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
+            if isinstance(usage_iri, list):
+                # For multiple usages: Usage weight is instantiated for each usage
+                if isinstance(weightage, list) and (len(weightage) == len(usage_iri)):
+                    # Instantiate usage labels if present 
+                    if isinstance(usage_label, list) and (len(usage_label) == len(usage_iri)):                   
+                        for item, weight, label in zip(usage_iri, weightage, usage_label):
+                            us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
+                            insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
+                            insert += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
+                            insert += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
+                            insert += f"<{us_iri}> <{RDFS_LABEL}> \"{label}\"^^<{XSD_STRING}> . "
+                    # Usage labels not present
+                    else:
+                        for item, weight in zip(usage_iri, weightage):
+                            us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
+                            insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
+                            insert += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
+                            insert += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
             else:
                 us_iri = KB + usage_iri[usage_iri.rfind('/')+1:] + '_' + str(uuid.uuid4())
                 insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "

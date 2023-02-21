@@ -37,8 +37,8 @@ def obtain_data_for_certificate(lmk_key: str, endpoint='domestic'):
     """
     # Get EPC API endpoint
     endpoints = {'domestic': EPC_DOMESTIC_CERT,
-                'non-domestic': EPC_NON_DOMESTIC_CERT,
-                'display': EPC_DISPLAY_CERT}
+                 'non-domestic': EPC_NON_DOMESTIC_CERT,
+                 'display': EPC_DISPLAY_CERT}
     url = endpoints.get(endpoint)
     if not url:
         logger.error('Invalid endpoint (i.e. EPC type) provided.')

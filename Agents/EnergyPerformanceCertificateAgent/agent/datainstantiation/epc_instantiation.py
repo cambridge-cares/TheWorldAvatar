@@ -155,12 +155,10 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
                                           'construction_end','floor_description', 
                                           'roof_description','wall_description', 
                                           'windows_description','floor_area', 'epc_rating', 'rooms', 'weightage']
-                    elif (epc_endpoint == 'non-domestic'):
+                    elif (epc_endpoint in ['non-domestic', 'display']):
                         data_to_update = ['epc_lmkkey','property_type_iri','usage_iri', 'usage_label',
                                           'floor_area', 'epc_rating', 'weightage']
-                    elif (epc_endpoint == 'display'):
-                        data_to_update = ['epc_lmkkey', 'property_type_iri','usage_iri', 'usage_label',
-                                          'floor_area', 'epc_rating', 'weightage']
+
                     data_to_update = {k: v for k, v in data_to_instantiate.items() if k in data_to_update}
                     data_to_update['property_iri'] = instantiated[0].get('property')
 
@@ -306,16 +304,14 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
                     # potentially include instantiation of previously not available data
                     if (epc_endpoint == 'domestic'):
                         data_to_update = ['epc_lmkkey', 'built_form_iri', 
-                                      'property_type_iri','usage_iri', 'usage_label',
-                                      'construction_end','floor_description', 
-                                      'roof_description','wall_description', 
-                                      'windows_description','floor_area', 'epc_rating', 'rooms', 'weightage']
-                    if (epc_endpoint == 'non-domestic'):
+                                          'property_type_iri','usage_iri', 'usage_label',
+                                          'construction_end','floor_description', 
+                                          'roof_description','wall_description', 
+                                          'windows_description','floor_area', 'epc_rating', 'rooms', 'weightage']
+                    elif (epc_endpoint in ['non-domestic', 'display']):
                         data_to_update = ['epc_lmkkey','property_type_iri','usage_iri', 'usage_label',
                                           'floor_area', 'epc_rating', 'weightage']
-                    elif (epc_endpoint == 'display'):
-                        data_to_update = ['epc_lmkkey', 'property_type_iri',
-                                          'floor_area', 'epc_rating', 'weightage', 'usage_iri', 'usage_label']
+
                     data_to_update = {k: v for k, v in data_to_instantiate.items() if k in data_to_update}
                     data_to_update['property_iri'] = instantiated[0].get('property')
 
@@ -326,8 +322,6 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
                     updated_epcs += 1
         else:
             logger.info('No associated UPRNs are instantiated in OntoCityGml endpoint.')
-    else:
-        logger.info('No EPC data available for provided lodgement identifier.')
 
     if summarise:
         # Potentially "summarise" EPCs for parent buildings
@@ -362,7 +356,6 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
 
     # Initialise return values
     all_epcs = (0, 0)
-    all_summaries = (0, 0)
 
     # Initialise KG clients
     kgclient_epc = KGClient(query_endpoint, update_endpoint)
@@ -399,12 +392,11 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
             # Update number of amended EPC instances
             all_epcs = tuple([sum(x) for x in zip(all_epcs, epcs)])
 
-        # Summarise EPCs for parent building
-        summaries = instantiate_epcs_for_parent_buildings(kgclient=kgclient_epc, epc_endpoint=epc_endpoint)  
-        all_summaries = tuple([sum(x) for x in zip(all_summaries, summaries)])
-
+    # Summarise EPCs for parent building
+    summaries = instantiate_epcs_for_parent_buildings(kgclient=kgclient_epc) 
+     
     # Return number of newly instantiated and updated EPCs (single and summaries)
-    return (all_epcs, all_summaries)
+    return (all_epcs, summaries)
 
 
 def condition_epc_data(data):
@@ -415,7 +407,7 @@ def condition_epc_data(data):
             data - dictionary of data as returned from API
     """
 
-    # Initialise dictionary of data to Instantiate
+    # Initialise dictionary of data to instantiate
     data_to_instantiate = {
         'epc_lmkkey': data.get('lmk-key'),
         'uprn': data.get('uprn'),
@@ -508,7 +500,7 @@ def condition_epc_non_domestic_data(data):
             data - dictionary of data as returned from API
     """
 
-    # Initialise dictionary of data to Instantiate
+    # Initialise dictionary of data to instantiate
     data_to_instantiate = {
         'epc_lmkkey': data.get('lmk-key'),
         'uprn': data.get('uprn'),
@@ -568,7 +560,7 @@ def condition_epc_display_data(data):
             data - dictionary of data as returned from API
     """
 
-    # Initialise dictionary of data to Instantiate
+    # Initialise dictionary of data to instantiate
     data_to_instantiate = {
         'epc_lmkkey': data.get('lmk-key'),
         'uprn': data.get('uprn'),
@@ -882,15 +874,15 @@ def retrieve_ocgml_uprns(uprn: str = '', query_endpoint=OCGML_ENDPOINT,
 def retrieve_parent_building(uprns: list, query_endpoint=QUERY_ENDPOINT,
                              update_endpoint=UPDATE_ENDPOINT, kgclient=None):
     """
-        Retrieve parent building for list of UPRNs (i.e. flats)
-        
-        Arguments:
-            uprns - List of UPRNs (str) for which to retrieve parent building
-            query_endpoint - SPARQL endpoint from which to retrieve data
-            kgclient - pre-initialized KG client with endpoints
+    Retrieve parent building for list of UPRNs (i.e. flats)
+    
+    Arguments:
+        uprns - List of UPRNs (str) for which to retrieve parent building
+        query_endpoint - SPARQL endpoint from which to retrieve data
+        kgclient - pre-initialized KG client with endpoints
 
-        Returns:
-            IRI of parent building (None if no parent building instantiated)
+    Returns:
+        IRI of parent building (None if no parent building instantiated)
     """
 
     # Initialise parent building IRI
@@ -917,11 +909,10 @@ def retrieve_parent_building(uprns: list, query_endpoint=QUERY_ENDPOINT,
 
 def instantiate_epcs_for_parent_buildings(query_endpoint=QUERY_ENDPOINT,
                                           update_endpoint=UPDATE_ENDPOINT,
-                                          kgclient=None, 
-                                          epc_endpoint='domestic'):
+                                          kgclient=None):
     """
-        Retrieves instantiated EPC information for "child" properties and
-        summarizes and instantiates them for the parent building
+    Retrieves instantiated EPC information for "child" properties and
+    summarizes and instantiates them for the parent building
     """
 
     # Initialise return values
@@ -933,31 +924,24 @@ def instantiate_epcs_for_parent_buildings(query_endpoint=QUERY_ENDPOINT,
         kgclient = KGClient(query_endpoint, update_endpoint)
 
     # Retrieve EPC data for childen properties and parent buildings
-    epcs_data = retrieve_epcs_child_and_parent_buildings(kgclient=kgclient, epc_endpoint=epc_endpoint)
+    epcs_data = retrieve_epcs_child_and_parent_buildings(kgclient=kgclient)
     # Summarize EPC information for parent buildings
-    summarized = summarize_epc_data(epcs_data, epc_endpoint=epc_endpoint)
-    if (epc_endpoint == 'domestic'):
-        columns_to_instantiate = ['property_iri', 'uprn',
-            'address_iri', 'addr_street', 'addr_number', 'addr_bldg_name', 'addr_unit_name',
-            'postcode_iri', 'district_iri', 'built_form_iri', 'property_type_iri',
-            'usage_iri', 'usage_label', 'construction_start', 'construction_end',
-            'floor_description', 'roof_description', 'wall_description',
-            'windows_description', 'floor_area', 'epc_rating', 'rooms', 'weightage']
-        
-        columns_to_update = ['property_iri', 'built_form_iri', 'property_type_iri',
-                            'usage_iri', 'usage_label', 'construction_end',
-                            'floor_description', 'roof_description', 'wall_description', 
-                            'windows_description','floor_area', 'epc_rating', 'rooms', 'weightage']
+    summarized = summarize_epc_data(epcs_data)
 
-    elif ((epc_endpoint == 'non-domestic') or (epc_endpoint == 'display')):
-        columns_to_instantiate = ['property_iri', 'uprn',
-            'address_iri', 'addr_street', 'addr_number', 'addr_bldg_name', 'addr_unit_name',
-            'postcode_iri', 'district_iri', 'property_type_iri',
-            'usage_iri', 'usage_label', 'floor_area', 'epc_rating', 'weightage']
-        
-        columns_to_update = ['property_iri', 'property_type_iri',
-                            'usage_iri', 'usage_label', 
-                            'floor_area', 'epc_rating', 'weightage']
+    columns_to_instantiate = ['property_iri', 'uprn',
+        'address_iri', 'addr_street', 'addr_number', 'addr_bldg_name', 'addr_unit_name',
+        'postcode_iri', 'district_iri', 'property_type_iri', 'usage_iri', 'usage_label',
+        'floor_area', 'epc_rating', 'weightage',            
+        # Domestic specific
+        'built_form_iri', 'construction_start', 'construction_end',
+        'floor_description', 'roof_description', 'wall_description',
+        'windows_description']
+    
+    columns_to_update = ['property_iri', 'property_type_iri', 'usage_iri', 'usage_label',
+        'floor_area', 'epc_rating', 'weightage',
+        # Domestic specific
+        'built_form_iri', 'construction_end', 'floor_description', 'roof_description', 
+        'wall_description', 'windows_description', 'rooms']
 
     # Instantiate / Update EPC information for parent buildings
     for index, row in summarized.iterrows():
@@ -992,18 +976,18 @@ def instantiate_epcs_for_parent_buildings(query_endpoint=QUERY_ENDPOINT,
 
 def retrieve_epcs_child_and_parent_buildings(query_endpoint=QUERY_ENDPOINT,
                                              update_endpoint=UPDATE_ENDPOINT, 
-                                             kgclient=None, epc_endpoint='domestic'):
+                                             kgclient=None):
     """
-        Retrieves instantiated EPC information for all parent buildings
-        and associated children properties from KG
+    Retrieves instantiated EPC information for all parent buildings
+    and associated children properties from KG
 
-        Returns:
-            DataFrame with following columns:
-            ['addr_number', 'addr_street', 'addr_bldg_name', 'addr_unit_name', 'address_iri', 
-            'built_form_iri', 'construction_end', 'construction_start', 'district_iri', 
-            'epc_rating', 'floor_area', 'floor_description', 'parent_iri', 'parent_id', 
-            'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 'rooms', 
-            'usage_iri', 'usage_label', 'wall_description', 'windows_description', 'weightage'] 
+    Returns:
+        DataFrame with following columns:
+        ['addr_number', 'addr_street', 'addr_bldg_name', 'addr_unit_name', 'address_iri', 
+        'built_form_iri', 'construction_end', 'construction_start', 'district_iri', 
+        'epc_rating', 'floor_area', 'floor_description', 'parent_iri', 'parent_id', 
+        'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 'rooms', 
+        'usage_iri', 'usage_label', 'wall_description', 'windows_description', 'weightage'] 
     """
 
     # Create KG client if not provided
@@ -1011,45 +995,28 @@ def retrieve_epcs_child_and_parent_buildings(query_endpoint=QUERY_ENDPOINT,
         kgclient = KGClient(query_endpoint, update_endpoint)
 
     # Retrieve EPC data
-    if (epc_endpoint == 'domestic'):
-        query = get_children_and_parent_building_properties()
-    elif ((epc_endpoint == 'non-domestic') or (epc_endpoint == 'display')):
-        query = get_children_and_parent_building_properties_non_domestic()
+    query = get_children_and_parent_building_properties()
     res = kgclient.performQuery(query)
 
     # Unwrap results and create DataFrame
-    if (epc_endpoint == 'domestic'):
-        cols = ['addr_number', 'addr_street', 'addr_bldg_name', 'addr_unit_name', 'address_iri', 
-                'built_form_iri', 'construction_end', 'construction_start', 'district_iri', 
-                'epc_rating', 'floor_area', 'floor_description', 'parent_iri', 'parent_id', 
-                'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 'rooms', 
-                'usage_iri', 'usage_label', 'wall_description', 'windows_description'] 
-        df = pd.DataFrame(columns=cols, data=res)
+    cols = ['addr_number', 'addr_street', 'addr_bldg_name', 'addr_unit_name', 'address_iri', 
+            'built_form_iri', 'construction_end', 'construction_start', 'district_iri', 
+            'epc_rating', 'floor_area', 'floor_description', 'parent_iri', 'parent_id', 
+            'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 'rooms', 
+            'usage_iri', 'usage_label', 'wall_description', 'windows_description', 'weightage'] 
+    df = pd.DataFrame(columns=cols, data=res)
 
-        # Cast data types
-        for c in ['addr_number', 'addr_street', 'addr_bldg_name', 'addr_unit_name', 'address_iri', 
-                'built_form_iri', 'district_iri', 'epc_rating', 'floor_description', 'parent_iri', 
-                'parent_id', 'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 
-                'usage_iri', 'usage_label', 'wall_description', 'windows_description'] :
-            df[c] = df[c].astype('string')
-        df['construction_start'] = pd.to_datetime(df['construction_start'], yearfirst=True, dayfirst=False)
-        df['construction_end'] = pd.to_datetime(df['construction_end'], yearfirst=True, dayfirst=False)
-        df['floor_area'] = df['floor_area'].astype('float')
-        df['rooms'] = df['rooms'].astype('Int64')
-
-    elif ((epc_endpoint == 'non-domestic') or (epc_endpoint == 'display')):
-        cols = ['addr_number', 'addr_street', 'addr_bldg_name', 'addr_unit_name', 'address_iri', 
-                'district_iri', 'epc_rating', 'floor_area', 'parent_iri', 'parent_id', 
-                'postcode_iri', 'property_iri', 'property_type_iri', 'usage_iri', 'usage_label', 'weightage'] 
-        df = pd.DataFrame(columns=cols, data=res)
-
-        # Cast data types
-        for c in ['addr_number', 'addr_street', 'addr_bldg_name', 'addr_unit_name', 'address_iri', 
-                'district_iri', 'epc_rating', 'parent_iri', 'parent_id', 'postcode_iri', 'property_iri', 
-                'property_type_iri', 'usage_iri', 'usage_label'] :
-            df[c] = df[c].astype('string')
-        df['floor_area'] = df['floor_area'].astype('float')
-        df['weightage'] = df['weightage'].astype('float')
+    # Cast data types
+    for c in ['addr_number', 'addr_street', 'addr_bldg_name', 'addr_unit_name', 'address_iri', 
+              'built_form_iri', 'district_iri', 'epc_rating', 'floor_description', 'parent_iri', 
+              'parent_id', 'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 
+              'usage_iri', 'usage_label', 'wall_description', 'windows_description'] :
+        df[c] = df[c].astype('string')
+    df['construction_start'] = pd.to_datetime(df['construction_start'], yearfirst=True, dayfirst=False)
+    df['construction_end'] = pd.to_datetime(df['construction_end'], yearfirst=True, dayfirst=False)
+    df['floor_area'] = df['floor_area'].astype('float')
+    df['weightage'] = df['weightage'].astype('float')
+    df['rooms'] = df['rooms'].astype('Int64')
 
     # Fill missing data with None
     df = df.replace('nan', None)
@@ -1059,269 +1026,160 @@ def retrieve_epcs_child_and_parent_buildings(query_endpoint=QUERY_ENDPOINT,
     return df
 
 
-def summarize_epc_data(data, epc_endpoint):
+def summarize_epc_data(data):
     """
-        Summarizes provided EPC data for "children" properties into aggregate
-        values for parent buildings
+    Summarizes provided EPC data for "children" properties into aggregate
+    values for parent buildings
 
-        Arguments:
-            data - DataFrame with following columns:
-                  ['addr_number', 'addr_street', 'addr_bldg_name', 'addr_unit_name', 'address_iri', 
-                  'built_form_iri', 'construction_end', 'construction_start', 'district_iri', 
-                  'epc_rating', 'floor_area', 'floor_description', 'parent_iri', 'parent_id', 
-                  'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 'rooms', 
-                  'usage_iri', 'usage_label', 'wall_description', 'windows_description'] 
+    Arguments:
+        data - DataFrame with following columns:
+                ['addr_number', 'addr_street', 'addr_bldg_name', 'addr_unit_name', 'address_iri', 
+                'built_form_iri', 'construction_end', 'construction_start', 'district_iri', 
+                'epc_rating', 'floor_area', 'floor_description', 'parent_iri', 'parent_id', 
+                'postcode_iri', 'property_iri', 'property_type_iri', 'roof_description', 'rooms', 
+                'usage_iri', 'usage_label', 'wall_description', 'windows_description', 'weightage'] 
     """
-    if (epc_endpoint == 'domestic'):
-        # Initialise return DataFrame
-        cols = ['uprn', 'address_iri', 'addr_street', 'addr_number', 'addr_bldg_name', 'postcode_iri', 
-                'district_iri', 'built_form_iri', 'property_type_iri', 'usage_iri',
-                'construction_start', 'construction_end', 'floor_description', 'roof_description', 
-                'wall_description', 'windows_description', 'floor_area', 'epc_rating', 'rooms', 'created', 'weightage']
-        df = pd.DataFrame(columns=cols)
 
-        #
-        # How to summarize values
-        #
-        # 1) Sum up actual values of children properties
-        sum_up = ['rooms', 'floor_area']
-        # 2) Use most common value of children properties
-        most_common = ['epc_rating', 'built_form_iri', 'property_type_iri']
-        # 3) Aggregate / concatenate distinct values
-        agg = ['usage_iri',  'floor_description', 'roof_description',
-               'wall_description', 'windows_description']
+    # Initialise return DataFrame
+    cols = ['uprn', 'address_iri', 'addr_street', 'addr_number', 'addr_bldg_name', 'postcode_iri', 
+            'district_iri', 'property_type_iri', 'usage_iri', 'floor_area', 'epc_rating',  'created', 
+            'weightage',
+            # Additional info for domestic buildings
+            'built_form_iri', 'rooms', 'construction_start', 'construction_end', 'floor_description', 
+            'roof_description', 'wall_description', 'windows_description',]
+    df = pd.DataFrame(columns=cols)
 
-        # Summarize data per parent building
-        parents = data['parent_iri'].unique()
-        for p in parents:
-            d = data[data['parent_iri'] == p].copy()
+    #
+    # How to summarize values
+    #
+    # 1) Sum up actual values of children properties
+    sum_up = ['rooms', 'floor_area']
+    # 2) Use most common value of children properties
+    most_common = ['epc_rating', 'built_form_iri', 'property_type_iri']
+    # 3) Aggregate / concatenate distinct values
+    agg = ['usage_iri',  'floor_description', 'roof_description',
+           'wall_description', 'windows_description']
+
+    # Summarize data per parent building
+    parents = data['parent_iri'].unique()
+    for p in parents:
+        d = data[data['parent_iri'] == p].copy()
+    
+        # Sum up
+        for i in sum_up:
+            df.loc[p, i] = d[i].sum()
+        # Most common
+        for i in most_common:
+            if not d[i].value_counts().empty:
+                # Retrieve most common value (i.e. value with highest count)
+                df.loc[p, i] = d[i].value_counts().index[0]
+        # Replace invalid maisonette property type
+        if df.loc[p, 'property_type_iri'] == OBE_MAISONETTE:
+            df.loc[p, 'property_type_iri'] = OBE_HOUSE
+
+        # Concatenate distinct values
+        for i in agg:
+            # Assess list of usages and respetive weightages
+            if (i == 'usage_iri'):
+                usage_list = list(d['usage_iri'])
+                total_usages = len(usage_list)
+
+                vals = list(d['usage_iri'].unique())
+                weightage = []
+                if len(vals) > 1:
+                    for item in vals:
+                        count = (usage_list.count(item))
+                        weight = count/total_usages
+                        weightage.append((weight))
+                    df.loc[p, 'weightage'] = ';'.join([str(w) for w in weightage])
+
+                vals = [v for v in vals if v]                
+                
+                if vals:
+                    concatenated = ';'.join(vals)
+                    # Replace invalid single residential usage
+                    concatenated_fixed = concatenated.replace(OBE_SINGLERESIDENTIAL, OBE_MULTIRESIDENTIAL)
+                    df.loc[p, 'usage_iri'] = concatenated_fixed
+            # Simply concatenate all other values
+            else:
+                vals = list(d[i].unique())
+                vals = [v for v in vals if v]
+                if vals:
+                    concatenated = ';'.join(vals)
+                    df.loc[p, i] = concatenated
+
+        # Retrieve construction dates
+        try:
+            # Earliest construction start
+            df.loc[p, 'construction_start'] = d['construction_start'].min()
+            # Latest construction end
+            df.loc[p, 'construction_end'] = d['construction_end'].max()
+        except Exception:
+            logger.info('No construction date data could be obtained.')
         
-            # sum up
-            for i in sum_up:
-                df.loc[p, i] = d[i].sum()
-            # most common
-            for i in most_common:
-                if not d[i].value_counts().empty:
-                    # Retrieve most common value (i.e. value with highest count)
-                    df.loc[p, i] = d[i].value_counts().index[0]
-            # Replace invalid maisonette property type
-            if df.loc[p, 'property_type_iri'] == OBE_MAISONETTE:
-                df.loc[p, 'property_type_iri'] = OBE_HOUSE
+        # Retrieve postcode and admin district IRIs
+        try:
+            df.loc[p, 'district_iri'] = d['district_iri'].unique()[0]
+        except Exception:
+            logger.info('No AdministrativeDistrict IRI could be obtained.')
+        try:
+            df.loc[p, 'postcode_iri'] = d['postcode_iri'].unique()[0]
+        except Exception:
+            logger.info('No PostalCode IRI could be obtained.')
 
-            # concatenate distinct values
-            for i in agg:
-                if (i=='usage_iri'):
-                    usage_list = list(d['usage_iri'])
-                    total_usages = len(usage_list)
+        # Retrieve/create unique identifier for parent building ("UPRN equivalent")
+        uprn = d['parent_id'].unique()[0]
+        if not uprn: 
+            uprn = str(uuid.uuid4())
+            df.loc[p, 'created'] = True
+        df.loc[p, 'uprn'] = uprn
 
-                    vals = list(d['usage_iri'].unique())
-                    weightage = []
-                    if len(vals) > 1:
-                        for item in vals:
-                            count = (usage_list.count(item))
-                            weight = count/total_usages
-                            weightage.append((weight))
-                        df.loc[p, 'weightage'] = ';'.join([str(w) for w in weightage])
+        # Retrieve/create address information for parent building
+        addresses = list(d['address_iri'].unique())
+        addresses = [a for a in addresses if a]
+        if len(addresses) == 1:
+            # in case all children have same address
+            address = addresses[0]
+        else:
+            # in case children have different / no address
+            address = KB + 'Address_' + str(uuid.uuid4())
+        df.loc[p, 'address_iri'] = address
 
-                    vals = [v for v in vals if v]                
-                    
-                    if vals:
-                        concatenated = ';'.join(vals)
-                        # Replace invalid single residential usage
-                        concatenated_fixed = concatenated.replace(OBE_SINGLERESIDENTIAL, OBE_MULTIRESIDENTIAL)
-                        df.loc[p, 'usage_iri'] = concatenated_fixed
+        # Extract street and property number as well as building name
+        try:
+            street = sorted(d['addr_street'].unique())
+            street = [s for s in street if s]
+            # Remove leading and trailing single letters, i.e. "A King Street", "B King Street"
+            street = [re.sub('^[a-zA-Z] ', '', s) for s in street]
+            street = [re.sub(' [a-zA-Z]$', '', s) for s in street]
+            street = list(set(street))
+            if street:
+                concatenated = '; '.join(street)         
+                df.loc[p, 'addr_street'] = concatenated
+        except Exception:
+            logger.info('No Street name information could be obtained.')
+        
+        try:
+            nr = sorted(d['addr_number'].unique())
+            nr = [n for n in nr if n]
+            if nr:
+                concatenated = ', '.join(nr)
+                df.loc[p, 'addr_number'] = concatenated
+        except Exception:
+            logger.info('No Property number information could be obtained.')
 
-                else:
-                    vals = list(d[i].unique())
-                    vals = [v for v in vals if v]
-                    if vals:
-                        concatenated = ';'.join(vals)
-                        df.loc[p, i] = concatenated
-
-            # Retrieve construction dates
-            try:
-                # Earliest construction start
-                df.loc[p, 'construction_start'] = d['construction_start'].min()
-                # Latest construction end
-                df.loc[p, 'construction_end'] = d['construction_end'].max()
-            except Exception:
-                logger.info('No construction date data could be obtained.')
-            
-            # Retrieve postcode and admin district IRIs
-            try:
-                df.loc[p, 'district_iri'] = d['district_iri'].unique()[0]
-            except Exception:
-                logger.info('No AdministrativeDistrict IRI could be obtained.')
-            try:
-                df.loc[p, 'postcode_iri'] = d['postcode_iri'].unique()[0]
-            except Exception:
-                logger.info('No PostalCode IRI could be obtained.')
-
-            # Retrieve/create unique identifier for parent building ("UPRN equivalent")
-            uprn = d['parent_id'].unique()[0]
-            if not uprn: 
-                uprn = str(uuid.uuid4())
-                df.loc[p, 'created'] = True
-            df.loc[p, 'uprn'] = uprn
-
-            # Retrieve/create address information for parent building
-            addresses = list(d['address_iri'].unique())
-            addresses = [a for a in addresses if a]
-            if len(addresses) == 1:
-                # in case all children have same address
-                address = addresses[0]
-            else:
-                # in case children have different / no address
-                address = KB + 'Address_' + str(uuid.uuid4())
-            df.loc[p, 'address_iri'] = address
-
-            # Extract street and property number as well as building name
-            try:
-                street = sorted(d['addr_street'].unique())
-                street = [s for s in street if s]
-                # Remove leading and trailing single letters, i.e. "A King Street", "B King Street"
-                street = [re.sub('^[a-zA-Z] ', '', s) for s in street]
-                street = [re.sub(' [a-zA-Z]$', '', s) for s in street]
-                street = list(set(street))
-                if street:
-                    concatenated = '; '.join(street)         
-                    df.loc[p, 'addr_street'] = concatenated
-            except Exception:
-                logger.info('No Street name information could be obtained.')
-            
-            try:
-                nr = sorted(d['addr_number'].unique())
-                nr = [n for n in nr if n]
-                if nr:
-                    concatenated = ', '.join(nr)
-                    df.loc[p, 'addr_number'] = concatenated
-            except Exception:
-                logger.info('No Property number information could be obtained.')
-
-            try:
-                bldg = sorted(d['addr_bldg_name'].unique())
-                bldg = [n for n in bldg if n]
-                # Remove leading and trailing whitespaces and numbers, i.e. "8 King Castle", " King Castle"
-                bldg = [re.sub('^\d*\s*', '', s) for s in bldg]
-                bldg = [re.sub('\s*\d*$', '', s) for s in bldg]
-                bldg = list(set(bldg))
-                if bldg:
-                    concatenated = '; '.join(nr)
-                    df.loc[p, 'addr_bldg_name'] = concatenated
-            except Exception:
-                logger.info('No Building name information could be obtained.')
-
-    elif ((epc_endpoint == 'non-domestic') or (epc_endpoint == 'display')):
-        # Initialise return DataFrame
-        cols = ['uprn', 'address_iri', 'addr_street', 'addr_number', 'addr_bldg_name', 'postcode_iri', 
-                'district_iri', 'property_type_iri', 'usage_iri',
-                'floor_area', 'epc_rating', 'created', 'weightage']
-        df = pd.DataFrame(columns=cols)
-
-        #
-        # How to summarize values
-        #
-        # 1) Sum up actual values of children properties
-        sum_up = ['floor_area']
-        # 2) Use most common value of children properties
-        most_common = ['epc_rating', 'property_type_iri']
-        # 3) Aggregate / concatenate distinct values
-        agg = ['usage_iri']
-
-        # Summarize data per parent building
-        parents = data['parent_iri'].unique()
-        for p in parents:
-            d = data[data['parent_iri'] == p].copy()
-            # sum up
-            for i in sum_up:
-                df.loc[p, i] = d[i].sum()
-            # most common
-            for i in most_common:
-                if not d[i].value_counts().empty:
-                    # Retrieve most common value (i.e. value with highest count)
-                    df.loc[p, i] = d[i].value_counts().index[0]
-            
-            # concatenate distinct values
-            usage_list = list(d['usage_iri'])
-            total_usages = len(usage_list)
-
-            vals = list(d['usage_iri'].unique())
-            weightage = []
-            if len(vals) > 1:
-                for item in vals:
-                    count = (usage_list.count(item))
-                    weight = count/total_usages
-                    weightage.append((weight))
-                df.loc[p, 'weightage'] = ';'.join([str(i) for i in weightage])
-
-            vals = [v for v in vals if v]
-            if vals:
-                concatenated = ';'.join(vals)
-                df.loc[p, 'usage_iri'] = concatenated
-
-            # Retrieve postcode and admin district IRIs
-            try:
-                df.loc[p, 'district_iri'] = d['district_iri'].unique()[0]
-            except Exception:
-                logger.info('No AdministrativeDistrict IRI could be obtained.')
-            try:
-                df.loc[p, 'postcode_iri'] = d['postcode_iri'].unique()[0]
-            except Exception:
-                logger.info('No PostalCode IRI could be obtained.')
-
-            # Retrieve/create unique identifier for parent building ("UPRN equivalent")
-            uprn = d['parent_id'].unique()[0]
-            if not uprn: 
-                uprn = str(uuid.uuid4())
-                df.loc[p, 'created'] = True
-            df.loc[p, 'uprn'] = uprn
-
-            # Retrieve/create address information for parent building
-            addresses = list(d['address_iri'].unique())
-            addresses = [a for a in addresses if a]
-            if len(addresses) == 1:
-                # in case all children have same address
-                address = addresses[0]
-            else:
-                # in case children have different / no address
-                address = KB + 'Address_' + str(uuid.uuid4())
-            df.loc[p, 'address_iri'] = address
-
-            # Extract street and property number as well as building name
-            try:
-                street = sorted(d['addr_street'].unique())
-                street = [s for s in street if s]
-                # Remove leading and trailing single letters, i.e. "A King Street", "B King Street"
-                street = [re.sub('^[a-zA-Z] ', '', s) for s in street]
-                street = [re.sub(' [a-zA-Z]$', '', s) for s in street]
-                street = list(set(street))
-                if street:
-                    concatenated = '; '.join(street)         
-                    df.loc[p, 'addr_street'] = concatenated
-            except Exception:
-                logger.info('No Street name information could be obtained.')
-            
-            try:
-                nr = sorted(d['addr_number'].unique())
-                nr = [n for n in nr if n]
-                if nr:
-                    concatenated = ', '.join(nr)
-                    df.loc[p, 'addr_number'] = concatenated
-            except Exception:
-                logger.info('No Property number information could be obtained.')
-
-            try:
-                bldg = sorted(d['addr_bldg_name'].unique())
-                bldg = [n for n in bldg if n]
-                # Remove leading and trailing whitespaces and numbers, i.e. "8 King Castle", " King Castle"
-                bldg = [re.sub('^\d*\s*', '', s) for s in bldg]
-                bldg = [re.sub('\s*\d*$', '', s) for s in bldg]
-                bldg = list(set(bldg))
-                if bldg:
-                    concatenated = '; '.join(nr)
-                    df.loc[p, 'addr_bldg_name'] = concatenated
-            except Exception:
-                logger.info('No Building name information could be obtained.')
+        try:
+            bldg = sorted(d['addr_bldg_name'].unique())
+            bldg = [n for n in bldg if n]
+            # Remove leading and trailing whitespaces and numbers, i.e. "8 King Castle", " King Castle"
+            bldg = [re.sub('^\d*\s*', '', s) for s in bldg]
+            bldg = [re.sub('\s*\d*$', '', s) for s in bldg]
+            bldg = list(set(bldg))
+            if bldg:
+                concatenated = '; '.join(nr)
+                df.loc[p, 'addr_bldg_name'] = concatenated
+        except Exception:
+            logger.info('No Building name information could be obtained.')
 
 
     # Create 'property_iri' column
@@ -1342,7 +1200,7 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
     '''
         Retrieve relevant building information (i.e. footprint, elevation) from
         OntoCityGml SPARQl endpoint and instantiate/update according to OntoBuiltEnv
-        (elevation as triples, footprint uploaded to postgis)
+        (elevation as triples, footprint uploaded to PostGIS)
     '''
     # Initialise return values
     footprints_new = 0
