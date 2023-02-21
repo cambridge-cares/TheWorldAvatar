@@ -175,7 +175,7 @@ Instantiate EPC data for all instantiated UPRNs (and postcodes) by sending `POST
 
 ### **4) Run Building Matching Agent**
 
-The following steps refer to the Building Matching agent (on branch `1376-dev-building-matching-agent`) as of commit `79b13971aff9c0ccbd0cdd69db71c04ff9c80fd2`. More details can be found in the [Building Matching Readme]:
+The following steps refer to the Building Matching agent as of commit `3c9158599cfa78eea543ddc99d9225defe91e6c9`. More details can be found in the [Building Matching Readme]:
 
 1) Ensure both SPARQL endpoints, i.e. one containing buildings instantiated in OntoCityGML (`ocgml_endpoint`) and one with their OntoBuiltEnv counterparts (`epc_endpoint`), are available. In the following, let's assume the endpoints are:
 
@@ -227,7 +227,7 @@ Markus Hofmeister (mh807@cam.ac.uk), February 2023
 [VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
 
 <!-- github -->
-[Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/README.md
+[Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BuildingMatchingAgent/README.md
 [Common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
 [credentials]: https://github.com/cambridge-cares/TheWorldAvatar/tree/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/credentials
 [Digital Twin Visualisation Framework]:https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework
