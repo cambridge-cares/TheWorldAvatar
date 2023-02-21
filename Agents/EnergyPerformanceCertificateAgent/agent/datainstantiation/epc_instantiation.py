@@ -229,10 +229,13 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
         #
         uprns = retrieve_ocgml_uprns(uprn, kgclient=kgclient_ocgml)
         if uprns:
+            # Initialise boolean flag whether property is inside another (parent) building
+            is_child = False
             # Relevant UPRNs are instantiated in OntoCityGml (i.e. have geospatial representation)
             if len(uprns) == 1:
                 # If it is a flat, then create/retrieve parent building IRI
                 if row.get('property-type') in ['Flat', 'Maisonette']:
+                    is_child = True
                     parent = retrieve_parent_building(uprns, kgclient=kgclient_epc)
                     # Retrieve parent building IRI if already instantiated, otherwise create            
                     if parent:
@@ -242,6 +245,8 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
                 else:
                     parent_iri = None
             else:
+                # Current property belongs to building which hosts multiple UPRNs
+                is_child = True
                 parent = retrieve_parent_building(uprns, kgclient=kgclient_epc)
                 # Retrieve parent building IRI if already instantiated, otherwise create            
                 if parent:
@@ -272,8 +277,11 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
                     # 2) No EPC data instantiated yet --> Instantiate data
                     # Create Property IRI
                     if (epc_endpoint == 'domestic'):
-                        if row.get('property-type') in ['Flat', 'Maisonette']:
-                            data_to_instantiate['property_iri'] = OBE_FLAT + '_' + str(uuid.uuid4())
+                        if is_child:
+                            if row.get('property-type') in ['Flat', 'Maisonette']:
+                                data_to_instantiate['property_iri'] = KB + 'Flat_' + str(uuid.uuid4())
+                            else:
+                                data_to_instantiate['property_iri'] = KB + 'Property_' + str(uuid.uuid4())
                         else:
                             data_to_instantiate['property_iri'] = KB + 'Building_' + str(uuid.uuid4())
                     elif (epc_endpoint == 'non-domestic' or epc_endpoint == 'display'):
@@ -393,6 +401,8 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
             all_epcs = tuple([sum(x) for x in zip(all_epcs, epcs)])
 
     # Summarise EPCs for parent building
+    print('Instantiating EPC data for parent buildings ... ')
+    #logger.info('Instantiating EPC data for parent buildings ... ')    
     summaries = instantiate_epcs_for_parent_buildings(kgclient=kgclient_epc) 
      
     # Return number of newly instantiated and updated EPCs (single and summaries)
@@ -935,7 +945,7 @@ def instantiate_epcs_for_parent_buildings(query_endpoint=QUERY_ENDPOINT,
         # Domestic specific
         'built_form_iri', 'construction_start', 'construction_end',
         'floor_description', 'roof_description', 'wall_description',
-        'windows_description']
+        'windows_description', 'rooms']
     
     columns_to_update = ['property_iri', 'property_type_iri', 'usage_iri', 'usage_label',
         'floor_area', 'epc_rating', 'weightage',
@@ -1067,7 +1077,7 @@ def summarize_epc_data(data):
     
         # Sum up
         for i in sum_up:
-            df.loc[p, i] = d[i].sum()
+            df.loc[p, i] = d[i].sum(min_count=1)
         # Most common
         for i in most_common:
             if not d[i].value_counts().empty:
