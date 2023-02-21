@@ -4,22 +4,36 @@ In order to deploy (on a Linux machine):
 
 1. Spin up the `gateway` by following the instructions in its readme file.
 
-2. From a terminal in the `stack-manager` directory in TWA git repository, start the `stack-manager` by running the following:
+2. The PSDT is based on 'the stack' from the `Deploy/stacks/dynamic` folder within TWA git repository. Apart from the core stack, custom containers can be added, in particular the following agents:
+   - Access Agent
+   - District Heating Agent
+   - Feature Info Agent
+   - Forecasting Agent
+   - Historical House 45 Utilities Agent
+   - Historical Pirmasens Station Agent
+   - Historical Pump Data Instantiation Agent
+   - Sewage Network Agent
+   - Solarkataster Agent
+   - Thingspeak Agent
+
+   Please consult the readme files of each of these agents on how to build and deploy them as part of a stack. Essentially, in each case, the agent image needs to be built (or pulled from an image repository), and an input config `json` file needs to be copied into the `inputs/config` folder in the `stack-manager` directory in TWA git repository.
+
+3. From a terminal in the `stack-manager` directory, start the `stack-manager` by running the following:
     ```console
     sudo ./stack.sh start psdt
     ```
 
-3. Populate the `input` folder of the `stack-data-uploader` directory with what is in the `stack-inputs` folder, following the readme files in each subfolder.
+4. Populate the `input` folder of the `stack-data-uploader` directory in TWA git repository with what is in the `stack-inputs` folder, following the readme files in each subfolder.
 
-4. From a terminal in the `stack-data-uploader` directory in TWA git repository, start the `stack-data-uploader` container by running the following:
+5. From a terminal in the `stack-data-uploader` directory, start the `stack-data-uploader` container by running the following:
     ```console
     sudo ./stack.sh start psdt
     ```
 
-5. Run `copy_icons_into_geoserver.sh` from within the `stack-inputs` folder.
+6. Run `copy_icons_into_geoserver.sh` from within the `stack-inputs` folder.
 
-6. Spin up the visualisation by following the instructions in its readme file.
+7. Spin up the visualisation by following the instructions in its readme file.
 
-7. Spin up an instance of the Feature Info Agent from within TWA git repository.
+8. In order to view the visualisation webpage in a browser from outside the host machine, you will need to either open a port in the firewall of the host machine, or set up an ssh tunnel. The required port number can be found in the docker-compose file of the visualisation.
 
-8. Run the script to update the stack nginx configuration from the feature info agent files folder in order to make the agent reachable from the visualisation and prevent CORS errors.
+9. In order to access the web-frontends of the containers in the stack from outside the host machine, you will need to either open a port in the firewall of the host machine, or set up an ssh tunnel. For the required port number, see the readme file of the `gateway`.
