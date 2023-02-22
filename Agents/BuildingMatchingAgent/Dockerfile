@@ -1,6 +1,6 @@
 # First stage: build war file
 #==================================================================================================
-FROM maven:3.8.6-eclipse-temurin-11-focal as builder
+FROM maven:3.6-openjdk-8-slim as builder
 
 # Copy all files into root's home, including the source, pom file, ./m2 directory, credentials and config files
 ADD . /root
