@@ -5,7 +5,7 @@
 
     <servlet>
         <servlet-name>SensorLoggerMobileAppAgentServlet</servlet-name>
-        <servlet-class>uk.ac.cam.cares.jps.agent.sensorloggermobileappagent</servlet-class>
+        <servlet-class>uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.SensorLoggerMobileAppServlet</servlet-class>
     </servlet>
 
     <servlet-mapping>
