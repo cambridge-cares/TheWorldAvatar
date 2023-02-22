@@ -38,3 +38,36 @@ def task_initialise_postcodes(**inputs) -> dict:
         logger.error('Unable to instantiate local authority with postcodes.', ex)
         return {'msg': 'Postcode instantiation failed: ' + str(ex)}
 
+
+# Define task to initialise/update single EPC
+@shared_task(ignore_result=False)
+def task_instantiate_epc_data_for_certificate(**inputs) -> dict:
+    try:
+        # Instantiate/update EPC
+        epcs = instantiate_epc_data_for_certificate(**inputs)
+        return_dict = {'Newly instantiated EPCs': epcs[0],
+                       'Updated EPCs': epcs[1]}
+        for key, value in return_dict.items():
+            print(key, ' : ', value)
+        return return_dict                       
+    except Exception as ex:
+        logger.error('Unable to instantiate EPC data.', ex)
+        return {'msg': 'EPC data instantiation failed: ' + str(ex)}
+
+
+# Define task to initialise/update all EPCs
+@shared_task(ignore_result=False)
+def task_instantiate_epc_data_for_all_uprns(**inputs) -> dict:
+    try:
+        # Instantiate/update all EPCs
+        epcs = instantiate_epc_data_for_all_postcodes(**inputs)
+        return_dict = {'Newly instantiated EPCs': epcs[0][0],
+                       'Updated EPCs': epcs[0][1],
+                       'Newly instantiated parent buildings': epcs[1][0],
+                       'Updated parent buildings': epcs[1][1]}
+        for key, value in return_dict.items():
+            print(key, ' : ', value)
+        return return_dict
+    except Exception as ex:
+        logger.error('Unable to instantiate EPC data.', ex)
+        return {'msg': 'EPC data instantiation failed: ' + str(ex)}

@@ -62,10 +62,11 @@ def api_initialise_postcodes():
     
     # Start Celery task
     result = tasks.task_initialise_postcodes.delay(**inputs)
+    print(f'Submitted job to instantiate postcodes - job id: {result.id}')
     return jsonify({'result_id': result.id}), 200
 
 
-# Define route for API request to instantiate single EPC data (i.e. for one UPRN)
+# Define agent route to instantiate single EPC data (i.e. for one UPRN)
 @inputtasks_bp.route('/epcagent/instantiate/certificates/single', methods=['POST'])
 def api_instantiate_epc_data_for_certificate():
     #
@@ -108,18 +109,15 @@ def api_instantiate_epc_data_for_certificate():
         ocgml_endpoint = OCGML_ENDPOINT
         logger.info('Using default OntoCityGml endpoint.')
     inputs['ocgml_endpoint'] = ocgml_endpoint
-    try:
-        # Instantiate EPC
-        response = instantiate_epc_data_for_certificate(**inputs)
-        return jsonify({'Newly instantiated EPCs': response[0],
-                        'Updated EPCs': response[1]}), 200
-    except Exception as ex:
-        logger.error('Unable to instantiate EPC data.', ex)
-        return jsonify({'msg': 'EPC data instantiation failed: ' + str(ex)}), 500
+
+    # Start Celery task
+    result = tasks.task_instantiate_epc_data_for_certificate.delay(**inputs)
+    print(f'Submitted job to update single EPC - job id: {result.id}')
+    return jsonify({'result_id': result.id}), 200
 
 
-# Define route for API request to instantiate all latest EPC data for all 
-# instantiated postcodes (i.e. latest available data for all UPRNs)
+# Define agent route to instantiate all latest EPC data for all instantiated postcodes
+# (i.e. instantiate/update latest available data for all UPRNs)
 @inputtasks_bp.route('/epcagent/instantiate/certificates/all', methods=['POST'])
 def api_instantiate_epc_data_for_all_uprns():
     #
@@ -158,19 +156,11 @@ def api_instantiate_epc_data_for_all_uprns():
         ocgml_endpoint = OCGML_ENDPOINT
         logger.info('Using default OntoCityGml endpoint.')
     inputs['ocgml_endpoint'] = ocgml_endpoint
-    try:
-        # Instantiate EPCs
-        response = instantiate_epc_data_for_all_postcodes(**inputs)
-        return_dict = {'Newly instantiated EPCs': response[0][0],
-                       'Updated EPCs': response[0][1],
-                       'Newly instantiated parent buildings': response[1][0],
-                       'Updated parent buildings': response[1][1]}
-        for key, value in return_dict.items():
-            print(key, ' : ', value)
-        return jsonify(return_dict), 200
-    except Exception as ex:
-        logger.error('Unable to instantiate EPC data.', ex)
-        return jsonify({'msg': 'EPC data instantiation failed: ' + str(ex)}), 500
+    
+    # Start Celery task
+    result = tasks.task_instantiate_epc_data_for_all_uprns.delay(**inputs)
+    print(f'Submitted job to update all EPCs - job id: {result.id}')
+    return jsonify({'result_id': result.id}), 200
 
 #
 # HTTP requests to be run after Building Matching Agent has linked
