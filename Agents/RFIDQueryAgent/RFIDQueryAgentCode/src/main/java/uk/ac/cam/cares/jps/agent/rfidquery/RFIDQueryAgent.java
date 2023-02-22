@@ -192,17 +192,12 @@ public class RFIDQueryAgent{
      * @param speciesLabels The JSONObject containing the labels of the chemical
      * @param latestTimeStamp latest timestamp value
      */
-    public void sendEmail(String tagID, JSONObject speciesLabels, String latestTimeStamp) {
-        if (speciesLabels != null) {
+    public void sendEmail(String tagID, String label, String latestTimeStamp) {
+        if (label != null) {
             try {
                 EmailSender sender = new EmailSender();
-                String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp.toString() + ". \n The container has the following tag ID " + tagID.split("_")[2] + " and it is storing a chemical with the following information: \n" + "\n Labels: { ";
-                for (int i=0; i <speciesLabels.length(); i++) {
-                    LOGGER.info(speciesLabels.get("label_"+i));
-                    emailMessages = emailMessages + speciesLabels.get("label_"+i) + " , ";
-                    LOGGER.info("The concated message is " + emailMessages);
-                }
-                emailMessages = emailMessages.substring(0, emailMessages.lastIndexOf(" , ")) + " }. ";
+                String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp.toString() + ". \n The container has the following tag ID " + tagID.split("_")[2] + " and it is storing a chemical with the following label: " + label;
+                
                 LOGGER.info("The email message is " + emailMessages);
                 sender.sendEmail("Alert!", emailMessages);
             } catch (Exception e) {
