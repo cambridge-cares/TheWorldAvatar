@@ -1,9 +1,9 @@
 # Import agent, root web page, and configuration
 from pyderivationagent.conf import config_derivation_agent
 
-from AgeDerivationAgent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from AgeDerivationAgent.agent import AgeAgent
-from AgeDerivationAgent.agent import default
+from toyagent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from toyagent.agent import AgeAgent
+from toyagent.agent import default
 
 def create_app():
     # Depending on the deployment environment, different ways to retrieve/set the 
@@ -24,7 +24,7 @@ def create_app():
     #       a) Create `agent.env` file (based on `agent.env.example`)
     #       b) Retrieve environment variables using local path to .env file:
     #               agent_config = config_derivation_agent('./agent.env')
-    agent_config = config_derivation_agent()
+    agent_config = config_derivation_agent(env_file='./agent.env.example')
 
     agent = AgeAgent(
         # Settings read from environment variables (.env file, docker-compose)
@@ -43,7 +43,9 @@ def create_app():
 
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
 
-    agent.start_all_periodical_job()
+    #agent.start_all_periodical_job()
 
     # Expose flask app of agent
     return agent.app
+
+create_app()

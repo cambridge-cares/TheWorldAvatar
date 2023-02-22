@@ -10,7 +10,7 @@
 # For details on HM Land Registry's Price Paid Data PPD data, see:
 # https://www.gov.uk/guidance/about-the-price-paid-data#explanations-of-column-headers-in-the-ppd
 
-from AgeDerivationAgent.kg_operations.javagateway import jpsBaseLibGW
+from toyagent.kg_operations.javagateway import jpsBaseLibGW
 
 
 # Dates from HM Land Registry are reported in xsd:gYearMonth, i.e. ISO 8601 YYYY-MM

@@ -8,8 +8,8 @@
 
 from py4jps import agentlogging
 
-from AgeDerivationAgent.kg_operations.javagateway import stackClientsGw
-from AgeDerivationAgent.utils.env_configs import DATABASE, NAMESPACE
+from toyagent.kg_operations.javagateway import stackClientsGw
+from toyagent.utils.env_configs import DATABASE, NAMESPACE
 
 
 # Initialise logger instance (ensure consistent logger level with `entrypoint.py`)

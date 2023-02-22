@@ -7,8 +7,8 @@ from pyderivationagent import DerivationAgent
 from pyderivationagent import DerivationInputs
 from pyderivationagent import DerivationOutputs
 
-from AgeDerivationAgent.datamodel.iris import *
-from AgeDerivationAgent.kg_operations.kgclient import KGClient
+from toyagent.datamodel.iris import *
+from toyagent.kg_operations.kgclient import KGClient
 
 
 class AgeAgent(DerivationAgent):

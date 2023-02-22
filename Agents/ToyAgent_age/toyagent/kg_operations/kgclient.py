@@ -13,8 +13,8 @@ from rdflib import URIRef, Literal
 from py4jps import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
 
-from AgeDerivationAgent.datamodel.iris import *
-from AgeDerivationAgent.datamodel.data import GBP_SYMBOL, TIME_FORMAT_LONG, TIME_FORMAT_SHORT
+from toyagent.datamodel.iris import *
+from toyagent.datamodel.data import GBP_SYMBOL, TIME_FORMAT_LONG, TIME_FORMAT_SHORT
 
 # Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
 logger = agentlogging.get_logger('prod')
