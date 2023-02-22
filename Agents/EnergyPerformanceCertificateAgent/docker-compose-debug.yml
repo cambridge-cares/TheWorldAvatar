@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   epc_agent:
-    image: ghcr.io/cambridge-cares/epc_agent_debug:1.0.0
+    image: ghcr.io/cambridge-cares/epc_agent_debug:1.1.0
     build:
       context: .
       target: debug

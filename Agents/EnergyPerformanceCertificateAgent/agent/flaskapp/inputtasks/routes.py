@@ -1,9 +1,12 @@
 ################################################
 # Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 14 Sep 2022                            #
+# Date: 22 Feb 2023                            #
 ################################################
 
+from celery.result import AsyncResult
 from flask import Blueprint, request, jsonify
+
+from . import tasks
 
 from py4jps import agentlogging
 
@@ -26,8 +29,18 @@ inputtasks_bp = Blueprint(
 )
 
 
-# Define route for API request to initialise postcodes for provided local
-# authority district
+# Fetch the result of previously started task with provided 'id'
+# Return whether the task is finished (ready), whether it finished successfully, 
+# and what the return value (or error) was if it is finished.
+@inputtasks_bp.get("/epcagent/result/<id>")
+def task_result(id: str):
+    result = AsyncResult(id)
+    return {"ready": result.ready(),
+            "successful": result.successful(),
+            "response": result.result if result.ready() else None}
+
+
+# Define agent route to initialise postcodes for provided local authority district
 @inputtasks_bp.route('/epcagent/instantiate/postcodes', methods=['POST'])
 def api_initialise_postcodes():
     #
@@ -46,16 +59,10 @@ def api_initialise_postcodes():
     except Exception as ex:
         logger.error('Invalid local authority district code provided.')
         raise InvalidInput('Invalid local authority district code provided.') from ex
-    try:
-        # Instantiate postcodes
-        response = initialise_postcodes(**inputs)
-        if not response:
-            return jsonify({'msg': 'Local authority code already instantiated'}), 200
-        else:
-            return jsonify({'Postcodes': response}), 200
-    except Exception as ex:
-        logger.error('Unable to instantiate local authority with postcodes.', ex)
-        return jsonify({'msg': 'Postcode instantiation failed: ' + str(ex)}), 500
+    
+    # Start Celery task
+    result = tasks.task_initialise_postcodes.delay(**inputs)
+    return jsonify({'result_id': result.id}), 200
 
 
 # Define route for API request to instantiate single EPC data (i.e. for one UPRN)

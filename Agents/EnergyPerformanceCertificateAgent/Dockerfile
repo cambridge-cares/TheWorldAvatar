@@ -18,6 +18,9 @@ ENV PYTHONUNBUFFERED=1
 # Install Java
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
+# Install Redis for scheduling of background tasks using Celery (via Flask)
+RUN apt install -y redis-server
+
 # Copy Stack-Client resource from published Docker image (potentially ensure
 # directory structure matches requirements for jpsrm to update py4jps resources)
 RUN mkdir -p ./tmp_stack
@@ -54,7 +57,11 @@ ENV FLASK_DEBUG=1
 
 # Launch application in container
 WORKDIR /app/agent/flaskapp/
-CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
+# Create pipeline of multiple commands using Shell Form of CMD (to perform a series of operations)
+# 1) Start Redis server at default 'localhost:6379'
+# 2) Point the celery worker to the celery_app object and set user to non-root user
+# 3) Start Flask App in debug mode
+CMD redis-server | celery -A wsgi.celery_app worker --uid=1000 | python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
 
 
 #------------------------------------------------------

@@ -18,14 +18,19 @@ from apscheduler.schedulers.background import BackgroundScheduler
 # (https://epc.opendatacommunities.org/docs/guidance#faq-updates)
 sched = BackgroundScheduler(daemon=True)
 # Update EPC data every first of the month
-sched.add_job(instantiate_epc_data_for_all_postcodes, trigger='cron', day=1,
+# sched.add_job(instantiate_epc_data_for_all_postcodes, trigger='cron', day=1,
+#               kwargs={'epc_endpoint': None})
+sched.add_job(instantiate_epc_data_for_all_postcodes, trigger='interval', minutes=100,
               kwargs={'epc_endpoint': None})
 # Update PostGIS database (i.e. changed usages) every second of the month
-sched.add_job(add_ocgml_building_data, trigger='cron', day=2)
+# sched.add_job(add_ocgml_building_data, trigger='cron', day=2)
+sched.add_job(add_ocgml_building_data, trigger='interval', minutes=105)
 
 sched.start()
 
+# To use celery commands, Celery needs an app object
 app = create_app()
+celery_app = app.extensions["celery"]
 
 
 if __name__ == "__main__":
