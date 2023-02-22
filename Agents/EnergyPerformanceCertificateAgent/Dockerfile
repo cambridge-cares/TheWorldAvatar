@@ -61,7 +61,7 @@ WORKDIR /app/agent/flaskapp/
 # 1) Start Redis server at default 'localhost:6379'
 # 2) Point the celery worker to the celery_app object and set user to non-root user
 # 3) Start Flask App in debug mode
-CMD redis-server | celery -A wsgi.celery_app worker --uid=1000 | python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
+CMD redis-server | celery -A wsgi.celery_app worker --uid=1 | python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
 
 
 #------------------------------------------------------

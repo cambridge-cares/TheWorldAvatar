@@ -14,15 +14,15 @@ setup(
     python_requires='>=3.7',
     include_package_data=True,
     install_requires= [
-        'apscheduler==3.9',
-        'docopt==0.6',
-        'flask==2.1',
+        'apscheduler==3.10.0',
         'celery[redis]==5.2.7',
-        'geojson-rewind==1.0',
-        'JayDeBeApi==1.2',
-        'pandas==1.3',
-        'pyproj==3.3',
-        'py4jps==1.0.30', 
-        'requests==2.27'
+        'docopt~=0.6',
+        'flask==2.2.3',
+        'geojson-rewind==1.0.3',
+        'JayDeBeApi==1.2.3',
+        'pandas==1.5.3',
+        'pyproj==3.4.1',
+        'py4jps==1.0.33', 
+        'requests==2.28.2'
     ]
 )
