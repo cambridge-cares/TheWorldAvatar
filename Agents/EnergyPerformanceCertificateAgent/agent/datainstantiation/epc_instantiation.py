@@ -338,7 +338,7 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
     return (new_epcs, updated_epcs), (new_summaries, updated_summaries)
 
 
-def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
+def instantiate_epc_data_for_all_postcodes(epc_endpoint=None,
                                            ocgml_endpoint=OCGML_ENDPOINT,
                                            query_endpoint=QUERY_ENDPOINT, 
                                            update_endpoint=UPDATE_ENDPOINT):

@@ -59,11 +59,11 @@ ENV FLASK_DEBUG=1
 WORKDIR /app/agent/flaskapp/
 # Create pipeline of multiple commands using Shell Form of CMD (to perform a series of operations)
 # 1) Start Redis server at default 'localhost:6379'
-# 2) Point the celery worker to the celery_app object (as superuser!)
-# NOTE: Although this is not recommended, this avoids permission issues when (potentially) downloading
-#       pyproj projections and accessing the JDBS driver (due to repository access restrictions)
+# 2) Point the celery worker to the celery_app object (add '-B' option to enable periodic task scheduling)
+# NOTE: Although not recommended, celery is run as superuser to avoid permission issues when (potentially) 
+#       downloading pyproj projections and accessing the JDBS driver (due to repository access restrictions)
 # 3) Start Flask App in debug mode
-CMD redis-server | celery -A wsgi.celery_app worker | python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
+CMD redis-server | celery -A wsgi.celery_app worker -B | python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
 
 
 #------------------------------------------------------

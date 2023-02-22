@@ -14,7 +14,6 @@ setup(
     python_requires='>=3.7',
     include_package_data=True,
     install_requires= [
-        'apscheduler==3.10.0',
         'celery[redis]==5.2.7',
         'docopt~=0.6',
         'flask==2.2.3',
