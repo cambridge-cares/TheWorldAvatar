@@ -4,7 +4,6 @@ import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
-import org.json.JSONArray;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.testcontainers.containers.GenericContainer;
@@ -31,7 +30,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 
 @Ignore("Requires both triple store endpoint set up and running (using testcontainers)\n" +
         "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
-        
+       
 
 @Testcontainers
 public class RFIDQueryBuilderIntegrationTest {
@@ -59,14 +58,14 @@ public class RFIDQueryBuilderIntegrationTest {
      * Namespaces for ontologies
      */
 	public static final String ONTODEVICE_NS = "https://www.theworldavatar.com/kg/ontodevice/";
-	public static final String ONTOLAB_NS = "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#";
+	public static final String ONTOLAB_NS = "https://www.theworldavatar.com/kg/ontolab/";
     public static final String ONTOCAPE_CPS_BEHAVIOR_NS = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#";
     public static final String ONTOCAPE_PHASE_SYSTEM_NS = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#";
     public static final String ONTOCAPE_MATERIAL_NS = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#";
     public static final String ONTOCAPE_SYSTEM_NS = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#";
     public static final String ONTOSPECIES_NS = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#";
-    public static final String ONTOKIN_NS = "http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#";
-    public static final String SKOS_NS = "http://www.w3.org/2004/02/skos/core#";
+    public static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
+    public static final String SAREF_NS = "https://saref.etsi.org/core/";
     
 	/**
      * Prefixes
@@ -78,44 +77,34 @@ public class RFIDQueryBuilderIntegrationTest {
     private static final Prefix PREFIX_ONTOCAPE_MATERIAL = SparqlBuilder.prefix("ontocape_material", iri(ONTOCAPE_MATERIAL_NS));
     private static final Prefix PREFIX_ONTOCAPE_SYSTEM = SparqlBuilder.prefix("ontocape_system", iri(ONTOCAPE_SYSTEM_NS));
     private static final Prefix PREFIX_ONTOSPECIES = SparqlBuilder.prefix("ontospecies", iri(ONTOSPECIES_NS));
-    private static final Prefix PREFIX_ONTOKIN = SparqlBuilder.prefix("ontokin", iri(ONTOKIN_NS));
-    private static final Prefix PREFIX_SKOS = SparqlBuilder.prefix("skos", iri(SKOS_NS));
+    private static final Prefix PREFIX_RDFS = SparqlBuilder.prefix("rdfs", iri(RDFS_NS));
+    private static final Prefix PREFIX_SAREF = SparqlBuilder.prefix("saref", iri(SAREF_NS));
     
 	/**
      * Relationships
      */ 
 	private static final Iri hasQualitativeValue = PREFIX_ONTODEVICE.iri("hasQualitativeValue");
-	private static final Iri isPropertyOf = PREFIX_ONTODEVICE.iri("isPropertyOf");
 	private static final Iri isAttachedTo = PREFIX_ONTODEVICE.iri("isAttachedTo");
 	private static final Iri isFilledWith = PREFIX_ONTOLAB.iri("isFilledWith");
 	private static final Iri refersToMaterial = PREFIX_ONTOCAPE_CPS_BEHAVIOR.iri("refersToMaterial");
 	private static final Iri thermodynamicBehavior = PREFIX_ONTOCAPE_MATERIAL.iri("thermodynamicBehavior");
     private static final Iri isComposedOfSubsystem = PREFIX_ONTOCAPE_SYSTEM.iri("isComposedOfSubsystem");
     private static final Iri representsOccurenceOf = PREFIX_ONTOCAPE_PHASE_SYSTEM.iri("representsOccurenceOf");
-    private static final Iri hasMolecularFormula = PREFIX_ONTOSPECIES.iri("hasMolecularFormula");
-    private static final Iri hasElementNumber = PREFIX_ONTOKIN.iri("hasElementNumber");
-    private static final Iri hasNumberOfElement = PREFIX_ONTOKIN.iri("hasNumberOfElement");
-    private static final Iri altLabel = PREFIX_SKOS.iri("altLabel");
-
-    /**
-     * Classes
-     */ 
-	private static final Iri MolecularFormula = PREFIX_ONTOSPECIES.iri("MolecularFormula");
+    private static final Iri label = PREFIX_RDFS.iri("label");
+    private static final Iri hasState = PREFIX_SAREF.iri("hasState");
 
     /**
      * Instances IRIs
      */
-    private static final Iri quality = iri("http://www.theworldavatar.com/kb/ontodevice/tag_01_status");
+    private static final Iri state = iri("http://www.theworldavatar.com/kb/ontodevice/tag_01_status");
     private static final Iri qualitativeValue = iri("https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status_89c6626e-4eae-4e75-8d7e-502d5cf904b0");
     private static final Iri tag = iri("http://www.theworldavatar.com/kb/ontodevice/tag_01");
     private static final Iri bottle = iri("http://www.theworldavatar.com/kb/ontolab/Bottle_01");
+    private static final Iri chemicalAmount = iri("http://www.theworldavatar.com/kb/ontolab/ChemicalAmount_01");
     private static final Iri chemical = iri("http://www.theworldavatar.com/kb/ontolab/Chemical_01");
-    private static final Iri material = iri("http://www.theworldavatar.com/kb/ontolab/Material_01");
     private static final Iri phase = iri("http://www.theworldavatar.com/kb/ontolab/SolidPhase_01");
     private static final Iri phaseComponent = iri("http://www.theworldavatar.com/kb/ontolab/PhaseComponent_01");
     private static final Iri species = iri("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
-    private static final Iri molecularFormula = iri("http://www.theworldavatar.com/kb/ontospecies/MolecularFormula_0a1489ff-c315-4607-93fc-b70b633bf060");
-    private static final Iri elementNumber = iri("http://www.theworldavatar.com/kb/ontospecies/ElementNumber_0a1489ff-c315-4607-93fc-b70b633bf060_Br");
 
     @Before
     public void IntializeMockBlazeGraphAndBuilderAndAddMockTriples() throws IOException {
@@ -145,22 +134,17 @@ public class RFIDQueryBuilderIntegrationTest {
         builder = new RFIDQueryBuilder(propertiesFile, propertiesFile);
 
         //Initialise mock triples in triple store
-        TriplePattern updatePattern = quality.has(hasQualitativeValue, qualitativeValue);
-        TriplePattern updatePattern2 = quality.has(isPropertyOf, tag);
+        TriplePattern updatePattern = state.has(hasQualitativeValue, qualitativeValue);
+        TriplePattern updatePattern2 = tag.has(hasState, state);
         TriplePattern updatePattern3 = tag.has(isAttachedTo, bottle);
-        TriplePattern updatePattern4 = bottle.has(isFilledWith, chemical);
-        TriplePattern updatePattern5 = chemical.has(refersToMaterial, material);
-        TriplePattern updatePattern6 = material.has(thermodynamicBehavior, phase);
+        TriplePattern updatePattern4 = bottle.has(isFilledWith, chemicalAmount);
+        TriplePattern updatePattern5 = chemicalAmount.has(refersToMaterial, chemical);
+        TriplePattern updatePattern6 = chemical.has(thermodynamicBehavior, phase);
         TriplePattern updatePattern7 = phase.has(isComposedOfSubsystem, phaseComponent);
         TriplePattern updatePattern8 = phaseComponent.has(representsOccurenceOf, species);
-        TriplePattern updatePattern9 = species.has(hasMolecularFormula, molecularFormula);
-        TriplePattern updatePattern10 = molecularFormula.isA(MolecularFormula);
-        TriplePattern updatePattern11 = molecularFormula.has(hasElementNumber, elementNumber);
-        TriplePattern updatePattern12 = elementNumber.has(hasNumberOfElement, "3");
-        TriplePattern updatePattern13 = species.has(altLabel, "test");
-        TriplePattern updatePattern14 = species.has(altLabel, "testing");
-        InsertDataQuery insert = Queries.INSERT_DATA(updatePattern, updatePattern2, updatePattern3, updatePattern4, updatePattern5, updatePattern6, updatePattern7, updatePattern8, updatePattern9, updatePattern10, updatePattern11, updatePattern12, updatePattern13, updatePattern14);
-        insert.prefix(PREFIX_ONTOCAPE_CPS_BEHAVIOR, PREFIX_ONTOCAPE_MATERIAL, PREFIX_ONTOCAPE_PHASE_SYSTEM, PREFIX_ONTOCAPE_SYSTEM, PREFIX_ONTODEVICE, PREFIX_ONTOKIN, PREFIX_ONTOLAB, PREFIX_ONTOSPECIES, PREFIX_SKOS);
+        TriplePattern updatePattern9 = species.has(label, "test");
+        InsertDataQuery insert = Queries.INSERT_DATA(updatePattern, updatePattern2, updatePattern3, updatePattern4, updatePattern5, updatePattern6, updatePattern7, updatePattern8, updatePattern9);
+        insert.prefix(PREFIX_ONTOCAPE_CPS_BEHAVIOR, PREFIX_ONTOCAPE_MATERIAL, PREFIX_ONTOCAPE_PHASE_SYSTEM, PREFIX_ONTOCAPE_SYSTEM, PREFIX_ONTODEVICE, PREFIX_RDFS, PREFIX_ONTOLAB, PREFIX_ONTOSPECIES, PREFIX_SAREF);
         kbClient.executeUpdate(insert.getQueryString());
     }
     // Cleaning up containers after each test, otherwise unused containers will first be killed when all tests finished
@@ -173,49 +157,49 @@ public class RFIDQueryBuilderIntegrationTest {
     
     @Test
     public void queryQualitySuccessAndFail() throws IOException {
-        String IRI = builder.queryForQualityWithHasQualitativeValue("https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status_89c6626e-4eae-4e75-8d7e-502d5cf904b0");
+        String IRI = builder.queryForStateWithHasQualitativeValue("https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status_89c6626e-4eae-4e75-8d7e-502d5cf904b0");
         Assert.assertEquals("http://www.theworldavatar.com/kb/ontodevice/tag_01_status", IRI);
 
         //provide invalid data IRI
         try {
-            IRI = builder.queryForQualityWithHasQualitativeValue("https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status");
+            IRI = builder.queryForStateWithHasQualitativeValue("https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status");
         } catch (Exception e) {
-            Assert.assertEquals("Unable to query for quality IRI!", e.getMessage());
+            Assert.assertEquals("Unable to query for state IRI!", e.getMessage());
         }
 
         //remove hasQualitativeValue link between Quality and QualitativeValue
-        TriplePattern Pattern = quality.has(hasQualitativeValue, qualitativeValue);
+        TriplePattern Pattern = state.has(hasQualitativeValue, qualitativeValue);
         DeleteDataQuery delete = Queries.DELETE_DATA(Pattern);
         delete.prefix(PREFIX_ONTODEVICE);
         kbClient.executeUpdate(delete.getQueryString());
 
         try {
-            IRI = builder.queryForQualityWithHasQualitativeValue("https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status");
+            IRI = builder.queryForStateWithHasQualitativeValue("https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status");
         } catch (Exception e) {
-            Assert.assertEquals("Unable to query for quality IRI!", e.getMessage());
+            Assert.assertEquals("Unable to query for state IRI!", e.getMessage());
         }
     }
 
     @Test
     public void queryTagSuccessAndFail() throws IOException {
-        String IRI = builder.queryForTagWithQualityIRI("http://www.theworldavatar.com/kb/ontodevice/tag_01_status");
+        String IRI = builder.queryForTagWithStateIRI("http://www.theworldavatar.com/kb/ontodevice/tag_01_status");
         Assert.assertEquals("http://www.theworldavatar.com/kb/ontodevice/tag_01", IRI);
 
-        //invalid Quality IRI
+        //invalid State IRI
         try {
-            IRI = builder.queryForTagWithQualityIRI("http://www.theworldavatar.com/kb/ontodevice/tag_01_stat");
+            IRI = builder.queryForTagWithStateIRI("http://www.theworldavatar.com/kb/ontodevice/tag_01_stat");
         } catch (Exception e) {
             Assert.assertEquals("Unable to query for tag IRI!", e.getMessage());
         }
 
-        //remove isPropertyOf link between Tag and Quality
-        TriplePattern Pattern = quality.has(isPropertyOf, tag);
+        //remove hasState link between Tag and State
+        TriplePattern Pattern = tag.has(hasState, state);
         DeleteDataQuery delete = Queries.DELETE_DATA(Pattern);
-        delete.prefix(PREFIX_ONTODEVICE);
+        delete.prefix(PREFIX_SAREF);
         kbClient.executeUpdate(delete.getQueryString());
 
         try {
-            IRI = builder.queryForTagWithQualityIRI("http://www.theworldavatar.com/kb/ontodevice/tag_01_status");
+            IRI = builder.queryForTagWithStateIRI("http://www.theworldavatar.com/kb/ontodevice/tag_01_status");
         } catch (Exception e) {
             Assert.assertEquals("Unable to query for tag IRI!", e.getMessage());
         }
@@ -233,7 +217,7 @@ public class RFIDQueryBuilderIntegrationTest {
             Assert.assertEquals("Unable to query for bottle IRI!", e.getMessage());
         }
 
-        //remove isPropertyOf link between Tag and Quality
+        //remove isAttachedTo between tag and bottle
         TriplePattern Pattern = tag.has(isAttachedTo, bottle);
         DeleteDataQuery delete = Queries.DELETE_DATA(Pattern);
         delete.prefix(PREFIX_ONTODEVICE);
@@ -247,50 +231,50 @@ public class RFIDQueryBuilderIntegrationTest {
     }
 
     @Test
-    public void queryChemicalSuccessAndFail() throws IOException {
-        String IRI = builder.queryForChemicalWithIsFilledWith("http://www.theworldavatar.com/kb/ontolab/Bottle_01");
-        Assert.assertEquals("http://www.theworldavatar.com/kb/ontolab/Chemical_01", IRI);
+    public void queryChemicalAmountSuccessAndFail() throws IOException {
+        String IRI = builder.queryForChemicalAmountWithIsFilledWith("http://www.theworldavatar.com/kb/ontolab/Bottle_01");
+        Assert.assertEquals("http://www.theworldavatar.com/kb/ontolab/ChemicalAmount_01", IRI);
 
         //invalid bottle IRI
         try {
-            IRI = builder.queryForChemicalWithIsFilledWith("http://www.theworldavatar.com/kb/ontolab/Bottle_02");
+            IRI = builder.queryForChemicalAmountWithIsFilledWith("http://www.theworldavatar.com/kb/ontolab/Bottle_02");
         } catch (Exception e) {
-            Assert.assertEquals("Unable to query for chemical IRI!", e.getMessage());
+            Assert.assertEquals("Unable to query for chemical amount IRI!", e.getMessage());
         }
 
-        //remove isFilledWith link between Bottle and Chemical
-        TriplePattern Pattern = bottle.has(isFilledWith, chemical);
+        //remove isFilledWith link between Bottle and ChemicalAmount
+        TriplePattern Pattern = bottle.has(isFilledWith, chemicalAmount);
         DeleteDataQuery delete = Queries.DELETE_DATA(Pattern);
         delete.prefix(PREFIX_ONTOLAB);
         kbClient.executeUpdate(delete.getQueryString());
 
         try {
-            IRI = builder.queryForBottleWithIsAttachedTo("http://www.theworldavatar.com/kb/ontolab/Bottle_01");
+            IRI = builder.queryForChemicalAmountWithIsFilledWith("http://www.theworldavatar.com/kb/ontolab/Bottle_01");
         } catch (Exception e) {
-            Assert.assertEquals("Unable to query for chemical IRI!", e.getMessage());
+            Assert.assertEquals("Unable to query for chemical amount IRI!", e.getMessage());
         }
     }
     
     @Test
     public void queryMaterialSuccessAndFail() throws IOException {
-        String IRI = builder.queryForMaterialWithRefersToMaterial("http://www.theworldavatar.com/kb/ontolab/Chemical_01");
-        Assert.assertEquals("http://www.theworldavatar.com/kb/ontolab/Material_01", IRI);
+        String IRI = builder.queryForChemicalWithRefersToMaterial("http://www.theworldavatar.com/kb/ontolab/ChemicalAmount_01");
+        Assert.assertEquals("http://www.theworldavatar.com/kb/ontolab/Chemical_01", IRI);
 
-        //invalid chemical IRI
+        //invalid chemical amount IRI
         try {
-            IRI = builder.queryForMaterialWithRefersToMaterial("http://www.theworldavatar.com/kb/ontolab/Chemical_02");
+            IRI = builder.queryForChemicalWithRefersToMaterial("http://www.theworldavatar.com/kb/ontolab/ChemicalAmount_02");
         } catch (Exception e) {
-            Assert.assertEquals("Unable to query for material IRI!", e.getMessage());
+            Assert.assertEquals("Unable to query for chemical IRI!", e.getMessage());
         }
 
-        //remove refersToMaterial link between Chemical and Material
-        TriplePattern Pattern = chemical.has(refersToMaterial, material);
+        //remove refersToMaterial link between ChemicalAmount and Chemical
+        TriplePattern Pattern = chemicalAmount.has(refersToMaterial, chemical);
         DeleteDataQuery delete = Queries.DELETE_DATA(Pattern);
         delete.prefix(PREFIX_ONTOCAPE_CPS_BEHAVIOR);
         kbClient.executeUpdate(delete.getQueryString());
 
         try {
-            IRI = builder.queryForMaterialWithRefersToMaterial("http://www.theworldavatar.com/kb/ontolab/Chemical_01");
+            IRI = builder.queryForChemicalWithRefersToMaterial("http://www.theworldavatar.com/kb/ontolab/ChemicalAmount_01");
         } catch (Exception e) {
             Assert.assertEquals("Unable to query for material IRI!", e.getMessage());
         }
@@ -298,24 +282,24 @@ public class RFIDQueryBuilderIntegrationTest {
 
     @Test
     public void queryPhaseSuccessAndFail() throws IOException {
-        String IRI = builder.queryForPhaseWithThermodynamicBehavior("http://www.theworldavatar.com/kb/ontolab/Material_01");
+        String IRI = builder.queryForPhaseWithThermodynamicBehavior("http://www.theworldavatar.com/kb/ontolab/Chemical_01");
         Assert.assertEquals("http://www.theworldavatar.com/kb/ontolab/SolidPhase_01", IRI);
 
-        //invalid material IRI
+        //invalid chemical IRI
         try {
-            IRI = builder.queryForPhaseWithThermodynamicBehavior("http://www.theworldavatar.com/kb/ontolab/Material_02");
+            IRI = builder.queryForPhaseWithThermodynamicBehavior("http://www.theworldavatar.com/kb/ontolab/Chemical_02");
         } catch (Exception e) {
             Assert.assertEquals("Unable to query for phase IRI!", e.getMessage());
         }
 
         //remove thermodynamicBehavior link between Material and Phase
-        TriplePattern Pattern = material.has(thermodynamicBehavior, phase);
+        TriplePattern Pattern = chemical.has(thermodynamicBehavior, phase);
         DeleteDataQuery delete = Queries.DELETE_DATA(Pattern);
         delete.prefix(PREFIX_ONTOCAPE_MATERIAL);
         kbClient.executeUpdate(delete.getQueryString());
 
         try {
-            IRI = builder.queryForPhaseWithThermodynamicBehavior("http://www.theworldavatar.com/kb/ontolab/Material_01");
+            IRI = builder.queryForPhaseWithThermodynamicBehavior("http://www.theworldavatar.com/kb/ontolab/Chemical_01");
         } catch (Exception e) {
             Assert.assertEquals("Unable to query for phase IRI!", e.getMessage());
         }
@@ -340,7 +324,7 @@ public class RFIDQueryBuilderIntegrationTest {
         kbClient.executeUpdate(delete.getQueryString());
 
         try {
-            IRI = builder.queryForPhaseWithThermodynamicBehavior("http://www.theworldavatar.com/kb/ontolab/SolidPhase_01");
+            IRI = builder.queryForPhaseComponentWithIsComposedOfSubsystem("http://www.theworldavatar.com/kb/ontolab/SolidPhase_01");
         } catch (Exception e) {
             Assert.assertEquals("Unable to query for phase component IRI!", e.getMessage());
         }
@@ -353,7 +337,7 @@ public class RFIDQueryBuilderIntegrationTest {
 
         //invalid phase component IRI
         try {
-            IRI = builder.queryForPhaseComponentWithIsComposedOfSubsystem("http://www.theworldavatar.com/kb/ontolab/PhaseComponent_02");
+            IRI = builder.queryForSpeciesWithRepresentsOccurenceOf("http://www.theworldavatar.com/kb/ontolab/PhaseComponent_02");
         } catch (Exception e) {
             Assert.assertEquals("Unable to query for species IRI!", e.getMessage());
         }
@@ -365,110 +349,35 @@ public class RFIDQueryBuilderIntegrationTest {
         kbClient.executeUpdate(delete.getQueryString());
 
         try {
-            IRI = builder.queryForPhaseWithThermodynamicBehavior("http://www.theworldavatar.com/kb/ontolab/PhaseComponent_01");
+            IRI = builder.queryForSpeciesWithRepresentsOccurenceOf("http://www.theworldavatar.com/kb/ontolab/PhaseComponent_01");
         } catch (Exception e) {
             Assert.assertEquals("Unable to query for species IRI!", e.getMessage());
         }
     }
 
     @Test
-    public void queryMolecularFormulaSuccessAndFail() throws IOException {
-        String IRI = builder.queryForMolecularFormulaWithHasMolecularFormula("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
-        Assert.assertEquals("http://www.theworldavatar.com/kb/ontospecies/MolecularFormula_0a1489ff-c315-4607-93fc-b70b633bf060", IRI);
+    public void queryLabelSuccessAndFail() throws IOException {
+        String a = null;
+        a = builder.queryForLabel("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
+        Assert.assertEquals("test", a);
 
         //invalid species IRI
         try {
-            IRI = builder.queryForMolecularFormulaWithHasMolecularFormula("http://www.theworldavatar.com/kb/ontospecies/Species");
+            a = builder.queryForLabel("http://www.theworldavatar.com/kb/ontospecies/Species");
         } catch (Exception e) {
-            Assert.assertEquals("Unable to query for molecular formula IRI!", e.getMessage());
+            Assert.assertEquals("Unable to query for label via rdfs:label!", e.getMessage());
         }
 
-        //remove hasMolecularFormula link between Species and Molecular Formula
-        TriplePattern Pattern = species.has(hasMolecularFormula, molecularFormula);
+        //remove label link between Species and String values
+        TriplePattern Pattern = species.has(label, "test");
         DeleteDataQuery delete = Queries.DELETE_DATA(Pattern);
-        delete.prefix(PREFIX_ONTOSPECIES);
+        delete.prefix(PREFIX_RDFS);
         kbClient.executeUpdate(delete.getQueryString());
 
         try {
-            IRI = builder.queryForMolecularFormulaWithHasMolecularFormula("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
+            a = builder.queryForLabel("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
         } catch (Exception e) {
-            Assert.assertEquals("Unable to query for molecular formula IRI!", e.getMessage());
-        }
-    }
-
-    @Test
-    public void queryElementNumberSuccessAndFail() throws IOException {
-        String IRI = builder.queryForElementNumberViaHasElementNumber("http://www.theworldavatar.com/kb/ontospecies/MolecularFormula_0a1489ff-c315-4607-93fc-b70b633bf060");
-        Assert.assertEquals("http://www.theworldavatar.com/kb/ontospecies/ElementNumber_0a1489ff-c315-4607-93fc-b70b633bf060_Br", IRI);
-
-        //invalid element number IRI
-        try {
-            IRI = builder.queryForElementNumberViaHasElementNumber("http://www.theworldavatar.com/kb/ontospecies/MolecularFormula");
-        } catch (Exception e) {
-            Assert.assertEquals("Unable to query for element number IRI!", e.getMessage());
-        }
-
-        //remove hasElementNumber link between Molecular Formula and Element Number
-        TriplePattern Pattern = molecularFormula.has(hasElementNumber, elementNumber);
-        DeleteDataQuery delete = Queries.DELETE_DATA(Pattern);
-        delete.prefix(PREFIX_ONTOKIN);
-        kbClient.executeUpdate(delete.getQueryString());
-
-        try {
-            IRI = builder.queryForMolecularFormulaWithHasMolecularFormula("http://www.theworldavatar.com/kb/ontospecies/MolecularFormula_0a1489ff-c315-4607-93fc-b70b633bf060");
-        } catch (Exception e) {
-            Assert.assertEquals("Unable to query for element number IRI!", e.getMessage());
-        }
-    }
-
-    @Test
-    public void queryNumberOfElementSuccessAndFail() throws IOException {
-        String number = builder.queryForNumberViaHasNumberOfElement("http://www.theworldavatar.com/kb/ontospecies/ElementNumber_0a1489ff-c315-4607-93fc-b70b633bf060_Br");
-        Assert.assertEquals("3", number);
-
-        //invalid element number IRI
-        try {
-            number = builder.queryForNumberViaHasNumberOfElement("http://www.theworldavatar.com/kb/ontospecies/ElementNumber");
-        } catch (Exception e) {
-            Assert.assertEquals("Unable to query for number of element!", e.getMessage());
-        }
-
-        //remove hasNumberOfElement link between Element Number and Number
-        TriplePattern Pattern = elementNumber.has(hasNumberOfElement, "3");
-        DeleteDataQuery delete = Queries.DELETE_DATA(Pattern);
-        delete.prefix(PREFIX_ONTOKIN);
-        kbClient.executeUpdate(delete.getQueryString());
-
-        try {
-            number = builder.queryForNumberViaHasNumberOfElement("http://www.theworldavatar.com/kb/ontospecies/ElementNumber_0a1489ff-c315-4607-93fc-b70b633bf060_Br");
-        } catch (Exception e) {
-            Assert.assertEquals("Unable to query for number of element!", e.getMessage());
-        }
-    }
-
-    @Test
-    public void queryLabelsSuccessAndFail() throws IOException {
-        JSONArray a = new JSONArray();
-        a = builder.queryForLabelsViaAltLabel("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
-        Assert.assertEquals(2, a.length());
-
-        //invalid species IRI
-        try {
-            a = builder.queryForLabelsViaAltLabel("http://www.theworldavatar.com/kb/ontospecies/Species");
-        } catch (Exception e) {
-            Assert.assertEquals("Unable to query for alternate labels!", e.getMessage());
-        }
-
-        //remove altLabel link between Species and String values
-        TriplePattern Pattern = species.has(altLabel, "test").andHas(altLabel, "testing");
-        DeleteDataQuery delete = Queries.DELETE_DATA(Pattern);
-        delete.prefix(PREFIX_SKOS);
-        kbClient.executeUpdate(delete.getQueryString());
-
-        try {
-            a = builder.queryForLabelsViaAltLabel("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
-        } catch (Exception e) {
-            Assert.assertEquals("Unable to query for alternate labels!", e.getMessage());
+            Assert.assertEquals("Unable to query for label via rdfs:label!", e.getMessage());
         }
     }
 
