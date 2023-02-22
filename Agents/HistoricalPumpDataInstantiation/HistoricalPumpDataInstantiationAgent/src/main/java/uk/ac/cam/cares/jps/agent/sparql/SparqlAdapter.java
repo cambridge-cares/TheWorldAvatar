@@ -80,7 +80,7 @@ public class SparqlAdapter {
     private static String createInsertQuery(Map<String, List<String>> timeSeriesMap) {
         InsertBuilder builder = new InsertBuilder();
         QueryHandler.genInsertPrefixMapping(builder, BASE_URI);
-        // Don't add unit triples here - these should be defined in OM. (And OM doesn't use skos:notation...)
+        // Don't add unit triples here - these should be defined in OM.
         //builder.addTriples(OntologyConstant.OM_KWH, OntologyConstant.SKOS_NOTATION, OntologyConstant.KWH_LITERAL);
         // For each pump, add their triples
         for (String pumpIRI : timeSeriesMap.keySet()) {
