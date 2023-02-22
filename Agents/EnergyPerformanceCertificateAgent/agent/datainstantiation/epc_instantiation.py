@@ -375,10 +375,6 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint=None,
     postcodes = [r['postcode'] for r in res]
     postcodes = [p for p in postcodes if p]
 
-    #TODO: remove
-    postcodes.sort()
-    postcodes = postcodes[4000:4050]
-
     # Split list of postcodes in chunks of max. size n
     n = 500
     postcodes = [postcodes[i:i + n] for i in range(0, len(postcodes), n)]
