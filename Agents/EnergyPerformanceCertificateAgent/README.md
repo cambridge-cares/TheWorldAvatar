@@ -177,7 +177,7 @@ Instantiate EPC data for all instantiated UPRNs (and postcodes) by sending `POST
 
 ### **4) Run Building Matching Agent**
 
-The following steps refer to the Building Matching agent version 1.0.1 as of commit `b2fd81c079956dc184c9329b0ee7bd5e07c42224`. More details can be found in the [Building Matching Readme]:
+The following steps refer to the Building Matching agent version 1.0.0 as of commit `8cb656055ea74410ef3c4c0764a6c0a80efc38ff`. More details can be found in the [Building Matching Readme]:
 
 1) Ensure both SPARQL endpoints, i.e. one containing buildings instantiated in OntoCityGML (`ocgml_endpoint`) and one with their OntoBuiltEnv counterparts (`epc_endpoint`), are available. In the following, let's assume the endpoints are:
 
