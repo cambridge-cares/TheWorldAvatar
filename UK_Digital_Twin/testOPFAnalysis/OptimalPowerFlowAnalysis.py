@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 16 Feb 2023          #
+# Last Update Date: 21 Feb 2023          #
 ##########################################
 
 """
@@ -8,8 +8,6 @@ Optimal Power Flow Analysis
 """
 from ast import Str
 from cgi import test
-import logging
-logging.basicConfig(filename='opf.log', level=logging.DEBUG)
 import math
 from logging import raiseExceptions
 from pickle import TRUE
@@ -78,7 +76,7 @@ import csv
 from pymoo.util import plotting
 from pymoo.visualization.scatter import Scatter
 from sklearn.cluster import DBSCAN ## pip install scikit-learn
-from pyscipopt import Model
+from pyscipopt import Model ## conda install
 from SMRSitePreSelection.DecommissioningCost import DecommissioningCost as DCost
 import matplotlib.pyplot as plt
 from pymoo.decomposition.asf import ASF ##Augmented Scalarization Function (ASF)
@@ -90,7 +88,6 @@ import matplotlib.ticker as ticker
 import geojson
 import ast
 from shapely.geometry import mapping
-
 from colourPicker import sequentialHEXColourCodePicker, createColourBarLegend 
 
 ## create configuration objects
@@ -115,6 +112,7 @@ derivationInstanceBaseURL = dt.baseURL + SLASH + dt.topNode + SLASH
 modelFactorArrays = readFile(ukmf.CO2EmissionFactorAndCostFactor)
 
 class OptimalPowerFlowAnalysis:
+    
     def __init__(
         self, 
         topologyNodeIRI:str,
@@ -669,12 +667,13 @@ class OptimalPowerFlowAnalysis:
             ## plt.title("Normalised Objective Space")
             plt.xlabel("Normalised SMR investment and risk cost (-)", fontsize = labelFontSize)
             plt.ylabel("Normalised load-demand distance (-)", fontsize = labelFontSize) 
+            #plt.legend(fontsize = legendFontSize, loc='upper left', frameon=False)
             plt.legend(
-                        loc="upper center", 
-                        fontsize = legendFontSize, 
-                        ncol=2, 
-                        bbox_to_anchor=(0.5, -0.16), 
-                        frameon=False)
+                    loc="upper center", 
+                    fontsize = legendFontSize, 
+                    ncol=2, 
+                    bbox_to_anchor=(0.5, -0.16), 
+                    frameon=False)
             plt.tight_layout()
             self.mkdirParetoFrontFig()
             plt.savefig(self.diagramPathParetoFront  + 'ParetoFront_SMR_%s.pdf' % str(self.numberOfSMRToBeIntroduced), dpi = 1200, bbox_inches='tight')
@@ -6026,7 +6025,9 @@ class OptimalPowerFlowAnalysis:
         if len(energyBreakdown_eachSMRDesign) != len(NumberOfSMRUnitList):
             raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
         ## set up the clourmap
-        colorList = ["#13bef2", "#ffcc33", "#1B2631", "#99A3A4", "#873600", "#cc3300", "#1e8700", "#873600"]
+        # colorList = ["#13bef2", "#ffcc33", "#1B2631", "#99A3A4", "#873600", "#cc3300", "#1e8700", "#873600"]
+        colorList = ["#ffcc33", "#008080",  "#1B2631", "#99A3A4", "#873600", "#13bef2", "#cc3300", "#1e8700", "#873600"]
+        ## ['Solar' 'Hydro' 'Coal' 'NaturalGas' 'Oil' 'Wind' 'Nuclear' 'SMR' 'Others']
 
         for w in range(len(weatherConditionList)):
             for pickedWeight in pickedWeightList:
@@ -6179,7 +6180,7 @@ if __name__ == '__main__':
     ## TODO: stop generating the JSON files
     generateVisualisationJSON = True
    
-    pop_size = 800
+    pop_size = 1000
     n_offsprings = 1000
     numberOfGenerations = 400
 # ## TODO: for testing 
@@ -6191,22 +6192,22 @@ if __name__ == '__main__':
     pickedWeight = 0.9
     
     ## Be careful with the NumberOfSMRUnitList: while study the impact of the weight, it will require more SMR unit number 
-    NumberOfSMRUnitList = [0, 5, 10, 25, 30, 40, 45, 48, 50, 51, 52, 53, 54] #[0, 5, 10, 25, 30, 40, 46, 48, 52] #[0, 1, 5, 10, 15, 20, 22, 24, 25, 28, 30, 35, 40, 45, 47, 50, 54, 60]
+    NumberOfSMRUnitList = [0, 5, 10, 23, 25, 28, 30, 40, 46, 48, 50, 51, 52, 53, 54] #[0, 5, 10, 25, 30, 40, 46, 48, 52] #[0, 1, 5, 10, 15, 20, 22, 24, 25, 28, 30, 35, 40, 45, 47, 50, 54, 60]
     weighterList = [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
-    CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 70, 80, 100]
+    CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 70, 80, 100, 120]
     weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
 
     ###FORTEST###
-    # NumberOfSMRUnitList = [5, 30] 
-    # weighterList = [0.5]
-    # CarbonTaxForOPFList = [60]
-    # weatherConditionList = [[0.67, 0.74, "WHSH"]] #, [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
+    # NumberOfSMRUnitList = [23, 30]
+
+
+    # weighterList = [0] # [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
+    # CarbonTaxForOPFList = [160, 180, 200]# [100, 120, 140]
+    # weatherConditionList = [[0.67, 0.033, "WHSL"]] # [0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
 
     ifReadLocalResults = True
 
-    cleanUpAllNPY = False
-
-    rootPath = '/mnt/d/wx243/FromTWA/npy/'## root path for npu files store
+    rootPath = '/mnt/d/wx243/FromAW/npy/0222/'## root path for npu files store
 
     ## Specified net demanding results for GeoJSON creation 
     ifSpecifiedResultsForNetDemanding = True
@@ -6218,44 +6219,25 @@ if __name__ == '__main__':
         SMRCapitalCost, MonetaryValuePerHumanLife, NeighbourhoodRadiusForSMRUnitOf1MW, ProbabilityOfReactorFailure, SMRCapability, maxmumSMRUnitAtOneSite, 
         SMRIntergratedDiscount, DecommissioningCostEstimatedLevel, safeDistance, pop_size, n_offsprings, numberOfGenerations, ifReadLocalResults, updateEndPointURL)  
 
-    if cleanUpAllNPY:
-        emptyArray = numpy.array([])
-        numpy.save(rootPath + "np_summary_eachSMRDesign.npy", emptyArray)
-        numpy.save(rootPath + "np_SMROutputAndOperationalRatio_eachSMRDesign.npy", emptyArray)
-        numpy.save(rootPath + "np_emission_eachSMRDesign.npy", emptyArray)
-        numpy.save(rootPath + "np_energyBreakdown_eachSMRDesign.npy", emptyArray)
-        numpy.save(rootPath + "np_netDemanding_smallArea_eachSMRDesign.npy", emptyArray)
-        numpy.save(rootPath + "np_netDemanding_regionalArea_eachSMRDesign.npy", emptyArray)
-        numpy.save(rootPath + "np_transmissionLoss_eachSMRDesign.npy", emptyArray)
-        numpy.save(rootPath + "np_energyBreakdown_smallArea_eachSMRDesign.npy", emptyArray)
-        numpy.save(rootPath + "np_energyBreakdown_regionalArea_eachSMRDesign.npy", emptyArray)
-        numpy.save(rootPath + "np_busRawResult_eachSMRDesign.npy", emptyArray)
-        numpy.save(rootPath + "np_branchRawResult_eachSMRDesign.npy", emptyArray)
-        numpy.save(rootPath + "np_genRawResult_eachSMRDesign.npy", emptyArray)
-
-
 ####================ OLD demanding assessment method: without pre-OPF ================####
     if not ifReadLocalResults:
-        # logging.basicConfig(filename='./OPF_LogFile.log', level=logging.DEBUG)
-        logging.info('###The record time is ' + str(time.strftime("%Y%m%d-%H%M", time.localtime())) + '###')
-        logging.info('SMR list is: ' + str(NumberOfSMRUnitList))
         testOPF_29BusModel.powerPlantAndDemandingAreasMapper()
         testOPF_29BusModel.retrofitGeneratorInstanceFinder() ## determine the retrofitListBeforeSelection, population_list and weightedDemandingDistance_list
         ## visulasitionOfCluster(testOPF_29BusModel.retrofitListBeforeSelection, 'clusterResults')
         testOPF_29BusModel.ModelPythonObjectInputInitialiser_BusAndBranch()
-        # summary_eachSMRDesign = []
-        # SMROutputAndOperationalRatio_eachSMRDesign = []
+        summary_eachSMRDesign = []
+        SMROutputAndOperationalRatio_eachSMRDesign = []
         ratio_eachSMRDesign = []
-        # emission_eachSMRDesign = []
-        # energyBreakdown_eachSMRDesign = []
-        # netDemanding_smallArea_eachSMRDesign = [] 
-        # netDemanding_regionalArea_eachSMRDesign = []
-        # transmissionLoss_eachSMRDesign = []
-        # energyBreakdown_smallArea_eachSMRDesign = []
-        # energyBreakdown_regionalArea_eachSMRDesign = []
-        # busRawResult_eachSMRDesign = []
-        # branchRawResult_eachSMRDesign = []
-        # genRawResult_eachSMRDesign = []
+        emission_eachSMRDesign = []
+        energyBreakdown_eachSMRDesign = []
+        netDemanding_smallArea_eachSMRDesign = [] 
+        netDemanding_regionalArea_eachSMRDesign = []
+        transmissionLoss_eachSMRDesign = []
+        energyBreakdown_smallArea_eachSMRDesign = []
+        energyBreakdown_regionalArea_eachSMRDesign = []
+        busRawResult_eachSMRDesign = []
+        branchRawResult_eachSMRDesign = []
+        genRawResult_eachSMRDesign = []
 
         for numberOfSMRToBeIntroduced in NumberOfSMRUnitList:
             print('===The number of SMR is: ', str(numberOfSMRToBeIntroduced))
@@ -6324,7 +6306,7 @@ if __name__ == '__main__':
                     branchRawResult_eachWeather.append(testOPF_29BusModel.branchOutputRecoder)
                     genRawResult_eachWeather.append(testOPF_29BusModel.genOutputRecoder)
                  
-                summary_eachCarbonTax.append(summary_eachWeather) 
+                summary_eachCarbonTax.append(summary_eachWeather)
                 ratio_eachCarbonTax.append(ratio_eachWeather)
                 SMR_eachCarbonTax.append(SMR_eachWeather)
                 emission_eachCarbonTax.append(emission_eachWeather)
@@ -6338,158 +6320,53 @@ if __name__ == '__main__':
                 busRawResult_eachCarbonTax.append(busRawResult_eachWeather)
                 branchRawResult_eachCarbonTax.append(branchRawResult_eachWeather)
                 genRawResult_eachCarbonTax.append(genRawResult_eachWeather)
-          
-            ## update the local npy files
-            summary_eachSMRDesign = numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True) ## total cost and total emission
-            summary_eachSMRDesign = summary_eachSMRDesign.tolist()
+
             summary_eachSMRDesign.append(summary_eachCarbonTax)
-            np_summary_eachSMRDesign = numpy.array(summary_eachSMRDesign)
-            numpy.save(rootPath + "np_summary_eachSMRDesign.npy", np_summary_eachSMRDesign)
-            logging.info(str(time.strftime("%Y%m%d-%H%M", time.localtime())) + " np_summary_eachSMRDesign.npy is added by SMR " + str(numberOfSMRToBeIntroduced))
-            print('### np_summary_eachSMRDesign -- SMR ' + str(numberOfSMRToBeIntroduced) + ' is finished ###')
-
-            SMROutputAndOperationalRatio_eachSMRDesign = numpy.load(rootPath +"np_SMROutputAndOperationalRatio_eachSMRDesign.npy", allow_pickle=True)
-            SMROutputAndOperationalRatio_eachSMRDesign = SMROutputAndOperationalRatio_eachSMRDesign.tolist()
+            ratio_eachSMRDesign.append(ratio_eachCarbonTax)
             SMROutputAndOperationalRatio_eachSMRDesign.append(SMR_eachCarbonTax)
-            np_SMROutputAndOperationalRatio_eachSMRDesign = numpy.array(SMROutputAndOperationalRatio_eachSMRDesign)
-            numpy.save(rootPath + "np_SMROutputAndOperationalRatio_eachSMRDesign.npy", np_SMROutputAndOperationalRatio_eachSMRDesign)
-            logging.info(str(time.strftime("%Y%m%d-%H%M", time.localtime())) + " np_SMROutputAndOperationalRatio_eachSMRDesign.npy is added by SMR " + str(numberOfSMRToBeIntroduced))
-            print('### np_SMROutputAndOperationalRatio_eachSMRDesign -- SMR ' + str(numberOfSMRToBeIntroduced) + ' is finished ###')
-
-            emission_eachSMRDesign = numpy.load(rootPath +"np_emission_eachSMRDesign.npy", allow_pickle=True)
-            emission_eachSMRDesign = emission_eachSMRDesign.tolist()
             emission_eachSMRDesign.append(emission_eachCarbonTax)
-            np_emission_eachSMRDesign = numpy.array(emission_eachSMRDesign)
-            numpy.save(rootPath + "np_emission_eachSMRDesign.npy", np_emission_eachSMRDesign)
-            logging.info(str(time.strftime("%Y%m%d-%H%M", time.localtime())) + " np_emission_eachSMRDesign.npy is added by SMR " + str(numberOfSMRToBeIntroduced))
-            print('### np_emission_eachSMRDesign -- SMR ' + str(numberOfSMRToBeIntroduced) + ' is finished ###')
-
-            energyBreakdown_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_eachSMRDesign.npy", allow_pickle=True)
-            energyBreakdown_eachSMRDesign = energyBreakdown_eachSMRDesign.tolist()
             energyBreakdown_eachSMRDesign.append(energyBreakdown_eachCarbonTax)
-            np_energyBreakdown_eachSMRDesign = numpy.array(energyBreakdown_eachSMRDesign)
-            numpy.save(rootPath + "np_energyBreakdown_eachSMRDesign.npy", np_energyBreakdown_eachSMRDesign)
-            logging.info(str(time.strftime("%Y%m%d-%H%M", time.localtime())) + " np_energyBreakdown_eachSMRDesign.npy is added by SMR " + str(numberOfSMRToBeIntroduced))
-            print('### np_energyBreakdown_eachSMRDesign -- SMR ' + str(numberOfSMRToBeIntroduced) + ' is finished ###')
-
-            np_genTypeLabel = numpy.array(genTypeLabel) 
-            numpy.save(rootPath + "np_genTypeLabel.npy", np_genTypeLabel)
-            logging.info(str(time.strftime("%Y%m%d-%H%M", time.localtime())) + " np_energyBreakdown_eachSMRDesign.npy is added.")
-            # genTypeLabel = numpy.load(rootPath +"np_genTypeLabel.npy", allow_pickle=True)
-
-            netDemanding_smallArea_eachSMRDesign = numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)
-            netDemanding_smallArea_eachSMRDesign = netDemanding_smallArea_eachSMRDesign.tolist()
             netDemanding_smallArea_eachSMRDesign.append(netDemanding_smallArea_eachCarbonTax)
-            np_netDemanding_smallArea_eachSMRDesign = numpy.array(netDemanding_smallArea_eachSMRDesign) 
-            numpy.save(rootPath + "np_netDemanding_smallArea_eachSMRDesign.npy", np_netDemanding_smallArea_eachSMRDesign)
-            logging.info(str(time.strftime("%Y%m%d-%H%M", time.localtime())) + " np_netDemanding_smallArea_eachSMRDesign.npy is added by SMR " + str(numberOfSMRToBeIntroduced))
-            print('### np_netDemanding_smallArea_eachSMRDesign -- SMR ' + str(numberOfSMRToBeIntroduced) + ' is finished ###')
-
-            netDemanding_regionalArea_eachSMRDesign = numpy.load(rootPath +"np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)
-            netDemanding_regionalArea_eachSMRDesign = netDemanding_regionalArea_eachSMRDesign.tolist()
             netDemanding_regionalArea_eachSMRDesign.append(netDemanding_regionalArea_eachCarbonTax)
-            np_netDemanding_regionalArea_eachSMRDesign = numpy.array(netDemanding_regionalArea_eachSMRDesign)
-            numpy.save(rootPath + "np_netDemanding_regionalArea_eachSMRDesign.npy", np_netDemanding_regionalArea_eachSMRDesign)
-            logging.info(str(time.strftime("%Y%m%d-%H%M", time.localtime())) + " np_netDemanding_regionalArea_eachSMRDesign.npy is added by SMR " + str(numberOfSMRToBeIntroduced))
-            print('### np_netDemanding_regionalArea_eachSMRDesign -- SMR ' + str(numberOfSMRToBeIntroduced) + ' is finished ###')
-
-            transmissionLoss_eachSMRDesign = numpy.load(rootPath +"np_transmissionLoss_eachSMRDesign.npy", allow_pickle=True)    
-            transmissionLoss_eachSMRDesign = transmissionLoss_eachSMRDesign.tolist()
             transmissionLoss_eachSMRDesign.append(transmissionLoss_eachCarbonTax)
-            np_transmissionLoss_eachSMRDesign = numpy.array(transmissionLoss_eachSMRDesign)
-            numpy.save(rootPath + "np_transmissionLoss_eachSMRDesign.npy", np_transmissionLoss_eachSMRDesign)
-            logging.info(str(time.strftime("%Y%m%d-%H%M", time.localtime())) + " np_transmissionLoss_eachSMRDesign.npy is added by SMR " + str(numberOfSMRToBeIntroduced))
-            print('### np_transmissionLoss_eachSMRDesign -- SMR ' + str(numberOfSMRToBeIntroduced) + ' is finished ###')
-
-            energyBreakdown_smallArea_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_smallArea_eachSMRDesign.npy", allow_pickle=True)
-            energyBreakdown_smallArea_eachSMRDesign = energyBreakdown_smallArea_eachSMRDesign.tolist()
             energyBreakdown_smallArea_eachSMRDesign.append(energyBreakdown_smallArea_eachCarbonTax)
-            np_energyBreakdown_smallArea_eachSMRDesign = numpy.array(energyBreakdown_smallArea_eachSMRDesign)
-            numpy.save(rootPath + "np_energyBreakdown_smallArea_eachSMRDesign.npy", np_energyBreakdown_smallArea_eachSMRDesign)
-            logging.info(str(time.strftime("%Y%m%d-%H%M", time.localtime())) + " np_energyBreakdown_smallArea_eachSMRDesign.npy is added by SMR " + str(numberOfSMRToBeIntroduced))
-            print('### np_energyBreakdown_smallArea_eachSMRDesign -- SMR ' + str(numberOfSMRToBeIntroduced) + ' is finished ###')
-
-            energyBreakdown_regionalArea_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)
-            energyBreakdown_regionalArea_eachSMRDesign = energyBreakdown_regionalArea_eachSMRDesign.tolist()
             energyBreakdown_regionalArea_eachSMRDesign.append(energyBreakdown_regionalArea_eachCarbonTax)
-            np_energyBreakdown_regionalArea_eachSMRDesign = numpy.array(energyBreakdown_regionalArea_eachSMRDesign)
-            numpy.save(rootPath + "np_energyBreakdown_regionalArea_eachSMRDesign.npy", np_energyBreakdown_regionalArea_eachSMRDesign)
-            logging.info(str(time.strftime("%Y%m%d-%H%M", time.localtime())) + " np_energyBreakdown_regionalArea_eachSMRDesign.npy is added by SMR " + str(numberOfSMRToBeIntroduced))
-            print('### np_energyBreakdown_regionalArea_eachSMRDesign -- SMR ' + str(numberOfSMRToBeIntroduced) + ' is finished ###')
-
-            busRawResult_eachSMRDesign = numpy.load(rootPath +"np_busRawResult_eachSMRDesign.npy", allow_pickle=True)
-            busRawResult_eachSMRDesign = busRawResult_eachSMRDesign.tolist()
-            busRawResult_eachSMRDesign.append(busRawResult_eachCarbonTax)
-            np_busRawResult_eachSMRDesign = numpy.array(busRawResult_eachSMRDesign)
-            numpy.save(rootPath + "np_busRawResult_eachSMRDesign.npy", np_busRawResult_eachSMRDesign)
-            logging.info(str(time.strftime("%Y%m%d-%H%M", time.localtime())) + " np_busRawResult_eachSMRDesign.npy is added by SMR " + str(numberOfSMRToBeIntroduced))
-            print('### np_busRawResult_eachSMRDesign -- SMR ' + str(numberOfSMRToBeIntroduced) + ' is finished ###')
-
-            branchRawResult_eachSMRDesign = numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)
-            branchRawResult_eachSMRDesign = branchRawResult_eachSMRDesign.tolist()
-            branchRawResult_eachSMRDesign.append(branchRawResult_eachCarbonTax)
-            np_branchRawResult_eachSMRDesign = numpy.array(branchRawResult_eachSMRDesign)
-            numpy.save(rootPath + "np_branchRawResult_eachSMRDesign.npy", np_branchRawResult_eachSMRDesign)
-            logging.info(str(time.strftime("%Y%m%d-%H%M", time.localtime())) + " np_branchRawResult_eachSMRDesign.npy is added by SMR " + str(numberOfSMRToBeIntroduced))
-            print('### np_branchRawResult_eachSMRDesign -- SMR ' + str(numberOfSMRToBeIntroduced) + ' is finished ###')
-
-            genRawResult_eachSMRDesign = numpy.load(rootPath +"np_genRawResult_eachSMRDesign.npy", allow_pickle=True)
-            genRawResult_eachSMRDesign = genRawResult_eachSMRDesign.tolist()
-            genRawResult_eachSMRDesign.append(genRawResult_eachCarbonTax)
-            np_genRawResult_eachSMRDesign = numpy.array(genRawResult_eachSMRDesign)
-            numpy.save(rootPath + "np_genRawResult_eachSMRDesign.npy", np_genRawResult_eachSMRDesign)
-            logging.info(str(time.strftime("%Y%m%d-%H%M", time.localtime())) + " np_genRawResult_eachSMRDesign.npy is added by SMR " + str(numberOfSMRToBeIntroduced))
-            print('### np_genRawResult_eachSMRDesign -- SMR ' + str(numberOfSMRToBeIntroduced) + ' is finished ###')
-
-            print('********SMR ' + str(numberOfSMRToBeIntroduced) + ' is finished********')
-
-
-            # summary_eachSMRDesign.append(summary_eachCarbonTax)
-            # ratio_eachSMRDesign.append(ratio_eachCarbonTax)
-            # SMROutputAndOperationalRatio_eachSMRDesign.append(SMR_eachCarbonTax)
-            # emission_eachSMRDesign.append(emission_eachCarbonTax)
-            # energyBreakdown_eachSMRDesign.append(energyBreakdown_eachCarbonTax)
-            # netDemanding_smallArea_eachSMRDesign.append(netDemanding_smallArea_eachCarbonTax)
-            # netDemanding_regionalArea_eachSMRDesign.append(netDemanding_regionalArea_eachCarbonTax)
-            # transmissionLoss_eachSMRDesign.append(transmissionLoss_eachCarbonTax)
-            # energyBreakdown_smallArea_eachSMRDesign.append(energyBreakdown_smallArea_eachCarbonTax)
-            # energyBreakdown_regionalArea_eachSMRDesign.append(energyBreakdown_regionalArea_eachCarbonTax)
             ## Raw data recorder
-            # busRawResult_eachSMRDesign.append(busRawResult_eachCarbonTax)
-            # branchRawResult_eachSMRDesign.append(branchRawResult_eachCarbonTax)
-            # genRawResult_eachSMRDesign.append(genRawResult_eachCarbonTax)
+            busRawResult_eachSMRDesign.append(busRawResult_eachCarbonTax)
+            branchRawResult_eachSMRDesign.append(branchRawResult_eachCarbonTax)
+            genRawResult_eachSMRDesign.append(genRawResult_eachCarbonTax)
 
-        # np_summary_eachSMRDesign = numpy.array(summary_eachSMRDesign)
-        # np_SMROutputAndOperationalRatio_eachSMRDesign = numpy.array(SMROutputAndOperationalRatio_eachSMRDesign)
-        # np_emission_eachSMRDesign = numpy.array(emission_eachSMRDesign) 
-        # np_energyBreakdown_eachSMRDesign = numpy.array(energyBreakdown_eachSMRDesign) 
-        # np_genTypeLabel = numpy.array(genTypeLabel) 
-        # np_netDemanding_smallArea_eachSMRDesign = numpy.array(netDemanding_smallArea_eachSMRDesign) 
-        # np_netDemanding_regionalArea_eachSMRDesign = numpy.array(netDemanding_regionalArea_eachSMRDesign)
-        # np_transmissionLoss_eachSMRDesign = numpy.array(transmissionLoss_eachSMRDesign)
-        # np_energyBreakdown_smallArea_eachSMRDesign = numpy.array(energyBreakdown_smallArea_eachSMRDesign)
-        # np_energyBreakdown_regionalArea_eachSMRDesign = numpy.array(energyBreakdown_regionalArea_eachSMRDesign)
-        # np_busRawResult_eachSMRDesign = numpy.array(busRawResult_eachSMRDesign)
-        # np_branchRawResult_eachSMRDesign = numpy.array(branchRawResult_eachSMRDesign)
-        # np_genRawResult_eachSMRDesign = numpy.array(genRawResult_eachSMRDesign)
+        np_summary_eachSMRDesign = numpy.array(summary_eachSMRDesign)
+        np_SMROutputAndOperationalRatio_eachSMRDesign = numpy.array(SMROutputAndOperationalRatio_eachSMRDesign)
+        np_emission_eachSMRDesign = numpy.array(emission_eachSMRDesign) 
+        np_energyBreakdown_eachSMRDesign = numpy.array(energyBreakdown_eachSMRDesign) 
+        np_genTypeLabel = numpy.array(genTypeLabel) 
+        np_netDemanding_smallArea_eachSMRDesign = numpy.array(netDemanding_smallArea_eachSMRDesign) 
+        np_netDemanding_regionalArea_eachSMRDesign = numpy.array(netDemanding_regionalArea_eachSMRDesign)
+        np_transmissionLoss_eachSMRDesign = numpy.array(transmissionLoss_eachSMRDesign)
+        np_energyBreakdown_smallArea_eachSMRDesign = numpy.array(energyBreakdown_smallArea_eachSMRDesign)
+        np_energyBreakdown_regionalArea_eachSMRDesign = numpy.array(energyBreakdown_regionalArea_eachSMRDesign)
+        np_busRawResult_eachSMRDesign = numpy.array(busRawResult_eachSMRDesign)
+        np_branchRawResult_eachSMRDesign = numpy.array(branchRawResult_eachSMRDesign)
+        np_genRawResult_eachSMRDesign = numpy.array(genRawResult_eachSMRDesign)
 
-        # numpy.save(rootPath + "np_summary_eachSMRDesign.npy", np_summary_eachSMRDesign)
-        # numpy.save(rootPath + "np_SMROutputAndOperationalRatio_eachSMRDesign.npy", np_SMROutputAndOperationalRatio_eachSMRDesign)
-        # numpy.save(rootPath + "np_emission_eachSMRDesign.npy", np_emission_eachSMRDesign)
-        # numpy.save(rootPath + "np_energyBreakdown_eachSMRDesign.npy", np_energyBreakdown_eachSMRDesign)
-        
-        # numpy.save(rootPath + "np_netDemanding_smallArea_eachSMRDesign.npy", np_netDemanding_smallArea_eachSMRDesign)
-        # numpy.save(rootPath + "np_netDemanding_regionalArea_eachSMRDesign.npy", np_netDemanding_regionalArea_eachSMRDesign)
-        # numpy.save(rootPath + "np_transmissionLoss_eachSMRDesign.npy", np_transmissionLoss_eachSMRDesign)
-        # numpy.save(rootPath + "np_energyBreakdown_smallArea_eachSMRDesign.npy", np_energyBreakdown_smallArea_eachSMRDesign)
-        # numpy.save(rootPath + "np_energyBreakdown_regionalArea_eachSMRDesign.npy", np_energyBreakdown_regionalArea_eachSMRDesign)
-        # numpy.save(rootPath + "np_busRawResult_eachSMRDesign.npy", np_busRawResult_eachSMRDesign)
-        # numpy.save(rootPath + "np_branchRawResult_eachSMRDesign.npy", np_branchRawResult_eachSMRDesign)
-        # numpy.save(rootPath + "np_genRawResult_eachSMRDesign.npy", np_genRawResult_eachSMRDesign)
+        numpy.save(rootPath + "np_summary_eachSMRDesign.npy", np_summary_eachSMRDesign)
+        numpy.save(rootPath + "np_SMROutputAndOperationalRatio_eachSMRDesign.npy", np_SMROutputAndOperationalRatio_eachSMRDesign)
+        numpy.save(rootPath + "np_emission_eachSMRDesign.npy", np_emission_eachSMRDesign)
+        numpy.save(rootPath + "np_energyBreakdown_eachSMRDesign.npy", np_energyBreakdown_eachSMRDesign)
+        numpy.save(rootPath + "np_genTypeLabel.npy", np_genTypeLabel)
+        numpy.save(rootPath + "np_netDemanding_smallArea_eachSMRDesign.npy", np_netDemanding_smallArea_eachSMRDesign)
+        numpy.save(rootPath + "np_netDemanding_regionalArea_eachSMRDesign.npy", np_netDemanding_regionalArea_eachSMRDesign)
+        numpy.save(rootPath + "np_transmissionLoss_eachSMRDesign.npy", np_transmissionLoss_eachSMRDesign)
+        numpy.save(rootPath + "np_energyBreakdown_smallArea_eachSMRDesign.npy", np_energyBreakdown_smallArea_eachSMRDesign)
+        numpy.save(rootPath + "np_energyBreakdown_regionalArea_eachSMRDesign.npy", np_energyBreakdown_regionalArea_eachSMRDesign)
+        numpy.save(rootPath + "np_busRawResult_eachSMRDesign.npy", np_busRawResult_eachSMRDesign)
+        numpy.save(rootPath + "np_branchRawResult_eachSMRDesign.npy", np_branchRawResult_eachSMRDesign)
+        numpy.save(rootPath + "np_genRawResult_eachSMRDesign.npy", np_genRawResult_eachSMRDesign)
     else:
         summary_eachSMRDesign = numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True) ## total cost and total emission
         # SMROutputAndOperationalRatio_eachSMRDesign = numpy.load(rootPath +"np_SMROutputAndOperationalRatio_eachSMRDesign.npy", allow_pickle=True)
-        # emission_eachSMRDesign = numpy.load(rootPath +"np_emission_eachSMRDesign.npy", allow_pickle=True)
+        emission_eachSMRDesign = numpy.load(rootPath +"np_emission_eachSMRDesign.npy", allow_pickle=True)
         energyBreakdown_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_eachSMRDesign.npy", allow_pickle=True)
         genTypeLabel = numpy.load(rootPath +"np_genTypeLabel.npy", allow_pickle=True)
         # netDemanding_smallArea_eachSMRDesign = numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)
@@ -6503,11 +6380,11 @@ if __name__ == '__main__':
 
         summary_eachSMRDesign = summary_eachSMRDesign.tolist()
         # SMROutputAndOperationalRatio_eachSMRDesign = SMROutputAndOperationalRatio_eachSMRDesign.tolist()
-        # emission_eachSMRDesign = emission_eachSMRDesign.tolist()
+        emission_eachSMRDesign = emission_eachSMRDesign.tolist()
         energyBreakdown_eachSMRDesign = energyBreakdown_eachSMRDesign.tolist()
         genTypeLabel = genTypeLabel.tolist()  
         # netDemanding_smallArea_eachSMRDesign = netDemanding_smallArea_eachSMRDesign.tolist()
-        # netDemanding_regionalArea_eachSMRDesign = netDemanding_regionalArea_eachSMRDesign.tolist()
+        # netDemanding_regionalArea_eachSMRDesign = netDemanding_regionalArea_eachSMRDesign.tolist() bgc 
         # transmissionLoss_eachSMRDesign = transmissionLoss_eachSMRDesign.tolist()
         # energyBreakdown_smallArea_eachSMRDesign = energyBreakdown_smallArea_eachSMRDesign.tolist()
         # energyBreakdown_regionalArea_eachSMRDesign = energyBreakdown_regionalArea_eachSMRDesign.tolist()
@@ -6517,8 +6394,8 @@ if __name__ == '__main__':
 
 
     # testOPF_29BusModel.resultsSheetCreator(NumberOfSMRUnitList, weatherConditionList, CarbonTaxForOPFList, summary_eachSMRDesign)
-    # testOPF_29BusModel.dataHeatmapCreator_totalCostAndEmission(summary_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
-    # testOPF_29BusModel.dataHeatmapCreator_SMROutputAndOperationalRatio(SMROutputAndOperationalRatio_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
+    testOPF_29BusModel.dataHeatmapCreator_totalCostAndEmission(summary_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
+    ## testOPF_29BusModel.dataHeatmapCreator_SMROutputAndOperationalRatio(SMROutputAndOperationalRatio_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
     # testOPF_29BusModel.dataHeatmapCreator_CO2Emission(emission_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
      
     ##-- The line charts showing the procesed results --##
@@ -6526,7 +6403,7 @@ if __name__ == '__main__':
     testOPF_29BusModel.lineGraph_weightImpact(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
     ## testOPF_29BusModel.lineGraph_SMRImpactForCO2Emission(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
     ## testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForEachSMRDesign(energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
-    # testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForOptimisedDesign(summary_eachSMRDesign, energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, [0.5])
+    ## testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForOptimisedDesign(summary_eachSMRDesign, energyBreakdown_eachSMRDesign, genTypeLabel, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, [0.5])
 
     # netDemanding_smallArea_eachSMRDesign, netDemanding_regionalArea_eachSMRDesign = testOPF_29BusModel.netDemandingCalculator(ifReadLocalResults, genRawResult_eachSMRDesign)
 
@@ -6539,13 +6416,13 @@ if __name__ == '__main__':
     # netDemanding_smallArea_eachSMRDesign = netDemanding_smallArea_eachSMRDesign.tolist()
     # netDemanding_regionalArea_eachSMRDesign = netDemanding_regionalArea_eachSMRDesign.tolist()
 
-    # testOPF_29BusModel.GeoJSONCreator_netDemandingForSmallArea(netDemanding_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
+    testOPF_29BusModel.GeoJSONCreator_netDemandingForSmallArea(netDemanding_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
     # testOPF_29BusModel.GeoJSONCreator_netDemandingForRegionalArea(netDemanding_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
     # testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator_RegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
     # testOPF_29BusModel.GeoJSONCreator_branchGrid(branchRawResult_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
     # testOPF_29BusModel.GeoJSONCreator_majorEnergySourceForSmallArea(energyBreakdown_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
     # testOPF_29BusModel.GeoJSONCreator_outputOfDifferentEnergySourceForSmallArea(energyBreakdown_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
-    # testOPF_29BusModel.GeoJSONCreator_totalOutputOfRegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
+    testOPF_29BusModel.GeoJSONCreator_totalOutputOfRegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
 
 
 

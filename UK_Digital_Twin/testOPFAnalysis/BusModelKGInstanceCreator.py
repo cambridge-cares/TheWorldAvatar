@@ -27,6 +27,7 @@ from UK_Digital_Twin_Package import demandLoadAllocator as DLA
 from pyderivationagent.kg_operations.sparql_client import PySparqlClient # the import of this agent will need a parckage name werkzeug, install `pip install Werkzeug==2.0.2`, otherwise it will report the error message
 import uuid
 from py4jps.resources import JpsBaseLib
+import urllib.request
 
 """Notation used in URI construction"""
 HASH = '#'
@@ -54,11 +55,14 @@ endpoint_iri = endpointList.ukdigitaltwin['queryendpoint_iri'] # federated query
 ONS_JSON =  endpointList.ONS['endpoint_iri']
 
 """T-Box URI"""
-ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
-ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
-ontocape_mathematical_model     = owlready2.get_ontology(t_box.ontocape_mathematical_model).load()
-ontopowsys_PowerSystemModel     = owlready2.get_ontology(t_box.ontopowsys_PowerSystemModel).load()
-ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
+if urllib.request.urlopen("http://www.theworldavatar.com/ontology/").getcode() == 200:
+    ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
+    ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
+    ontocape_mathematical_model     = owlready2.get_ontology(t_box.ontocape_mathematical_model).load()
+    ontopowsys_PowerSystemModel     = owlready2.get_ontology(t_box.ontopowsys_PowerSystemModel).load()
+    ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
+else:
+    print('---THE WORLD AVATAR NOT FOUND---')
 
 """User specified folder path"""
 filepath = None
