@@ -375,6 +375,10 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint='domestic',
     postcodes = [r['postcode'] for r in res]
     postcodes = [p for p in postcodes if p]
 
+    #TODO: remove
+    postcodes.sort()
+    postcodes = postcodes[4000:4050]
+
     # Split list of postcodes in chunks of max. size n
     n = 500
     postcodes = [postcodes[i:i + n] for i in range(0, len(postcodes), n)]
@@ -1203,14 +1207,21 @@ def summarize_epc_data(data):
     return df
 
 
-def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
+def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT, 
                             update_endpoint=UPDATE_ENDPOINT, 
                             ocgml_endpoint=OCGML_ENDPOINT,
                             kgclient_epc=None, kgclient_ocgml=None):
     '''
-        Retrieve relevant building information (i.e. footprint, elevation) from
-        OntoCityGml SPARQl endpoint and instantiate/update according to OntoBuiltEnv
-        (elevation as triples, footprint uploaded to PostGIS)
+    Retrieve relevant building information (i.e. footprint, elevation) from
+    OntoCityGml SPARQl endpoint and instantiate/update according to OntoBuiltEnv
+    (elevation as triples, footprint uploaded to PostGIS)
+
+    Arguments:
+        query_endpoint - Blazegraph endpoint with EPC KG
+        ocgml_endpoint - Blazegraph endpoint with instantiated OntoCityGml buildings
+        trans - pyproj transformation object
+        kgclient_epc, kgclient_ocgml - KGClient instances for EPC and OCGML endpoints
+
     '''
     # Initialise return values
     footprints_new = 0
@@ -1233,28 +1244,9 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
     #
     # 1) Retrieve Coordinate Reference System form OCGML endpoint
     #
-    query = get_ocgml_crs()
-    try:
-        kg_crs = kgclient_ocgml.performQuery(query)
-        # Unpack queried CRS result to extract coordinate reference system
-        if len(kg_crs) != 1:
-            logger.error('No or multiple CRS detected in SPARQL query result.')
-            raise ValueError('No or multiple CRS detected in SPARQL query result.')
-        else:
-            crs = kg_crs[0]['crs']
-    except KGException as ex:
-        logger.error('Unable to retrieve CRS from OCGML endpoint.')
-        raise KGException('Unable to retrieve CRS from OCGML endpoint.') from ex
-    try:
-        # Initialise Pyproj projection from OCGML CRS to EPSG:4326 (current Postgis default)
-        ocgml_crs = CRSs[crs]
-        target_crs = CRSs['EPSG:4326']
-        trans = initialise_pyproj_transformer(current_crs=ocgml_crs, 
-                                              target_crs=target_crs)
-    except Exception as ex:
-        logger.error('Unable to initialise Pyproj transformation object.')
-        raise RuntimeError('Unable to initialise Pyproj transformation object.') from ex
-    
+    trans, target_crs = initialise_pyproj_projection(kgclient_epc=kgclient_epc, 
+                                                     kgclient_ocgml=kgclient_ocgml)
+
     #
     # 2) Query information for matched buildings
     #
@@ -1445,6 +1437,56 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
             elevations_new += len(batch)
 
     return (footprints_new, footprints_dup, elevations_new, elevations_old)
+
+
+def initialise_pyproj_projection(query_endpoint=QUERY_ENDPOINT,
+                                 ocgml_endpoint=OCGML_ENDPOINT,
+                                 kgclient_epc=None, kgclient_ocgml=None):
+    '''
+    Initialise pyproj projection for coordinate transformation from OCGML CRS to 
+    PostGIS (i.e. EPSG:4326)
+
+    Arguments:
+        query_endpoint - Blazegraph endpoint with EPC KG
+        ocgml_endpoint - Blazegraph endpoint with instantiated OntoCityGml buildings
+        kgclient_epc, kgclient_ocgml - KGClient instances for EPC and OCGML endpoints
+    
+    Retruns:
+        pyproj projection instance
+        ocgml_crs - OCGML coordinate reference system
+        target_crs - Target coordinate reference system (i.e. EPSG:4326)
+    '''
+
+    # Create KG clients if not provided
+    if not kgclient_epc:
+        kgclient_epc = KGClient(query_endpoint, query_endpoint)
+    if not kgclient_ocgml:
+        kgclient_ocgml = KGClient(ocgml_endpoint, ocgml_endpoint)
+
+    # Retrieve Coordinate Reference System from OCGML endpoint
+    query = get_ocgml_crs()
+    try:
+        kg_crs = kgclient_ocgml.performQuery(query)
+        # Unpack queried CRS result to extract coordinate reference system
+        if len(kg_crs) != 1:
+            logger.error('No or multiple CRS detected in SPARQL query result.')
+            raise ValueError('No or multiple CRS detected in SPARQL query result.')
+        else:
+            crs = kg_crs[0]['crs']
+    except KGException as ex:
+        logger.error('Unable to retrieve CRS from OCGML endpoint.')
+        raise KGException('Unable to retrieve CRS from OCGML endpoint.') from ex
+    try:
+        # Initialise Pyproj projection from OCGML CRS to EPSG:4326 (current Postgis default)
+        ocgml_crs = CRSs[crs]
+        target_crs = CRSs['EPSG:4326']
+        trans = initialise_pyproj_transformer(current_crs=ocgml_crs, 
+                                              target_crs=target_crs)
+    except Exception as ex:
+        logger.error('Unable to initialise Pyproj transformation object.')
+        raise RuntimeError('Unable to initialise Pyproj transformation object.') from ex
+
+    return trans, target_crs
 
 
 if __name__ == '__main__':

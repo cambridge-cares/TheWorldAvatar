@@ -49,7 +49,8 @@ def task_instantiate_epc_data_for_certificate(**inputs) -> dict:
                        'Updated EPCs': epcs[1]}
         for key, value in return_dict.items():
             print(key, ' : ', value)
-        return return_dict                       
+        return return_dict   
+                            
     except Exception as ex:
         logger.error('Unable to instantiate EPC data.', ex)
         return {'msg': 'EPC data instantiation failed: ' + str(ex)}
@@ -68,6 +69,26 @@ def task_instantiate_epc_data_for_all_uprns(**inputs) -> dict:
         for key, value in return_dict.items():
             print(key, ' : ', value)
         return return_dict
+
     except Exception as ex:
         logger.error('Unable to instantiate EPC data.', ex)
         return {'msg': 'EPC data instantiation failed: ' + str(ex)}
+
+
+# Define task to initialise/update all EPCs
+@shared_task(ignore_result=False)
+def task_add_ocgml_building_data() -> dict:
+    try:
+        # Retrieve and instantiate building footprint/elevation
+        ocgml = add_ocgml_building_data()
+        return_dict = {'Instantiated PostGIS footprints': ocgml[0],
+                       'Already instantiated PostGIS footprints': ocgml[1],
+                       'Deleted building elevations': ocgml[2],
+                       'Instantiated building elevations': ocgml[3]}
+        for key, value in return_dict.items():
+            print(key, ' : ', value)
+        return return_dict
+
+    except Exception as ex:
+        logger.error('Unable to instantiate PostGIS features and/or OntoBuiltEnv building elevations.', ex)
+        return {'msg': 'Instantiating OntoCityGml data failed: ' + str(ex)}

@@ -2,10 +2,12 @@
 
 The `Energy Performance Certificate` (EPC) agent is an input agent which queries data from the [EPC APIs] (i.e. 3 individual endpoints for domestic, non-domestic and display certificates), and instantiates it according to the [OntoBuiltEnv] ontology in the [TheWorldAvatar] knowledge graph.
 
-It is designed to interact with the stack spun up by the stack manager. 
+The agent is designed to interact with the stack spun up by the stack manager. It is implemented as Flask App and uses Celery to run long running requests as background tasks. 
 
-<span style="color:red">Tests are currently still excluded.</span>
-<br/><br/>
+**Please note**:
+1) Celery workers are run with superuser privileges to avoid permission issues with accessing particular repositories
+2) Tests are currently still excluded.
+
 
 # 1. Setup
 

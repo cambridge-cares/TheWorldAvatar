@@ -16,7 +16,7 @@ from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from agent.kgutils.initialise_kb import create_blazegraph_namespace, upload_ontology
 from agent.kgutils.initialise_ocgml import upload_ocgml_quads
 from agent.datainstantiation.postcodes import initialise_postcodes
-from agent.datainstantiation.epc_instantiation import instantiate_epc_data_for_certificate, \
+from agent.datainstantiation.epc_instantiation import initialise_pyproj_projection, instantiate_epc_data_for_certificate, \
                                                         instantiate_epc_data_for_all_postcodes, \
                                                         add_ocgml_building_data
 
@@ -167,28 +167,19 @@ def api_instantiate_epc_data_for_all_uprns():
 # OntoBuiltEnv building instances with OntoCityGml ones
 #
 
-# Define route for API request to retrieve relevant building information from OCGML and 
-# instantiate according to OntoBuiltEnv
+# Define agent route to retrieve relevant building information from OCGML and 
+# instantiate it using OntoBuiltEnv (required for PostGIS/Geoserver visualisation)
 @inputtasks_bp.route('/epcagent/add/ocgml_info', methods=['GET'])
 def api_add_ocgml_building_data():
     # Check arguments (query parameters)
     if len(request.args) > 0:
         logger.warning("Query parameters provided, although not required. \
                         Provided arguments will be neglected.")
-    try:
-        # Retrieve and instantiate building elevation
-        res = add_ocgml_building_data()
-        return_dict = {'Instantiated PostGIS footprints': res[0],
-                       'Already instantiated PostGIS footprints': res[1],
-                       'Deleted building elevations': res[2],
-                       'Instantiated building elevations': res[3]}
-        for key, value in return_dict.items():
-            print(key, ' : ', value)
-        return jsonify(return_dict), 200
 
-    except Exception as ex:
-        logger.error('Unable to instantiate PostGIS features and/or OntoBuiltEnv building elevations.', ex)
-        return jsonify({'msg': 'Instantiating OntoCityGml data failed: ' + str(ex)}), 500
+    # Start Celery task
+    result = tasks.task_add_ocgml_building_data.delay()
+    print(f'Submitted job to retrieve OCGML data - job id: {result.id}')
+    return jsonify({'result_id': result.id}), 200
 
 #
 # DEPRECATED ENDPOINTS
