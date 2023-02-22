@@ -217,28 +217,28 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 					throw new JPSRuntimeException(LOADCONFIGS_ERROR_MSG, e);
 				}
 
-				//query for Quality IRI that ontodevice:hasQualitativeValue <data IRI>
-				String quality = builder.queryForQualityWithHasQualitativeValue(dataIRI);
-				LOGGER.info("The subject retrieved is " + quality);
+				//query for state IRI that ontodevice:hasQualitativeValue <data IRI>
+				String stateIRI = builder.queryForStateWithHasQualitativeValue(dataIRI);
+				LOGGER.info("The subject retrieved is " + stateIRI);
 
-				//query for tag IRI with quality IRI via ontodevice:isPropertyOf
-				String tagIRI = builder.queryForTagWithQualityIRI(quality);
+				//query for tag IRI with state IRI via saref:hasState
+				String tagIRI = builder.queryForTagWithStateIRI(stateIRI);
 				LOGGER.info("The tag IRI retrieved is " + tagIRI);
 
 				//query for bottle IRI with tag IRI via ontodevice:isAttachedTo
 				String bottleIRI = builder.queryForBottleWithIsAttachedTo(tagIRI);
 				LOGGER.info("The bottle IRI retrieved is " + bottleIRI);
 
-				//query for chemical IRI with bottle IRI via ontolab:isFilledWith
-				String chemicalIRI = builder.queryForChemicalWithIsFilledWith(bottleIRI);
-				LOGGER.info("The chemical IRI retrieved is " + chemicalIRI);
+				//query for chemical amount IRI with bottle IRI via ontolab:isFilledWith
+				String chemicalAmountIRI = builder.queryForChemicalAmountWithIsFilledWith(bottleIRI);
+				LOGGER.info("The chemical amount IRI retrieved is " + chemicalAmountIRI);
 
-				//query for material IRI with chemical IRI via ontocape_cps_behavior:refersToMaterial
-				String materialIRI = builder.queryForMaterialWithRefersToMaterial(chemicalIRI);
-				LOGGER.info("The material IRI retrieved is " + materialIRI);
+				//query for chemical IRI with chemical amount IRI via ontocape_cps_behavior:refersToMaterial
+				String chemicalIRI = builder.queryForChemicalWithRefersToMaterial(chemicalAmountIRI);
+				LOGGER.info("The material IRI retrieved is " + chemicalIRI);
 
-				//query for phase IRI with material IRI via ontocape_material:thermodynamicBehavior
-				String phaseIRI = builder.queryForPhaseWithThermodynamicBehavior(materialIRI);
+				//query for phase IRI with chemical IRI via ontocape_material:thermodynamicBehavior
+				String phaseIRI = builder.queryForPhaseWithThermodynamicBehavior(chemicalIRI);
 				LOGGER.info("The phase IRI retrieved is " + phaseIRI);
 
 				//query for phase component IRI with phase IRI via ontocape_system:isComposedOfSubsystem
@@ -249,31 +249,12 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				String speciesIRI = builder.queryForSpeciesWithRepresentsOccurenceOf(phaseComponentIRI);
 				LOGGER.info("The species IRI retrieved is " + speciesIRI);
 
-				//query for molecular formula IRI with species IRI via ontospecies:hasMolecularFormula
-				String molecularFormulaIRI = builder.queryForMolecularFormulaWithHasMolecularFormula(speciesIRI);
-				LOGGER.info("The molecular formula IRI retrieved is " + molecularFormulaIRI);
-
-				//query for element number IRI with molecular formula IRI via ontokin:hasElementNumber
-				String elementNumberIRI = builder.queryForElementNumberViaHasElementNumber(molecularFormulaIRI);
-				LOGGER.info("The element number IRI retrieved is " + elementNumberIRI);
-
-				//query for number of elements with element number IRI via ontokin:hasNumberOfElement
-				String numberOfElement = builder.queryForNumberViaHasNumberOfElement(elementNumberIRI);
-				LOGGER.info("The number of element that this species " + speciesIRI + " has is " + numberOfElement);
-
-				//query for alt labels of species
-				JSONArray altLabels = new JSONArray();
-				altLabels = builder.queryForLabelsViaAltLabel(speciesIRI);
-				JSONObject labels = new JSONObject();
-
-				for (int j=0; j < altLabels.length(); j++) {
-					labels.put("label_"+j, altLabels.getJSONObject(j).getString("label"));
-				}
-
-				LOGGER.info(labels.toString());
+				//query for species label via rdfs:label
+				String label = builder.queryForLabel(speciesIRI);
+				LOGGER.info("The label of the species is " + label);
 
 				LOGGER.info("Preparing to send email...");
-				agent.sendEmail(dataIRI, labels, timestamp);
+				agent.sendEmail(dataIRI, label, timestamp);
 				LOGGER.info("Alert Email sent for " + dataIRI);
 				jsonMessage.accumulate("Result", "Alert Email sent for " + dataIRI);
 
