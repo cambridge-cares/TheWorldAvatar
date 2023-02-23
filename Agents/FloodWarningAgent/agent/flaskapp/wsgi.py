@@ -20,9 +20,9 @@ from agent.flaskapp import create_app
 
 # Initialise background scheduler and add recurring background task to 
 # assimilate latest time series data once per day
-#sched = BackgroundScheduler(daemon=True)
-#sched.add_job(update_warnings, trigger='cron', hour='3', timezone=utc)
-#sched.start()
+sched = BackgroundScheduler(daemon=True)
+sched.add_job(update_warnings, trigger='interval', hours='1', timezone=utc)
+sched.start()
 
 app = create_app()
 
