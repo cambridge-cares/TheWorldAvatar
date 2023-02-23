@@ -225,3 +225,90 @@ def update_flood_warning(warning_uri: str = None, severity: str = None, label: s
         query = None
 
     return query
+
+
+def delete_flood_warning(warning_uri: str = None) -> str:
+    # Returns DELETE query to delete instantiated flood warning incl. ALL 
+    # obsolete downstream relations (also including derivation markup);
+    # associated flood areas are not affected, only relation is deleted
+
+    if warning_uri:
+        # Create delete
+        query = f"""
+            DELETE {{
+                <{warning_uri}> <{RDF_TYPE}> <{RT_FLOOD_ALERT_OR_WARNING}> ; 
+                                <{FLOOD_HAS_SEVERITY}> ?severity_iri ; 
+                                <{FLOOD_WARNS_ABOUT}> ?flood_event_iri ;
+                                <{RDFS_LABEL}> ?warning_label ; 
+                                <{RT_MESSAGE}> ?warning_message ; 
+                                <{RT_TIME_RAISED}> ?time_raise ; 
+                                <{RT_TIME_MESSAGE_CHANGED}> ?time_message ; 
+                                <{RT_TIME_SEVERITY_CHANGED}> ?time_severity ; 
+                ?area_iri <{RT_CURRENT_WARNING}> <{warning_uri}> . 
+                ?flood_event_iri <{RDF_TYPE}> <{ENVO_FLOOD}> ;
+                                 <{FLOOD_HAS_LOCATION}> ?location_iri ;  
+                                 <{FLOOD_RESULTS_IN}> ?impact_iri ; 
+                                 <{FLOOD_AFFECTS}> ?affected_iri . 
+
+                ?impact_iri <{RDF_TYPE}> <{FLOOD_IMPACT}> ; 
+                            <{FLOOD_HAS_CLASSIFICATION}> ?impact ; 
+                            <{FLOOD_HAS_MONETARY_VALUE}> ?impact_quantity . 
+                ?impact_quantity <{RDF_TYPE}> ?impact_quantity_type ;
+                                 <{OM_HAS_VALUE}> ?impact_quantity_value . 
+                ?impact_quantity_value <{RDF_TYPE}> <{OM_MEASURE}> ;
+                                       <{OM_HAS_UNIT}> ?impact_quantity_unit ; 
+                                       <{OM_HAS_NUMERICALVALUE}> ?impact_quantity_num_value .
+
+                ?affected_iri <{RDF_TYPE}> ?affected_type ;
+                              <{FLOOD_HAS_TOTAL_COUNT}> ?affected_count ;
+                              <{FLOOD_HAS_TOTAL_MONETARY_VALUE}> ?quantity .
+                ?quantity <{RDF_TYPE}> ?quantity_type ;
+                          <{OM_HAS_VALUE}> ?quantity_value . 
+                ?quantity_value <{RDF_TYPE}> <{OM_MEASURE}> ;
+                                <{OM_HAS_UNIT}> ?quantity_unit ; 
+                                <{OM_HAS_NUMERICALVALUE}> ?quantity_num_value .
+
+            WHERE
+                <{warning_uri}> <{RDF_TYPE}> <{RT_FLOOD_ALERT_OR_WARNING}> ; 
+                                <{FLOOD_HAS_SEVERITY}> ?severity_iri ;
+                                <{FLOOD_WARNS_ABOUT}> ?flood_event_iri . 
+                ?area_iri <{RT_CURRENT_WARNING}> <{warning_uri}> . 
+                ?flood_event_iri <{RDF_TYPE}> <{ENVO_FLOOD}> ;
+                                 <{FLOOD_HAS_LOCATION}> ?location_iri . 
+                OPTIONAL {{ <{warning_uri}> <{RDFS_LABEL}> ?warning_label }}
+                OPTIONAL {{ <{warning_uri}> <{RT_MESSAGE}> ?warning_message }}
+                OPTIONAL {{ <{warning_uri}> <{RT_TIME_RAISED}> ?time_raise }}
+                OPTIONAL {{ <{warning_uri}> <{RT_TIME_MESSAGE_CHANGED}> ?time_message }} 
+                OPTIONAL {{ <{warning_uri}> <{RT_TIME_SEVERITY_CHANGED}> ?time_severity }} 
+
+                OPTIONAL {{ ?flood_event_iri <{FLOOD_RESULTS_IN}> ?impact_iri . 
+                            ?impact_iri <{RDF_TYPE}> <{FLOOD_IMPACT}> ; 
+                                        <{FLOOD_HAS_MONETARY_VALUE}> ?impact_quantity . 
+                            OPTIONAL {{ ?impact_iri <{FLOOD_HAS_CLASSIFICATION}> ?impact }} 
+                            ?impact_quantity <{RDF_TYPE}> ?impact_quantity_type ;
+                                             <{OM_HAS_VALUE}> ?impact_quantity_value . 
+                            ?impact_quantity_value <{RDF_TYPE}> <{OM_MEASURE}> ;
+                                                   <{OM_HAS_UNIT}> ?impact_quantity_unit ; 
+                                                    <{OM_HAS_NUMERICALVALUE}> ?impact_quantity_num_value .
+                         }}
+                OPTIONAL {{ ?flood_event_iri <{FLOOD_AFFECTS}> ?affected_iri . 
+                            ?affected_iri <{RDF_TYPE}> ?affected_type ;
+                                          <{FLOOD_HAS_TOTAL_COUNT}> ?affected_count ;
+                                          <{FLOOD_HAS_TOTAL_MONETARY_VALUE}> ?quantity .
+                            ?quantity <{RDF_TYPE}> ?quantity_type ;
+                                      <{OM_HAS_VALUE}> ?quantity_value . 
+                            ?quantity_value <{RDF_TYPE}> <{OM_MEASURE}> ;
+                                            <{OM_HAS_UNIT}> ?quantity_unit ; 
+                                            <{OM_HAS_NUMERICALVALUE}> ?quantity_num_value .
+                         }}
+            }}
+        """
+        #TODO: include deletion of derivation markup (at end of lifetime of warning)
+
+        # Remove unnecessary whitespaces
+        query = ' '.join(query.split())
+
+    else:
+        query = None
+
+    return query

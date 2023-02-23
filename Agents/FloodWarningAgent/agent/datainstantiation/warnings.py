@@ -96,7 +96,7 @@ def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT,
         if warnings_to_update:
             print('Updating flood warnings ...')
             updated_warnings = \
-                update_flood_warnings(warnings_to_update, current_warnings, 
+                update_instantiated_flood_warnings(warnings_to_update, current_warnings, 
                                       kgclient=kg_client)
             print('Updating finished.')
 
@@ -104,7 +104,7 @@ def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT,
         if warnings_to_deleted:
             print('Deleting inactive flood warnings ...')
             deleted_warnings = \
-                delete_flood_warnings(warnings_to_deleted, kgclient=kg_client)
+                delete_instantiated_flood_warnings(warnings_to_deleted, kgclient=kg_client)
             print('Deleting finished.')
 
 
@@ -190,102 +190,6 @@ def instantiate_flood_areas_and_warnings(areas_to_instantiate: list, areas_kg: d
     new_warnings = instantiate_flood_warnings(warning_data_to_instantiate, kgclient=kgclient)
 
     return new_areas, new_warnings
-
-
-def update_flood_warnings(warnings_to_update: list, warnings_data_api: list,
-                          query_endpoint=QUERY_ENDPOINT, kgclient=None):
-    """
-    Update flood warnings and alerts in the KG (i.e. update list of flood warnings
-    with data dicts as retrieved from API by 'retrieve_current_warnings')
-
-    Arguments:
-        warnings_to_update (list): List of flood warning URIs to be updated
-        warnings_data_api (list): List of dictionaries with flood warning data from API
-
-    Returns:
-        Number of updated flood warnings as int
-    """
-
-    # Create KG client if not provided
-    if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
-
-    # Extract relevant warning data
-    data_to_update = [w for w in warnings_data_api if w.get('warning_uri') in warnings_to_update]
-
-    for data in data_to_update:
-        # Keep only "updatable" information
-        relevant = ['warning_uri', 'severity', 'label', 'message', 'timeRaised', 
-                    'timeMsgChanged', 'timeSevChanged'] 
-        data = {k: v for k, v in data.items() if k in relevant}
-        # Create SPARQL update query
-        query = update_flood_warnings(**data)
-        # Perform update
-        kgclient.performUpdate(query)
-    
-
-    return len(data_to_update)
-
-
-def get_instantiated_flood_warnings(query_endpoint=QUERY_ENDPOINT,
-                                    kgclient=None) -> dict:
-    """
-    Retrieve all instantiated flood warnings with latest update timestamp
-
-    Arguments:
-        query_endpoint - SPARQL endpoint from which to retrieve data
-        kgclient - pre-initialized KG client with endpoints
-
-    Returns:
-        warnings (dict): Dictionary with flood warning/alert IRIs as keys and
-                         latest update timestamp as values
-    """
-
-    # Create KG client if not provided
-    if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
-    
-    # Retrieve instantiated flood warnings
-    query = get_all_flood_warnings()
-    res = kgclient.performQuery(query)
-
-    # Unwrap results
-    warning = [r.pop('warning_iri') for r in res]
-    last_altered = [list(r.values()) for r in res]
-    for i in range(len(last_altered)):
-        last_altered[i] = [dt.strptime(t, BLAZEGRAPH_TIME_FORMAT) for t in last_altered[i]]
-        last_altered[i] = max(last_altered[i])
-    warnings = dict(zip(warning, last_altered))
-
-    return warnings
-
-
-def get_instantiated_flood_areas(query_endpoint=QUERY_ENDPOINT,
-                                 kgclient=None) -> dict:
-    """
-    Retrieve all instantiated flood areas with associated 'hasLocation' Location IRIs
-
-    Arguments:
-        query_endpoint - SPARQL endpoint from which to retrieve data
-        kgclient - pre-initialized KG client with endpoints
-
-    Returns:
-        areas (dict): Dictionary with flood area IRIs as keys and associated 
-                      Location IRIs as values
-    """
-
-    # Create KG client if not provided
-    if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
-    
-    # Retrieve instantiated flood warnings
-    query = get_all_flood_areas()
-    res = kgclient.performQuery(query)
-
-    # Unwrap results
-    areas = {r['area_iri']: r['location_iri'] for r in res}
-
-    return areas
 
 
 def instantiate_flood_areas(areas_data: list=[],
@@ -408,4 +312,128 @@ def instantiate_flood_warnings(warnings_data: list=[],
     kgclient.performUpdate(query)
 
     return len(warnings_data)
-     
+
+
+def update_instantiated_flood_warnings(warnings_to_update: list, warnings_data_api: list,
+                                       query_endpoint=QUERY_ENDPOINT, kgclient=None):
+    """
+    Update flood warnings and alerts in the KG (i.e. update list of flood warnings
+    with data dicts as retrieved from API by 'retrieve_current_warnings')
+
+    Arguments:
+        warnings_to_update (list): List of flood warning URIs to be updated
+        warnings_data_api (list): List of dictionaries with flood warning data from API
+
+    Returns:
+        Number of updated flood warnings as int
+    """
+
+    # Create KG client if not provided
+    if not kgclient:
+        kgclient = KGClient(query_endpoint, query_endpoint)
+
+    # Extract relevant warning data
+    data_to_update = [w for w in warnings_data_api if w.get('warning_uri') in warnings_to_update]
+
+    for data in data_to_update:
+        # Keep only "updatable" information
+        relevant = ['warning_uri', 'severity', 'label', 'message', 'timeRaised', 
+                    'timeMsgChanged', 'timeSevChanged'] 
+        data = {k: v for k, v in data.items() if k in relevant}
+        # Create SPARQL update query
+        query = update_instantiated_flood_warnings(**data)
+        # Perform update
+        kgclient.performUpdate(query)
+    
+
+    return len(data_to_update)
+
+
+def delete_instantiated_flood_warnings(warnings_to_delete: list, query_endpoint=QUERY_ENDPOINT, 
+                                       kgclient=None):
+    """
+    Delete obsolete (i.e. inactive) flood warnings and alerts from the KG 
+    (i.e. including all obsolete downstream relations)
+    NOTE: Associated flood areas (incl. geospatial data in PostGIS) are not deleted
+          as they may be used by other flood warnings (and are rather stable entities)
+
+    Arguments:
+        warnings_to_delete (list): List of flood warning URIs to be deleted
+
+    Returns:
+        Number of updated flood warnings as int
+    """
+
+    # Create KG client if not provided
+    if not kgclient:
+        kgclient = KGClient(query_endpoint, query_endpoint)
+
+    for warning in warnings_to_delete:
+        # Create SPARQL delete query
+        query = delete_flood_warning(warning)
+        # Perform update
+        kgclient.performUpdate(query)
+    
+
+    return len(warnings_to_delete)
+
+
+def get_instantiated_flood_warnings(query_endpoint=QUERY_ENDPOINT,
+                                    kgclient=None) -> dict:
+    """
+    Retrieve all instantiated flood warnings with latest update timestamp
+
+    Arguments:
+        query_endpoint - SPARQL endpoint from which to retrieve data
+        kgclient - pre-initialized KG client with endpoints
+
+    Returns:
+        warnings (dict): Dictionary with flood warning/alert IRIs as keys and
+                         latest update timestamp as values
+    """
+
+    # Create KG client if not provided
+    if not kgclient:
+        kgclient = KGClient(query_endpoint, query_endpoint)
+    
+    # Retrieve instantiated flood warnings
+    query = get_all_flood_warnings()
+    res = kgclient.performQuery(query)
+
+    # Unwrap results
+    warning = [r.pop('warning_iri') for r in res]
+    last_altered = [list(r.values()) for r in res]
+    for i in range(len(last_altered)):
+        last_altered[i] = [dt.strptime(t, BLAZEGRAPH_TIME_FORMAT) for t in last_altered[i]]
+        last_altered[i] = max(last_altered[i])
+    warnings = dict(zip(warning, last_altered))
+
+    return warnings
+
+
+def get_instantiated_flood_areas(query_endpoint=QUERY_ENDPOINT,
+                                 kgclient=None) -> dict:
+    """
+    Retrieve all instantiated flood areas with associated 'hasLocation' Location IRIs
+
+    Arguments:
+        query_endpoint - SPARQL endpoint from which to retrieve data
+        kgclient - pre-initialized KG client with endpoints
+
+    Returns:
+        areas (dict): Dictionary with flood area IRIs as keys and associated 
+                      Location IRIs as values
+    """
+
+    # Create KG client if not provided
+    if not kgclient:
+        kgclient = KGClient(query_endpoint, query_endpoint)
+    
+    # Retrieve instantiated flood warnings
+    query = get_all_flood_areas()
+    res = kgclient.performQuery(query)
+
+    # Unwrap results
+    areas = {r['area_iri']: r['location_iri'] for r in res}
+
+    return areas
