@@ -265,16 +265,31 @@ public class SensorLoggerMobileAppServlet extends JPSAgent {
     private static RemoteStoreClient storeClient = new RemoteStoreClient("http://127.0.0.1:9999/blazegraph/namespace/test/sparql", "http://127.0.0.1:9999/blazegraph/namespace/test/sparql");
     private static TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
 
-    /**
-     * Stack server
-     */
+    private static final Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppServlet.class);
 
     private static Long downsamplingRate;
     private static int downsamplingType;
     private static int timerDelay;
     private static int timerFrequency;
 
-    //    private static String dbURL;
+    private static void readConfig() {
+        ResourceBundle config = ResourceBundle.getBundle("config");
+        downsamplingType = Integer.parseInt(config.getString("downsamplingType"));
+        downsamplingRate = Long.valueOf(config.getString("downsamplingRate"));
+        timerDelay = Integer.valueOf(config.getString("timerDelay"));
+        timerFrequency = Integer.valueOf(config.getString("timerFrequency"));
+    }
+
+//    /**
+//     * Stack server
+//     */
+//
+//    private static Long downsamplingRate;
+//    private static int downsamplingType;
+//    private static int timerDelay;
+//    private static int timerFrequency;
+//
+//    private static String dbURL;
 //    private static String user;
 //    private static String password;
 //    private static  String timeseriesDBUrl;
@@ -285,16 +300,16 @@ public class SensorLoggerMobileAppServlet extends JPSAgent {
 //    private static RemoteRDBStoreClient rdbStoreClient;
 //    private static RemoteStoreClient storeClient;
 //
-    private static final Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppServlet.class);
-    //    private static final String BASEURI = "https://www.theworldavatar.com/kg/measure_";
-    private static void readConfig() {
-        ResourceBundle config = ResourceBundle.getBundle("config");
-        downsamplingType= Integer.parseInt(config.getString("downsamplingType"));
-        downsamplingRate= Long.valueOf(config.getString("downsamplingRate"));
-        timerDelay= Integer.valueOf(config.getString("timerDelay"));
-        timerFrequency= Integer.valueOf(config.getString("timerFrequency"));
-
-
+//    private static final Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppServlet.class);
+//    private static final String BASEURI = "https://www.theworldavatar.com/kg/measure_";
+//
+//    private static void readConfig() {
+//        ResourceBundle config = ResourceBundle.getBundle("config");
+//        downsamplingType= Integer.parseInt(config.getString("downsamplingType"));
+//        downsamplingRate= Long.valueOf(config.getString("downsamplingRate"));
+//        timerDelay= Integer.valueOf(config.getString("timerDelay"));
+//        timerFrequency= Integer.valueOf(config.getString("timerFrequency"));
+//
 //
 //        dbURL = config.getString("db.url");
 //        user = config.getString("db.user");
@@ -303,11 +318,15 @@ public class SensorLoggerMobileAppServlet extends JPSAgent {
 //        tsUser = config.getString("ts.user");
 //        tsPassword = config.getString("ts.password");
 //
-//        rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
+//        rdbStoreClient = new RemoteRDBStoreClient(dbURL, "postgres", "admin");
+////        rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
 //        storeClient = new RemoteStoreClient(config.getString("timeseries.query.endpoint"), config.getString("timeseries.update.endpoint"));
-////        tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
-////        tsRDBStoreClient = new RemoteRDBStoreClient(timeseriesDBUrl, tsUser, tsPassword);
-    }
+//        tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
+//        tsRDBStoreClient = new RemoteRDBStoreClient(timeseriesDBUrl, tsUser, tsPassword);
+//    }
+
+
+
 
 
 
