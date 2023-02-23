@@ -20,7 +20,7 @@ from py4jps import agentlogging
 from forecasting.datamodel.iris import *
 from forecasting.datamodel.data_mapping import *
 from forecasting.utils.tools import *
-from forecasting.utils.env_configs import *
+from forecasting.utils.default_configs import *
 from forecasting.forecasting_agent.agent import *
 
 from . import conftest as cf
@@ -71,7 +71,7 @@ def test_prophet(query_dict, expected, test_client, initialise_clients):
     cf.initialise_prophet(kg_client, ts_client, rdb_url)
 
     # Send request to flask app
-    response = test_client.post('/api/forecastingAgent/forecast', 
+    response = test_client.post('/forecast', 
                                 json={"headers": {'content_type': 'application/json'},
                                 **query_dict
                                 }).json
@@ -113,7 +113,7 @@ def test_prophet_error(query_dict, expected_error_message, test_client, initiali
     # Create clean slate for test and initialise data as required
     cf.initialise_prophet(kg_client, ts_client, rdb_url)
 
-    res = test_client.post('/api/forecastingAgent/forecast',
+    res = test_client.post('/forecast',
                            json={"headers": {'content_type': 'application/json'},
                            **query_dict
                            })
@@ -135,7 +135,7 @@ def test_tft(query_dict, expected, test_client, initialise_clients):
     # Create clean slate for test and initialise data as required
     cf.initialise_tft(kg_client, ts_client, rdb_url)
 
-    res = test_client.post('/api/forecastingAgent/forecast', 
+    res = test_client.post('/forecast', 
                            json={"headers": {'content_type': 'application/json'},
                            **query_dict
                            }).json
@@ -174,10 +174,39 @@ def test_tft_error(query_dict, expected_error_message, test_client, initialise_c
     # Create clean slate for test and initialise data as required
     cf.initialise_tft(kg_client, ts_client, rdb_url)
 
-    res = test_client.post('/api/forecastingAgent/forecast', 
+    res = test_client.post('/forecast', 
                            json={"headers": {'content_type': 'application/json'},
                            **query_dict
                            })
 
     assert res.status_code == 500
     assert expected_error_message in res.json['msg']
+
+
+@pytest.mark.parametrize(
+    "query_dict, expected_code, expected_error", 
+    [
+        (cf.query1, 200, None),
+        (cf.query_error11, 500, cf.expected_error11),
+        (cf.query_error12, 500, cf.expected_error12),
+        # Verify that default endpoints are (still) used
+        (cf.query1, 200, None),
+    ]
+)
+def test_http_connection_config(query_dict, expected_code, expected_error, test_client, initialise_clients):
+
+    # Get SPARQL client from fixture
+    kg_client, ts_client, rdb_url = initialise_clients
+    # Create clean slate for test and initialise data as required
+    cf.initialise_prophet(kg_client, ts_client, rdb_url)
+
+    res = test_client.post('/forecast', 
+                           json={"headers": {'content_type': 'application/json'},
+                           **query_dict
+                           })
+    
+    # Verify that request fails for changed RDB and KG endpoints
+    assert res.status_code == expected_code
+    if expected_code == 500:
+        # Verify expected error message
+        assert expected_error in res.json['msg']
