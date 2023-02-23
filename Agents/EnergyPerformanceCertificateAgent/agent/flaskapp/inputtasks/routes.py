@@ -197,7 +197,7 @@ def api_initialise_kb():
         return jsonify({'msg': 'Initialisation successful.'}), 200
 
     except Exception as ex:
-        logger.error("Unable to initialise knowledge base with TBox and ABox.", ex)
+        logger.error("Unable to initialise knowledge base with TBox and ABox: " + str(ex))
         return jsonify({'msg': 'Initialisation failed: ' + str(ex)}), 500
 
 
@@ -218,5 +218,5 @@ def api_initialise_ocgml():
         return jsonify({'msg': 'OntoCityGml quad upload successful'}), 200
 
     except Exception as ex:
-        logger.error("Unable to upload OntoCityGml quads.", ex)
+        logger.error("Unable to upload OntoCityGml quads: " + str(ex))
         return jsonify({'msg': 'Initialisation failed: ' + str(ex)}), 500

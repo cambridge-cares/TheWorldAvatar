@@ -19,7 +19,7 @@ services:
       - ONTOP_FILE=/app/resources/ontop.obda
       - OCGML_ENDPOINT=
     ports:
-      - "5001:5000"
+      - "5005:5000"
     volumes:
       # Link container output directory to local directory to access output files
       - ./data:/app/data

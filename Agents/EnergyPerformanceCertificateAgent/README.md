@@ -124,7 +124,7 @@ Agent start-up will automatically register a recurring task to assimilate latest
 &nbsp;
 ## Provided functionality
 
-An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root http://localhost:5001/epcagent. All requests are to be sent as POST requests and all available endpoints are listed below. Example requests are provided in the [resources] folder.
+An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root http://localhost:5005/epcagent. All requests are to be sent as POST requests and all available endpoints are listed below. Example requests are provided in the [resources] folder.
 
 - POST request to instantiate all postcodes in a given local authority:
 > `/epcagent/instantiate/postcodes`
@@ -219,7 +219,7 @@ Markus Hofmeister (mh807@cam.ac.uk), February 2023
 [CARES container registry on Github]: https://github.com/orgs/cambridge-cares/packages
 [EPC APIs]: https://epc.opendatacommunities.org/docs/api
 [Github package repository]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
-[http://localhost:5001/]: http://localhost:5001/
+[http://localhost:5005/epcagent]: http://localhost:5005/epcagent
 [Java Runtime Environment version >=11]: https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot
 [JDBC driver]: https://jdbc.postgresql.org/download/ 
 [OntoBuiltEnv]: https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl

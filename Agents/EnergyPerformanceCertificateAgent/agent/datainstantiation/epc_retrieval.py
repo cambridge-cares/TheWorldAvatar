@@ -7,6 +7,7 @@
 # certificates data from the EPC API endpoints
 
 import requests
+import time
 import pandas as pd
 from pathlib import Path
 
@@ -24,16 +25,19 @@ from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 logger = agentlogging.get_logger("prod")
 
 
-def obtain_data_for_certificate(lmk_key: str, endpoint='domestic'):
+def obtain_data_for_certificate(lmk_key: str, endpoint='domestic',
+                                max_retries=3, retry_delay=60):
     """
-        Retrieves EPC data for provided certificate from given endpoint
+    Retrieves EPC data for provided certificate from given endpoint
 
-        Arguments:
-            lmk_key - certificate id (i.e. individual lodgement identifier)
-            endpoint (str) - EPC endpoint from which to retrieve data
-                             ['domestic', 'non-domestic', 'display']
-        Returns:
-            Dictionary of relevant EPC data (empty dictionary if no data available)
+    Arguments:
+        lmk_key - certificate id (i.e. individual lodgement identifier)
+        endpoint (str) - EPC endpoint from which to retrieve data
+                         ['domestic', 'non-domestic', 'display']
+        max_retries (int) - maximum number of attempts in case of API failure
+        retry_delay (int) - delay in seconds between API retries
+    Returns:
+        Dictionary of relevant EPC data (empty dictionary if no data available)
     """
     # Get EPC API endpoint
     endpoints = {'domestic': EPC_DOMESTIC_CERT,
@@ -48,17 +52,30 @@ def obtain_data_for_certificate(lmk_key: str, endpoint='domestic'):
     url += str(lmk_key)
     headers = {'Authorization': 'Basic {}'.format(ENCODED_AUTH),
                'Accept': 'application/json'}
+    
     # Retrieve EPC data
-    try:
-        res = requests.get(url=url, headers=headers)
-        if res.status_code == 200:
-            epc = res.json()
-        elif res.status_code == 404:
-            logger.info('No data available for provided certificate lodgement identifier.')
-            epc = None
-    except Exception as ex:
-        logger.error('Error retrieving EPC data from API.')
-        raise APIException('Error retrieving EPC data from API.') from ex
+    retrieved = False
+    remaining_attempts = max_retries
+    while not retrieved:
+        try:
+            res = requests.get(url=url, headers=headers)
+            if res.status_code == 200:
+                epc = res.json()
+                retrieved = True
+            elif res.status_code == 404:
+                logger.info('No data available for provided certificate lodgement identifier.')
+                epc = None
+                retrieved = True
+            else:
+                raise APIException('Error retrieving EPC data from API.')
+        except Exception as ex:
+            logger.error('Error retrieving EPC data from API: ' + str(ex))
+            remaining_attempts -= 1
+            logger.info(f'Retrying in {retry_delay} seconds. {remaining_attempts} attempts remaining.')
+            time.sleep(retry_delay)
+            if remaining_attempts == 0:
+                logger.error('Maximum number of retries reached. Aborting.')
+                raise APIException('Error retrieving data from EPC API: ' + str(ex))
     
     # Extract relevant EPC data based on endpoint
     if (endpoint == 'domestic'):
@@ -86,16 +103,19 @@ def obtain_data_for_certificate(lmk_key: str, endpoint='domestic'):
     return epc_data
 
 
-def obtain_latest_data_for_postcodes(postcodes: list, endpoint='domestic'):
+def obtain_latest_data_for_postcodes(postcodes: list, endpoint='domestic',
+                                     max_retries=3, retry_delay=60):
     """
-        Retrieves EPC data for provided list of postcodes from given endpoint
+    Retrieves EPC data for provided list of postcodes from given endpoint
 
-        Arguments:
-            postcodes - list of strings of postcodes
-            endpoint (str) - EPC endpoint from which to retrieve data
-                             ['domestic', 'non-domestic', 'display']
-        Returns:
-            DataFrame of relevant EPC data (empty DataFrame if no data available)
+    Arguments:
+        postcodes - list of strings of postcodes
+        endpoint (str) - EPC endpoint from which to retrieve data
+                            ['domestic', 'non-domestic', 'display']
+        max_retries (int) - maximum number of attempts in case of API failure
+        retry_delay (int) - delay in seconds between API retries
+    Returns:
+        DataFrame of relevant EPC data (empty DataFrame if no data available)
     """
     # Get EPC API endpoint
     endpoints = {'domestic': EPC_DOMESTIC_SEARCH,
@@ -115,21 +135,37 @@ def obtain_latest_data_for_postcodes(postcodes: list, endpoint='domestic'):
     all_dfs = []
     df = pd.DataFrame()
 
+    # Retrieve EPC data in individual requests per postcode (due to API filtering limitations)
     for pc in postcodes:
         i += 1
         logger.info(f'Retrieving EPC {i:>4}/{len(postcodes):>4}')
         url_epc = url + '?postcode=' + str(pc)
-        r = requests.get(url=url_epc, headers=headers)
-        if r.status_code == 200:
-            if r.text != '':
-                epcs = r.json()
-                # Create DataFrame for current EPC data
-                df = pd.DataFrame(columns=epcs['column-names'], data=epcs['rows'])
-                # Append data to list
-                all_dfs.append(df)
-        else:
-            logger.error('Error retrieving EPC data from API.')
-            raise APIException('Error retrieving EPC data from API.')
+
+        # Retrieve EPC data chunk
+        retrieved = False
+        remaining_attempts = max_retries
+        while not retrieved:
+            try:
+                res = requests.get(url=url_epc, headers=headers)
+                if res.status_code == 200:
+                    retrieved = True
+                    if res.text != '':
+                        epcs = res.json()
+                        # Create DataFrame for current EPC data
+                        df = pd.DataFrame(columns=epcs['column-names'], data=epcs['rows'])
+                        # Append data to list
+                        all_dfs.append(df)
+                else:
+                    raise APIException('Error retrieving EPC data from API.')
+            except Exception as ex:
+                logger.error(f'Error retrieving EPC data for postcode {pc}: ' + str(ex))
+                remaining_attempts -= 1
+                logger.info(f'Retrying in {retry_delay} seconds. {remaining_attempts} attempts remaining.')
+                time.sleep(retry_delay)
+                if remaining_attempts == 0:
+                    logger.error('Maximum number of retries reached. Aborting.')
+                    # Skip to next postcode
+                    break
 
     # Construct overall DataFrame
     if len(all_dfs) > 1:

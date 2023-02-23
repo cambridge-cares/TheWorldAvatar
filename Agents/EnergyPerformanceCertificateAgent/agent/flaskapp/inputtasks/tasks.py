@@ -30,7 +30,7 @@ def task_initialise_postcodes(**inputs) -> dict:
         else:
             return {'Newly instantiated postcodes': postcodes}
     except Exception as ex:
-        logger.error('Unable to instantiate local authority with postcodes.', ex)
+        logger.error('Unable to instantiate local authority with postcodes: ' + str(ex))
         return {'msg': 'Postcode instantiation failed: ' + str(ex)}
 
 
@@ -47,7 +47,7 @@ def task_instantiate_epc_data_for_certificate(**inputs) -> dict:
         return return_dict   
                             
     except Exception as ex:
-        logger.error('Unable to instantiate EPC data.', ex)
+        logger.error('Unable to instantiate EPC data: ' + str(ex))
         return {'msg': 'EPC data instantiation failed: ' + str(ex)}
 
 
@@ -66,7 +66,7 @@ def task_instantiate_epc_data_for_all_uprns(**inputs) -> dict:
         return return_dict
 
     except Exception as ex:
-        logger.error('Unable to instantiate EPC data.', ex)
+        logger.error('Unable to instantiate EPC data: ' + str(ex))
         return {'msg': 'EPC data instantiation failed: ' + str(ex)}
 
 
@@ -85,5 +85,5 @@ def task_add_ocgml_building_data() -> dict:
         return return_dict
 
     except Exception as ex:
-        logger.error('Unable to instantiate PostGIS features and/or OntoBuiltEnv building elevations.', ex)
+        logger.error('Unable to instantiate PostGIS features and/or OntoBuiltEnv building elevations: ' + str(ex))
         return {'msg': 'Instantiating OntoCityGml data failed: ' + str(ex)}
