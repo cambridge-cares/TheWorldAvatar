@@ -163,6 +163,8 @@ class PostGISClient:
         """
         This function sets the 'activity' of a flood area in the database to allow
         for visualisation of areas associated with active flood warnings only (later)
+
+        activity: Boolean value whether a flood area is currently affected or not
         """
         try:
             with jaydebeapi.connect(*self.conn_props) as conn:
@@ -170,6 +172,27 @@ class PostGISClient:
                 with conn.cursor() as curs:
                     # ... and execute the SQL query
                     curs.execute(f"UPDATE {table} SET active=? WHERE area_uri=?", (activity, area_uri))
+                    # Get the number of rows affected by the update
+                    num_rows = curs.rowcount
+                    return num_rows
+        except Exception as ex:
+            logger.error(f'Error updating field: {ex}')
+            raise StackException('Error updating PostGIS field') from ex
+
+
+    def set_flood_area_severity(self, severity: int, area_uri: str, table=LAYERNAME):
+        """
+        This function sets the 'severity' of a flood area in the database to allow
+        for additional visualisation styling based on severity level
+
+        severity: Integer score (1...4) indicating severity level of flood warning
+        """
+        try:
+            with jaydebeapi.connect(*self.conn_props) as conn:
+                # Create a cursor object ...
+                with conn.cursor() as curs:
+                    # ... and execute the SQL query
+                    curs.execute(f"UPDATE {table} SET severity=? WHERE area_uri=?", (severity, area_uri))
                     # Get the number of rows affected by the update
                     num_rows = curs.rowcount
                     return num_rows
@@ -243,11 +266,11 @@ class GeoserverClient(StackClient):
 
 def create_geojson_for_postgis(areal_extend_iri: str, label: str, polygon_uri: str, 
                                area_uri: str, kg_endpoint: str, area_types: list =[], 
-                               county_iri: str = None, water_body_label: str = None,) -> str:
+                               water_body_type: str = None) -> str:
     """
     Create GeoJSON string for upload to PostGIS database
 
-    Initially, the GeoJSON needed to contain at least ""name", "iri", and "endpoint"
+    Initially, the GeoJSON needed to contain at least "name", "iri", and "endpoint"
     for FeatureInfoAgent to work (i.e. be able to retrieve data from PostGIS)
     This is no longer the case, but these properties are kept for consistency with
     previous agent implementations, i.e. 
@@ -270,7 +293,9 @@ def create_geojson_for_postgis(areal_extend_iri: str, label: str, polygon_uri: s
         # NOTE: 'active' property is used to filter out inactive flood areas
         #        for visualisation using PostGIS / GeoServer later --> initialised as 
         #       'True' as missing areas are only created for active flood warnings
-        'active': True        
+        'active': True,
+        # Initialise 'severity' property (populated later)
+        'severity': None
     }
     # Add optional properties
     area_type = []
@@ -279,8 +304,7 @@ def create_geojson_for_postgis(areal_extend_iri: str, label: str, polygon_uri: s
     area_type = list(set(area_type))
     area_type = None if len(area_type) != 1 else area_type[0]
     if area_type: props['area_type'] = area_type
-    if water_body_label: props['waterbody'] = water_body_label
-    if county_iri: props['ons_county_iri'] = county_iri
+    if water_body_type: props['waterbody'] = water_body_type
 
     # Create additional properties for GeoJSON
     #NOTE: This assumes that the polygon is a FeatureCollection with only one feature

@@ -6,7 +6,7 @@ prefix om:    <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 
 SELECT ?label ?value ?unit
 WHERE {
-  <https://www.theworldavatar.com/kg/ontoflood/ArealExtentPolygon_2dc4a786-db34-4b52-b6f5-2938fdfe5d6b> ^flood:hasArealExtent/^flood:hasLocation ?area . 
+  [IRI] ^flood:hasArealExtent/^flood:hasLocation ?area . 
   ?area rt:currentWarning ?warning . 
   ?warning flood:warnsAbout ?flood .
 

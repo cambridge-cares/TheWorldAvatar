@@ -65,3 +65,9 @@ SEVERITY_IRIS= {
     'flood alert': FLOOD_FLOOD_ALERT,
     'warning no longer in force': FLOOD_WARNING_NO_LONGER_IN_FORCE,
     }
+SEVERITY_LEVELS= {
+    'severe flood warning': 1,
+    'flood warning': 2,
+    'flood alert': 3,
+    'warning no longer in force': 4,
+    }

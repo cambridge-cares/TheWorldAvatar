@@ -241,7 +241,7 @@ def instantiate_flood_areas(areas_data: list=[],
         # Create GeoJSON string for PostGIS upload
         logger.info("Create FloodArea GeoJSON string for PostGIS upload ...")
         props = ['areal_extend_iri', 'area_uri', 'polygon_uri', 'label', 
-                 'area_types', 'county_iri', 'water_body_label']
+                 'area_types', 'water_body_type']
         props = {p: area[p] for p in props}
         geojson_str = create_geojson_for_postgis(**props, kg_endpoint=query_endpoint)
 
@@ -318,6 +318,13 @@ def instantiate_flood_warnings(warnings_data: list=[],
             logger.error(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
             raise RuntimeError(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
 
+        # Update current severity level for flood area (to allow better styling)
+        num_rows = postgis_client.set_flood_area_severity(severity=SEVERITY_LEVELS[warning['severity'].lower()],
+                                                          area_uri=warning['area_uri'])
+        if num_rows != 1:
+            logger.error(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
+            raise RuntimeError(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
+
     # Create INSERT query and perform update
     query = f"INSERT DATA {{ {triples} }}"
     kgclient.performUpdate(query)
@@ -339,6 +346,9 @@ def update_instantiated_flood_warnings(warnings_to_update: list, warnings_data_a
         Number of updated flood warnings as int
     """
 
+    # Initialise PostGIS client
+    postgis_client = PostGISClient()
+
     # Create KG client if not provided
     if not kgclient:
         kgclient = KGClient(query_endpoint, query_endpoint)
@@ -355,8 +365,20 @@ def update_instantiated_flood_warnings(warnings_to_update: list, warnings_data_a
         query = update_flood_warning(**data)
         # Perform update
         kgclient.performUpdate(query)
-    
 
+        # Retrieve associated flood area URI
+        query = get_associated_flood_area(data['warning_uri'])
+        res = kgclient.performQuery(query)
+        # Unwrap results
+        area = [r['area_iri'] for r in res][0]
+
+        # Update current severity level for flood area (to allow better styling)
+        num_rows = postgis_client.set_flood_area_severity(severity=SEVERITY_LEVELS[data['severity'].lower()],
+                                                          area_uri=area)
+        if num_rows != 1:
+            logger.error(f'Expected to change "severity" field for 1 flood area, but updated {num_rows}.')
+            raise RuntimeError(f'Expected to change "severity" field for 1 flood area, but updated {num_rows}.')
+    
     return len(data_to_update)
 
 

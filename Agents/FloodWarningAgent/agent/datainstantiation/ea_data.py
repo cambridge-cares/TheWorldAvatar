@@ -19,8 +19,7 @@ from agent.errorhandling.exceptions import APIException
 from py4jps import agentlogging
 
 # Initialise logger
-logger = agentlogging.get_logger("dev")
-#logger = agentlogging.get_logger("prod")
+logger = agentlogging.get_logger("prod")
 
 
 # Define API URL

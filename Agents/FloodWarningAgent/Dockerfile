@@ -68,7 +68,7 @@ WORKDIR /app
 COPY ./agent ./agent
 
 # Set the entrypoint
-# timeout set to 10 min to avoid exceptions for longer API/KG calls
-ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "agent:flaskapp:create_app()" --timeout 600
+# timeout set to 30 min to avoid exceptions for longer API/KG calls
+ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "agent:flaskapp:create_app()" --timeout 1800
 
 #==================================================================================================

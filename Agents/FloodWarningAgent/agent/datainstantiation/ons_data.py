@@ -54,7 +54,7 @@ def retrieve_ons_county(county_name) -> str:
     data = json.loads(res.text)
     data = data.get('results', {}).get('bindings', [])
     if len(data) != 1:
-        logger.error('None or multiple matching counties found.')
+        logger.warning(f'None or multiple matching ONS counties found for "{county_name}".')
         return None
     else:
         county_iri = data[0].get('district_iri', {}).get('value', None)

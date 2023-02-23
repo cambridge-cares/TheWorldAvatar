@@ -72,7 +72,7 @@
             "id": "stackName",
             "type": "promptString",
             "description": "Name your stack.",
-            "default": "FLOOD"
+            "default": "KINGS-LYNN"
         },
         {
             "id": "debug.port",
