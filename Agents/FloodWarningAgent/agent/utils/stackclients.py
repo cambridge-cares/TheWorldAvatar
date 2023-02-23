@@ -159,6 +159,25 @@ class PostGISClient:
             raise StackException('Unsuccessful JDBC interaction.') from ex
 
 
+    def set_flood_area_activity(self, activity: bool, area_uri: str, table=LAYERNAME):
+        """
+        This function sets the 'activity' of a flood area in the database to allow
+        for visualisation of areas associated with active flood warnings only (later)
+        """
+        try:
+            with jaydebeapi.connect(*self.conn_props) as conn:
+                # Create a cursor object ...
+                with conn.cursor() as curs:
+                    # ... and execute the SQL query
+                    curs.execute(f"UPDATE {table} SET active=? WHERE area_uri=?", (activity, area_uri))
+                    # Get the number of rows affected by the update
+                    num_rows = curs.rowcount
+                    return num_rows
+        except Exception as ex:
+            logger.error(f'Error updating field: {ex}')
+            raise StackException('Error updating PostGIS field') from ex
+
+
 class GdalClient(StackClient):
     
     def __init__(self):
@@ -222,9 +241,9 @@ class GeoserverClient(StackClient):
                                        geoserver_layer, self.vectorsettings)
 
 
-def create_geojson_for_postgis(polygon_uri: str, area_uri: str, kg_endpoint: str,
-                               area_types: list =[], county_iri: str = None, 
-                               water_body_label: str = None,) -> str:
+def create_geojson_for_postgis(areal_extend_iri: str, label: str, polygon_uri: str, 
+                               area_uri: str, kg_endpoint: str, area_types: list =[], 
+                               county_iri: str = None, water_body_label: str = None,) -> str:
     """
     Create GeoJSON string for upload to PostGIS database
 
@@ -243,9 +262,15 @@ def create_geojson_for_postgis(polygon_uri: str, area_uri: str, kg_endpoint: str
 
     # Define properties
     props = {
-        'iri': area_uri,
+        'iri': areal_extend_iri,
+        'name': label,
         'endpoint': kg_endpoint,
-        'geom_iri': polygon_uri
+        'area_uri': area_uri,
+        'geom_iri': polygon_uri,
+        # NOTE: 'active' property is used to filter out inactive flood areas
+        #        for visualisation using PostGIS / GeoServer later --> initialised as 
+        #       'True' as missing areas are only created for active flood warnings
+        'active': True        
     }
     # Add optional properties
     area_type = []

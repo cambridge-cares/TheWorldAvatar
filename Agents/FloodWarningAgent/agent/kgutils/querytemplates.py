@@ -66,14 +66,27 @@ def get_all_flood_areas() -> str:
     return query
 
 
+def get_associated_flood_area(flood_warning_iri: str) -> str:
+    # Retrieve flood area associated with flood warning
+    query = f"""
+        SELECT ?area_iri
+        WHERE {{
+            <{flood_warning_iri}> ^<{RT_CURRENT_WARNING}> ?area_iri . 
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    return query
+
+
 #
 # INTERNAL SPARQL UPDATES
 #
-def flood_area_instantiation_triples(area_uri: str = None, area_types: list = [], county_iri: str = None,
-                                     location_iri: str = None, admin_district_iri: str = None,
-                                     waterbody_iri: str = None, water_body_type: str = None, 
+def flood_area_instantiation_triples(area_uri: str, location_iri: str, admin_district_iri: str, 
+                                     areal_extend_iri: str, waterbody_iri: str, water_body_type: str,
+                                     history_iri: str, area_types: list = [], county_iri: str = None,
                                      label: str = None, area_identifier: str = None, 
-                                     water_body_label: str = None, history_iri: str = None) -> tuple:
+                                     water_body_label: str = None, ) -> tuple:
     """
     Create INSERT triples to instantiate single flood area (to be placed inside a SPARQL INSERT DATA block)
 
@@ -83,6 +96,8 @@ def flood_area_instantiation_triples(area_uri: str = None, area_types: list = []
         county_iri (str): IRI of county as retrieved from ONS API
         location_iri (str): IRI of Location associated with flood area (and potential flood event)
         admin_district_iri (str): IRI of administrative district associated with Location
+        areal_extend_iri (str): IRI of polygon describing areal extend of flood area 
+                                (i.e. used as 'iri' in PostGIS)
         waterbody_iri (str): IRI of water body associated with flood area
     """
 
@@ -100,6 +115,8 @@ def flood_area_instantiation_triples(area_uri: str = None, area_types: list = []
             <{location_iri}> <{RDF_TYPE}> <{FLOOD_LOCATION}> . 
             <{location_iri}> <{FLOOD_HAS_ADMINISTRATIVE_DISTRICT}> <{admin_district_iri}> . 
             <{admin_district_iri}> <{RDF_TYPE}> <{FLOOD_ADMINISTRATIVE_DISTRICT}> . 
+            <{location_iri}> <{FLOOD_HAS_AREAL_EXTENT}> <{areal_extend_iri}> . 
+            <{areal_extend_iri}> <{RDF_TYPE}> <{FLOOD_AREAL_EXTENT_POLYGON}> . 
             <{area_uri}> <{FLOOD_ATTACHED_WATERBODY}> <{waterbody_iri}> . 
             <{waterbody_iri}> <{RDF_TYPE}> <{waterbody_type}> . 
         """
@@ -243,7 +260,7 @@ def delete_flood_warning(warning_uri: str = None) -> str:
                                 <{RT_MESSAGE}> ?warning_message ; 
                                 <{RT_TIME_RAISED}> ?time_raise ; 
                                 <{RT_TIME_MESSAGE_CHANGED}> ?time_message ; 
-                                <{RT_TIME_SEVERITY_CHANGED}> ?time_severity ; 
+                                <{RT_TIME_SEVERITY_CHANGED}> ?time_severity . 
                 ?area_iri <{RT_CURRENT_WARNING}> <{warning_uri}> . 
                 ?flood_event_iri <{RDF_TYPE}> <{ENVO_FLOOD}> ;
                                  <{FLOOD_HAS_LOCATION}> ?location_iri ;  
@@ -268,7 +285,7 @@ def delete_flood_warning(warning_uri: str = None) -> str:
                                 <{OM_HAS_UNIT}> ?quantity_unit ; 
                                 <{OM_HAS_NUMERICALVALUE}> ?quantity_num_value .
 
-            WHERE
+            }} WHERE {{
                 <{warning_uri}> <{RDF_TYPE}> <{RT_FLOOD_ALERT_OR_WARNING}> ; 
                                 <{FLOOD_HAS_SEVERITY}> ?severity_iri ;
                                 <{FLOOD_WARNS_ABOUT}> ?flood_event_iri . 

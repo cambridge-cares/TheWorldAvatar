@@ -4,7 +4,7 @@ xsd:		http://www.w3.org/2001/XMLSchema#
 flood:      https://www.theworldavatar.com/kg/ontoflood/
 
 [MappingDeclaration] @collection [[
-mappingId   station_location
+mappingId   flood_area_polygon
 target      <{iri}> a geo:Feature , flood:ArealExtentPolygon ; geo:hasGeometry <{geom_iri}> . 
             <{geom_iri}> geo:asWKT "<http://www.opengis.net/def/crs/EPSG/0/4326> {wkt}"^^geo:wktLiteral .
 source      SELECT ST_AsText(wkb_geometry) as wkt, iri, geom_iri FROM floodwarnings

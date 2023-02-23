@@ -19,8 +19,7 @@ from agent.kgutils.querytemplates import ons_county
 from py4jps import agentlogging
 
 # Initialise logger
-#TODO: Change to 'prod' logger
-logger = agentlogging.get_logger("dev")
+logger = agentlogging.get_logger("prod")
 
 
 # Define API URL

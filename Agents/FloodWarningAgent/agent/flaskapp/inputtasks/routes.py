@@ -10,8 +10,7 @@ from agent.datainstantiation.warnings import update_warnings
 from py4jps import agentlogging
 
 # Initialise logger
-#TODO: update logger level
-logger = agentlogging.get_logger("dev")
+logger = agentlogging.get_logger("prod")
 
 
 inputtasks_bp = Blueprint(
@@ -33,7 +32,7 @@ def api_update_all_warnings():
         return_dict = {'Instantiated areas': response[0],
                        'Instantiated warnings': response[1],
                        'Updated warnings': response[2],
-                       'Archived warnings': response[3] }
+                       'Deleted warnings': response[3] }
         for key, value in return_dict.items():
             print(f'Number of {key.lower()}' , ' : ', value)
         return jsonify(return_dict), 200

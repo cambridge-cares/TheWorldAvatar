@@ -25,8 +25,7 @@ from agent.utils.stackclients import GdalClient, GeoserverClient, \
 from py4jps import agentlogging
 
 # Initialise logger
-#TODO: Update logger level
-logger = agentlogging.get_logger("dev")
+logger = agentlogging.get_logger("prod")
 
 
 def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT, 
@@ -97,7 +96,7 @@ def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT,
             print('Updating flood warnings ...')
             updated_warnings = \
                 update_instantiated_flood_warnings(warnings_to_update, current_warnings, 
-                                      kgclient=kg_client)
+                                                   kgclient=kg_client)
             print('Updating finished.')
 
         # 6) Delete inactive flood warnings
@@ -225,6 +224,7 @@ def instantiate_flood_areas(areas_data: list=[],
         # Create IRIs for Location associated with flood area (and potential flood event)
         area['location_iri'] = KB + 'Location_' + str(uuid.uuid4())
         area['admin_district_iri'] = KB + 'AdministrativeDistrict_' + str(uuid.uuid4())
+        area['areal_extend_iri'] = KB + 'ArealExtentPolygon_' + str(uuid.uuid4())
         # Create waterbody IRI
         area['waterbody_iri'] = KB + area['water_body_type'].capitalize() + '_' + str(uuid.uuid4())
         # Create history iri
@@ -240,7 +240,8 @@ def instantiate_flood_areas(areas_data: list=[],
 
         # Create GeoJSON string for PostGIS upload
         logger.info("Create FloodArea GeoJSON string for PostGIS upload ...")
-        props = ['polygon_uri', 'area_uri', 'area_types', 'county_iri', 'water_body_label']
+        props = ['areal_extend_iri', 'area_uri', 'polygon_uri', 'label', 
+                 'area_types', 'county_iri', 'water_body_label']
         props = {p: area[p] for p in props}
         geojson_str = create_geojson_for_postgis(**props, kg_endpoint=query_endpoint)
 
@@ -292,6 +293,9 @@ def instantiate_flood_warnings(warnings_data: list=[],
         Number (int) of instantiated flood warnings/alerts
     """
 
+    # Initialise PostGIS client
+    postgis_client = PostGISClient()
+
     # Create KG client if not provided
     if not kgclient:
         kgclient = KGClient(query_endpoint, query_endpoint)
@@ -306,6 +310,13 @@ def instantiate_flood_warnings(warnings_data: list=[],
         
         # Construct triples for flood warning/alert instantiation
         triples += flood_warning_instantiation_triples(**warning)
+
+        # Ensure flood area is set active (even if flood area itself has not been
+        # newly instantiated, i.e. is already instantiated and likely inactive)
+        num_rows = postgis_client.set_flood_area_activity(activity=True, area_uri=warning['area_uri'])
+        if num_rows != 1:
+            logger.error(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
+            raise RuntimeError(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
 
     # Create INSERT query and perform update
     query = f"INSERT DATA {{ {triples} }}"
@@ -341,7 +352,7 @@ def update_instantiated_flood_warnings(warnings_to_update: list, warnings_data_a
                     'timeMsgChanged', 'timeSevChanged'] 
         data = {k: v for k, v in data.items() if k in relevant}
         # Create SPARQL update query
-        query = update_instantiated_flood_warnings(**data)
+        query = update_flood_warning(**data)
         # Perform update
         kgclient.performUpdate(query)
     
@@ -363,18 +374,32 @@ def delete_instantiated_flood_warnings(warnings_to_delete: list, query_endpoint=
     Returns:
         Number of updated flood warnings as int
     """
+    
+    # Initialise PostGIS client
+    postgis_client = PostGISClient()
 
     # Create KG client if not provided
     if not kgclient:
         kgclient = KGClient(query_endpoint, query_endpoint)
 
     for warning in warnings_to_delete:
+        # Retrieve associated flood area URI
+        query = get_associated_flood_area(warning)
+        res = kgclient.performQuery(query)
+        # Unwrap results
+        area = [r['area_iri'] for r in res][0]
+
         # Create SPARQL delete query
         query = delete_flood_warning(warning)
         # Perform update
         kgclient.performUpdate(query)
-    
 
+        # Ensure flood area is set inactive (to be suppressed from visualising)
+        num_rows = postgis_client.set_flood_area_activity(activity=False, area_uri=area)
+        if num_rows != 1:
+            logger.error(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
+            raise RuntimeError(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
+    
     return len(warnings_to_delete)
 
 
