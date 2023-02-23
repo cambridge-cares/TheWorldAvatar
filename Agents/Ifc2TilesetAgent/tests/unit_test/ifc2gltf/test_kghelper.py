@@ -8,7 +8,7 @@ A test suite for the agent.ifc2gltf.kghelper submodule.
 import pandas as pd
 
 # Self import
-from agent.ifc2gltf.kghelper import create_query, classify_file_name
+from agent.ifc2gltf.kghelper import create_metadata_query, classify_file_name
 
 
 def test_create_query():
@@ -28,7 +28,7 @@ def test_create_query():
     expected += "VALUES ?ifcclass {ifc2x3:IfcBuildingElementProxy ifc2x3:IfcFurnishingElement "
     expected += "ifc2x3:IfcFlowTerminal ifc4:IfcBuildingElementProxy ifc4:IfcFurnishingElement "
     expected += "ifc4:IfcFlowTerminal } \n}"
-    assert expected == create_query()
+    assert expected == create_metadata_query()
 
 
 def test_classify_file_name():

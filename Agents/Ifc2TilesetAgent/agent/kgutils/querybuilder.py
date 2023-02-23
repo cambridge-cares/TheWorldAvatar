@@ -12,6 +12,7 @@ from agent.exceptions.exceptions import QueryBuilderError
 
 logger = agentlogging.get_logger('prod')
 
+
 class QueryBuilder:
     """
     A class to build all types of SPARQL queries.
@@ -35,12 +36,10 @@ class QueryBuilder:
             logger.error("Invalid query_type parameter! Valid parameter includes 0.")
             raise QueryBuilderError("Invalid query_type parameter! Valid parameter includes 0.")
 
-
     def __str__(self):
         return self.prefix + self.select_string + self.where_string + "}"
 
-
-    def add_prefix(self, namespace: str, prefix: str ="base"):
+    def add_prefix(self, namespace: str, prefix: str = "base"):
         """
         This function adds the prefixes for SPARQL query.
 
@@ -56,6 +55,7 @@ class QueryBuilder:
             raise QueryBuilderError(namespace + " exists. Please input a new namespace.")
         self.prefix += "PREFIX " + prefix + ":<" + namespace + ">\n"
 
+        return self
 
     def add_select_var(self, *variable_vars: str):
         """
@@ -68,6 +68,7 @@ class QueryBuilder:
         for var in variable_vars:
             self.select_string += "?" + var + self.whitespace
 
+        return self
 
     def add_where_triple(self, subject: str, predicate: str, objectnode: str, var_ind: int = 0):
         """
@@ -88,10 +89,10 @@ class QueryBuilder:
             self.where_string += predicate + self.whitespace + objectnode + ".\n"
         elif var_ind == 1:
             self.where_string += "?" + subject + self.whitespace
-            self.where_string +=  predicate + self.whitespace + objectnode + ".\n"
+            self.where_string += predicate + self.whitespace + objectnode + ".\n"
         elif var_ind == 2:
             self.where_string += subject + self.whitespace
-            self.where_string +=  "?" + predicate + self.whitespace + objectnode + ".\n"
+            self.where_string += "?" + predicate + self.whitespace + objectnode + ".\n"
         elif var_ind == 3:
             self.where_string += subject + self.whitespace
             self.where_string += predicate + self.whitespace + "?" + objectnode + ".\n"
@@ -111,6 +112,7 @@ class QueryBuilder:
             logger.error("Invalid var_index! Only 0 - 7 is valid.")
             raise QueryBuilderError("Invalid var_index! Only 0 - 7 is valid.")
 
+        return self
 
     def add_values_where(self, var: str, *values):
         """
@@ -136,3 +138,8 @@ class QueryBuilder:
                 self.where_string += str(value) + self.whitespace
         # Close the VALUES clause
         self.where_string += "} \n"
+
+        return self
+
+    def build(self):
+        return self.__str__()

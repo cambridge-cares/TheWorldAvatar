@@ -7,9 +7,16 @@ This module provides the root tile and its bounding boxes for all tilesets.
 # Standard library imports
 from pathlib import Path
 
+# Third party imports
+from py4jps import agentlogging
+
 # Self imports
 import agent.app as state
 import agent.config.config as properties
+from agent.kgutils import RDF_PREFIX, BOT_PREFIX, QueryBuilder, KGClient
+
+# Retrieve logger
+logger = agentlogging.get_logger("dev")
 
 
 def root_tile():
@@ -21,8 +28,8 @@ def root_tile():
     The root tileset generated as a python dictionary
     """
     tileset = {'asset': {'version': '1.1'},
-                'geometricError': 1024,
-                'root': {"boundingVolume": {"box": properties.bbox_root},
+               'geometricError': 1024,
+               'root': {"boundingVolume": {"box": properties.bbox_root},
                         "geometricError": 512,
                         "refine": "ADD",
                         }
@@ -30,39 +37,59 @@ def root_tile():
     return tileset
 
 
-def append_tileset_schema(tileset, query_endpoint: str, update_endpoint: str):
+def append_tileset_schema(tileset: dict, building_iri: str):
     """
     Append tileset schema class and metadata to tileset
 
     Arguments:
         tileset - the root tileset generated as a python dictionary
-        query_endpoint - SPARQL QUERY endpoint
-        update_endpoint - SPARQL UPDATE endpoint
+        building_iri - data IRI of the building
     """
     # Append definition of class and its properties to schema
-    tileset['schema'] =  {'classes': {
-                    'TilesetMetaData': {
-                        'name': "Tileset metadata",
-                        'description': "A metadata class for the tileset",
-                        'properties': {
-                            'queryEndpoint': {
-                                "description": "SPARQL query endpoint",
-                                "type": "STRING"
-                            },
-                            'updateEndpoint': {
-                                "description": "SPARQL update endpoint",
-                                "type": "STRING"
-                            }
-                        }
-                    }}}
+    tileset['schema'] = {"classes": {
+        "TilesetMetaData": {
+            "name": "Tileset metadata",
+            "description": "A metadata class for the tileset",
+            "properties": {
+                "buildingIri": {
+                    "description": "Data IRI of the building",
+                    "type": "STRING"
+                }
+            }
+        }}}
     # Append specific tileset values to the core metadata class
-    tileset['metadata'] =  {
+    tileset['metadata'] = {
         'class': 'TilesetMetaData',
         'properties': {
-            'queryEndpoint': query_endpoint,
-            'updateEndpoint': update_endpoint,
+            'buildingIri': building_iri
         }
     }
+
+
+def get_building_iri(query_endpoint: str, update_endpoint: str) -> str:
+    """
+    Retrieves the building IRI from the specified endpoint
+
+    Arguments:
+        query_endpoint - SPARQL Query endpoint
+        update_endpoint - SPARQL Update endpoint
+    Returns:
+        Building IRI string
+    """
+    logger.debug("Initialising KG Client...")
+    client = KGClient(query_endpoint, update_endpoint)
+
+    query = QueryBuilder() \
+        .add_prefix("http://www.w3.org/1999/02/22-rdf-syntax-ns#", RDF_PREFIX) \
+        .add_prefix("https://w3id.org/bot#", BOT_PREFIX) \
+        .add_select_var("iri") \
+        .add_where_triple("iri", RDF_PREFIX + ":type", BOT_PREFIX + ":Building", 1) \
+        .build()
+
+    logger.debug("Executing query...")
+    # assume that there exists only one building in the KG subgraph
+    return client.execute_query(query)[0]["iri"]
+
 
 def gen_root_content(query_endpoint: str, update_endpoint: str):
     """
@@ -73,11 +100,12 @@ def gen_root_content(query_endpoint: str, update_endpoint: str):
         query_endpoint - SPARQL QUERY endpoint
         update_endpoint - SPARQL UPDATE endpoint
     Returns:
-    The tileset generated as a python dictionary
+        The tileset generated as a python dictionary
     """
     # Generate a minimal tileset
     tileset = root_tile()
-    append_tileset_schema(tileset, query_endpoint, update_endpoint)
+    building_iri = get_building_iri(query_endpoint, update_endpoint)
+    append_tileset_schema(tileset, building_iri)
 
     # Respective filepaths
     building_file_path = "./data/gltf/building.gltf"

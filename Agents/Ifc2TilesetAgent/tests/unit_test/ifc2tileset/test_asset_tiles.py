@@ -17,15 +17,21 @@ def test_init_asset_tiles():
     """
     Tests init_asset_tiles()
     """
+    # ARRANGE
     # Initialise test parameters
     expected_bbox = []
     properties.bbox_child = expected_bbox
-    endpoint = "endpoint"
+    building_iri = "buildingIri"
+
     # Init root tile for input
-    input = root_tile()
-    append_tileset_schema(input, endpoint, endpoint)
+    tileset = root_tile()
+    append_tileset_schema(tileset, building_iri)
+
+    # ACT
     # Execute method
-    output = init_asset_tiles(input)
+    output = init_asset_tiles(tileset)
+
+    # ASSERT
     # Test that root tile is generated with no glTF content
     assert output["asset"]["version"] == "1.1"
     assert output["geometricError"] == 1024
@@ -62,7 +68,7 @@ def gen_sample_parameters(test_range):
         sample_asset = []
         # Generate list of assets
         for i in range(test_range):
-            sample_asset.append({"asset"+str(i): "id"+str(i)})
+            sample_asset.append({"asset" + str(i): "id" + str(i)})
         return sample_tileset, sample_asset
     else:
         raise ValueError("test_range param must be more than 1")
@@ -113,27 +119,27 @@ def assert_nested_node_content(nested_node_list, test_range, current_asset_num=6
         assert "boundingVolume" in nested_dict
         assert nested_dict["geometricError"] == 50
         # Max content in one children node should be 6 unless test_range is not divisible by 6
-        max_range = current_asset_num+6 if test_range - \
-            current_asset_num > 6 else test_range
+        max_range = current_asset_num + 6 if test_range - \
+                                             current_asset_num > 6 else test_range
         i = -1  # initialise list index in 'contents' node
         # Test that the assets' contents are properly appended
         for asset_no in range(current_asset_num, max_range):
-            i = -1 if i > 4 else i+1
+            i = -1 if i > 4 else i + 1
             if test_case == 0:
                 metadata = nested_dict["contents"][i]["metadata"]
                 assert nested_dict["contents"][i]["uri"] == "./gltf/asset" + \
-                    str(asset_no)+".gltf"
+                       str(asset_no) + ".gltf"
                 assert metadata["class"] == "AssetMetaData"
                 assert metadata["properties"]["name"] == "element" + \
-                    str(asset_no)
-                assert metadata["properties"]["uid"] == "uid"+str(asset_no)
-                assert metadata["properties"]["iri"] == "iri"+str(asset_no)
+                       str(asset_no)
+                assert metadata["properties"]["uid"] == "uid" + str(asset_no)
+                assert metadata["properties"]["iri"] == "iri" + str(asset_no)
 
             else:
                 assert nested_dict["contents"][i]["asset" +
-                                                  str(asset_no)] == "id"+str(asset_no)
+                                                  str(asset_no)] == "id" + str(asset_no)
         # 6 assets should be cleared for each nested dict
-        current_asset_num = current_asset_num+6
+        current_asset_num = current_asset_num + 6
 
 
 def test_appenddict_rec_less_than_six_assets():
@@ -179,11 +185,11 @@ def gen_sample_df(test_range):
     """
     rows = []
     for i in range(test_range):
-        rows.append({'uid' : "uid" + str(i),
-            'name' : "element" + str(i),
-            'iri' : "iri" + str(i),
-            'file' : "asset" + str(i)}
-        )
+        rows.append({'uid': "uid" + str(i),
+                     'name': "element" + str(i),
+                     'iri': "iri" + str(i),
+                     'file': "asset" + str(i)}
+                    )
     return pd.DataFrame(rows)
 
 
@@ -194,9 +200,10 @@ def test_gen_tileset_assets():
     # Generate sample parameters
     test_range = 8
     sample_df = gen_sample_df(test_range)
-    endpoint = "endpoint"
+    building_iri = "buildingIri"
     sample_tileset = root_tile()
-    append_tileset_schema(sample_tileset, endpoint, endpoint)
+    append_tileset_schema(sample_tileset, building_iri)
+
     # Execute test method
     tileset = gen_tileset_assets(sample_df, sample_tileset)
 

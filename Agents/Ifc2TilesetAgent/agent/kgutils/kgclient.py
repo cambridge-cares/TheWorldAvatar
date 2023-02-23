@@ -14,6 +14,7 @@ from agent.kgutils.javagateway import jpsBaseLibGW
 
 logger = agentlogging.get_logger('prod')
 
+
 class KGClient:
     """
     A class to represent a Knowledge Graph Client.
@@ -28,11 +29,12 @@ class KGClient:
         kg_password: str
             Password for the SPARQL endpoint
     """
-    def __init__(self, query_endpoint: str, update_endpoint: str, kg_user: str =None,
-                 kg_password: str =None):
+
+    def __init__(self, query_endpoint: str, update_endpoint: str, kg_user: str = None,
+                 kg_password: str = None):
         # create a JVM module view and use it to import the required java classes
         self.twa_base_lib_view = jpsBaseLibGW.createModuleView()
-        jpsBaseLibGW.importPackages(self.twa_base_lib_view,"uk.ac.cam.cares.jps.base.query.*")
+        jpsBaseLibGW.importPackages(self.twa_base_lib_view, "uk.ac.cam.cares.jps.base.query.*")
 
         try:
             if kg_user is not None and kg_password is not None:
@@ -44,7 +46,6 @@ class KGClient:
         except Exception as ex:
             logger.error("Unable to initialise KG client.")
             raise KGException("Unable to initialise KG client.") from ex
-
 
     def execute_query(self, query: str):
         """
@@ -58,7 +59,6 @@ class KGClient:
             logger.error("SPARQL query not successful.")
             raise KGException("SPARQL query not successful.") from ex
         return json.loads(response)
-
 
     def execute_update(self, update: str):
         """

@@ -18,6 +18,7 @@ from agent.ifc2tileset.root_tile import root_tile
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
 
+
 def gen_solarpanel_tileset():
     """
     Generates and write the tileset for solar panel into 3D Tiles Next format if it exists
@@ -51,6 +52,6 @@ def jsonwriter(tileset, tileset_string):
             tileset_string - a string containing the output tileset's name
     """
     json_string = json.dumps(tileset)
-    with open('data/'+tileset_string+'.json', 'w', encoding="utf-8") as outfile:
+    with open('data/' + tileset_string + '.json', 'w', encoding="utf-8") as outfile:
         outfile.write(json_string)
-    logger.info(tileset_string+".json have been generated")
+    logger.info(tileset_string + ".json have been generated")

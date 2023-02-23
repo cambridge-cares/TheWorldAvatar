@@ -3,6 +3,7 @@
 
 This module provides methods to generate tilesets related to assets.
 """
+import pandas as pd
 
 # Self imports
 import agent.app as state
@@ -10,7 +11,7 @@ import agent.config.config as properties
 from agent.kgutils.const import NAME_VAR, ID_VAR, IRI_VAR
 
 
-def init_asset_tiles(tileset):
+def init_asset_tiles(tileset: dict):
     """
     Initialise the tileset to receive asset information
 
@@ -50,7 +51,7 @@ def init_asset_tiles(tileset):
     return tileset
 
 
-def appenddict_rec(tileset_root, assetlist, i=6):
+def appenddict_rec(tileset_root: dict, assetlist, i=6):
     """
     Recursively adds every i assets to a new child node of the required format.
     Function will only run if there are more than 6 assets.
@@ -77,7 +78,7 @@ def appenddict_rec(tileset_root, assetlist, i=6):
         return
 
 
-def gen_tileset_assets(asset_df, tileset):
+def gen_tileset_assets(asset_df: pd.DataFrame, tileset: dict):
     """
     Add asset properties into the tileset.
 

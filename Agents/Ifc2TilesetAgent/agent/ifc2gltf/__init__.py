@@ -15,6 +15,7 @@ from agent.utils import run_shellcommand, retrieve_abs_filepath
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
 
+
 def conv2gltf(input_ifc: str, query_endpoint: str, update_endpoint: str):
     """
     Invokes the related external tools to convert an IFC file
@@ -40,7 +41,7 @@ def conv2gltf(input_ifc: str, query_endpoint: str, update_endpoint: str):
         gltfpath = retrieve_abs_filepath(gltfpath)
 
         # Initialise the commands and append accordingly
-        ifcconvert_command = [ "./IfcConvert", "-q", input_ifc, glbpath]
+        ifcconvert_command = ["./IfcConvert", "-q", input_ifc, glbpath]
         ifcconvert_command = append_ifcconvert_command(
             key, value_list, ifcconvert_command)
         glb2gltf_command = "gltf-pipeline -i " + glbpath + " -o " + gltfpath

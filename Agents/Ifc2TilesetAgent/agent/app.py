@@ -17,17 +17,16 @@ from agent.ifc2tileset import gen_tilesets
 from agent.exceptions import InvalidInputError
 from agent.config import set_properties
 
-
 # Initialise logger
 logger = agentlogging.get_logger("dev")
 
 # Shared fields
 asset_url = "./gltf/"
 
+
 def create_app():
     # create and configure the app
     app = Flask(__name__, instance_relative_config=True)
-
 
     # Show an instructional message at the app's home page
     @app.route('/')
@@ -73,12 +72,13 @@ def create_app():
         ifcopenshell.open(ifc_filepath)
 
         logger.info("Converting the model into glTF files...")
-        metadata = conv2gltf(ifc_filepath, query_endpoint, update_endpoint)
+        asset_data = conv2gltf(ifc_filepath, query_endpoint, update_endpoint)
 
         logger.info("Generating the tilesets...")
-        gen_tilesets(metadata, query_endpoint, update_endpoint)
+        gen_tilesets(asset_data, query_endpoint, update_endpoint)
+
         # Return the result in JSON format
         return jsonify({"result": "IFC model has successfully been converted. " +
-        "Please visit the 'data' directory for the outputs"})
-    
+                                  "Please visit the 'data' directory for the outputs"})
+
     return app

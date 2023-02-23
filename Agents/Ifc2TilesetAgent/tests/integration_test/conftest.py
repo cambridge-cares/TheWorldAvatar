@@ -34,12 +34,13 @@ def gen_sample_ifc_file():
     is_complex - A boolean whether to create a complex IFC model with multiple element,\
         or a simple model consisting of only one Wall
     """
+
     def _gen_ifc_file(ifc_path, is_complex=False):
         # Create a blank model
         model = ifcopenshell.file()
         # All projects must have one IFC Project element
         project = run("root.create_entity", model,
-                    ifc_class="IfcProject", name="My Project")
+                      ifc_class="IfcProject", name="My Project")
         # To generate geometry, must assign units, defaults to metric units without args
         run("unit.assign_unit", model)
         # Create a geometry modelling context for storing 3D geometries
@@ -50,11 +51,11 @@ def gen_sample_ifc_file():
         )
         # Create a site, building, and storey
         site = run("root.create_entity", model,
-                ifc_class="IfcSite", name="My Site")
+                   ifc_class="IfcSite", name="My Site")
         building = run("root.create_entity", model,
-                    ifc_class="IfcBuilding", name="Building A")
+                       ifc_class="IfcBuilding", name="Building A")
         storey = run("root.create_entity", model,
-                    ifc_class="IfcBuildingStorey", name="Ground Floor")
+                     ifc_class="IfcBuildingStorey", name="Ground Floor")
         # Assign their relations
         run("aggregate.assign_object", model, relating_object=project, product=site)
         run("aggregate.assign_object", model, relating_object=site, product=building)
@@ -64,7 +65,7 @@ def gen_sample_ifc_file():
         wall = run("root.create_entity", model, ifc_class="IfcWall")
         # Add body geometry in meters
         representation = run("geometry.add_wall_representation",
-                            model, context=body, length=5, height=3, thickness=0.2)
+                             model, context=body, length=5, height=3, thickness=0.2)
         # Assign body geometry to the wall
         run("geometry.assign_representation", model,
             product=wall, representation=representation)
@@ -75,23 +76,25 @@ def gen_sample_ifc_file():
         if is_complex:
             # Create a building element proxy for water meter and solar panel
             meter = model.create_entity("IfcBuildingElementProxy",
-                                GlobalId=testconsts.meterid, Name="Water Meter")
+                                        GlobalId=testconsts.sample_meter_id, Name="Water Meter")
             solarpanel = model.create_entity("IfcBuildingElementProxy",
-                                GlobalId=testconsts.panelid, Name="Solar Panel")
+                                             GlobalId=testconsts.sample_panel_id, Name="Solar Panel")
             # Create a random furnishing element
             wirebox = model.create_entity("IfcFurnishingElement",
-                                GlobalId=testconsts.boxid, Name="Electric Wire Box")
+                                          GlobalId=testconsts.sample_box_id, Name="Electric Wire Box")
             # Assign geometries to each element
             run("geometry.assign_representation", model,
-                    product=meter, representation=representation)
+                product=meter, representation=representation)
             run("geometry.assign_representation", model,
-                    product=solarpanel, representation=representation)
+                product=solarpanel, representation=representation)
             run("geometry.assign_representation", model,
-                    product=wirebox, representation=representation)
+                product=wirebox, representation=representation)
         # Write out to a file
         model.write(ifc_path)
         return ifc_path
+
     return _gen_ifc_file
+
 
 @pytest.fixture(scope="session")
 def assert_asset_geometries():
@@ -101,18 +104,21 @@ def assert_asset_geometries():
     Argument:
     asset_list - A list containing the expected asset names
     """
+
     def _setup_geom_assertions(asset_list):
         for asset in asset_list:
             glbpath = "./data/glb/" + asset + ".glb"
             gltfpath = "./data/gltf/" + asset + ".gltf"
-            try: 
+            try:
                 assert os.path.isfile(glbpath)
                 assert os.path.isfile(gltfpath)
             finally:
                 os.remove(glbpath)
                 os.remove(gltfpath)
         return None
+
     return _setup_geom_assertions
+
 
 # ----------------------------------------------------------------------------------
 # Module-scoped test fixtures
@@ -129,6 +135,7 @@ def tileset_content():
     Returns:
     The tileset's contents as a Python dictionary
     """
+
     def _retrieve_tileset_contents(json_filepath):
         # Read the results
         json_output = open(json_filepath, "r", encoding="utf-8")
@@ -136,6 +143,7 @@ def tileset_content():
         tileset_content = json.loads(contents)  # Convert to dictionary
         json_output.close()
         return tileset_content
+
     return _retrieve_tileset_contents
 
 
@@ -157,6 +165,7 @@ def initialise_client():
     clear_triplestore(kg_client)
     clear_loggers()
 
+
 @pytest.fixture(scope='function')
 def flaskapp():
     app = create_app()
@@ -165,6 +174,7 @@ def flaskapp():
     })
     yield app.test_client()
 
+
 @pytest.fixture(scope='function')
 def sample_properties():
     """
@@ -172,15 +182,16 @@ def sample_properties():
     """
     yaml_path = "./config/properties.yaml"
     data = dict(
-        root_tile = testconsts.ROOT_TILE,
-        child_tile = testconsts.CHILD_TILE,
-        query_endpoint = testconsts.KG_ENDPOINT,
-        update_endpoint = testconsts.KG_ENDPOINT
+        root_tile=testconsts.ROOT_TILE,
+        child_tile=testconsts.CHILD_TILE,
+        query_endpoint=testconsts.KG_ENDPOINT,
+        update_endpoint=testconsts.KG_ENDPOINT
     )
     # Generate the file
     with open(yaml_path, 'w') as outfile:
         yaml.dump(data, outfile)
     return yaml_path
+
 
 # ----------------------------------------------------------------------------------
 # Helper functions
@@ -195,12 +206,14 @@ def clear_loggers():
         for handler in handlers:
             logger.removeHandler(handler)
 
+
 def clear_triplestore(kgClient):
     """Delete all triples"""
     query_delete = """
         DELETE WHERE {?s ?p ?o}
         """
     kgClient.execute_update(query_delete)
+
 
 def create_ifcaxis2placement(ifcfile, point, dir1, dir2):
     """Creates an IfcAxis2Placement3D from Location, Axis and RefDirection specified as Python tuples"""
@@ -210,14 +223,16 @@ def create_ifcaxis2placement(ifcfile, point, dir1, dir2):
     axis2placement = ifcfile.createIfcAxis2Placement3D(point, dir1, dir2)
     return axis2placement
 
+
 def create_ifclocalplacement(ifcfile, point, dir1, dir2, relative_to=None):
     """
     Creates an IfcLocalPlacement from Location, Axis and RefDirection, 
     specified as Python tuples, and relative placement
     """
-    axis2placement = create_ifcaxis2placement(ifcfile,point,dir1,dir2)
-    ifclocalplacement2 = ifcfile.createIfcLocalPlacement(relative_to,axis2placement)
+    axis2placement = create_ifcaxis2placement(ifcfile, point, dir1, dir2)
+    ifclocalplacement2 = ifcfile.createIfcLocalPlacement(relative_to, axis2placement)
     return ifclocalplacement2
+
 
 def create_ifcpolyline(ifcfile, point_list):
     """Creates an IfcPolyLine from a list of points, specified as Python tuples"""
@@ -228,6 +243,7 @@ def create_ifcpolyline(ifcfile, point_list):
     polyline = ifcfile.createIfcPolyLine(ifcpts)
     return polyline
 
+
 def create_ifcextrudedareasolid(ifcfile, point_list, ifcaxis2placement, extrude_dir, extrusion):
     """Creates an IfcExtrudedAreaSolid from a list of points, specified as Python tuples"""
     polyline = create_ifcpolyline(ifcfile, point_list)
@@ -235,4 +251,3 @@ def create_ifcextrudedareasolid(ifcfile, point_list, ifcaxis2placement, extrude_
     ifcdir = ifcfile.createIfcDirection(extrude_dir)
     ifcextrudedareasolid = ifcfile.createIfcExtrudedAreaSolid(ifcclosedprofile, ifcaxis2placement, ifcdir, extrusion)
     return ifcextrudedareasolid
-
