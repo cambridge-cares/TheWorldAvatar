@@ -8,8 +8,9 @@ wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/bert_pretrained.zip && unzip
 
 wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/Dictionaries.zip && unzip Dictionaries.zip -d /app/DATA/ && rm Dictionaries.zip
 wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/cde_models.zip
-RUN mkdir -p /root/.local/share/ChemDataExtractor/
-RUN unzip cde_models.zip -d /root/.local/share/ChemDataExtractor/
+mkdir -p /root/.local/share/ChemDataExtractor/
+unzip cde_models.zip -d /root/.local/share/ChemDataExtractor/
 rm cde_models.zip
+pip --default-timeout=10000 install --no-cache-dir -r requirements_linux.txt
 
 sh /start.sh
