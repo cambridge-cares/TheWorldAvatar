@@ -33,8 +33,6 @@ def api_update_all_warnings():
                        'Instantiated warnings': response[1],
                        'Updated warnings': response[2],
                        'Deleted warnings': response[3] }
-        for key, value in return_dict.items():
-            print(f'Number of {key.lower()}' , ' : ', value)
         return jsonify(return_dict), 200
 
     except Exception as ex:

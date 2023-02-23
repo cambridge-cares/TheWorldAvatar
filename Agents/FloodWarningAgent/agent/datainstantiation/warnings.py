@@ -106,6 +106,11 @@ def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT,
                 delete_instantiated_flood_warnings(warnings_to_deleted, kgclient=kg_client)
             print('Deleting finished.')
 
+        # Print update summary 
+        print(f'Instantiated areas: {instantiated_areas}')
+        print(f'Instantiated warnings: {instantiated_warnings}')
+        print(f'Updated warnings: {updated_warnings}')
+        print(f'Deleted warnings: {deleted_warnings}')
 
     return instantiated_areas, instantiated_warnings, updated_warnings, deleted_warnings
 
