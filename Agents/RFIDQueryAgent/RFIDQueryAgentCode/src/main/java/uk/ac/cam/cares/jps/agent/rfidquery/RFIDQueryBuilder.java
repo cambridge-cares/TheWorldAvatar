@@ -52,7 +52,8 @@ public class RFIDQueryBuilder {
     private static final String GETELEMENTNUMBER_ERROR_MSG = "Unable to query for element number IRI!" ;
     private static final String GETNUMBEROFELEMENT_ERROR_MSG = "Unable to query for number of elements!" ;
     private static final String GETLABEL_ERROR_MSG = "Unable to query for label via rdfs:label!";
-    
+    private static final String GETGHSHAZARDSTATEMENTS_ERROR_MSG = "Unable to query for GHS Hazard Statements!";
+    private static final String GETSTATEMENTLABELANDCOMMENT_ERROR_MSG = "Unable to query for GHS Hazard Statements labels and comments!";
     /**
      * Namespaces for ontologies
      */
@@ -91,6 +92,8 @@ public class RFIDQueryBuilder {
     private static final Iri representsOccurenceOf = PREFIX_ONTOCAPE_PHASE_SYSTEM.iri("representsOccurenceOf");
     private static final Iri label = PREFIX_RDFS.iri("label");
     private static final Iri hasState = PREFIX_SAREF.iri("hasState");
+    private static final Iri hasGHSHazardStatement = PREFIX_ONTOSPECIES.iri("hasGHSHazardStatements");
+    private static final Iri comment = PREFIX_RDFS.iri("comment");
 
     /**
      * Classes
@@ -332,9 +335,62 @@ public class RFIDQueryBuilder {
             result = kbClient2.executeQuery().getJSONObject(0).getString("label");
         } 
     } catch (Exception e) {
-        throw new JPSRuntimeException(GETLABEL_ERROR_MSG);
+        throw new JPSRuntimeException(GETLABEL_ERROR_MSG, e);
     }
         return result;
+    }
+
+    //SELECT ?GHSHazardStatements WHERE {<IRIString> ontospecies:hasGHSHazardStatements ?GHSHazardStatements}
+    public JSONArray queryForGHSHazardStatements(String IRIString) {
+        Variable ghsHazardStatements = SparqlBuilder.var("GHSHazardStatements");
+        JSONArray queryResult;
+        SelectQuery query = Queries.SELECT();
+        //create triple pattern
+        TriplePattern queryPattern = iri(IRIString).has(hasGHSHazardStatement, ghsHazardStatements);
+        query.prefix(PREFIX_ONTOSPECIES).select(ghsHazardStatements).where(queryPattern);
+        kbClient2.setQuery(query.getQueryString());
+        queryResult = kbClient2.executeQuery();
+        if(queryResult.isEmpty()){
+            queryResult = null;
+        }
+        return queryResult;
+    }
+
+    //SELECT ?label WHERE {<IRIString> rdfs:label ?label}
+    //SELECT ?comment WHERE {<IRIString> rdfs:comment ?comment}
+    public Map<String, List<String>> queryForLabelAndCommentForGHSHazardStatements(JSONArray IRIArray) {
+        Map<String, List<String>> map = new HashMap<>();
+        if (IRIArray != null) {
+            map.put("label", new ArrayList<>());
+            map.put("comment", new ArrayList<>());
+            String iriString = null;
+            Variable statementLabel = SparqlBuilder.var("label");
+            Variable statementComment = SparqlBuilder.var("comment");
+            for (int i = 0; i <= IRIArray.length() - 1; i++) {
+                iriString = IRIArray.getJSONObject(i).getString("GHSHazardStatements");
+                LOGGER.info("The ghs hazard statement IRI is " + iriString);
+                SelectQuery query = Queries.SELECT();
+                //create triple pattern
+                TriplePattern queryPattern = iri(iriString).has(label,statementLabel);
+                TriplePattern queryPattern1 = iri(iriString).has(comment, statementComment);
+                query.prefix(PREFIX_RDFS).select(statementLabel, statementComment).where(queryPattern, queryPattern1);
+                kbClient2.setQuery(query.getQueryString());
+                try {
+                    JSONArray queryResult = kbClient2.executeQuery();
+                    if(!queryResult.isEmpty()){
+                        LOGGER.info("The label is " + queryResult.getJSONObject(0).getString("label"));
+                        map.get("label").add(queryResult.getJSONObject(0).getString("label"));
+                        LOGGER.info("The comment is " + queryResult.getJSONObject(0).getString("comment"));
+                        map.get("comment").add(queryResult.getJSONObject(0).getString("comment"));
+                    }
+                } catch (Exception e) {
+                    throw new JPSRuntimeException(GETSTATEMENTLABELANDCOMMENT_ERROR_MSG, e);
+                }
+            }
+        } else {
+            map = null;
+        }
+        return map;
     }
 }
 

@@ -207,7 +207,9 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 
 			LOGGER.info("exceedThreshold for " + dataIRI + " is " + exceedThreshold);
 
-			if (exceedThreshold == true && args.length > 3 && args[4].contains("true")){
+			
+
+			if (exceedThreshold == true && args.length > 3 && args[4].split(",")[i].contains("true")){
 				LOGGER.info("Beginning queries...");
 				//Create RFIDQueryBuilder
 				RFIDQueryBuilder builder ;
@@ -253,14 +255,19 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				String label = builder.queryForLabel(speciesIRI);
 				LOGGER.info("The label of the species is " + label);
 
+				//query for hazard statement IRIs via ontospecies:hasGHSHazardStatements
+				JSONArray GHSHazardStatements = builder.queryForGHSHazardStatements(speciesIRI);
+
+				//query for the label and comment of each hazard statement IRI and put them in a hash map
+				Map<String, List<String>> map = builder.queryForLabelAndCommentForGHSHazardStatements(GHSHazardStatements);
 				LOGGER.info("Preparing to send email...");
-				agent.sendEmail(dataIRI, label, timestamp);
+				agent.sendEmail(dataIRI, label, timestamp, map);
 				LOGGER.info("Alert Email sent for " + dataIRI);
 				jsonMessage.accumulate("Result", "Alert Email sent for " + dataIRI);
 
 			} else if (exceedThreshold == true) {
 				LOGGER.info("Preparing to send email...");
-				agent.sendEmail(dataIRI, null, timestamp);
+				agent.sendEmail(dataIRI, null, timestamp, null);
 				LOGGER.info("Alert Email sent for " + dataIRI);
 				jsonMessage.accumulate("Result", "Alert Email sent for " + dataIRI);
 			}
