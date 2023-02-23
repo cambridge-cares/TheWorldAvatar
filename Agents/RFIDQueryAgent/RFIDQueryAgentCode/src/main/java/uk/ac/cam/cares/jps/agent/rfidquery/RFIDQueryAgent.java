@@ -191,19 +191,34 @@ public class RFIDQueryAgent{
      * @param tagID tag status IRI
      * @param speciesLabels The JSONObject containing the labels of the chemical
      * @param latestTimeStamp latest timestamp value
+     * @param map Hashmap containing the labels and comments for each GHS Hazard Statement
      */
-    public void sendEmail(String tagID, String label, String latestTimeStamp) {
-        if (label != null) {
+    public void sendEmail(String tagID, String label, String latestTimeStamp, Map<String, List<String>> map) {
+        if (label != null && map != null) {
             try {
                 EmailSender sender = new EmailSender();
-                String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp.toString() + ". \n The container has the following tag ID " + tagID.split("_")[2] + " and it is storing a chemical with the following label: " + label;
-                
+                String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp.toString() + ". \n The container has the following tag ID " + tagID.split("_")[2] + " and it is storing a chemical with the following label: " + label + ". The chemical has the following GHS hazard statements: ";
+                for (int i = 0; i < map.get("label").size() - 1; i++) {
+                    LOGGER.info("The label from the map is " + map.get("label").get(i));
+                    LOGGER.info("The comment from the map is " + map.get("comment").get(i));
+                    emailMessages = emailMessages.concat("{" + map.get("label").get(i) + ":" + map.get("comment").get(i) + "} . ");
+                }
                 LOGGER.info("The email message is " + emailMessages);
                 sender.sendEmail("Alert!", emailMessages);
             } catch (Exception e) {
                 throw new JPSRuntimeException("Unable to send out alert email!");
             }
-        } else {
+        } else if (label != null && map == null) {
+            try {
+                EmailSender sender = new EmailSender();
+                String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp.toString() + ". \n The container has the following tag ID " + tagID.split("_")[2] + " and it is storing a chemical with the following label: " + label + ".";
+
+                LOGGER.info("The email message is " + emailMessages);
+                sender.sendEmail("Alert!", emailMessages);
+            } catch (Exception e) {
+                throw new JPSRuntimeException("Unable to send out alert email!");
+            }
+        } else if (label == null && map == null) {
             try {
                 EmailSender sender = new EmailSender();
                 String emailMessages;
