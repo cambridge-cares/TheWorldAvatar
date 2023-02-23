@@ -28,7 +28,6 @@ from agent.errorhandling.exceptions import *
 from agent.utils.env_configs import YEAR
 from agent.utils.stack_configs import (QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
-
 # Initialise logger
 logger = agentlogging.get_logger("prod")  
 
@@ -368,16 +367,40 @@ def upload_elec_data_to_KG (year: str = YEAR,
         year: the number of year of which the data you may want to read
         query_endpoint: str = QUERY_ENDPOINT,
         update_endpoint: str = UPDATE_ENDPOINT
-        path: mainly for testing reason, provide an path to a json file which can be read and upload to knowledge graph
+        path: mainly for testing reason, provide an path to a json/xslx file which can be read and upload to knowledge graph
               example json files can be seen in ./tests/data folder
     '''
 # Retrieve reading from web
     logger.info('Retrieving Electricity consumption data from Excel ...')
-    if path is None:
+    try:
+        # Try the default path
+        if path is None:
+            data = pd.read_excel(
+                f'./data/LSOA_domestic_elec_2010-{year[2:3]}.xlsx',
+                sheet_name=year,
+                skiprows=4,
+                skipfooter=1
+            )
+        # Try the specified path
+        else:
+            if os.path.isfile(path):
+                file_extension = os.path.splitext(path)[1].lower()
+                if file_extension == '.xlsx':
+                    data = pd.read_excel(
+                        path,
+                        sheet_name=year,
+                        skiprows=4,
+                        skipfooter=1
+                    )
+                elif file_extension == '.json':
+                    # Try the JSON file
+                    with open(path, 'r') as file:
+                        data = json.load(file)
+                else:
+                    logger.info("Specified path file can't be found or not valid, try to get the data from web...")
+    except:
+        # Retrieve data from the Web
         data = read_from_web_elec(year)
-    else:
-        with open(path, 'r') as file:
-            data = json.load(file)
 
     LSOA_codes = data["LSOA code"].values
     met_num = data["Number\nof meters\n"].values
@@ -481,7 +504,8 @@ def upload_elec_data_to_KG (year: str = YEAR,
 
 def upload_gas_data_to_KG (year: str = YEAR,
                 query_endpoint: str = QUERY_ENDPOINT,
-                update_endpoint: str = UPDATE_ENDPOINT):
+                update_endpoint: str = UPDATE_ENDPOINT,
+                path: str = None):
     '''
         perform SPARQL update to upload the gas consumption/meter/nonmeter data into Blazegraph
         
@@ -489,10 +513,41 @@ def upload_gas_data_to_KG (year: str = YEAR,
         year: the number of year of which the data you may want to read
         query_endpoint: str = QUERY_ENDPOINT,
         update_endpoint: str = UPDATE_ENDPOINT
+        path: mainly for testing reason, provide an path to a json/xslx file which can be read and upload to knowledge graph
+              example json files can be seen in ./tests/data folder
     '''
 # Retrieve reading from web
     logger.info('Retrieving Gas consumption data from Excel ...')
-    data = read_from_web_gas(year)
+    try:
+        # Try the default path
+        if path is None:
+            data = pd.read_excel(
+                f'./data/LSOA_domestic_gas_2010-{year[2:3]}.xlsx',
+                sheet_name=YEAR,
+                skiprows=4,
+                skipfooter=1
+            )
+        # Try the specified path
+        else:
+            if os.path.isfile(path):
+                file_extension = os.path.splitext(path)[1].lower()
+                if file_extension == '.xlsx':
+                    data = pd.read_excel(
+                        path,
+                        sheet_name=year,
+                        skiprows=4,
+                        skipfooter=1
+                    )
+                elif file_extension == '.json':
+                    # Try the JSON file
+                    with open(path, 'r') as file:
+                        data = json.load(file)
+                else:
+                    logger.info("Specified path file can't be found or not valid, try to get the data from web...")
+    except:
+        # Retrieve data from the Web
+        data = read_from_web_gas(year)
+
     LSOA_codes = data["LSOA code"].values
     met_num = data["Number\nof meters\n"].values
     consump = data["Total \nconsumption\n(kWh)"].values
@@ -632,7 +687,8 @@ def upload_Geoinfo_to_KG(query_endpoint: str = QUERY_ENDPOINT,
 
 def upload_fuel_poverty_to_KG (year: str = YEAR,
                 query_endpoint: str = QUERY_ENDPOINT,
-                update_endpoint: str = UPDATE_ENDPOINT):
+                update_endpoint: str = UPDATE_ENDPOINT,
+                path: str = None):
     '''
         perform SPARQL update to upload the fuel poor number, total household number data into Blazegraph
         
@@ -640,10 +696,42 @@ def upload_fuel_poverty_to_KG (year: str = YEAR,
         year: the number of year of which the data you may want to read
         query_endpoint: str = QUERY_ENDPOINT,
         update_endpoint: str = UPDATE_ENDPOINT
+        path: mainly for testing reason, provide an path to a json/xslx file which can be read and upload to knowledge graph
+              example json files can be seen in ./tests/data folder
     '''
     # Retrieve reading from web
     logger.info('Retrieving Fuel poverty data from Excel ...')
-    data = read_from_web_fuel_poverty(year)
+    
+    try:
+        year_published = str(int(year) + 2)
+        # Try the default path
+        if path is None:
+            data = pd.read_excel(
+                f'./data/sub-regional-fuel-poverty-{year_published}-tables.xlsx',
+                sheet_name="Table 3",
+                skiprows=2,
+                skipfooter=8
+            )
+        # Try the specified path
+        else:
+            if os.path.isfile(path):
+                file_extension = os.path.splitext(path)[1].lower()
+                if file_extension == '.xlsx':
+                    data = pd.read_excel(
+                        path,
+                        sheet_name="Table 3",
+                        skiprows=2,
+                        skipfooter=8
+                    )
+                elif file_extension == '.json':
+                    # Try the JSON file
+                    with open(path, 'r') as file:
+                        data = json.load(file)
+                else:
+                    logger.info("Specified path file can't be found or not valid, try to get the data from web...")
+    except:
+        # Retrieve data from the Web
+        data = read_from_web_fuel_poverty(year)
 
     LSOA_codes = data["LSOA Code"].values
     house_num = data["Number of households"].values
@@ -710,7 +798,8 @@ def upload_fuel_poverty_to_KG (year: str = YEAR,
 
 def upload_hadUK_climate_to_KG (year: str = YEAR,
                 query_endpoint: str = QUERY_ENDPOINT,
-                update_endpoint: str = UPDATE_ENDPOINT):
+                update_endpoint: str = UPDATE_ENDPOINT,
+                path: str = None):
     '''
         perform SPARQL update to upload the Climate data into Blazegraph
         The climate data for each LSOA is calculated based on hadUK grid climate data
@@ -720,6 +809,8 @@ def upload_hadUK_climate_to_KG (year: str = YEAR,
         year: the number of year of which the data you may want to read
         query_endpoint: str = QUERY_ENDPOINT,
         update_endpoint: str = UPDATE_ENDPOINT
+        path: mainly for testing reason, provide an path to a nc file which can be read and upload to knowledge graph
+              example json files can be seen in ./tests/data folder
     '''
     months_dict = {'January':0,'February':1,'March':2,'April':3,'May':4,'June':5,'July':6,'August':7,'September':8,'October':9,'November':10,'December':11}
     
@@ -739,7 +830,16 @@ def upload_hadUK_climate_to_KG (year: str = YEAR,
         Given a variable in the specified year of HadUK Grid dataset, reads the file
         and returns the grid of observations.
         '''
-        fn = read_from_web_temp(year, var_name)
+        try:
+            # Try the default path
+            if path is None:
+                fn = f'./data/{var_name}_hadukgrid_uk_1km_mon_{year}01-{year}12.nc'
+            else:
+                fn = path
+        except:
+            # Retrieve data from the Web
+            fn = read_from_web_temp(year, var_name)
+
         ds = nc.Dataset(fn)
         var_grid = ds.variables[var_name][:]
         logger.info(f'{year} {var_name}: hadUK climate data from {fn} succesfully retrieved and calculated')
