@@ -67,6 +67,7 @@ RUN pip install gunicorn
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
 COPY ./$AGENTDIR ./$AGENTDIR
+COPY  ./agent.env.example ./agent.env.example
 
 # Set the entrypoint
 # Use shell form to enable variable substitution (https://stackoverflow.com/a/37904830)
