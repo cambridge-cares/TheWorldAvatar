@@ -66,6 +66,9 @@ public class Aermod {
 
     int create144File(WeatherData weatherData) {
         String windSpeed = String.valueOf(weatherData.getWindSpeedInKnots());
+        while (windSpeed.length() <2) {
+            windSpeed = "0" + windSpeed;
+        }
         if (windSpeed.length() != 2) {
             LOGGER.error("Invalid wind speed value {}", windSpeed);
             return 1;
