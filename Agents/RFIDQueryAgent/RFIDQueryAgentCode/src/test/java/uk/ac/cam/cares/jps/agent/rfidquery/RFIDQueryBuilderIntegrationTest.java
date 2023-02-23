@@ -4,6 +4,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
+import org.json.JSONArray;
 import org.junit.*;
 import org.junit.rules.TemporaryFolder;
 import org.testcontainers.containers.GenericContainer;
@@ -18,6 +19,7 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
+import java.util.*;
 
 import org.eclipse.rdf4j.sparqlbuilder.core.query.DeleteDataQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
@@ -30,7 +32,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 
 @Ignore("Requires both triple store endpoint set up and running (using testcontainers)\n" +
         "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
-       
+     
 
 @Testcontainers
 public class RFIDQueryBuilderIntegrationTest {
@@ -92,6 +94,8 @@ public class RFIDQueryBuilderIntegrationTest {
     private static final Iri representsOccurenceOf = PREFIX_ONTOCAPE_PHASE_SYSTEM.iri("representsOccurenceOf");
     private static final Iri label = PREFIX_RDFS.iri("label");
     private static final Iri hasState = PREFIX_SAREF.iri("hasState");
+    private static final Iri hasGHSHazardStatement = PREFIX_ONTOSPECIES.iri("hasGHSHazardStatements");
+    private static final Iri comment = PREFIX_RDFS.iri("comment");
 
     /**
      * Instances IRIs
@@ -105,7 +109,8 @@ public class RFIDQueryBuilderIntegrationTest {
     private static final Iri phase = iri("http://www.theworldavatar.com/kb/ontolab/SolidPhase_01");
     private static final Iri phaseComponent = iri("http://www.theworldavatar.com/kb/ontolab/PhaseComponent_01");
     private static final Iri species = iri("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
-
+    private static final Iri GHSHazardStatement1 = iri("http://www.theworldavatar.com/kg/ontospecies/GHSHazardStatements_61ecccfe-2f04-44ac-a209-d6dc23e2dbe2");
+    private static final Iri GHSHazardStatement2 = iri("http://www.theworldavatar.com/kg/ontospecies/GHSHazardStatements_b02dc3ca-0fba-4c7e-bf30-636918b6ca49");
     @Before
     public void IntializeMockBlazeGraphAndBuilderAndAddMockTriples() throws IOException {
         // Start the containers
@@ -143,7 +148,13 @@ public class RFIDQueryBuilderIntegrationTest {
         TriplePattern updatePattern7 = phase.has(isComposedOfSubsystem, phaseComponent);
         TriplePattern updatePattern8 = phaseComponent.has(representsOccurenceOf, species);
         TriplePattern updatePattern9 = species.has(label, "test");
-        InsertDataQuery insert = Queries.INSERT_DATA(updatePattern, updatePattern2, updatePattern3, updatePattern4, updatePattern5, updatePattern6, updatePattern7, updatePattern8, updatePattern9);
+        TriplePattern updatePattern10 = species.has(hasGHSHazardStatement, GHSHazardStatement1);
+        TriplePattern updatePattern11 = species.has(hasGHSHazardStatement, GHSHazardStatement2);
+        TriplePattern updatePattern12 = GHSHazardStatement1.has(label, "testing1");
+        TriplePattern updatePattern13 = GHSHazardStatement1.has(comment, "some hazard warning 1");
+        TriplePattern updatePattern14 = GHSHazardStatement2.has(label, "testing2");
+        TriplePattern updatePattern15 = GHSHazardStatement2.has(comment, "some hazard warning 2");
+        InsertDataQuery insert = Queries.INSERT_DATA(updatePattern, updatePattern2, updatePattern3, updatePattern4, updatePattern5, updatePattern6, updatePattern7, updatePattern8, updatePattern9, updatePattern10, updatePattern11, updatePattern12, updatePattern13, updatePattern14, updatePattern15);
         insert.prefix(PREFIX_ONTOCAPE_CPS_BEHAVIOR, PREFIX_ONTOCAPE_MATERIAL, PREFIX_ONTOCAPE_PHASE_SYSTEM, PREFIX_ONTOCAPE_SYSTEM, PREFIX_ONTODEVICE, PREFIX_RDFS, PREFIX_ONTOLAB, PREFIX_ONTOSPECIES, PREFIX_SAREF);
         kbClient.executeUpdate(insert.getQueryString());
     }
@@ -378,6 +389,59 @@ public class RFIDQueryBuilderIntegrationTest {
             a = builder.queryForLabel("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
         } catch (Exception e) {
             Assert.assertEquals("Unable to query for label via rdfs:label!", e.getMessage());
+        }
+    }
+
+    @Test
+    public void queryForGHSHazardStatementsSuccessAndFail() throws IOException {
+        JSONArray a = builder.queryForGHSHazardStatements("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
+        Assert.assertEquals(2, a.length());
+
+        //invalid species IRI
+        a = builder.queryForGHSHazardStatements("http://www.theworldavatar.com/kb/ontospecies/Species");
+        Assert.assertEquals(null, a);
+
+        //remove hasGHSHazardStatements link between Species and GHSHazardStatements
+        TriplePattern Pattern = species.has(hasGHSHazardStatement, GHSHazardStatement1);
+        TriplePattern Pattern2 = species.has(hasGHSHazardStatement, GHSHazardStatement2);
+        DeleteDataQuery delete = Queries.DELETE_DATA(Pattern, Pattern2);
+        delete.prefix(PREFIX_ONTOSPECIES);
+        kbClient.executeUpdate(delete.getQueryString());
+        a = builder.queryForGHSHazardStatements("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060"); 
+        Assert.assertEquals(null, a);
+    }
+
+    @Test
+    public void queryForLabelAndCommentForGHSHazardStatementsSuccessAndFail() throws IOException {
+        JSONArray a = builder.queryForGHSHazardStatements("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
+        Map<String, List<String>> map = builder.queryForLabelAndCommentForGHSHazardStatements(a);
+        Assert.assertEquals(2, map.get("label").size());
+        Assert.assertEquals(2, map.get("comment").size());
+
+        if (map.get("label").get(0) == "testing1") {
+            Assert.assertEquals("some hazard warning 1",map.get("comment").get(0));
+        } else if (map.get("label").get(0) == "testing2") {
+            Assert.assertEquals("some hazard warning 2",map.get("comment").get(0));
+        }
+
+        //invalid species IRI
+        a = builder.queryForGHSHazardStatements("http://www.theworldavatar.com/kb/ontospecies/Species");
+        map = builder.queryForLabelAndCommentForGHSHazardStatements(a);
+        Assert.assertEquals(null, map);
+
+        //remove rdfs:label and rdfs:comment link between GHSHazardStatements and labels and comments
+        TriplePattern updatePattern1 = GHSHazardStatement1.has(label, "testing1");
+        TriplePattern updatePattern2 = GHSHazardStatement1.has(comment, "some hazard warning 1");
+        TriplePattern updatePattern3 = GHSHazardStatement2.has(label, "testing2");
+        TriplePattern updatePattern4 = GHSHazardStatement2.has(comment, "some hazard warning 2");
+        DeleteDataQuery delete = Queries.DELETE_DATA(updatePattern1, updatePattern2, updatePattern3, updatePattern4);
+        delete.prefix(PREFIX_RDFS);
+        kbClient.executeUpdate(delete.getQueryString());
+        try {
+            a = builder.queryForGHSHazardStatements("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
+            map = builder.queryForLabelAndCommentForGHSHazardStatements(a);
+        } catch (Exception e) {
+            Assert.assertEquals("Unable to query for GHS Hazard Statements labels and comments!", e.getMessage());
         }
     }
 
