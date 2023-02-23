@@ -69,11 +69,11 @@ def get_all_flood_areas() -> str:
 #
 # INTERNAL SPARQL UPDATES
 #
-def flood_area_instantiation_triples(area_uri: str, area_types: list, county_iri: str,
-                                     location_iri: str, admin_district_iri: str,
-                                     waterbody_iri: str, water_body_type: str, label: str, 
-                                     area_identifier: str, water_body_label: str,
-                                     history_iri: str) -> tuple:
+def flood_area_instantiation_triples(area_uri: str = None, area_types: list = [], county_iri: str = None,
+                                     location_iri: str = None, admin_district_iri: str = None,
+                                     waterbody_iri: str = None, water_body_type: str = None, 
+                                     label: str = None, area_identifier: str = None, 
+                                     water_body_label: str = None, history_iri: str = None) -> tuple:
     """
     Create INSERT triples to instantiate single flood area (to be placed inside a SPARQL INSERT DATA block)
 
@@ -122,9 +122,10 @@ def flood_area_instantiation_triples(area_uri: str, area_types: list, county_iri
     return triples
 
 
-def flood_warning_instantiation_triples(warning_uri: str, area_uri: str, flood_event_iri: str,
-                                        location_iri: str, severity: str, label: str, message: str, 
-                                        timeRaised: str, timeMsgChanged: str, timeSevChanged: str) -> tuple:
+def flood_warning_instantiation_triples(warning_uri: str = None, area_uri: str = None, flood_event_iri: str = None,
+                                        location_iri: str = None, severity: str = None, label: str = None,
+                                        message: str = None, timeRaised: str = None, timeMsgChanged: str = None,
+                                        timeSevChanged: str = None) -> tuple:
     """
     Create INSERT triples to instantiate single flood warning (to be placed inside a SPARQL INSERT DATA block)
 
@@ -164,3 +165,63 @@ def flood_warning_instantiation_triples(warning_uri: str, area_uri: str, flood_e
     triples = ' '.join(triples.split())
     
     return triples
+
+
+def update_flood_warning(warning_uri: str = None, severity: str = None, label: str = None, 
+                         message: str = None, timeRaised: str = None, timeMsgChanged: str = None,
+                         timeSevChanged: str = None) -> str:
+    # Returns DELETE / INSERT query to update instantiated flood warning
+
+    # Not all flood warning/alert info is considered "updatable", i.e. the following
+    # relations are assumed constant (incl. all downstream relations):
+    #   - associated flood area
+    #   - associated flood event
+
+    if warning_uri:
+        # Get applicable severity IRI from OntoFlood ABox
+        severity_iri = SEVERITY_IRIS[severity.lower()]
+
+        # Create query building blocks
+        delete = f"""
+            DELETE {{
+                <{warning_uri}> <{FLOOD_HAS_SEVERITY}> ?severity_iri ; 
+                                <{RDFS_LABEL}> ?warning_label ; 
+                                <{RT_MESSAGE}> ?warning_message ; 
+                                <{RT_TIME_RAISED}> ?time_raise ; 
+                                <{RT_TIME_MESSAGE_CHANGED}> ?time_message ; 
+                                <{RT_TIME_SEVERITY_CHANGED}> ?time_severity ; 
+        }}
+        """
+
+        insert = f"""
+            INSERT {{
+        """
+        # Object properties
+        insert += f"<{warning_uri}> <{FLOOD_HAS_SEVERITY}> <{severity_iri}> . "        
+        # Data properties
+        if label: insert += f"<{warning_uri}> <{RDFS_LABEL}> \"{label}\"^^<{XSD_STRING}> . "
+        if message: insert += f"<{warning_uri}> <{RT_MESSAGE}> \"{message}\"^^<{XSD_STRING}> . "
+        if timeRaised: insert += f"<{warning_uri}> <{RT_TIME_RAISED}> \"{timeRaised}\"^^<{XSD_DATETIME}> . "
+        if timeMsgChanged: insert += f"<{warning_uri}> <{RT_TIME_MESSAGE_CHANGED}> \"{timeMsgChanged}\"^^<{XSD_DATETIME}> . "
+        if timeSevChanged: insert += f"<{warning_uri}> <{RT_TIME_SEVERITY_CHANGED}> \"{timeSevChanged}\"^^<{XSD_DATETIME}> . "
+        insert += f"}} "
+
+        where =f"""WHERE {{
+                <{warning_uri}> <{RDF_TYPE}> <{RT_FLOOD_ALERT_OR_WARNING}> ; 
+                                <{FLOOD_HAS_SEVERITY}> ?severity_iri . 
+                OPTIONAL {{ <{warning_uri}> <{RDFS_LABEL}> ?warning_label }}
+                OPTIONAL {{ <{warning_uri}> <{RT_MESSAGE}> ?warning_message }}
+                OPTIONAL {{ <{warning_uri}> <{RT_TIME_RAISED}> ?time_raise }}
+                OPTIONAL {{ <{warning_uri}> <{RT_TIME_MESSAGE_CHANGED}> ?time_message }} 
+                OPTIONAL {{ <{warning_uri}> <{RT_TIME_SEVERITY_CHANGED}> ?time_severity }}
+            }}
+        """
+
+        query = delete + insert + where
+        # Remove unnecessary whitespaces
+        query = ' '.join(query.split())
+
+    else:
+        query = None
+
+    return query
