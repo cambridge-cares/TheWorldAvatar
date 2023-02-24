@@ -263,8 +263,9 @@ class WeatherQueryClient {
 		
 		// parse wkt literal
 		GeometryWrapper geometryWrapper= WKTDatatype.INSTANCE.parse(wktString);
-		double lat = geometryWrapper.getXYGeometry().getCoordinate().getY();
-		double lon = geometryWrapper.getXYGeometry().getCoordinate().getX();
+
+		double lat = geometryWrapper.getXYGeometry().getCoordinate().getX(); // WKT is (long,lat), but jena-geosparql seem to be (lat,long). Needs further investigation
+		double lon = geometryWrapper.getXYGeometry().getCoordinate().getY(); // WKT is (long,lat), but jena-geosparql seem to be (lat,long). Needs further investigation
 		
 		// the key for this map is the weather class, value is the corresponding value
 		Map<String,Double> newWeatherData;

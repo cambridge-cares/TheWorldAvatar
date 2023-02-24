@@ -636,7 +636,7 @@ public class TimeSeriesRDBClient<T> {
 		Condition condition = tableNameColumn.eq(DB_TABLE_NAME);
 		if (schema != null) {
 			Field<String> schemaColumn = DSL.field("table_schema", String.class);
-			condition.and(schemaColumn.eq(schema));
+			condition = condition.and(schemaColumn.eq(schema));
 		}
 		return context.select(count()).from(tables).where(condition).fetchOne(0, int.class) == 1;
 	}
