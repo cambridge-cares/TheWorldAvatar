@@ -18,7 +18,7 @@
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <MSM.:hasInput rdf:resource="#MessageContent_51f590967a8336f6f6b75cd1c28a03d1cd394a0c"/>
   <MSM.:hasOutput rdf:resource="#MessageContent_73f0c70c87a6867652de9ad6430136275b32e915"/>
-  <MSM.:hasHttpUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://kg.cmclinnovations.com:5001/api/model/predict</MSM.:hasHttpUrl>
+  <MSM.:hasHttpUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://127.0.0.1:5000/api/model/predict</MSM.:hasHttpUrl>
   <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; of &lt;species&gt;</MSM.:hasQuestionTemplates>
   <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; of OPF with donor &lt;species&gt;</MSM.:hasQuestionTemplates>
 </MSM.:Operation>
@@ -31,9 +31,9 @@
 <MSM.:MessagePart rdf:about="#MessagePart_b9af45ded809accca9464f984e46f28e8af5718e">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">smiles</MSM.:hasName>
-  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_species</MSM.:hasType>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Smiles</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</MSM.:isArray>
-  <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">species</MSM.:hasNerLabel>
+  <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">smiles</MSM.:hasNerLabel>
 </MSM.:MessagePart>
 
 <MSM.:MessageContent rdf:about="#MessageContent_73f0c70c87a6867652de9ad6430136275b32e915">
@@ -44,7 +44,7 @@
 <MSM.:MessagePart rdf:about="#MessagePart_78eaf13bcb51b8f528a940d6f099ef16407acb2d">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">pce</MSM.:hasName>
-  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_power_conversion_efficiency</MSM.:hasType>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#PowerConversionEfficiency</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>
   <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">attribute</MSM.:hasNerLabel>
 </MSM.:MessagePart>
