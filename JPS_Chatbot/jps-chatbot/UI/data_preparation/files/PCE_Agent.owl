@@ -30,10 +30,10 @@
 
 <MSM.:MessagePart rdf:about="#MessagePart_b9af45ded809accca9464f984e46f28e8af5718e">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">smiles</MSM.:hasName>
-  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Smiles</MSM.:hasType>
+  <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">species</MSM.:hasName>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</MSM.:isArray>
-  <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">smiles</MSM.:hasNerLabel>
+  <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">species</MSM.:hasNerLabel>
 </MSM.:MessagePart>
 
 <MSM.:MessageContent rdf:about="#MessageContent_73f0c70c87a6867652de9ad6430136275b32e915">
