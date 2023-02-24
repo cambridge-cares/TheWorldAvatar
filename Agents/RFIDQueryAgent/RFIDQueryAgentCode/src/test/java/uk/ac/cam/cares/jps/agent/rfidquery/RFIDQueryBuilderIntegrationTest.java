@@ -32,7 +32,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 
 @Ignore("Requires both triple store endpoint set up and running (using testcontainers)\n" +
         "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
-   
+  
 @Testcontainers
 public class RFIDQueryBuilderIntegrationTest {
 
@@ -153,7 +153,8 @@ public class RFIDQueryBuilderIntegrationTest {
         TriplePattern updatePattern13 = GHSHazardStatement1.has(comment, "some hazard warning 1");
         TriplePattern updatePattern14 = GHSHazardStatement2.has(label, "testing2");
         TriplePattern updatePattern15 = GHSHazardStatement2.has(comment, "some hazard warning 2");
-        InsertDataQuery insert = Queries.INSERT_DATA(updatePattern, updatePattern2, updatePattern3, updatePattern4, updatePattern5, updatePattern6, updatePattern7, updatePattern8, updatePattern9, updatePattern10, updatePattern11, updatePattern12, updatePattern13, updatePattern14, updatePattern15);
+        TriplePattern updatePattern16 = bottle.has(label, "chemical container 1");
+        InsertDataQuery insert = Queries.INSERT_DATA(updatePattern, updatePattern2, updatePattern3, updatePattern4, updatePattern5, updatePattern6, updatePattern7, updatePattern8, updatePattern9, updatePattern10, updatePattern11, updatePattern12, updatePattern13, updatePattern14, updatePattern15, updatePattern16);
         insert.prefix(PREFIX_ONTOCAPE_CPS_BEHAVIOR, PREFIX_ONTOCAPE_MATERIAL, PREFIX_ONTOCAPE_PHASE_SYSTEM, PREFIX_ONTOCAPE_SYSTEM, PREFIX_ONTODEVICE, PREFIX_RDFS, PREFIX_ONTOLAB, PREFIX_ONTOSPECIES, PREFIX_SAREF);
         kbClient.executeUpdate(insert.getQueryString());
     }
@@ -191,13 +192,13 @@ public class RFIDQueryBuilderIntegrationTest {
     }
 
     @Test
-    public void queryBottleSuccessAndFail() throws IOException {
-        String IRI = builder.queryForBottleWithIsAttachedTo("http://www.theworldavatar.com/kb/ontodevice/tag_01");
+    public void queryTaggedObjectSuccessAndFail() throws IOException {
+        String IRI = builder.queryForTaggedObjectWithIsAttachedTo("http://www.theworldavatar.com/kb/ontodevice/tag_01");
         Assert.assertEquals("http://www.theworldavatar.com/kb/ontolab/Bottle_01", IRI);
 
         //invalid tag IRI
         try {
-            IRI = builder.queryForBottleWithIsAttachedTo("http://www.theworldavatar.com/kb/ontodevice/tag_02");
+            IRI = builder.queryForTaggedObjectWithIsAttachedTo("http://www.theworldavatar.com/kb/ontodevice/tag_02");
         } catch (Exception e) {
             Assert.assertEquals("Unable to query for bottle IRI!", e.getMessage());
         }
@@ -209,7 +210,7 @@ public class RFIDQueryBuilderIntegrationTest {
         kbClient.executeUpdate(delete.getQueryString());
 
         try {
-            IRI = builder.queryForBottleWithIsAttachedTo("http://www.theworldavatar.com/kb/ontodevice/tag_01");
+            IRI = builder.queryForTaggedObjectWithIsAttachedTo("http://www.theworldavatar.com/kb/ontodevice/tag_01");
         } catch (Exception e) {
             Assert.assertEquals("Unable to query for tag IRI!", e.getMessage());
         }
@@ -341,14 +342,14 @@ public class RFIDQueryBuilderIntegrationTest {
     }
 
     @Test
-    public void queryLabelSuccessAndFail() throws IOException {
+    public void querySpeciesLabelSuccessAndFail() throws IOException {
         String a = null;
-        a = builder.queryForLabel("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
+        a = builder.queryForSpeciesLabel("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
         Assert.assertEquals("test", a);
 
         //invalid species IRI
         try {
-            a = builder.queryForLabel("http://www.theworldavatar.com/kb/ontospecies/Species");
+            a = builder.queryForSpeciesLabel("http://www.theworldavatar.com/kb/ontospecies/Species");
         } catch (Exception e) {
             Assert.assertEquals("Unable to query for label via rdfs:label!", e.getMessage());
         }
@@ -360,7 +361,33 @@ public class RFIDQueryBuilderIntegrationTest {
         kbClient.executeUpdate(delete.getQueryString());
 
         try {
-            a = builder.queryForLabel("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
+            a = builder.queryForSpeciesLabel("http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060");
+        } catch (Exception e) {
+            Assert.assertEquals("Unable to query for label via rdfs:label!", e.getMessage());
+        }
+    }
+
+    @Test
+    public void queryTaggedObjectLabelSuccessAndFail() throws IOException {
+        String a = null;
+        a = builder.queryForTaggedObjectLabel("http://www.theworldavatar.com/kb/ontolab/Bottle_01");
+        Assert.assertEquals("chemical container 1", a);
+
+        //invalid tagged object IRI
+        try {
+            a = builder.queryForTaggedObjectLabel("http://www.theworldavatar.com/kb/ontolab/Bottle_");
+        } catch (Exception e) {
+            Assert.assertEquals("Unable to query for label via rdfs:label!", e.getMessage());
+        }
+
+        //remove label link between tagged object and String values
+        TriplePattern Pattern = species.has(label, "chemical container 1");
+        DeleteDataQuery delete = Queries.DELETE_DATA(Pattern);
+        delete.prefix(PREFIX_RDFS);
+        kbClient.executeUpdate(delete.getQueryString());
+
+        try {
+            a = builder.queryForTaggedObjectLabel("http://www.theworldavatar.com/kb/ontolab/Bottle_01");
         } catch (Exception e) {
             Assert.assertEquals("Unable to query for label via rdfs:label!", e.getMessage());
         }
