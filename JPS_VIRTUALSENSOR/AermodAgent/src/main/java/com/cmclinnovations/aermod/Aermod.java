@@ -65,6 +65,7 @@ public class Aermod {
     }
 
     int create144File(WeatherData weatherData) {
+
         String windSpeed = String.valueOf(weatherData.getWindSpeedInKnots());
         while (windSpeed.length() <2) {
             windSpeed = "0" + windSpeed;
@@ -75,6 +76,9 @@ public class Aermod {
         }
 
         String windDirection = String.valueOf(weatherData.getWindDirectionInTensOfDegrees());
+        while (windDirection.length() <2) {
+            windDirection = "0" + windDirection;
+        }
         if (windDirection.length() != 2) {
             LOGGER.error("Invalid wind direction value {}", windDirection);
             return 1;
@@ -91,11 +95,9 @@ public class Aermod {
         }
 
         String humidity = String.valueOf(weatherData.getHumidityAsPercentage());
-        if (humidity.length() == 1) {
-            humidity = "00" + humidity;
-        } else if (humidity.length() == 2) {
+        while (humidity.length() <3) {
             humidity = "0" + humidity;
-        } 
+        }
         if (humidity.length() != 3) {
             LOGGER.error("Invalid humidity value {}", humidity);
             return 1;
