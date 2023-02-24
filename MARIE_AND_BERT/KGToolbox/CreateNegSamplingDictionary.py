@@ -12,11 +12,14 @@ class NegSamplingCreator:
     NegSamplingCreator creates a dictionary mapping all s_p combination to all neighbouring
     entities of s that are fake triples ...
     """
+
     @staticmethod
     def random_sample_by_fraction(dataset, frac):
         return random.sample(dataset, int(len(dataset) * frac))
 
-    def __init__(self, dataset_dir, ontology):
+    def __init__(self, dataset_dir, ontology, other_class_frac=0.0, same_class_frac=1.0):
+        self.other_class_frac = other_class_frac
+        self.same_class_frac = same_class_frac
         self.dataset_dir = dataset_dir
         self.ontology = ontology
         self.full_dataset_dir = os.path.join(DATA_DIR, self.dataset_dir)
@@ -36,8 +39,8 @@ class NegSamplingCreator:
         :return:
         """
         stop_p_list = ["hasLogP", "hasDensity", "hasBoilingPoint",
-                                         "hasSolubility", "hasLogP", "hasLogS", "hasMolecularWeight",
-                                         "hasMeltingPoint"]
+                       "hasSolubility", "hasLogP", "hasLogS", "hasMolecularWeight",
+                       "hasMeltingPoint"]
         # create the list of tails first
         s_p_neg_dict = {}
         s_p_pos_dict = {}
@@ -82,8 +85,10 @@ class NegSamplingCreator:
             # 0.1, 0.5 so far best
             # test 0.05, 0.5         # 0.5, 0.05 , 6430992
             # test 0.02, 0.2         # 0.2, 0.02 , 2568773
-            sampled_neg_entities_different_class = self.random_sample_by_fraction(all_neg_entities_different_class, frac=0)
-            sampled_neg_entities_same_class = self.random_sample_by_fraction(all_neg_entities_same_class, frac=1)
+            sampled_neg_entities_different_class = self.random_sample_by_fraction(all_neg_entities_different_class,
+                                                                                  frac=self.other_class_frac)
+            sampled_neg_entities_same_class = self.random_sample_by_fraction(all_neg_entities_same_class,
+                                                                             frac=self.same_class_frac)
             print("--------------------------")
             print(len(sampled_neg_entities_different_class))
             print(len(sampled_neg_entities_same_class))

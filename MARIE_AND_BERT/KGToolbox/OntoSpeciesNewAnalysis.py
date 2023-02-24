@@ -35,8 +35,12 @@ class OntoSpeciesNewAnalyzer:
         return dictionary
 
     def __init__(self, sub_ontology):
+        self.ontology = "ontospecies_new"
+        self.sub_ontology = sub_ontology
         self.class_stop_list = ["rdf-schema#Resource", "rdf-schema#Class"]
-        self.file_creator = IntegratedTrainingFileCreator(sparql_namespace="copy_ontospecies_pubchem")
+        self.file_creator = IntegratedTrainingFileCreator(sparql_namespace="copy_ontospecies_pubchem",
+                                                          ontology=self.ontology,
+                                                          sub_ontology=sub_ontology)
         self.query_blazegraph = self.file_creator.query_blazegraph
         self.species_role_dictionary, self.role_species_dictionary = self.get_roles_of_species()
         self.species_class_dict, self.class_species_dict = self.get_all_chemical_classes()
@@ -46,8 +50,6 @@ class OntoSpeciesNewAnalyzer:
 
         self.numerical_attribute_species_node_dict, self.node_value_dict = self.get_all_numerical_attributes()
 
-        self.ontology = "ontospecies_new"
-        self.sub_ontology = sub_ontology
         self.full_dataset_dir = os.path.join(DATA_DIR, "CrossGraph", self.ontology)
         self.sub_ontology_path = os.path.join(self.full_dataset_dir, self.sub_ontology)
 
@@ -261,20 +263,19 @@ class OntoSpeciesNewAnalyzer:
 
         return species_class_dict, class_species_dict
 
-
-    def create_inference_candidate_dict(self, entity2idx):
-        """
-        Make a dictionary mapping true tail to candidate entities in the form of indices
-        1. create all uses list
-        :return:
-        """
-        candidate_dict = {}
-        role_list = list(self.role_species_dictionary.keys())
-        role_list = list(set(role_list))
-        role_list = [entity2idx[role] for role in role_list]
-        for role_idx in role_list:
-            candidate_dict[role_idx] = role_list
-        return candidate_dict
+    # def create_inference_candidate_dict(self, entity2idx, dictionary):
+    #     """
+    #     Make a dictionary mapping true tail to candidate entities in the form of indices
+    #     1. create all uses list
+    #     :return:
+    #     """
+    #     candidate_dict = {}
+    #     role_list = list(dictionary.keys())
+    #     role_list = list(set(role_list))
+    #     role_list = [entity2idx[role] for role in role_list]
+    #     for role_idx in role_list:
+    #         candidate_dict[role_idx] = role_list
+    #     return candidate_dict
 
     def run(self):
         numerical_triples, numerical_eval_triples = self.create_numerical_triples()
@@ -299,17 +300,8 @@ class OntoSpeciesNewAnalyzer:
         self.write_triples_to_tsv(other_triples=other_triples, numerical_triples=numerical_triples)
 
         # =================== STANDARD PACKAGE FOR FILES NEEDED ========================================
-        ontology = f"{self.ontology}/{self.sub_ontology}"
-        MakeIndex.create_indexing(self.sub_ontology, data_dir=f'CrossGraph/{ontology}')
-        my_extractor = HopExtractor(dataset_dir=self.sub_ontology_path, dataset_name=self.sub_ontology)
-        file_loader = FileLoader(full_dataset_dir=self.sub_ontology_path, dataset_name=self.sub_ontology)
-        entity2idx, idx2entity, rel2idx, idx2rel = file_loader.load_index_files()
-        candidate_dict = self.create_inference_candidate_dict(entity2idx=entity2idx)
-        with open(f"{self.sub_ontology_path}/candidate_dict.json", "w") as f:
-            f.write(json.dumps(candidate_dict))
-            f.close()
-        my_creator = NegSamplingCreator(dataset_dir=self.sub_ontology_path, ontology=self.sub_ontology)
-        my_creator.create_full_neg_dictionary()
+        self.file_creator.create_supporting_files_for_embedding(
+            inference_target_dictionary=self.role_species_dictionary)
         # ==============================================================================================
 
 
