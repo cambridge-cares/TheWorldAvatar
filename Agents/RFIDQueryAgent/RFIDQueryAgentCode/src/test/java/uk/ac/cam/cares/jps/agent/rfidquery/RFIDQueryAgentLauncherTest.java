@@ -44,7 +44,7 @@ public class RFIDQueryAgentLauncherTest {
         // Paths to the three different property files
        
         String clientPropertiesFile = clientPropertyFile.getCanonicalPath();
-        args = new String[] {clientPropertiesFile, "some_data_iri", "10", clientPropertiesFile};
+        args = new String[] {clientPropertiesFile, "some_data_iri", "10", "true", clientPropertiesFile};
     }
     
     @Test
@@ -106,7 +106,7 @@ public class RFIDQueryAgentLauncherTest {
             Assert.fail();
         }
         catch (JPSRuntimeException e) {
-            Assert.assertEquals("Need at least three arguments in the following order:1) time series client for timeseries data 2)list of data IRIs 3)Number of hours 4) species sparql endpoints 5)whether tagged object contains some chemical (true or false)", e.getMessage());
+            Assert.assertEquals("Need five arguments in the following order:1) time series client for timeseries data 2)list of data IRIs 3)Number of hours 4) species sparql endpoints 5)whether tagged object contains some chemical (true or false)", e.getMessage());
         }
     }
 
