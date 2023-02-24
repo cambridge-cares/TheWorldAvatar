@@ -18,6 +18,8 @@ In order to deploy (on a Linux machine):
 
    Please consult the readme files of each of these agents on how to build and deploy them as part of a stack. Essentially, in each case, the agent image needs to be built (or pulled from an image repository), and an input config `json` file needs to be copied into the `inputs/config` folder in the `stack-manager` directory in TWA git repository.
 
+   The Feature Info Agent is critical to the operation of the PSDT, as it allows the front-end to query additional information from the KG. Before spinning it up, make sure you either copy all files from the `feature-info-agent-files/queries` folder into the relevant `queries` folder that is bind-mounted (e.g. `TheWorldAvatar/Agents/FeatureInfoAgent/queries`), or adjust the absolute path of the bind mount in the agent input config `json` file accordingly. NB Any change to the `json` file in the `queries` folder requires the agent to be restarted, whereas the SPARQL query files are hot-reloaded (via the bind mount) for each request and thus do not require the agent to be restarted when changed.
+
 3. From a terminal in the `stack-manager` directory, start the `stack-manager` by running the following:
     ```console
     sudo ./stack.sh start psdt
