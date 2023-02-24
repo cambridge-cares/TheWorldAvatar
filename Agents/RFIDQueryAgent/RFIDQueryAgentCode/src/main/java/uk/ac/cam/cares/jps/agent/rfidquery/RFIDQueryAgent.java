@@ -106,8 +106,8 @@ public class RFIDQueryAgent{
 
     /**
      * Queries for latest data and check whether latest timestamps exceed threshold set by user
-     * @return resuTts A Json Object with the following format {iri_1: {exceedThreshold: true/false, timestamp: timestamp value, dataIRI: data IRI 1}, 
-     *                                                          iri_2: {exceedThreshold: true/false, timestamp: timestamp value, dataIRI: data IRI 2} }
+     * @return resuTts A Json Object with the following format {iri_0: {exceedThreshold: true/false, timestamp: timestamp value, dataIRI: data IRI 1}, 
+     *                                                          iri_1: {exceedThreshold: true/false, timestamp: timestamp value, dataIRI: data IRI 2} }
      */
     public JSONObject queriesStatusAndCheckTimeStamps() {
         JSONObject results = new JSONObject();
@@ -188,16 +188,16 @@ public class RFIDQueryAgent{
     }
 
     /**
-     * @param tagID tag status IRI
+     * @param tagStatusIRI tag status IRI
      * @param speciesLabels The JSONObject containing the labels of the chemical
      * @param latestTimeStamp latest timestamp value
      * @param map Hashmap containing the labels and comments for each GHS Hazard Statement
      */
-    public void sendEmail(String tagID, String objectLabel, String speciesLabel, String latestTimeStamp, Map<String, List<String>> map) {
+    public void sendEmail(String tagStatusIRI, String objectLabel, String speciesLabel, String latestTimeStamp, Map<String, List<String>> map) {
         if (speciesLabel != null && map != null) {
             try {
                 EmailSender sender = new EmailSender();
-                String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp.toString() + ". \n The container has the following label " + objectLabel + " and tag ID " + tagID.split("_")[2] + " and it is storing a chemical with the following label: " + speciesLabel + ". The chemical has the following GHS hazard statements: ";
+                String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp.toString() + ". \n The container has the following label " + objectLabel + " and tag ID " + tagStatusIRI.split("_")[2] + " and it is storing a chemical with the following label: " + speciesLabel + ". The chemical has the following GHS hazard statements: ";
                 for (int i = 0; i <= map.get("label").size() - 1; i++) {
                     LOGGER.info("The label from the map is " + map.get("label").get(i));
                     LOGGER.info("The comment from the map is " + map.get("comment").get(i));
@@ -211,7 +211,7 @@ public class RFIDQueryAgent{
         } else if (speciesLabel != null && map == null) {
             try {
                 EmailSender sender = new EmailSender();
-                String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp.toString() + ". \n The container has the following label " + objectLabel + " and tag ID " + tagID.split("_")[2] + " and it is storing a chemical with the following label: " + speciesLabel + ".";
+                String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp.toString() + ". \n The container has the following label " + objectLabel + " and tag ID " + tagStatusIRI.split("_")[2] + " and it is storing a chemical with the following label: " + speciesLabel + ".";
 
                 LOGGER.info("The email message is " + emailMessages);
                 sender.sendEmail("Alert!", emailMessages);
@@ -222,7 +222,7 @@ public class RFIDQueryAgent{
             try {
                 EmailSender sender = new EmailSender();
                 String emailMessages;
-                emailMessages = "The tagged object has been removed since " + latestTimeStamp.toString() + ". The object has the following label " + objectLabel + " and tag ID " + tagID.split("_")[2] + " .\n";
+                emailMessages = "The tagged object has been removed since " + latestTimeStamp.toString() + ". The object has the following label " + objectLabel + " and tag ID " + tagStatusIRI.split("_")[2] + " .\n";
                 sender.sendEmail("Alert!", emailMessages);
             } catch (Exception e) {
                 throw new JPSRuntimeException("Unable to send out alert email!");
