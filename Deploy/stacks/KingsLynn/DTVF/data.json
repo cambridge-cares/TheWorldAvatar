@@ -32,6 +32,7 @@
                     "type": "circle",
                     "treeable": false,
                     "maxzoom": 10,
+                    "order": 0,
                     "layout": {
                         "visibility": "visible"
                     },
@@ -48,6 +49,7 @@
                     "source": "ocgml_buildings",
                     "type": "fill-extrusion",
                     "minzoom": 8, 
+                    "order": 4,
                     "layout": {
                         "visibility": "visible"
                     },
@@ -70,6 +72,7 @@
                     "source-layer": "buildings",
                     "type": "fill-extrusion",
                     "minzoom": 8, 
+                    "order": 5,
                     "layout": {
                         "visibility": "visible"
                     },
@@ -136,6 +139,7 @@
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
                     "minzoom": 8,
+                    "order": 6,
                     "layout": {
                         "visibility": "visible",
                         "icon-image": [
@@ -180,6 +184,7 @@
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
                     "minzoom": 8,
+                    "order": 7,
                     "layout": {
                         "visibility": "visible",
                         "icon-image": ["get", "type"],
@@ -217,14 +222,15 @@
                     "source": "floodwarnings_active",
                     "source-layer": "floodwarnings",
                     "type": "fill",
-                    "order": 2,
+                    "order": 3,
                     "layout": {
                         "visibility": "visible"
                     },
+                    "text-field": ["get", "severity"],
                     "paint": {
                         "fill-color": [
                             "match",
-                            ["to-string", ["get", "severity"]],
+                            ["get", "severity"],
                             "4", "#ADD8E6",
                             "3", "#FFD34B",
                             "2", "#FFA500",
@@ -269,9 +275,10 @@
                 {
                     "id": "openpopgrid",
                     "type": "raster",
-                    "minzoom": 8,
                     "name": "OpenPopGrid",
                     "source": "openpopgrid",
+                    "minzoom": 8,
+                    "order": 1,
                     "layout": {
                         "visibility": "visible"
                     }

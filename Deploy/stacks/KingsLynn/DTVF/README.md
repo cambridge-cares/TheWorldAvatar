@@ -63,9 +63,8 @@ To ensure communication between the DTVF and the Feature Info Agent, the followi
 
 ```diff
 - Pending To Dos 
-    - refine clustering with vector tiles (i.e. summarise measurement stations at low zoom levels)
-    - add attributions in settings.json
-    - include further icons for different types of buildings
+    - Refine clustering with vector tiles (i.e. summarise measurement stations at low zoom levels)
+    - Add attributions in settings.json
 ```
 
 <!-- Links -->
