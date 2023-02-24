@@ -135,6 +135,8 @@ bash ./stack.sh start <STACK_NAME>
 
 After deploying the agent, the NGINX routing configuration of your stack may need to be adjusted to ensure the agent is accessible via the `/feature-info-agent` route.
 
+In order to avoid this problem (as well as associated CORS issues), copy the `json` file (with the absolute path of the bind mount adjusted as required) from the `stack-manager-input-config` folder into the `inputs/config` folder of the stack manager before starting it. This should set up the NGINX routing correctly, as well as add CORS headers to requests.
+
 It is worth noting that the docker compose setup for this agent creates a bind mount between the `queries` directory on the host machine, and the `/app/queries` directory within the container. This means that simply adding your configuration and query files to the former before running the container should automatically make them available to the agent.
 
 <!-- Links -->
