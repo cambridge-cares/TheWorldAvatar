@@ -386,9 +386,9 @@ public class Aermod {
      * without this the visualisation container cannot access the file
      * @return
      */
-    int modifyDataFilePermissions() {
+    int modifyFilePermissions(String filename) {
         try {
-            Process process = Runtime.getRuntime().exec(new String[]{"chmod", "a+rwx", "data.json"}, null, new File(EnvConfig.VIS_FOLDER));
+            Process process = Runtime.getRuntime().exec(new String[]{"chmod", "a+rwx", filename}, null, new File(EnvConfig.VIS_FOLDER));
             if (process.waitFor() != 0) {
                 return 1;
             }
@@ -417,7 +417,7 @@ public class Aermod {
         overall.put("start", start);
         overall.put("search", search);
 
-        File settingsJson = Paths.get(EnvConfig.VIS_FOLDER, "settingsJson.json").toFile();
+        File settingsJson = Paths.get(EnvConfig.VIS_FOLDER, "settings.json").toFile();
         try {
             Files.deleteIfExists(settingsJson.toPath());
         } catch(IOException e) {
