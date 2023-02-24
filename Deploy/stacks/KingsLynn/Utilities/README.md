@@ -23,7 +23,7 @@ The above commands will create and activate the virtual environment `venv` in th
 &nbsp;
 ## 1) Using the UPRN Agent scripts
 
-> The following steps refer to commit `68abb0eb4c24438fa46a3acdb2f6a3c3786292a8` on `https://github.com/cambridge-cares/CitiesKG/tree/develop`
+> The following steps refer to commit `609022747856c619984fa972e6a773259625a9ec` on `https://github.com/cambridge-cares/CitiesKG/tree/develop`
 
 The scripts within the `uprn_agent` subdirectory help to run the UPRN Agent from `https://github.com/cambridge-cares/CitiesKG/tree/develop/agents` in batches of individual buildings. This workaround might be necessary to 1) avoid heap space issues when processing the entire Blazegraph namespace at once (i.e. containing ~38,000 buildings for King's Lynn) and/or JSON Exceptions "arbitrarily" thrown by the UPRN Agent. Furthermore, a script is provided to verifying whether all relevant UPRN information has been added "correctly" to the KG.
 
@@ -36,7 +36,7 @@ Requirements:
 
 3) Deploy Access Agent (locally) via Docker as described in [Access Agent README] (commit `db76f502fd293c69c509371cc9694d19accda0fa` on branch `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`) and upload correct endpoint mappings
 
-4) Ensure Blazegraph namespace with OntoCityGML building instances is available (which need to be already enriched with LOD0 footprints using the TSD Agent as described here `https://github.com/cambridge-cares/CitiesKG/tree/develop/agents#footprint-mode`)
+4) Ensure Blazegraph namespace with OntoCityGML building instances is available (which need to be already enriched with LOD0 footprints using the TSD Agent as described [here](https://github.com/cambridge-cares/CitiesKG/tree/develop/agents#footprint-mode)
 
 5) Specify `blazegraph` namespace and `agent` endpoins in [run_uprn_agent_in_chunks.py] as well as waiting time between individual agent requests - this might need experimenting, as the HTTP request to agent returns <200> after a successful request; however, the actual upload of triples to Blazegraph might take longer. Hence, too little waiting time between requests will suppress successful instantiation of UPRN triples in Blazegraph. 5-10s waiting time seem to work well.
 

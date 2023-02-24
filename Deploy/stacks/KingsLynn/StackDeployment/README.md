@@ -111,7 +111,7 @@ FME is used to convert the shapefile from the previous step into a `.gml` file t
 
 > The following steps refer to commit `7c378e97d268b02e0d70661257894d5bff8e3655` on `https://github.com/cambridge-cares/CitiesKG/tree/develop`
 
-The [CityImportAgent] can be used to import the `.gml` file from the previous step into the KG. However, the latest version (at time of writing) faces issues with larger `.gml` files and a manual workaround is required as detailed below. Please note that Java 8 and IntelliJ are required to build and run the CityImportAgent. Furthermore, the [AccessAgent] needs to be running locally (as Docker container) in order to access the target KG namespace. The folder `../../Data/03 OntoCityGml Instantiation/Standalone_CitiesKG_Blazegraph/` contains a `Start_Blazegraph_with_default_settings.bat` file to bring up a Blazegraph instance with required settings for importing OntoCityGml buildings, which will start at `http://127.0.0.1:9999/blazegraph/`.
+The [CityImportAgent] can be used to import the `.gml` file from the previous step into the KG. However, the version at time of writing faces issues with larger `.gml` files and a manual workaround is required as detailed below. Please note that Java 8 and IntelliJ are required to build and run the CityImportAgent. Furthermore, the [AccessAgent] needs to be running locally (as Docker container) in order to access the target KG namespace. The folder `../../Data/03 OntoCityGml Instantiation/Standalone_CitiesKG_Blazegraph/` contains a `Start_Blazegraph_with_default_settings.bat` file to bring up a Blazegraph instance with required settings for importing OntoCityGml buildings, which will start at `http://127.0.0.1:9999/blazegraph/`.
 
 It is **not** recommended to re-do step 3 and instead use the pre-instantiated OntoCityGml quads provided in the `../../Data/99 KG snapshots/1_instantiated_ontocitygml/` repository.
 
@@ -124,7 +124,7 @@ All CitiesKG Agents require the [AccessAgent] to be running (locally) as Docker 
 3) Replace initial `routing.json` within AccessAgent repository with provided [routing.json] file
 4) Upload routing information by running `bash ./uploadRouting.sh` (again within `JPS_ACCESS_AGENT/access-agent-dev-stack` repo)
 
-**Please note** that the `uri.route` within the [CKG config.properties] file needs to match the label used in the [routing.json] file, i.e. `uri.route=http://localhost:48888/ocgml_buildings`. After providing the correct `uri.route`, the City Agents `.war` file can be built and deployed as described in the [CityImportAgent] README. The `.war` file built of commit `de911a62235d5c3d6c87ff9692bbdc5c11ce7d9b` is provided in the `../../Data/03 OntoCityGml Instantiation/City agents war file/` repository (for reference).
+**Please note** that the `uri.route` within the [CKG config.properties] file needs to match the label used in the [routing.json] file, i.e. `uri.route=http://localhost:48888/ocgml_buildings`. After providing the correct `uri.route`, the City Agents `.war` file can be built and deployed as described in the [CityImportAgent] README.
 
 
 ### 1) City Import Agent
@@ -141,7 +141,7 @@ After the `.gml` file is split into smaller files, they can be manually uploaded
 
 ## 4.1) Thematic Surface Discovery Agent (CitiesKG)
 
-> The following steps refer to commit `7c378e97d268b02e0d70661257894d5bff8e3655` on `https://github.com/cambridge-cares/CitiesKG/tree/develop`
+> The following steps refer to commit `7c378e97d268b02e0d70661257894d5bff8e3655` on `https://github.com/cambridge-cares/CitiesKG/tree/develop` (however, they should also work for later commits, e.g. `609022747856c619984fa972e6a773259625a9ec` as used for UPRN agent and provided `.war` file)
 
 The Thematic Surface Discovery Agent (TSDA) is used to enrich LOD1 building data with thematic surface information (i.e. roof, wall, floor, etc.) and also provides a `LOD0 Footprint` mode to attach an `lod0FootprintId` to each building (required for subsequent UPRN agent). The [TSDAgent] README provides details about building and using the TSDA. Please note that there are discrepancies between the Access Agent related parts in the [TSDAgent] README and the [AccessAgent] README, with the [AccessAgent] README being up-to-date.
 
@@ -158,9 +158,9 @@ Content-Type: application/json
 
 ## 4.2) UPRN Agent (potentially in chunks)
 
-> The following steps refer to commit `68abb0eb4c24438fa46a3acdb2f6a3c3786292a8` on `https://github.com/cambridge-cares/CitiesKG/tree/develop` 
+> The following steps refer to commit `609022747856c619984fa972e6a773259625a9ec` on `https://github.com/cambridge-cares/CitiesKG/tree/develop` (the `.war` file built of this commit is provided in the `../../Data/03 OntoCityGml Instantiation/City agents war file/` repository (for reference); however, deploying via IntelliJ is recommended).
 
-The [UPRN Agent] queries intersecting UPRNs for each instantiated OntoCityGml building from the Ordnance Survey [OS Features API] and instantiates them into the KG. The agent is designed to either process all buildings within a namespace or a single building provided as `cityObjectIRI`:
+The [UPRN Agent] queries intersecting UPRNs for each instantiated OntoCityGml building from the Ordnance Survey [OS Features API] and instantiates them into the KG. The agent is designed to either process all buildings within a namespace (and push changes to KG every 2k buildings) or a single building provided as `cityObjectIRI`:
 
 ```
 PUT http://localhost:8080/agents/uprn
@@ -177,23 +177,53 @@ As the agent tends to fail when processing an entire namespace on particular mac
 
 ## 4.3) Energy Performance Certificate (EPC) Agent
 
-> The following steps refer to commit `9f432c74d09bd790251ad0e1b5d8273b81f9fecc` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-EPCInstantiationAgent`
+> The following steps refer to commit `???` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main` using the published Docker image `ghcr.io/cambridge-cares/epc_agent:1.0.0`
 
-Build and deploy the EPC Agent as described in the [EPC Agent README], i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack. Follow the described instantiation workflow by sending the respective HTTP requests to the agent. The subsequent recurring updating of instantiated data occurs automatically.
+(Build and) deploy the EPC Agent as described in the [EPC Agent README], i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack. Follow the described instantiation workflow by sending the respective HTTP requests to the agent. The subsequent recurring updating of instantiated data occurs automatically.
 
-1) Initialise namespace for EPC building data (i.e. namespace `buildings` created upon initialisation to host all building related data)
-2) Instantiate all EPC building data
-3) Update geospatial representation of buildings in OntoBuiltEnv namespace
-   (**Please note:** This requires the Building Matching Agent to be run first!)
+0) New namespace (i.e. `buildings`) to host all building related data created automatically upon agent startup (incl. upload of ontology and all required unit symbols)
+1) Instantiate all postcodes in King's Lynn local authority:
+    ```
+    POST http://165.232.172.16:5001/epcagent/instantiate/postcodes
+    Content-Type: application/json
+
+    { "query": {
+        "district": "E07000146"
+        }
+    }
+    ```
+2) Instantiate all EPC building data (for all buildings and from all 3 APIs):
+    ```
+    POST http://165.232.172.16:5001/epcagent/instantiate/certificates/all
+    Content-Type: application/json
+
+    { "query": {
+        "ocgml_endpoint": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql"
+        }
+    }
+    ```
+3) Run Building Matching Agent (details see below)
+4) Update geospatial representation of buildings and insert additional OntoCityGml information in OntoBuiltEnv namespace (required for DTVF and Geoserver styling)
 
 - A KG export of successfully instantiated EPC data (steps 1 & 2) is provided in `../../Data/99 KG snapshots/4_epc_data_before_matching`
 
 
 ## 4.4) Building Matching Agent
 
-> The following description refers to commit `79b13971aff9c0ccbd0cdd69db71c04ff9c80fd2` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/1376-dev-building-matching-agent`
+> The following description refers to commit `7adc29459a2661f9fb7ad267d9f111d3d537249a` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
 
-The Building Matching Agent links buildings instantiated according to OntoBuiltEnv using the EPC Agent with their OntoCityGml representations. General details on how to use the agent can be found in the [Building Matching Readme]; however, all relevant steps are also described in section 3.4. in the [EPC Agent README].
+The Building Matching Agent links buildings instantiated according to OntoBuiltEnv using the EPC Agent with their OntoCityGml representations. General details on how to use the agent can be found in the [Building Matching Readme]; however, all relevant steps are also described in section 3.4. in the [EPC Agent README]. The following request shall match buildings in the `ocgml` and `buildings` namespace:
+
+```
+PUT http://localhost:58085/BuildingMatchingAgent/match
+Content-Type: application/json
+
+{ 
+  "ocgml": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql",
+  "obe": "http://165.232.172.16:3838/blazegraph/namespace/buildings/sparql",
+  "prefixIRI": "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/"
+}
+```
 
 After the Building instances are matched, step 3) from the EPC Agent can be performed.
 
@@ -264,8 +294,8 @@ The `resources` folder contains an `instantiated_buildings.sparql` file which co
 [CityImportAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
 [TSDAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
 [AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#readme
-[EPC Agent README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/dev-EPCInstantiationAgent/Agents/EnergyPerformanceCertificateAgent/README.md
-[Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/1376-dev-building-matching-agent/Agents/BuildingMatchingAgent/README.md
+[EPC Agent README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/EnergyPerformanceCertificateAgent/README.md
+[Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BuildingMatchingAgent/README.md
 [RiverLevelsAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAgent
 
 <!-- Repositories -->
