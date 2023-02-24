@@ -63,7 +63,6 @@ To ensure communication between the DTVF and the Feature Info Agent, the followi
 
 ```diff
 - Pending To Dos 
-    - update visualised (fudged) building data with actual data after running building matching agent
     - refine clustering with vector tiles (i.e. summarise measurement stations at low zoom levels)
     - add attributions in settings.json
     - include further icons for different types of buildings

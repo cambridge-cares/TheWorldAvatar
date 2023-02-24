@@ -141,10 +141,8 @@
                         "icon-image": [
                             "match",
                             ["get", "subtype"],
-                            "observation",
-                            "weather-obs",
-                            "forecast",
-                            "weather-for",
+                            "observation", "weather-obs",
+                            "forecast", "weather-for",
                             "weather"
                         ],
                         "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
@@ -194,7 +192,69 @@
             ]
         },
         {
-            "name": "Population data",
+            "name": "Flood Warnings",
+            "stack": "http://165.232.172.16:3838",
+            "sources": [
+                {
+                    "id": "floodwarnings_active",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=floodwarnings:floodwarnings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&cql_filter=active=true"
+                    ]
+                },
+                {
+                    "id": "floodwarnings_inactive",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=floodwarnings:floodwarnings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&cql_filter=active=false"
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "floodwarnings",
+                    "name": "Active flood warnings",
+                    "source": "floodwarnings_active",
+                    "source-layer": "floodwarnings",
+                    "type": "fill",
+                    "order": 2,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-color": [
+                            "match",
+                            ["to-string", ["get", "severity"]],
+                            "4", "#ADD8E6",
+                            "3", "#FFD34B",
+                            "2", "#FFA500",
+                            "1", "#FF0000",
+                            "#808080"
+                          ],
+                        "fill-opacity": 0.4,
+                        "fill-outline-color": "#000000"
+                    }
+                },
+                {
+                    "id": "floodwarnings_outdated",
+                    "name": "Inactive flood warnings",
+                    "source": "floodwarnings_inactive",
+                    "source-layer": "floodwarnings",
+                    "type": "fill",
+                    "order": 2,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-color": "#808080",
+                        "fill-opacity": 0.4,
+                        "fill-outline-color": "#000000"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Population Data",
             "stack": "http://165.232.172.16:3838",
             "sources": [
                 {
