@@ -58,6 +58,22 @@ public class QueryHandler {
     }
 
     /**
+     * Retrieves the IRI as a string from a row of Jena Result Set if it exists.
+     *
+     * @param soln     The row of Jena result set to retrieve information from.
+     * @param variable The variable name of interest.
+     * @return The IRI as a string.
+     */
+    public static String retrieveIri(QuerySolution soln, String variable) {
+        if (soln.contains(variable)) {
+            // Retrieve only the literal value with getString(), do not retrieve the namespace
+            return soln.get(variable).toString();
+        } else {
+            return null;
+        }
+    }
+
+    /**
      * Retrieves literal as a string from a row of Jena Result Set if it exists.
      *
      * @param soln     The row of Jena result set to retrieve information from.

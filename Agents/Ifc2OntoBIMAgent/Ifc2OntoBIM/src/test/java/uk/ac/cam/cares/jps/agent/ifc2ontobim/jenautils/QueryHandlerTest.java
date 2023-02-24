@@ -30,6 +30,8 @@ class QueryHandlerTest {
     private static final String testLiteral = "Building1";
     private static final String testHeightVar = "height";
     private static final String testDoubleLiteral = "102";
+    private static final String testIriVar = "IRI";
+    private static final String testIri = "http://www.example.org/Test_124";
 
 
     @Test
@@ -65,6 +67,17 @@ class QueryHandlerTest {
         String secondStatement = "[" + JunitTestUtils.bimUri + secondInst + ", " + RDF.type + ", " + JunitTestUtils.bimUri + testConstructClass + "]";
         assertTrue(strResults.contains(firstStatement));
         assertTrue(strResults.contains(secondStatement));
+    }
+
+    @Test
+    void testRetrieveIri() {
+        // Create a sample query solution for testing
+        QuerySolutionMap solution = new QuerySolutionMap();
+        solution.add(testIriVar, ResourceFactory.createResource(testIri));
+        // Execute the method and ensure results are string
+        assertEquals(testIri, QueryHandler.retrieveIri(solution, testIriVar));
+        // If the variable does not exist, ensure that null is return
+        assertNull(QueryHandler.retrieveIri(solution, "nonExisting"));
     }
 
     @Test

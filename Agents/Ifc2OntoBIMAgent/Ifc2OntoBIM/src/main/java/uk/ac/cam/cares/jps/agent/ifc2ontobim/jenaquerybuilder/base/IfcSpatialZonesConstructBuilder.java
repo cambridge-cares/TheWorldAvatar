@@ -55,35 +55,7 @@ public class IfcSpatialZonesConstructBuilder extends IfcConstructBuilderTemplate
             case "ifc:IfcSite":
                 addReferenceSystemParamQueryComponents(builder);
                 break;
-            case "ifc:IfcBuilding":
-            case "ifc:IfcBuildingStorey":
-            case "ifc:IfcSpace":
-                addSpatialLocationQueryComponents(builder, ifcClass);
-                break;
         }
-    }
-
-    /**
-     * Add the statements for relating each spatial structure element to their parent element.
-     *
-     * @param builder Construct Builder object to add Construct query statements.
-     */
-    private void addSpatialLocationQueryComponents(ConstructBuilder builder, String ifcClass) {
-        switch (ifcClass) {
-            case "ifc:IfcBuilding":
-                builder.addConstruct(ZONE_VAR, "bot:hasBuilding", ELEMENT_VAR);
-                break;
-            case "ifc:IfcBuildingStorey":
-                builder.addConstruct(ZONE_VAR, "bot:hasStorey", ELEMENT_VAR);
-                break;
-            case "ifc:IfcSpace":
-                builder.addConstruct(ZONE_VAR, "bot:hasSpace", ELEMENT_VAR);
-                break;
-        }
-
-        builder.addWhere(RELAGGR_VAR, QueryHandler.RDF_TYPE, "ifc:IfcRelAggregates")
-                .addWhere(RELAGGR_VAR, "ifc:relatingObject_IfcRelDecomposes", ZONE_VAR)
-                .addWhere(RELAGGR_VAR, "ifc:relatedObjects_IfcRelDecomposes", ELEMENT_VAR);
     }
 
     /**

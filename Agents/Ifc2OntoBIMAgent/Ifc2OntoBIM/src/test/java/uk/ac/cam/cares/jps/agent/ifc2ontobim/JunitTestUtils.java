@@ -42,8 +42,8 @@ public class JunitTestUtils {
 
     public static void doesExpectedListExist(List<String> expected, String result) {
         expected.forEach(statement -> {
-                    Matcher matcher = Pattern.compile(statement).matcher(result);
-                    assertTrue(matcher.find());
+            Matcher matcher = Pattern.compile(statement).matcher(result);
+            assertTrue(matcher.find());
         });
     }
 

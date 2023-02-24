@@ -67,8 +67,10 @@ class IfcSiteRepresentationTest {
         IfcSiteRepresentation sample = new IfcSiteRepresentation(testIri1, null);
         // Execute method
         sample.constructStatements(sampleSet);
-        // Clean up results to a string
-        assertEquals(0, sampleSet.size());
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedCommonStatements(), result);
     }
 
     @Test
@@ -81,7 +83,16 @@ class IfcSiteRepresentationTest {
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedCommonStatements(), result);
         JunitTestUtils.doesExpectedListExist(genExpectedStatements(), result);
+
+    }
+
+    private List<String> genExpectedCommonStatements() {
+        List<String> expected = new ArrayList<>();
+        expected.add(testBaseUri1 + "Site_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://w3id.org/bot#Site");
+        expected.add(testBaseUri1 + "Site_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + testIri1);
+        return expected;
     }
 
     private List<String> genExpectedStatements() {

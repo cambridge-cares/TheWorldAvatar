@@ -7,7 +7,6 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,10 +48,7 @@ class IfcSpatialZonesConstructBuilderTest {
         String query = new IfcSpatialZonesConstructBuilder().createSparqlQuery(builder, "ifc:IfcSite", "bim:IfcSiteRepresentation");
         // Check for statements specific to site
         List<String> expected = this.genExpectedResultsForSite();
-        expected.forEach(line -> {
-            System.out.println(line);
-            assertTrue(query.contains(line));
-        });
+        expected.forEach(line -> assertTrue(query.contains(line)));
     }
 
     @Test
@@ -73,7 +69,6 @@ class IfcSpatialZonesConstructBuilderTest {
                 .append("    ?element rdfs:label ?name .\n")
                 .append("    ?element bim:hasLocalPosition ?localplacement .\n")
                 .append("    ?localplacement rdf:type bim:LocalPlacement .\n")
-                .append("    ?zone bot:hasSpace ?element .\n")
                 .append("  }\n")
                 .append("WHERE\n")
                 .append("  { ?element  rdf:type  ifc:IfcSpace .\n")
@@ -81,11 +76,7 @@ class IfcSpatialZonesConstructBuilderTest {
                 .append("    ?element ifc:name_IfcRoot/express:hasString ?name .\n")
                 .append("    ?element  ifc:objectPlacement_IfcProduct  ?localplacement .\n")
                 .append("    ?localplacement\n")
-                .append("              rdf:type              ifc:IfcLocalPlacement .\n")
-                .append("    ?relaggregates\n")
-                .append("              rdf:type              ifc:IfcRelAggregates ;\n")
-                .append("              ifc:relatingObject_IfcRelDecomposes  ?zone ;\n")
-                .append("              ifc:relatedObjects_IfcRelDecomposes  ?element}\n");
+                .append("              rdf:type              ifc:IfcLocalPlacement");
         return expected.toString();
     }
 
@@ -93,7 +84,6 @@ class IfcSpatialZonesConstructBuilderTest {
         List<String> expected = new ArrayList<>();
         // Construct statements
         expected.add("?element rdf:type bim:IfcStoreyRepresentation .");
-        expected.add("?zone bot:hasStorey ?element .");
         // Where statements
         expected.add("?element  rdf:type  ifc:IfcBuildingStorey .");
         return expected;
@@ -104,7 +94,6 @@ class IfcSpatialZonesConstructBuilderTest {
         List<String> expected = new ArrayList<>();
         // Construct statements
         expected.add("?element rdf:type bim:IfcBuildingRepresentation .");
-        expected.add("?zone bot:hasBuilding ?element ");
         // Where statements
         expected.add("?element  rdf:type  ifc:IfcBuilding .");
         return expected;
