@@ -1,0 +1,16 @@
+{
+  "ServiceSpec": {
+    "Name": "SensorLoggerMobileAppAgent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "sensorloggermobileapp_agent:1.0.0"
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080",
+      "externalPath": "/sensor"
+    }
+  }
+}

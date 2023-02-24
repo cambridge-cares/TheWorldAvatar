@@ -1,0 +1,27 @@
+version: "3.8"
+
+networks:
+  stack:
+    # name: test
+    name: ${STACK_NAME}
+    driver: overlay
+    attachable: true
+
+services:
+  sensorloggermobileapp_agent:
+    networks:
+      - stack
+    image: sensorloggermobileapp_agent:1.0.0
+    build: .
+    container_name: sensorloggermobileapp_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - "10102:8080"
+
+    volumes:
+      - external_maven_repo_sensorloggermobileapp_agent:/root/.m2
+
+volumes:
+  external_maven_repo_sensorloggermobileapp_agent:
+    name: "external_maven_repo_sensorloggermobileapp_agent"

@@ -2,28 +2,27 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.cam.cares.jps</groupId>
-    <artifactId>java_agent_eg</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <artifactId>SensorLoggerMobileAppAgent</artifactId>
+    <version>1.0.0</version>
     <packaging>war</packaging>
 
-    <!-- Project properties -->
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Version of the JPS Base Library to use -->
-        <jps.base.version>1.30.0</jps.base.version>
+        <jps.base.version>1.31.0</jps.base.version>
     </properties>
+
 
     <!-- Parent POM -->
     <parent>
         <groupId>uk.ac.cam.cares.jps</groupId>
         <artifactId>jps-parent-pom</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>2.2.0</version>
     </parent>
 
     <!-- Profiles are used to switch between building for development and production
@@ -51,55 +50,47 @@
         </profile>
     </profiles>
 
+    <!-- Build settings -->
     <build>
-        <plugins>
 
-            <!-- Compile and build with Java 11 -->
+        <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.7.0</version>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
                 </configuration>
             </plugin>
 
-            <!-- Allows maven executions -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
-            </plugin>
 
-            <!-- Used to execute unit tests -->
+            <!-- Maven plugin for unit tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <!-- JUnit 5 requires Surefire version 2.22.0 or higher -->
                 <version>2.22.0</version>
             </plugin>
 
-            <!-- Used to build into a WAR file and ensures everything in ./WEB-INF
-            gets copied into the final WAR file's internal WEB-INF directory. -->
+            <!-- Maven plugin for packaging -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <!-- Version, configuration, and executions should be pulled from the
-                parent POM unless overridden here. -->
+                <version>3.3.1</version>
             </plugin>
 
             <!-- Downloads and extracts ZIP archives from Maven repository -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.2.0</version>
                 <!-- Version, configuration, and executions should be pulled from the
                 parent POM unless overridden here. -->
+
             </plugin>
 
         </plugins>
     </build>
-
     <!-- Dependencies -->
     <dependencies>
 
