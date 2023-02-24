@@ -253,19 +253,18 @@ bash ./stack.sh start KINGS-LYNN
 
 ## River Levels Agent
 
-> The following description refers to commit `03bdd20501a9901d390c76fdd3b298f6ea672c66` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
+> The following description refers to commit `d877c31d7a6a2cc642e861e041a3df170def24d4` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
 
 The [RiverLevelsAgent] (also referred to as *Flood Agent*) instantiates river level data from the [Environment Agency] into the KG. Details on building and deploying the agent are provided in its README and only summarised here: 
 
-* Building the agent requires both a `settings.xml` and `settings-security.xml` to be provided in the `docker/.m2` sub-repository of the agent to be able to download TWA packages from Github
-* Both the `datum.json` and `river_stations.csv` files provided in the [RiverLevelAgent input folder] here shall be copied over to the root directory of the agent (i.e. the location where the agent's `docker-compose.yml` file is located)
-* To deploy the agent to the spun up stack, simply run the following command to initialise the stations and start a scheduled update that downloads data from the API daily:
+* Building the agent requires two single-word text files `repo_username.txt` and `repo_password.txt` to be provided in the `docker/credentials` sub-repository of the agent (in order to be able to download TWA packages from Github)
+* Both the `datum.json` and `river_stations.csv` files provided in the [river_level_agent input folder] here shall be copied over to the root directory of the agent (i.e. the location where the agent's `docker-compose.yml` file is located)
+* To deploy the agent (using the pulled image) to the spun up stack, simply run the following command to initialise the stations and start a scheduled update that downloads data from the API daily:
     ```bash
     bash ./stack.sh start KINGS-LYNN
     ```
-```diff
-- Please note: The agent populates all station data into the default "kb" namespace of Blazegraph
-```
+* **Please note**: The Blazegraph namespace specified in the docker-compose file (i.e. `river_stations`) needs to be created beforehand in order for the agent to start up successfully.
+
 
 &nbsp;
 # Tracking instantiated building information
@@ -303,7 +302,7 @@ The `resources` folder contains an `instantiated_buildings.sparql` file which co
 <!-- Repositories -->
 [Utilities]: ../Utilities
 [UPRN Agent in batches]: ../Utilities/uprn_agent/run_uprn_agent_in_chunks.py
-[RiverLevelAgent input folder]: /StackDeployment/inputs/river_level_agent
+[river_level_agent input folder]: /StackDeployment/inputs/river_level_agent
 [Agent docker-compose file folder]: /StackDeployment/inputs/docker_compose_files
 
 <!-- Files -->
