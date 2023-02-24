@@ -9,11 +9,19 @@
         },
         {
             "class": "https://www.theworldavatar.com/kg/ontobuiltenv/Flat",
-            "metaFile": "BuildingsFlats.sparql"
+            "metaFile": "OntoBuiltEnvProperties.sparql"
         },
         {
             "class": "http://www.purl.org/oema/infrastructure/Building",
-            "metaFile": "BuildingsFlats.sparql"
+            "metaFile": "OntoBuiltEnvProperties.sparql"
+        },
+        {
+            "class": "https://www.theworldavatar.com/kg/ontobuiltenv/Property",
+            "metaFile": "OntoBuiltEnvProperties.sparql"
+        },
+        {
+            "class": "https://www.theworldavatar.com/kg/ontoflood/ArealExtentPolygon",
+            "metaFile": "FloodWarnings.sparql"
         }
     ]
 }
