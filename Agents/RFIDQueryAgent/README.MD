@@ -1,59 +1,58 @@
 # RFID Query Agent
 
 This agent is designed to query for the latest status of the RFID tags (In/Out) and determine whether the tagged object has been "Out" for longer
-than expected. If the tagged object has been "Out" for longer than expected, An email will be sent to the relevant personnel via the [EmailSender class in the JPS Base Lib](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/email/EmailSender.java). The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) from the JPS_BASE_LIB to interact with both the KG and database.
+than allowed. If the tagged object has been "Out" for longer than allowed, An email will be sent to the relevant personnel via the [EmailSender class in the JPS Base Lib](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/email/EmailSender.java). The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and [remote store client](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/query/RemoteStoreClient.java) from the JPS_BASE_LIB to interact with both the KG and database.
+
+If the tagged object is a chemical container that contains some chemical, the agent will query for the chemical species's label, check whether the species has GHS Hazard Statements and if so, query for the statements. These information will be added to the email content before it is sent to the relevant personnel.
 
 ## Usage 
-This part of the README describes the usage of the agent. The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. Sending the appropriate request to the correct URL will initiate the agent. Since it uses the time-series client which maintains both instances in a knowledge graph and a Postgres database to store the data, these will be required to be set-up before.  
+This part of the README describes the usage of the agent. The module itself can be packaged into an executable war, deployed as a web servlet on tomcat. Sending the appropriate request to the correct URL will initiate the agent. Since it uses the time-series client and remote store client to interact with the KG and database, the KG and database will be required to be set-up beforehand.  
 
 The [next section](#requirements) will explain the requirements to run the agent.
+
 ### Requirements
 1) It is required to have access to a knowledge graph SPARQL endpoint and Postgres database. These can run on the same machine or need to be accessible from the host machine via a fixed URL. This can be either in the form of a Docker container or natively running on a machine. It is not in the scope of this README to explain the set-up of a knowledge graph triple store or Postgres database.
 
 2) It is required to have the [Email Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/EmailAgent) set up beforehand.
 
-3) It is required to have some timeseries data that contains the status of the RFID tags (In/Out) already instantiated in the knowledge graph. One such agent that currently does that is the [RFID Update Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/RFIDUpdateAgent).
+3) It is required to have some timeseries data that contains the status of the RFID tags (In/Out) already instantiated in the knowledge graph via the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) One such agent that currently does this is the [RFID Update Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/RFIDUpdateAgent).
 
-4) If the tagged object is a chemical container that contain some chemicals, the tag, chemical container and the chemical it contains should be instantiated in the knowledge graph based on [OntoDevice](pending), [OntoLab](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontolab) and [OntoSpecies](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontospecies). An example of the instance can be found below:
+4) If the tagged object is a chemical container that contain some chemicals; the tag, chemical container, chemical it contains, chemical species label and the species's GHS Hazard Statements(if the species does have GHS Hazard Statements) should be instantiated in the knowledge graph based on several ontologies: [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice), [OntoLab](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontolab), [OntoSpecies](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontospecies), [OntoCAPE](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontocape), [OntoReaction](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoreaction) . An example of the instance can be found below:
 ```
 <http://www.theworldavatar.com/kb/ontodevice/RFIDSensor_01> a ontodevice:RFIDSensor;
-     ontodevice:observes <http://www.theworldavatar.com/kb/ontodevice/tag_01_status> .
+     ontodevice:observes <https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status_89c6626e-4eae-4e75-8d7e-502d5cf904b0> .
 
-<http://www.theworldavatar.com/kb/ontodevice/tag_01_status> a ontodevice:InOutStatus ;
-   ontodevice:isPropertyOf <http://www.theworldavatar.com/kb/ontodevice/tag_01> ;
-   ontodevice:isObservedBy <http://www.theworldavatar.com/kb/ontodevice/RFIDSensor_01> ;
-   ontodevice:hasQualitativeValue <https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status_89c6626e-4eae-4e75-8d7e-502d5cf904b0> .
-
-<https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status_89c6626e-4eae-4e75-8d7e-502d5cf904b0> a ontodevice:QualitativeValue .
+<https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status_89c6626e-4eae-4e75-8d7e-502d5cf904b0> a ontodevice:InOutState ;
+     ontotimeseries:hasTimeSeries <https://www.theworldavatar.com/kg/ontotimeseries/Timeseries_d2929ba8-84f5-4fe0-94b2-850c4b40e10a> .
 
 <http://www.theworldavatar.com/kb/ontodevice/tag_01> a ontodevice:PassiveRFIDTag ;
-   ontodevice:hasProperty <http://www.theworldavatar.com/kb/ontodevice/tag_01_status> ;
+   saref:hasState <https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status_89c6626e-4eae-4e75-8d7e-502d5cf904b0> ;
    ontodevice:isAttachedTo <http://www.theworldavatar.com/kb/ontolab/Bottle_01> .
 
 <http://www.theworldavatar.com/kb/ontolab/Bottle_01> a ontolab:ChemicalContainer ;
-   ontolab:isFilledWith <http://www.theworldavatar.com/kb/ontolab/Chemical_01> .
+   rdfs:label "chemical container 01" ;
+   ontolab:isFilledWith <http://www.theworldavatar.com/kb/ontolab/ChemicalAmount_01> .
 
-<http://www.theworldavatar.com/kb/ontolab/Chemical_01> a ontolab:Chemical ;
-   ontolab:fills <http://www.theworldavatar.com/kb/ontolab/Bottle_01> ;
-   ontoCAPE_CPS_Behavior:refersToMaterial <http://www.theworldavatar.com/kb/ontolab/Material_01> .
+<http://www.theworldavatar.com/kb/ontolab/ChemicalAmount_01> a ontolab:ChemicalAmount ;
+   ontoCAPE_CPS_Behavior:refersToMaterial <http://www.theworldavatar.com/kb/ontolab/Chemical_01> .
 
-<http://www.theworldavatar.com/kb/ontolab/Material_01> a ontoCAPE_CPS_Behavior:Material ;
-   ontoCAPE_Material:thermodynamicBehavior <http://www.theworldavatar.com/kb/ontolab/SolidPhase_01> .
+<http://www.theworldavatar.com/kb/ontolab/Chemical_01> a ontoreaction:Chemical ;
+   ontoCAPE_Material:thermodynamicBehavior <http://www.theworldavatar.com/kb/ontolab/Phase_01> .
 
-<http://www.theworldavatar.com/kb/ontolab/SolidPhase_01> a ontoCAPE_Phase_System:SinglePhase ;
+<http://www.theworldavatar.com/kb/ontolab/Phase_01> a ontoCAPE_Phase_System:SinglePhase ;
    ontoCAPE_System:isComposedOfSubsystem <http://www.theworldavatar.com/kb/ontolab/PhaseComponent_01> .
 
 <http://www.theworldavatar.com/kb/ontolab/PhaseComponent_01> a ontoCAPE_Phase_System:PhaseComponent ;
-   ontoCAPE_Phase_System:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060> .
+   ontoCAPE_Phase_System:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_92490f04-fc41-457a-baff-14480eae4d3e> .
 
-<http://www.theworldavatar.com/kb/ontospecies/Species_0a1489ff-c315-4607-93fc-b70b633bf060> a ontospecies:Species ;
-   ontospecies:hasMolecularFormula <http://www.theworldavatar.com/kb/ontospecies/MolecularFormula_0a1489ff-c315-4607-93fc-b70b633bf060> .
+<http://www.theworldavatar.com/kg/ontospecies/Species_92490f04-fc41-457a-baff-14480eae4d3e> a ontospecies:Species ;
+   rdfs:label "KNO3" ;
+   ontospecies:hasGHSHazardStatements <http://www.theworldavatar.com/kg/ontospecies/GHSHazardStatements_61ecccfe-2f04-44ac-a209-d6dc23e2dbe2> .
 
-<http://www.theworldavatar.com/kb/ontospecies/MolecularFormula_0a1489ff-c315-4607-93fc-b70b633bf060> a ontospecies:MolecularFormula ;
-   ontokin:hasElementNumber <http://www.theworldavatar.com/kb/ontospecies/ElementNumber_0a1489ff-c315-4607-93fc-b70b633bf060_Br> .
+<http://www.theworldavatar.com/kg/ontospecies/GHSHazardStatements_61ecccfe-2f04-44ac-a209-d6dc23e2dbe2> a ontospecies:GHSHazardStatements ;
+   rdfs:comment	"Causes skin irritation [Warning Skin corrosion/irritation]" ;
+   rdfs:label	"H315" .
 
-<http://www.theworldavatar.com/kb/ontospecies/ElementNumber_0a1489ff-c315-4607-93fc-b70b633bf060_Br> a ontokin:ElementNumber ;
-   ontokin:hasNumberOfElement 3 .
 ```
 
 ### Property file
@@ -104,32 +103,17 @@ The agent is reachable at "rfid-query-agent/retrieve" on localhost port 1021.
 
 #### Run the agent
 To run the agent, a POST request must be sent to http://localhost:1021/rfid-query-agent/retrieve with a correct JSON Object.
-There are two formats for the requests:
-
-If the tagged object does not contain a chemical:
+The request has this general format:
 ```
 POST http://localhost:1021/rfid-query-agent/retrieve
 Content-Type: application/json
-{dataIRIs":"iri_1,iri_2,iri_3","hours":"10","timeSeriesClientProperties":"CLIENT_PROPERTIES","containSpecies":"false"}
+{dataIRIs":"<iri_1>,<iri_2>,<iri_3>","hours":"<number of hours the tagged object is allowed to be "out" for>","timeSeriesClientProperties":"CLIENT_PROPERTIES","containSpecies":"<true or false for iri_1>,<true or false for iri_2>,<true or false for iri_3>","speciesProperties":"SPECIES_PROPERTIES"}
 ```
-The JSONObject should contain the data IRIs of the RFID tags status, each IRI should be separated by a "," (see example below), the number of hours that the tagged object is allowed to be "Out" for, the environment variable pointing to where the `client.properties` is located at (Default should be "CLIENT_PROPERTIES" as the `Dockerfile` automatically does this for you) and whether the tagged object contains a chemical.
+The JSONObject should contain the data IRIs of the RFID tags status where each IRI is separated by a "," , the number of hours that the tagged objects is allowed to be "Out" for, the environment variable pointing to where the `client.properties` is located at (Default should be "CLIENT_PROPERTIES" as the `Dockerfile` automatically does this for you), whether each of the tagged object contains a chemical (true or false), and the environment variable pointing to where the `species.properties` is located at (Default should be "SPECIES_PROPERTIES" as the `Dockerfile` automatically does this for you). 
 
-In curl syntax
+An example of the request in curl syntax
 ```
-curl -X POST --header "Content-Type: application/json" -d "{\"dataIRIs\":\"https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status_89c6626e-4eae-4e75-8d7e-502d5cf904b0,https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009726_status_9fdfa988-46c3-4402-bbcc-3d712234af6d\",\"hours\":\"1\",\"timeSeriesClientProperties\":\"CLIENT_PROPERTIES\",\"containSpecies\":\"false\"}" http://localhost:1021/rfid-query-agent/retrieve
-```
-
-If the tagged object contains a chemical:
-```
-POST http://localhost:1021/rfid-query-agent/retrieve
-Content-Type: application/json
-{dataIRIs":"iri_1,iri_2,iri_3","hours":"10","timeSeriesClientProperties":"CLIENT_PROPERTIES","containSpecies":"true","speciesProperties":"SPECIES_PROPERTIES"}
-```
-The JSONObject should contain the data IRIs of the RFID tags status, each IRI should be separated by a "," (see example below), the number of hours that the tagged object is allowed to be "Out" for, the environment variable pointing to where the `client.properties` is located at (Default should be "CLIENT_PROPERTIES" as the `Dockerfile` automatically does this for you), whether the tagged object contains a chemical and the environment variable pointing to where the `species.properties` is located at (Default should be "SPECIES_PROPERTIES" as the `Dockerfile` automatically does this for you). 
-
-In curl syntax
-```
-curl -X POST --header "Content-Type: application/json" -d "{\"dataIRIs\":\"https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status_89c6626e-4eae-4e75-8d7e-502d5cf904b0,https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009726_status_9fdfa988-46c3-4402-bbcc-3d712234af6d\",\"hours\":\"1\",\"timeSeriesClientProperties\":\"CLIENT_PROPERTIES\",\"containSpecies\":\"true\",\"speciesProperties\":\"SPECIES_PROPERTIES\"}" http://localhost:1021/rfid-query-agent/retrieve
+curl -X POST --header "Content-Type: application/json" -d "{\"dataIRIs\":\"https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status_89c6626e-4eae-4e75-8d7e-502d5cf904b0,https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009726_status_9fdfa988-46c3-4402-bbcc-3d712234af6d\",\"hours\":\"6\",\"timeSeriesClientProperties\":\"CLIENT_PROPERTIES\",\"containSpecies\":\"true,true\",\"speciesProperties\":\"SPECIES_PROPERTIES\"}" http://localhost:1021/rfid-query-agent/retrieve
 ```
 
 If the agent runs successfully, you should see a returned JSON Object depending on the following scenarios:
@@ -146,5 +130,20 @@ If the agent runs successfully, you should see a returned JSON Object depending 
 
 3) If tagged object is "Out" for longer than allowed.
 ```
-{"message":"POST request has been sent successfully.","Result":["Input agent object initialized.","Time series client object initialized.","Queried for latest RFID tag status and checked timestamp threshold.","Alert Email sent for <data IRI>"]}
+{"message":"POST request has been sent successfully.","Result":["Input agent object initialized.","Time series client object initialized.","Queried for latest RFID tag status and checked timestamp threshold.","Alert Email sent for <iri_1>","Alert Email sent for <iri_2>"]}
+```
+
+If the tagged object is "Out" for longer than allowed, an email will be sent with the following content:
+
+1) If tagged object is not a chemical container.
+```
+The tagged object has been removed since 2023-02-23T09:25:13Z. The object has the following label chemical container 02 and tag ID 00000000000000A000009726 . 
+```
+2) If tagged object is a chemical container containing a chemical with GHS Hazard Statements.
+```
+The chemical container with the following information has been removed since 2023-01-17T04:16:41Z. The container has the following label chemical container 01 and tag ID 00000000000000A000009727 and it is storing a chemical with the following label: KNO3. The chemical has the following GHS hazard statements: {H315:Causes skin irritation [Warning Skin corrosion/irritation]} . {H319:Causes serious eye irritation [Warning Serious eye damage/eye irritation]} . {H335:May cause respiratory irritation [Warning Specific target organ toxicity, single exposure; Respiratory tract irritation]} . {H272:May intensify fire; oxidizer [Danger Oxidizing liquids; Oxidizing solids]} . 
+```
+3) If tagged object is a chemical container containing a chemical without GHSHazardStatements.
+```
+The chemical container with the following information has been removed since 2023-01-17T04:16:41Z. The container has the following label chemical container 01 and tag ID 00000000000000A000009727 and it is storing a chemical with the following label: Hydrogen.
 ```
