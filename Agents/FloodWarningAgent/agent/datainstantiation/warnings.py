@@ -80,7 +80,7 @@ def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT,
         warnings_to_update = [w for w in warning_uris if w in warnings_kg]
         warnings_to_update = [w for w in warnings_to_update if warnings_kg.get(w) < last_altered.get(w)]
         # ... to be deleted (i.e. not active anymore)
-        warnings_to_deleted = [w for w in warnings_kg if w not in warning_uris]
+        warnings_to_delete = [w for w in warnings_kg if w not in warning_uris]
 
         # 4) Instantiate missing flood areas and warnings
         if warnings_to_instantiate or areas_to_instantiate:
@@ -100,10 +100,10 @@ def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT,
             print('Updating finished.')
 
         # 6) Delete inactive flood warnings
-        if warnings_to_deleted:
+        if warnings_to_delete:
             print('Deleting inactive flood warnings ...')
             deleted_warnings = \
-                delete_instantiated_flood_warnings(warnings_to_deleted, kgclient=kg_client)
+                delete_instantiated_flood_warnings(warnings_to_delete, kgclient=kg_client)
             print('Deleting finished.')
 
         # Print update summary 
@@ -375,7 +375,11 @@ def update_instantiated_flood_warnings(warnings_to_update: list, warnings_data_a
         query = get_associated_flood_area(data['warning_uri'])
         res = kgclient.performQuery(query)
         # Unwrap results
-        area = [r['area_iri'] for r in res][0]
+        try:
+            area = [r['area_iri'] for r in res][0]
+        except Exception as ex:
+            logger.error('No associated flood area IRI could be retrieved for warning: {}.'.format(data['warning_uri']))
+            raise RuntimeError('No associated flood area IRI could be retrieved for warning: {}.'.format(data['warning_uri'])) from ex  
 
         # Update current severity level for flood area (to allow better styling)
         num_rows = postgis_client.set_flood_area_severity(severity=SEVERITY_LEVELS[data['severity'].lower()],
@@ -414,7 +418,11 @@ def delete_instantiated_flood_warnings(warnings_to_delete: list, query_endpoint=
         query = get_associated_flood_area(warning)
         res = kgclient.performQuery(query)
         # Unwrap results
-        area = [r['area_iri'] for r in res][0]
+        try:
+            area = [r['area_iri'] for r in res][0]
+        except Exception as ex:
+            logger.error('No associated flood area IRI could be retrieved for warning: {}.'.format(warning))
+            raise RuntimeError('No associated flood area IRI could be retrieved for warning: {}.'.format(warning)) from ex         
 
         # Create SPARQL delete query
         query = delete_flood_warning(warning)

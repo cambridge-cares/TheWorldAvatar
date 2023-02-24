@@ -28,6 +28,7 @@ WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
 COPY ./resources/ontop.obda ./resources/ontop.obda
+# Add JDBC driver to allow for retrieval of JDBC connection properties from PostGIS client
 ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 
 # Install Python package and the required libraries
@@ -69,6 +70,6 @@ COPY ./agent ./agent
 
 # Set the entrypoint
 # timeout set to 30 min to avoid exceptions for longer API/KG calls
-ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "agent.flaskapp:create_app()" --timeout 1800
+ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "agent.flaskapp.wsgi:app" --timeout 1800
 
 #==================================================================================================
