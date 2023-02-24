@@ -91,11 +91,6 @@ public class RFIDQueryBuilder {
     private static final Iri comment = PREFIX_RDFS.iri("comment");
 
     /**
-     * Classes
-     */ 
-	// private static final Iri MolecularFormula = PREFIX_ONTOSPECIES.iri("MolecularFormula");
-
-    /**
      * Standard constructor
      * @param filepath1 The filepath that contains the sparql endpoints of where the tag status data IRI is located in.
      * @param filepath2 The filepath that contains the sparql endpoints of where the chemical information is located at. 
@@ -272,7 +267,7 @@ public class RFIDQueryBuilder {
         return result;
     }
 
-    //SELECT ?Species WHERE { ?PhaseComponent ontoCAPE_Phase_System:representsOccurenceOf ?Species }
+    //SELECT ?Species WHERE { <IRIString> ontoCAPE_Phase_System:representsOccurenceOf ?Species }
     public String queryForSpeciesWithRepresentsOccurenceOf(String IRIString) {
         String result = null;
         Variable species = SparqlBuilder.var("species");
