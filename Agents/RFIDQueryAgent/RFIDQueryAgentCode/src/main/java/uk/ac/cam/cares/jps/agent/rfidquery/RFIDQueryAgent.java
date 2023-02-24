@@ -198,7 +198,7 @@ public class RFIDQueryAgent{
             try {
                 EmailSender sender = new EmailSender();
                 String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp.toString() + ". \n The container has the following tag ID " + tagID.split("_")[2] + " and it is storing a chemical with the following label: " + label + ". The chemical has the following GHS hazard statements: ";
-                for (int i = 0; i < map.get("label").size() - 1; i++) {
+                for (int i = 0; i <= map.get("label").size() - 1; i++) {
                     LOGGER.info("The label from the map is " + map.get("label").get(i));
                     LOGGER.info("The comment from the map is " + map.get("comment").get(i));
                     emailMessages = emailMessages.concat("{" + map.get("label").get(i) + ":" + map.get("comment").get(i) + "} . ");
