@@ -1,0 +1,14 @@
+version: '3.4'
+
+services:
+  jpsvirtualsensor:
+    image: jpsvirtualsensor
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      JAVA_OPTS: -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005,quiet=y
+    ports:
+      - 8084:8084
+      - 5005:5005
+      - 5005:5005

@@ -1,5 +1,6 @@
 package com.cmclinnovations.aermod;
 
+import com.hp.hpl.jena.ontology.Individual;
 import org.eclipse.rdf4j.model.vocabulary.GEOF;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
@@ -12,6 +13,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.json.JSONArray;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
@@ -26,6 +28,7 @@ import com.cmclinnovations.aermod.objects.WeatherData;
 
 import it.unibz.inf.ontop.model.vocabulary.GEO;
 import uk.ac.cam.cares.jps.base.derivation.DerivationSparql;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
@@ -458,7 +461,7 @@ public class QueryClient {
         }
     }
 
-    /*  SPARQL queries for buildings class
+    /*  SPARQL queries for buildings class */
 
     public static JSONArray StackQuery (String StackQueryIRI) {
 
@@ -528,9 +531,6 @@ public class QueryClient {
 
         return GeometricQueryResult;
     }
-
-
-*/
 
 
 
