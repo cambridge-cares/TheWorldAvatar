@@ -12,6 +12,11 @@ services:
     networks:
       - stack
     image: sensorloggermobileapp_agent:1.0.0
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
     build: .
     container_name: sensorloggermobileapp_agent
     environment:
