@@ -138,6 +138,9 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 	return validate;
     }
     
+	 /**
+     * @param args A String[] {timeseriesDataClientProperties, DataIRIs, numOfHours, speciesProperties, containSpecies}
+     */
     public JSONObject initializeAgent(String[] args) {
     	 // Ensure that there are five arguments provided
         if (args.length != 5) {
@@ -198,11 +201,9 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 			throw new JPSRuntimeException(GETLATESTSTATUSANDCHECKTHRESHOLD_ERROR_MSG ,e);
 		}
 
-		/**
-		 * loop through results to get data IRI, exceedThreshold, timestamp
-		 * If exceedThreshold is true, query for chemical species info
-		 * Run sendEmail with tag ID, chemical species info
-		 */
+		
+		//loop through results to get data IRI, exceedThreshold, timestamp
+		
 		for (int i = 0; i <= overallResults.length() - 1; i++){
 			JSONObject a = overallResults.getJSONObject("iri_"+i);
 			String timestamp = a.getString("timestamp");
@@ -210,8 +211,6 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 			String dataIRI = a.getString("dataIRI");
 
 			LOGGER.info("exceedThreshold for " + dataIRI + " is " + exceedThreshold);
-
-			
 
 			if (exceedThreshold == true && args.length > 3 && args[4].split(",")[i].contains("true")){
 				LOGGER.info("Beginning queries...");
@@ -264,6 +263,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 
 				//query for the label and comment of each hazard statement IRI and put them in a hash map
 				Map<String, List<String>> map = builder.queryForLabelAndCommentForGHSHazardStatements(GHSHazardStatements);
+				
 				LOGGER.info("Preparing to send email...");
 				agent.sendEmail(dataIRI, objectLabel, speciesLabel, timestamp, map);
 				LOGGER.info("Alert Email sent for " + dataIRI);
