@@ -58,7 +58,7 @@ The [next section](#requirements) will explain the requirements to run the agent
 ### Property file
 For running the agent, one or two property files is required depending on whether your tagged object is a chemical container:
 - One [property file for the time-series client](#time-series-client-properties) defining how to access the database and SPARQL endpoint.
-- One [property file for chemical species](#species-properties) defining how to access the sparql endpoints that contains the chemical species information.
+- One [property file for chemical species](#species-properties) defining how to access the SPARQL endpoints that contains the chemical species information.
 
 #### Time-series client properties
 The time-series client properties file needs to contain all credentials and endpoints to access the SPARQL endpoint of the knowledge graph and the Postgres database. It should contain the following keys:
@@ -133,7 +133,7 @@ If the agent runs successfully, you should see a returned JSON Object depending 
 {"message":"POST request has been sent successfully.","Result":["Input agent object initialized.","Time series client object initialized.","Queried for latest RFID tag status and checked timestamp threshold.","Alert Email sent for <iri_1>","Alert Email sent for <iri_2>"]}
 ```
 
-If the tagged object is "Out" for longer than allowed, an email will be sent with the following content:
+If the tagged object is "Out" for longer than allowed, the email content sent will be different depending on the scenarios mentioned below. Some examples of the email content can be found below:
 
 1) If tagged object is not a chemical container.
 ```
