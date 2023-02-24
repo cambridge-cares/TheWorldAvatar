@@ -242,6 +242,10 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				String chemicalIRI = builder.queryForChemicalWithRefersToMaterial(chemicalAmountIRI);
 				LOGGER.info("The material IRI retrieved is " + chemicalIRI);
 
+				String speciesIRI;
+				if (builder.queryForChemicalComponentWithIntrinsicCharacteristics(chemicalIRI) != null){
+					speciesIRI = builder.queryForChemicalComponentWithIntrinsicCharacteristics(chemicalIRI);
+				} else {
 				//query for phase IRI with chemical IRI via ontocape_material:thermodynamicBehavior
 				String phaseIRI = builder.queryForPhaseWithThermodynamicBehavior(chemicalIRI);
 				LOGGER.info("The phase IRI retrieved is " + phaseIRI);
@@ -251,8 +255,9 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				LOGGER.info("The phase component IRI retrieved is " + phaseComponentIRI);
 
 				//query for species IRI with phase component IRI via ontocape_phase_system:representsOccurenceOf
-				String speciesIRI = builder.queryForSpeciesWithRepresentsOccurenceOf(phaseComponentIRI);
+				speciesIRI = builder.queryForSpeciesWithRepresentsOccurenceOf(phaseComponentIRI);
 				LOGGER.info("The species IRI retrieved is " + speciesIRI);
+				}
 
 				//query for species label via rdfs:label
 				String speciesLabel = builder.queryForSpeciesLabel(speciesIRI);

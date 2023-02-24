@@ -48,7 +48,7 @@ public class RFIDQueryBuilder {
     private static final String GETPHASECOMPONENT_ERROR_MSG = "Unable to query for phase component IRI!" ;
     private static final String GETSPECIES_ERROR_MSG = "Unable to query for species IRI!" ;
     private static final String GETLABEL_ERROR_MSG = "Unable to query for label via rdfs:label!";
-    private static final String GETGHSHAZARDSTATEMENTS_ERROR_MSG = "Unable to query for GHS Hazard Statements!";
+    private static final String GETCHEMICALCOMPONENT_ERROR_MSG = "Unable to query for chemical component IRI!";
     private static final String GETSTATEMENTLABELANDCOMMENT_ERROR_MSG = "Unable to query for GHS Hazard Statements labels and comments!";
     /**
      * Namespaces for ontologies
@@ -59,6 +59,7 @@ public class RFIDQueryBuilder {
     public static final String ONTOCAPE_PHASE_SYSTEM_NS = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#";
     public static final String ONTOCAPE_MATERIAL_NS = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#";
     public static final String ONTOCAPE_SYSTEM_NS = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#";
+    public static final String ONTOCAPE_CPS_SUBSTANCE = "http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#";
     public static final String ONTOSPECIES_NS = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#";
     public static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
     public static final String SAREF_NS = "https://saref.etsi.org/core/";
@@ -72,6 +73,7 @@ public class RFIDQueryBuilder {
     private static final Prefix PREFIX_ONTOCAPE_PHASE_SYSTEM = SparqlBuilder.prefix("ontocape_cps_phase_system", iri(ONTOCAPE_PHASE_SYSTEM_NS));
     private static final Prefix PREFIX_ONTOCAPE_MATERIAL = SparqlBuilder.prefix("ontocape_material", iri(ONTOCAPE_MATERIAL_NS));
     private static final Prefix PREFIX_ONTOCAPE_SYSTEM = SparqlBuilder.prefix("ontocape_system", iri(ONTOCAPE_SYSTEM_NS));
+    private static final Prefix PREFIX_ONTOCAPE_CPS_SUBSTANCE = SparqlBuilder.prefix("ontocape_cps_substance", iri(ONTOCAPE_CPS_SUBSTANCE));
     private static final Prefix PREFIX_ONTOSPECIES = SparqlBuilder.prefix("ontospecies", iri(ONTOSPECIES_NS));
     private static final Prefix PREFIX_RDFS = SparqlBuilder.prefix("rdfs", iri(RDFS_NS));
     private static final Prefix PREFIX_SAREF = SparqlBuilder.prefix("saref", iri(SAREF_NS));
@@ -89,6 +91,14 @@ public class RFIDQueryBuilder {
     private static final Iri hasState = PREFIX_SAREF.iri("hasState");
     private static final Iri hasGHSHazardStatement = PREFIX_ONTOSPECIES.iri("hasGHSHazardStatements");
     private static final Iri comment = PREFIX_RDFS.iri("comment");
+    private static final Iri intrinsicCharacteristics = PREFIX_ONTOCAPE_MATERIAL.iri("intrinsicCharacteristics");
+    private static final Iri containsDirectly = PREFIX_ONTOCAPE_SYSTEM.iri("containsDirectly");
+    /**
+     * Classes
+     */
+    private static final Iri multiPhaseSystem = PREFIX_ONTOCAPE_PHASE_SYSTEM.iri("MultiphaseSystem");
+    private static final Iri singlePhase = PREFIX_ONTOCAPE_PHASE_SYSTEM.iri("SinglePhase");
+    private static final Iri mixture = PREFIX_ONTOCAPE_CPS_SUBSTANCE.iri("Mixture");
 
     /**
      * Standard constructor
@@ -246,20 +256,53 @@ public class RFIDQueryBuilder {
         return result;
     }
 
-    //SELECT ?phaseComponent WHERE { <IRIString> ontoCAPE_System:isComposedOfSubsystem ?phaseComponent }
+
+
+    //Check whether <IRIString> rdf:type ontoCAPE_System:MultiphaseSystem, if so
+    //SELECT ?phaseComponent WHERE { <IRIString> ontoCAPE_System:isComposedOfSubsystem ?singlePhase .
+    //                               ?singlePhase ontoCAPE_System:isComposedOfSubsystem ?phaseComponent . }
+    // else
+    //SELECT ?phaseComponent WHERE {<IRIString> ontoCAPE_System:isComposedOfSubsystem ?phaseComponent }
     public String queryForPhaseComponentWithIsComposedOfSubsystem(String IRIString) {
         String result = null;
-        Variable phaseComponent = SparqlBuilder.var("phaseComponent");
+        Variable variable = SparqlBuilder.var("variable");
         SelectQuery query = Queries.SELECT();
         //create triple pattern
-        TriplePattern queryPattern = iri(IRIString).has(isComposedOfSubsystem, phaseComponent);
-        query.prefix(PREFIX_ONTOCAPE_SYSTEM).select(phaseComponent).where(queryPattern);
+        TriplePattern queryPattern = iri(IRIString).isA(variable);
+        query.prefix(PREFIX_ONTOCAPE_SYSTEM).select(variable).where(queryPattern);
         kbClient1.setQuery(query.getQueryString());
         try {
         JSONArray queryResult = kbClient1.executeQuery();
-        if(!queryResult.isEmpty()){
-            LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
-            result = kbClient1.executeQuery().getJSONObject(0).getString("phaseComponent");
+        if(queryResult.getJSONObject(0).getString("variable").contains("MultiphaseSystem")){
+            Variable singlePhase = SparqlBuilder.var("singlePhase");
+            TriplePattern queryPattern3 = iri(IRIString).has(isComposedOfSubsystem, singlePhase);
+            Variable phaseComponent = SparqlBuilder.var("phaseComponent");
+            TriplePattern queryPattern4 = singlePhase.has(isComposedOfSubsystem, phaseComponent);
+            query.prefix(PREFIX_ONTOCAPE_SYSTEM).select(phaseComponent).where(queryPattern3, queryPattern4);
+            kbClient1.setQuery(query.getQueryString());
+            try {
+                queryResult = kbClient1.executeQuery();
+                if(!queryResult.isEmpty()){
+                    LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
+                    result = kbClient1.executeQuery().getJSONObject(0).getString("phaseComponent");
+                }
+            } catch (Exception e) {
+                throw new JPSRuntimeException(GETPHASECOMPONENT_ERROR_MSG);
+            }
+        } else {
+            Variable phaseComponent = SparqlBuilder.var("phaseComponent");
+            TriplePattern queryPattern5 = iri(IRIString).has(isComposedOfSubsystem, phaseComponent);
+            query.prefix(PREFIX_ONTOCAPE_SYSTEM).select(phaseComponent).where(queryPattern5);
+            kbClient1.setQuery(query.getQueryString());
+            try {
+                queryResult = kbClient1.executeQuery();
+                if(!queryResult.isEmpty()){
+                    LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
+                    result = kbClient1.executeQuery().getJSONObject(0).getString("phaseComponent");
+                }
+            } catch (Exception e) {
+                throw new JPSRuntimeException(GETPHASECOMPONENT_ERROR_MSG);
+            }
         }
     } catch (Exception e) {
         throw new JPSRuntimeException(GETPHASECOMPONENT_ERROR_MSG);
@@ -309,16 +352,16 @@ public class RFIDQueryBuilder {
         return result;
     }
 
-        //SELECT ?label WHERE { <IRIString> rdfs:label ?Label }
-        public String queryForTaggedObjectLabel(String IRIString) {
-            String result = null;
-            Variable taggedObjectLabel = SparqlBuilder.var("label");
-            SelectQuery query = Queries.SELECT();
-            //create triple pattern
-            TriplePattern queryPattern = iri(IRIString).has(label, taggedObjectLabel);
-            query.prefix(PREFIX_RDFS).select(taggedObjectLabel).where(queryPattern);
-            kbClient1.setQuery(query.getQueryString());
-            try {
+    //SELECT ?label WHERE { <IRIString> rdfs:label ?Label }
+    public String queryForTaggedObjectLabel(String IRIString) {
+        String result = null;
+        Variable taggedObjectLabel = SparqlBuilder.var("label");
+        SelectQuery query = Queries.SELECT();
+        //create triple pattern
+        TriplePattern queryPattern = iri(IRIString).has(label, taggedObjectLabel);
+        query.prefix(PREFIX_RDFS).select(taggedObjectLabel).where(queryPattern);
+        kbClient1.setQuery(query.getQueryString());
+        try {
             JSONArray queryResult = kbClient1.executeQuery();
             if(!queryResult.isEmpty()){
                 LOGGER.info(kbClient1.executeQuery());
@@ -327,8 +370,57 @@ public class RFIDQueryBuilder {
         } catch (Exception e) {
             throw new JPSRuntimeException(GETLABEL_ERROR_MSG, e);
         }
-            return result;
+        return result;
+    }
+
+    //SELECT ?substance WHERE {<IRIString> ontoCAPE_Material:intrinsicCharacteristics ?substance}
+    public String queryForChemicalComponentWithIntrinsicCharacteristics(String IRIString) {
+        Variable substance = SparqlBuilder.var("substance");
+        JSONArray queryResult;
+        String chemicalComponent;
+        SelectQuery query = Queries.SELECT();
+        //create triple pattern
+        TriplePattern queryPattern = iri(IRIString).has(intrinsicCharacteristics, substance);
+        query.prefix(PREFIX_ONTOCAPE_MATERIAL).select(substance).where(queryPattern);
+        kbClient1.setQuery(query.getQueryString());
+        queryResult = kbClient1.executeQuery();
+        if(queryResult.isEmpty()){
+            chemicalComponent = null;
+        } else {
+            String a = queryResult.getJSONObject(0).getString("substance");
+            Variable variable = SparqlBuilder.var("variable");
+            //create triple pattern
+            TriplePattern queryPattern1 = iri(a).isA(variable);
+            query.prefix(PREFIX_ONTOCAPE_MATERIAL).select(variable).where(queryPattern1);
+            kbClient1.setQuery(query.getQueryString());
+            queryResult = kbClient1.executeQuery();
+            if(queryResult.getJSONObject(0).getString("variable").contains("Mixture")){
+                chemicalComponent = queryForChemicalComponentWithContainsDirectly(a);
+            } else {
+                chemicalComponent = a;
+            }
         }
+        return chemicalComponent;
+    }
+    
+    public String queryForChemicalComponentWithContainsDirectly(String IRIString) {
+        SelectQuery query = Queries.SELECT();
+        String result = null;
+        Variable chemicalComponent = SparqlBuilder.var("chemicalComponent");
+        TriplePattern queryPattern = iri(IRIString).has(containsDirectly, chemicalComponent);
+        query.prefix(PREFIX_ONTOCAPE_SYSTEM).select(chemicalComponent).where(queryPattern);
+        kbClient1.setQuery(query.getQueryString());
+        try {
+            JSONArray queryResult = kbClient1.executeQuery();
+            if(!queryResult.isEmpty()){
+                LOGGER.info(kbClient1.executeQuery());
+                result = kbClient1.executeQuery().getJSONObject(0).getString("chemicalComponent");
+            } 
+        } catch (Exception e) {
+            throw new JPSRuntimeException(GETCHEMICALCOMPONENT_ERROR_MSG, e);
+        }
+        return result;
+    }
 
     //SELECT ?GHSHazardStatements WHERE {<IRIString> ontospecies:hasGHSHazardStatements ?GHSHazardStatements}
     public JSONArray queryForGHSHazardStatements(String IRIString) {
