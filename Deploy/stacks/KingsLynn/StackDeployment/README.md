@@ -97,7 +97,9 @@ The following steps explain how to upload the data to the stack using the [Stack
 
 
 &nbsp;
-# Building instantiation workflow
+# Data instantiation workflow
+
+The following provides an overview of all steps and agents required to instantiate the data into the KG. Copies of the (potentially) required `docker-compose.yml` files are provided in the [Agent docker-compose file folder] for convenience and reproducibility.
 
 ## 1) Geospatial data consolidation (QGIS, *manual*)
 
@@ -210,7 +212,7 @@ As the agent tends to fail when processing an entire namespace on particular mac
 
 ## 4.4) Building Matching Agent
 
-> The following description refers to commit `7adc29459a2661f9fb7ad267d9f111d3d537249a` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
+> The following description refers to commit `8cb656055ea74410ef3c4c0764a6c0a80efc38ff` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
 
 The Building Matching Agent links buildings instantiated according to OntoBuiltEnv using the EPC Agent with their OntoCityGml representations. General details on how to use the agent can be found in the [Building Matching Readme]; however, all relevant steps are also described in section 3.4. in the [EPC Agent README]. The following request shall match buildings in the `ocgml` and `buildings` namespace:
 
@@ -301,8 +303,9 @@ The `resources` folder contains an `instantiated_buildings.sparql` file which co
 <!-- Repositories -->
 [Utilities]: ../Utilities
 [UPRN Agent in batches]: ../Utilities/uprn_agent/run_uprn_agent_in_chunks.py
-[RiverLevelAgent input folder]: /StackDeployment/inputs/RiverLevelAgent
+[RiverLevelAgent input folder]: /StackDeployment/inputs/river_level_agent
+[Agent docker-compose file folder]: /StackDeployment/inputs/docker_compose_files
 
 <!-- Files -->
-[routing.json]: /StackDeployment\inputs\AccessAgent\routing.json
+[routing.json]: /StackDeployment/inputs/access_agent/routing.json
 [CKG config.properties]: https://github.com/cambridge-cares/CitiesKG/blob/develop/agents/src/main/resources/config.properties
