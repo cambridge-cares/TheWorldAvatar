@@ -83,7 +83,6 @@ public class RFIDQueryBuilder {
 	/**
      * Relationships
      */ 
-	private static final Iri hasQualitativeValue = PREFIX_ONTODEVICE.iri("hasQualitativeValue");
 	private static final Iri isAttachedTo = PREFIX_ONTODEVICE.iri("isAttachedTo");
 	private static final Iri isFilledWith = PREFIX_ONTOLAB.iri("isFilledWith");
 	private static final Iri refersToMaterial = PREFIX_ONTOCAPE_CPS_BEHAVIOR.iri("refersToMaterial");
@@ -149,27 +148,6 @@ public class RFIDQueryBuilder {
                 throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_update_endpoint>\"");
             }
         }
-    }
-
-    //SELECT ?quality WHERE { ?state ontodevice:hasQualitativeValue <data IRI or ontodevice:QualitativeValue> }
-    public String queryForStateWithHasQualitativeValue(String dataIRIString) {
-        String result = null;
-        Variable state = SparqlBuilder.var("state");
-        SelectQuery query = Queries.SELECT();
-        //create triple pattern
-        TriplePattern queryPattern = state.has(hasQualitativeValue, iri(dataIRIString));
-        query.prefix(PREFIX_ONTODEVICE).select(state).where(queryPattern);
-        kbClient1.setQuery(query.getQueryString());
-        try {
-        JSONArray queryResult = kbClient1.executeQuery();
-		if(!queryResult.isEmpty()){
-            LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
-			result = kbClient1.executeQuery().getJSONObject(0).getString("state");
-		}
-    } catch (Exception e){
-        throw new JPSRuntimeException(GETSTATE_ERROR_MSG);
-    }
-		return result;
     }
     
     //SELECT ?tag WHERE { ?tag saref:hasState <IRIString> }

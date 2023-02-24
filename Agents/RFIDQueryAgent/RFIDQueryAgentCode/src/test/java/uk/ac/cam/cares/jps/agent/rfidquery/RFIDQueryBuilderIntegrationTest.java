@@ -32,8 +32,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 
 @Ignore("Requires both triple store endpoint set up and running (using testcontainers)\n" +
         "Requires Docker to run the tests. When on Windows, WSL2 as backend is required to ensure proper execution.")
-     
-
+   
 @Testcontainers
 public class RFIDQueryBuilderIntegrationTest {
 
@@ -163,31 +162,6 @@ public class RFIDQueryBuilderIntegrationTest {
     public void stopContainers() {
         if (blazegraph.isRunning()) {
             blazegraph.stop();
-        }
-    }
-    
-    @Test
-    public void queryQualitySuccessAndFail() throws IOException {
-        String IRI = builder.queryForStateWithHasQualitativeValue("https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status_89c6626e-4eae-4e75-8d7e-502d5cf904b0");
-        Assert.assertEquals("http://www.theworldavatar.com/kb/ontodevice/tag_01_status", IRI);
-
-        //provide invalid data IRI
-        try {
-            IRI = builder.queryForStateWithHasQualitativeValue("https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status");
-        } catch (Exception e) {
-            Assert.assertEquals("Unable to query for state IRI!", e.getMessage());
-        }
-
-        //remove hasQualitativeValue link between Quality and QualitativeValue
-        TriplePattern Pattern = state.has(hasQualitativeValue, qualitativeValue);
-        DeleteDataQuery delete = Queries.DELETE_DATA(Pattern);
-        delete.prefix(PREFIX_ONTODEVICE);
-        kbClient.executeUpdate(delete.getQueryString());
-
-        try {
-            IRI = builder.queryForStateWithHasQualitativeValue("https://www.theworldavatar.com/kg/ontotimeseries/rfid_tag_00000000000000A000009727_status");
-        } catch (Exception e) {
-            Assert.assertEquals("Unable to query for state IRI!", e.getMessage());
         }
     }
 

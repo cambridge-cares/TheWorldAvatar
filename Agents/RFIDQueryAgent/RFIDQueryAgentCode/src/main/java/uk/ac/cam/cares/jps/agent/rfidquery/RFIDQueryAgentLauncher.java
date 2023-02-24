@@ -219,12 +219,8 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 					throw new JPSRuntimeException(LOADCONFIGS_ERROR_MSG, e);
 				}
 
-				//query for state IRI that ontodevice:hasQualitativeValue <data IRI>
-				String stateIRI = builder.queryForStateWithHasQualitativeValue(dataIRI);
-				LOGGER.info("The subject retrieved is " + stateIRI);
-
 				//query for tag IRI with state IRI via saref:hasState
-				String tagIRI = builder.queryForTagWithStateIRI(stateIRI);
+				String tagIRI = builder.queryForTagWithStateIRI(dataIRI);
 				LOGGER.info("The tag IRI retrieved is " + tagIRI);
 
 				//query for bottle IRI with tag IRI via ontodevice:isAttachedTo
