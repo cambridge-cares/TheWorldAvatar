@@ -40,17 +40,13 @@ public class RFIDQueryBuilder {
     /**
      * Log messages
      */
-    private static final String GETSTATE_ERROR_MSG = "Unable to query for state IRI!" ;
     private static final String GETTAG_ERROR_MSG = "Unable to query for tag IRI!" ;
-    private static final String GETBOTTLE_ERROR_MSG = "Unable to query for bottle IRI!" ;
+    private static final String GETTAGGEDOBJECT_ERROR_MSG = "Unable to query for tagged object IRI!" ;
     private static final String GETCHEMICALAMOUNT_ERROR_MSG = "Unable to query for chemical amount IRI!" ;
     private static final String GETCHEMICAL_ERROR_MSG = "Unable to query for chemical IRI!" ;
     private static final String GETPHASE_ERROR_MSG = "Unable to query for phase IRI!" ;
     private static final String GETPHASECOMPONENT_ERROR_MSG = "Unable to query for phase component IRI!" ;
     private static final String GETSPECIES_ERROR_MSG = "Unable to query for species IRI!" ;
-    private static final String GETMOLECULARFORMULA_ERROR_MSG = "Unable to query for molecular formula IRI!" ;
-    private static final String GETELEMENTNUMBER_ERROR_MSG = "Unable to query for element number IRI!" ;
-    private static final String GETNUMBEROFELEMENT_ERROR_MSG = "Unable to query for number of elements!" ;
     private static final String GETLABEL_ERROR_MSG = "Unable to query for label via rdfs:label!";
     private static final String GETGHSHAZARDSTATEMENTS_ERROR_MSG = "Unable to query for GHS Hazard Statements!";
     private static final String GETSTATEMENTLABELANDCOMMENT_ERROR_MSG = "Unable to query for GHS Hazard Statements labels and comments!";
@@ -171,23 +167,23 @@ public class RFIDQueryBuilder {
         return result;
     }
     
-    //SELECT ?Bottle WHERE { <IRIString> ontodevice:isAttachedTo ?Bottle }
-    public String queryForBottleWithIsAttachedTo(String IRIString) {
+    //SELECT ?TaggedObject WHERE { <IRIString> ontodevice:isAttachedTo ?TaggedObject }
+    public String queryForTaggedObjectWithIsAttachedTo(String IRIString) {
         String result = null;
-        Variable bottle = SparqlBuilder.var("bottle");
+        Variable taggedObject = SparqlBuilder.var("taggedObject");
         SelectQuery query = Queries.SELECT();
         //create triple pattern
-        TriplePattern queryPattern = iri(IRIString).has(isAttachedTo, bottle);
-        query.prefix(PREFIX_ONTODEVICE).select(bottle).where(queryPattern);
+        TriplePattern queryPattern = iri(IRIString).has(isAttachedTo, taggedObject);
+        query.prefix(PREFIX_ONTODEVICE).select(taggedObject).where(queryPattern);
         kbClient1.setQuery(query.getQueryString());
         try {
         JSONArray queryResult = kbClient1.executeQuery();
         if(!queryResult.isEmpty()){
             LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
-            result = kbClient1.executeQuery().getJSONObject(0).getString("bottle");
+            result = kbClient1.executeQuery().getJSONObject(0).getString("taggedObject");
         }
     } catch (Exception e) {
-        throw new JPSRuntimeException(GETBOTTLE_ERROR_MSG);
+        throw new JPSRuntimeException(GETTAGGEDOBJECT_ERROR_MSG);
     }
         return result;
     }
@@ -298,7 +294,7 @@ public class RFIDQueryBuilder {
     }
 
     //SELECT ?label WHERE { <IRIString> rdfs:label ?label }
-    public String queryForLabel(String IRIString) {
+    public String queryForSpeciesLabel(String IRIString) {
         String result = null;
         Variable labelOfChemicalSpecies = SparqlBuilder.var("label");
         SelectQuery query = Queries.SELECT();
@@ -317,6 +313,27 @@ public class RFIDQueryBuilder {
     }
         return result;
     }
+
+        //SELECT ?label WHERE { <IRIString> rdfs:label ?Label }
+        public String queryForTaggedObjectLabel(String IRIString) {
+            String result = null;
+            Variable taggedObjectLabel = SparqlBuilder.var("label");
+            SelectQuery query = Queries.SELECT();
+            //create triple pattern
+            TriplePattern queryPattern = iri(IRIString).has(label, taggedObjectLabel);
+            query.prefix(PREFIX_RDFS).select(taggedObjectLabel).where(queryPattern);
+            kbClient1.setQuery(query.getQueryString());
+            try {
+            JSONArray queryResult = kbClient1.executeQuery();
+            if(!queryResult.isEmpty()){
+                LOGGER.info(kbClient1.executeQuery());
+                result = kbClient1.executeQuery().getJSONObject(0).getString("label");
+            } 
+        } catch (Exception e) {
+            throw new JPSRuntimeException(GETLABEL_ERROR_MSG, e);
+        }
+            return result;
+        }
 
     //SELECT ?GHSHazardStatements WHERE {<IRIString> ontospecies:hasGHSHazardStatements ?GHSHazardStatements}
     public JSONArray queryForGHSHazardStatements(String IRIString) {

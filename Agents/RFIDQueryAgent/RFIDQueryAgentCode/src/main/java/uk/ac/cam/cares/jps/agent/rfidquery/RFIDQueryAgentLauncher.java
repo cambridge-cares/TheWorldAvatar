@@ -224,8 +224,12 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				LOGGER.info("The tag IRI retrieved is " + tagIRI);
 
 				//query for bottle IRI with tag IRI via ontodevice:isAttachedTo
-				String bottleIRI = builder.queryForBottleWithIsAttachedTo(tagIRI);
+				String bottleIRI = builder.queryForTaggedObjectWithIsAttachedTo(tagIRI);
 				LOGGER.info("The bottle IRI retrieved is " + bottleIRI);
+
+			    //query for bottle label via rdfs:label
+				String objectLabel = builder.queryForTaggedObjectLabel(bottleIRI);
+				LOGGER.info("The label of the tagged object is " + objectLabel);
 
 				//query for chemical amount IRI with bottle IRI via ontolab:isFilledWith
 				String chemicalAmountIRI = builder.queryForChemicalAmountWithIsFilledWith(bottleIRI);
@@ -248,8 +252,8 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				LOGGER.info("The species IRI retrieved is " + speciesIRI);
 
 				//query for species label via rdfs:label
-				String label = builder.queryForLabel(speciesIRI);
-				LOGGER.info("The label of the species is " + label);
+				String speciesLabel = builder.queryForSpeciesLabel(speciesIRI);
+				LOGGER.info("The label of the species is " + speciesLabel);
 
 				//query for hazard statement IRIs via ontospecies:hasGHSHazardStatements
 				JSONArray GHSHazardStatements = builder.queryForGHSHazardStatements(speciesIRI);
@@ -257,13 +261,34 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				//query for the label and comment of each hazard statement IRI and put them in a hash map
 				Map<String, List<String>> map = builder.queryForLabelAndCommentForGHSHazardStatements(GHSHazardStatements);
 				LOGGER.info("Preparing to send email...");
-				agent.sendEmail(dataIRI, label, timestamp, map);
+				agent.sendEmail(dataIRI, objectLabel, speciesLabel, timestamp, map);
 				LOGGER.info("Alert Email sent for " + dataIRI);
 				jsonMessage.accumulate("Result", "Alert Email sent for " + dataIRI);
 
 			} else if (exceedThreshold == true) {
+				LOGGER.info("Beginning queries...");
+				//Create RFIDQueryBuilder
+				RFIDQueryBuilder builder ;
+				try {
+					builder = new RFIDQueryBuilder(args[0], args[3]);
+				} catch (IOException e) {
+					throw new JPSRuntimeException(LOADCONFIGS_ERROR_MSG, e);
+				}
+
+				//query for tag IRI with state IRI via saref:hasState
+				String tagIRI = builder.queryForTagWithStateIRI(dataIRI);
+				LOGGER.info("The tag IRI retrieved is " + tagIRI);
+
+				//query for tagged object IRI with tag IRI via ontodevice:isAttachedTo
+				String taggedObjectIRI = builder.queryForTaggedObjectWithIsAttachedTo(tagIRI);
+				LOGGER.info("The bottle IRI retrieved is " + taggedObjectIRI);
+
+				//query for tagged object label via rdfs:label
+				String label = builder.queryForTaggedObjectLabel(taggedObjectIRI);
+				LOGGER.info("The label of the tagged object is " + label);
+
 				LOGGER.info("Preparing to send email...");
-				agent.sendEmail(dataIRI, null, timestamp, null);
+				agent.sendEmail(dataIRI, label, null, timestamp, null);
 				LOGGER.info("Alert Email sent for " + dataIRI);
 				jsonMessage.accumulate("Result", "Alert Email sent for " + dataIRI);
 			}
