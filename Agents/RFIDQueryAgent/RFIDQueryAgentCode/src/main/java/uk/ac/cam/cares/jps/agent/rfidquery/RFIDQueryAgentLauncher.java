@@ -70,6 +70,7 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
     private static final String GETLATESTSTATUSANDCHECKTHRESHOLD_ERROR_MSG = "Unable to query for latest data and/or check RFID Status Threshold!";
     private static final String ARGUMENT_MISMATCH_MSG = "Need five arguments in the following order:1) time series client for timeseries data 2)list of data IRIs 3)Number of hours 4) species sparql endpoints 5)whether tagged object contains some chemical (true or false)";
     private static final String AGENT_ERROR_MSG = "The RFID Query Agent could not be constructed!";
+	private static final String QUERYBUILDER_ERROR_MSG = "The RFID Query Builder could not be constructed!";
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -219,23 +220,23 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				try {
 					builder = new RFIDQueryBuilder(args[0], args[3]);
 				} catch (IOException e) {
-					throw new JPSRuntimeException(LOADCONFIGS_ERROR_MSG, e);
+					throw new JPSRuntimeException(QUERYBUILDER_ERROR_MSG,e);
 				}
 
 				//query for tag IRI with state IRI via saref:hasState
 				String tagIRI = builder.queryForTagWithStateIRI(dataIRI);
 				LOGGER.info("The tag IRI retrieved is " + tagIRI);
 
-				//query for bottle IRI with tag IRI via ontodevice:isAttachedTo
-				String bottleIRI = builder.queryForTaggedObjectWithIsAttachedTo(tagIRI);
-				LOGGER.info("The bottle IRI retrieved is " + bottleIRI);
+				//query for tagged object IRI with tag IRI via ontodevice:isAttachedTo
+				String taggedObjectIRI = builder.queryForTaggedObjectWithIsAttachedTo(tagIRI);
+				LOGGER.info("The bottle IRI retrieved is " + taggedObjectIRI);
 
 			    //query for bottle label via rdfs:label
-				String objectLabel = builder.queryForTaggedObjectLabel(bottleIRI);
+				String objectLabel = builder.queryForTaggedObjectLabel(taggedObjectIRI);
 				LOGGER.info("The label of the tagged object is " + objectLabel);
 
 				//query for chemical amount IRI with bottle IRI via ontolab:isFilledWith
-				String chemicalAmountIRI = builder.queryForChemicalAmountWithIsFilledWith(bottleIRI);
+				String chemicalAmountIRI = builder.queryForChemicalAmountWithIsFilledWith(taggedObjectIRI);
 				LOGGER.info("The chemical amount IRI retrieved is " + chemicalAmountIRI);
 
 				//query for chemical IRI with chemical amount IRI via ontocape_cps_behavior:refersToMaterial
@@ -243,6 +244,8 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				LOGGER.info("The material IRI retrieved is " + chemicalIRI);
 
 				String speciesIRI;
+				//check whether there are IRIs instantiated via ontocape_material:intrinsicCharacteristics
+				//If so continue the queries to retrieve the chemicalComponent IRI which is equivalent to the species IRI
 				if (builder.queryForChemicalComponentWithIntrinsicCharacteristics(chemicalIRI) != null){
 					speciesIRI = builder.queryForChemicalComponentWithIntrinsicCharacteristics(chemicalIRI);
 				} else {
@@ -281,9 +284,9 @@ public class RFIDQueryAgentLauncher extends JPSAgent{
 				try {
 					builder = new RFIDQueryBuilder(args[0], args[3]);
 				} catch (IOException e) {
-					throw new JPSRuntimeException(LOADCONFIGS_ERROR_MSG, e);
+					throw new JPSRuntimeException(QUERYBUILDER_ERROR_MSG, e);
 				}
-
+				
 				//query for tag IRI with state IRI via saref:hasState
 				String tagIRI = builder.queryForTagWithStateIRI(dataIRI);
 				LOGGER.info("The tag IRI retrieved is " + tagIRI);

@@ -106,8 +106,9 @@ public class RFIDQueryAgent{
 
     /**
      * Queries for latest data and check whether latest timestamps exceed threshold set by user
-     * @return resuTts A Json Object with the following format {iri_0: {exceedThreshold: true/false, timestamp: timestamp value, dataIRI: data IRI 1}, 
-     *                                                          iri_1: {exceedThreshold: true/false, timestamp: timestamp value, dataIRI: data IRI 2} }
+     * @return results
+     * A Json Object with the following format {iri_0: {exceedThreshold: true/false, timestamp: timestamp value, dataIRI: data IRI 1}, 
+     *                                          iri_1: {exceedThreshold: true/false, timestamp: timestamp value, dataIRI: data IRI 2} }
      */
     public JSONObject queriesStatusAndCheckTimeStamps() {
         JSONObject results = new JSONObject();
@@ -157,6 +158,7 @@ public class RFIDQueryAgent{
             //This is the thresholdTimeStamp
             OffsetDateTime thresholdTimeStamp = latestTimeStamp.plusHours(hours);
 
+            //get current datetime
             long timestamp = System.currentTimeMillis();
             Date date = new java.util.Date(timestamp);
             SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -189,7 +191,8 @@ public class RFIDQueryAgent{
 
     /**
      * @param tagStatusIRI tag status IRI
-     * @param speciesLabels The JSONObject containing the labels of the chemical
+     * @param objectLabel tagged object label
+     * @param speciesLabel species label
      * @param latestTimeStamp latest timestamp value
      * @param map Hashmap containing the labels and comments for each GHS Hazard Statement
      */
