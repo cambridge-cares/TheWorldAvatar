@@ -15,7 +15,7 @@ The [next section](#requirements) will explain the requirements to run the agent
 
 2) It is required to have the [Email Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/EmailAgent) set up beforehand.
 
-3) It is required to have some timeseries data that contains the status of the RFID tags (In/Out) already instantiated in the knowledge graph via the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) One such agent that currently does this is the [RFID Update Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/RFIDUpdateAgent).
+3) It is required to have some timeseries data that contains the status of the RFID tags (In/Out) already instantiated in the knowledge graph via the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries). One such agent that currently does this is the [RFID Update Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/RFIDUpdateAgent).
 
 4) If the tagged object is a chemical container that contain some chemicals; the tag, chemical container, chemical it contains, chemical species label and the species's GHS Hazard Statements(if the species does have GHS Hazard Statements) should be instantiated in the knowledge graph based on several ontologies: [OntoDevice](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontodevice), [OntoLab](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontolab), [OntoSpecies](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontospecies), [OntoCAPE](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontocape), [OntoReaction](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoreaction) . An example of the instance can be found below:
 ```
@@ -137,7 +137,7 @@ If the tagged object is "Out" for longer than allowed, the email content sent wi
 
 1) If tagged object is not a chemical container.
 ```
-The tagged object has been removed since 2023-02-23T09:25:13Z. The object has the following label chemical container 02 and tag ID 00000000000000A000009726 . 
+The tagged object has been removed since 2023-02-23T09:25:13Z. The object has the following label asset 02 and tag ID 00000000000000A000009726 . 
 ```
 2) If tagged object is a chemical container containing a chemical with GHS Hazard Statements.
 ```
