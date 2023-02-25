@@ -23,7 +23,7 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 
 /**
- * Class to query for chemical species information.
+ * Class to construct queries to retrieve IRIs and information from the triple store.
  * @author  */
 public class RFIDQueryBuilder {
 	/**
@@ -55,10 +55,10 @@ public class RFIDQueryBuilder {
      */
 	public static final String ONTODEVICE_NS = "https://www.theworldavatar.com/kg/ontodevice/";
 	public static final String ONTOLAB_NS = "https://www.theworldavatar.com/kg/ontolab/";
-    public static final String ONTOCAPE_CPS_BEHAVIOR_NS = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#";
-    public static final String ONTOCAPE_PHASE_SYSTEM_NS = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#";
-    public static final String ONTOCAPE_MATERIAL_NS = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/material/material.owl#";
-    public static final String ONTOCAPE_SYSTEM_NS = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#";
+    public static final String ONTOCAPE_CPS_BEHAVIOR_NS = "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#";
+    public static final String ONTOCAPE_PHASE_SYSTEM_NS = "http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#";
+    public static final String ONTOCAPE_MATERIAL_NS = "http://www.theworldavatar.com/ontology/ontocape/material/material.owl#";
+    public static final String ONTOCAPE_SYSTEM_NS = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#";
     public static final String ONTOCAPE_CPS_SUBSTANCE = "http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#";
     public static final String ONTOSPECIES_NS = "http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#";
     public static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
@@ -169,7 +169,7 @@ public class RFIDQueryBuilder {
     } catch (Exception e){
         throw new JPSRuntimeException(GETTAG_ERROR_MSG);
     }
-        return result;
+    return result;
     }
     
     //SELECT ?TaggedObject WHERE { <IRIString> ontodevice:isAttachedTo ?TaggedObject }
@@ -190,7 +190,7 @@ public class RFIDQueryBuilder {
     } catch (Exception e) {
         throw new JPSRuntimeException(GETTAGGEDOBJECT_ERROR_MSG);
     }
-        return result;
+    return result;
     }
 
     //SELECT ?chemicalAmount WHERE { <IRIString> ontodevice:isFilledWith ?chemicalAmount }
@@ -211,7 +211,7 @@ public class RFIDQueryBuilder {
     } catch (Exception e) {
         throw new JPSRuntimeException(GETCHEMICALAMOUNT_ERROR_MSG);
     }
-        return result;
+    return result;
     }
 
     //SELECT ?chemical WHERE { <IRIString> ontoCAPE_CPS_Behavior:refersToMaterial ?chemical }
@@ -232,7 +232,7 @@ public class RFIDQueryBuilder {
     } catch (Exception e) {
         throw new JPSRuntimeException(GETCHEMICAL_ERROR_MSG);
     }
-        return result;
+    return result;
     }
 
     //SELECT ?phase WHERE { <IRIString> ontoCAPE_Material:thermodynamicBehavior ?phase }
@@ -253,7 +253,7 @@ public class RFIDQueryBuilder {
     } catch (Exception e) {
         throw new JPSRuntimeException(GETPHASE_ERROR_MSG);
     }
-        return result;
+    return result;
     }
 
 
@@ -307,7 +307,7 @@ public class RFIDQueryBuilder {
     } catch (Exception e) {
         throw new JPSRuntimeException(GETPHASECOMPONENT_ERROR_MSG);
     }
-        return result;
+    return result;
     }
 
     //SELECT ?Species WHERE { <IRIString> ontoCAPE_Phase_System:representsOccurenceOf ?Species }
@@ -320,12 +320,12 @@ public class RFIDQueryBuilder {
         query.prefix(PREFIX_ONTOCAPE_PHASE_SYSTEM).select(species).where(queryPattern);
         kbClient1.setQuery(query.getQueryString());
         try {
-        JSONArray queryResult = kbClient1.executeQuery();
-        if(!queryResult.isEmpty()){
-            LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
-            result = kbClient1.executeQuery().getJSONObject(0).getString("species");
-        }
-    } catch (Exception e) {
+            JSONArray queryResult = kbClient1.executeQuery();
+            if(!queryResult.isEmpty()){
+                LOGGER.info(kbClient1.executeQuery().getJSONObject(0));
+                result = kbClient1.executeQuery().getJSONObject(0).getString("species");
+            }
+        } catch (Exception e) {
             throw new JPSRuntimeException(GETSPECIES_ERROR_MSG);
         }
         return result;
@@ -341,14 +341,14 @@ public class RFIDQueryBuilder {
         query.prefix(PREFIX_RDFS).select(labelOfChemicalSpecies).where(queryPattern);
         kbClient2.setQuery(query.getQueryString());
         try {
-        JSONArray queryResult = kbClient2.executeQuery();
-        if(!queryResult.isEmpty()){
-            LOGGER.info(kbClient2.executeQuery());
-            result = kbClient2.executeQuery().getJSONObject(0).getString("label");
-        } 
-    } catch (Exception e) {
-        throw new JPSRuntimeException(GETLABEL_ERROR_MSG, e);
-    }
+            JSONArray queryResult = kbClient2.executeQuery();
+            if(!queryResult.isEmpty()){
+                LOGGER.info(kbClient2.executeQuery());
+                result = kbClient2.executeQuery().getJSONObject(0).getString("label");
+            } 
+        } catch (Exception e) {
+            throw new JPSRuntimeException(GETLABEL_ERROR_MSG, e);
+        }
         return result;
     }
 
@@ -403,6 +403,7 @@ public class RFIDQueryBuilder {
         return chemicalComponent;
     }
     
+    //SELECT ?chemicalComponent WHERE <IRIString> ontoCAPE_System:containsDirectly ?chemicalComponent
     public String queryForChemicalComponentWithContainsDirectly(String IRIString) {
         SelectQuery query = Queries.SELECT();
         String result = null;
