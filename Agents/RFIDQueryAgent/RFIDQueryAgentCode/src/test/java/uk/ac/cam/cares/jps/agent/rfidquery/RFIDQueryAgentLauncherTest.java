@@ -26,9 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class RFIDQueryAgentLauncherTest {
-
-	
-	private static final Logger LOGGER = LogManager.getLogger(RFIDQueryAgentLauncherTest.class);
 	
     // Temporary folder to place a properties file
     @Rule
@@ -64,6 +61,7 @@ public class RFIDQueryAgentLauncherTest {
         testRequestParams.put("hours", "10");
         testRequestParams.put("timeSeriesClientProperties", "TEST_CLIENTPROPERTIES");
         testRequestParams.put("speciesProperties","TEST_CLIENTPROPERTIES");
+        testRequestParams.put("containSpecies","true");
         try {
         testMessage = testLauncher.processRequestParameters(testRequestParams);
         }
@@ -72,13 +70,11 @@ public class RFIDQueryAgentLauncherTest {
         }
         //test invalid environment variables in requestParams
         testRequestParams.remove("dataIR");
-
+        testRequestParams.remove("timeSeriesClientProperties");
         //invalid environment variables TEST_CLIENTPROPERT should cause validateInput to return back false and processRequestParameters to
         //return back the jsonMessage {"Result":"Request parameters are not defined correctly."}
         testRequestParams.put("dataIRIs", "some_data_IRI");
-        testRequestParams.put("hours", "10");
         testRequestParams.put("timeSeriesClientProperties", "TEST_CLIENTPROPERT");
-        testRequestParams.put("speciesProperties", "TEST_CLIENTPROPERTIES");
         String folderName = "configs";
         File Folder = folder.newFolder(folderName);
 
