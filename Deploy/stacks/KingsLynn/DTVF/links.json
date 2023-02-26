@@ -1,13 +1,25 @@
 {
-    "intro": "This list contains links to a number of resources designed to act as supplemental documentation for this visualisation.<BR>TODO:Replace with links to data sources.",
+    "intro": "The list below provides an overview of uses resources and their respective links for further information:<BR>",
     "links": [
         {
-            "text": "Placeholder1",
-            "url": "https://placeholder1.org/"
+            "text": "Ordnance Survey OpenMap - Local",
+            "url": "https://osdatahub.os.uk/downloads/open/OpenMapLocal"
         },
         {
-            "text": "Placeholder2",
-            "url": "https://placeholder2.org/"
+            "text": "Digimap",
+            "url": "https://digimap.edina.ac.uk/os"
+        },
+        {
+            "text": "MetOffice DataPoint API",
+            "url": "https://www.metoffice.gov.uk/services/data/datapoint/api-reference"
+        },
+        {
+            "text": "Energy Performance Certificate APIs",
+            "url": "https://epc.opendatacommunities.org/docs/api"
+        },
+        {
+            "text": "Environment Agency Real Time flood-monitoring API",
+            "url": "https://environment.data.gov.uk/flood-monitoring/doc/reference"
         }
     ]
 }
