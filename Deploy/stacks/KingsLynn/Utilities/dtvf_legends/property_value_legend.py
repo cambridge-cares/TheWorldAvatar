@@ -11,6 +11,7 @@ from matplotlib.colors import LinearSegmentedColormap
 #
 #  1) Define min and max values for colorbar (£)
 # 
+#NOTE: Align values and colors with data.json
 cb_min = 100000
 cb_max = 1100000
 
