@@ -55,7 +55,16 @@
                         "visibility": "visible"
                     },
                     "paint": {
-                        "fill-extrusion-color": "#000000",
+                        "fill-extrusion-color": [
+                            "match",
+                            ["get", "primary_usage_category"],
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/Domestic", "#808080",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/EmergencyServices", "#D62728",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/MedicalCare", "#FF7F0E",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/Education", "#2CA02C",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic", "#1F77B4",
+                            "#808080"
+                          ],
                         "fill-extrusion-opacity": 0.4,
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
