@@ -1,6 +1,7 @@
 prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-prefix ems: <https://www.theworldavatar.com/kg/ontoems/>
+prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix ems:  <https://www.theworldavatar.com/kg/ontoems/>
+prefix skos: <http://www.w3.org/2004/02/skos/core#>
 
 SELECT ?Property ?Value ?Unit
 WHERE {
@@ -14,8 +15,10 @@ WHERE {
     BIND ("Data source" AS ?Property )
     [IRI] ems:dataSource ?Value .
   } UNION { 
+    # Add OR property path ("|") to allow for different name relations between
+    # MetOffice/AirQuality stations and WaterLevelStations (i.e. EA stations)
     BIND ("Identifier" AS ?Property )
-    [IRI] ems:hasIdentifier ?Value .
+    [IRI] ems:hasIdentifier|skos:notation ?Value .
   } UNION { 
     BIND ("Elevation" AS ?Property )
     BIND ("m" AS ?Unit )
