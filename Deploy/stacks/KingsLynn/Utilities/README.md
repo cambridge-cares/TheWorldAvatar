@@ -52,6 +52,14 @@ Assess the added UPRN information via the agent with static data once added from
 It has been observed that not all buildings instantiated in OntoCityGml get UPRN information attached after running the UPRN agent. The scripts within the `building_retrieval` subdirectory help to assess whether there is a specific pattern for buildings with vs. without UPRN information after running the agent, i.e. the `query_buildings.py` script is used to retrieve building footprints for buildings with vs. without instantiated UPRN information to analyse potential structural differences between respective buildings. Primary focus is to understand whether the non-retrieval of UPRN information using the UPRN agent seems legit or rather erroneous. The script creates .geojson files to be overlayed with other maps in QGIS / FEM Data Inspector to visually analyse potential structural differences.
 
 &nbsp;
+## 3) Create legend figures for DTVF
+
+The `dtvf_legends` repository contains scripts to create legend figures for the DTVF visualisation:
+
+1) The `property_value_legend` script creates a color bar for the porperty value legend. **Please ensure** that 1) the mi/max values of the legend need to be adjusted depending on the data to be visualised and 2) the respective colors need to be aligned between this script and the values used in the `data.json`
+2)
+
+&nbsp;
 ## Knowledge Graph utilities
 
 The scripts within the `kg_utils` subdirectory provide functionality to interact with an online knowledge graph (i.e. SPARQL endpoint):

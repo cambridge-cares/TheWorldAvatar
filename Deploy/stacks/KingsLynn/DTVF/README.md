@@ -17,7 +17,11 @@ docker compose -p dtvf-kings-lynn -f ./docker/docker-compose.yml up -d --force-r
 bash ./redeploy.sh
 ```
 
-**Please note**: A valid Mapbox API username and token must be provided in your `index.html` file. After successfully deploying the visualisation, it should be available at `http://localhost:5555`.
+**Please note**: 
+
+1) A valid Mapbox API username and token must be provided in your `index.html` file. After successfully deploying the visualisation, it should be available at `http://localhost:5555`.
+
+2) Ensure that the required legend figures are provided to the `data` folder. Otherwise, please run the scripts in the `Utilities\dtvf_legends` repository first.
 
 
 &nbsp;
@@ -25,23 +29,13 @@ bash ./redeploy.sh
 
 > The following description refers to `ghcr.io/cambridge-cares/feature-info-agent:2.0.0` as of commit `f01834fec13ac25b205faeed05eb2b7ce83169d2` of the `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
 
-The Feature Info Agent is used to retrieve meta data for visualisation(s). Details on how to spin up and deploy the agent to a spun up Stack is provided in the [FeatureInfoAgent] README. **Please note** that building the agent requires access to further [TWA Github packages], which requires both a `settings.xml` and `settings-security.xml` to be provided in the `.m2` folder of the [FeatureInfoAgent] before building. **However, please also note** that building is only required if changes have been made to the agent. Otherwise, the Docker image should simply be pulled (i.e. by skipping this build command)
+The Feature Info Agent is used to retrieve meta data for visualisation(s). Details on how to spin up and deploy the agent to a spun up Stack is provided in the [FeatureInfoAgent] README. However, the following steps shall be sufficient to get the agent up and running for the `KINGS-LYNN` visualisation:
 
-```bash
-# Build the agent image
- bash ./stack.sh build
-```
-Deploying the agent creates a bind mount between the `queries` directory on the host machine, and the `/app/queries` directory within the container. This means that simply adding your configuration and query files to the former **before** running the container should automatically make them available to the agent. **Please note** that you need to redeploy the agent after adding new or updating files in the `queries` directory. 
+1) Copy the `feature_info_agent.json` file from the [FeatureInfoAgent subdirectory] into the `inputs/config` folder of the stack manager (i.e. `Deploy/stacks/dynamic/stack-manager/inputs/config`) - potentially adjust the absolute path of the source path of the bind mount
+2) Copy the required `fia-config.json` and `.sparql` files from the [FeatureInfoAgent queries] sub-folder of this repository into the `queries` folder of the Feature Info Agent (i.e. `Agents/FeatureInfoAgent/queries`)
+3) Start the stack manager as usual (i.e. `bash ./stack.sh start <STACK_NAME>` from the stack-manager repo). This should start the FIA container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
 
-The required `fia-config.json` and `.sparql` files to be placed inside the agent before building/deploying the Docker image are provided in the [FeatureInfoAgent queries] sub-folder of this repository.
-
-To deploy the agent to the spun up `KINGS-LYNN` stack, please run the following command from the [FeatureInfoAgent] directory wherever the stack is running (i.e. potentially on the remote VM):
-
-```bash
- # Deploy the agent to the stack
- bash ./stack.sh start KINGS-LYNN
-```
-After deploying the agent, the NGINX routing configuration needs to be added. **Please note** that this is required after each agent startup, details are provided below.
+Deploying the agent creates a bind mount between the `queries` directory on the host machine, and the `/app/queries` directory within the container. As the sparql files in the query folder are loaded upon request, added files become 'hot-reloaded' and should automatically be available to the agent without having to restart the container. Changing the `fia-config.json`, however, requires a container restart.
 
 
 &nbsp;
@@ -51,31 +45,20 @@ To ensure communication between the DTVF and the Feature Info Agent, the followi
 
 * **Allow CORS (i.e. Cross-Origin Resource Sharing)**: The FIA relies on CORS information to retrieve metadata from the stack after clicking on any displayed feature. A current work-around to enable this is installing a browser plug-in to blanket-allow CORS requests. However, one should be aware of the security implications of this!
 
-* **Add NGINX routing for Feature Info Agent**: When spinning up a stack using the stack-manager, the stack adds all necessary routes to the nginx container automatically. However, this does not apply to the retrospectively added FIA. Run the [update_nginx_conf.sh] script to update the stack NGINX configuration to make the FIA reachable from the visualisation and prevent CORS errors. **Please note** that this script needs to be run wherever the stack is running, i.e. on the remote virtual machine if deployed there.
-
-    ```bash
-    # Potentially navigate to location where helper script is located
-    cd DTVF/FeatureInfoAgent/routing/
-    # Run helper script to add Feature Info Agent NGINX configuration
-    bash ./update_nginx_conf.sh
-    ```
-
 
 ```diff
 - Pending To Dos 
-    - update visualised (fudged) building data with actual data after running building matching agent
-    - refine clustering with vector tiles (i.e. summarise measurement stations at low zoom levels)
-    - add attributions in settings.json
-    - include further icons for different types of buildings
+    - Refine clustering with vector tiles (i.e. summarise measurement stations at low zoom levels)
+    - Add attributions in settings.json
 ```
 
 <!-- Links -->
 [DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations
 [example Mapbox visualisation]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework/example-mapbox-vis
-[FeatureInfoAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-feature-info-agent/Agents/FeatureInfoAgent
+[FeatureInfoAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent
 [TWA Github packages]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
 
 <!-- repositories -->
 [FeatureInfoAgent queries]: FeatureInfoAgent/queries
 [DTVF subdirectory]: /DTVF
-[update_nginx_conf.sh]: /DTVF/FeatureInfoAgent/routing/update_nginx_conf.sh
+[FeatureInfoAgent subdirectory]: /DTVF/FeatureInfoAgent

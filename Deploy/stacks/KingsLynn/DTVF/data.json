@@ -32,6 +32,7 @@
                     "type": "circle",
                     "treeable": false,
                     "maxzoom": 10,
+                    "order": 0,
                     "layout": {
                         "visibility": "visible"
                     },
@@ -43,38 +44,57 @@
                     }
                 },
                 {
-                    "id": "ocgml_buildings-layer",
-                    "name": "OS BHA Buildings (i.e. buildings without EPC information)",
-                    "source": "ocgml_buildings",
+                    "id": "obe_buildings-layer",
+                    "name": "Buildings with usage information",
+                    "source": "obe_buildings",
+                    "source-layer": "buildings",
                     "type": "fill-extrusion",
                     "minzoom": 8, 
+                    "order": 5,
                     "layout": {
                         "visibility": "visible"
                     },
                     "paint": {
-                        "fill-extrusion-color": "#303030",
+                        "fill-extrusion-color": [
+                            "match",
+                            ["get", "primary_usage_category"],
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/Domestic", "#808080",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/EmergencyServices", "#D62728",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/MedicalCare", "#FF7F0E",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/Education", "#2CA02C",
+                            "https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic", "#1F77B4",
+                            "#808080"
+                          ],
                         "fill-extrusion-opacity": 0.4,
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
                             "case",
-                            ["has", "fill-extrusion-height"],
-                            ["to-number", ["get", "fill-extrusion-height"]],
+                            ["has", "building height"],
+                            ["*", 1.4, ["to-number", ["get", "building height"]]],
                             8
                         ]
                     }
                 },
                 {
                     "id": "obe_buildings-layer",
-                    "name": "Buildings with EPC information",
+                    "name": "Buildings with value estimations",
                     "source": "obe_buildings",
                     "source-layer": "buildings",
                     "type": "fill-extrusion",
                     "minzoom": 8, 
+                    "order": 5,
                     "layout": {
                         "visibility": "visible"
                     },
                     "paint": {
-                        "fill-extrusion-color": "#000000",
+                        "fill-extrusion-color": [
+                            "case", 
+                            ["==", ["get", "value estimation"], null], "#000000", [
+                            "interpolate", ["linear"],
+                            ["number", ["get", "value estimation"]],
+                            100000, "#3887BE",
+                            1100000, "#DB1F1F"
+                        ]],
                         "fill-extrusion-opacity": 0.4,
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
@@ -92,12 +112,35 @@
                     "source-layer": "buildings",
                     "type": "line",
                     "minzoom": 8, 
+                    "order": 4.5,
                     "layout": {
                         "visibility": "visible"
                     },
                     "paint": {
                         "line-color": "#000000",
                         "line-opacity": 0.5
+                    }
+                },
+                {
+                    "id": "ocgml_buildings-layer",
+                    "name": "OS BHA Buildings (i.e. buildings without EPC information)",
+                    "source": "ocgml_buildings",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 4,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#303030",
+                        "fill-extrusion-opacity": 0.4,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "fill-extrusion-height"],
+                            ["to-number", ["get", "fill-extrusion-height"]],
+                            8
+                        ]
                     }
                 }
             ]
@@ -136,15 +179,14 @@
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
                     "minzoom": 8,
+                    "order": 6,
                     "layout": {
                         "visibility": "visible",
                         "icon-image": [
                             "match",
                             ["get", "subtype"],
-                            "observation",
-                            "weather-obs",
-                            "forecast",
-                            "weather-for",
+                            "observation", "weather-obs",
+                            "forecast", "weather-for",
                             "weather"
                         ],
                         "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
@@ -182,6 +224,7 @@
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
                     "minzoom": 8,
+                    "order": 7,
                     "layout": {
                         "visibility": "visible",
                         "icon-image": ["get", "type"],
@@ -194,7 +237,70 @@
             ]
         },
         {
-            "name": "Population data",
+            "name": "Flood Warnings",
+            "stack": "http://165.232.172.16:3838",
+            "sources": [
+                {
+                    "id": "floodwarnings_active",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=floodwarnings:floodwarnings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&cql_filter=active=true"
+                    ]
+                },
+                {
+                    "id": "floodwarnings_inactive",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=floodwarnings:floodwarnings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&cql_filter=active=false"
+                    ]
+                }
+            ], 
+            "layers": [
+                {
+                    "id": "floodwarnings",
+                    "name": "Active flood warnings",
+                    "source": "floodwarnings_active",
+                    "source-layer": "floodwarnings",
+                    "type": "fill",
+                    "order": 3,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "text-field": ["get", "severity"],
+                    "paint": {
+                        "fill-color": [
+                            "match",
+                            ["get", "severity"],
+                            "4", "#ADD8E6",
+                            "3", "#FFD34B",
+                            "2", "#FFA500",
+                            "1", "#FF0000",
+                            "#808080"
+                          ],
+                        "fill-opacity": 0.4,
+                        "fill-outline-color": "#000000"
+                    }
+                },
+                {
+                    "id": "floodwarnings_outdated",
+                    "name": "Inactive flood warnings",
+                    "source": "floodwarnings_inactive",
+                    "source-layer": "floodwarnings",
+                    "type": "fill",
+                    "order": 2,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-color": "#808080",
+                        "fill-opacity": 0.4,
+                        "fill-outline-color": "#000000"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Population Data",
             "stack": "http://165.232.172.16:3838",
             "sources": [
                 {
@@ -209,9 +315,10 @@
                 {
                     "id": "openpopgrid",
                     "type": "raster",
-                    "minzoom": 8,
                     "name": "OpenPopGrid",
                     "source": "openpopgrid",
+                    "minzoom": 8,
+                    "order": 1,
                     "layout": {
                         "visibility": "visible"
                     }

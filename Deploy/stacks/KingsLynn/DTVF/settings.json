@@ -9,5 +9,5 @@
         "Name": "name",
         "ID": "id"
     },
-    "attribution": "Attribution placeholder 1<br/>Attribution placeholder 1"
+    "attribution": "Contains OS data © Crown copyright and database rights 2022 (100025252)<BR>Contains public sector information licensed under the Open Government Licence v3.0.<BR>This showcase uses Environment Agency flood and river level data from the real-time data API (Beta)"
 }

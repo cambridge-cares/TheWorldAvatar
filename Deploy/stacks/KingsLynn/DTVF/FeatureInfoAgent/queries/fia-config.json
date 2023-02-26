@@ -8,12 +8,27 @@
             "timeLimit": 48
         },
         {
+            "class": "https://www.theworldavatar.com/kg/ontoems/WaterLevelReportingStation",
+            "metaFile": "ReportingStations.sparql",
+            "timeFile": "ReportingStations_time.sparql",
+            "databaseName": "postgres",
+            "timeLimit": 48
+        },
+        {
             "class": "https://www.theworldavatar.com/kg/ontobuiltenv/Flat",
-            "metaFile": "BuildingsFlats.sparql"
+            "metaFile": "OntoBuiltEnvProperties.sparql"
         },
         {
             "class": "http://www.purl.org/oema/infrastructure/Building",
-            "metaFile": "BuildingsFlats.sparql"
+            "metaFile": "OntoBuiltEnvProperties.sparql"
+        },
+        {
+            "class": "https://www.theworldavatar.com/kg/ontobuiltenv/Property",
+            "metaFile": "OntoBuiltEnvProperties.sparql"
+        },
+        {
+            "class": "https://www.theworldavatar.com/kg/ontoflood/ArealExtentPolygon",
+            "metaFile": "FloodWarnings.sparql"
         }
     ]
 }
