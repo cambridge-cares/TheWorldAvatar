@@ -43,7 +43,7 @@ def create_app():
 
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
 
-    #agent.start_all_periodical_job()
+    agent.start_all_periodical_job()
 
     # Expose flask app of agent
     return agent.app
