@@ -44,30 +44,8 @@
                     }
                 },
                 {
-                    "id": "ocgml_buildings-layer",
-                    "name": "OS BHA Buildings (i.e. buildings without EPC information)",
-                    "source": "ocgml_buildings",
-                    "type": "fill-extrusion",
-                    "minzoom": 8, 
-                    "order": 4,
-                    "layout": {
-                        "visibility": "visible"
-                    },
-                    "paint": {
-                        "fill-extrusion-color": "#303030",
-                        "fill-extrusion-opacity": 0.4,
-                        "fill-extrusion-base": 0,
-                        "fill-extrusion-height": [
-                            "case",
-                            ["has", "fill-extrusion-height"],
-                            ["to-number", ["get", "fill-extrusion-height"]],
-                            8
-                        ]
-                    }
-                },
-                {
                     "id": "obe_buildings-layer",
-                    "name": "Buildings with EPC information",
+                    "name": "Buildings with usage information",
                     "source": "obe_buildings",
                     "source-layer": "buildings",
                     "type": "fill-extrusion",
@@ -89,18 +67,71 @@
                     }
                 },
                 {
+                    "id": "obe_buildings-layer",
+                    "name": "Buildings with value estimations",
+                    "source": "obe_buildings",
+                    "source-layer": "buildings",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 5,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case", 
+                            ["==", ["get", "value estimation"], null], "#000000", [
+                            "interpolate", ["linear"],
+                            ["number", ["get", "value estimation"]],
+                            100000, "#3887BE",
+                            1100000, "#DB1F1F"
+                        ]],
+                        "fill-extrusion-opacity": 0.4,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building height"],
+                            ["*", 1.4, ["to-number", ["get", "building height"]]],
+                            8
+                        ]
+                    }
+                },
+                {
                     "id": "buildings-outline-layer",
                     "name": "Buildings with EPC information",
                     "source": "obe_buildings",
                     "source-layer": "buildings",
                     "type": "line",
                     "minzoom": 8, 
+                    "order": 4.5,
                     "layout": {
                         "visibility": "visible"
                     },
                     "paint": {
                         "line-color": "#000000",
                         "line-opacity": 0.5
+                    }
+                },
+                {
+                    "id": "ocgml_buildings-layer",
+                    "name": "OS BHA Buildings (i.e. buildings without EPC information)",
+                    "source": "ocgml_buildings",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 4,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": "#303030",
+                        "fill-extrusion-opacity": 0.4,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "fill-extrusion-height"],
+                            ["to-number", ["get", "fill-extrusion-height"]],
+                            8
+                        ]
                     }
                 }
             ]

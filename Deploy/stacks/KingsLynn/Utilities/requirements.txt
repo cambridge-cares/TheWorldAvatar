@@ -4,3 +4,4 @@ pyproj
 requests~=2.28
 sparqlwrapper~=2.0
 py4jps==1.0.30
+matplotlib==3.6.2p

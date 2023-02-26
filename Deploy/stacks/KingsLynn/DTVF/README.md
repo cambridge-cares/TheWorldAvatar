@@ -17,7 +17,11 @@ docker compose -p dtvf-kings-lynn -f ./docker/docker-compose.yml up -d --force-r
 bash ./redeploy.sh
 ```
 
-**Please note**: A valid Mapbox API username and token must be provided in your `index.html` file. After successfully deploying the visualisation, it should be available at `http://localhost:5555`.
+**Please note**: 
+
+1) A valid Mapbox API username and token must be provided in your `index.html` file. After successfully deploying the visualisation, it should be available at `http://localhost:5555`.
+
+2) Ensure that the required legend figures are provided to the `data` folder. Otherwise, please run the scripts in the `Utilities\dtvf_legends` repository first.
 
 
 &nbsp;
