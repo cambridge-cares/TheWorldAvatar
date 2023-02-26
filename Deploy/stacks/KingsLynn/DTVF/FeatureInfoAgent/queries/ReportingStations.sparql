@@ -15,8 +15,7 @@ WHERE {
     BIND ("Data source" AS ?Property )
     [IRI] ems:dataSource ?Value .
   } UNION { 
-    # Add OR property path ("|") to allow for different name relations between
-    # MetOffice/AirQuality stations and WaterLevelStations (i.e. EA stations)
+    # Add OR property path ("|") to allow for different name relations between MetOffice/AirQuality stations and WaterLevelStations (i.e. EA stations)
     BIND ("Identifier" AS ?Property )
     [IRI] ems:hasIdentifier|skos:notation ?Value .
   } UNION { 
