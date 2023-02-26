@@ -2,6 +2,7 @@ prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix ems:  <https://www.theworldavatar.com/kg/ontoems/>
 prefix skos: <http://www.w3.org/2004/02/skos/core#>
+prefix rt:   <http://environment.data.gov.uk/flood-monitoring/def/core/>
 
 SELECT ?Property ?Value ?Unit
 WHERE {
@@ -22,5 +23,22 @@ WHERE {
     BIND ("Elevation" AS ?Property )
     BIND ("m" AS ?Unit )
     [IRI] ems:hasObservationElevation ?Value .
+  }
+  # Add additional information for EA river level stations (if available)
+  UNION {
+    BIND ("River name" AS ?Property )
+    [IRI] rt:riverName ?Value .
+  } UNION {
+    BIND ("Catchment name" AS ?Property )
+    [IRI] rt:catchmentName ?Value .
+  } UNION {
+    BIND ("Opening data" AS ?Property )
+    [IRI] rt:dateOpened ?Value .
+  } UNION {
+    BIND ("Upstream station" AS ?Property )
+    [IRI] ^ems:hasDownstreamStation ?Value .
+  } UNION {
+    BIND ("Downstream station" AS ?Property )
+    [IRI] ems:hasDownstreamStation ?Value .
   }
 }

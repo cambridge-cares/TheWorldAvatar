@@ -4,7 +4,7 @@ prefix om:   <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 prefix ems:  <https://www.theworldavatar.com/kg/ontoems/>
 prefix rt:   <http://environment.data.gov.uk/flood-monitoring/def/core/>
 
-SELECT ?Measurement ?Name ?Unit ?LastUpdate ?MeasurementMethod ?MeasurementPeriod_sec
+SELECT ?Measurement ?Name ?Unit ?LastUpdate ?MeasurementMethod ?MeasurementPeriod_sec ?Range ?Trend
 WHERE {
   # Observations/Measurements: account for different unit relations between MetOffice/AirQuality stations and WaterLevelStations (i.e. EA stations)
   {
@@ -21,6 +21,12 @@ WHERE {
     # Add additional information (if available)
     OPTIONAL { ?Measurement rt:qualifier ?MeasurementMethod}
     OPTIONAL { ?Measurement rt:period ?MeasurementPeriod_sec}
+    OPTIONAL { ?Measurement ems:hasCurrentRange ?range_ini . 
+               BIND (replace(replace(str(?range_ini), str(ems:), ''), 'Range', '') as ?Range)
+             }
+    OPTIONAL { ?Measurement ems:hasCurrentTrend ?trend_ini . 
+               BIND (replace(replace(str(?trend_ini), str(ems:), ''), 'Trend', '') as ?Trend)
+             }
   }
   # Forecasts: only relevant for MetOffice stations
   UNION {
