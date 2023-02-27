@@ -135,23 +135,19 @@
             "sources": [
                 {
                     "id": "metoffice",  
-                    "type": "vector",
+                    "type": "geojson",
                     "cluster": true,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "tiles": [
-                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=metoffice:metoffice&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                    ]
+                    "data": "http://165.232.172.16:3838/geoserver/metoffice/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=metoffice%3Ametoffice&outputFormat=application%2Fjson"
                 },
                 {
                     "id": "ea-stations",  
-                    "type": "vector",
+                    "type": "geojson",
                     "cluster": true,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "tiles": [
-                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=river_stations:river_stations&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                    ]
+                    "data": "http://165.232.172.16:3838/geoserver/river_stations/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=river_stations%3Ariver_stations&outputFormat=application%2Fjson"
                 }
             ], 
             "layers": [
@@ -159,7 +155,6 @@
                     "id": "metoffice",
                     "name": "Weather Stations", 
                     "source": "metoffice",
-                    "source-layer": "metoffice",
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
                     "minzoom": 8,
@@ -183,28 +178,26 @@
                     "id": "metoffice_cluster",
                     "name":  "Weather Stations",
                     "source": "metoffice",
-                    "source-layer": "metoffice",
                     "type": "symbol",
                     "filter": ["has", "point_count"],
                     "minzoom": 4, 
                     "layout": {
                         "visibility": "visible",
                         "icon-image": "weather",
-                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.6, 20, 0.8],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true,
                         "text-field": "{point_count_abbreviated}",
-                        "text-font": ["Arial Unicode MS Bold"],
-                        "text-size": 12,
+                        "text-font": ["Arial Unicode MS Regular"],
+                        "text-size": 15,
                         "text-anchor": "center",
-                        "text-offset": [0, -0.15]
+                        "text-offset": [0, 0.5]
                     }
                 },
                 {
                     "id": "ea-stations",
                     "name": "Flood Monitoring Stations", 
                     "source": "ea-stations",
-                    "source-layer": "river_stations",
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
                     "minzoom": 8,
@@ -217,6 +210,26 @@
                         "icon-ignore-placement": true
                     }
                     
+                },
+                {
+                    "id": "ea-stations_cluster",
+                    "name":  "Flood Monitoring Stations",
+                    "source": "ea-stations",
+                    "type": "symbol",
+                    "filter": ["has", "point_count"],
+                    "minzoom": 4, 
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "ea-water-level",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.6, 20, 0.8],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "text-field": "{point_count_abbreviated}",
+                        "text-font": ["Arial Unicode MS Regular"],
+                        "text-size": 15,
+                        "text-anchor": "center",
+                        "text-offset": [0, 0.5]
+                    }
                 }
             ]
         },
