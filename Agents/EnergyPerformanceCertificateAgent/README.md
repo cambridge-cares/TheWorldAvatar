@@ -82,13 +82,14 @@ bash ./stack.sh start <STACK NAME>
 In case of time out issues in automatically building the StackClients resource, please try pulling the required stack-clients image first by `docker pull docker.cmclinnovations.com/stack-client:1.6.2`
 
 The *debug version* will run when built and launched through the provided VS Code `launch.json` configurations:
-> **Build and Debug**: Build Debug Docker image (incl. pushing to ghcr.io) and deploy as new container (incl. creation of new `.vscode/port.txt` file)
+> **Build and Debug (Flask)**: Build Debug Docker image (incl. pushing to ghcr.io) and deploy as new container (incl. creation of new `.vscode/port.txt` file)
 
-> **Debug**: Pull Debug Docker image from ghcr.io and deploy as new container (requires deletion of existing `.vscode/port.txt` to ensure mapping to same port)
+> **Debug (Flask)**: Pull Debug Docker image from ghcr.io and deploy as new container (requires deletion of existing `.vscode/port.txt` to ensure mapping to same port)
 
-> **Reattach and Debug**: Simply reattach debugger to running Debug Docker image. In case Debug image needs to be manually started as container, the following command can be used: 
+> **Reattach and Debug (Flask)**: Simply reattach debugger to running Debug Docker image. In case Debug image needs to be manually started as container, the following command can be used: 
 `bash ./stack.sh start TEST-STACK --debug-port <PORT from .vscode/port.txt>`
 
+**Please note**: As most of the data processing is handled in asynchronous background tasks managed by Celery, breakpoints in those codes would not be triggered by the configurations above. Hence, the debug version of the agent waits for the Celery debugger to attached (i.e. run provided `Attach and Debug Celery` configuration).
 
 &nbsp;
 ## 1.4 Spinning up the Stack remotely via SSH
@@ -124,7 +125,7 @@ Agent start-up will automatically register a recurring task to assimilate latest
 &nbsp;
 ## Provided functionality
 
-An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root http://localhost:5005/epcagent. All requests are to be sent as POST requests and all available endpoints are listed below. Example requests are provided in the [resources] folder.
+An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root http://localhost:5007/epcagent. All requests are to be sent as POST requests and all available endpoints are listed below. Example requests are provided in the [resources] folder.
 
 - POST request to instantiate all postcodes in a given local authority:
 > `/epcagent/instantiate/postcodes`
@@ -219,7 +220,7 @@ Markus Hofmeister (mh807@cam.ac.uk), February 2023
 [CARES container registry on Github]: https://github.com/orgs/cambridge-cares/packages
 [EPC APIs]: https://epc.opendatacommunities.org/docs/api
 [Github package repository]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
-[http://localhost:5005/epcagent]: http://localhost:5005/epcagent
+[http://localhost:5007/epcagent]: http://localhost:5007/epcagent
 [Java Runtime Environment version >=11]: https://adoptopenjdk.net/?variant=openjdk8&jvmVariant=hotspot
 [JDBC driver]: https://jdbc.postgresql.org/download/ 
 [OntoBuiltEnv]: https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl

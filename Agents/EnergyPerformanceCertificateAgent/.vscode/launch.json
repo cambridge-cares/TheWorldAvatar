@@ -6,7 +6,7 @@
     "configurations": [
         {
             "type": "python",
-            "name": "Debug",
+            "name": "Debug (Flask)",
             "request": "attach",
             "host": "localhost",
             "port": "${input:debug.port}",
@@ -20,7 +20,7 @@
         },
         {
             "type": "python",
-            "name": "Build and Debug",
+            "name": "Build and Debug (Flask)",
             "request": "attach",
             "host": "localhost",
             "port": "${input:debug.port}",
@@ -34,10 +34,23 @@
         },
         {
             "type": "python",
-            "name": "Reattach and Debug",
+            "name": "Reattach and Debug (Flask)",
             "request": "attach",
             "host": "localhost",
             "port": "${input:debug.port.read}",
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/agent",
+                    "remoteRoot": "/app/agent"
+                }
+            ]
+        },
+        {
+            "type": "python",
+            "name": "Attach and Debug Celery",
+            "request": "attach",
+            "host": "localhost",
+            "port": "5679",
             "pathMappings": [
                 {
                     "localRoot": "${workspaceFolder}/agent",

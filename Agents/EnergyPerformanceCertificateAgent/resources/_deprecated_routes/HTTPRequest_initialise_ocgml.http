@@ -1,4 +1,4 @@
 // Example HTTP request to initialise the OntoCityGml knowledge base at given KG endpoint
 
-GET http://165.232.172.16:5005/ocgml/initialise
+GET http://165.232.172.16:5007/ocgml/initialise
 Content-Type: application/json

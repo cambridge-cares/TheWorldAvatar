@@ -1,8 +1,8 @@
 // Example HTTP request to fetch the result of previously started task with provided 'id'
-// http://165.232.172.16:5005/epcagent/result/<id>
+// http://165.232.172.16:5007/epcagent/result/<id>
 
 // <id>: Task id as returned by the agent when the task was started
 
-GET http://165.232.172.16:5005/epcagent/result/6cf25c65-dbc1-4523-9836-5c6757dfece1
+GET http://165.232.172.16:5007/epcagent/result/cef8ef61-0ddc-49f3-a2cc-d9f188e8581c
 Content-Type: application/json
 

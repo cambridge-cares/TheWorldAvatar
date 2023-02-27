@@ -7,7 +7,7 @@
 //                 (the agent only instantiates EPC data for buildings instantiated in OntoCityGml)
 //                 --> OPTIONAL: if not provided, default namespace from environment variables will be used
 
-POST http://165.232.172.16:5005/epcagent/instantiate/certificates/single
+POST http://165.232.172.16:5007/epcagent/instantiate/certificates/single
 Content-Type: application/json
 
 # # Domestic EPC
