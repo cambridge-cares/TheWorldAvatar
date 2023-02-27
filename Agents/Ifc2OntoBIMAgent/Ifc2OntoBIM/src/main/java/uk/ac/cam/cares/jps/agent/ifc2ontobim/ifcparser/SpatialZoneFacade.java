@@ -11,7 +11,9 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcSiteRepresentation;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcStoreyRepresentation;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 
+import java.util.ArrayDeque;
 import java.util.LinkedHashSet;
+import java.util.Queue;
 
 
 /**
@@ -47,10 +49,29 @@ public class SpatialZoneFacade {
         selectBuilder.addVar(CommonQuery.ZONE_VAR)
                 .addVar(CommonQuery.NAME_VAR)
                 .addVar(CommonQuery.UID_VAR)
+                .addVar(CommonQuery.LAT_DEGREE_VAR).addVar(CommonQuery.LAT_MIN_VAR)
+                .addVar(CommonQuery.LAT_SEC_VAR).addVar(CommonQuery.LAT_MIL_SEC_VAR)
+                .addVar(CommonQuery.LONG_DEGREE_VAR).addVar(CommonQuery.LONG_MIN_VAR)
+                .addVar(CommonQuery.LONG_SEC_VAR).addVar(CommonQuery.LONG_MIL_SEC_VAR)
                 .addVar(CommonQuery.ELEVATION_VAR);
         selectBuilder.addWhere(CommonQuery.ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCSITE)
                 .addWhere(CommonQuery.ZONE_VAR, CommonQuery.IFC_NAME + CommonQuery.EXPRESS_HASSTRING, CommonQuery.NAME_VAR)
                 .addWhere(CommonQuery.ZONE_VAR, CommonQuery.IFC_ID + CommonQuery.EXPRESS_HASSTRING, CommonQuery.UID_VAR)
+                // Latitude
+                .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_REF_LAT, CommonQuery.LAT_VAR)
+                .addOptional(CommonQuery.LAT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCCOMPOUND_PLANE_ANGLE)
+                .addOptional(CommonQuery.LAT_VAR, CommonQuery.LIST_HAS_CONTENT + CommonQuery.EXPRESS_HASINTEGER, CommonQuery.LAT_DEGREE_VAR)
+                .addOptional(CommonQuery.LAT_VAR, CommonQuery.LIST_HAS_NEXT + "/" + CommonQuery.LIST_HAS_CONTENT + CommonQuery.EXPRESS_HASINTEGER, CommonQuery.LAT_MIN_VAR)
+                .addOptional(CommonQuery.LAT_VAR, CommonQuery.LIST_HAS_NEXT + "/" + CommonQuery.LIST_HAS_NEXT + "/" + CommonQuery.LIST_HAS_CONTENT + CommonQuery.EXPRESS_HASINTEGER, CommonQuery.LAT_SEC_VAR)
+                .addOptional(CommonQuery.LAT_VAR, CommonQuery.LIST_HAS_NEXT + "/" + CommonQuery.LIST_HAS_NEXT + "/" + CommonQuery.LIST_HAS_NEXT + "/" + CommonQuery.LIST_HAS_CONTENT + CommonQuery.EXPRESS_HASINTEGER, CommonQuery.LAT_MIL_SEC_VAR)
+                // Longitude
+                .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_REF_LONG, CommonQuery.LONG_VAR)
+                .addOptional(CommonQuery.LONG_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCCOMPOUND_PLANE_ANGLE)
+                .addOptional(CommonQuery.LONG_VAR, CommonQuery.LIST_HAS_CONTENT + CommonQuery.EXPRESS_HASINTEGER, CommonQuery.LONG_DEGREE_VAR)
+                .addOptional(CommonQuery.LONG_VAR, CommonQuery.LIST_HAS_NEXT + "/" + CommonQuery.LIST_HAS_CONTENT + CommonQuery.EXPRESS_HASINTEGER, CommonQuery.LONG_MIN_VAR)
+                .addOptional(CommonQuery.LONG_VAR, CommonQuery.LIST_HAS_NEXT + "/" + CommonQuery.LIST_HAS_NEXT + "/" + CommonQuery.LIST_HAS_CONTENT + CommonQuery.EXPRESS_HASINTEGER, CommonQuery.LONG_SEC_VAR)
+                .addOptional(CommonQuery.LONG_VAR, CommonQuery.LIST_HAS_NEXT + "/" + CommonQuery.LIST_HAS_NEXT + "/" + CommonQuery.LIST_HAS_NEXT + "/" + CommonQuery.LIST_HAS_CONTENT + CommonQuery.EXPRESS_HASINTEGER, CommonQuery.LONG_MIL_SEC_VAR)
+                // Elevation
                 .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_SITE_ELEV + CommonQuery.EXPRESS_HASDOUBLE, CommonQuery.ELEVATION_VAR);
         CommonQuery.addBaseQueryComponents(selectBuilder);
         return selectBuilder.buildString();
@@ -70,8 +91,32 @@ public class SpatialZoneFacade {
             String iri = soln.get(CommonQuery.ZONE_VAR).toString();
             String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
             String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
+            Queue<String> latitude;
+            // Add latitude values as a queue
+            if (soln.contains(CommonQuery.LAT_DEGREE_VAR) && soln.contains(CommonQuery.LAT_MIN_VAR) &&
+                    soln.contains(CommonQuery.LAT_SEC_VAR) && soln.contains(CommonQuery.LAT_MIL_SEC_VAR)) {
+                latitude = new ArrayDeque<>();
+                latitude.offer(QueryHandler.retrieveLiteral(soln, CommonQuery.LAT_DEGREE_VAR));
+                latitude.offer(QueryHandler.retrieveLiteral(soln, CommonQuery.LAT_MIN_VAR));
+                latitude.offer(QueryHandler.retrieveLiteral(soln, CommonQuery.LAT_SEC_VAR));
+                latitude.offer(QueryHandler.retrieveLiteral(soln, CommonQuery.LAT_MIL_SEC_VAR));
+            } else {
+               latitude = null;
+            }
+            Queue<String> longitude;
+            // Add longitude values as a queue
+            if (soln.contains(CommonQuery.LONG_DEGREE_VAR) && soln.contains(CommonQuery.LONG_MIN_VAR) &&
+                    soln.contains(CommonQuery.LONG_SEC_VAR) && soln.contains(CommonQuery.LONG_MIL_SEC_VAR)) {
+                longitude = new ArrayDeque<>();
+                longitude.offer(QueryHandler.retrieveLiteral(soln, CommonQuery.LONG_DEGREE_VAR));
+                longitude.offer(QueryHandler.retrieveLiteral(soln, CommonQuery.LONG_MIN_VAR));
+                longitude.offer(QueryHandler.retrieveLiteral(soln, CommonQuery.LONG_SEC_VAR));
+                longitude.offer(QueryHandler.retrieveLiteral(soln, CommonQuery.LONG_MIL_SEC_VAR));
+            } else {
+                longitude = null;
+            }
             String elev = QueryHandler.retrieveLiteral(soln, CommonQuery.ELEVATION_VAR);
-            IfcSiteRepresentation site = new IfcSiteRepresentation(iri, name, uid, elev);
+            IfcSiteRepresentation site = new IfcSiteRepresentation(iri, name, uid, latitude, longitude, elev);
             zoneMappings.add(iri, site);
             site.constructStatements(statementSet);
         }

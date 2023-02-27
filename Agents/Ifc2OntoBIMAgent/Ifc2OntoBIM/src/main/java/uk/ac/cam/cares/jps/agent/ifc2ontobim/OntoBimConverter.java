@@ -10,7 +10,6 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaclassifier.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement.IfcElementConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base.IfcProjectConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcgeometry.GeomConstructBuilderMediator;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base.IfcSpatialZonesConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.IgnoreClassHelper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.TTLWriter;
@@ -87,7 +86,7 @@ public class OntoBimConverter {
         LinkedHashSet<Statement> statementSet = new LinkedHashSet<>();
         ignoreGeom = IgnoreClassHelper.genIgnoreSet();
         genProjectStatements(builder, statementSet);
-        genSpatialZoneStatements(builder, statementSet);
+        genSpatialZoneStatements(statementSet);
         genElementsStatements(builder, statementSet);
         genCommonGeometryContentStatements(builder, statementSet);
 
@@ -115,22 +114,10 @@ public class OntoBimConverter {
      * The results returned are constructed as statements in the OntoBIM schema and stored as a set.
      * Note that the statements will be written to a temporary file to prevent heap overflow.
      *
-     * @param builder      The construct builder to add new query statements.
      * @param statementSet Stores the relevant queried statements into this set.
      */
-    private void genSpatialZoneStatements(ConstructBuilder builder, LinkedHashSet<Statement> statementSet) {
-        Map<String, String> spatialZones = new HashMap<>();
-        spatialZones.put("ifc:IfcSite", "bim:IfcSiteRepresentation");
-
-        for (String ifcZones : spatialZones.keySet()) {
-            // Clone the builder to ensure that query statements are not transferred across different zones
-            ConstructBuilder tempBuilder = builder.clone();
-            LOGGER.info("Preparing query for the spatial zone: " + ifcZones);
-            String query = new IfcSpatialZonesConstructBuilder().createSparqlQuery(tempBuilder, ifcZones, spatialZones.get(ifcZones));
-            QueryHandler.queryConstructStatementsAsSet(query, this.owlModel, statementSet);
-            LOGGER.info("Retrieved statements related to spatial zones for " + ifcZones);
-        }
-        CompoundAngleMeasureClassifier.addClassMapping(statementSet, classMapping);
+    private void genSpatialZoneStatements(LinkedHashSet<Statement> statementSet) {
+        LOGGER.info("Retrieving and generating spatial zones statements...");
         SpatialZoneFacade.genZoneTriples(this.owlModel, statementSet);
         this.storeInTempFiles(statementSet);
         LOGGER.info("Stored statements for spatial zones in temporary file");

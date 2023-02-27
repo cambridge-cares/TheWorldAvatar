@@ -26,6 +26,12 @@ public class OntoBimConstant {
     public static final String BOT_HAS_STOREY = NamespaceMapper.BOT_NAMESPACE + "hasStorey";
     public static final String BIM_HAS_ROOM = NamespaceMapper.BIM_NAMESPACE + "hasRoom";
     public static final String BIM_HAS_ID = NamespaceMapper.BIM_NAMESPACE + "hasIfcId";
+    public static final String BIM_HAS_LAT = NamespaceMapper.BIM_NAMESPACE + "hasRefLatitude";
+    public static final String BIM_HAS_LONG = NamespaceMapper.BIM_NAMESPACE + "hasRefLongitude";
+    public static final String BIM_HAS_DEGREE = NamespaceMapper.BIM_NAMESPACE + "hasDegree";
+    public static final String BIM_HAS_MINUTE = NamespaceMapper.BIM_NAMESPACE + "hasMinute";
+    public static final String BIM_HAS_SEC = NamespaceMapper.BIM_NAMESPACE + "hasSecond";
+    public static final String BIM_HAS_MILSEC = NamespaceMapper.BIM_NAMESPACE + "hasMillionthSecond";
 
     // OntoBim classes
     public static final String SITE_CLASS = "Site";
@@ -44,6 +50,7 @@ public class OntoBimConstant {
     public static final String BIM_BUILDING_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + BUILDING_REP_CLASS;
     public static final String BIM_STOREY_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + STOREY_REP_CLASS;
     public static final String BIM_ROOM_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + ROOM_REP_CLASS;
+    public static final String BIM_COMPOUND_PLANE_ANGLE = NamespaceMapper.BIM_NAMESPACE + "CompoundPlaneAngle";
 
     // OM classes
     public static final String HEIGHT_CLASS = NamespaceMapper.OM_NAMESPACE + "Height";

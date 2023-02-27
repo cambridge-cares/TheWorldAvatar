@@ -65,7 +65,7 @@ class SpatialZoneStorageTest {
     @Test
     void testAddAndGetSite() {
         // Create a new sample representation
-        IfcSiteRepresentation sampleSite = new IfcSiteRepresentation(TEST_SITE_IRI, TEST_SITE_NAME, TEST_SITE_UID, TEST_ELEV.toString());
+        IfcSiteRepresentation sampleSite = new IfcSiteRepresentation(TEST_SITE_IRI, TEST_SITE_NAME, TEST_SITE_UID, null, null, TEST_ELEV.toString());
         // Execute method
         testMappings.add(TEST_SITE_IRI, sampleSite);
         // Assert if they are equals

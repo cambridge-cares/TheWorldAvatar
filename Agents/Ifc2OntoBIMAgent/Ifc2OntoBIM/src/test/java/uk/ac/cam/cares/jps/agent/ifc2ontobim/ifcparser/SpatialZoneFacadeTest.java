@@ -37,13 +37,26 @@ class SpatialZoneFacadeTest {
     private static final String BUILDING_AGG_INST = TEST_BASE_URI + "IfcRelAggregates_106";
     private static final String STOREY_AGG_INST = TEST_BASE_URI + "IfcRelAggregates_126";
     private static final String ROOM_AGG_INST = TEST_BASE_URI + "IfcRelAggregates_136";
+    // Numerical literals
     private static final Double TEST_SITE_DOUBLE = 25.0;
+    private static final Double TEST_SITE_LAT_DEGREE = 10.21;
+    private static final Double TEST_SITE_LAT_MINUTE = 10.0;
+    private static final Double TEST_SITE_LAT_SEC = 1.35;
+    private static final Double TEST_SITE_LAT_MIL_SEC = 0.0;
+    private static final Double TEST_SITE_LONG_DEGREE = 21.5;
+    private static final Double TEST_SITE_LONG_MINUTE = 20.0;
+    private static final Double TEST_SITE_LONG_SEC = 3.15;
+    private static final Double TEST_SITE_LONG_MIL_SEC = 5.6;
     private static final Double TEST_BUILDING_REF_ELEV_DOUBLE = 28.15;
     private static final Double TEST_BUILDING_TER_ELEV_DOUBLE = 3.6;
     private static final Double TEST_STOREY_DOUBLE = 1.2;
     private static final Double TEST_STOREY_DOUBLE2 = 3.4;
+    // Properties
     private static final Property hasDouble = ResourceFactory.createProperty(JunitTestUtils.expressUri + "hasDouble");
     private static final Property hasString = ResourceFactory.createProperty(JunitTestUtils.expressUri + "hasString");
+    private static final Property hasInteger = ResourceFactory.createProperty(JunitTestUtils.expressUri + "hasInteger");
+    private static final Property hasContents = ResourceFactory.createProperty(JunitTestUtils.listUri + "hasContents");
+    private static final Property hasNext = ResourceFactory.createProperty(JunitTestUtils.listUri + "hasNext");
     private static final Property hasName = ResourceFactory.createProperty(JunitTestUtils.IFC2X3_NAME_PROPERTY);
     private static final Property hasId = ResourceFactory.createProperty(JunitTestUtils.IFC2X3_ID_PROPERTY);
 
@@ -90,7 +103,7 @@ class SpatialZoneFacadeTest {
     }
 
     @Test
-    void testGenZoneTriplesOptionalValuesNotAvailable() {
+    void testGenZoneTriplesSimpleModel() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         // Execute method
@@ -99,14 +112,48 @@ class SpatialZoneFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedStatements(), result);
-        // Ensure that the building terrain elevation triples are not generated
-        JunitTestUtils.doesExpectedListNotExist(genExpectedAdditionalStatements(), result);
+        // Ensure that the extra triples are not generated
+        JunitTestUtils.doesExpectedListNotExist(genExpectedComplexModelStatements(), result);
+        JunitTestUtils.doesExpectedListNotExist(genExpectedLatLongStatements(), result);
+    }
+
+    @Test
+    void testGenZoneTriplesNoLatLong() {
+        // Set up
+        addComplexModelTriples();
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Execute method
+        SpatialZoneFacade.genZoneTriples(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedComplexModelStatements(), result);
+        // Ensure that latitude/longitude triples are not generated
+        JunitTestUtils.doesExpectedListNotExist(genExpectedLatLongStatements(), result);
+    }
+
+    @Test
+    void testGenZoneTriplesSimpleModelWithLatLong() {
+        // Set up
+        addLatLongTriples();
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Execute method
+        SpatialZoneFacade.genZoneTriples(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedLatLongStatements(), result);
+        // Ensure that complex model triples are not generated
+        JunitTestUtils.doesExpectedListNotExist(genExpectedComplexModelStatements(), result);
     }
 
     @Test
     void testGenZoneTriples() {
         // Set up
-        addAdditionalTriples();
+        addComplexModelTriples();
+        addLatLongTriples();
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         // Execute method
         SpatialZoneFacade.genZoneTriples(sampleModel, sampleSet);
@@ -114,10 +161,11 @@ class SpatialZoneFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedStatements(), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedAdditionalStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedComplexModelStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedLatLongStatements(), result);
     }
 
-    private void addAdditionalTriples() {
+    private void addComplexModelTriples() {
         Resource buildingBlankNode = sampleModel.createResource();
         Resource storeyBlankNode = sampleModel.createResource();
         Resource storeyNameBlankNode = sampleModel.createResource();
@@ -203,6 +251,52 @@ class SpatialZoneFacadeTest {
                         sampleModel.getResource(KITCHEN_INST));
     }
 
+    private void addLatLongTriples() {
+        Resource latitudeNode = sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCompoundPlaneAngleMeasure_321");
+        Resource longitudeNode = sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCompoundPlaneAngleMeasure_532");
+        sampleModel.createResource(SITE_INST)
+                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCompoundPlaneAngleMeasure"))
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "refLatitude_IfcSite"), latitudeNode)
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "refLongitude_IfcSite"), longitudeNode);
+        // Latitude statements
+        Resource latDegBlankNode = sampleModel.createResource();
+        Resource latMinBlankNode = sampleModel.createResource();
+        Resource latMinValBlankNode = sampleModel.createResource();
+        Resource latSecBlankNode = sampleModel.createResource();
+        Resource latSecValBlankNode = sampleModel.createResource();
+        Resource latMilSecBlankNode = sampleModel.createResource();
+        Resource latMilSecValBlankNode = sampleModel.createResource();
+        sampleModel.add(latitudeNode, hasContents, latDegBlankNode);
+        sampleModel.add(latDegBlankNode, hasInteger, ResourceFactory.createTypedLiteral(String.valueOf(TEST_SITE_LAT_DEGREE)));
+        sampleModel.add(latitudeNode, hasNext, latMinBlankNode);
+        sampleModel.add(latMinBlankNode, hasContents, latMinValBlankNode);
+        sampleModel.add(latMinValBlankNode, hasInteger, ResourceFactory.createTypedLiteral(String.valueOf(TEST_SITE_LAT_MINUTE)));
+        sampleModel.add(latMinBlankNode, hasNext, latSecBlankNode);
+        sampleModel.add(latSecBlankNode, hasContents, latSecValBlankNode);
+        sampleModel.add(latSecValBlankNode, hasInteger, ResourceFactory.createTypedLiteral(String.valueOf(TEST_SITE_LAT_SEC)));
+        sampleModel.add(latSecBlankNode, hasNext, latMilSecBlankNode);
+        sampleModel.add(latMilSecBlankNode, hasContents, latMilSecValBlankNode);
+        sampleModel.add(latMilSecValBlankNode, hasInteger, ResourceFactory.createTypedLiteral(String.valueOf(TEST_SITE_LAT_MIL_SEC)));
+        // Longitude statements
+        Resource longDegBlankNode = sampleModel.createResource();
+        Resource longMinBlankNode = sampleModel.createResource();
+        Resource longMinValBlankNode = sampleModel.createResource();
+        Resource longSecBlankNode = sampleModel.createResource();
+        Resource longSecValBlankNode = sampleModel.createResource();
+        Resource longMilSecBlankNode = sampleModel.createResource();
+        Resource longMilSecValBlankNode = sampleModel.createResource();
+        sampleModel.add(longitudeNode, hasContents, longDegBlankNode);
+        sampleModel.add(longDegBlankNode, hasInteger, ResourceFactory.createTypedLiteral(String.valueOf(TEST_SITE_LONG_DEGREE)));
+        sampleModel.add(longitudeNode, hasNext, longMinBlankNode);
+        sampleModel.add(longMinBlankNode, hasContents, longMinValBlankNode);
+        sampleModel.add(longMinValBlankNode, hasInteger, ResourceFactory.createTypedLiteral(String.valueOf(TEST_SITE_LONG_MINUTE)));
+        sampleModel.add(longMinBlankNode, hasNext, longSecBlankNode);
+        sampleModel.add(longSecBlankNode, hasContents, longSecValBlankNode);
+        sampleModel.add(longSecValBlankNode, hasInteger, ResourceFactory.createTypedLiteral(String.valueOf(TEST_SITE_LONG_SEC)));
+        sampleModel.add(longSecBlankNode, hasNext, longMilSecBlankNode);
+        sampleModel.add(longMilSecBlankNode, hasContents, longMilSecValBlankNode);
+        sampleModel.add(longMilSecValBlankNode, hasInteger, ResourceFactory.createTypedLiteral(String.valueOf(TEST_SITE_LONG_MIL_SEC)));    }
+
     private List<String> genExpectedStatements() {
         List<String> expected = new ArrayList<>();
         expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefElevation, " + TEST_BASE_URI + "Height_");
@@ -227,7 +321,23 @@ class SpatialZoneFacadeTest {
         return expected;
     }
 
-    private List<String> genExpectedAdditionalStatements() {
+    private List<String> genExpectedLatLongStatements() {
+        List<String> expected = new ArrayList<>();
+        expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefLatitude, " + TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/CompoundPlaneAngle");
+        expected.add(TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasDegree, \"" + TEST_SITE_LAT_DEGREE);
+        expected.add(TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasMinute, \"" + TEST_SITE_LAT_MINUTE);
+        expected.add(TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSecond, \"" + TEST_SITE_LAT_SEC);
+        expected.add(TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasMillionthSecond, \"" + TEST_SITE_LAT_MIL_SEC);
+        expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefLongitude, " + TEST_BASE_URI + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasDegree, \"" + TEST_SITE_LONG_DEGREE);
+        expected.add(TEST_BASE_URI + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasMinute, \"" + TEST_SITE_LONG_MINUTE);
+        expected.add(TEST_BASE_URI + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSecond, \"" + TEST_SITE_LONG_SEC);
+        expected.add(TEST_BASE_URI + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasMillionthSecond, \"" + TEST_SITE_LONG_MIL_SEC);
+        return expected;
+    }
+
+    private List<String> genExpectedComplexModelStatements() {
         List<String> expected = new ArrayList<>();
         expected.add(TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTerrainElevation, " + TEST_BASE_URI + "Height_");
         expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue, \"" + TEST_BUILDING_TER_ELEV_DOUBLE);
