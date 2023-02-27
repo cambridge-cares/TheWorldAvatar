@@ -77,6 +77,13 @@
       <version>4.13</version>
       <scope>test</scope>
     </dependency>
+    <!-- For mocking static methods -->
+    <dependency>
+      <groupId>com.github.stefanbirkner</groupId>
+      <artifactId>system-lambda</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+
 
     <!-- Logging -->
     <dependency>
@@ -93,6 +100,12 @@
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-web</artifactId>
       <version>2.17.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>3.5.7</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
