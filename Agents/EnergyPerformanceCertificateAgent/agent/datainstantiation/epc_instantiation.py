@@ -276,16 +276,13 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
                 if not instantiated:                 
                     # 2) No EPC data instantiated yet --> Instantiate data
                     # Create Property IRI
-                    if (epc_endpoint == 'domestic'):
-                        if is_child:
-                            if row.get('property-type') in ['Flat', 'Maisonette']:
-                                data_to_instantiate['property_iri'] = KB + 'Flat_' + str(uuid.uuid4())
-                            else:
-                                data_to_instantiate['property_iri'] = KB + 'Property_' + str(uuid.uuid4())
+                    if is_child:
+                        if row.get('property-type') in ['Flat', 'Maisonette']:
+                            data_to_instantiate['property_iri'] = KB + 'Flat_' + str(uuid.uuid4())
                         else:
-                            data_to_instantiate['property_iri'] = KB + 'Building_' + str(uuid.uuid4())
-                    elif (epc_endpoint == 'non-domestic' or epc_endpoint == 'display'):
-                        data_to_instantiate['property_iri'] = KB + 'Property_' + str(uuid.uuid4())
+                            data_to_instantiate['property_iri'] = KB + 'Property_' + str(uuid.uuid4())
+                    else:
+                        data_to_instantiate['property_iri'] = KB + 'Building_' + str(uuid.uuid4())
 
                     # Add postcode and district IRIs
                     postcode = row.get('postcode')
@@ -1296,7 +1293,8 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                     raise KGException('Unable to retrieve building usage category.') from ex
                 
                 usages = []
-                # Map usage(s)
+                # Map usage(s) for visualisation: prioritise "critical" usages
+                to_prioritise = [OBE_EMERGENCYSERVICE, OBE_MEDICALCARE, OBE_EDUCATION]
                 if len(retrieved_usage) == 1:
                     primary_usage = retrieved_usage[0].get('usage')
                     usages.append(primary_usage)
@@ -1304,19 +1302,30 @@ def add_ocgml_building_data(query_endpoint=QUERY_ENDPOINT,
                     # is already "general" (i.e. not a key in mapping dict), use it directly
                     usage_category = USAGE_MAPPING.get(primary_usage, primary_usage)
                 else:
+                    # Initialise primary usage
+                    primary_usage = None
                     max_weight = 0
                     for u in retrieved_usage:
-                        usages.append(u.get('usage'))
+                        usage = u.get('usage')
+                        usages.append(usage)
                         query = get_usage_share(u.get('usage_iri'))
                         try:
-                            weight = (kgclient_epc.performQuery(query))
+                            weight = kgclient_epc.performQuery(query)
+                            weight = float(weight[0].get('share'))
                         except KGException as ex:
                             logger.error('Unable to retrieve usage share.')
                             raise KGException('Unable to retrieve usage share.') from ex
-                        if float(weight[0].get('share')) > max_weight:
-                            #NOTE: In case of equal usage weights, the first usage is used
-                            max_weight = float(weight[0].get('share'))
-                            primary_usage = u.get('usage')
+                        if weight >= max_weight:
+                            #NOTE: In case of equal usage weights, use prioritised 
+                            #      usage, otherwise use the first one
+                            if primary_usage:
+                                if usage in to_prioritise:
+                                    primary_usage = usage
+                                    max_weight = weight
+                            else:
+                                primary_usage = usage
+                                max_weight = weight
+
                     usage_category = USAGE_MAPPING.get(primary_usage, primary_usage)
                 # Convert list of usages to concatenated string (to be JSON compatible)
                 usages = ';'.join(usages)
