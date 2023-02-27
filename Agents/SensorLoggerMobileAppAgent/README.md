@@ -32,9 +32,14 @@ You'll need to provide  your credentials in single-word text files located like 
 ```
 
 ## Debugging the agent
+#### Building the docker image 
+On the Debug side panel of VSCode, run the `Build and debug` configuration. (This will fail but will produce the docker image)
+
+#### Debugging
 1) Insert breakpoints within the code.
-2) On the Debug side panel of VSCode, run the `Debug` configuration. (This will fail but will spin up the agent within the stack - `Failed to attach to remote debuggee VM. Reason: com.sun.jdi.connect.spi.ClosedConnectionException`)
-3) Run `Reattach and debug` to enter the debug mode. 
+2) On the Debug side panel of VSCode, run the `Debug` configuration.
+3) Input the <STACK-NAME> (This will fail but will spin up the agent within the stack - `Failed to attach to remote debuggee VM. Reason: com.sun.jdi.connect.spi.ClosedConnectionException`)
+4) Run `Reattach and debug` to enter the debug mode. 
 
 ## Testing the agent
 1) Edit the local address of `SamplePOST_for_Stack` in `/SensorLoggerMobileAppAgent/sensorloggermobileapp_agent/src/main/resources`. To do so, run `ipconfig` in cmd.exe, obtain `IPv4 Address` under `Wireless LAN adapter WiFi`, replace `<LOCAL_URL>` with this `IPv4 Address` at `http://<LOCAL_URL>:10102/SensorLoggerMobileAppAgent/mb`

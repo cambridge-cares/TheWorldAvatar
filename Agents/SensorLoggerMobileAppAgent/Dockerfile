@@ -25,6 +25,8 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
+
+ADD https://jdbc.postgresql.org/download/postgresql-42.5.4.jar ./resources/
 # COPY --from=builder /root/sensorloggermobileapp_agent/output/SensorLoggerMobileAppAgent##1.0.0.war $CATALINA_HOME/webapps/
 
 
