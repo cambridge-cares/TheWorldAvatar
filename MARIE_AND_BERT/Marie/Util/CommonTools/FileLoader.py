@@ -6,10 +6,19 @@ from Marie.Util.Logging import MarieLogger
 from Marie.Util.location import DATA_DIR
 
 
+
 class FileLoader:
     """
     File loader loads embedding files, index files and so on
     """
+
+    @staticmethod
+    def create_o_p_dict(triples):
+        o_p_dict = {}
+        for triple in triples:
+            s, p, o = [e.strip() for e in triple.split("\t")]
+            o_p_dict[o] = p
+        return o_p_dict
 
     def __init__(self, full_dataset_dir, dataset_name=None):
         self.marie_logger = MarieLogger()
@@ -29,7 +38,7 @@ class FileLoader:
             value_dictionary = pickle.load(file)
         return value_dictionary
 
-    def load_all_triples(self, full_dataset_dir =None, dataset_name=None):
+    def load_all_triples(self, full_dataset_dir=None, dataset_name=None):
         if full_dataset_dir is None:
             triple_path = os.path.join(f'{self.full_dataset_dir}/{self.dataset_name}-train.txt')
         else:
