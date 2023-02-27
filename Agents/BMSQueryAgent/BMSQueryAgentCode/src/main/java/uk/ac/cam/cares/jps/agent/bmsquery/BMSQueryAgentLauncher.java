@@ -23,8 +23,10 @@ public class BMSQueryAgentLauncher extends JPSAgent {
     private static final String KEY_DATAIRI = "dataIRI";
     private static final String KEY_CLIENT_PROPERTIES = "clientProperties";
 
-    private static final String AGENT_ERROR_MSG = "The BMSQueryAgent could not be constructed!";
-    private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
+    public static final String PARAMETERS_VALIDATION_ERROR_MSG = "Unable to validate request sent to the agent.";
+    public static final String EMPTY_PARAMETER_ERROR_MSG = "Empty Request.";
+    public static final String AGENT_Construction_ERROR_MSG = "The BMSQueryAgent could not be constructed.";
+    public static final String TSCLIENT_CONSTRUCTION_ERROR_MSG = "Could not construct the time series client needed by the input agent.";
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -42,8 +44,8 @@ public class BMSQueryAgentLauncher extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         if (!validateInput(requestParams)) {
-            LOGGER.error("Unable to validate request sent to the agent!");
-            throw new JPSRuntimeException("Unable to validate request sent to the agent!");
+            LOGGER.error(PARAMETERS_VALIDATION_ERROR_MSG);
+            throw new JPSRuntimeException(PARAMETERS_VALIDATION_ERROR_MSG);
         }
 
         String dataIRI = requestParams.getString(KEY_DATAIRI);
@@ -60,7 +62,7 @@ public class BMSQueryAgentLauncher extends JPSAgent {
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
 
         if (requestParams.isEmpty()) {
-            LOGGER.error("Empty Request.");
+            LOGGER.error(EMPTY_PARAMETER_ERROR_MSG);
             return false;
         }
 
@@ -76,7 +78,7 @@ public class BMSQueryAgentLauncher extends JPSAgent {
 
         String clientProperties = requestParams.getString(KEY_CLIENT_PROPERTIES);
         if (System.getenv(clientProperties) == null) {
-            LOGGER.error("Client property file at " + clientProperties + "is not found.");
+            LOGGER.error("Client property file is not found in the environment variable.");
             return false;
         }
 
@@ -89,8 +91,8 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         try {
             agent = new BMSQueryAgent();
         } catch (Exception e) {
-            LOGGER.error(AGENT_ERROR_MSG, e);
-            throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
+            LOGGER.error(AGENT_Construction_ERROR_MSG, e);
+            throw new JPSRuntimeException(AGENT_Construction_ERROR_MSG, e);
         }
         LOGGER.info("Input agent object initialized.");
         JSONObject jsonMessage = new JSONObject();
@@ -101,8 +103,8 @@ public class BMSQueryAgentLauncher extends JPSAgent {
             tsClient = new TimeSeriesClient<>(OffsetDateTime.class, clientPropertyFile);
             agent.setTsClient(tsClient);
         } catch (IOException | JPSRuntimeException e) {
-            LOGGER.error(TSCLIENT_ERROR_MSG, e);
-            throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e);
+            LOGGER.error(TSCLIENT_CONSTRUCTION_ERROR_MSG, e);
+            throw new JPSRuntimeException(TSCLIENT_CONSTRUCTION_ERROR_MSG, e);
         }
         LOGGER.info("Time series client object initialized.");
         jsonMessage.accumulate("Message", "Time series client object initialized.");
