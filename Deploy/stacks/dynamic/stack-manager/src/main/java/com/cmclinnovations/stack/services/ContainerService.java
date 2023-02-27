@@ -4,20 +4,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 
 import com.cmclinnovations.stack.clients.core.AbstractEndpointConfig;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.clients.docker.DockerClient.ComplexCommand;
+import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.ContainerSpec;
-import com.github.dockerjava.api.model.ContainerSpecSecret;
 import com.github.dockerjava.api.model.ServiceSpec;
 import com.github.dockerjava.api.model.TaskSpec;
+import com.github.odiszapc.nginxparser.NgxBlock;
+import com.github.odiszapc.nginxparser.NgxConfig;
 
 public class ContainerService extends AbstractService {
 
@@ -153,6 +154,16 @@ public class ContainerService extends AbstractService {
             dockerClient.addSecret(secretName, "UNUSED");
         }
         return secretExists;
+    }
+
+    public void addServerSpecificNginxLocationBlocks(NgxConfig locationConfigOut,
+            Map<String, String> upstreams, Entry<String, Connection> endpoint) {
+        // Do nothing by default, override if container needs alteration to a NGINX location configuration block
+    }
+
+    public void addServerSpecificNginxSettingsToLocationBlock(NgxBlock locationBlock,
+            Map<String, String> upstreams, Entry<String, Connection> endpoint) {
+        // Do nothing by default, override if container needs to add an NGINX location configuration block
     }
 
 }

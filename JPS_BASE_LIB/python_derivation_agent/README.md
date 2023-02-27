@@ -1,6 +1,6 @@
 # Description #
 
-The `pyderivationagent` package provides a python wrapper for derivation agents as part of [TheWorldAvatar](https://github.com/cambridge-cares/TheWorldAvatar) project. It is a python equivalent of `uk.ac.cam.cares.jps.base.agent.DerivationAgent.java` but based on [Flask](https://flask.palletsprojects.com/en/2.0.x/) application behind a [gunicorn](https://gunicorn.org/) server, inspired by the [Example: Python agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/examples/python_agent). `pyderivationagent` uses `py4jps>=1.0.21` to access derivation operations provided in `uk.ac.cam.cares.jps.base.derivation.DerivationClient.java`. For technical details, below are a few useful links:
+The `pyderivationagent` package provides a python wrapper for derivation agents as part of [TheWorldAvatar](https://github.com/cambridge-cares/TheWorldAvatar) project. It is a python equivalent of `uk.ac.cam.cares.jps.base.agent.DerivationAgent.java` but based on [Flask](https://flask.palletsprojects.com/en/2.0.x/) application behind a [gunicorn](https://gunicorn.org/) server, inspired by the [Example: Python agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/examples/python_agent). `pyderivationagent` uses `py4jps>=1.0.32` to access derivation operations provided in `uk.ac.cam.cares.jps.base.derivation.DerivationClient.java`. For technical details, below are a few useful links:
 - [`py4jps`](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB/python_wrapper) - python wrapper for jps-base-lib
 - [`DerivationClient`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/derivation) - derivation framework
 - [`DerivationAgent.java`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/agent/DerivationAgent.java) - derivation agent java class that uses methods provided in `DerivationClient`
@@ -400,11 +400,14 @@ services:
 
   # Blazegraph
   blazegraph:
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
     container_name: "blazegraph_test"
     ports:
       - 27149:8080
     environment:
+      # Use BLAZEGRAPH_USER and BLAZEGRAPH_PASSWORD_FILE if you would like to add authentication
+      # Otherwise, you may wish to comment them out
+      BLAZEGRAPH_USER: bg_user
       BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
     # Add a secret to set the password for BASIC authentication
     secrets:
@@ -466,7 +469,6 @@ The release procedure is currently semi-automated and requires a few items:
 - The version number x.x.x for the release
 - Clone of `TheWorldAvatar` repository on your local machine
 - Docker-desktop is installed and running on your local machine
-- You have access to the docker.cmclinnovations.com registry on your local machine, for more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 
 ## Stable version release
 For a stable version release, please create and checkout to a new branch from your feature branch once you are happy with the feature and above details are ready. The release process can then be started by using the commands below, depending on the operating system you're using. (REMEMBER TO CHANGE THE CORRECT VALUES FOR `<absolute_path_to>` IN THE COMMANDS BELOW!)
