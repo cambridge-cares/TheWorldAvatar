@@ -13,14 +13,11 @@ Before building, change the placeholder `<STACK-NAME>` in `./sensorloggermobilea
 
 You'll need to provide  your credentials in single-word text files located like this:
 #### Under the main folder
-`sensorloggermobileapp_username.txt` refers to the stack username and `sensorloggermobileapp_password.txt` refers to the stack password for the `postgis_password` previously set in stack-manager. 
 ```
 ./SensorLoggerMobileAppAgent/
     credentials/
         repo_username.txt
         repo_password.txt
-        sensorloggermobileapp_username.txt
-        sensorloggermobileapp_password.txt
 ```
 
 #### Under the docker folder
