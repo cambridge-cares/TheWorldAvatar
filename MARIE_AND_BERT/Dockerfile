@@ -1,29 +1,31 @@
 FROM tiangolo/uwsgi-nginx-flask:python3.8 as flask
-
-# COPY ./Marie/ Marie
+WORKDIR /app
+#RUN apt-get update && \
+#    apt-get upgrade -y && \
+#    apt-get install -y git && \
+#    git init && git remote add -f origin https://github.com/cambridge-cares/TheWorldAvatar \
+#&& git sparse-checkout set MARIE_AND_BERT \
+#&& git pull origin dev-marie-and-bert
 RUN git clone --branch dev-marie-and-bert https://github.com/cambridge-cares/TheWorldAvatar
-RUN cp -r TheWorldAvatar/MARIE_AND_BERT/Marie ./Marie
-RUN cp -r TheWorldAvatar/MARIE_AND_BERT/uwsgi.ini ./uwsgi.ini
-RUN cp -r TheWorldAvatar/MARIE_AND_BERT/static ./static
-RUN cp -r TheWorldAvatar/MARIE_AND_BERT/templates ./templates
-RUN cp -r TheWorldAvatar/MARIE_AND_BERT/main.py ./main.py
-RUN cp -r TheWorldAvatar/MARIE_AND_BERT/requirements_linux.txt ./requirements_linux.txt
-RUN pip install --no-cache-dir -r requirements_linux.txt
-RUN mkdir ./DATA
-RUN mkdir ./DATA/CrossGraph
-ADD http://www.theworldavatar.com/MARIE_DEPLOYMENT/cross_graph_model_new ./DATA/CrossGraph
-RUN mkdir ./DATA/CrossGraph/pubchem
-RUN mkdir ./DATA/CrossGraph/ontokin
-RUN mkdir ./DATA/CrossGraph/ontospecies
-RUN mkdir ./DATA/CrossGraph/ontocompchem
+RUN cp -r TheWorldAvatar/MARIE_AND_BERT/Marie ./Marie  \
+&& cp -r TheWorldAvatar/MARIE_AND_BERT/uwsgi.ini ./uwsgi.ini \
+&& cp -r TheWorldAvatar/MARIE_AND_BERT/static ./static \
+&& cp -r TheWorldAvatar/MARIE_AND_BERT/templates ./templates \
+&& cp -r TheWorldAvatar/MARIE_AND_BERT/main.py ./main.py \
+&& cp -r TheWorldAvatar/MARIE_AND_BERT/requirements_linux.txt ./requirements_linux.txt \
+&& cp -r TheWorldAvatar/MARIE_AND_BERT/prestart.sh ./prestart.sh
+#COPY prestart.sh prestart.sh
 
-RUN wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/pubchem.zip && unzip pubchem.zip -d ./DATA/CrossGraph/pubchem && rm pubchem.zip
-RUN wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/ontokin.zip && unzip ontokin.zip -d ./DATA/CrossGraph/ontokin && rm ontokin.zip
-RUN wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/ontospecies.zip && unzip ontospecies.zip -d ./DATA/CrossGraph/ontospecies && rm ontospecies.zip
-RUN wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/ontocompchem.zip && unzip ontocompchem.zip -d ./DATA/CrossGraph/ontocompchem && rm ontocompchem.zip
-
-ADD http://www.theworldavatar.com/MARIE_DEPLOYMENT/Dictionaries.zip .
-RUN unzip Dictionaries.zip -d ./DATA/Dictionaries
-ADD http://www.theworldavatar.com/MARIE_DEPLOYMENT/cde_models.zip .
-RUN mkdir -p /root/.local/share/ChemDataExtractor/
-RUN unzip cde_models.zip -d /root/.local/share/ChemDataExtractor/
+#COPY requirements_linux.txt requirements_linux.txt
+RUN apt-get update && \
+    apt-get install -y openjdk-11-jdk && \
+    apt-get install -y ant && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/ && \
+    rm -rf /var/cache/oracle-jdk8-installer
+ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
+RUN export JAVA_HOME
+#COPY script.sh script.sh
+RUN pip install faiss-cpu
+#RUN chmod +x ./script.sh
+#CMD [ "/bin/bash","-c","./script.sh"]
