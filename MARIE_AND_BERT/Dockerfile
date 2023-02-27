@@ -12,9 +12,9 @@ RUN cp -r TheWorldAvatar/MARIE_AND_BERT/Marie ./Marie  \
 && cp -r TheWorldAvatar/MARIE_AND_BERT/static ./static \
 && cp -r TheWorldAvatar/MARIE_AND_BERT/templates ./templates \
 && cp -r TheWorldAvatar/MARIE_AND_BERT/main.py ./main.py \
-&& cp -r TheWorldAvatar/MARIE_AND_BERT/requirements_linux.txt ./requirements_linux.txt
-#&& cp -r TheWorldAvatar/MARIE_AND_BERT/script.sh ./script.sh
-COPY prestart.sh prestart.sh
+&& cp -r TheWorldAvatar/MARIE_AND_BERT/requirements_linux.txt ./requirements_linux.txt \
+&& cp -r TheWorldAvatar/MARIE_AND_BERT/prestart.sh ./prestart.sh
+#COPY prestart.sh prestart.sh
 
 #COPY requirements_linux.txt requirements_linux.txt
 RUN apt-get update && \
