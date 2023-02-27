@@ -149,23 +149,6 @@
             <version>1.5.0</version>
         </dependency>
 
-        <!-- https://repo.osgeo.org/repository/release/org.geotools/gt-main -->
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-main</artifactId>
-            <version>27.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-epsg-extension</artifactId>
-            <version>27.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-epsg-hsql</artifactId>
-            <version>27.2</version>
-        </dependency>
-
         <dependency>
             <groupId>org.locationtech.geotrellis</groupId>
             <artifactId>geotrellis-proj4_2.12</artifactId>

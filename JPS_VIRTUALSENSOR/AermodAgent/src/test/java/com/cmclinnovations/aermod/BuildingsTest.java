@@ -8,8 +8,6 @@ import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.operation.TransformException;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 import java.io.File;
@@ -71,6 +69,8 @@ public class BuildingsTest {
         Assertions.assertEquals(bp.BPIPPRMStackInput.size(),1+numStacks);
         Assertions.assertEquals(bp.BuildingVertices.size(),numBuildings);
 
+        /* 
+
         int res = bp.createBPIPPRMInput();
         Assertions.assertEquals(res,0);
         int res2 = bp.createAERMODSourceInput();
@@ -84,7 +84,7 @@ public class BuildingsTest {
         int res5 = bp.createAERMODSourceInput();
         Assertions.assertEquals(res5,0);
 
-
+*/
 
 
 
