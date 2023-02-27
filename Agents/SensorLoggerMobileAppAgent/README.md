@@ -1,18 +1,42 @@
-# SensorLoggerMobileAppAGent
+# SensorLoggerMobileAppAgent
+## Description
+The SensorLoggerMobileAppAgent is intended to receive HTTP POST requests containing JSON payload from the [SensorLogger mobile app](https://github.com/tszheichoi/awesome-sensor-logger). The agent retrieves JSON payload from the SensorLogger mobile app, parse the JSON Array and instantiate the data onto the knowledge graph using the timeseries client. The static relations are instantiated using the object graph mapper library.
 
 ## To deploy this agent with the stack
 1) Spin up the stack-manager
+
+The agent has been implemented to work with stack, which requires the stack to be [set up](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
+
+Before building, change the placeholder `<STACK-NAME>` in `./sensorloggermobileapp_agent/src/main/resources/config.properties` to the name of your stack. Currently, some parts hardcoded to be `test`.
+
 2) Input the necessary credentials in the folders
 
 You'll need to provide  your credentials in single-word text files located like this:
+#### Under the main folder
+`sensorloggermobileapp_username.txt` refers to the stack username and `sensorloggermobileapp_password.txt` refers to the stack password for the `postgis_password` previously set in stack-manager. 
+```
+./SensorLoggerMobileAppAgent/
+    credentials/
+        repo_username.txt
+        repo_password.txt
+        sensorloggermobileapp_username.txt
+        sensorloggermobileapp_password.txt
+```
+
+#### Under the docker folder
 ```
 ./docker/
     credentials/
         repo_username.txt
         repo_password.txt
 ```
-3) ./stack.sh build in this folder
-4) Enter vscode debug mode (This will fail but will spin up the agent within the stack) but press again Reattach and debug
-5) Edit the local address and send a POSTRequest to the the local port under resources
 
-   POST http://<LOCAL_URL>/SensorLoggerMobileAppAgent/mb
+## Debugging the agent
+1) Insert breakpoints within the code.
+2) On the Debug side panel of VSCode, run the `Debug` configuration. (This will fail but will spin up the agent within the stack - `Failed to attach to remote debuggee VM. Reason: com.sun.jdi.connect.spi.ClosedConnectionException`)
+3) Run `Reattach and debug` to enter the debug mode. 
+
+## Testing the agent
+1) Edit the local address of `SamplePOST_for_Stack` in `/SensorLoggerMobileAppAgent/sensorloggermobileapp_agent/src/main/resources`. To do so, run `ipconfig` in cmd.exe, obtain `IPv4 Address` under `Wireless LAN adapter WiFi`, replace `<LOCAL_URL>` with this `IPv4 Address` at `http://<LOCAL_URL>:10102/SensorLoggerMobileAppAgent/mb`
+   
+2) Send the POST Request, and you will receive 200 status code as response. 

@@ -12,7 +12,7 @@ RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|"
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
 WORKDIR /root/sensorloggermobileapp_agent/src/main/resources
-RUN sed -i "s|DBUSERNAME|$(cat ../../../../credentials/sensorloggermobileapp_username.txt)|;s|DBPASSWORD|$(cat ../../../../credentials/sensorloggermobileapp_password.txt)|;s|TSUSERNAME|$(cat ../../../../credentials/timeseries_username.txt)|;s|TSPASSWORD|$(cat ../../../../credentials/timeseries_password.txt)|" config.properties
+RUN sed -i "s|DBUSERNAME|$(cat ../../../../credentials/sensorloggermobileapp_username.txt)|;s|DBPASSWORD|$(cat ../../../../credentials/sensorloggermobileapp_password.txt)|" config.properties
 
 # Build
 WORKDIR /root/sensorloggermobileapp_agent

@@ -314,17 +314,14 @@ public class SensorLoggerMobileAppServlet extends JPSAgent {
         dbURL = config.getString("db.url");
         user = config.getString("db.user");
         password = config.getString("db.password");
-        timeseriesDBUrl = config.getString("timeseriesDB.url");
-        tsUser = config.getString("ts.user");
-        tsPassword = config.getString("ts.password");
 
-        rdbStoreClient = new RemoteRDBStoreClient(dbURL, "postgres", "admin");
-//        rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
+        rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
+
+        storeClient = new RemoteStoreClient(config.getString("timeseries.query.endpoint"), config.getString("timeseries.update.endpoint"));
+
+
 //        EndpointConfig endpointConfig = new EndpointConfig();
 //        rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-        storeClient = new RemoteStoreClient(config.getString("timeseries.query.endpoint"), config.getString("timeseries.update.endpoint"));
-//        tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
-//        tsRDBStoreClient = new RemoteRDBStoreClient(timeseriesDBUrl, tsUser, tsPassword);
     }
 
 
