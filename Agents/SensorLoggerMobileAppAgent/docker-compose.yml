@@ -1,32 +1,75 @@
 version: "3.8"
 
-networks:
-  stack:
-    # name: test
-    name: ${STACK_NAME}
-    driver: overlay
-    attachable: true
-
 services:
   sensorloggermobileapp_agent:
-    networks:
-      - stack
     image: sensorloggermobileapp_agent:1.0.0
     deploy:
       mode: replicated
       replicas: 1
       restart_policy:
         condition: none
-    build: .
-    container_name: sensorloggermobileapp_agent
     environment:
-      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      - STACK_NAME=${STACK_NAME}
+      - DATABASE=sensorlogger
+      - GEOSERVER_WORKSPACE=dispersion
+      - DISPERSION_LAYER=dispersion_layer
+      - SIMULATION_DIR=/root/aermod/simulations
+      - FILE_SERVER_URL=http://file-server:8080/FileServer/
+      - DISPERSION_STYLE_NAME=dispersion_style
+      - VIS_FOLDER=/vis_data
+      - GEOSERVER_URL=http://host.docker.internal:3838/geoserver # specifying here because WMS endpoint does not work with container name
+    configs:
+      - postgis
+      - blazegraph
+      - geoserver
+      - ontop
+    secrets:
+      - postgis_password
+      - geoserver_password
     ports:
       - "10102:8080"
-
     volumes:
-      - external_maven_repo_sensorloggermobileapp_agent:/root/.m2
+      - logs:/root/.jps
+      - vis_data:/vis_data
+    networks:
+      - stack
 
 volumes:
-  external_maven_repo_sensorloggermobileapp_agent:
-    name: "external_maven_repo_sensorloggermobileapp_agent"
+  logs:
+    name: "logs"
+  vis_data:
+    name: "vis_data"
+
+
+#version: "3.8"
+#
+#networks:
+#  stack:
+#    # name: test
+#    name: ${STACK_NAME}
+#    driver: overlay
+#    attachable: true
+#
+#services:
+#  sensorloggermobileapp_agent:
+#    networks:
+#      - stack
+#    image: sensorloggermobileapp_agent:1.0.0
+#    deploy:
+#      mode: replicated
+#      replicas: 1
+#      restart_policy:
+#        condition: none
+#    build: .
+#    container_name: sensorloggermobileapp_agent
+#    environment:
+#      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+#    ports:
+#      - "10102:8080"
+#
+#    volumes:
+#      - external_maven_repo_sensorloggermobileapp_agent:/root/.m2
+#
+#volumes:
+#  external_maven_repo_sensorloggermobileapp_agent:
+#    name: "external_maven_repo_sensorloggermobileapp_agent"

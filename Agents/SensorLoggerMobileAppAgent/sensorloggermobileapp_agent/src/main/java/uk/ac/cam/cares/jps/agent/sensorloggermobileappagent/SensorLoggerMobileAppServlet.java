@@ -311,15 +311,10 @@ public class SensorLoggerMobileAppServlet extends JPSAgent {
         timerFrequency= Integer.valueOf(config.getString("timerFrequency"));
 
 
-        dbURL = config.getString("db.url");
-        user = config.getString("db.user");
-        password = config.getString("db.password");
-        
-        rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
-//        rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
-//        EndpointConfig endpointConfig = new EndpointConfig();
-//        rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-        storeClient = new RemoteStoreClient(config.getString("timeseries.query.endpoint"), config.getString("timeseries.update.endpoint"));
+
+        EndpointConfig endpointConfig = new EndpointConfig();
+        rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
+        storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
     }
 
 

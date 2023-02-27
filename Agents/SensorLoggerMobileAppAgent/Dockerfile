@@ -11,8 +11,6 @@ WORKDIR /root/.m2
 RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|" settings-security.xml
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
-WORKDIR /root/sensorloggermobileapp_agent/src/main/resources
-RUN sed -i "s|DBUSERNAME|$(cat ../../../../credentials/sensorloggermobileapp_username.txt)|;s|DBPASSWORD|$(cat ../../../../credentials/sensorloggermobileapp_password.txt)|" config.properties
 
 # Build
 WORKDIR /root/sensorloggermobileapp_agent
@@ -23,9 +21,7 @@ RUN --mount=type=cache,target=/root/.m2/repository mvn package
 #==================================================================================================
 FROM tomcat:9.0 as agent
 
-WORKDIR /app
-
-
+WORKDIR /root/sensorloggermobileapp_agent
 ADD https://jdbc.postgresql.org/download/postgresql-42.5.4.jar ./resources/
 # COPY --from=builder /root/sensorloggermobileapp_agent/output/SensorLoggerMobileAppAgent##1.0.0.war $CATALINA_HOME/webapps/
 
