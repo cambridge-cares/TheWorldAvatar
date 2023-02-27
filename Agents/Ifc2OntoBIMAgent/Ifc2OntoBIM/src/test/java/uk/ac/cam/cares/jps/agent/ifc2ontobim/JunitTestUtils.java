@@ -21,6 +21,8 @@ public class JunitTestUtils {
     public static final String listUri = "https://w3id.org/list#";
     public static final String rdfUri = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     public static final String rdfsUri = "http://www.w3.org/2000/01/rdf-schema#";
+    public static final String IFC2X3_ID_PROPERTY = ifc2x3Uri + "globalId_IfcRoot";
+    public static final String IFC2X3_NAME_PROPERTY = ifc2x3Uri + "name_IfcRoot";
 
     public static void addPrefix(ConstructBuilder builder) {
         Map<String, String> nsMapping = new HashMap<>();

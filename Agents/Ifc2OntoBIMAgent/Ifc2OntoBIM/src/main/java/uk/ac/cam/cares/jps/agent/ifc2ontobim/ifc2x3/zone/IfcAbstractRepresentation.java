@@ -1,9 +1,12 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone;
 
 import org.apache.jena.rdf.model.Statement;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.OntoBimConstant;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.StatementHandler;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.StringUtils;
 
 import java.util.LinkedHashSet;
+import java.util.UUID;
 
 /**
  * A class representing the IfcAbstractRepresentation concept in OntoBIM.
@@ -13,6 +16,9 @@ import java.util.LinkedHashSet;
 public class IfcAbstractRepresentation {
     private final String iri;
     private final String prefix;
+    private final String name;
+    private final String uid;
+
     private static final String BACKSLASH = "/";
     private static final String HASH = "#";
     protected static final String METRE_UNIT = "m";
@@ -20,16 +26,27 @@ public class IfcAbstractRepresentation {
     /**
      * Standard Constructor initialising the common inputs.
      *
-     * @param iri The instance IRI to be created.
+     * @param iri       The instance IRI to be created.
+     * @param className The name of the OntoBIM class.
+     * @param name      The name of this IFC object.
+     * @param uid       The IFC uid generated for this object.
      */
-    public IfcAbstractRepresentation(String iri) {
-        this.iri = iri;
+    public IfcAbstractRepresentation(String iri, String className, String name, String uid) {
         this.prefix = iri.contains(HASH) ? StringUtils.getStringBeforeLastCharacterOccurrence(iri, HASH) + HASH :
                 StringUtils.getStringBeforeLastCharacterOccurrence(iri, BACKSLASH) + BACKSLASH;
+        this.iri = this.prefix + className + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
+        this.name = name;
+        this.uid = uid;
     }
 
-    protected String getIri() {return this.iri;}
-    protected String getPrefix() {return this.prefix;}
+    protected String getIri() { return this.iri;}
+
+    protected String getPrefix() { return this.prefix;}
+
+    protected String getName() { return this.name;}
+
+    protected String getUid() { return this.uid;}
+
 
     /**
      * An abstract method that must be overridden and used in each subclass
@@ -38,5 +55,17 @@ public class IfcAbstractRepresentation {
      * @param statementSet The set containing the new ontoBIM triples.
      */
     public void constructStatements(LinkedHashSet<Statement> statementSet) {
+    }
+
+    /**
+     * Generate IfcAbstractRepresentation statements required.
+     *
+     * @param statementSet The set containing the new ontoBIM triples.
+     * @param classIRI     The full IRI of the OntoBim class concept.
+     */
+    public void addIfcAbstractRepresentationStatements(LinkedHashSet<Statement> statementSet, String classIRI) {
+        StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.RDF_TYPE, classIRI);
+        StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.RDFS_LABEL, this.getName(), false);
+        StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_ID, this.getUid(), false);
     }
 }

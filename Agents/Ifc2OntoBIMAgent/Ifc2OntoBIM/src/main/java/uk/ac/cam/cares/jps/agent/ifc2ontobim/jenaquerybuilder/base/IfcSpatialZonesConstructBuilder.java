@@ -38,9 +38,6 @@ public class IfcSpatialZonesConstructBuilder extends IfcConstructBuilderTemplate
      * @return The SPARQL query string for spatial zones
      */
     public String createSparqlQuery(ConstructBuilder builder, String ifcClass, String bimClass) {
-        // Calls the template method to generate the base SPARQL query statements
-        this.createTemplateSparqlQuery(builder, ifcClass, bimClass);
-
         // Calls methods specific to each input to generate additional SPARQL query statements
         this.switchFunctionDependingOnInput(builder, ifcClass, bimClass);
         return builder.buildString();

@@ -20,11 +20,13 @@ public class IfcRoomRepresentation extends IfcAbstractRepresentation {
      * Standard Constructor initialising the necessary and optional inputs.
      *
      * @param iri       The instance IRI to be created.
+     * @param name      The name of this IFC object.
+     * @param uid       The IFC uid generated for this object.
      * @param storeyIri The IRI of bot:Storey that is linked to this building instance.
      */
-    public IfcRoomRepresentation(String iri, String storeyIri) {
+    public IfcRoomRepresentation(String iri, String name, String uid, String storeyIri) {
         // Initialise the super class
-        super(iri);
+        super(iri, OntoBimConstant.ROOM_REP_CLASS,  name, uid);
         this.storeyIRI = storeyIri;
         // Generate a new bim Room IRI
         this.bimRoomIRI = this.getPrefix() + OntoBimConstant.ROOM_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
@@ -39,6 +41,7 @@ public class IfcRoomRepresentation extends IfcAbstractRepresentation {
      */
     @Override
     public void constructStatements(LinkedHashSet<Statement> statementSet) {
+        super.addIfcAbstractRepresentationStatements(statementSet, OntoBimConstant.BIM_ROOM_REP_CLASS);
         StatementHandler.addStatement(statementSet, this.getBimRoomIRI(), OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_ROOM_CLASS);
         StatementHandler.addStatement(statementSet, this.getBimRoomIRI(), OntoBimConstant.BIM_HAS_IFC_REPRESENTATION, this.getIri());
         StatementHandler.addStatement(statementSet, this.storeyIRI, OntoBimConstant.BIM_HAS_ROOM, this.getBimRoomIRI());

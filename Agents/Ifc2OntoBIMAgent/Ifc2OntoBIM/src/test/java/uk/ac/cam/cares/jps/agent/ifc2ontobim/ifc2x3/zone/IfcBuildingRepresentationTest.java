@@ -15,6 +15,9 @@ class IfcBuildingRepresentationTest {
     private static final String testIri1 = testBaseUri1 + "IfcBuildingRepresentation_142";
     private static final String testBaseUri2 = "http://www.example.org/test#";
     private static final String testIri2 = testBaseUri2 + "IfcBuildingRepresentation_1322";
+    private static final String testClassName = "IfcBuildingRepresentation";
+    private static final String testName = "Building Host";
+    private static final String testUID = "0192auje134";
     private static final String testSiteIri = testBaseUri1 + "Site_531";
     private static final Double testRefElev1 = 125.0;
     private static final Double testRefElev2 = 125.15;
@@ -30,18 +33,24 @@ class IfcBuildingRepresentationTest {
     @Test
     void testConstructor() {
         // First constructor
-        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testSiteIri, testRefElev1.toString(), testTerElev1.toString());
+        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testName, testUID, testSiteIri, testRefElev1.toString(), testTerElev1.toString());
         // Test that the sample fields are correct
-        assertEquals(testIri1, sample.getIri());
         assertEquals(testBaseUri1, sample.getPrefix());
+        assertNotEquals(testIri1, sample.getIri());
+        assertTrue(sample.getIri().contains(testBaseUri1 + testClassName + "_"));
+        assertEquals(testName, sample.getName());
+        assertEquals(testUID, sample.getUid());
         assertEquals(testRefElev1, sample.getRefElevation());
         assertEquals(testTerElev1, sample.getTerElevation());
         assertTrue(sample.getBotBuildingIRI().contains(sample.getPrefix() + "Building_"));
         // Second constructor
-        IfcBuildingRepresentation sample2 = new IfcBuildingRepresentation(testIri2, testSiteIri, testRefElev1.toString(), testTerElev1.toString());
+        IfcBuildingRepresentation sample2 = new IfcBuildingRepresentation(testIri2, testName, testUID, testSiteIri, testRefElev1.toString(), testTerElev1.toString());
         // Test that the sample fields are correct
-        assertEquals(testIri2, sample2.getIri());
         assertEquals(testBaseUri2, sample2.getPrefix());
+        assertNotEquals(testIri2, sample2.getIri());
+        assertTrue(sample2.getIri().contains(testBaseUri2 + testClassName + "_"));
+        assertEquals(testName, sample2.getName());
+        assertEquals(testUID, sample2.getUid());
         assertEquals(testRefElev1, sample.getRefElevation());
         assertEquals(testTerElev1, sample.getTerElevation());
         assertTrue(sample2.getBotBuildingIRI().contains(sample2.getPrefix() + "Building_"));
@@ -49,10 +58,10 @@ class IfcBuildingRepresentationTest {
 
     @Test
     void testConstructorRefElevation() {
-        IfcBuildingRepresentation sample1 = new IfcBuildingRepresentation(testIri1, testSiteIri, testRefElev1.toString(), testTerElev1.toString());
-        IfcBuildingRepresentation sample2 = new IfcBuildingRepresentation(testIri1, testSiteIri, testRefElevation1, testTerElevation1);
-        IfcBuildingRepresentation sample3 = new IfcBuildingRepresentation(testIri1, testSiteIri, testRefElev2.toString(), testTerElev2.toString());
-        IfcBuildingRepresentation sample4 = new IfcBuildingRepresentation(testIri1, testSiteIri, testRefElevation2, testTerElevation2);
+        IfcBuildingRepresentation sample1 = new IfcBuildingRepresentation(testIri1, testName, testUID, testSiteIri, testRefElev1.toString(), testTerElev1.toString());
+        IfcBuildingRepresentation sample2 = new IfcBuildingRepresentation(testIri1, testName, testUID, testSiteIri, testRefElevation1, testTerElevation1);
+        IfcBuildingRepresentation sample3 = new IfcBuildingRepresentation(testIri1, testName, testUID, testSiteIri, testRefElev2.toString(), testTerElev2.toString());
+        IfcBuildingRepresentation sample4 = new IfcBuildingRepresentation(testIri1, testName, testUID, testSiteIri, testRefElevation2, testTerElevation2);
         // Test that the sample fields are correct
         assertEquals(testRefElev1, sample1.getRefElevation());
         assertEquals(testRefElev1, sample2.getRefElevation());
@@ -68,7 +77,7 @@ class IfcBuildingRepresentationTest {
     void testConstructStatementsNoRefElev() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testSiteIri, null, testTerElev1.toString());
+        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testName, testUID, testSiteIri, null, testTerElev1.toString());
         // Execute method
         sample.constructStatements(sampleSet);
         // Clean up results as one string
@@ -84,7 +93,7 @@ class IfcBuildingRepresentationTest {
     void testConstructStatementsNoTerElev() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testSiteIri, testRefElev1.toString(), null);
+        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testName, testUID, testSiteIri, testRefElev1.toString(), null);
         // Execute method
         sample.constructStatements(sampleSet);
         // Clean up results as one string
@@ -100,7 +109,7 @@ class IfcBuildingRepresentationTest {
     void testConstructStatementsNoRefAndTerElev() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testSiteIri, null, null);
+        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testName, testUID, testSiteIri, null, null);
         // Execute method
         sample.constructStatements(sampleSet);
         // Clean up results to a string
@@ -112,7 +121,7 @@ class IfcBuildingRepresentationTest {
     void testConstructStatements() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testSiteIri, testRefElev1.toString(), testTerElev1.toString());
+        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testName, testUID, testSiteIri, testRefElev1.toString(), testTerElev1.toString());
         // Execute method
         sample.constructStatements(sampleSet);
         // Clean up results as one string
@@ -126,14 +135,17 @@ class IfcBuildingRepresentationTest {
     private List<String> genExpectedCommonStatements() {
         List<String> expected = new ArrayList<>();
         expected.add(testBaseUri1 + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://w3id.org/bot#Building");
-        expected.add(testBaseUri1 + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + testIri1);
+        expected.add(testBaseUri1 + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + testBaseUri1 + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(testBaseUri1 + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/IfcBuildingRepresentation");
+        expected.add(testBaseUri1 + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + testName);
+        expected.add(testBaseUri1 + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + testUID);
         expected.add(testSiteIri + ", https://w3id.org/bot#hasBuilding, " + testBaseUri1 + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         return expected;
     }
 
     private List<String> genExpectedRefElevationStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(testIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasRefElevation, " + testBaseUri1 + "Height_");
+        expected.add(testBaseUri1 + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefElevation, " + testBaseUri1 + "Height_");
         expected.add(testBaseUri1 + "Height_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.ontology-of-units-of-measure.org/resource/om-2/Height");
         expected.add(testBaseUri1 + "Height_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue, " + testBaseUri1 + "Measure_");
         expected.add(testBaseUri1 + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.ontology-of-units-of-measure.org/resource/om-2/Measure");
@@ -146,7 +158,7 @@ class IfcBuildingRepresentationTest {
 
     private List<String> genExpectedTerrainElevationStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(testIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasTerrainElevation, " + testBaseUri1 + "Height_");
+        expected.add(testBaseUri1 + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTerrainElevation, " + testBaseUri1 + "Height_");
         expected.add(testBaseUri1 + "Height_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.ontology-of-units-of-measure.org/resource/om-2/Height");
         expected.add(testBaseUri1 + "Height_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue, " + testBaseUri1 + "Measure_");
         expected.add(testBaseUri1 + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.ontology-of-units-of-measure.org/resource/om-2/Measure");

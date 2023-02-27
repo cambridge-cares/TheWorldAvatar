@@ -21,15 +21,6 @@ class OntoBIMInstance {
             case "IfcSite":
                 replacementName = "IfcSiteRepresentation";
                 break;
-            case "IfcBuilding":
-                replacementName = "IfcBuildingRepresentation";
-                break;
-            case "IfcBuildingStorey":
-                replacementName = "IfcStoreyRepresentation";
-                break;
-            case "IfcSpace":
-                replacementName = "IfcRoomRepresentation";
-                break;
             // Elements
             case "IfcRoof":
             case "IfcWall":

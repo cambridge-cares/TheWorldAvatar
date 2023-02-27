@@ -10,6 +10,7 @@ public class OntoBimConstant {
 
     // Generic properties
     public static final String RDF_TYPE = NamespaceMapper.RDF_NAMESPACE + "type";
+    public static final String RDFS_LABEL = NamespaceMapper.RDFS_NAMESPACE + "label";
 
     // Quantity properties
     public static final String OM_HAS_VALUE = NamespaceMapper.OM_NAMESPACE + "hasValue";
@@ -24,6 +25,7 @@ public class OntoBimConstant {
     public static final String BOT_HAS_BUILDING = NamespaceMapper.BOT_NAMESPACE + "hasBuilding";
     public static final String BOT_HAS_STOREY = NamespaceMapper.BOT_NAMESPACE + "hasStorey";
     public static final String BIM_HAS_ROOM = NamespaceMapper.BIM_NAMESPACE + "hasRoom";
+    public static final String BIM_HAS_ID = NamespaceMapper.BIM_NAMESPACE + "hasIfcId";
 
     // OntoBim classes
     public static final String SITE_CLASS = "Site";
@@ -34,6 +36,14 @@ public class OntoBimConstant {
     public static final String BOT_BUILDING_CLASS = NamespaceMapper.BOT_NAMESPACE + BUILDING_CLASS;
     public static final String BOT_STOREY_CLASS = NamespaceMapper.BOT_NAMESPACE + STOREY_CLASS;
     public static final String BIM_ROOM_CLASS = NamespaceMapper.BIM_NAMESPACE + ROOM_CLASS;
+    public static final String SITE_REP_CLASS = "IfcSiteRepresentation";
+    public static final String BUILDING_REP_CLASS = "IfcBuildingRepresentation";
+    public static final String STOREY_REP_CLASS = "IfcStoreyRepresentation";
+    public static final String ROOM_REP_CLASS = "IfcRoomRepresentation";
+    public static final String BIM_SITE_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + SITE_REP_CLASS;
+    public static final String BIM_BUILDING_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + BUILDING_REP_CLASS;
+    public static final String BIM_STOREY_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + STOREY_REP_CLASS;
+    public static final String BIM_ROOM_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + ROOM_REP_CLASS;
 
     // OM classes
     public static final String HEIGHT_CLASS = NamespaceMapper.OM_NAMESPACE + "Height";

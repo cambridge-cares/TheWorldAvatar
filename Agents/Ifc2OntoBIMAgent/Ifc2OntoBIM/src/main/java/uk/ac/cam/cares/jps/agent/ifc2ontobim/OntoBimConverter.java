@@ -121,9 +121,6 @@ public class OntoBimConverter {
     private void genSpatialZoneStatements(ConstructBuilder builder, LinkedHashSet<Statement> statementSet) {
         Map<String, String> spatialZones = new HashMap<>();
         spatialZones.put("ifc:IfcSite", "bim:IfcSiteRepresentation");
-        spatialZones.put("ifc:IfcBuilding", "bim:IfcBuildingRepresentation");
-        spatialZones.put("ifc:IfcBuildingStorey", "bim:IfcStoreyRepresentation");
-        spatialZones.put("ifc:IfcSpace", "bim:IfcRoomRepresentation");
 
         for (String ifcZones : spatialZones.keySet()) {
             // Clone the builder to ensure that query statements are not transferred across different zones

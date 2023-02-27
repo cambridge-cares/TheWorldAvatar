@@ -9,7 +9,6 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcBuildingRepresentati
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcRoomRepresentation;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcSiteRepresentation;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcStoreyRepresentation;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 
 import java.util.LinkedHashSet;
@@ -22,25 +21,6 @@ import java.util.LinkedHashSet;
  */
 public class SpatialZoneFacade {
     private static SpatialZoneStorage zoneMappings;
-    private static final String ZONE_VAR = "?zone";
-    private static final String PARENT_ZONE_VAR = "?subzone";
-    private static final String RELAGGR_VAR = "?relaggregates";
-    private static final String ELEVATION_VAR = "?elev";
-    private static final String TER_ELEVATION_VAR = "?terElev";
-    // IfcOwl Properties
-    private static final String EXPRESS_HASDOUBLE = "/express:hasDouble";
-    private static final String IFC_SITE_ELEV = NamespaceMapper.IFC_PREFIX + ":refElevation_IfcSite";
-    private static final String IFC_BUILDING_ELEV = NamespaceMapper.IFC_PREFIX + ":elevationOfRefHeight_IfcBuilding";
-    private static final String IFC_BUILDING_TERELEV = NamespaceMapper.IFC_PREFIX + ":elevationOfTerrain_IfcBuilding";
-    private static final String IFC_STOREY_ELEV = NamespaceMapper.IFC_PREFIX + ":elevation_IfcBuildingStorey";
-    private static final String IFC_PARENT_ZONE_REL = NamespaceMapper.IFC_PREFIX + ":relatingObject_IfcRelDecomposes";
-    private static final String IFC_CHILD_ZONE_REL = NamespaceMapper.IFC_PREFIX + ":relatedObjects_IfcRelDecomposes";
-    // IfcOwl Classes
-    private static final String IFCSITE = NamespaceMapper.IFC_PREFIX + ":IfcSite";
-    private static final String IFCBUILDING = NamespaceMapper.IFC_PREFIX + ":IfcBuilding";
-    private static final String IFCSTOREY = NamespaceMapper.IFC_PREFIX + ":IfcBuildingStorey";
-    private static final String IFCSPACE = NamespaceMapper.IFC_PREFIX + ":IfcSpace";
-    private static final String RELAGG = NamespaceMapper.IFC_PREFIX + ":IfcRelAggregates";
 
 
     /**
@@ -64,10 +44,15 @@ public class SpatialZoneFacade {
      */
     private static String createSiteSelectQuery() {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
-        selectBuilder.addVar(ZONE_VAR)
-                .addVar(ELEVATION_VAR);
-        selectBuilder.addWhere(ZONE_VAR, QueryHandler.RDF_TYPE, IFCSITE)
-                .addOptional(ZONE_VAR, IFC_SITE_ELEV + EXPRESS_HASDOUBLE, ELEVATION_VAR);
+        selectBuilder.addVar(CommonQuery.ZONE_VAR)
+                .addVar(CommonQuery.NAME_VAR)
+                .addVar(CommonQuery.UID_VAR)
+                .addVar(CommonQuery.ELEVATION_VAR);
+        selectBuilder.addWhere(CommonQuery.ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCSITE)
+                .addWhere(CommonQuery.ZONE_VAR, CommonQuery.IFC_NAME + CommonQuery.EXPRESS_HASSTRING, CommonQuery.NAME_VAR)
+                .addWhere(CommonQuery.ZONE_VAR, CommonQuery.IFC_ID + CommonQuery.EXPRESS_HASSTRING, CommonQuery.UID_VAR)
+                .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_SITE_ELEV + CommonQuery.EXPRESS_HASDOUBLE, CommonQuery.ELEVATION_VAR);
+        CommonQuery.addBaseQueryComponents(selectBuilder);
         return selectBuilder.buildString();
     }
 
@@ -82,9 +67,11 @@ public class SpatialZoneFacade {
         ResultSet results = QueryHandler.execSelectQuery(siteQuery, owlModel);
         while (results.hasNext()) {
             QuerySolution soln = results.nextSolution();
-            String iri = soln.get(ZONE_VAR).toString();
-            String elev = QueryHandler.retrieveLiteral(soln, ELEVATION_VAR);
-            IfcSiteRepresentation site = new IfcSiteRepresentation(iri, elev);
+            String iri = soln.get(CommonQuery.ZONE_VAR).toString();
+            String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
+            String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
+            String elev = QueryHandler.retrieveLiteral(soln, CommonQuery.ELEVATION_VAR);
+            IfcSiteRepresentation site = new IfcSiteRepresentation(iri, name, uid, elev);
             zoneMappings.add(iri, site);
             site.constructStatements(statementSet);
         }
@@ -97,17 +84,22 @@ public class SpatialZoneFacade {
      */
     private static String createBuildingSelectQuery() {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
-        selectBuilder.addVar(ZONE_VAR)
-                .addVar(PARENT_ZONE_VAR)
-                .addVar(ELEVATION_VAR)
-                .addVar(TER_ELEVATION_VAR);
-        selectBuilder.addWhere(ZONE_VAR, QueryHandler.RDF_TYPE, IFCBUILDING)
-                .addOptional(ZONE_VAR, IFC_BUILDING_ELEV + EXPRESS_HASDOUBLE, ELEVATION_VAR)
-                .addOptional(ZONE_VAR, IFC_BUILDING_TERELEV + EXPRESS_HASDOUBLE, TER_ELEVATION_VAR)
-                .addWhere(RELAGGR_VAR, QueryHandler.RDF_TYPE, RELAGG)
-                .addWhere(RELAGGR_VAR, IFC_PARENT_ZONE_REL, PARENT_ZONE_VAR)
-                .addWhere(PARENT_ZONE_VAR, QueryHandler.RDF_TYPE, IFCSITE)
-                .addWhere(RELAGGR_VAR, IFC_CHILD_ZONE_REL, ZONE_VAR);
+        selectBuilder.addVar(CommonQuery.ZONE_VAR)
+                .addVar(CommonQuery.NAME_VAR)
+                .addVar(CommonQuery.UID_VAR)
+                .addVar(CommonQuery.PARENT_ZONE_VAR)
+                .addVar(CommonQuery.ELEVATION_VAR)
+                .addVar(CommonQuery.TER_ELEVATION_VAR);
+        selectBuilder.addWhere(CommonQuery.ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCBUILDING)
+                .addWhere(CommonQuery.ZONE_VAR, CommonQuery.IFC_NAME + CommonQuery.EXPRESS_HASSTRING, CommonQuery.NAME_VAR)
+                .addWhere(CommonQuery.ZONE_VAR, CommonQuery.IFC_ID + CommonQuery.EXPRESS_HASSTRING, CommonQuery.UID_VAR)
+                .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_BUILDING_ELEV + CommonQuery.EXPRESS_HASDOUBLE, CommonQuery.ELEVATION_VAR)
+                .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_BUILDING_TERELEV + CommonQuery.EXPRESS_HASDOUBLE, CommonQuery.TER_ELEVATION_VAR)
+                .addWhere(CommonQuery.RELAGGR_VAR, QueryHandler.RDF_TYPE, CommonQuery.RELAGG)
+                .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_PARENT_ZONE_REL, CommonQuery.PARENT_ZONE_VAR)
+                .addWhere(CommonQuery.PARENT_ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCSITE)
+                .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_CHILD_ZONE_REL, CommonQuery.ZONE_VAR);
+        CommonQuery.addBaseQueryComponents(selectBuilder);
         return selectBuilder.buildString();
     }
 
@@ -122,11 +114,13 @@ public class SpatialZoneFacade {
         ResultSet results = QueryHandler.execSelectQuery(buildingQuery, owlModel);
         while (results.hasNext()) {
             QuerySolution soln = results.nextSolution();
-            String iri = soln.get(ZONE_VAR).toString();
-            String elev = QueryHandler.retrieveLiteral(soln, ELEVATION_VAR);
-            String terElev = QueryHandler.retrieveLiteral(soln, TER_ELEVATION_VAR);
-            IfcSiteRepresentation site = zoneMappings.getSite(QueryHandler.retrieveIri(soln, PARENT_ZONE_VAR));
-            IfcBuildingRepresentation building = new IfcBuildingRepresentation(iri, site.getBotSiteIRI(), elev, terElev);
+            String iri = soln.get(CommonQuery.ZONE_VAR).toString();
+            String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
+            String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
+            String elev = QueryHandler.retrieveLiteral(soln, CommonQuery.ELEVATION_VAR);
+            String terElev = QueryHandler.retrieveLiteral(soln, CommonQuery.TER_ELEVATION_VAR);
+            IfcSiteRepresentation site = zoneMappings.getSite(QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR));
+            IfcBuildingRepresentation building = new IfcBuildingRepresentation(iri, name, uid, site.getBotSiteIRI(), elev, terElev);
             zoneMappings.add(iri, building);
             building.constructStatements(statementSet);
         }
@@ -139,15 +133,20 @@ public class SpatialZoneFacade {
      */
     private static String createStoreySelectQuery() {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
-        selectBuilder.addVar(ZONE_VAR)
-                .addVar(PARENT_ZONE_VAR)
-                .addVar(ELEVATION_VAR);
-        selectBuilder.addWhere(ZONE_VAR, QueryHandler.RDF_TYPE, IFCSTOREY)
-                .addOptional(ZONE_VAR, IFC_STOREY_ELEV + EXPRESS_HASDOUBLE, ELEVATION_VAR)
-                .addWhere(RELAGGR_VAR, QueryHandler.RDF_TYPE, RELAGG)
-                .addWhere(RELAGGR_VAR, IFC_PARENT_ZONE_REL, PARENT_ZONE_VAR)
-                .addWhere(PARENT_ZONE_VAR, QueryHandler.RDF_TYPE, IFCBUILDING)
-                .addWhere(RELAGGR_VAR, IFC_CHILD_ZONE_REL, ZONE_VAR);
+        selectBuilder.addVar(CommonQuery.ZONE_VAR)
+                .addVar(CommonQuery.NAME_VAR)
+                .addVar(CommonQuery.UID_VAR)
+                .addVar(CommonQuery.PARENT_ZONE_VAR)
+                .addVar(CommonQuery.ELEVATION_VAR);
+        selectBuilder.addWhere(CommonQuery.ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCSTOREY)
+                .addWhere(CommonQuery.ZONE_VAR, CommonQuery.IFC_NAME + CommonQuery.EXPRESS_HASSTRING, CommonQuery.NAME_VAR)
+                .addWhere(CommonQuery.ZONE_VAR, CommonQuery.IFC_ID + CommonQuery.EXPRESS_HASSTRING, CommonQuery.UID_VAR)
+                .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_STOREY_ELEV + CommonQuery.EXPRESS_HASDOUBLE, CommonQuery.ELEVATION_VAR)
+                .addWhere(CommonQuery.RELAGGR_VAR, QueryHandler.RDF_TYPE, CommonQuery.RELAGG)
+                .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_PARENT_ZONE_REL, CommonQuery.PARENT_ZONE_VAR)
+                .addWhere(CommonQuery.PARENT_ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCBUILDING)
+                .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_CHILD_ZONE_REL, CommonQuery.ZONE_VAR);
+        CommonQuery.addBaseQueryComponents(selectBuilder);
         return selectBuilder.buildString();
     }
 
@@ -162,10 +161,12 @@ public class SpatialZoneFacade {
         ResultSet results = QueryHandler.execSelectQuery(storeyQuery, owlModel);
         while (results.hasNext()) {
             QuerySolution soln = results.nextSolution();
-            String iri = soln.get(ZONE_VAR).toString();
-            String elev = QueryHandler.retrieveLiteral(soln, ELEVATION_VAR);
-            IfcBuildingRepresentation building = zoneMappings.getBuilding(QueryHandler.retrieveIri(soln, PARENT_ZONE_VAR));
-            IfcStoreyRepresentation storey = new IfcStoreyRepresentation(iri, building.getBotBuildingIRI(), elev);
+            String iri = soln.get(CommonQuery.ZONE_VAR).toString();
+            String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
+            String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
+            String elev = QueryHandler.retrieveLiteral(soln, CommonQuery.ELEVATION_VAR);
+            IfcBuildingRepresentation building = zoneMappings.getBuilding(QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR));
+            IfcStoreyRepresentation storey = new IfcStoreyRepresentation(iri, name, uid, building.getBotBuildingIRI(), elev);
             zoneMappings.add(iri, storey);
             storey.constructStatements(statementSet);
         }
@@ -178,13 +179,18 @@ public class SpatialZoneFacade {
      */
     private static String createRoomSelectQuery() {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
-        selectBuilder.addVar(ZONE_VAR)
-                .addVar(PARENT_ZONE_VAR);
-        selectBuilder.addWhere(ZONE_VAR, QueryHandler.RDF_TYPE, IFCSPACE)
-                .addWhere(RELAGGR_VAR, QueryHandler.RDF_TYPE, RELAGG)
-                .addWhere(RELAGGR_VAR, IFC_PARENT_ZONE_REL, PARENT_ZONE_VAR)
-                .addWhere(PARENT_ZONE_VAR, QueryHandler.RDF_TYPE, IFCSTOREY)
-                .addWhere(RELAGGR_VAR, IFC_CHILD_ZONE_REL, ZONE_VAR);
+        selectBuilder.addVar(CommonQuery.ZONE_VAR)
+                .addVar(CommonQuery.NAME_VAR)
+                .addVar(CommonQuery.UID_VAR)
+                .addVar(CommonQuery.PARENT_ZONE_VAR);
+        selectBuilder.addWhere(CommonQuery.ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCSPACE)
+                .addWhere(CommonQuery.ZONE_VAR, CommonQuery.IFC_NAME + CommonQuery.EXPRESS_HASSTRING, CommonQuery.NAME_VAR)
+                .addWhere(CommonQuery.ZONE_VAR, CommonQuery.IFC_ID + CommonQuery.EXPRESS_HASSTRING, CommonQuery.UID_VAR)
+                .addWhere(CommonQuery.RELAGGR_VAR, QueryHandler.RDF_TYPE, CommonQuery.RELAGG)
+                .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_PARENT_ZONE_REL, CommonQuery.PARENT_ZONE_VAR)
+                .addWhere(CommonQuery.PARENT_ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCSTOREY)
+                .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_CHILD_ZONE_REL, CommonQuery.ZONE_VAR);
+        CommonQuery.addBaseQueryComponents(selectBuilder);
         return selectBuilder.buildString();
     }
 
@@ -199,10 +205,12 @@ public class SpatialZoneFacade {
         ResultSet results = QueryHandler.execSelectQuery(storeyQuery, owlModel);
         while (results.hasNext()) {
             QuerySolution soln = results.nextSolution();
-            String iri = soln.get(ZONE_VAR).toString();
-            String storeyIri = QueryHandler.retrieveIri(soln, PARENT_ZONE_VAR);
+            String iri = soln.get(CommonQuery.ZONE_VAR).toString();
+            String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
+            String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
+            String storeyIri = QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR);
             IfcStoreyRepresentation storey = zoneMappings.getStorey(storeyIri);
-            IfcRoomRepresentation room = new IfcRoomRepresentation(iri, storey.getBotStoreyIRI());
+            IfcRoomRepresentation room = new IfcRoomRepresentation(iri, name, uid, storey.getBotStoreyIRI());
             zoneMappings.add(iri, room);
             room.constructStatements(statementSet);
         }

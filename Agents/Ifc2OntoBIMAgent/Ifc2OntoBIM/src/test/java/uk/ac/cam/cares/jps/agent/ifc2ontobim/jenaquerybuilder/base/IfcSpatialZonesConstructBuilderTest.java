@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
+import org.apache.jena.base.Sys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
@@ -20,34 +21,11 @@ class IfcSpatialZonesConstructBuilderTest {
     }
 
     @Test
-    void testCreateSparqlQueryForRoom() {
-        String query = new IfcSpatialZonesConstructBuilder().createSparqlQuery(builder, "ifc:IfcSpace", "bim:IfcRoomRepresentation");
-        // In the first test, check all query statements are included
-        String expected = this.genExpectedResultsForRoom();
-        assertTrue(query.contains(expected));
-    }
-
-    @Test
-    void testCreateSparqlQueryForBuildingStorey() {
-        String query = new IfcSpatialZonesConstructBuilder().createSparqlQuery(builder, "ifc:IfcBuildingStorey", "bim:IfcStoreyRepresentation");
-        // Check for statements specific to building storey
-        List<String> expected = this.genExpectedResultsForBuildingStorey();
-        expected.forEach(line -> assertTrue(query.contains(line)));
-    }
-
-    @Test
-    void testCreateSparqlQueryForBuilding() {
-        String query = new IfcSpatialZonesConstructBuilder().createSparqlQuery(builder, "ifc:IfcBuilding", "bim:IfcBuildingRepresentation");
-        // Check for statements specific to building
-        List<String> expected = this.genExpectedResultsForBuilding();
-        expected.forEach(line -> assertTrue(query.contains(line)));
-    }
-
-    @Test
     void testCreateSparqlQueryForSite() {
         String query = new IfcSpatialZonesConstructBuilder().createSparqlQuery(builder, "ifc:IfcSite", "bim:IfcSiteRepresentation");
         // Check for statements specific to site
         List<String> expected = this.genExpectedResultsForSite();
+        System.out.println(query);
         expected.forEach(line -> assertTrue(query.contains(line)));
     }
 
@@ -60,49 +38,9 @@ class IfcSpatialZonesConstructBuilderTest {
         assertTrue(thrownError.getMessage().contains("must be a Path, URI , variable, or a wildcard."));
     }
 
-    private String genExpectedResultsForRoom() {
-        StringBuilder expected = new StringBuilder();
-        expected.append("CONSTRUCT \n")
-                .append("  { \n")
-                .append("    ?element rdf:type bim:IfcRoomRepresentation .\n")
-                .append("    ?element bim:hasIfcId ?uid .\n")
-                .append("    ?element rdfs:label ?name .\n")
-                .append("    ?element bim:hasLocalPosition ?localplacement .\n")
-                .append("    ?localplacement rdf:type bim:LocalPlacement .\n")
-                .append("  }\n")
-                .append("WHERE\n")
-                .append("  { ?element  rdf:type  ifc:IfcSpace .\n")
-                .append("    ?element ifc:globalId_IfcRoot/express:hasString ?uid .\n")
-                .append("    ?element ifc:name_IfcRoot/express:hasString ?name .\n")
-                .append("    ?element  ifc:objectPlacement_IfcProduct  ?localplacement .\n")
-                .append("    ?localplacement\n")
-                .append("              rdf:type              ifc:IfcLocalPlacement");
-        return expected.toString();
-    }
-
-    private List<String> genExpectedResultsForBuildingStorey() {
-        List<String> expected = new ArrayList<>();
-        // Construct statements
-        expected.add("?element rdf:type bim:IfcStoreyRepresentation .");
-        // Where statements
-        expected.add("?element  rdf:type  ifc:IfcBuildingStorey .");
-        return expected;
-
-    }
-
-    private List<String> genExpectedResultsForBuilding() {
-        List<String> expected = new ArrayList<>();
-        // Construct statements
-        expected.add("?element rdf:type bim:IfcBuildingRepresentation .");
-        // Where statements
-        expected.add("?element  rdf:type  ifc:IfcBuilding .");
-        return expected;
-    }
-
     private List<String> genExpectedResultsForSite() {
         List<String> expected = new ArrayList<>();
         // Construct statements
-        expected.add("?element rdf:type bim:IfcSiteRepresentation .");
         expected.add("?element bim:hasRefLatitude ?latcompoundangle .");
         expected.add("?latcompoundangle rdf:type bim:CompoundPlaneAngle .");
         expected.add("?latcompoundangle bim:hasDegree ?latdegree .");
@@ -116,7 +54,6 @@ class IfcSpatialZonesConstructBuilderTest {
         expected.add("?longcompoundangle bim:hasSecond ?longsecond .");
         expected.add("?longcompoundangle bim:hasMillionthSecond ?longmilsecond .");
         // Where statements
-        expected.add("?element  rdf:type  ifc:IfcSite .");
         expected.add("?element  ifc:refLatitude_IfcSite  ?latcompoundangle .");
         expected.add("?latcompoundangle list:hasContents/express:hasInteger ?latdegree .");
         expected.add("?latcompoundangle (list:hasNext/list:hasContents)/express:hasInteger ?latminute .");

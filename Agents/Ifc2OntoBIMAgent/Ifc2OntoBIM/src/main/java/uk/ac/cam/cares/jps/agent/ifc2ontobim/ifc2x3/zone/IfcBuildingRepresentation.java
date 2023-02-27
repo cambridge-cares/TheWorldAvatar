@@ -23,13 +23,15 @@ public class IfcBuildingRepresentation extends IfcAbstractRepresentation {
      * Standard Constructor initialising the necessary and optional inputs.
      *
      * @param iri          The instance IRI to be created.
+     * @param name         The name of this IFC object.
+     * @param uid          The IFC uid generated for this object.
      * @param siteIri      The IRI of bot:Site that is linked to this building instance.
      * @param refElevation An optional field containing the reference elevation values stored in IFC.
      * @param terElevation An optional field containing the terrain elevation values stored in IFC.
      */
-    public IfcBuildingRepresentation(String iri, String siteIri, String refElevation, String terElevation) {
+    public IfcBuildingRepresentation(String iri, String name, String uid, String siteIri, String refElevation, String terElevation) {
         // Initialise the super class
-        super(iri);
+        super(iri, OntoBimConstant.BUILDING_REP_CLASS,  name, uid);
         this.siteIRI = siteIri;
         // Generate a new bot Building IRI
         this.botBuildingIRI = this.getPrefix() + OntoBimConstant.BUILDING_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
@@ -60,6 +62,7 @@ public class IfcBuildingRepresentation extends IfcAbstractRepresentation {
      */
     @Override
     public void constructStatements(LinkedHashSet<Statement> statementSet) {
+        super.addIfcAbstractRepresentationStatements(statementSet, OntoBimConstant.BIM_BUILDING_REP_CLASS);
         StatementHandler.addStatement(statementSet, this.getBotBuildingIRI(), OntoBimConstant.RDF_TYPE, OntoBimConstant.BOT_BUILDING_CLASS);
         StatementHandler.addStatement(statementSet, this.getBotBuildingIRI(), OntoBimConstant.BIM_HAS_IFC_REPRESENTATION, this.getIri());
         StatementHandler.addStatement(statementSet, this.siteIRI, OntoBimConstant.BOT_HAS_BUILDING, this.getBotBuildingIRI());
