@@ -92,7 +92,17 @@ The *debug version* will run when built and launched through the provided VS Cod
 **Please note**: As most of the data processing is handled in asynchronous background tasks managed by Celery, breakpoints in those codes would not be triggered by the configurations above. Hence, the debug version of the agent waits for the Celery debugger to attached (i.e. run provided `Attach and Debug Celery` configuration).
 
 &nbsp;
-## 1.4 Spinning up the Stack remotely via SSH
+## 1.4 Known issues
+
+The following issues have been observed with the *production image* of the agent:
+
+- Sometimes the agent claims to fail when started with an uninitialised Blazegraph namespace. Nevertheless, the namespace is created and the ontology is loaded. Simply restart the agent to resolve this issue.
+- The agent tends to (temporarily) stop returning output messages and HTTP responses after being called on its startup route (from the browser). The agent continues to work and provides all "missing" responses after being called on its startup route again.
+
+Both issues are likely related to some misalignment between gunicorn and Celery (works) as the *debug version* of the agent does not seem to suffer from these issues.
+
+&nbsp;
+## 1.5 Spinning up the Stack remotely via SSH
 
 To spin up the stack remotely via SSH, VSCode's in-built SSH support can be used. Simply follow the steps provided here to use [VSCode via SSH] to log in to a remote machine (e.g. Virtual machine running on Digital Ocean) an start developing there. Regular log in relies on username and password. To avoid recurring prompts to provide credentials, one can [Create SSH key] and [Upload SSH key] to the remote machine to allow for automatic authentification.
 
