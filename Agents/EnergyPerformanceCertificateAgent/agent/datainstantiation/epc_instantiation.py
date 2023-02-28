@@ -29,6 +29,9 @@ from agent.datainstantiation.epc_retrieval import obtain_data_for_certificate, \
 from agent.kgutils.stackclients import OntopClient, PostGISClient, GdalClient, \
                                        GeoserverClient
 
+# Import PyDerivationAgent for derivation markup
+from pyderivationagent import PyDerivationClient
+
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
@@ -366,11 +369,22 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint=None,
     kgclient_epc = KGClient(query_endpoint, update_endpoint)
     kgclient_ocgml = KGClient(ocgml_endpoint, ocgml_endpoint)
 
+    # Create a PyDerivationClient instance
+    derivation_client = PyDerivationClient(
+        derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
+        query_endpoint=query_endpoint,
+        update_endpoint=update_endpoint,
+    )
+
     # Retrieve instantiated postcodes from KG
     query = instantiated_postalcodes()
     res = kgclient_epc.performQuery(query)
     postcodes = [r['postcode'] for r in res]
     postcodes = [p for p in postcodes if p]
+
+    #TODO: Remove
+    postcodes.sort()
+    postcodes = postcodes[2000:2050]
 
     # Split list of postcodes in chunks of max. size n
     n = 500
@@ -401,6 +415,19 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint=None,
     print('Instantiating EPC data for parent buildings ... ')
     #logger.info('Instantiating EPC data for parent buildings ... ')    
     summaries = instantiate_epcs_for_parent_buildings(kgclient=kgclient_epc) 
+
+    # Update timestamps of pure inputs
+    # Retrieve all (potential) pure inputs
+    query = get_all_pure_inputs()
+    res = kgclient_epc.performQuery(query)
+    pure_inputs = [r['iri'] for r in res]
+    pure_inputs = [p for p in pure_inputs if p]
+    #NOTE: As of pyderivationagent (1.3.0), a timestamp will be automatically added to 
+    # pure inputs at the initiL markup of THE derivation instance
+    # The 'updateTimestamps(List<String>)' method updates all instantiated timestamps 
+    # for IRIs in list (i.e. only updates timestamp for those instances which already 
+    # have timestamp attached, otherwise nothing happens)
+    derivation_client.updateTimestamps(pure_inputs)
      
     # Return number of newly instantiated and updated EPCs (single and summaries)
     return (all_epcs, summaries)

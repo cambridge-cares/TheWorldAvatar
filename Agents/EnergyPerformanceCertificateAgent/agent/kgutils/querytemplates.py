@@ -273,6 +273,27 @@ def get_ocgml_crs():
     return query
 
 
+def get_all_pure_inputs():
+    # Retrieve IRIs of all (potential) pure inputs instantiated/updated by EPC agent, i.e.
+    # - OBE properties (Building, Flat, Property)
+    # - OBE floor area
+    # - OBE postal code
+    query = f"""SELECT ?iri
+        WHERE {{  
+            {{ ?iri <{RDF_TYPE}> <{OBE_POSTALCODE}> }}
+            UNION
+            {{ ?iri <{RDF_TYPE}> <{OM_AREA}> ;
+                    ^<{OBE_HAS_TOTAL_FLOOR_AREA}> ?property }}
+            UNION
+            {{ ?iri <{RDF_TYPE}>/<{RDFS_SUBCLASS_OF}>* <{OBE_PROPERTY}> }}
+        }}
+    """
+
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    return query
+
+
 #
 # SPARQL UPDATES
 #

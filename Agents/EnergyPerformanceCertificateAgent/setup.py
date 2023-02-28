@@ -16,10 +16,11 @@ setup(
     install_requires= [
         'celery[redis]==5.2.7',
         'docopt~=0.6',
-        'flask==2.2.3',
+        'flask==2.1.0',
         'geojson-rewind==1.0.3',
         'JayDeBeApi==1.2.3',
         'pandas==1.5.3',
+        'pyderivationagent==1.4.1',
         'pyproj==3.4.1',
         'py4jps==1.0.33', 
         'requests==2.28.2'
