@@ -15,18 +15,19 @@ from Marie.Util.Models.CrossGraphAlignmentModel import CrossGraphAlignmentModel
 from Marie.Util.location import DATA_DIR
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.WikidataEngine import WikidataEngine
+import threading 
 
-
-def normalize_scores(scores_list):
-    normalized_scores = []
-    for scores in scores_list:
+def normalize_scores(self, scores_list):
+    normalized_scores = {}
+    for domain in self.domain_list: 
+        scores = scores_list[domain]
         max_score = max(scores)
         scores = [score / max_score for score in scores]
         if len(scores) < 5:
             diff = 5 - len(scores)
             for i in range(diff):
                 scores.append(-999)
-        normalized_scores.append(scores)
+        normalized_scores[domain]=scores
     return normalized_scores
 
 
@@ -37,20 +38,14 @@ class CrossGraphQAEngine:
 
     def __init__(self):
         self.marie_logger = MarieLogger()
-        self.pubchem_engine = PubChemQAEngine()
-        self.ontochemistry_engine = OntoCompChemEngine()
-        self.ontospecies_engine = OntoSpeciesQAEngine()
-        self.ontokin_engine = OntoKinQAEngine()
-        self.wikidata_engine = WikidataEngine()
         self.nel = ChemicalNEL()
 
         self.domain_encoding = {"pubchem": 0, "ontocompchem": 1, "ontospecies": 2, "ontokin": 3, "wikidata": 4}
         self.encoding_domain = {v: k for k, v in self.domain_encoding.items()}
         self.domain_list = self.domain_encoding.keys()
         print(self.domain_list)
-        self.engine_list = [self.pubchem_engine, self.ontochemistry_engine, self.ontospecies_engine,
-                            self.ontokin_engine, self.wikidata_engine]
-
+        self.engine_list = [None] * len(self.domain_list)
+        self.lock = threading.Lock()
         self.device = torch.device("cpu")
         self.max_length = 12
         # self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
@@ -117,52 +112,74 @@ class CrossGraphQAEngine:
         :param heads: IRI of the head entity before cross-ontology translation, always in the form of CID (pubchem ID)
         :return: the re-ranked list of answer labels according to the adjusted scores
         """
-        score_list = []
-        label_list = []
+        score_list = {}
+        label_list = {}
         domain_list = []
-        target_list = []
-        print("=========================")
+        target_list = {}
         stop_words = ["find", "all", "species", "what", "is", "the", "show", "me", "What", "Show"]
         tokens = [t for t in question.split(" ") if t.lower().strip() not in stop_words]
         question = " ".join(tokens)
         mention = self.nel.get_mention(question)
-        # remove stop words ...
-        # what is the ... of ... find all .. species .. e.g.
-
-
         if mention is not None:
             question = question.replace(mention, "")
 
-        for domain, engine in zip(self.domain_list, self.engine_list):
-            if domain in heads:
-                head = heads[domain]
-            else:
-                head = None
+        def process_domain(domain, index, head=None):
+            nonlocal score_list, label_list, target_list
+
+            if domain == "pubchem":
+                self.engine_list[index] = PubChemQAEngine()
+            elif domain == "ontocompchem":
+                self.engine_list[index] = OntoCompChemEngine()
+            elif domain == "ontospecies":
+                self.engine_list[index] = OntoSpeciesQAEngine()
+            elif domain == "ontokin":
+                self.engine_list[index] = OntoKinQAEngine()
+            elif domain == "wikidata":
+                self.engine_list[index] = WikidataEngine()
+
+            print(f"Engine for {domain} created")
+            
+            engine = self.engine_list[index]
+
             print(f"======================== USING ENGINE {domain}============================")
             if domain == "wikidata":
                 print("question given: ", question, "mention", mention)
                 labels, scores, targets, question_type = engine.run(question=question, mention=mention)
                 if question_type == "numerical":
                     return self.prepare_for_visualization(answer_list=labels, target_list=targets)
-                    # return labels, scores, targets
+                #     return labels, scores, targets
             else:
                 labels, scores, targets = engine.run(question=question, head=head, mention=mention)
-            # TODO: if domain is wikidata and gives a numerical answer, clear the results from other engines
 
             length_diff = 5 - len(labels)
             scores = scores + [-999] * length_diff
             labels = labels + ["EMPTY SLOT"] * length_diff
             targets = targets + ["EMPTY SLOT"] * length_diff
-            score_list.append(scores)
-            label_list += labels
-            target_list += targets
+            with self.lock:
+                score_list[domain] = scores
+                label_list[domain] = labels
+                target_list[domain] = targets
+
+        threads = []
+        for i, domain in enumerate(self.domain_list):
+            if domain in heads:
+                head = heads[domain]
+            else:
+                head = None
+            t = threading.Thread(target=process_domain, args=(domain, i, head))
+            threads.append(t)
+            t.start()
+
+        for t in threads:
+            t.join()
 
         tokenized_question = self.nlp.tokenize_question(question, 1)
         score_factors = self.score_adjust_model.predict_domain(tokenized_question).squeeze()
         adjusted_score_list = []
 
-        normalized_score_list = normalize_scores(score_list)
-        for score, score_factor, domain in zip(normalized_score_list, score_factors, self.domain_list):
+        normalized_score_list = normalize_scores(self, score_list)
+        for score_factor, domain in zip(score_factors, self.domain_list):
+            score = normalized_score_list[domain]
             if disable_alignment:
                 score = torch.FloatTensor([1, 1, 1, 1, 1])
             else:
@@ -176,8 +193,15 @@ class CrossGraphQAEngine:
             print("domain:", domain)
             print("------------------------")
 
-        return self.re_rank_answers(domain_list=domain_list, score_list=adjusted_score_list, answer_list=label_list,
-                                    target_list=target_list)
+        new_label_list = []
+        new_target_list = []
+
+        for domain in self.domain_list:
+            new_label_list += label_list[domain]
+            new_target_list += target_list[domain]
+
+        return self.re_rank_answers(domain_list=domain_list, score_list=adjusted_score_list, answer_list=new_label_list,
+                                    target_list=new_target_list)
 
 
 if __name__ == '__main__':
@@ -186,7 +210,7 @@ if __name__ == '__main__':
 
     my_qa_engine = CrossGraphQAEngine()
     START_TIME = time.time()
-    rst = my_qa_engine.run(question="Show me the melting point of all species")
+    rst = my_qa_engine.run(question="Show me the melting point of CH4")
     print(rst)
     print(f"TIME USED: {time.time() - START_TIME}")
     #
