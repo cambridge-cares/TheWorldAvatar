@@ -35,10 +35,8 @@ On the Debug side panel of VSCode, run the `Build and debug` configuration. (Thi
 #### Debugging
 1) Insert breakpoints within the code.
 2) On the Debug side panel of VSCode, run the `Debug` configuration.
-3) Input the <STACK-NAME> (This will fail but will spin up the agent within the stack - `Failed to attach to remote debuggee VM. Reason: com.sun.jdi.connect.spi.ClosedConnectionException`)
+3) It will prompt you to input the <STACK-NAME> (This will fail but will spin up the agent within the stack - `Failed to attach to remote debuggee VM. Reason: com.sun.jdi.connect.spi.ClosedConnectionException`)
 4) Run `Reattach and debug` to enter the debug mode. 
 
 ## Testing the agent
-1) Edit the local address of `SamplePOST_for_Stack` in `/SensorLoggerMobileAppAgent/sensorloggermobileapp_agent/src/main/resources`. To do so, run `ipconfig` in cmd.exe, obtain `IPv4 Address` under `Wireless LAN adapter WiFi`, replace `<LOCAL_URL>` with this `IPv4 Address` at `http://<LOCAL_URL>:10102/SensorLoggerMobileAppAgent/mb`
-   
-2) Send the POST Request, and you will receive 200 status code as response. 
+1) Send the POST Request of `SamplePOST_for_Stack` in `/SensorLoggerMobileAppAgent/sensorloggermobileapp_agent/src/main/resources`. You will receive 200 status code as response.
