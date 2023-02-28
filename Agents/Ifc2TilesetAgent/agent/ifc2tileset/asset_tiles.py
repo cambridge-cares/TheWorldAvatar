@@ -3,6 +3,7 @@
 
 This module provides methods to generate tilesets related to assets.
 """
+# Third party imports
 import pandas as pd
 
 # Self imports

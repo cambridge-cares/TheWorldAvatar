@@ -25,7 +25,7 @@ def test_default(flaskapp):
 
 
 def test_api_simple(initialise_client, flaskapp, gen_sample_ifc_file, sample_properties,
-                    tileset_content, assert_asset_geometries, ):
+                    tileset_content, assert_asset_geometries):
     """
     Tests the POST request for the api route on a simple IFC model
     """

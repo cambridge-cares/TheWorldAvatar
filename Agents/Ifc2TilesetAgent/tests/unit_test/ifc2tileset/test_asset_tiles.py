@@ -10,14 +10,13 @@ import pandas as pd
 # Self import
 import agent.config.config as properties
 from agent.ifc2tileset.asset_tiles import init_asset_tiles, gen_tileset_assets, appenddict_rec
-from agent.ifc2tileset.root_tile import root_tile, append_tileset_schema
+from agent.ifc2tileset.root_tile import root_tile, append_tileset_schema_and_metadata
 
 
 def test_init_asset_tiles():
     """
     Tests init_asset_tiles()
     """
-    # ARRANGE
     # Initialise test parameters
     expected_bbox = []
     properties.bbox_child = expected_bbox
@@ -25,13 +24,11 @@ def test_init_asset_tiles():
 
     # Init root tile for input
     tileset = root_tile()
-    append_tileset_schema(tileset, building_iri)
+    append_tileset_schema_and_metadata(tileset, building_iri)
 
-    # ACT
     # Execute method
     output = init_asset_tiles(tileset)
 
-    # ASSERT
     # Test that root tile is generated with no glTF content
     assert output["asset"]["version"] == "1.1"
     assert output["geometricError"] == 1024
@@ -202,7 +199,7 @@ def test_gen_tileset_assets():
     sample_df = gen_sample_df(test_range)
     building_iri = "buildingIri"
     sample_tileset = root_tile()
-    append_tileset_schema(sample_tileset, building_iri)
+    append_tileset_schema_and_metadata(sample_tileset, building_iri)
 
     # Execute test method
     tileset = gen_tileset_assets(sample_df, sample_tileset)

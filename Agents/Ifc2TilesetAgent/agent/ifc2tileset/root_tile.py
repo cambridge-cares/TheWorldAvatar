@@ -37,7 +37,7 @@ def root_tile():
     return tileset
 
 
-def append_tileset_schema(tileset: dict, building_iri: str):
+def append_tileset_schema_and_metadata(tileset: dict, building_iri: str):
     """
     Append tileset schema class and metadata to tileset
 
@@ -105,7 +105,7 @@ def gen_root_content(query_endpoint: str, update_endpoint: str):
     # Generate a minimal tileset
     tileset = root_tile()
     building_iri = get_building_iri(query_endpoint, update_endpoint)
-    append_tileset_schema(tileset, building_iri)
+    append_tileset_schema_and_metadata(tileset, building_iri)
 
     # Respective filepaths
     building_file_path = "./data/gltf/building.gltf"

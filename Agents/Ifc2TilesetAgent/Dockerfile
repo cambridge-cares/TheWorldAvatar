@@ -48,7 +48,7 @@ COPY ./agent ./agent
 FROM builder as test
 
 # Install testing frameworks
-RUN python -m pip install pytest
+RUN python -m pip install pytest pytest-mock
 
 # Copy the Python test source code
 COPY ./tests ./tests
