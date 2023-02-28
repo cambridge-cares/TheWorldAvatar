@@ -3,10 +3,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.Ifc2OntoBIMAgent;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcBuildingRepresentation;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcRoomRepresentation;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcSiteRepresentation;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcStoreyRepresentation;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.*;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.HashMap;
@@ -18,6 +15,7 @@ import java.util.HashMap;
  * @author qhouyee
  */
 public class SpatialZoneStorage {
+    private final HashMap<String, IfcProjectRepresentation> project;
     private final HashMap<String, IfcSiteRepresentation> sites;
     private final HashMap<String, IfcBuildingRepresentation> buildings;
     private final HashMap<String, IfcStoreyRepresentation> storeys;
@@ -29,10 +27,25 @@ public class SpatialZoneStorage {
      * Standard Constructor initialising the maps.
      */
     public SpatialZoneStorage() {
+        this.project = new HashMap<>();
         this.sites = new HashMap<>();
         this.buildings = new HashMap<>();
         this.storeys = new HashMap<>();
         this.rooms = new HashMap<>();
+    }
+
+    /**
+     * Retrieve the site's Java object associated with the IRI input.
+     *
+     * @param iri The data IRI generated from IfcOwl.
+     */
+    public IfcProjectRepresentation getProject(String iri) {
+        if (this.project.containsKey(iri)) {
+            return this.project.get(iri);
+        } else {
+            LOGGER.error(iri + NON_EXISTING_ERROR);
+            throw new JPSRuntimeException(iri + NON_EXISTING_ERROR);
+        }
     }
 
     /**
@@ -89,6 +102,17 @@ public class SpatialZoneStorage {
             LOGGER.error(iri + NON_EXISTING_ERROR);
             throw new JPSRuntimeException(iri + NON_EXISTING_ERROR);
         }
+    }
+
+    /**
+     * An overloaded method to store the data IRI
+     * and its associated zone's Java object as mappings.
+     *
+     * @param iri  The data IRI generated from IfcOwl.
+     * @param project The IfcProjectRepresentation object generated from the iri.
+     */
+    public void add(String iri, IfcProjectRepresentation project) {
+        this.project.put(iri, project);
     }
 
     /**

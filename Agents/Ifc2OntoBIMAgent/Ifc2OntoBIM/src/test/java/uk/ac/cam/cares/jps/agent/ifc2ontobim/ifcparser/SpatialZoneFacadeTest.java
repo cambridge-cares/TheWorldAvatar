@@ -43,6 +43,7 @@ class SpatialZoneFacadeTest {
     private static final String KITCHEN_INST = TEST_BASE_URI + "IfcSpace_615";
     private static final String KITCHEN_ID = "0a126gr";
     private static final String KITCHEN_NAME = "Kitchen";
+    private static final String PROJECT_AGG_INST = TEST_BASE_URI + "IfcRelAggregates_5";
     private static final String BUILDING_AGG_INST = TEST_BASE_URI + "IfcRelAggregates_106";
     private static final String STOREY_AGG_INST = TEST_BASE_URI + "IfcRelAggregates_126";
     private static final String ROOM_AGG_INST = TEST_BASE_URI + "IfcRelAggregates_136";
@@ -145,6 +146,44 @@ class SpatialZoneFacadeTest {
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedStatements(), result);
         // Ensure that the extra triples are not generated
+        JunitTestUtils.doesExpectedListNotExist(genProjectRootZoneStatements(true), result);
+        JunitTestUtils.doesExpectedListNotExist(genProjectRootZoneStatements(false), result);
+        JunitTestUtils.doesExpectedListNotExist(genExpectedComplexModelStatements(), result);
+        JunitTestUtils.doesExpectedListNotExist(genExpectedLatLongStatements(), result);
+    }
+
+    @Test
+    void testGenZoneTriplesSimpleModelSiteRoot() {
+        // Set up
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        addProjectRootZoneTriples(SITE_INST);
+        // Execute method
+        SpatialZoneFacade.genZoneTriples(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genProjectRootZoneStatements(true), result);
+        // Ensure that the extra triples are not generated
+        JunitTestUtils.doesExpectedListNotExist(genProjectRootZoneStatements(false), result);
+        JunitTestUtils.doesExpectedListNotExist(genExpectedComplexModelStatements(), result);
+        JunitTestUtils.doesExpectedListNotExist(genExpectedLatLongStatements(), result);
+    }
+
+    @Test
+    void testGenZoneTriplesSimpleModelBuildingRoot() {
+        // Set up
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        addProjectRootZoneTriples(BUILDING_INST);
+        // Execute method
+        SpatialZoneFacade.genZoneTriples(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genProjectRootZoneStatements(false), result);
+        // Ensure that the extra triples are not generated
+        JunitTestUtils.doesExpectedListNotExist(genProjectRootZoneStatements(true), result);
         JunitTestUtils.doesExpectedListNotExist(genExpectedComplexModelStatements(), result);
         JunitTestUtils.doesExpectedListNotExist(genExpectedLatLongStatements(), result);
     }
@@ -162,6 +201,8 @@ class SpatialZoneFacadeTest {
         JunitTestUtils.doesExpectedListExist(genExpectedStatements(), result);
         JunitTestUtils.doesExpectedListExist(genExpectedComplexModelStatements(), result);
         // Ensure that latitude/longitude triples are not generated
+        JunitTestUtils.doesExpectedListNotExist(genProjectRootZoneStatements(true), result);
+        JunitTestUtils.doesExpectedListNotExist(genProjectRootZoneStatements(false), result);
         JunitTestUtils.doesExpectedListNotExist(genExpectedLatLongStatements(), result);
     }
 
@@ -177,7 +218,9 @@ class SpatialZoneFacadeTest {
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedStatements(), result);
         JunitTestUtils.doesExpectedListExist(genExpectedLatLongStatements(), result);
-        // Ensure that complex model triples are not generated
+        // Ensure that complex model and project triples are not generated
+        JunitTestUtils.doesExpectedListNotExist(genProjectRootZoneStatements(true), result);
+        JunitTestUtils.doesExpectedListNotExist(genProjectRootZoneStatements(false), result);
         JunitTestUtils.doesExpectedListNotExist(genExpectedComplexModelStatements(), result);
     }
 
@@ -185,6 +228,7 @@ class SpatialZoneFacadeTest {
     void testGenZoneTriples() {
         // Set up
         addComplexModelTriples();
+        addProjectRootZoneTriples(SITE_INST);
         addLatLongTriples();
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         // Execute method
@@ -195,6 +239,7 @@ class SpatialZoneFacadeTest {
         JunitTestUtils.doesExpectedListExist(genExpectedStatements(), result);
         JunitTestUtils.doesExpectedListExist(genExpectedComplexModelStatements(), result);
         JunitTestUtils.doesExpectedListExist(genExpectedLatLongStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genProjectRootZoneStatements(true), result);
     }
 
     private void addComplexModelTriples() {
@@ -286,6 +331,15 @@ class SpatialZoneFacadeTest {
                         sampleModel.getResource(KITCHEN_INST));
     }
 
+    private void addProjectRootZoneTriples(String root) {
+        sampleModel.createResource(PROJECT_AGG_INST)
+                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelAggregates"))
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "relatingObject_IfcRelDecomposes"),
+                        sampleModel.getResource(PROJECT_INST))
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "relatedObjects_IfcRelDecomposes"),
+                        sampleModel.getResource(root));
+    }
+
     private void addLatLongTriples() {
         Resource latitudeNode = sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCompoundPlaneAngleMeasure_321");
         Resource longitudeNode = sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCompoundPlaneAngleMeasure_532");
@@ -361,6 +415,16 @@ class SpatialZoneFacadeTest {
         expected.add(TEST_BASE_URI + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://w3id.org/bot#Building");
         expected.add(TEST_BASE_URI + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         expected.add(TEST_BASE_URI + "Site_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://w3id.org/bot#hasBuilding, " + TEST_BASE_URI + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        return expected;
+    }
+
+    private List<String> genProjectRootZoneStatements(boolean isSite) {
+        List<String> expected = new ArrayList<>();
+        if (isSite) {
+            expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRootZone, " + TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        } else {
+            expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRootZone, " + TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        }
         return expected;
     }
 

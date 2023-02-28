@@ -37,6 +37,8 @@ public class OntoBimConstant {
     public static final String BIM_HAS_MILSEC = NamespaceMapper.BIM_NAMESPACE + "hasMillionthSecond";
     // OntoBim project/ model properties
     public static final String BIM_HAS_PHASE = NamespaceMapper.BIM_NAMESPACE + "hasPhase";
+    public static final String BIM_HAS_ROOT_ZONE = NamespaceMapper.BIM_NAMESPACE + "hasRootZone";
+
     public static final String BIM_HAS_CONTEXT = NamespaceMapper.BIM_NAMESPACE + "hasContext";
     public static final String BIM_HAS_SPACE_DIMENSION = NamespaceMapper.BIM_NAMESPACE + "hasSpaceDimensions";
     public static final String BIM_HAS_PRECISION = NamespaceMapper.BIM_NAMESPACE + "hasPrecision";

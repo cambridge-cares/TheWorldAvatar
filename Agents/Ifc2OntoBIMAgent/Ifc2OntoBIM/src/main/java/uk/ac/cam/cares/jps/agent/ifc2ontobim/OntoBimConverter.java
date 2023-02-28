@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.SpatialZoneFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaclassifier.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement.IfcElementConstructBuilder;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base.IfcProjectConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcgeometry.GeomConstructBuilderMediator;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.IgnoreClassHelper;
@@ -85,7 +84,6 @@ public class OntoBimConverter {
         // Create a new Set to ensure statements are kept in one object and not duplicated
         LinkedHashSet<Statement> statementSet = new LinkedHashSet<>();
         ignoreGeom = IgnoreClassHelper.genIgnoreSet();
-        genProjectStatements(builder, statementSet);
         genSpatialZoneStatements(statementSet);
         genElementsStatements(builder, statementSet);
         genCommonGeometryContentStatements(builder, statementSet);
@@ -93,21 +91,6 @@ public class OntoBimConverter {
         writer.writeTTLWithIntermediateFiles(this.tempFilePaths, ttlFilePath, classMapping);
     }
 
-    /**
-     * Query the generated TTL file for the project container and their relevant information. The results returned are
-     * constructed as statements in the OntoBIM schema and stored as a set.
-     *
-     * @param builder      The construct builder to add new query statements.
-     * @param statementSet Stores the relevant queried statements into this set.
-     */
-    private void genProjectStatements(ConstructBuilder builder, LinkedHashSet<Statement> statementSet) {
-        // Clone the builder to ensure that query statements are not transferred across different zones
-        ConstructBuilder tempBuilder = builder.clone();
-        LOGGER.info("Preparing query for IfcProject container.");
-        String query = new IfcProjectConstructBuilder().createSparqlQuery(tempBuilder);
-        QueryHandler.queryConstructStatementsAsSet(query, this.owlModel, statementSet);
-        LOGGER.info("Retrieved statements related to Ifc Project.");
-    }
 
     /**
      * Query the generated TTL file for spatial zones and their relevant information.

@@ -1,14 +1,18 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 
+import org.apache.jena.arq.querybuilder.Converters;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
+import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.GeometricRepresentationContext;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base.IfcConstructBuilderTemplate;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.ArrayDeque;
 import java.util.LinkedHashSet;
@@ -46,7 +50,7 @@ public class SpatialZoneFacade {
      */
     private static String createProjectSelectQuery() {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
-        selectBuilder.addVar(CommonQuery.ZONE_VAR)
+        selectBuilder.addVar(CommonQuery.PROJECT_VAR)
                 .addVar(CommonQuery.NAME_VAR)
                 .addVar(CommonQuery.PHASE_VAR)
                 .addVar(CommonQuery.REP_CONTEXT_VAR)
@@ -54,11 +58,11 @@ public class SpatialZoneFacade {
                 .addVar(CommonQuery.MODEL_PRECISION_VAR)
                 .addVar(CommonQuery.MODEL_PLACEMENT_VAR)
                 .addVar(CommonQuery.NORTH_DIR_VAR);
-        selectBuilder.addWhere(CommonQuery.ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCPROJECT)
-                .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_PROJECT_NAME + CommonQuery.EXPRESS_HASSTRING, CommonQuery.NAME_VAR)
-                .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_PROJECT_PHASE + CommonQuery.EXPRESS_HASSTRING, CommonQuery.PHASE_VAR)
+        selectBuilder.addWhere(CommonQuery.PROJECT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCPROJECT)
+                .addOptional(CommonQuery.PROJECT_VAR, CommonQuery.IFC_PROJECT_NAME + CommonQuery.EXPRESS_HASSTRING, CommonQuery.NAME_VAR)
+                .addOptional(CommonQuery.PROJECT_VAR, CommonQuery.IFC_PROJECT_PHASE + CommonQuery.EXPRESS_HASSTRING, CommonQuery.PHASE_VAR)
                 // Representation context
-                .addWhere(CommonQuery.ZONE_VAR, CommonQuery.IFC_PROJECT_REP_CONTEXT, CommonQuery.REP_CONTEXT_VAR)
+                .addWhere(CommonQuery.PROJECT_VAR, CommonQuery.IFC_PROJECT_REP_CONTEXT, CommonQuery.REP_CONTEXT_VAR)
                 .addWhere(CommonQuery.REP_CONTEXT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCGEOM_REP_CONTEXT)
                 .addWhere(CommonQuery.REP_CONTEXT_VAR, CommonQuery.IFC_PROJECT_COORD_DIM + CommonQuery.EXPRESS_HASINTEGER, CommonQuery.SPACE_DIMENSION_VAR)
                 .addOptional(CommonQuery.REP_CONTEXT_VAR, CommonQuery.IFC_PROJECT_CONTEXT_PRECISION + CommonQuery.EXPRESS_HASDOUBLE, CommonQuery.MODEL_PRECISION_VAR)
@@ -78,7 +82,7 @@ public class SpatialZoneFacade {
         ResultSet results = QueryHandler.execSelectQuery(projectQuery, owlModel);
         while (results.hasNext()) {
             QuerySolution soln = results.nextSolution();
-            String iri = soln.get(CommonQuery.ZONE_VAR).toString();
+            String iri = soln.get(CommonQuery.PROJECT_VAR).toString();
             String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
             String phase = QueryHandler.retrieveLiteral(soln, CommonQuery.PHASE_VAR);
             String contextIri = QueryHandler.retrieveIri(soln, CommonQuery.REP_CONTEXT_VAR);
@@ -88,9 +92,28 @@ public class SpatialZoneFacade {
             String northDirIri = QueryHandler.retrieveIri(soln, CommonQuery.NORTH_DIR_VAR);
             GeometricRepresentationContext context = new GeometricRepresentationContext(contextIri, dimension, precision, wcsIri, northDirIri);
             IfcProjectRepresentation project = new IfcProjectRepresentation(iri, name, phase, context);
+            zoneMappings.add(iri, project);
             project.constructStatements(statementSet);
             context.constructStatements(statementSet);
         }
+    }
+
+    /**
+     * Add the optional triples for linking the IfcProject to the root spatial zone (Site or Building).
+     * As IfcProject is only linked to one such zone, it may not exist and may return no value.
+     *
+     * @param builder The SELECT builder to append these optional statements.
+     */
+    private static void addProjectRootZoneRelation(SelectBuilder builder) {
+        // Set up the empty builders and add the necessary prefixes
+        SelectBuilder optionalBuilder = new SelectBuilder();
+        NamespaceMapper.addSubqueryBuilderNamespaces(optionalBuilder);
+        // Add query statements
+        optionalBuilder.addWhere(CommonQuery.CONTEXT_REL_VAR, QueryHandler.RDF_TYPE, CommonQuery.RELAGG)
+                .addWhere(CommonQuery.CONTEXT_REL_VAR, CommonQuery.IFC_PARENT_ZONE_REL, CommonQuery.PROJECT_VAR)
+                .addWhere(CommonQuery.PROJECT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCPROJECT)
+                .addWhere(CommonQuery.CONTEXT_REL_VAR, CommonQuery.IFC_CHILD_ZONE_REL, CommonQuery.ZONE_VAR);
+        builder.addOptional(optionalBuilder);
     }
 
     /**
@@ -103,6 +126,7 @@ public class SpatialZoneFacade {
         selectBuilder.addVar(CommonQuery.ZONE_VAR)
                 .addVar(CommonQuery.NAME_VAR)
                 .addVar(CommonQuery.UID_VAR)
+                .addVar(CommonQuery.PROJECT_VAR)
                 .addVar(CommonQuery.LAT_DEGREE_VAR).addVar(CommonQuery.LAT_MIN_VAR)
                 .addVar(CommonQuery.LAT_SEC_VAR).addVar(CommonQuery.LAT_MIL_SEC_VAR)
                 .addVar(CommonQuery.LONG_DEGREE_VAR).addVar(CommonQuery.LONG_MIN_VAR)
@@ -128,6 +152,7 @@ public class SpatialZoneFacade {
                 // Elevation
                 .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_SITE_ELEV + CommonQuery.EXPRESS_HASDOUBLE, CommonQuery.ELEVATION_VAR);
         CommonQuery.addBaseQueryComponents(selectBuilder);
+        addProjectRootZoneRelation(selectBuilder);
         return selectBuilder.buildString();
     }
 
@@ -170,7 +195,9 @@ public class SpatialZoneFacade {
                 longitude = null;
             }
             String elev = QueryHandler.retrieveLiteral(soln, CommonQuery.ELEVATION_VAR);
-            IfcSiteRepresentation site = new IfcSiteRepresentation(iri, name, uid, latitude, longitude, elev);
+            String project = soln.contains(CommonQuery.PROJECT_VAR) ?
+                    zoneMappings.getProject(QueryHandler.retrieveIri(soln, CommonQuery.PROJECT_VAR)).getIri() : null;
+            IfcSiteRepresentation site = new IfcSiteRepresentation(iri, name, uid, project, latitude, longitude, elev);
             zoneMappings.add(iri, site);
             site.constructStatements(statementSet);
         }
@@ -186,6 +213,7 @@ public class SpatialZoneFacade {
         selectBuilder.addVar(CommonQuery.ZONE_VAR)
                 .addVar(CommonQuery.NAME_VAR)
                 .addVar(CommonQuery.UID_VAR)
+                .addVar(CommonQuery.PROJECT_VAR)
                 .addVar(CommonQuery.PARENT_ZONE_VAR)
                 .addVar(CommonQuery.ELEVATION_VAR)
                 .addVar(CommonQuery.TER_ELEVATION_VAR);
@@ -199,6 +227,7 @@ public class SpatialZoneFacade {
                 .addWhere(CommonQuery.PARENT_ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCSITE)
                 .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_CHILD_ZONE_REL, CommonQuery.ZONE_VAR);
         CommonQuery.addBaseQueryComponents(selectBuilder);
+        addProjectRootZoneRelation(selectBuilder);
         return selectBuilder.buildString();
     }
 
@@ -218,8 +247,10 @@ public class SpatialZoneFacade {
             String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
             String elev = QueryHandler.retrieveLiteral(soln, CommonQuery.ELEVATION_VAR);
             String terElev = QueryHandler.retrieveLiteral(soln, CommonQuery.TER_ELEVATION_VAR);
+            String project = soln.contains(CommonQuery.PROJECT_VAR) ?
+                    zoneMappings.getProject(QueryHandler.retrieveIri(soln, CommonQuery.PROJECT_VAR)).getIri() : null;
             IfcSiteRepresentation site = zoneMappings.getSite(QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR));
-            IfcBuildingRepresentation building = new IfcBuildingRepresentation(iri, name, uid, site.getBotSiteIRI(), elev, terElev);
+            IfcBuildingRepresentation building = new IfcBuildingRepresentation(iri, name, uid, project, site.getBotSiteIRI(), elev, terElev);
             zoneMappings.add(iri, building);
             building.constructStatements(statementSet);
         }

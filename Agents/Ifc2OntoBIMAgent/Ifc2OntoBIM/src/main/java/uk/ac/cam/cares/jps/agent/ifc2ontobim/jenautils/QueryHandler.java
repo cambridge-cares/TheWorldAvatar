@@ -66,7 +66,6 @@ public class QueryHandler {
      */
     public static String retrieveIri(QuerySolution soln, String variable) {
         if (soln.contains(variable)) {
-            // Retrieve only the literal value with getString(), do not retrieve the namespace
             return soln.get(variable).toString();
         } else {
             return null;

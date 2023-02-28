@@ -28,6 +28,8 @@ public class CommonQuery {
     protected static final String ELEVATION_VAR = "?elev";
     protected static final String TER_ELEVATION_VAR = "?terElev";
     protected static final String REP_CONTEXT_VAR = "?repcontext";
+    protected static final String CONTEXT_REL_VAR = "?contextrelation";
+    protected static final String PROJECT_VAR = "?project";
     protected static final String SPACE_DIMENSION_VAR = "?spacedimension";
     protected static final String MODEL_PRECISION_VAR = "?modelprecision";
     protected static final String NORTH_DIR_VAR = "?northdirection";

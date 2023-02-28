@@ -38,7 +38,7 @@ public class IfcProjectRepresentation {
         }
     }
 
-    protected String getIri() {return this.iri;}
+    public String getIri() {return this.iri;}
 
     /**
      * Generate and add the statements required for this Class to the statement set input.

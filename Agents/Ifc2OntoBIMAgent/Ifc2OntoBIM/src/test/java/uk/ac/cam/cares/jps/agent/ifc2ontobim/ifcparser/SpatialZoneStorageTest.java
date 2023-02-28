@@ -2,10 +2,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcBuildingRepresentation;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcRoomRepresentation;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcSiteRepresentation;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcStoreyRepresentation;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.*;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -14,6 +11,8 @@ class SpatialZoneStorageTest {
     private static SpatialZoneStorage testMappings;
     private static final String TEST_BASE_URI = "http://www.example.org/";
     private static final String NON_EXISTENT_IRI = TEST_BASE_URI + "DOES/NOT/EXIST_1223";
+    private static final String TEST_PROJECT_CLASS = "IfcProjectRepresentation";
+    private static final String TEST_PROJECT_IRI = TEST_BASE_URI + TEST_PROJECT_CLASS + "_12";
     private static final String TEST_SITE_CLASS = "IfcSiteRepresentation";
     private static final String TEST_BUILDING_CLASS = "IfcBuildingRepresentation";
     private static final String TEST_STOREY_CLASS = "IfcStoreyRepresentation";
@@ -36,6 +35,12 @@ class SpatialZoneStorageTest {
     @BeforeEach
     void genSampleStatements() {
         testMappings = new SpatialZoneStorage();
+    }
+
+    @Test
+    void testGetProjectFail() {
+        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> testMappings.getProject(NON_EXISTENT_IRI));
+        assertEquals(NON_EXISTING_ERROR, thrownError.getMessage());
     }
 
     @Test
@@ -63,9 +68,19 @@ class SpatialZoneStorageTest {
     }
 
     @Test
+    void testAddAndGetProject() {
+        // Create a new sample representation
+        IfcProjectRepresentation sampleProject = new IfcProjectRepresentation(TEST_PROJECT_IRI, null, null, null);
+        // Execute method
+        testMappings.add(TEST_PROJECT_IRI, sampleProject);
+        // Assert if they are equals
+        assertEquals(sampleProject, testMappings.getProject(TEST_PROJECT_IRI));
+    }
+
+    @Test
     void testAddAndGetSite() {
         // Create a new sample representation
-        IfcSiteRepresentation sampleSite = new IfcSiteRepresentation(TEST_SITE_IRI, TEST_SITE_NAME, TEST_SITE_UID, null, null, TEST_ELEV.toString());
+        IfcSiteRepresentation sampleSite = new IfcSiteRepresentation(TEST_SITE_IRI, TEST_SITE_NAME, TEST_SITE_UID, null, null, null, TEST_ELEV.toString());
         // Execute method
         testMappings.add(TEST_SITE_IRI, sampleSite);
         // Assert if they are equals
@@ -76,7 +91,7 @@ class SpatialZoneStorageTest {
     void testAddAndGetBuilding() {
         // Create a new sample representation
         IfcBuildingRepresentation sampleBuilding = new IfcBuildingRepresentation(TEST_BUILDING_IRI, TEST_BUILDING_NAME,
-                TEST_BUILDING_UID, TEST_SITE_IRI, TEST_ELEV.toString(), TEST_ELEV.toString());
+                TEST_BUILDING_UID, null, TEST_SITE_IRI, TEST_ELEV.toString(), TEST_ELEV.toString());
         // Execute method
         testMappings.add(TEST_BUILDING_IRI, sampleBuilding);
         // Assert if they are equals
