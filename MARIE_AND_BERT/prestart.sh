@@ -1,4 +1,4 @@
-mkdir /app/DATA
+mkdir  -p /app/DATA
 
 
 wget http://159.223.42.53:8080/CrossGraph.zip && unzip CrossGraph.zip -d /app/DATA/ && rm CrossGraph.zip

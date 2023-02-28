@@ -26,6 +26,6 @@ RUN apt-get update && \
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
 RUN export JAVA_HOME
 #COPY script.sh script.sh
-RUN pip install faiss-cpu
+RUN pip install STOUT-pypi==2.0.2
 #RUN chmod +x ./script.sh
 #CMD [ "/bin/bash","-c","./script.sh"]
