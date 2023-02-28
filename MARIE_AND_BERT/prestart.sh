@@ -2,7 +2,6 @@ mkdir  -p /app/DATA
 mkdir -p /root/.local/share/ChemDataExtractor/
 
 if [ -d /app/DATA/CrossGraph ];
-
 then
   echo "File already exists"
 else
@@ -13,6 +12,13 @@ else
   wget -nc http://159.223.42.53:8080/Dictionaries.zip && unzip Dictionaries.zip -d /app/DATA/ && rm Dictionaries.zip
   wget -nc http://159.223.42.53:8080/cde_models.zip && unzip cde_models.zip -d /root/.local/share/ChemDataExtractor/ && rm cde_models.zip
 fi
+
+if [ -d /root/.data/STOUT-V2/models ];
+then
+  echo "File already exists"
+else
+  mkdir  -p /root/.data/STOUT-V2/
+  wget -nc http://159.223.42.53:8080/models.zip && unzip models.zip -d /root/.data/STOUT-V2/ && rm models.zip
 
 #wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/CrossGraph.zip && unzip CrossGraph.zip -d /app/DATA/ && rm CrossGraph.zip
 #wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/Evaluation.zip && unzip Evaluation.zip -d /app/DATA/ && rm Evaluation.zip
