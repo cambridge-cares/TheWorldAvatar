@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.accessagent;
 
+import java.util.List;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -168,6 +170,7 @@ public class AccessAgent extends JPSAgent{
 	 * @param requestParams
 	 * @return
 	 */
+	/**
 	public JSONObject performGet(JSONObject requestParams) {
 		
 		String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
@@ -199,7 +202,51 @@ public class AccessAgent extends JPSAgent{
 			logInputParams(requestParams, sparqlquery, true);
 			throw new JPSRuntimeException(e);
 		}
-	}
+	}*/
+	
+	 /**
+		 * Perform HTTP GET. This will "get" all triples (from specified graph).
+		 * @param requestParams
+		 * @return
+		 */
+		public JSONObject performGet(JSONObject requestParams) {
+			
+			String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
+			String sparqlupdate = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);		
+		    String targetIRI = requestParams.getString(JPSConstants.TARGETIRI);
+		   
+		    if(sparqlquery!=null || sparqlupdate!=null) {
+		    	throw new JPSRuntimeException("parameters " + JPSConstants.QUERY_SPARQL_QUERY + " and " 
+		    									+ JPSConstants.QUERY_SPARQL_UPDATE + " are not allowed");
+		    }
+		    
+			try {
+				logInputParams(requestParams, "", false);
+				
+				//TODO return as JSON Array
+				
+				List<String> endpoints = StoreRouter.getEndpoints(targetIRI);
+				String queryIRI = endpoints.get(StoreRouter.QUERY_INDEX);
+				String updateIRI = endpoints.get(StoreRouter.UPDATE_INDEX);
+				
+				if(queryIRI==null && updateIRI==null){
+					LOGGER.error("Endpoint could not be retrieved for the following resource ID:"+targetIRI);
+				}
+								
+				JSONObject JSONresult = new JSONObject();
+				String result = null;
+				
+				//get
+				//result = kbClient.get(graphIRI, accept);
+				JSONresult.put(JPSConstants.RESULT_KEY,result);
+			
+				return JSONresult;
+			
+			} catch (RuntimeException e) {
+				logInputParams(requestParams, sparqlquery, true);
+				throw new JPSRuntimeException(e);
+			}
+		}
 	
 	/**
 	 * Perform HTTP PUT. Insert triples into store.
