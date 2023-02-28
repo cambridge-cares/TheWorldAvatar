@@ -5,14 +5,14 @@
             "metaFile": "ReportingStations.sparql",
             "timeFile": "ReportingStations_time.sparql",
             "databaseName": "postgres",
-            "timeLimit": 48
+            "timeLimit": 168
         },
         {
             "class": "https://www.theworldavatar.com/kg/ontoems/WaterLevelReportingStation",
             "metaFile": "ReportingStations.sparql",
             "timeFile": "ReportingStations_time.sparql",
             "databaseName": "postgres",
-            "timeLimit": 48
+            "timeLimit": 168
         },
         {
             "class": "https://www.theworldavatar.com/kg/ontobuiltenv/Flat",
