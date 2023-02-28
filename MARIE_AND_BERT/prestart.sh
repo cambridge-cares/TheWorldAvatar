@@ -19,6 +19,7 @@ then
 else
   mkdir  -p /root/.data/STOUT-V2/
   wget -nc http://159.223.42.53:8080/models.zip && unzip models.zip -d /root/.data/STOUT-V2/ && rm models.zip
+fi
 
 #wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/CrossGraph.zip && unzip CrossGraph.zip -d /app/DATA/ && rm CrossGraph.zip
 #wget http://www.theworldavatar.com/MARIE_DEPLOYMENT/Evaluation.zip && unzip Evaluation.zip -d /app/DATA/ && rm Evaluation.zip
