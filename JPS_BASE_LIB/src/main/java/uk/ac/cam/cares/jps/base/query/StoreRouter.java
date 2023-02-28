@@ -97,8 +97,8 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 	 * key=label, value=[queryEndpoint, updateEndpoint]
 	 */
 	private static final int CACHE_SIZE = Integer.parseInt(KeyValueMap.getInstance().get(IKeys.STOREROUTER_CACHE_SIZE));
-	private static final int QUERY_INDEX = 0;
-	private static final int UPDATE_INDEX = 1;
+	public static final int QUERY_INDEX = 0;
+	public static final int UPDATE_INDEX = 1;
 
 	private static StoreRouter storeRouter = null;
 
@@ -195,6 +195,31 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 		}
 		
 		return kbClient;
+	}
+	
+	public static List<String> getEndpoints(String targetResourceID){
+		
+		List<String> endpoints = null;
+		
+		if (targetResourceID != null && !targetResourceID.isEmpty()) {
+			
+			//instantiate singleton if not already done so
+			getInstance();
+
+			if (isFileBasedTargetResourceID(targetResourceID)) {
+				LOGGER.error("Endpoints not supported for file based store.");
+			}else if(isRemoteTargetResourceID(targetResourceID)){
+				
+				String targetResourceLabel = getLabelFromTargetResourceID(targetResourceID);
+				LOGGER.info("Remote store. targetResourceLabel="+targetResourceLabel);
+				
+				endpoints = storeRouter.get(targetResourceLabel);			
+			}
+		}else {
+			LOGGER.error("targetResourceID is null.");
+		}
+		
+		return endpoints;
 	}
 	
 	/**
