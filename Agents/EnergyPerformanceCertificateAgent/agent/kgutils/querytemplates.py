@@ -273,19 +273,32 @@ def get_ocgml_crs():
     return query
 
 
-def get_all_pure_inputs():
+def get_all_pure_inputs(property_iris: list = []):
     # Retrieve IRIs of all (potential) pure inputs instantiated/updated by EPC agent, i.e.
     # - OBE properties (Building, Flat, Property)
     # - OBE floor area
     # - OBE postal code
-    query = f"""SELECT ?iri
-        WHERE {{  
-            {{ ?iri <{RDF_TYPE}> <{OBE_POSTALCODE}> }}
-            UNION
-            {{ ?iri <{RDF_TYPE}> <{OM_AREA}> ;
-                    ^<{OBE_HAS_TOTAL_FLOOR_AREA}> ?property }}
-            UNION
-            {{ ?iri <{RDF_TYPE}>/<{RDFS_SUBCLASS_OF}>* <{OBE_PROPERTY}> }}
+
+    # Remove any potential None values and duplicates
+    property_iris = [iri for iri in property_iris if iri]
+    property_iris = list(set(property_iris))
+
+    query = f"""
+        SELECT ?postcode ?property ?floor_area 
+        WHERE {{ 
+    """
+
+    if property_iris:
+        values = '> <'.join(property_iris)
+        values = '<' + values + '>'
+        query += f"VALUES ?property {{ {values} }}"
+    
+    query += f"""
+        ?property <{RDF_TYPE}>/<{RDFS_SUBCLASS_OF}>* <{OBE_PROPERTY}> ;
+                  <{OBE_HAS_TOTAL_FLOOR_AREA}> ?floor_area ;
+                  <{OBE_HAS_ADDRESS}>/<{OBE_HAS_POSTALCODE}> ?postcode .
+        ?floor_area <{RDF_TYPE}> <{OM_AREA}> . 
+        ?postcode <{RDF_TYPE}> <{OBE_POSTALCODE}> .
         }}
     """
 

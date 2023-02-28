@@ -182,7 +182,7 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
                                        query_endpoint=QUERY_ENDPOINT, 
                                        update_endpoint=UPDATE_ENDPOINT,
                                        kgclient_epc=None, kgclient_ocgml=None,
-                                       summarise=True):
+                                       summarise=True, update_timestamps=True):
     """
     Retrieves EPC data for provided list of postcodes from given endpoint and 
     instantiates them in the KG according to OntoBuiltEnv
@@ -194,6 +194,7 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
         ocgml_endpoint - SPARQL endpoint with instantiated OntoCityGml buildings
         kgclient - KG Client to interact with OntoBuiltEnv SPARQL endpoint
         summarise (bool) - boolean flag whether to summarise EPC data for parent buildings
+        update_timestamps (bool) - boolean flag whether to update timestamps for pure inputs
     Returns:
         Tuple of newly instantiated and updated EPCs (new, updated)
         Tuple of newly summarized and updated EPC summaries (new, updated)
@@ -215,6 +216,15 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
         kgclient_epc = KGClient(query_endpoint, update_endpoint)
     if not kgclient_ocgml:
         kgclient_ocgml = KGClient(ocgml_endpoint, ocgml_endpoint)
+
+    # Create a PyDerivationClient instance
+    derivation_client = PyDerivationClient(
+        derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
+        query_endpoint=query_endpoint,
+        update_endpoint=update_endpoint,
+    )
+    # Initialise list or property IRIs to derive pure inputs
+    properties = []
 
     # Iterate through DataFrame
     for index, row in epc_data.iterrows():
@@ -301,6 +311,8 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
                     logger.info('No EPC data instantiated for UPRN. Instantiate data ... ')
                     insert_query = instantiate_epc_data(**data_to_instantiate)
                     kgclient_epc.performUpdate(insert_query)
+                    # Add property and (potential) parent IRI to list of pure input properties
+                    properties.extend([data_to_instantiate['property_iri'], parent_iri])
                     new_epcs += 1
 
                 else:
@@ -325,15 +337,29 @@ def instantiate_epc_data_for_postcodes(postcodes: list, epc_endpoint='domestic',
 
                     logger.info('Instantiated EPC data for UPRN outdated. Updated data ... ')
                     update_query = update_epc_data(**data_to_update)
-
                     kgclient_epc.performUpdate(update_query)
+                    # Add property and (potential) parent IRI to list of pure input properties
+                    properties.extend([data_to_update['property_iri'], parent_iri])
                     updated_epcs += 1
         else:
             logger.info('No associated UPRNs are instantiated in OntoCityGml endpoint.')
 
     if summarise:
         # Potentially "summarise" EPCs for parent buildings
-        new_summaries, updated_summaries = instantiate_epcs_for_parent_buildings(kgclient=kgclient_epc, epc_endpoint=epc_endpoint)    
+        new_summaries, updated_summaries = \
+            instantiate_epcs_for_parent_buildings(kgclient=kgclient_epc, 
+                                                  query_endpoint=query_endpoint)
+    
+    ### Update timestamps of pure inputs ###
+    if update_timestamps and properties:
+        # Retrieve all (potential) pure inputs
+        query = get_all_pure_inputs(property_iris=properties)
+        res = kgclient_epc.performQuery(query)
+        # Unwrap list of IRIs and remove potential duplicates (i.e. postcodes)
+        pure_inputs = [iri for r in res for iri in list(r.values())]
+        pure_inputs = list(set(pure_inputs))
+        # Update all instantiated timestamps (i.e. only already instantiated ones)
+        derivation_client.updateTimestamps(pure_inputs)
 
     return (new_epcs, updated_epcs), (new_summaries, updated_summaries)
 
@@ -384,7 +410,7 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint=None,
 
     #TODO: Remove
     postcodes.sort()
-    postcodes = postcodes[2000:2050]
+    postcodes = postcodes[2100:2150]
 
     # Split list of postcodes in chunks of max. size n
     n = 500
@@ -406,7 +432,7 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint=None,
                                     epc_endpoint=epc_endpoint, ocgml_endpoint=ocgml_endpoint, 
                                     query_endpoint=query_endpoint, update_endpoint=update_endpoint,
                                     kgclient_epc=kgclient_epc, kgclient_ocgml=kgclient_ocgml,
-                                    summarise=False)
+                                    summarise=False, update_timestamps=False)
 
             # Update number of amended EPC instances
             all_epcs = tuple([sum(x) for x in zip(all_epcs, epcs)])
@@ -416,12 +442,13 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint=None,
     #logger.info('Instantiating EPC data for parent buildings ... ')    
     summaries = instantiate_epcs_for_parent_buildings(kgclient=kgclient_epc) 
 
-    # Update timestamps of pure inputs
+    ### Update timestamps of pure inputs ###
     # Retrieve all (potential) pure inputs
     query = get_all_pure_inputs()
     res = kgclient_epc.performQuery(query)
-    pure_inputs = [r['iri'] for r in res]
-    pure_inputs = [p for p in pure_inputs if p]
+    # Unwrap list of IRIs and remove potential duplicates (i.e. postcodes)
+    pure_inputs = [iri for r in res for iri in list(r.values())]
+    pure_inputs = list(set(pure_inputs))
     #NOTE: As of pyderivationagent (1.3.0), a timestamp will be automatically added to 
     # pure inputs at the initiL markup of THE derivation instance
     # The 'updateTimestamps(List<String>)' method updates all instantiated timestamps 
