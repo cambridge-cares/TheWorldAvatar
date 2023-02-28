@@ -1,6 +1,7 @@
 # Install the EPC Agent in Docker container
 #==================================================================================================
-
+# Reference published Docker image for Stack-Client resources to use
+FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
@@ -17,8 +18,13 @@ ENV PYTHONUNBUFFERED=1
 # Install Java
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
-# Copy Stack-Client resource required to update py4jps later
-COPY ./tmp_stack ./tmp_stack
+# Install Redis for scheduling of background tasks using Celery (via Flask)
+RUN apt install -y redis-server
+
+# Copy Stack-Client resource from published Docker image (potentially ensure
+# directory structure matches requirements for jpsrm to update py4jps resources)
+RUN mkdir -p ./tmp_stack
+COPY --from=stackclients /app ./tmp_stack
 
 # Set the default working directory & copy files to install Python
 WORKDIR /app
@@ -30,8 +36,6 @@ ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 # Install Python package and the required libraries
 RUN python -m pip install --upgrade pip
 RUN pip install -e .
-# Installation of agentlogging (potentially to be excluded to avoid performance issues)
-RUN pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 
 # Update py4jps resources
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
@@ -47,13 +51,25 @@ FROM base as debug
 # Install additional dependencies for debugging
 RUN pip install debugpy
 
+# Expose 2 debug ports (one for Flask, one for Celery)
+EXPOSE 5678
+EXPOSE 5679
+
 # Set flask app and development environment to allow for hot-reloading
-ENV FLASK_APP=app/epcdata/flaskapp/wsgi.py
+ENV FLASK_APP=app/agent/flaskapp/wsgi.py
 ENV FLASK_DEBUG=1
 
 # Launch application in container
-WORKDIR /app/epcdata/flaskapp/
-CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000
+WORKDIR /app/agent/flaskapp/
+# Create pipeline of multiple commands using Shell Form of CMD (to perform a series of operations)
+# 1) Start Redis server at default 'localhost:6379'
+# 2) Start Flask App in debug mode
+# 3) Point the celery worker to the celery_app object (add '-B' option to enable periodic task scheduling)
+# NOTE: Although not recommended, celery is run as superuser to avoid permission issues when (potentially) 
+#       downloading pyproj projections and accessing the JDBS driver (due to repository access restrictions)
+CMD redis-server & \
+    python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.0.0.0 -p 5000 &  \
+    python -m debugpy --listen 0.0.0.0:5679 --wait-for-client -m celery -A wsgi.celery_app worker -B
 
 
 #------------------------------------------------------
@@ -61,11 +77,11 @@ CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.
 #------------------------------------------------------
 FROM base as prod
 # Install additional dependencies
-RUN pip install gunicorn
+RUN pip install gunicorn==20.1.0
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
-COPY ./epcdata ./epcdata
+COPY ./agent ./agent
 COPY ./app_entry_point.sh .
 
 # Set the entrypoint

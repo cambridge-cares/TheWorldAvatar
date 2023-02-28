@@ -9,15 +9,15 @@
 import os
 import requests
 
-import agentlogging
+from py4jps import agentlogging
 
-from epcdata.datamodel.iris import *
-from epcdata.datamodel.data_mapping import GBP, GBP_PER_SM
-from epcdata.errorhandling.exceptions import KGException
-from epcdata.kgutils.javagateway import jpsBaseLibGW
-from epcdata.kgutils.kgclient import KGClient
-from epcdata.utils.env_configs import OCGML_ENDPOINT
-from epcdata.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.datamodel.iris import *
+from agent.datamodel.data_mapping import GBP, GBP_PER_SM, METRE, METRE_SQ, ABOX
+from agent.errorhandling.exceptions import KGException
+from agent.kgutils.javagateway import jpsBaseLibGW
+from agent.kgutils.kgclient import KGClient
+from agent.utils.env_configs import OCGML_ENDPOINT
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 
 # Initialise logger
@@ -67,9 +67,9 @@ def create_blazegraph_namespace(endpoint=OCGML_ENDPOINT,
         logger.info('Request status code: {}\n'.format(response.status_code))
 
 
-def instantiate_GBP_units():
+def instantiate_all_units():
     """
-        Return SPARQL update to instantiate required GBP units
+        Return SPARQL update to instantiate all required units (both ascii and non-ascii)
     """
 
     # NOTE: There are reported issues with encoding of special characters, i.e. Blazegraph
@@ -78,21 +78,40 @@ def instantiate_GBP_units():
 
     query = f"""
         INSERT DATA {{
+            <{UOM_GBP_M2}> <{RDFS_SUBCLASS_OF}> <{OM_UNIT}> . 
             <{UOM_GBP_M2}> <{OM_SYMBOL}> \"{GBP_PER_SM}\"^^<{XSD_STRING}> . 
+            <{OM_GBP}> <{RDFS_SUBCLASS_OF}> <{OM_UNIT}> . 
             <{OM_GBP}> <{OM_SYMBOL}> \"{GBP}\"^^<{XSD_STRING}> . 
+            <{OM_M}> <{RDF_TYPE}> <{OM + 'SingularUnit'}> . 
+            <{OM + 'SingularUnit'}> <{RDFS_SUBCLASS_OF}> <{OM_UNIT}> .
+            <{OM_M}> <{OM_SYMBOL}> \"{METRE}\"^^<{XSD_STRING}> .             
+            <{OM_M2}> <{RDF_TYPE}> <{OM + 'UnitExponentiation'}> . 
+            <{OM + 'UnitExponentiation'}> <{RDFS_SUBCLASS_OF}> <{OM + 'CompoundUnit'}> . 
+            <{OM + 'CompoundUnit'}> <{RDFS_SUBCLASS_OF}> <{OM_UNIT}> . 
+            <{OM_M2}> <{OM_SYMBOL}> \"{METRE_SQ}\"^^<{XSD_STRING}> .
     }}"""
 
     return query
 
-def initialise_kb():
-    """
-        Uploads TBox and ABox from TWA to KG namespace
-    """
 
-    # URLs to .owl files
-    #TODO: Potentially to be replaced with better maintained Github Links
-    tbox = 'http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl'
-    abox = 'http://www.theworldavatar.com/kb/ontobuiltenv/OntoBuiltEnv.owl'
+def instantiate_abox():
+    """
+        Return SPARQL update to instantiate all recurring built forms and property types
+    """
+    triples = ''
+    for key, item in ABOX.items():
+        triples += f'<{item}> <{RDF_TYPE}> <{key}> . '
+    query = f"INSERT DATA {{ {triples} }} "
+
+    return query
+
+
+def upload_ontology():
+    """
+        Uploads TBox from github and all units KG namespace
+    """
+    # URL to .owl files
+    tbox = TBOX_URL
 
     # Create KGclient to upload .owl files
     kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
@@ -109,38 +128,46 @@ def initialise_kb():
         raise KGException("Unable to retrieve TBox version from KG.") from ex
 
     if not res:
-        # Upload TBox and ABox if not already instantiated
+        # Upload TBox if not already instantiated
         temp_fp = 'tmp.owl'
-        for i in [tbox, abox]:
+        try:
+            # Retrieve .owl file
+            logger.info(f'Retrieving TBox from TWA ...')
             try:
-                # Retrieve .owl file
-                logger.info(f'Retrieving {i.capitalize()} from TWA ...')
-                try:
-                    content = requests.get(i)
-                except Exception as ex:
-                    logger.error(f"Unable to retrieve {i.capitalize()} from TWA server.")
-                    raise KGException(f"Unable to retrieve {i.capitalize()} from TWA server.") from ex
-                logger.info(f'Writing temporary {i.capitalize()} .owl file ...')
-                with open(temp_fp, 'w') as f:
-                    f.write(content.text)
-                # Create Java file
-                temp_f = jpsBaseLib_view.java.io.File(temp_fp)
-                # Upload .owl file to KG
-                logger.info(f'Uploading {i.capitalize()} .owl file to KG ...')
-                kg_client.kg_client.uploadFile(temp_f)
-                os.remove(temp_fp)
+                content = requests.get(tbox)
             except Exception as ex:
-                logger.error("Unable to initialise knowledge base with TBox and ABox.")
-                raise KGException("Unable to initialise knowledge base with TBox and ABox.") from ex
+                logger.error(f"Unable to retrieve TBox from GitHub.")
+                raise KGException(f"Unable to retrieve TBox from GitHub.") from ex
+            logger.info(f'Writing temporary TBox .owl file ...')
+            with open(temp_fp, 'w') as f:
+                f.write(content.text)
+            # Create Java file
+            temp_f = jpsBaseLib_view.java.io.File(temp_fp)
+            # Upload .owl file to KG
+            logger.info(f'Uploading TBox .owl file to KG ...')
+            kg_client.kg_client.uploadFile(temp_f)
+            os.remove(temp_fp)
+        except Exception as ex:
+            logger.error("Unable to initialise knowledge base with TBox.")
+            raise KGException("Unable to initialise knowledge base with TBox.") from ex
         
         # Upload GBP symbols to KG (not directly part of OntoBuiltEnv ontology TBox or ABox,
         # but required within KG for proper agent execution later on (i.e. derivation agents,
         # and visualisation purposes)
-        logger.info('Instantiating GBP symbols ...')
-        query = instantiate_GBP_units()
+        logger.info('Instantiating all units ...')
+        query = instantiate_all_units()
         try:
             kg_client.performUpdate(query)
         except Exception as ex:
-            logger.error("Unable to initialise GBP symbols in KG.")
-            raise KGException("Unable to initialise GBP symbols in KG.") from ex
+            logger.error("Unable to initialise all units in KG.")
+            raise KGException("Unable to initialise all units in KG.") from ex
+
+        # Upload recurring built forms and property types to KG
+        logger.info('Instantiating recurring types ...')
+        query = instantiate_abox()
+        try:
+            kg_client.performUpdate(query)
+        except Exception as ex:
+            logger.error("Unable to instantiate recurring types.")
+            raise KGException("Unable to instantiate recurring types.") from ex
 

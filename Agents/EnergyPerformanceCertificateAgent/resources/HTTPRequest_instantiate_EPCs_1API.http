@@ -1,27 +1,32 @@
-// Example HTTP request to instantiate EPC building data for given certificate 
+// Example HTTP request to instantiate latest EPC building data for all instantiated UPRNs (and postcodes)
+// retrieving data from specified EPC API
 
-// lmk_key: Individual lodgement identifier of particular EPC (see: https://epc.opendatacommunities.org/docs/api/domestic#domestic-cert)
 // epc_endpoint: EPC endpoint from which to retrieve data 
 //               ['domestic', 'non-domestic', 'display']
 // ocgml_endpoint: Available SPARQL endpoint containing instantiated buildings in OntoCityGML
 //                 (the agent only instantiates EPC data for buildings instantiated in OntoCityGml)
 //                 --> OPTIONAL: if not provided, default namespace from environment variables will be used
 
-POST http://165.232.172.16:5007/epcagent/instantiate/certificates/single
+POST http://165.232.172.16:5007/epcagent/instantiate/certificates/all
 Content-Type: application/json
 
-# # Domestic EPC
+# # Domestic API
 # { "query": {
-#       "lmk_key": "260808730062009040611251270078171",
 #       "epc_endpoint": "domestic",
 #       "ocgml_endpoint": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql"
 #     }
 # }
 
-# Non-domestic query
+# Non-domestic API
 { "query": {
-     "lmk_key": "54715380002011092111465010400280",
-     "epc_endpoint": "non-domestic",
-     "ocgml_endpoint": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql"
-  }
+      "epc_endpoint": "non-domestic",
+      "ocgml_endpoint": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql"
+    }
 }
+
+# # Display API
+# { "query": {
+#       "epc_endpoint": "display",
+#       "ocgml_endpoint": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql"
+#     }
+# }

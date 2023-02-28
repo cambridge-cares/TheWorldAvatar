@@ -9,11 +9,10 @@
 import uuid
 import pandas as pd
 
-import agentlogging
+from py4jps import agentlogging
 
-from epcdata.datamodel.iris import *
-from epcdata.datamodel.data_mapping import UNITS_MAPPING
-#from epcdata.kgutils.stackclients import PostGISClient
+from agent.datamodel.iris import *
+from agent.datamodel.data_mapping import UNITS_MAPPING, ABOX
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
@@ -140,6 +139,15 @@ def get_parent_building(uprns: list):
 def get_children_and_parent_building_properties():
     # Get IRIs of instantiated properties and parent buildings as well as
     # key information of properties to "summarize"
+    # 
+    # usage = actual usage iri (individual instance)
+    # usage_iri = usage type (concept)
+    #NOTE: Usage labels and weightages of children not explicitly queried as
+    #      1) weightage will be assessed for parent building based on count
+    #      2) usage labels for usage instances won't be instantiated for parent
+    #         buildings, as same usage could refer to multiple children , i.e. multiple 
+    #         labels --> parent buildings only provide high level summary
+
     query = f"""
         SELECT DISTINCT ?parent_iri ?parent_id ?property_iri ?address_iri ?postcode_iri ?district_iri
                         ?addr_street ?addr_number ?addr_bldg_name ?addr_unit_name ?epc_rating ?rooms 
@@ -148,19 +156,19 @@ def get_children_and_parent_building_properties():
                         ?wall_description  ?windows_description
         WHERE {{
             ?property_iri <{OBE_IS_IN}> ?parent_iri ;
-                      <{OBE_HAS_ADDRESS}> ?address_iri .
+                          <{OBE_HAS_ADDRESS}> ?address_iri .
             ?address_iri <{OBE_HAS_POSTALCODE}> ?postcode_iri ;
-                     <{OBE_HAS_ADMIN_DISTRICT}> ?district_iri .
+                         <{OBE_HAS_ADMIN_DISTRICT}> ?district_iri .
             OPTIONAL {{ ?address_iri <{ICONTACT_HAS_STREET}> ?addr_street }}
             OPTIONAL {{ ?address_iri <{ICONTACT_HAS_STREET_NUMBER}> ?addr_number }}
             OPTIONAL {{ ?address_iri <{ICONTACT_HAS_BUILDING}> ?addr_bldg_name }}
             OPTIONAL {{ ?address_iri <{OBE_HAS_UNIT_NAME}> ?addr_unit_name }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_ENERGYRATING}> ?epc_rating }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_NUMBER_ROOMS}> ?rooms }}
-            OPTIONAL {{ ?property_iri <{OBE_HAS_USAGE}> ?usage_iri }}
-            OPTIONAL {{ ?property_iri <{RDFS_LABEL}> ?usage_label }}
-            OPTIONAL {{ ?property_iri <{OBE_HAS_PROPERTY_TYPE}> ?property_type_iri }}
-            OPTIONAL {{ ?property_iri <{OBE_HAS_BUILT_FORM}> ?built_form_iri }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_PROPERTY_USAGE}> ?usage .
+                        ?usage <{RDF_TYPE}> ?usage_iri . }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_PROPERTY_TYPE}>/<{RDF_TYPE}> ?property_type_iri }}
+            OPTIONAL {{ ?property_iri <{OBE_HAS_BUILT_FORM}>/<{RDF_TYPE}> ?built_form_iri }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_CONSTRUCTION_DATE}>/<{TIME_HAS_BEGINNING}>/<{TIME_IN_DATETIME_STAMP}> ?construction_start }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_CONSTRUCTION_DATE}>/<{TIME_HAS_END}>/<{TIME_IN_DATETIME_STAMP}> ?construction_end }}
             OPTIONAL {{ ?property_iri <{OBE_HAS_CONSTRUCTION_COMPONENT}> ?component1 .
@@ -191,6 +199,33 @@ def get_matched_buildings() -> str:
         SELECT DISTINCT ?obe_bldg
         WHERE {{
             ?obe_bldg <{OBE_HAS_OCGML_REPRESENTATION}> ?ocgml_bldg .
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    return query
+
+
+def get_buildings_usage(bldg_iri: str):
+    # Retrieve usages of OntoBuiltEnv buildings 
+    query = f"""
+        SELECT ?usage ?usage_iri
+        WHERE {{
+          <{bldg_iri}> <{OBE_HAS_PROPERTY_USAGE}> ?usage_iri .
+          ?usage_iri <{RDF_TYPE}> ?usage
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    return query
+
+
+def get_usage_share(usage_iri: str):
+    # Retrieve usage share of a given building usage
+    query = f"""
+        SELECT ?share
+        WHERE {{
+          <{usage_iri}> <{OBE_HAS_USAGE_SHARE}> ?share
         }}
     """
     # Remove unnecessary whitespaces
@@ -292,12 +327,12 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
                          addr_bldg_name: str = None, addr_unit_name: str = None,
                          postcode_iri:str = None, district_iri: str = None,
                          built_form_iri: str = None, property_type_iri: str = None,
-                         usage_iri: str = None, usage_label: str = None,
+                         usage_iri = None, usage_label = None,
                          construction_start: str = None, construction_end: str = None,
                          floor_description: str = None, roof_description: str = None, 
                          wall_description: str = None, windows_description: str = None,  
                          floor_area: float = None, rooms: int = None,
-                         epc_rating: str = None, epc_lmkkey: str = None) -> str:
+                         epc_rating: str = None, epc_lmkkey: str = None, weightage = None) -> str:
     # Returns triples to instantiate EPC data for single property
     
     if property_iri and uprn:
@@ -309,6 +344,8 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
         # Property definition
         if 'Building' in property_iri:
             triples += f"<{property_iri}> <{RDF_TYPE}> <{OBE_BUILDING}> . "
+        elif 'Property' in property_iri:
+            triples += f"<{property_iri}> <{RDF_TYPE}> <{OBE_PROPERTY}> . "
         else:
             triples += f"<{property_iri}> <{RDF_TYPE}> <{OBE_FLAT}> . "
         if parent_iri: triples += f"""<{property_iri}> <{OBE_IS_IN}> <{parent_iri}> . 
@@ -327,11 +364,36 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
         if district_iri: triples += f"<{property_iri}> <{OBE_LOCATEDIN}> <{district_iri}> . "
         
         # Instances        
-        if property_type_iri: triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> <{property_type_iri}> . "
-        if built_form_iri: triples += f"<{property_iri}> <{OBE_HAS_BUILT_FORM}> <{built_form_iri}> . "
-        if usage_iri: 
-            triples += f"<{property_iri}> <{OBE_HAS_USAGE}> <{usage_iri}> . "
-            if usage_label: triples += f"<{property_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
+        if property_type_iri:
+            triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> <{ABOX[property_type_iri]}> . "
+        if built_form_iri:
+            triples += f"<{property_iri}> <{OBE_HAS_BUILT_FORM}> <{ABOX[built_form_iri]}> . "
+        if usage_iri:
+            if isinstance(usage_iri, list):
+                # For multiple usages: Usage weight is instantiated for each usage
+                if isinstance(weightage, list) and (len(weightage) == len(usage_iri)):
+                    # Instantiate usage labels if present 
+                    if isinstance(usage_label, list) and (len(usage_label) == len(usage_iri)):
+                        for item, weight, label in zip(usage_iri, weightage, usage_label):
+                            us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
+                            triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
+                            triples += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
+                            triples += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
+                            triples += f"<{us_iri}> <{RDFS_LABEL}> \"{label}\"^^<{XSD_STRING}> . "
+                    # Usage labels not present
+                    else:
+                        for item, weight in zip(usage_iri, weightage):
+                            us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
+                            triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
+                            triples += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
+                            triples += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
+            else:
+                # For single usage: Usage weight is assumed 1 and not instantiated
+                us_iri = KB + usage_iri[usage_iri.rfind('/')+1:] + '_' + str(uuid.uuid4())
+                triples += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
+                triples += f"<{us_iri}> <{RDF_TYPE}> <{usage_iri}> . "
+                if usage_label: triples += f"<{us_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
+
         if construction_start or construction_end:
             #TODO: Potentially include relevant construction time bands in ABox
             interval_iri = KB + 'Interval_' + str(uuid.uuid4())
@@ -348,37 +410,35 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
                                <{instant_iri}> <{RDF_TYPE}> <{TIME_INSTANT}> . 
                                <{instant_iri}> <{TIME_IN_DATETIME_STAMP}> \"{construction_end}\"^^<{XSD_DATETIMESTAMP}> . """
         if floor_description: 
-            floor_iri = OBE_FLOOR + '_' + str(uuid.uuid4())
+            floor_iri = KB + 'Floor_' + str(uuid.uuid4())
             triples += f"""<{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> <{floor_iri}> . 
                            <{floor_iri}> <{RDF_TYPE}> <{OBE_FLOOR}> . 
                            <{floor_iri}> <{RDFS_COMMENT}> \"{floor_description}\"^^<{XSD_STRING}> . """
         if roof_description: 
-            roof_iri = OBE_ROOF + '_' + str(uuid.uuid4())
+            roof_iri = KB + 'Roof_' + str(uuid.uuid4())
             triples += f"""<{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> <{roof_iri}> . 
                            <{roof_iri}> <{RDF_TYPE}> <{OBE_ROOF}> . 
                            <{roof_iri}> <{RDFS_COMMENT}> \"{roof_description}\"^^<{XSD_STRING}> . """
         if wall_description: 
-            wall_iri = OBE_WALL + '_' + str(uuid.uuid4())
+            wall_iri = KB + 'Wall_' + str(uuid.uuid4())
             triples += f"""<{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> <{wall_iri}> . 
                            <{wall_iri}> <{RDF_TYPE}> <{OBE_WALL}> . 
                            <{wall_iri}> <{RDFS_COMMENT}> \"{wall_description}\"^^<{XSD_STRING}> . """
         if windows_description: 
-            windows_iri = OBE_WINDOWS + '_' + str(uuid.uuid4())
+            windows_iri = KB + 'Windows_' + str(uuid.uuid4())
             triples += f"""<{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> <{windows_iri}> . 
                            <{windows_iri}> <{RDF_TYPE}> <{OBE_WINDOWS}> . 
                            <{windows_iri}> <{RDFS_COMMENT}> \"{windows_description}\"^^<{XSD_STRING}> . """
         if floor_area:
             area_iri = KB + 'FloorArea_' + str(uuid.uuid4())
             measure_iri = KB + 'Measure_' + str(uuid.uuid4())
-            unit_iri = UNITS_MAPPING[OM_AREA][0]
-            unit_symbol = UNITS_MAPPING[OM_AREA][1]
+            unit_iri = UNITS_MAPPING[OM_AREA]
             triples += f"""<{property_iri}> <{OBE_HAS_TOTAL_FLOOR_AREA}> <{area_iri}> . 
                            <{area_iri}> <{RDF_TYPE}> <{OM_AREA}> . 
                            <{area_iri}> <{OM_HAS_VALUE}> <{measure_iri}> . 
                            <{measure_iri}> <{RDF_TYPE}> <{OM_MEASURE}> . 
                            <{measure_iri}> <{OM_NUM_VALUE}> \"{floor_area}\"^^<{XSD_FLOAT}> .
                            <{measure_iri}> <{OM_HAS_UNIT}> <{unit_iri}> . 
-                           <{unit_iri}> <{OM_SYMBOL}> \"{unit_symbol}\"^^<{XSD_STRING}> .
                            """
 
         # Literals
@@ -394,18 +454,18 @@ def instantiate_epc_data(property_iri: str = None, uprn: str = None, parent_iri:
 
     else:
         triples = None
-    
+
     return triples
 
 
 def update_epc_data(property_iri: str = None,
                     built_form_iri: str = None, property_type_iri: str = None,
-                    usage_iri: str = None, usage_label: str = None,
-                    construction_end: str = None,
+                    usage_iri = None, usage_label = None,
+                    construction_end: str = None, 
                     floor_description: str = None, roof_description: str = None, 
                     wall_description: str = None, windows_description: str = None,  
                     floor_area: float = None, rooms: int = None,
-                    epc_rating: str = None, epc_lmkkey: str = None) -> str:
+                    epc_rating: str = None, epc_lmkkey: str = None, weightage = None) -> str:
     # Returns DELETE / INSERT query to update instantiated EPC data
 
     # Not all building data is assumed to be "updatable", i.e. assumed constant:
@@ -420,10 +480,12 @@ def update_epc_data(property_iri: str = None,
                 <{property_iri}> <{OBE_HAS_LATEST_EPC}> ?lmkkey ;
                                  <{OBE_HAS_ENERGYRATING}> ?epc_rating ;
                                  <{OBE_HAS_NUMBER_ROOMS}> ?rooms ;
-                                 <{OBE_HAS_USAGE}> ?usage_iri ;
-                                 <{OBE_HAS_PROPERTY_TYPE}> ?property_type ;
-                                 <{OBE_HAS_BUILT_FORM}> ?built_form ;
-                                 <{RDFS_LABEL}> ?usage_label .
+                                 <{OBE_HAS_PROPERTY_USAGE}> ?usage_iri ;
+                                 <{OBE_HAS_PROPERTY_TYPE}> ?property_type_iri ;
+                                 <{OBE_HAS_BUILT_FORM}> ?built_form_iri .
+                ?usage_iri <{RDF_TYPE}> ?usage ;
+                           <{RDFS_LABEL}> ?usage_label ;
+                           <{OBE_HAS_USAGE_SHARE}> ?usage_share .
                 ?end_iri <{TIME_IN_DATETIME_STAMP}> ?end_time .
                 ?floor <{RDFS_COMMENT}> ?floor_description .
                 ?roof <{RDFS_COMMENT}> ?roof_description .
@@ -439,11 +501,35 @@ def update_epc_data(property_iri: str = None,
         if epc_lmkkey:  insert += f"<{property_iri}> <{OBE_HAS_LATEST_EPC}> \"{epc_lmkkey}\"^^<{XSD_STRING}> . "
         if epc_rating: insert += f"<{property_iri}> <{OBE_HAS_ENERGYRATING}> \"{epc_rating}\"^^<{XSD_STRING}> ."
         if rooms: insert += f"<{property_iri}> <{OBE_HAS_NUMBER_ROOMS}> \"{rooms}\"^^<{XSD_INTEGER}> . "
-        if usage_iri: 
-            insert += f"<{property_iri}> <{OBE_HAS_USAGE}> <{usage_iri}> . "
-            if usage_label: insert += f"<{property_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
-        if property_type_iri: insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> <{property_type_iri}> . "
-        if built_form_iri: insert += f"<{property_iri}> <{OBE_HAS_BUILT_FORM}> <{built_form_iri}> . "
+        if usage_iri:
+            if isinstance(usage_iri, list):
+                # For multiple usages: Usage weight is instantiated for each usage
+                if isinstance(weightage, list) and (len(weightage) == len(usage_iri)):
+                    # Instantiate usage labels if present 
+                    if isinstance(usage_label, list) and (len(usage_label) == len(usage_iri)):                   
+                        for item, weight, label in zip(usage_iri, weightage, usage_label):
+                            us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
+                            insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
+                            insert += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
+                            insert += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
+                            insert += f"<{us_iri}> <{RDFS_LABEL}> \"{label}\"^^<{XSD_STRING}> . "
+                    # Usage labels not present
+                    else:
+                        for item, weight in zip(usage_iri, weightage):
+                            us_iri = KB + item[item.rfind('/')+1:] + '_' + str(uuid.uuid4())
+                            insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
+                            insert += f"<{us_iri}> <{RDF_TYPE}> <{item}> . "
+                            insert += f"<{us_iri}> <{OBE_HAS_USAGE_SHARE}> \"{weight}\"^^<{XSD_FLOAT}> . "
+            else:
+                us_iri = KB + usage_iri[usage_iri.rfind('/')+1:] + '_' + str(uuid.uuid4())
+                insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> <{us_iri}> . "
+                insert += f"<{us_iri}> <{RDF_TYPE}> <{usage_iri}> . "
+                if usage_label: insert += f"<{us_iri}> <{RDFS_LABEL}> \"{usage_label}\"^^<{XSD_STRING}> . "
+
+        if property_type_iri: 
+            insert += f"<{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> <{ABOX[property_type_iri]}> . "
+        if built_form_iri: 
+            insert += f"<{property_iri}> <{OBE_HAS_BUILT_FORM}> <{ABOX[built_form_iri]}> . "
         if construction_end: insert += f"?end_iri <{TIME_IN_DATETIME_STAMP}> \"{construction_end}\"^^<{XSD_DATETIMESTAMP}> . "
         
         if floor_description: insert += f"?floor <{RDFS_COMMENT}> \"{floor_description}\"^^<{XSD_STRING}> . "
@@ -456,11 +542,13 @@ def update_epc_data(property_iri: str = None,
         where =f"""WHERE {{
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_LATEST_EPC}> ?lmkkey }}
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_ENERGYRATING}> ?epc_rating }}
-                OPTIONAL {{ <{property_iri}> <{OBE_HAS_NUMBER_ROOMS}> ?rooms }}
-                OPTIONAL {{ <{property_iri}> <{OBE_HAS_USAGE}> ?usage_iri }} 
-                OPTIONAL {{ <{property_iri}> <{RDFS_LABEL}> ?usage_label }}
-                OPTIONAL {{ <{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> ?property_type }}
-                OPTIONAL {{ <{property_iri}> <{OBE_HAS_BUILT_FORM}> ?built_form }}
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_NUMBER_ROOMS}> ?rooms }}                
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_PROPERTY_TYPE}> ?property_type_iri . }}
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_BUILT_FORM}> ?built_form_iri . }}
+                OPTIONAL {{ <{property_iri}> <{OBE_HAS_PROPERTY_USAGE}> ?usage_iri .
+                            ?usage_iri <{RDF_TYPE}> ?usage . 
+                            OPTIONAL {{ ?usage_iri <{RDFS_LABEL}> ?usage_label . }}
+                            OPTIONAL {{ ?usage_iri <{OBE_HAS_USAGE_SHARE}> ?usage_share . }} }}
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_CONSTRUCTION_DATE}>/<{TIME_HAS_END}> ?end_iri . 
                             ?end_iri <{TIME_IN_DATETIME_STAMP}> ?end_time . }}
                 OPTIONAL {{ <{property_iri}> <{OBE_HAS_CONSTRUCTION_COMPONENT}> ?floor .
@@ -486,7 +574,6 @@ def update_epc_data(property_iri: str = None,
 
     else:
         query = None
-
     return query
 
 
@@ -505,8 +592,7 @@ def delete_old_building_elevation(obe_bldg_iris):
             ?old_measure <{RDF_TYPE}> ?old_measure_type ; 
                             <{OM_NUM_VALUE}> ?old_value ;
                             <{OM_HAS_UNIT}> ?old_unit .
-            ?old_unit <{RDF_TYPE}> ?old_unit_type ;
-                        <{OM_SYMBOL}> ?old_unit_symbol 
+            ?old_unit <{RDF_TYPE}> ?old_unit_type . 
         }}
         WHERE {{
                 VALUES ?bldg_iri {{ {values} }}
@@ -517,8 +603,7 @@ def delete_old_building_elevation(obe_bldg_iris):
                             ?old_measure <{RDF_TYPE}> ?old_measure_type ;
                                          <{OM_NUM_VALUE}> ?old_value }}
                 OPTIONAL {{ ?old_measure <{OM_HAS_UNIT}> ?old_unit .
-                            ?old_unit <{RDF_TYPE}> ?old_unit_type ;
-                                      <{OM_SYMBOL}> ?old_unit_symbol }}
+                            ?old_unit <{RDF_TYPE}> ?old_unit_type }}
                 }}
         }}
     """
@@ -559,7 +644,6 @@ def instantiate_building_elevation(elevation_data):
             query += f"""
                 <{measure}> <{OM_HAS_UNIT}> <{unit}> . 
                 <{unit}> <{RDF_TYPE}> <{OM_UNIT}> . 
-                <{unit}> <{OM_SYMBOL}> "{d['unit']}"^^<{XSD_STRING}> . 
             """
 
     # Close query
