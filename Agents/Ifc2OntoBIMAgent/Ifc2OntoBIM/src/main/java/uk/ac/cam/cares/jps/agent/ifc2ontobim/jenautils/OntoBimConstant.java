@@ -1,6 +1,9 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils;
 
 public class OntoBimConstant {
+    public static final String BACKSLASH = "/";
+    public static final String HASH = "#";
+
     // restrict instantiation
     private OntoBimConstant() {
     }
@@ -32,8 +35,11 @@ public class OntoBimConstant {
     public static final String BIM_HAS_MINUTE = NamespaceMapper.BIM_NAMESPACE + "hasMinute";
     public static final String BIM_HAS_SEC = NamespaceMapper.BIM_NAMESPACE + "hasSecond";
     public static final String BIM_HAS_MILSEC = NamespaceMapper.BIM_NAMESPACE + "hasMillionthSecond";
+    public static final String BIM_HAS_PHASE = NamespaceMapper.BIM_NAMESPACE + "hasPhase";
 
     // OntoBim classes
+    public static final String PROJECT_CLASS = "IfcProjectRepresentation";
+    public static final String BIM_PROJECT_CLASS = NamespaceMapper.BIM_NAMESPACE + PROJECT_CLASS;
     public static final String SITE_CLASS = "Site";
     public static final String BUILDING_CLASS = "Building";
     public static final String STOREY_CLASS = "Storey";

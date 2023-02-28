@@ -13,6 +13,7 @@ public class CommonQuery {
     protected static final String NAME_VAR = "?name";
     protected static final String ZONE_VAR = "?zone";
     protected static final String PARENT_ZONE_VAR = "?subzone";
+    protected static final String PHASE_VAR = "?phase";
     protected static final String RELAGGR_VAR = "?relaggregates";
     protected static final String LAT_VAR = "?latitude";
     protected static final String LAT_DEGREE_VAR = "?latdegree";
@@ -42,7 +43,10 @@ public class CommonQuery {
     protected static final String IFC_CHILD_ZONE_REL = NamespaceMapper.IFC_PREFIX + ":relatedObjects_IfcRelDecomposes";
     protected static final String IFC_REF_LAT = NamespaceMapper.IFC_PREFIX + ":refLatitude_IfcSite";
     protected static final String IFC_REF_LONG = NamespaceMapper.IFC_PREFIX + ":refLongitude_IfcSite";
+    protected static final String IFC_PROJECT_NAME = NamespaceMapper.IFC_PREFIX + ":longName_IfcProject";
+    protected static final String IFC_PROJECT_PHASE = NamespaceMapper.IFC_PREFIX + ":phase_IfcProject";
     // IfcOwl Classes
+    protected static final String IFCPROJECT = NamespaceMapper.IFC_PREFIX + ":IfcProject";
     protected static final String IFCSITE = NamespaceMapper.IFC_PREFIX + ":IfcSite";
     protected static final String IFCBUILDING = NamespaceMapper.IFC_PREFIX + ":IfcBuilding";
     protected static final String IFCSTOREY = NamespaceMapper.IFC_PREFIX + ":IfcBuildingStorey";

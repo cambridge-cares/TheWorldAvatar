@@ -28,8 +28,6 @@ class IfcProjectConstructBuilderTest {
         StringBuilder expected = new StringBuilder();
         expected.append("CONSTRUCT \n")
                 .append("  { \n")
-                .append("    ?project rdfs:label ?name .\n")
-                .append("    ?project bim:hasPhase ?phase .\n")
                 .append("    ?project bim:hasContext ?repcontext .\n")
                 .append("    ?project bim:hasRootZone ?root .\n")
                 .append("    ?repcontext rdf:type bim:GeometricRepresentationContext .\n")
@@ -41,19 +39,17 @@ class IfcProjectConstructBuilderTest {
                 .append("    ?modelplacement rdf:type bim:LocalPlacement .\n")
                 .append("  }\n")
                 .append("WHERE\n")
-                .append("  { ?project  rdf:type  ifc:IfcProject .\n")
-                .append("    ?project ifc:longName_IfcProject/express:hasString ?name .\n")
-                .append("    ?project ifc:phase_IfcProject/express:hasString ?phase .\n")
-                .append("    ?project  ifc:representationContexts_IfcProject  ?repcontext .\n")
-                .append("    ?relaggregates\n")
-                .append("              rdf:type              ifc:IfcRelAggregates ;\n")
-                .append("              ifc:relatingObject_IfcRelDecomposes  ?project ;\n")
-                .append("              ifc:relatedObjects_IfcRelDecomposes  ?root .\n")
-                .append("    ?repcontext  rdf:type           ifc:IfcGeometricRepresentationContext ;\n")
-                .append("              ifc:worldCoordinateSystem_IfcGeometricRepresentationContext  ?modelplacement .\n")
-                .append("    ?repcontext ifc:coordinateSpaceDimension_IfcGeometricRepresentationContext/express:hasInteger ?spacedimensions .\n")
-                .append("    ?repcontext ifc:precision_IfcGeometricRepresentationContext/express:hasDouble ?modelprecision .\n")
-                .append("    ?repcontext  ifc:trueNorth_IfcGeometricRepresentationContext  ?northdirection}\n");
+                .append("  { ?project  rdf:type              ifc:IfcProject ;\n" +
+                        "              ifc:representationContexts_IfcProject  ?repcontext .\n" +
+                        "    ?relaggregates\n" +
+                        "              rdf:type              ifc:IfcRelAggregates ;\n" +
+                        "              ifc:relatingObject_IfcRelDecomposes  ?project ;\n" +
+                        "              ifc:relatedObjects_IfcRelDecomposes  ?root .\n" +
+                        "    ?repcontext  rdf:type           ifc:IfcGeometricRepresentationContext ;\n" +
+                        "              ifc:worldCoordinateSystem_IfcGeometricRepresentationContext  ?modelplacement .\n" +
+                        "    ?repcontext ifc:coordinateSpaceDimension_IfcGeometricRepresentationContext/express:hasInteger ?spacedimensions .\n" +
+                        "    ?repcontext ifc:precision_IfcGeometricRepresentationContext/express:hasDouble ?modelprecision .\n" +
+                        "    ?repcontext  ifc:trueNorth_IfcGeometricRepresentationContext  ?northdirection}");
         return expected.toString();
     }
 }

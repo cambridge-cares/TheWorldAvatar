@@ -5,10 +5,8 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcBuildingRepresentation;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcRoomRepresentation;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcSiteRepresentation;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcStoreyRepresentation;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.*;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base.IfcConstructBuilderTemplate;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 
 import java.util.ArrayDeque;
@@ -33,10 +31,46 @@ public class SpatialZoneFacade {
      */
     public static void genZoneTriples(Model owlModel, LinkedHashSet<Statement> statementSet) {
         zoneMappings = new SpatialZoneStorage();
+        execProjectQuery(owlModel, statementSet);
         execSiteQuery(owlModel, statementSet);
         execBuildingQuery(owlModel, statementSet);
         execStoreyQuery(owlModel, statementSet);
         execRoomQuery(owlModel, statementSet);
+    }
+
+    /**
+     * Creates the SPARQL SELECT query statements for IfcProject.
+     *
+     * @return A string containing the SPARQL query to execute.
+     */
+    private static String createProjectSelectQuery() {
+        SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
+        selectBuilder.addVar(CommonQuery.ZONE_VAR)
+                .addVar(CommonQuery.NAME_VAR)
+                .addVar(CommonQuery.PHASE_VAR);
+        selectBuilder.addWhere(CommonQuery.ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCPROJECT)
+                .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_PROJECT_NAME + CommonQuery.EXPRESS_HASSTRING, CommonQuery.NAME_VAR)
+                .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_PROJECT_PHASE + CommonQuery.EXPRESS_HASSTRING, CommonQuery.PHASE_VAR);
+        return selectBuilder.buildString();
+    }
+
+    /**
+     * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for IfcProject.
+     *
+     * @param owlModel     The IfcOwl model containing the triples to query from.
+     * @param statementSet A list containing the new OntoBIM triples.
+     */
+    private static void execProjectQuery(Model owlModel, LinkedHashSet<Statement> statementSet) {
+        String projectQuery = createProjectSelectQuery();
+        ResultSet results = QueryHandler.execSelectQuery(projectQuery, owlModel);
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            String iri = soln.get(CommonQuery.ZONE_VAR).toString();
+            String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
+            String phase = QueryHandler.retrieveLiteral(soln, CommonQuery.PHASE_VAR);
+            IfcProjectRepresentation project = new IfcProjectRepresentation(iri, name, phase);
+            project.constructStatements(statementSet);
+        }
     }
 
     /**

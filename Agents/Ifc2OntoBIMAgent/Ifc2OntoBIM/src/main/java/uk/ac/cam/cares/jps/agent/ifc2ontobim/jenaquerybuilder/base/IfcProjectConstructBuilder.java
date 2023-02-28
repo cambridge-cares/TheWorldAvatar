@@ -33,14 +33,10 @@ public class IfcProjectConstructBuilder {
      * @param builder Construct Builder object to add Construct query statements.
      */
     private void createProjectSparqlQuery(ConstructBuilder builder) {
-        builder.addConstruct(PROJECT_VAR, QueryHandler.RDFS_LABEL, IfcConstructBuilderTemplate.NAME_VAR)
-                .addConstruct(PROJECT_VAR, "bim:hasPhase", PHASE_VAR)
-                .addConstruct(PROJECT_VAR, "bim:hasContext", REPCONTEXT_VAR)
+        builder.addConstruct(PROJECT_VAR, "bim:hasContext", REPCONTEXT_VAR)
                 .addConstruct(PROJECT_VAR, "bim:hasRootZone", ROOT_VAR);
 
         builder.addWhere(PROJECT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcProject")
-                .addWhere(PROJECT_VAR, "ifc:longName_IfcProject/express:hasString", IfcConstructBuilderTemplate.NAME_VAR)
-                .addWhere(PROJECT_VAR, "ifc:phase_IfcProject/express:hasString", PHASE_VAR)
                 .addWhere(PROJECT_VAR, "ifc:representationContexts_IfcProject", REPCONTEXT_VAR)
                 .addWhere(IfcConstructBuilderTemplate.RELAGGR_VAR, QueryHandler.RDF_TYPE, "ifc:IfcRelAggregates")
                 .addWhere(IfcConstructBuilderTemplate.RELAGGR_VAR, "ifc:relatingObject_IfcRelDecomposes", PROJECT_VAR)

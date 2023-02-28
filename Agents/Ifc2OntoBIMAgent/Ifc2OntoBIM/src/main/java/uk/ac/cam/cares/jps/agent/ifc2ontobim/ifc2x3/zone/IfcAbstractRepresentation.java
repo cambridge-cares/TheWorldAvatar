@@ -18,9 +18,6 @@ public class IfcAbstractRepresentation {
     private final String prefix;
     private final String name;
     private final String uid;
-
-    private static final String BACKSLASH = "/";
-    private static final String HASH = "#";
     protected static final String METRE_UNIT = "m";
 
     /**
@@ -32,8 +29,8 @@ public class IfcAbstractRepresentation {
      * @param uid       The IFC uid generated for this object.
      */
     public IfcAbstractRepresentation(String iri, String className, String name, String uid) {
-        this.prefix = iri.contains(HASH) ? StringUtils.getStringBeforeLastCharacterOccurrence(iri, HASH) + HASH :
-                StringUtils.getStringBeforeLastCharacterOccurrence(iri, BACKSLASH) + BACKSLASH;
+        this.prefix = iri.contains(OntoBimConstant.HASH) ? StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.HASH) + OntoBimConstant.HASH :
+                StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.BACKSLASH) + OntoBimConstant.BACKSLASH;
         this.iri = this.prefix + className + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.name = name;
         this.uid = uid;

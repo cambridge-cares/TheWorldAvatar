@@ -13,6 +13,9 @@ import java.util.List;
 class SpatialZoneFacadeTest {
     private static Model sampleModel;
     private static final String TEST_BASE_URI = "http://www.theworldavatar.com/test/";
+    private static final String PROJECT_INST = TEST_BASE_URI + "IfcProject_1";
+    private static final String PROJECT_NAME = "New Project";
+    private static final String PROJECT_PHASE = "Construction";
     private static final String SITE_INST = TEST_BASE_URI + "IfcSite_16";
     private static final String SITE_ID = "1204avak981";
     private static final String SITE_NAME = "Land boundary";
@@ -64,14 +67,21 @@ class SpatialZoneFacadeTest {
     @BeforeEach
     void genSampleStatements() {
         sampleModel = ModelFactory.createDefaultModel();
+        // Generate the IfcOwl statements in the model
+        // For IfcProject
+        Resource projectNameBlankNode = sampleModel.createResource();
+        Resource projectPhaseBlankNode = sampleModel.createResource();
+        sampleModel.createResource(PROJECT_INST)
+                .addProperty(RDF.type,
+                        sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcProject"))
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "longName_IfcProject"), projectNameBlankNode)
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "phase_IfcProject"), projectPhaseBlankNode);
+        sampleModel.add(projectNameBlankNode, hasString, ResourceFactory.createPlainLiteral(PROJECT_NAME));
+        sampleModel.add(projectPhaseBlankNode, hasString, ResourceFactory.createPlainLiteral(PROJECT_PHASE));
+        // For IfcSite
         Resource siteBlankNode = sampleModel.createResource();
         Resource siteNameBlankNode = sampleModel.createResource();
         Resource siteIDBlankNode = sampleModel.createResource();
-        Resource buildingBlankNode = sampleModel.createResource();
-        Resource buildingNameBlankNode = sampleModel.createResource();
-        Resource buildingIDBlankNode = sampleModel.createResource();;
-        // Generate the IfcOwl statements in the model
-        // For IfcSite
         sampleModel.createResource(SITE_INST)
                 .addProperty(RDF.type,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcSite"))
@@ -83,6 +93,9 @@ class SpatialZoneFacadeTest {
         sampleModel.add(siteIDBlankNode, hasString, ResourceFactory.createPlainLiteral(SITE_ID));
         sampleModel.add(siteBlankNode, hasDouble, ResourceFactory.createTypedLiteral(String.valueOf(TEST_SITE_DOUBLE)));
         // For IfcBuilding
+        Resource buildingBlankNode = sampleModel.createResource();
+        Resource buildingNameBlankNode = sampleModel.createResource();
+        Resource buildingIDBlankNode = sampleModel.createResource();;
         sampleModel.createResource(BUILDING_INST)
                 .addProperty(RDF.type,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcBuilding"))
@@ -299,6 +312,9 @@ class SpatialZoneFacadeTest {
 
     private List<String> genExpectedStatements() {
         List<String> expected = new ArrayList<>();
+        expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/IfcProjectRepresentation");
+        expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + PROJECT_NAME);
+        expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasPhase, \"" + PROJECT_PHASE);
         expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefElevation, " + TEST_BASE_URI + "Height_");
         expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + SITE_NAME);
         expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + SITE_ID);
