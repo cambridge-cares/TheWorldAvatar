@@ -70,6 +70,15 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
         # Initialise KG clients
         kgclient_epc = KGClient(query_endpoint, update_endpoint)
         kgclient_ocgml = KGClient(ocgml_endpoint, ocgml_endpoint)
+
+        # Create a PyDerivationClient instance
+        derivation_client = PyDerivationClient(
+            derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
+            query_endpoint=query_endpoint,
+            update_endpoint=update_endpoint,
+        )
+        # Initialise list or property IRIs to derive pure inputs
+        properties = []
         
         #
         # Check if UPRN is instantiated in OntoCityGml and whether parent building 
@@ -143,6 +152,8 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
                     logger.info('No EPC data instantiated for UPRN. Instantiate data ... ')
                     insert_query = instantiate_epc_data(**data_to_instantiate)
                     kgclient_epc.performUpdate(insert_query)
+                    # Add property and (potential) parent IRI to list of pure input properties
+                    properties.extend([data_to_instantiate['property_iri'], parent_iri])
                     updates = (1, 0)
 
                 else:
@@ -168,7 +179,21 @@ def instantiate_epc_data_for_certificate(lmk_key: str, epc_endpoint='domestic',
                     logger.info('Instantiated EPC data for UPRN outdated. Updated data ... ')
                     update_query = update_epc_data(**data_to_update)
                     kgclient_epc.performUpdate(update_query)
+                    # Add property and (potential) parent IRI to list of pure input properties
+                    properties.extend([data_to_update['property_iri'], parent_iri])
                     updates = (0, 1)
+
+            ### Update timestamps of pure inputs ###
+            if properties:
+                # Retrieve all (potential) pure inputs
+                query = get_all_pure_inputs(property_iris=properties)
+                res = kgclient_epc.performQuery(query)
+                # Unwrap list of IRIs and remove potential duplicates (i.e. postcodes)
+                pure_inputs = [iri for r in res for iri in list(r.values())]
+                pure_inputs = list(set(pure_inputs))
+                # Update all instantiated timestamps (i.e. only already instantiated ones)
+                derivation_client.updateTimestamps(pure_inputs)
+
         else:
             logger.info('No associated UPRNs are instantiated in OntoCityGml endpoint.')
     else:
@@ -407,10 +432,6 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint=None,
     res = kgclient_epc.performQuery(query)
     postcodes = [r['postcode'] for r in res]
     postcodes = [p for p in postcodes if p]
-
-    #TODO: Remove
-    postcodes.sort()
-    postcodes = postcodes[2100:2150]
 
     # Split list of postcodes in chunks of max. size n
     n = 500
