@@ -23,28 +23,12 @@ public class TestGeneralRetrofitAgent {
 		//TODO Fill up the IRI in the variables.
 	}
 
-	@Nested
-	public class testQuery {
 
-		@Before
-		public class testQueryMaker {
-			@Test
-			public void testGetQueryForBuses () {
+	@Test
+	public void testQueryBuses () {
 
-			}
-
-			@Test
-			public void testGetQueryForGenerator(){
-
-			}
-		}
-
-		@Test
-		public void testQueryBuses () {
-
-		}
-		
 	}
+		
 
 	@Nested
 	public class testFindFirstSlackBus {
