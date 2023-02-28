@@ -64,17 +64,24 @@ public class Aermod {
         aermodDirectory.toFile().mkdir();
     }
 
-    int create144File(WeatherData weatherData) {
-        String windSpeed = String.valueOf(weatherData.getWindSpeedInKnots());
-        while (windSpeed.length() <2) {
-            windSpeed = "0" + windSpeed;
+    String addLeadingZero(String variable, int length) {
+        while (variable.length()<length) {
+            variable = "0" + variable;
         }
+        return variable;
+    }
+
+    int create144File(WeatherData weatherData) {
+
+        String windSpeed = String.valueOf(weatherData.getWindSpeedInKnots());
+        windSpeed=addLeadingZero(windSpeed,2);
         if (windSpeed.length() != 2) {
             LOGGER.error("Invalid wind speed value {}", windSpeed);
             return 1;
         }
 
         String windDirection = String.valueOf(weatherData.getWindDirectionInTensOfDegrees());
+        windDirection=addLeadingZero(windDirection,2);
         if (windDirection.length() != 2) {
             LOGGER.error("Invalid wind direction value {}", windDirection);
             return 1;
@@ -82,6 +89,7 @@ public class Aermod {
 
         // unsure how strict the format is, just follow blindly at the moment
         String temperature = String.valueOf(weatherData.getTemperatureInFahrenheit());
+        temperature=addLeadingZero(temperature,3);
         if (temperature.length() < 3) {
             temperature = "0" + temperature;
         }
@@ -91,11 +99,7 @@ public class Aermod {
         }
 
         String humidity = String.valueOf(weatherData.getHumidityAsPercentage());
-        if (humidity.length() == 1) {
-            humidity = "00" + humidity;
-        } else if (humidity.length() == 2) {
-            humidity = "0" + humidity;
-        } 
+        humidity=addLeadingZero(humidity,3);
         if (humidity.length() != 3) {
             LOGGER.error("Invalid humidity value {}", humidity);
             return 1;
@@ -388,9 +392,9 @@ public class Aermod {
      * without this the visualisation container cannot access the file
      * @return
      */
-    int modifyDataFilePermissions() {
+    int modifyFilePermissions(String filename) {
         try {
-            Process process = Runtime.getRuntime().exec(new String[]{"chmod", "a+rwx", "data.json"}, null, new File(EnvConfig.VIS_FOLDER));
+            Process process = Runtime.getRuntime().exec(new String[]{"chmod", "a+rwx", filename}, null, new File(EnvConfig.VIS_FOLDER));
             if (process.waitFor() != 0) {
                 return 1;
             }
@@ -419,7 +423,7 @@ public class Aermod {
         overall.put("start", start);
         overall.put("search", search);
 
-        File settingsJson = Paths.get(EnvConfig.VIS_FOLDER, "settingsJson.json").toFile();
+        File settingsJson = Paths.get(EnvConfig.VIS_FOLDER, "settings.json").toFile();
         try {
             Files.deleteIfExists(settingsJson.toPath());
         } catch(IOException e) {
