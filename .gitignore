@@ -21,12 +21,14 @@
 .classpath
 .project
 .factorypath
+*.iml
 
 # Java:
 *.jar
 *.war
 *.class
 log4j2.xml
+
 
 # Maven:
 target/
@@ -112,3 +114,8 @@ JPS_Chatbot/jps-chatbot/UI/source/OntoSpeciesLog
 Agents/DistrictHeatingNetworkAgent/config/TSDataHeatingNetworkTest.csv
 Agents/DistrictHeatingNetworkAgent/credentials/repo_password.txt
 Agents/DistrictHeatingNetworkAgent/credentials/repo_username.txt
+**/WeatherAgent/docker-compose.yml
+JPS_VIRTUALSENSOR/DispersionVis/index.html
+obsolete/*
+**/credentials/
+
