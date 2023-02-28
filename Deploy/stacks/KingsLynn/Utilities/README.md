@@ -56,8 +56,8 @@ It has been observed that not all buildings instantiated in OntoCityGml get UPRN
 
 The `dtvf_legends` repository contains scripts to create legend figures for the DTVF visualisation:
 
-1) The `property_value_legend` script creates a color bar for the porperty value legend. **Please ensure** that 1) the mi/max values of the legend need to be adjusted depending on the data to be visualised and 2) the respective colors need to be aligned between this script and the values used in the `data.json`
-2)
+1) The `property_value_legend` script creates a color bar for the porperty value legend. **Please ensure** that 1) the min/max values of the legend need to be adjusted depending on the data to be visualised and 2) the respective colors need to be aligned between this script and the values used in the `data.json`
+2) The `property_usage_legend` script creates building icons in different colors to indicate different building usages. **Please ensure** that the respective colors need to be aligned between this script and the values used in the `data.json`
 
 &nbsp;
 ## Knowledge Graph utilities

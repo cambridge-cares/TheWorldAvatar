@@ -20,7 +20,7 @@
                     "id": "obe_buildings",  
                     "type": "vector",
                     "tiles": [
-                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=test2:test2&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=buildings:buildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 }
             ], 
@@ -38,7 +38,7 @@
                     },
                     "paint": {
                         "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 25, 8, 100],
-                        "circle-opacity": 0.25,
+                        "circle-opacity": 0.15,
                         "circle-color": "#000000",
                         "circle-stroke-width": 0
                     }
@@ -47,7 +47,7 @@
                     "id": "obe_buildings-layer-usage",
                     "name": "Buildings with usage information",
                     "source": "obe_buildings",
-                    "source-layer": "test2",
+                    "source-layer": "buildings",
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 5,
