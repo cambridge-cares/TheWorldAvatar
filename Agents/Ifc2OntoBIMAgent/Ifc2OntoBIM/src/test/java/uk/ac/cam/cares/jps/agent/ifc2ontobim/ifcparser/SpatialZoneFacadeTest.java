@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 
+import org.apache.jena.base.Sys;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,9 +14,14 @@ import java.util.List;
 class SpatialZoneFacadeTest {
     private static Model sampleModel;
     private static final String TEST_BASE_URI = "http://www.theworldavatar.com/test/";
+    // Project and context
     private static final String PROJECT_INST = TEST_BASE_URI + "IfcProject_1";
     private static final String PROJECT_NAME = "New Project";
     private static final String PROJECT_PHASE = "Construction";
+    private static final String REP_CONTEXT_INST = TEST_BASE_URI + "IfcGeometricRepresentationContext_352";
+    private static final String WCS_INST = TEST_BASE_URI + "LocalPlacement_2531";
+    private static final String TRUE_NORTH_INST = TEST_BASE_URI + "DirectionVector_5513";
+    // Spatial zones
     private static final String SITE_INST = TEST_BASE_URI + "IfcSite_16";
     private static final String SITE_ID = "1204avak981";
     private static final String SITE_NAME = "Land boundary";
@@ -41,6 +47,8 @@ class SpatialZoneFacadeTest {
     private static final String STOREY_AGG_INST = TEST_BASE_URI + "IfcRelAggregates_126";
     private static final String ROOM_AGG_INST = TEST_BASE_URI + "IfcRelAggregates_136";
     // Numerical literals
+    private static final Double TEST_PROJECT_DIMENSIONS = 2.0;
+    private static final Double TEST_PROJECT_PRECISION = 10.3;
     private static final Double TEST_SITE_DOUBLE = 25.0;
     private static final Double TEST_SITE_LAT_DEGREE = 10.21;
     private static final Double TEST_SITE_LAT_MINUTE = 10.0;
@@ -68,14 +76,25 @@ class SpatialZoneFacadeTest {
     void genSampleStatements() {
         sampleModel = ModelFactory.createDefaultModel();
         // Generate the IfcOwl statements in the model
-        // For IfcProject
+        // For IfcProject context properties
+        Resource projectContextDimBlankNode = sampleModel.createResource();
+        Resource projectContextPrecisionBlankNode = sampleModel.createResource();
+        Resource projectContext= sampleModel.createResource(REP_CONTEXT_INST)
+                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcGeometricRepresentationContext"))
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "coordinateSpaceDimension_IfcGeometricRepresentationContext"), projectContextDimBlankNode)
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "precision_IfcGeometricRepresentationContext"), projectContextPrecisionBlankNode)
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "worldCoordinateSystem_IfcGeometricRepresentationContext"), ResourceFactory.createResource(WCS_INST));
+        sampleModel.add(projectContextDimBlankNode, hasInteger, ResourceFactory.createTypedLiteral(TEST_PROJECT_DIMENSIONS));
+        sampleModel.add(projectContextPrecisionBlankNode, hasDouble, ResourceFactory.createTypedLiteral(TEST_PROJECT_PRECISION));
+        // For generic IfcProject properties
         Resource projectNameBlankNode = sampleModel.createResource();
         Resource projectPhaseBlankNode = sampleModel.createResource();
         sampleModel.createResource(PROJECT_INST)
                 .addProperty(RDF.type,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcProject"))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "longName_IfcProject"), projectNameBlankNode)
-                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "phase_IfcProject"), projectPhaseBlankNode);
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "phase_IfcProject"), projectPhaseBlankNode)
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representationContexts_IfcProject"), projectContext);
         sampleModel.add(projectNameBlankNode, hasString, ResourceFactory.createPlainLiteral(PROJECT_NAME));
         sampleModel.add(projectPhaseBlankNode, hasString, ResourceFactory.createPlainLiteral(PROJECT_PHASE));
         // For IfcSite
@@ -179,6 +198,9 @@ class SpatialZoneFacadeTest {
     }
 
     private void addComplexModelTriples() {
+        sampleModel.createResource(REP_CONTEXT_INST)
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "trueNorth_IfcGeometricRepresentationContext"),
+                        ResourceFactory.createResource(TRUE_NORTH_INST));
         Resource buildingBlankNode = sampleModel.createResource();
         Resource storeyBlankNode = sampleModel.createResource();
         Resource storeyNameBlankNode = sampleModel.createResource();
@@ -315,6 +337,11 @@ class SpatialZoneFacadeTest {
         expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/IfcProjectRepresentation");
         expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + PROJECT_NAME);
         expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasPhase, \"" + PROJECT_PHASE);
+        expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasContext, " + TEST_BASE_URI + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationContext");
+        expected.add(TEST_BASE_URI + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSpaceDimensions, \"" + TEST_PROJECT_DIMENSIONS);
+        expected.add(TEST_BASE_URI + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasPrecision, \"" + TEST_PROJECT_PRECISION);
+        expected.add(TEST_BASE_URI + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasWorldCoordinateSystem, " + WCS_INST);
         expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefElevation, " + TEST_BASE_URI + "Height_");
         expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + SITE_NAME);
         expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + SITE_ID);
@@ -355,6 +382,7 @@ class SpatialZoneFacadeTest {
 
     private List<String> genExpectedComplexModelStatements() {
         List<String> expected = new ArrayList<>();
+        expected.add(TEST_BASE_URI + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTrueNorth, " + TRUE_NORTH_INST);
         expected.add(TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTerrainElevation, " + TEST_BASE_URI + "Height_");
         expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue, \"" + TEST_BUILDING_TER_ELEV_DOUBLE);
         expected.add(TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefElevation, " + TEST_BASE_URI + "Height_");

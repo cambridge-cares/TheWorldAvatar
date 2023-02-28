@@ -27,6 +27,11 @@ public class CommonQuery {
     protected static final String LONG_MIL_SEC_VAR = "?longmilsec";
     protected static final String ELEVATION_VAR = "?elev";
     protected static final String TER_ELEVATION_VAR = "?terElev";
+    protected static final String REP_CONTEXT_VAR = "?repcontext";
+    protected static final String SPACE_DIMENSION_VAR = "?spacedimension";
+    protected static final String MODEL_PRECISION_VAR = "?modelprecision";
+    protected static final String NORTH_DIR_VAR = "?northdirection";
+    protected static final String MODEL_PLACEMENT_VAR = "?modelplacement";
     // IfcOwl Properties
     protected static final String EXPRESS_HASDOUBLE = "/express:hasDouble";
     protected static final String EXPRESS_HASINTEGER = "/express:hasInteger";
@@ -45,6 +50,11 @@ public class CommonQuery {
     protected static final String IFC_REF_LONG = NamespaceMapper.IFC_PREFIX + ":refLongitude_IfcSite";
     protected static final String IFC_PROJECT_NAME = NamespaceMapper.IFC_PREFIX + ":longName_IfcProject";
     protected static final String IFC_PROJECT_PHASE = NamespaceMapper.IFC_PREFIX + ":phase_IfcProject";
+    protected static final String IFC_PROJECT_REP_CONTEXT = NamespaceMapper.IFC_PREFIX + ":representationContexts_IfcProject";
+    protected static final String IFC_PROJECT_COORD_DIM = NamespaceMapper.IFC_PREFIX + ":coordinateSpaceDimension_IfcGeometricRepresentationContext";
+    protected static final String IFC_PROJECT_CONTEXT_PRECISION = NamespaceMapper.IFC_PREFIX + ":precision_IfcGeometricRepresentationContext";
+    protected static final String IFC_PROJECT_WCS_CONTEXT = NamespaceMapper.IFC_PREFIX + ":worldCoordinateSystem_IfcGeometricRepresentationContext";
+    protected static final String IFC_PROJECT_TRUE_NORTH = NamespaceMapper.IFC_PREFIX + ":trueNorth_IfcGeometricRepresentationContext";
     // IfcOwl Classes
     protected static final String IFCPROJECT = NamespaceMapper.IFC_PREFIX + ":IfcProject";
     protected static final String IFCSITE = NamespaceMapper.IFC_PREFIX + ":IfcSite";
@@ -53,6 +63,7 @@ public class CommonQuery {
     protected static final String IFCSPACE = NamespaceMapper.IFC_PREFIX + ":IfcSpace";
     protected static final String RELAGG = NamespaceMapper.IFC_PREFIX + ":IfcRelAggregates";
     protected static final String IFCCOMPOUND_PLANE_ANGLE = NamespaceMapper.IFC_PREFIX + ":IfcCompoundPlaneAngleMeasure";
+    protected static final String IFCGEOM_REP_CONTEXT = NamespaceMapper.IFC_PREFIX + ":IfcGeometricRepresentationContext";
 
     /**
      * Add the statements for querying common metadata such as class name, their unique ifc ID, and name into the builder.

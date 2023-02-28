@@ -5,6 +5,7 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.GeometricRepresentationContext;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base.IfcConstructBuilderTemplate;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
@@ -47,10 +48,22 @@ public class SpatialZoneFacade {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         selectBuilder.addVar(CommonQuery.ZONE_VAR)
                 .addVar(CommonQuery.NAME_VAR)
-                .addVar(CommonQuery.PHASE_VAR);
+                .addVar(CommonQuery.PHASE_VAR)
+                .addVar(CommonQuery.REP_CONTEXT_VAR)
+                .addVar(CommonQuery.SPACE_DIMENSION_VAR)
+                .addVar(CommonQuery.MODEL_PRECISION_VAR)
+                .addVar(CommonQuery.MODEL_PLACEMENT_VAR)
+                .addVar(CommonQuery.NORTH_DIR_VAR);
         selectBuilder.addWhere(CommonQuery.ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCPROJECT)
                 .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_PROJECT_NAME + CommonQuery.EXPRESS_HASSTRING, CommonQuery.NAME_VAR)
-                .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_PROJECT_PHASE + CommonQuery.EXPRESS_HASSTRING, CommonQuery.PHASE_VAR);
+                .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_PROJECT_PHASE + CommonQuery.EXPRESS_HASSTRING, CommonQuery.PHASE_VAR)
+                // Representation context
+                .addWhere(CommonQuery.ZONE_VAR, CommonQuery.IFC_PROJECT_REP_CONTEXT, CommonQuery.REP_CONTEXT_VAR)
+                .addWhere(CommonQuery.REP_CONTEXT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCGEOM_REP_CONTEXT)
+                .addWhere(CommonQuery.REP_CONTEXT_VAR, CommonQuery.IFC_PROJECT_COORD_DIM + CommonQuery.EXPRESS_HASINTEGER, CommonQuery.SPACE_DIMENSION_VAR)
+                .addOptional(CommonQuery.REP_CONTEXT_VAR, CommonQuery.IFC_PROJECT_CONTEXT_PRECISION + CommonQuery.EXPRESS_HASDOUBLE, CommonQuery.MODEL_PRECISION_VAR)
+                .addWhere(CommonQuery.REP_CONTEXT_VAR, CommonQuery.IFC_PROJECT_WCS_CONTEXT, CommonQuery.MODEL_PLACEMENT_VAR)
+                .addOptional(CommonQuery.REP_CONTEXT_VAR, CommonQuery.IFC_PROJECT_TRUE_NORTH, CommonQuery.NORTH_DIR_VAR);
         return selectBuilder.buildString();
     }
 
@@ -68,8 +81,15 @@ public class SpatialZoneFacade {
             String iri = soln.get(CommonQuery.ZONE_VAR).toString();
             String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
             String phase = QueryHandler.retrieveLiteral(soln, CommonQuery.PHASE_VAR);
-            IfcProjectRepresentation project = new IfcProjectRepresentation(iri, name, phase);
+            String contextIri = QueryHandler.retrieveIri(soln, CommonQuery.REP_CONTEXT_VAR);
+            String dimension = QueryHandler.retrieveLiteral(soln, CommonQuery.SPACE_DIMENSION_VAR);
+            String precision = QueryHandler.retrieveLiteral(soln, CommonQuery.MODEL_PRECISION_VAR);
+            String wcsIri = QueryHandler.retrieveIri(soln, CommonQuery.MODEL_PLACEMENT_VAR);
+            String northDirIri = QueryHandler.retrieveIri(soln, CommonQuery.NORTH_DIR_VAR);
+            GeometricRepresentationContext context = new GeometricRepresentationContext(contextIri, dimension, precision, wcsIri, northDirIri);
+            IfcProjectRepresentation project = new IfcProjectRepresentation(iri, name, phase, context);
             project.constructStatements(statementSet);
+            context.constructStatements(statementSet);
         }
     }
 

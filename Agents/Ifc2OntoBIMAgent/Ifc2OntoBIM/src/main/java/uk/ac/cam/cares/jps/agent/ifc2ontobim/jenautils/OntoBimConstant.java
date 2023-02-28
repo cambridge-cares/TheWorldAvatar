@@ -35,11 +35,18 @@ public class OntoBimConstant {
     public static final String BIM_HAS_MINUTE = NamespaceMapper.BIM_NAMESPACE + "hasMinute";
     public static final String BIM_HAS_SEC = NamespaceMapper.BIM_NAMESPACE + "hasSecond";
     public static final String BIM_HAS_MILSEC = NamespaceMapper.BIM_NAMESPACE + "hasMillionthSecond";
+    // OntoBim project/ model properties
     public static final String BIM_HAS_PHASE = NamespaceMapper.BIM_NAMESPACE + "hasPhase";
-
+    public static final String BIM_HAS_CONTEXT = NamespaceMapper.BIM_NAMESPACE + "hasContext";
+    public static final String BIM_HAS_SPACE_DIMENSION = NamespaceMapper.BIM_NAMESPACE + "hasSpaceDimensions";
+    public static final String BIM_HAS_PRECISION = NamespaceMapper.BIM_NAMESPACE + "hasPrecision";
+    public static final String BIM_HAS_TRUE_NORTH= NamespaceMapper.BIM_NAMESPACE + "hasTrueNorth";
+    public static final String BIM_HAS_WCS = NamespaceMapper.BIM_NAMESPACE + "hasWorldCoordinateSystem";
     // OntoBim classes
     public static final String PROJECT_CLASS = "IfcProjectRepresentation";
     public static final String BIM_PROJECT_CLASS = NamespaceMapper.BIM_NAMESPACE + PROJECT_CLASS;
+    public static final String GEOM_CONTEXT_CLASS = "GeometricRepresentationContext";
+    public static final String BIM_GEOM_CONTEXT_CLASS = NamespaceMapper.BIM_NAMESPACE + GEOM_CONTEXT_CLASS;
     public static final String SITE_CLASS = "Site";
     public static final String BUILDING_CLASS = "Building";
     public static final String STOREY_CLASS = "Storey";
@@ -57,7 +64,11 @@ public class OntoBimConstant {
     public static final String BIM_STOREY_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + STOREY_REP_CLASS;
     public static final String BIM_ROOM_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + ROOM_REP_CLASS;
     public static final String BIM_COMPOUND_PLANE_ANGLE = NamespaceMapper.BIM_NAMESPACE + "CompoundPlaneAngle";
-
+    // OntoBim geometry classes
+    public static final String DIR_VEC_CLASS = "DirectionVector";
+    public static final String BIM_DIR_VEC_CLASS = NamespaceMapper.BIM_NAMESPACE + DIR_VEC_CLASS;
+    public static final String LOCAL_PLACEMENT_CLASS = "LocalPlacement";
+    public static final String BIM_LOCAL_PLACEMENT_CLASS = NamespaceMapper.BIM_NAMESPACE + LOCAL_PLACEMENT_CLASS;
     // OM classes
     public static final String HEIGHT_CLASS = NamespaceMapper.OM_NAMESPACE + "Height";
     public static final String MEASURE_CLASS = NamespaceMapper.OM_NAMESPACE + "Measure";

@@ -28,28 +28,14 @@ class IfcProjectConstructBuilderTest {
         StringBuilder expected = new StringBuilder();
         expected.append("CONSTRUCT \n")
                 .append("  { \n")
-                .append("    ?project bim:hasContext ?repcontext .\n")
                 .append("    ?project bim:hasRootZone ?root .\n")
-                .append("    ?repcontext rdf:type bim:GeometricRepresentationContext .\n")
-                .append("    ?repcontext bim:hasSpaceDimensions ?spacedimensions .\n")
-                .append("    ?repcontext bim:hasPrecision ?modelprecision .\n")
-                .append("    ?repcontext bim:hasTrueNorth ?northdirection .\n")
-                .append("    ?repcontext bim:hasWorldCoordinateSystem ?modelplacement .\n")
-                .append("    ?northdirection rdf:type bim:DirectionVector .\n")
-                .append("    ?modelplacement rdf:type bim:LocalPlacement .\n")
                 .append("  }\n")
                 .append("WHERE\n")
-                .append("  { ?project  rdf:type              ifc:IfcProject ;\n" +
-                        "              ifc:representationContexts_IfcProject  ?repcontext .\n" +
+                .append("  { ?project  rdf:type              ifc:IfcProject .\n" +
                         "    ?relaggregates\n" +
                         "              rdf:type              ifc:IfcRelAggregates ;\n" +
                         "              ifc:relatingObject_IfcRelDecomposes  ?project ;\n" +
-                        "              ifc:relatedObjects_IfcRelDecomposes  ?root .\n" +
-                        "    ?repcontext  rdf:type           ifc:IfcGeometricRepresentationContext ;\n" +
-                        "              ifc:worldCoordinateSystem_IfcGeometricRepresentationContext  ?modelplacement .\n" +
-                        "    ?repcontext ifc:coordinateSpaceDimension_IfcGeometricRepresentationContext/express:hasInteger ?spacedimensions .\n" +
-                        "    ?repcontext ifc:precision_IfcGeometricRepresentationContext/express:hasDouble ?modelprecision .\n" +
-                        "    ?repcontext  ifc:trueNorth_IfcGeometricRepresentationContext  ?northdirection}");
+                        "              ifc:relatedObjects_IfcRelDecomposes  ?root}");
         return expected.toString();
     }
 }
