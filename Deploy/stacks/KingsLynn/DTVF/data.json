@@ -183,7 +183,7 @@
                     "minzoom": 4, 
                     "layout": {
                         "visibility": "visible",
-                        "icon-image": "weather",
+                        "icon-image": "metoffice",
                         "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.6, 20, 0.8],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true,
@@ -191,7 +191,7 @@
                         "text-font": ["Arial Unicode MS Regular"],
                         "text-size": 15,
                         "text-anchor": "center",
-                        "text-offset": [0, 0.5]
+                        "text-offset": [0, 0]
                     }
                 },
                 {
@@ -220,7 +220,7 @@
                     "minzoom": 4, 
                     "layout": {
                         "visibility": "visible",
-                        "icon-image": "ea-water-level",
+                        "icon-image": "floodmonitoring",
                         "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.6, 20, 0.8],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true,
@@ -228,7 +228,7 @@
                         "text-font": ["Arial Unicode MS Regular"],
                         "text-size": 15,
                         "text-anchor": "center",
-                        "text-offset": [0, 0.5]
+                        "text-offset": [0, 0]
                     }
                 }
             ]
