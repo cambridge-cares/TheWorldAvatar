@@ -133,10 +133,10 @@ public class Buildings {
                 LOGGER.error("Failed to create AERMOD buildings input file, terminating");
                 return 1;
             }
-            if (createAermetInput() != 0) {
-                LOGGER.error("Failed to create AERMET input file, terminating");
-                return 1;
-            }
+            // if (createAermetInput() != 0) {
+            //     LOGGER.error("Failed to create AERMET input file, terminating");
+            //     return 1;
+            // }
             if (createAERMODSourceInput() != 0) {
                 LOGGER.error("Failed to create AERMOD sources input file, terminating");
                 return 1;
@@ -505,6 +505,22 @@ public class Buildings {
             if (process.waitFor() != 0) {
                 return 1;
             }
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            // Read the output from the command
+            LOGGER.info("Here is the standard output of the command:\n");
+            String s = null;
+            while ((s = stdInput.readLine()) != null) {
+                LOGGER.info(s);
+            }
+
+            // Read any errors from the attempted command
+            LOGGER.info("Here is the standard error of the command (if any):\n");
+            while ((s = stdError.readLine()) != null) {
+                LOGGER.info(s);
+            }
         } catch (IOException e) {
             return 0;
         } catch (InterruptedException e) {
@@ -518,20 +534,21 @@ public class Buildings {
 
         BufferedReader reader;
         StringBuilder sb = new StringBuilder();
+        Path filepath = bpipprmDirectory.resolve("building.dat");
 
         try {
-            reader = new BufferedReader(new FileReader("building.dat"));
+            reader = new BufferedReader(new FileReader(filepath.toString()));
             String line = reader.readLine();
             while (line != null) {
-                line.stripLeading();
-                if (line.substring(0,2) == "SO") sb.append("line" + "\n");
+                line = line.stripLeading();
+                if (line.length() > 2 && line.substring(0,2).equals("SO")) sb.append(line + "\n");
                 line = reader.readLine();
             }
             reader.close();
+            LOGGER.info(sb.toString());
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
-
 
         return writeToFile(aermodDirectory.resolve("buildings.dat"), sb.toString());
     }
