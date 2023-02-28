@@ -155,6 +155,54 @@ class OntoMopsReader:
             formula = binding["MOPFormula"]["value"]
             mop_formula_dict[mopIRI] = formula
         return mop_formula_dict
+    
+    def get_assembly_models(self):
+        query = self.SPARQL_TEMPLATE_WITH_PREFIX % """
+        SELECT ?am ?label
+        WHERE
+        {  
+            ?am rdf:type <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#AssemblyModel>.
+            ?am OntoMOPs:hasGenericBuildingUnit ?gbu1. 
+            ?gbu1 OntoMOPs:hasModularity ?modularity1.
+            ?gbu1 OntoMOPs:hasPlanarity ?planarity1.
+            ?gbuNumberIRI1 OntoMOPs:isNumberOf ?gbu1.
+            ?gbuNumberIRI1 OntoSpecies:value ?gbuNumber1.
+            ?am OntoMOPs:hasGenericBuildingUnit ?gbu2.
+            ?gbu2 OntoMOPs:hasModularity ?modularity2.
+            ?gbu2 OntoMOPs:hasPlanarity ?planarity2.
+            ?gbuNumberIRI2 OntoMOPs:isNumberOf ?gbu2.
+            ?gbuNumberIRI2 OntoSpecies:value ?gbuNumber2.
+            ?am OntoMOPs:hasSymmetryPointGroup ?symmPtGrp
+            FILTER(?gbu1 != ?gbu2)
+            BIND(
+            IF(?modularity1 > ?modularity2,
+            CONCAT("(", ?modularity1, "-", ?planarity1, ")", ?gbuNumber1, "(", ?modularity2, "-", ?planarity2, ")", ?gbuNumber2, "(", ?symmPtGrp, ")"),
+            IF(?modularity2 > ?modularity1,
+                CONCAT("(", ?modularity2, "-", ?planarity2, ")", ?gbuNumber2, "(", ?modularity1, "-", ?planarity1, ")", ?gbuNumber1, "(", ?symmPtGrp, ")"),
+                IF(?planarity1 = "pyramidal",
+                    CONCAT("(", ?modularity1, "-", ?planarity1, ")", ?gbuNumber1, "(", ?modularity2, "-", ?planarity2, ")", ?gbuNumber2, "(", ?symmPtGrp, ")"),
+                    CONCAT("(", ?modularity2, "-", ?planarity2, ")", ?gbuNumber2, "(", ?modularity1, "-", ?planarity1, ")", ?gbuNumber1, "(", ?symmPtGrp, ")")
+                )
+            )
+            )
+            AS ?label
+        )
+        }
+        """
+
+        am_label_dict = {}     
+        rst = self.query_blazegraph(query=query)["results"]["bindings"]
+        for binding in rst:
+            amIRI = binding["am"]["value"].split("/")[-1]
+            label = binding["label"]["value"]
+            if label in am_label_dict:
+                am_label_dict[label].append(amIRI)
+            else:
+                am_label_dict[label] = [amIRI]
+        
+        am_labels = list(am_label_dict.keys())
+
+        return am_label_dict, am_labels
 
     def run(self):
         all_triples = self.get_all_triples()
@@ -182,6 +230,14 @@ class OntoMopsReader:
         self.file_creator.create_supporting_files_for_embedding()
         with open(os.path.join(self.full_dataset_dir, "node_value_dict.json"), "w") as f:
             f.write(json.dumps(node_value_dict))
+            f.close()
+        
+        am_label_dict, am_lables = self.get_assembly_models()
+        with open(os.path.join(self.full_dataset_dir, "am_value.json"), "w") as f:
+            f.write(json.dumps(am_label_dict))
+            f.close()
+        with open(os.path.join(self.full_dataset_dir, "am_list.json"), "w") as f:
+            f.write(json.dumps(am_lables))
             f.close()
 
 
