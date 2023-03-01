@@ -9,6 +9,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 /**
@@ -57,7 +58,7 @@ public class RouterUploadTool {
 	 * @param storeClient store router
 	 * @return
 	 */
-    public int uploadRoutingData(JSONArray routingData, StoreClientInterface storeClient) {
+    public int uploadRoutingData(JSONArray routingData, TripleStoreClientInterface storeClient) {
     	
     	UpdateRequest sparqlUpdate = new UpdateRequest();  	
     	int nUpload = 0;
@@ -161,7 +162,7 @@ public class RouterUploadTool {
 	 * @param storeClient
 	 * @param sparqlUpdate
 	 */
-	public void uploadTriples(StoreClientInterface storeClient, UpdateRequest sparqlUpdate) {
+	public void uploadTriples(TripleStoreClientInterface storeClient, UpdateRequest sparqlUpdate) {
 		storeClient.executeUpdate(sparqlUpdate);		
 	}
 }
