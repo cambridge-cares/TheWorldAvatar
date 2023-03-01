@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import uk.ac.cam.cares.jps.powsys.retrofit.GeneralRetrofitAgent;
@@ -19,7 +20,7 @@ public class TestGeneralRetrofitAgent {
 	private JSONArray genIRI = new JSONArray();
 	private List<String[]> expectedBusQuery = new ArrayList<>();
 
-	private boolean compareQueryResult(List<BusInfo> a, List<BusInfo> b) {
+	private <T> boolean compareQueryResult(List<T> a, List<T> b) {
 
 	}
 
@@ -38,12 +39,23 @@ public class TestGeneralRetrofitAgent {
 		List<BusInfo> expected = new ArrayList<>();
 
 		List<BusInfo> actual = gra.queryBuses(model);
-		assertTrue(compareQueryResult(expected, actual))
+		assertTrue(compareQueryResult(expected, actual));
 	}
 	
 	@Test
 	public void testDeletePowerGeneratorsFromElectricalNetwork () {
+		GeneralRetrofitAgent gra = new GeneralRetrofitAgent();
+		List<String> input = new ArrayList<>();
+		gra.deletePowerGeneratorsFromElectricalNetwork(testENIRI, input);
 
+		AccessAgentCaller caller = new AccessAgentCaller();
+		//TODO Figure out the required query depending on testENIRI
+		JSONArray result = caller.queryStore();
+
+		//TODO get test output from testing in Blazegraph
+		List<BusInfo> expected = new ArrayList<>();
+
+		assertTrue(compareQueryResult(expected, actual));
 	}
 
 	@Test
