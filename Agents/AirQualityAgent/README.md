@@ -135,7 +135,7 @@ docker-compose -f "docker-compose_stack.yml" up -d --build
 
 ## Provided functionality
 
-An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5000/]. All requests are to be sent as GET requests and all available endpoints are listed below:
+An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5002/]. All requests are to be sent as GET requests and all available endpoints are listed below:
 
 - GET request to instantiate all UK-AIR stations (only new stations will be added, already instantiated stations will not be overwritten)
 > `/api/airqualityagent/instantiate/stations` 
@@ -164,6 +164,6 @@ Markus Hofmeister (mh807@cam.ac.uk), March 2022
 [virtual environment]: https://docs.python.org/3/tutorial/venv.html
 [TheWorldAvatar]: https://github.com/cambridge-cares/TheWorldAvatar
 [properties file]: resources\airquality.properties
-[http://localhost:5000/]: http://localhost:5000/
+[http://localhost:5002/]: http://localhost:5002/
 [resources]: resources
 [example retrieve all request]: resources\HTTPRequest_retrieve_all.http

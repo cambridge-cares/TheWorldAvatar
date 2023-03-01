@@ -45,9 +45,13 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     print('Retrieving instantiated time series triples from KG ...')
     #logger.info('Retrieving time series triples from KG ...')
     df = get_instantiated_observation_timeseries(query_endpoint=query_endpoint,
-                                                 update_endpoint=update_endpoint)
+                                                 update_endpoint=update_endpoint) 
     print('Time series triples successfully retrieved.')
     #logger.info('Time series triples successfully retrieved.')
+    
+    if df.empty:
+        # In case no instantiated time series are found, break
+        return 0
     
     # Extract only relevant information
     instantiated_obs = df[['dataIRI', 'stationID', 'comment', 'tsIRI']].copy()
@@ -80,8 +84,7 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
 
     kg_client = KGClient(query_endpoint, update_endpoint)
     # Initialise TimeSeriesClient
-    ts_client = TSClient(kg_client=kg_client, rdb_url=DB_URL, rdb_user=DB_USER, 
-                         rdb_password=DB_PASSWORD)
+    ts_client = TSClient(kg_client=kg_client)
     # ts_client = TSClient.tsclient_with_default_settings()
     
     # Loop through all observation timeseries - each time series only contains
@@ -94,7 +97,8 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
         ts = TSClient.create_timeseries(ts_data[dataIRI]['times'], [dataIRI], 
                                         [ts_data[dataIRI]['values']])
         ts_list.append(ts)
-    ts_client.bulkaddTimeSeriesData(ts_list)
+    with ts_client.connect() as conn:
+        ts_client.tsclient.bulkaddTimeSeriesData(ts_list, conn)
 
     added_obs = len(ts_list)
     print(f'Time series data for {added_obs} observations successfully added to KG.')
@@ -583,6 +587,8 @@ def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[],
 
     # Loop to avoid API timeout
     chunks = [ts_ids[i:i+chunksize] for i in range(0,len(ts_ids),chunksize)]
+    #TODO: remove testing limit
+    chunks = chunks[:2]
     i, j = 1, len(chunks)
     for chunk in chunks: 
         print(f'Retrieving chunk {i:>4}/{j:>4} of time series data from API ...')

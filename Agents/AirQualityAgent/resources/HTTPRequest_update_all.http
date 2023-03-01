@@ -3,17 +3,17 @@
 
 
 // Instantiate/update all static station information
-# GET http://localhost:5000/api/airqualityagent/instantiate/stations
+# GET http://localhost:5002/api/airqualityagent/instantiate/stations
 # Content-Type: application/json
 
 // Instantiate/update all static station reading information
-# GET http://localhost:5000/api/airqualityagent/instantiate/readings
+# GET http://localhost:5002/api/airqualityagent/instantiate/readings
 # Content-Type: application/json
 
 // Update all station reading time series
-# GET http://localhost:5000/api/airqualityagent/update/timeseries
+# GET http://localhost:5002/api/airqualityagent/update/timeseries
 # Content-Type: application/json
 
 // Instantiate/update all station information (incl. readings)
-GET http://localhost:5000/api/airqualityagent/update/all
+GET http://localhost:5002/api/airqualityagent/update/all
 Content-Type: application/json

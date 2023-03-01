@@ -15,7 +15,7 @@ services:
       - GEOSERVER_WORKSPACE=airquality
       - ONTOP_FILE=/app/resources/ontop.obda
     ports:
-      - "5000:5000"
+      - "5002:5000"
     volumes:
       # Link container output directory to local directory to access output files
       - ./output:/app/output

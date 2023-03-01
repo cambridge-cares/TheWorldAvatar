@@ -29,10 +29,12 @@ COPY --from=stackclients /app ./tmp_stack
 WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
+#TODO: likely remove
 # COPY ./resources/airquality.properties ./resources/airquality.properties
 
 COPY ./resources/ontop.obda ./resources/ontop.obda
-ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
+#TODO: Try whether the driver is actually necessary for PostGIS client or also works without --> otherwise add back
+#ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 
 # Install Python package and the required libraries
 RUN python -m pip install --upgrade pip
@@ -66,7 +68,7 @@ CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.
 #------------------------------------------------------
 FROM base as prod
 # Install additional dependencies
-RUN pip install gunicorn
+RUN pip install gunicorn==20.1.0
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
