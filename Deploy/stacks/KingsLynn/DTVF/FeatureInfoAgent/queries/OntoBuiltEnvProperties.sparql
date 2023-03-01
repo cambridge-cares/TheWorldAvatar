@@ -22,12 +22,12 @@ WHERE {
   } UNION { 
     BIND ("Address" AS ?label )
     [IRI] obe:hasAddress ?address .
-    OPTIONAL {?address icontact:hasStreet ?street . }
-    BIND( IF( EXISTS{ ?address icontact:hasStreet ?street }, str(?street), "") AS ?street ) 
-    OPTIONAL {?address icontact:hasStreetNumber ?nr . } 
-    BIND( IF( EXISTS{ ?address icontact:hasStreetNumber ?nr }, str(?nr), "") AS ?nr ) 
-    OPTIONAL {?address obe:hasUnitName ?unit_name . }
-    BIND( IF( EXISTS{ ?address obe:hasUnitName ?unit_name }, concat(", ", str(?unit_name)), "") AS ?unit_name ) 
+    OPTIONAL {?address icontact:hasStreet ?street_ini . }
+    BIND( IF( EXISTS{ ?address icontact:hasStreet ?street_ini }, str(?street_ini), "") AS ?street ) 
+    OPTIONAL {?address icontact:hasStreetNumber ?nr_ini . } 
+    BIND( IF( EXISTS{ ?address icontact:hasStreetNumber ?nr_ini }, str(?nr_ini), "") AS ?nr ) 
+    OPTIONAL {?address obe:hasUnitName ?unit_name_ini . }
+    BIND( IF( EXISTS{ ?address obe:hasUnitName ?unit_name_ini }, concat(", ", str(?unit_name_ini)), "") AS ?unit_name ) 
     BIND (concat(?street, " ", ?nr, " ", ?unit_name) as ?value)
   }
   # General building information
@@ -37,7 +37,7 @@ WHERE {
     BIND (replace(replace(str(?value_ini), str(dabgeo:), ''), str(obe:), '') as ?value)
   } UNION { 
     BIND ("Identifier" AS ?label )
-    BIND ("(i.e. UPRN where available)" AS ?unit )
+    BIND ("UPRN where available" AS ?unit )
     [IRI] obe:hasIdentifier ?value .
   } UNION { 
     BIND ("EPC rating" AS ?label )

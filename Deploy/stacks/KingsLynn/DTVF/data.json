@@ -38,13 +38,13 @@
                     },
                     "paint": {
                         "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 25, 8, 100],
-                        "circle-opacity": 0.25,
+                        "circle-opacity": 0.15,
                         "circle-color": "#000000",
                         "circle-stroke-width": 0
                     }
                 },
                 {
-                    "id": "obe_buildings-layer",
+                    "id": "obe_buildings-layer-usage",
                     "name": "Buildings with usage information",
                     "source": "obe_buildings",
                     "source-layer": "buildings",
@@ -65,7 +65,7 @@
                             "https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic", "#1F77B4",
                             "#808080"
                           ],
-                        "fill-extrusion-opacity": 0.4,
+                        "fill-extrusion-opacity": 0.6,
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
                             "case",
@@ -76,7 +76,7 @@
                     }
                 },
                 {
-                    "id": "obe_buildings-layer",
+                    "id": "obe_buildings-layer-value",
                     "name": "Buildings with value estimations",
                     "source": "obe_buildings",
                     "source-layer": "buildings",
@@ -84,7 +84,7 @@
                     "minzoom": 8, 
                     "order": 5,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "fill-extrusion-color": [
@@ -106,22 +106,6 @@
                     }
                 },
                 {
-                    "id": "buildings-outline-layer",
-                    "name": "Buildings with EPC information",
-                    "source": "obe_buildings",
-                    "source-layer": "buildings",
-                    "type": "line",
-                    "minzoom": 8, 
-                    "order": 4.5,
-                    "layout": {
-                        "visibility": "visible"
-                    },
-                    "paint": {
-                        "line-color": "#000000",
-                        "line-opacity": 0.5
-                    }
-                },
-                {
                     "id": "ocgml_buildings-layer",
                     "name": "OS BHA Buildings (i.e. buildings without EPC information)",
                     "source": "ocgml_buildings",
@@ -129,7 +113,7 @@
                     "minzoom": 8, 
                     "order": 4,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "fill-extrusion-color": "#303030",
@@ -151,23 +135,19 @@
             "sources": [
                 {
                     "id": "metoffice",  
-                    "type": "vector",
+                    "type": "geojson",
                     "cluster": true,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "tiles": [
-                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=metoffice:metoffice&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                    ]
+                    "data": "http://165.232.172.16:3838/geoserver/metoffice/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=metoffice%3Ametoffice&outputFormat=application%2Fjson"
                 },
                 {
                     "id": "ea-stations",  
-                    "type": "vector",
+                    "type": "geojson",
                     "cluster": true,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "tiles": [
-                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=river_stations:river_stations&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                    ]
+                    "data": "http://165.232.172.16:3838/geoserver/river_stations/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=river_stations%3Ariver_stations&outputFormat=application%2Fjson"
                 }
             ], 
             "layers": [
@@ -175,7 +155,6 @@
                     "id": "metoffice",
                     "name": "Weather Stations", 
                     "source": "metoffice",
-                    "source-layer": "metoffice",
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
                     "minzoom": 8,
@@ -185,9 +164,9 @@
                         "icon-image": [
                             "match",
                             ["get", "subtype"],
-                            "observation", "weather-obs",
-                            "forecast", "weather-for",
-                            "weather"
+                            "observation", "met_weather-obs",
+                            "forecast", "met_weather-for",
+                            "met_weather"
                         ],
                         "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
                         "icon-allow-overlap": true,
@@ -199,40 +178,67 @@
                     "id": "metoffice_cluster",
                     "name":  "Weather Stations",
                     "source": "metoffice",
-                    "source-layer": "metoffice",
                     "type": "symbol",
                     "filter": ["has", "point_count"],
                     "minzoom": 4, 
                     "layout": {
                         "visibility": "visible",
-                        "icon-image": "weather",
-                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
+                        "icon-image": "metoffice",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.75],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true,
                         "text-field": "{point_count_abbreviated}",
-                        "text-font": ["Arial Unicode MS Bold"],
-                        "text-size": 12,
+                        "text-font": ["Arial Unicode MS Regular"],
+                        "text-size": 15,
                         "text-anchor": "center",
-                        "text-offset": [0, -0.15]
+                        "text-offset": [0, 0]
                     }
                 },
                 {
                     "id": "ea-stations",
                     "name": "Flood Monitoring Stations", 
                     "source": "ea-stations",
-                    "source-layer": "river_stations",
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
                     "minzoom": 8,
                     "order": 7,
                     "layout": {
                         "visibility": "visible",
-                        "icon-image": ["get", "type"],
+                        "icon-image": [
+                            "match",
+                            ["get", "type"],
+                            "ea-flow", "ea_flow",
+                            "ea-rainfall", "ea_rainfall",
+                            "ea-temperature", "ea_temperature",
+                            "ea-water-level", "ea_water-level",
+                            "ea-wind", "ea_wind",
+                            "floodmonitoring"
+                        ],
                         "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true
                     }
                     
+                },
+                {
+                    "id": "ea-stations_cluster",
+                    "name":  "Flood Monitoring Stations",
+                    "source": "ea-stations",
+                    "type": "symbol",
+                    "filter": ["has", "point_count"],
+                    "minzoom": 4, 
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "floodmonitoring",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.75],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "text-field": "{point_count_abbreviated}",
+                        "text-font": ["Arial Unicode MS Regular"],
+                        "text-size": 15,
+                        "text-anchor": "center",
+                        "text-offset": [0, 0]
+                    }
                 }
             ]
         },
@@ -289,11 +295,11 @@
                     "type": "fill",
                     "order": 2,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "fill-color": "#808080",
-                        "fill-opacity": 0.4,
+                        "fill-opacity": 0.3,
                         "fill-outline-color": "#000000"
                     }
                 }
@@ -320,7 +326,7 @@
                     "minzoom": 8,
                     "order": 1,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     }
                 }
             ]
