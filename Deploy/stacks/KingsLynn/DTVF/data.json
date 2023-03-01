@@ -164,9 +164,9 @@
                         "icon-image": [
                             "match",
                             ["get", "subtype"],
-                            "observation", "weather-obs",
-                            "forecast", "weather-for",
-                            "weather"
+                            "observation", "met_weather-obs",
+                            "forecast", "met_weather-for",
+                            "met_weather"
                         ],
                         "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
                         "icon-allow-overlap": true,
@@ -204,7 +204,16 @@
                     "order": 7,
                     "layout": {
                         "visibility": "visible",
-                        "icon-image": ["get", "type"],
+                        "icon-image": [
+                            "match",
+                            ["get", "type"],
+                            "ea-flow", "ea_flow",
+                            "ea-rainfall", "ea_rainfall",
+                            "ea-temperature", "ea_temperature",
+                            "ea-water-level", "ea_water-level",
+                            "ea-wind", "ea_wind",
+                            "floodmonitoring"
+                        ],
                         "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true
