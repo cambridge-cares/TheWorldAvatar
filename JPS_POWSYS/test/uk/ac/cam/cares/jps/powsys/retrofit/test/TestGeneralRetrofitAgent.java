@@ -60,6 +60,22 @@ public class TestGeneralRetrofitAgent {
 
 	@Test
 	public void testCompletePowerGenerator () {
+		OntModel model = JenaHelper.createModel(testENIRI);
+		//TODO Figure out the generator IRI for testENIRI
+		String input;
+
+		GeneralRetrofitAgent gra = new GeneralRetrofitAgent();
+		gra.completePowerGenerator(model, input);
+
+		//TODO Figure out the required query depending on testENIRI
+		//TODO Map JSONArray to List
+		JSONArray actual = caller.queryStore();
+
+
+
+		//TODO Find expected result
+		List<GeneratorInfo> expected = new ArrayList<>();
+		assertTrue(compareQueryResult(expected, actual))
 
 	}
 
