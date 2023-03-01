@@ -9,13 +9,14 @@
 import re
 import datetime as dt
 import pandas as pd
+from agent.kgutils import kgclient
 
 #import agentlogging
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.timeseries import TSClient
 from agent.kgutils.querytemplates import *
 from agent.errorhandling.exceptions import InvalidInput, TSException
-from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.utils.stack_configs import DB_PASSWORD, DB_URL, DB_USER, QUERY_ENDPOINT, UPDATE_ENDPOINT
 from agent.utils.readings_mapping import TIME_FORMAT
 
 # Initialise logger
@@ -170,7 +171,9 @@ def get_time_series_data(station_iris: list = None,
     ts_units = []
     
     # Initialise TimeSeriesClient
-    ts_client = TSClient.tsclient_with_default_settings()
+    # ts_client = TSClient.tsclient_with_default_settings()
+    ts_client = TSClient(kg_client=kgclient, rdb_url=DB_URL, rdb_user=DB_USER, 
+                         rdb_password=DB_PASSWORD)
 
     for dataIRIs in dataIRIs_list:
 

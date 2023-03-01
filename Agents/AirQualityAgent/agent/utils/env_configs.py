@@ -9,7 +9,7 @@
 import os
 import warnings
 
-import agentlogging
+from py4jps import agentlogging
 from pathlib import Path
 
 

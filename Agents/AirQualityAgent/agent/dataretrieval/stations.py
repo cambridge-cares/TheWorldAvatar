@@ -12,12 +12,13 @@ import json
 import time
 import pathlib
 import pandas as pd
+from agent.kgutils import kgclient
 
 #import agentlogging
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.timeseries import TSClient
 from agent.kgutils.querytemplates import *
-from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.utils.stack_configs import DB_PASSWORD, DB_URL, DB_USER, QUERY_ENDPOINT, UPDATE_ENDPOINT
 from agent.errorhandling.exceptions import InvalidInput
 from agent.dataretrieval.readings import get_time_series_data
 from agent.utils.output_formatting import create_geojson_output, create_metadata_output
@@ -201,7 +202,9 @@ def create_json_output_files(outdir: str, observation_types: list = None,
     ###---  Create output files  ---###
     #
     # Initialise time series client   
-    ts_client = TSClient.tsclient_with_default_settings()
+    # ts_client = TSClient.tsclient_with_default_settings()
+    ts_client = TSClient(kg_client=kgclient, rdb_url=DB_URL, rdb_user=DB_USER, 
+                         rdb_password=DB_PASSWORD)
     # Create output files for each set of retrieved time series data
 
     print('Creating output files (geojson, metadata, timeseries) ...')

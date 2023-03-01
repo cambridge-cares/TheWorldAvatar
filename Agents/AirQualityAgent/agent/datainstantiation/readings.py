@@ -15,11 +15,12 @@ from math import nan
 from agent.dataretrieval.readings import *
 from agent.dataretrieval.stations import *
 from agent.datainstantiation.stations import *
+from agent.kgutils import kgclient
 from agent.kgutils.querytemplates import *
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.timeseries import TSClient
 from agent.errorhandling.exceptions import APIException
-from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.utils.stack_configs import DB_PASSWORD, DB_URL, DB_USER, QUERY_ENDPOINT, UPDATE_ENDPOINT
 from agent.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, \
                                               TIME_FORMAT, DATACLASS
 
@@ -77,8 +78,11 @@ def add_readings_timeseries(instantiated_ts_iris: list = None,
     mapping = mapping.to_dict('index')
     ts_data = {mapping[k]['dataIRI']:v for k,v in ts_data.items()}
 
+    kg_client = KGClient(query_endpoint, update_endpoint)
     # Initialise TimeSeriesClient
-    ts_client = TSClient.tsclient_with_default_settings()
+    ts_client = TSClient(kg_client=kg_client, rdb_url=DB_URL, rdb_user=DB_USER, 
+                         rdb_password=DB_PASSWORD)
+    # ts_client = TSClient.tsclient_with_default_settings()
     
     # Loop through all observation timeseries - each time series only contains
     # ONE pollutant reading (as sampling frequencies not known)
@@ -204,8 +208,14 @@ def instantiate_station_readings(instantiated_sites_dict: dict,
         print('Instantiate static time series triples ...')
         #logger.info('Instantiate static time series triples ...')
         # Instantiate all time series triples
-        ts_client = TSClient.tsclient_with_default_settings()
-        ts_client.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit)
+        # Instantiate all time series triples
+        ts_client = TSClient(kg_client=kg_client, rdb_url=DB_URL, rdb_user=DB_USER, 
+                             rdb_password=DB_PASSWORD)
+        with ts_client.connect() as conn:
+            ts_client.tsclient.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit, conn)
+
+        # ts_client = TSClient.tsclient_with_default_settings()
+        # ts_client.bulkInitTimeSeries(dataIRIs, dataClasses, timeUnit)
         print('Time series triples successfully added.')
         #logger.info('Time series triples successfully added.')
 
