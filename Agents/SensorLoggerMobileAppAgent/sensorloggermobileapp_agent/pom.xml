@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <!-- Version of the JPS Base Library to use -->
-        <jps.base.version>1.31.0</jps.base.version>
+        <jps.base.version>1.34.0</jps.base.version>
     </properties>
 
 
@@ -64,6 +64,13 @@
                 </configuration>
             </plugin>
 
+                        <!-- Allows maven executions -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+            </plugin>
+
 
             <!-- Maven plugin for unit tests -->
             <plugin>
@@ -91,6 +98,7 @@
 
         </plugins>
     </build>
+
     <!-- Dependencies -->
     <dependencies>
 
@@ -111,16 +119,37 @@
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-core</artifactId>
-            <version>3.1.1</version>
+            
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.jena/jena -->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-jdbc-core</artifactId>
+            
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-jdbc-driver-remote</artifactId>
+            
+        </dependency>
+
+        
+
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-jdbc-driver-bundle</artifactId>
+            <version>4.6.1</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena</artifactId>
             <version>4.6.1</version>
             <type>pom</type>
         </dependency>
+        
+
 
 
 
@@ -163,39 +192,44 @@
             <artifactId>junit-jupiter-engine</artifactId>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.apache.jena/jena-geosparql -->
         <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-geosparql</artifactId>
+            <version>4.1.0</version>
+        </dependency>
+
+        <!-- <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>apache-jena-libs</artifactId>
+            <version>4.5.0</version>
+            <type>pom</type>
+        </dependency> -->
+
+        <!-- https://mvnrepository.com/artifact/org.apache.jena/jena-jdbc-driver-remote -->
+        <!-- <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-jdbc-driver-remote</artifactId>
             <version>4.7.0</version>
-        </dependency>
+        </dependency> -->
 
-        <dependency>
-            <groupId>net.postgis</groupId>
-            <artifactId>postgis-jdbc</artifactId>
-            <version>2.1.7.2</version>
-        </dependency>
-
-        <!-- https://mvnrepository.com/artifact/org.postgresql/postgresql -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.5.4</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.springframework/spring-jdbc -->
-        <dependency>
+        <!-- <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jdbc</artifactId>
             <version>6.0.5</version>
-        </dependency>
+        </dependency> -->
 
 
         <!-- for interacting with the stack -->
         <dependency>
             <groupId>com.cmclinnovations</groupId>
             <artifactId>stack-clients</artifactId>
-            <version>1.5.0</version>
+            <version>1.8.0</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
@@ -221,320 +255,83 @@
 
 
     </dependencies>
+    <dependencyManagement>
+
+        <dependencies>
+
+            <dependency>
+                <groupId>org.apache.jena</groupId>
+                <artifactId>jena-arq</artifactId>
+                <version>4.6.1</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.apache.jena</groupId>
+                <artifactId>jena-core</artifactId>
+                <version>4.6.1</version> <!-- update to the desired version -->
+            </dependency>
+            <dependency>
+                <groupId>org.apache.tomcat</groupId>
+                <artifactId>tomcat-catalina</artifactId>
+                <version>9.0.56</version> <!-- update to the desired version -->
+            </dependency>
+
+
+            
+
+
+            <dependency>
+                <groupId>org.apache.jena</groupId>
+                <artifactId>jena-jdbc-driver-remote</artifactId>
+                <version>4.5.0</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.apache.jena</groupId>
+                <artifactId>jena-jdbc-core</artifactId>
+                <version>4.5.0</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>org.apache.jena</groupId>
+                <artifactId>jena-jdbc-driver-mem</artifactId>
+                <version>4.6.1</version>
+            </dependency>
+
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.module</groupId>
+                <artifactId>jackson-module-jaxb-annotations</artifactId>
+                <version>2.10.3</version>
+            </dependency>
+
+
+
+
+        
+
+
+            
+
+
+            <dependency>
+                <groupId>org.apache.jena</groupId>
+                <artifactId>jena-shaded-guava</artifactId>
+                <version>3.1.1</version>
+            </dependency>
+
+        
+
+            
+
+        </dependencies>
+
+
+
+
+
+    </dependencyManagement>
 </project>
-
-<!--<?xml version="1.0" encoding="UTF-8"?>-->
-<!--<project xmlns="http://maven.apache.org/POM/4.0.0"-->
-<!--         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
-<!--         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">-->
-<!--    <modelVersion>4.0.0</modelVersion>-->
-<!--    <groupId>uk.ac.cam.cares.jps</groupId>-->
-<!--    <artifactId>SensorLoggerMobileAppAgent</artifactId>-->
-<!--    <version>1.0.0</version>-->
-<!--    <packaging>war</packaging>-->
-
-<!--    <properties>-->
-<!--        <maven.compiler.source>11</maven.compiler.source>-->
-<!--        <maven.compiler.target>11</maven.compiler.target>-->
-<!--        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
-
-<!--        &lt;!&ndash; Version of the JPS Base Library to use &ndash;&gt;-->
-<!--        <jps.base.version>1.31.0</jps.base.version>-->
-<!--    </properties>-->
-
-
-<!--    &lt;!&ndash; Parent POM &ndash;&gt;-->
-<!--    <parent>-->
-<!--        <groupId>uk.ac.cam.cares.jps</groupId>-->
-<!--        <artifactId>jps-parent-pom</artifactId>-->
-<!--        <version>2.2.0</version>-->
-<!--    </parent>-->
-
-<!--    &lt;!&ndash; Profiles are used to switch between building for development and production-->
-<!--    environments. Use "-P profile-id" within an mvn command to build with a profile &ndash;&gt;-->
-<!--    <profiles>-->
-<!--        &lt;!&ndash; This profile should be used for development builds. &ndash;&gt;-->
-<!--        <profile>-->
-<!--            <id>dev-profile</id>-->
-<!--            <activation>-->
-<!--                <activeByDefault>true</activeByDefault>-->
-<!--            </activation>-->
-<!--            <properties>-->
-<!--                &lt;!&ndash; Set property to download development logging config &ndash;&gt;-->
-<!--                <log.artifact>java-logging-dev</log.artifact>-->
-<!--            </properties>-->
-<!--        </profile>-->
-
-<!--        &lt;!&ndash; This profile should be used for production builds. &ndash;&gt;-->
-<!--        <profile>-->
-<!--            <id>prod-profile</id>-->
-<!--            <properties>-->
-<!--                &lt;!&ndash; Set property to download production logging config &ndash;&gt;-->
-<!--                <log.artifact>java-logging-prod</log.artifact>-->
-<!--            </properties>-->
-<!--        </profile>-->
-<!--    </profiles>-->
-
-<!--    &lt;!&ndash; Build settings &ndash;&gt;-->
-<!--    <build>-->
-
-<!--        <plugins>-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-compiler-plugin</artifactId>-->
-<!--                <version>3.7.0</version>-->
-<!--                <configuration>-->
-<!--                    <source>${maven.compiler.source}</source>-->
-<!--                    <target>${maven.compiler.target}</target>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-
-
-<!--            &lt;!&ndash; Maven plugin for unit tests &ndash;&gt;-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-surefire-plugin</artifactId>-->
-<!--                <version>2.22.0</version>-->
-<!--            </plugin>-->
-
-<!--            &lt;!&ndash; Maven plugin for packaging &ndash;&gt;-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-war-plugin</artifactId>-->
-<!--                <version>3.3.1</version>-->
-<!--            </plugin>-->
-
-<!--            &lt;!&ndash; Downloads and extracts ZIP archives from Maven repository &ndash;&gt;-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-dependency-plugin</artifactId>-->
-<!--                <version>3.2.0</version>-->
-<!--                &lt;!&ndash; Version, configuration, and executions should be pulled from the-->
-<!--                parent POM unless overridden here. &ndash;&gt;-->
-
-<!--            </plugin>-->
-
-<!--        </plugins>-->
-<!--    </build>-->
-
-<!--    &lt;!&ndash; Dependencies &ndash;&gt;-->
-<!--    <dependencies>-->
-
-<!--        <dependency>-->
-<!--            <groupId>javax.servlet</groupId>-->
-<!--            <artifactId>javax.servlet-api</artifactId>-->
-<!--            <version>3.1.0</version>-->
-<!--            <scope>compile</scope>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash; For constructing SQL queries &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.jooq</groupId>-->
-<!--            <artifactId>jooq</artifactId>-->
-<!--            <version>3.14.9</version>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash; JSON handling &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.json</groupId>-->
-<!--            <artifactId>json</artifactId>-->
-<!--            <version>20180813</version>-->
-<!--            <type>jar</type>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash; JPS Base Library &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>uk.ac.cam.cares.jps</groupId>-->
-<!--            <artifactId>jps-base-lib</artifactId>-->
-<!--            <version>${jps.base.version}</version>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash; For sending HTTP request to the API &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.httpcomponents</groupId>-->
-<!--            <artifactId>httpclient</artifactId>-->
-<!--            <version>4.5.10</version>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash; Logging &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.logging.log4j</groupId>-->
-<!--            <artifactId>log4j-api</artifactId>-->
-<!--            <version>2.17.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.logging.log4j</groupId>-->
-<!--            <artifactId>log4j-core</artifactId>-->
-<!--            <version>2.17.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.logging.log4j</groupId>-->
-<!--            <artifactId>log4j-web</artifactId>-->
-<!--            <version>2.17.0</version>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash; For mocking APIs &ndash;&gt;-->
-<!--        &lt;!&ndash;        <dependency>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <groupId>com.github.tomakehurst</groupId>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <artifactId>wiremock-jre8-standalone</artifactId>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <version>2.29.1</version>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <scope>test</scope>&ndash;&gt;-->
-<!--        &lt;!&ndash;        </dependency>&ndash;&gt;-->
-<!--        &lt;!&ndash; For mocking static methods &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.mockito</groupId>-->
-<!--            <artifactId>mockito-inline</artifactId>-->
-<!--            <version>3.11.2</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-<!--        &lt;!&ndash; For creating docker containers in tests &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.testcontainers</groupId>-->
-<!--            <artifactId>postgresql</artifactId>-->
-<!--            <version>1.15.3</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.testcontainers</groupId>-->
-<!--            <artifactId>testcontainers</artifactId>-->
-<!--            <version>1.15.3</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.testcontainers</groupId>-->
-<!--            <artifactId>junit-jupiter</artifactId>-->
-<!--            <version>1.15.3</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-<!--        &lt;!&ndash; Used to mock environment variables in testing &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>com.github.stefanbirkner</groupId>-->
-<!--            <artifactId>system-lambda</artifactId>-->
-<!--            <version>1.2.0</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>junit</groupId>-->
-<!--            <artifactId>junit</artifactId>-->
-<!--            <version>4.13.2</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.testng</groupId>-->
-<!--            <artifactId>testng</artifactId>-->
-<!--            <version>7.6.1</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash; for interacting with the stack &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>com.cmclinnovations</groupId>-->
-<!--            <artifactId>stack-clients</artifactId>-->
-<!--            <version>1.0</version>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash;        &lt;!&ndash; used to parse geosparql wkt literal &ndash;&gt;&ndash;&gt;-->
-<!--        &lt;!&ndash;        <dependency>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <groupId>org.apache.jena</groupId>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <artifactId>jena-geosparql</artifactId>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <version>4.5.0</version>&ndash;&gt;-->
-<!--        &lt;!&ndash;        </dependency>&ndash;&gt;-->
-
-
-
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.springframework/spring-core &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework</groupId>-->
-<!--            <artifactId>spring-core</artifactId>-->
-<!--            <version>6.0.5</version>-->
-<!--        </dependency>-->
-
-<!--        &lt;!&ndash; https://mvnrepository.com/artifact/org.projectlombok/lombok &ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.projectlombok</groupId>-->
-<!--            <artifactId>lombok</artifactId>-->
-<!--            <version>1.18.22</version>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>net.postgis</groupId>-->
-<!--            <artifactId>postgis-jdbc</artifactId>-->
-<!--            <version>2.1.7.2</version>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>org.apache.jena</groupId>-->
-<!--            <artifactId>jena-core</artifactId>-->
-<!--            <version>4.5.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.jena</groupId>-->
-<!--            <artifactId>jena-arq</artifactId>-->
-<!--            <version>4.5.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.jena</groupId>-->
-<!--            <artifactId>jena-querybuilder</artifactId>-->
-<!--            <version>4.5.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.jena</groupId>-->
-<!--            <artifactId>jena-rdfconnection</artifactId>-->
-<!--            <version>4.5.0</version>-->
-<!--        </dependency>-->
-
-
-
-
-
-
-
-
-<!--        &lt;!&ndash;        <dependency>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <groupId>org.apache.jena</groupId>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <artifactId>jena-jdbc-core</artifactId>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <version>4.7.0</version>&ndash;&gt;-->
-<!--        &lt;!&ndash;        </dependency>&ndash;&gt;-->
-
-<!--        &lt;!&ndash;        <dependency>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <groupId>org.apache.jena</groupId>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <artifactId>jena-core</artifactId>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <version>4.7.0</version>&ndash;&gt;-->
-<!--        &lt;!&ndash;        </dependency>&ndash;&gt;-->
-
-<!--        &lt;!&ndash;        &lt;!&ndash; https://mvnrepository.com/artifact/org.apache.jena/jena &ndash;&gt;&ndash;&gt;-->
-<!--        &lt;!&ndash;        <dependency>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <groupId>org.apache.jena</groupId>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <artifactId>jena</artifactId>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <version>4.7.0</version>&ndash;&gt;-->
-<!--        &lt;!&ndash;            <type>pom</type>&ndash;&gt;-->
-<!--        &lt;!&ndash;        </dependency>&ndash;&gt;-->
-
-
-
-<!--        <dependency>-->
-<!--            <groupId>uk.ac.cam.cares.ogm</groupId>-->
-<!--            <artifactId>ogm</artifactId>-->
-<!--            <version>1.1.1</version>-->
-<!--        </dependency>-->
-
-
-<!--    </dependencies>-->
-
-<!--    <dependencyManagement>-->
-
-
-<!--        <dependencies>-->
-
-<!--            <dependency>-->
-<!--                <groupId>net.java.dev.jna</groupId>-->
-<!--                <artifactId>jna</artifactId>-->
-<!--                <version>5.8.0</version>-->
-<!--            </dependency>-->
-
-<!--        </dependencies>-->
-
-<!--    </dependencyManagement>-->
-
-<!--</project>-->

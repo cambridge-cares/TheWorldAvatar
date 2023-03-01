@@ -574,10 +574,10 @@ public class SensorLoggerMobileAppServlet extends JPSAgent {
         }
 
         try (Connection conn = rdbStoreClient.getConnection()) {
-            //Create POSTGIS Extension Automatically
-            Statement stmt = conn.createStatement();
-            String sql = "CREATE EXTENSION IF NOT EXISTS postgis";
-            stmt.executeUpdate(sql);
+            // //Create POSTGIS Extension Automatically
+            // Statement stmt = conn.createStatement();
+            // String sql = "CREATE EXTENSION IF NOT EXISTS postgis";
+            // stmt.executeUpdate(sql);
 
             TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
             tsClient.initTimeSeries(dataIRIList, dataClass, timeUnit, conn);
