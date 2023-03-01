@@ -125,7 +125,7 @@ public class AermodAgent extends DerivationAgent {
 
 
         // run aermet (weather preprocessor)
-        if (aermod.runAermet() != 0) {
+        if (aermod.runAermet(scope) != 0) {
             LOGGER.error("Stopping agent execution");
             return;
         }

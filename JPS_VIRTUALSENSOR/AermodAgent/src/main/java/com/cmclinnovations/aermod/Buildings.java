@@ -621,52 +621,6 @@ public class Buildings {
     }
 
 
-    public static int createAermetInput() {
-
-        double lat = scope.getCentroid().getCoordinate().getY();
-        double lon = scope.getCentroid().getCoordinate().getX();
-
-        String latSuffix = "N";
-        String lonSuffix = "E";
-        if (lat < 0 ) latSuffix = "S";
-        if (lon < 0) lonSuffix = "W";
-        lat = Math.abs(lat);
-        lon = Math.abs(lon);
-        String location = String.format("%f%s %f%s", lat, latSuffix, lon, lonSuffix);
-        String newLine = System.getProperty("line.separator");
-
-        StringBuilder sb = new StringBuilder("JOB \n");
-        sb.append("   REPORT aermet_report.txt \n")
-                .append("   MESSAGES aermet_message.txt \n")
-                .append(newLine)
-                .append("UPPERAIR \n")
-                .append("   DATA      UpperAirIGRA.txt IGRA \n")
-                .append("   XDATES    2022/12/18 TO 2022/12/18 \n")
-                .append("   LOCATION  00072202  " + location + " \n")
-                .append("   QAOUT aermet_uair_qaout.txt \n")
-                .append(newLine)
-                .append("SURFACE \n")
-                .append("   DATA      SurfaceCD144.txt CD144 \n")
-                .append("   XDATES    2022/12/18 TO 2022/12/18 \n")
-                .append("   LOCATION  00072202  " + location + "\n")
-                .append("   QAOUT aermet_surface_qaout.txt \n")
-                .append(newLine)
-                .append("METPREP \n")
-                .append("   OUTPUT surf.dat \n")
-                .append("   PROFILE upper.dat \n")
-                .append("   NWS_HGT WIND 6.7 \n")
-                .append("   METHOD REFLEVEL SUBNWS \n")
-                .append("   METHOD WIND_DIR RANDOM \n")
-                .append("   XDATES    2022/12/18 TO 2022/12/18 \n")
-                .append("   FREQ_SECT ANNUAL 1 \n")
-                .append("   SECTOR 1 0 360 \n")
-                .append("   SITE_CHAR 1 1 0.16 2.0 1.0 \n");
-
-        return writeToFile(aermetDirectory.resolve("aermet_input.inp"),sb.toString());
-
-    }
-
-
 
 
     // The following methods are deprecated.

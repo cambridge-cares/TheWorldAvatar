@@ -125,20 +125,70 @@ public class Aermod {
         return writeToFile(aermetDirectory.resolve("weather_template.144"), templateContent);
     }
 
+    public int createAermetInput(Polygon scope) {
+
+        double lat = scope.getCentroid().getCoordinate().getY();
+        double lon = scope.getCentroid().getCoordinate().getX();
+
+        String latSuffix = "N";
+        String lonSuffix = "E";
+        if (lat < 0 ) latSuffix = "S";
+        if (lon < 0) lonSuffix = "W";
+        lat = Math.abs(lat);
+        lon = Math.abs(lon);
+        String location = String.format("%f%s %f%s", lat, latSuffix, lon, lonSuffix);
+        String newLine = System.getProperty("line.separator");
+
+        StringBuilder sb = new StringBuilder("JOB \n");
+        sb.append("   REPORT aermet_report.txt \n")
+                .append("   MESSAGES aermet_message.txt \n")
+                .append(newLine)
+                .append("UPPERAIR \n")
+                .append("   DATA raob_soundings15747.FSL FSL \n")
+                .append("   EXTRACT  UAIR_EXTRACT.TXT")
+                .append("   QAOUT    UAIR_QAOUT.TXT")
+                .append("   XDATES    2022/9/23 TO 2022/9/23 \n")
+                .append("   LOCATION  00072202  " + location + " \n")
+                .append(newLine)
+                .append("SURFACE \n")
+                .append("   DATA      weather_template.144 CD144 \n")
+                .append("   EXTRACT   SURFACE_EXTRACT.TXT")
+                .append("   QAOUT   SURFACE_QAOUT.TXT")
+                .append("   XDATES    2022/9/23 TO 2022/9/23 \n")
+                .append("   LOCATION  00072202  " + location + "\n")
+                .append(newLine)
+                .append("METPREP \n")
+                .append("   OUTPUT ../aermod/AERMET_SURF.SFC \n")
+                .append("   PROFILE ../aermod/AERMET_UPPER.PFL \n")
+                .append("   NWS_HGT WIND 6.7 \n")
+                .append("   METHOD REFLEVEL SUBNWS \n")
+                .append("   METHOD WIND_DIR RANDOM \n")
+                .append("   XDATES    2022/9/23 TO 2022/9/23 \n")
+                .append("   FREQ_SECT ANNUAL 1 \n")
+                .append("   SECTOR 1 0 360 \n")
+                .append("   SITE_CHAR 1 1 0.16 2.0 1.5 \n");
+
+        return writeToFile(aermetDirectory.resolve("aermet_input.inp"),sb.toString());
+
+    }
+
+
     /**
      * return value 0 = success
      * 1 = possible error
      * @return
      */
-    int runAermet() {
+    int runAermet(Polygon scope) {
         // first copy soundings and FSL files
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream(AERMET_INPUT)) {
-            Files.copy(is, aermetDirectory.resolve(AERMET_INPUT));
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-            LOGGER.error("Failed to copy {}", AERMET_INPUT);
-            return 1;
-        }
+        // try (InputStream is = getClass().getClassLoader().getResourceAsStream(AERMET_INPUT)) {
+        //     Files.copy(is, aermetDirectory.resolve(AERMET_INPUT));
+        // } catch (IOException e) {
+        //     LOGGER.error(e.getMessage());
+        //     LOGGER.error("Failed to copy {}", AERMET_INPUT);
+        //     return 1;
+        // }
+
+        createAermetInput(scope);
 
         try (InputStream is = getClass().getClassLoader().getResourceAsStream("raob_soundings15747.FSL")) {
             Files.copy(is, aermetDirectory.resolve("raob_soundings15747.FSL"));
