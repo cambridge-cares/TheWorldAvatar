@@ -87,6 +87,7 @@ public class AccessAgentCaller{
         return Http.execute(Http.put(requestUrl, content, contentType, null, joparams));
 	}
 	
+	//TODO remove this
 	/**
 	 * cf. https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-get<br>
 	 * The method also allows to get non-RDF resources. 
@@ -106,7 +107,32 @@ public class AccessAgentCaller{
         JSONObject joparams = (JSONObject) a[1];
         return Http.execute(Http.get(requestUrl, accept, joparams));
     }
-	 
+	
+	/**
+	 * Get the SPARQL endpoints for a target resource. The query and update endpoints can be extracted from the JSONObject using the keys
+	 * JPSConstants.QUERY_ENDPOINT and JPSConstants.UPDATE_ENDPOINT.
+	 * This does not perform a SPARQL query/update.
+	 * 
+	 * @param targetResourceID
+	 * @return JSONArray with query and update endpoint
+	 */
+	public static JSONObject getEndpoints(String targetResourceID) {
+		
+		LOGGER.info("Get endpoint for targetResourceID=" + targetResourceID);
+
+		Object[] a = createRequestUrl(null, targetResourceID);
+		
+        String requestUrl = (String) a[0];
+        JSONObject joparams = (JSONObject) a[1];
+        if (joparams == null) {
+            joparams = new JSONObject();
+        }
+     	
+     	String result = Http.execute(Http.get(requestUrl, null, joparams));
+     	return new JSONObject(result);
+	}
+	
+	
 	/**
 	 * Execute a {@link <a href="https://www.w3.org/TR/sparql11-query/">SPARQL Query</a>} on the target resource.
 	 * 
