@@ -183,7 +183,7 @@ As the agent tends to fail when processing an entire namespace on particular mac
 
 (Build and) deploy the EPC Agent as described in the [EPC Agent README], i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack. Follow the described instantiation workflow by sending the respective HTTP requests to the agent. The subsequent recurring updating of instantiated data occurs automatically.
 
-0) New namespace (i.e. `buildings`) to host all building related data created automatically upon agent startup (incl. upload of ontology and all required unit symbols)
+0) New namespace (i.e. `kingslynn`) to host all building related data created automatically upon agent startup (incl. upload of ontology and all required unit symbols)
 1) Instantiate all postcodes in King's Lynn local authority:
     ```
     POST http://165.232.172.16:5001/epcagent/instantiate/postcodes
@@ -214,7 +214,7 @@ As the agent tends to fail when processing an entire namespace on particular mac
 
 > The following description refers to commit `8cb656055ea74410ef3c4c0764a6c0a80efc38ff` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
 
-The Building Matching Agent links buildings instantiated according to OntoBuiltEnv using the EPC Agent with their OntoCityGml representations. General details on how to use the agent can be found in the [Building Matching Readme]; however, all relevant steps are also described in section 3.4. in the [EPC Agent README]. The following request shall match buildings in the `ocgml` and `buildings` namespace:
+The Building Matching Agent links buildings instantiated according to OntoBuiltEnv using the EPC Agent with their OntoCityGml representations. General details on how to use the agent can be found in the [Building Matching Readme]; however, all relevant steps are also described in section 3.4. in the [EPC Agent README]. The following request shall match buildings in the `ocgml` and `kingslynn` namespace:
 
 ```
 PUT http://localhost:58085/BuildingMatchingAgent/match
@@ -222,7 +222,7 @@ Content-Type: application/json
 
 { 
   "ocgml": "http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql",
-  "obe": "http://165.232.172.16:3838/blazegraph/namespace/buildings/sparql",
+  "obe": "http://165.232.172.16:3838/blazegraph/namespace/kingslynn/sparql",
   "prefixIRI": "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/"
 }
 ```
