@@ -1,4 +1,7 @@
 from agent.datamodel.observation_types import *
+###--- Ontology ---#
+TBOX = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoems/OntoEMS.owl'
+ABOX = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoems/OntoEMS%20ABox.owl'
 
 ###--- Common Base URLs ---###
 # External ontologies
@@ -81,3 +84,4 @@ GEOLIT_LAT_LON = GEOLIT + 'lat-lon'
 
 # Miscellaneous
 SAMEAS = OWL + 'sameAs'
+OWL_VERSION = OWL + 'versionInfo'
