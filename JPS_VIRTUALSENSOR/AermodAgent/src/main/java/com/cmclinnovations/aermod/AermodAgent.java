@@ -111,12 +111,16 @@ public class AermodAgent extends DerivationAgent {
             throw new RuntimeException(e.getMessage());
         }
 
-        if (bpi.buildAvail) {
+        if (bpi.locindex >= 0) {
             int buildRes = bpi.run();
             if (buildRes != 0) {
                 LOGGER.error("Failed to run BPIPPRM, terminating");
                 throw new RuntimeException();
             }
+        } else {
+            bpi.createAERMODBuildingsInput();
+            bpi.createAERMODSourceInput();
+            bpi.createAERMODReceptorInput(nx, ny);
         }
 
 

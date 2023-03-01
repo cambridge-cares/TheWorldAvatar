@@ -67,15 +67,11 @@ public class Buildings {
     public static Path simulationDirectory;
     public static Path bpipprmDirectory;
     public static Path aermodDirectory;
-
     public static Path aermetDirectory;
-
     public static Polygon scope;
-
     public static int nx;
-
     public static int ny;
-    public static boolean buildAvail = true;
+    
 
     public void init(Path simulationDirectory, Polygon scope, int srid, int nx, int ny) throws ParseException {
 
@@ -106,21 +102,17 @@ public class Buildings {
             }
         }
 
-        if (locindex == -1) {
-            buildAvail = false;
+        if (locindex >= 0 && scope.getSRID() == 4326) {
+            StackQueryIRI = StackQueryEndpoint[locindex];
+            GeospatialQueryIRI = GeospatialQueryEndpoint[locindex];
+            DatabaseCoordSys = DatabaseCRS[locindex];
+        } else if (locindex == -1) {
             LOGGER.info("Input polygon not found in any namespace." + 
             "AERMOD will be run for ships only without buildings and plant items.");
-        }
-
-        if (scope.getSRID() != 4326) {
-            buildAvail = false;
+        } else if (scope.getSRID() != 4326) {
             LOGGER.info("Input scope does not have 4326 as its srid." + 
             "AERMOD will be run for ships only without buildings and plant items.");
-        }
-
-        StackQueryIRI = StackQueryEndpoint[locindex];
-        GeospatialQueryIRI = GeospatialQueryEndpoint[locindex];
-        DatabaseCoordSys = DatabaseCRS[locindex];
+        }  
         UTMCoordSys = "EPSG:" + srid;
 
 
@@ -539,6 +531,8 @@ public class Buildings {
 
         BufferedReader reader;
         StringBuilder sb = new StringBuilder();
+        if (locindex == -1) return writeToFile(aermodDirectory.resolve("buildings.dat"), sb.toString());
+
         Path filepath = bpipprmDirectory.resolve("building.dat");
 
         try {
