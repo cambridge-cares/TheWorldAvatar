@@ -26,4 +26,20 @@ public class NuclearGenType {
 	public void setid(String id) {
 		this.id = id;
 	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (this == other) {
+			return true;
+		}
+
+		if ((other == null) || !(other instanceof NuclearGenType)) {
+			return false;
+		}
+
+		NuclearGenType otherGenType = (NuclearGenType) other;
+		return this.nucleargentype.equals(otherGenType.nucleargentype) &&
+				this.capacity == otherGenType.capacity &&
+				this.id.equals(otherGenType.id);
+	}
 }

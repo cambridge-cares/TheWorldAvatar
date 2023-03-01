@@ -9,9 +9,7 @@ import com.cmclinnovations.stack.clients.core.AbstractEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.DockerClient.ComplexCommand;
 import com.cmclinnovations.stack.clients.utils.LocalTempDir;
 import com.cmclinnovations.stack.clients.utils.TempDir;
-import com.github.dockerjava.api.model.Config;
 import com.github.dockerjava.api.model.Container;
-import com.github.dockerjava.api.model.Secret;
 
 public class ContainerClient extends BaseClient {
 
@@ -115,54 +113,6 @@ public class ContainerClient extends BaseClient {
 
     protected final String getContainerId(String containerName) {
         return dockerClient.getContainerId(containerName);
-    }
-
-    protected final boolean configExists(String configName) {
-        return dockerClient.configExists(configName);
-    }
-
-    protected final Optional<Config> getConfig(String configName) {
-        return dockerClient.getConfig(configName);
-    }
-
-    protected final Optional<Config> getConfig(List<Config> configs, String configName) {
-        return dockerClient.getConfig(configs, configName);
-    }
-
-    protected final List<Config> getConfigs() {
-        return dockerClient.getConfigs();
-    }
-
-    protected final void addConfig(String configName, String data) {
-        dockerClient.addConfig(configName, data);
-    }
-
-    protected final void addConfig(String configName, byte[] data) {
-        dockerClient.addConfig(configName, data);
-    }
-
-    protected final void removeConfig(Config config) {
-        dockerClient.removeConfig(config);
-    }
-
-    protected final boolean secretExists(String secretName) {
-        return dockerClient.secretExists(secretName);
-    }
-
-    protected final Optional<Secret> getSecret(String secretName) {
-        return dockerClient.getSecret(secretName);
-    }
-
-    protected final List<Secret> getSecrets() {
-        return dockerClient.getSecrets();
-    }
-
-    protected final void addSecret(String secretName, String data) {
-        dockerClient.addSecret(secretName, data);
-    }
-
-    protected final void removeSecret(Secret secret) {
-        dockerClient.removeSecret(secret);
     }
 
 }

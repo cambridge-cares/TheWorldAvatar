@@ -18,6 +18,9 @@ class MapboxLayer extends DataLayer {
         if(onMap) {
             return MapHandler.MAP.getLayoutProperty(this.id, "visibility") === "visible";
         } else {
+            if(this.definition["layout"] == null || this.definition["layout"]["visibility"] == null) {
+                return true;
+            }
             return this.definition["layout"]["visibility"] === "visible";
         }
     }
