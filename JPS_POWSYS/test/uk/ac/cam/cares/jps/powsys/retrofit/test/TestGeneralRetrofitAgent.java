@@ -40,20 +40,6 @@ public class TestGeneralRetrofitAgent {
 		List<BusInfo> actual = gra.queryBuses(model);
 		assertTrue(compareQueryResult(expected, actual))
 	}
-		
-
-	@Nested
-	public class testFindFirstSlackBus {
-		@Test
-		public void testFindFirstSlackBus_Success () {
-
-		}
-
-		@Test(expected = JPSRuntimeException.class)
-		public void testFindFirstSlackBus_JPSRuntimeException () {
-
-		}
-	}
 	
 	@Test
 	public void testDeletePowerGeneratorsFromElectricalNetwork () {
@@ -67,11 +53,6 @@ public class TestGeneralRetrofitAgent {
 
 	@Test
 	public void testAddGeneratorsToElectricalNetwork () {
-
-	}
-
-	@Test
-	public void testConnectGeneratorToBus () {
 
 	}
 
