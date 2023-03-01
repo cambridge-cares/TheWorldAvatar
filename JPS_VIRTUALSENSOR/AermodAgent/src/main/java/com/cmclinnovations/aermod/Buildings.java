@@ -75,6 +75,7 @@ public class Buildings {
     public static int nx;
 
     public static int ny;
+    public static boolean buildAvail = true;
 
     public void init(Path simulationDirectory, Polygon scope, int srid, int nx, int ny) throws ParseException {
 
@@ -106,11 +107,15 @@ public class Buildings {
         }
 
         if (locindex == -1) {
-            throw new RuntimeException("Input polygon not found in any namespace.");
+            buildAvail = false;
+            LOGGER.info("Input polygon not found in any namespace." + 
+            "AERMOD will be run for ships only without buildings and plant items.");
         }
 
         if (scope.getSRID() != 4326) {
-            throw new RuntimeException("Input scope does not have 4326 as its srid.");
+            buildAvail = false;
+            LOGGER.info("Input scope does not have 4326 as its srid." + 
+            "AERMOD will be run for ships only without buildings and plant items.");
         }
 
         StackQueryIRI = StackQueryEndpoint[locindex];

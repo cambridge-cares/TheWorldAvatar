@@ -108,11 +108,15 @@ public class AermodAgent extends DerivationAgent {
             bpi = new Buildings();
             bpi.init(simulationDirectory,scope, srid, nx, ny);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(e.getMessage());
         }
-        if (bpi.run() != 0) {
-            LOGGER.error("Failed to run BPIPPRM, terminating");
-            throw new RuntimeException();
+
+        if (bpi.buildAvail) {
+            int buildRes = bpi.run();
+            if (buildRes != 0) {
+                LOGGER.error("Failed to run BPIPPRM, terminating");
+                throw new RuntimeException();
+            }
         }
 
 
