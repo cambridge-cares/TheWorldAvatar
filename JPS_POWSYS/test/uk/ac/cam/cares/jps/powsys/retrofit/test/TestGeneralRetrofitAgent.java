@@ -50,10 +50,10 @@ public class TestGeneralRetrofitAgent {
 
 		AccessAgentCaller caller = new AccessAgentCaller();
 		//TODO Figure out the required query depending on testENIRI
-		JSONArray result = caller.queryStore();
+		JSONArray actual = caller.queryStore();
 
 		//TODO get test output from testing in Blazegraph
-		List<BusInfo> expected = new ArrayList<>();
+		List<GeneratorInfo> expected = new ArrayList<>();
 
 		assertTrue(compareQueryResult(expected, actual));
 	}
