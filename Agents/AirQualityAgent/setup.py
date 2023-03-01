@@ -16,7 +16,7 @@ setup(
         'configobj~=5.0',
         'flask~=2.1',
         'pandas~=1.4',
-        'py4jps==1.0.19', 
+        'py4jps==1.0.30', 
         'requests~=2.27',
     ]
 )

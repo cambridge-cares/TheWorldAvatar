@@ -6,57 +6,84 @@
 # The purpose of this module is to provide functionality to use
 # the TimeSeriesClient from the JPS_BASE_LIB
 
-import os
-from pathlib import Path
+from contextlib import contextmanager
 
-#import agentlogging
+from py4jps import agentlogging
 from agent.errorhandling.exceptions import TSException
 from agent.kgutils.javagateway import jpsBaseLibGW
+from agent.utils.readings_mapping import TIMECLASS
+from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
 
 # Initialise logger
-#logger = agentlogging.get_logger("prod")
+logger = agentlogging.get_logger("prod")
 
 
 class TSClient:
 
-    @staticmethod
-    def tsclient_with_default_settings():
-        # Initialise TimeSeriesClient with default properties from properties file
+    
+    # Create ONE JVM module view on class level and import all required java classes
+    jpsBaseLibView = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
+    jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
 
-        # Create a JVM module view and use it to import the required java classes
-        jpsBaseLibView = jpsBaseLibGW.createModuleView()
-        jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
-        jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
+    def __init__(self, kg_client, timeclass=TIMECLASS, rdb_url=DB_URL, 
+                 rdb_user=DB_USER, rdb_password=DB_PASSWORD):
+        """
+        Initialise TimeSeriesClient (default properties taken from environment variables)
 
-        # Retrieve Java classes for time entries (Instant)
-        Instant = jpsBaseLibView.java.time.Instant
-        instant_class = Instant.now().getClass()
+        Arguments:
+            kg_client (KGClient): KGClient object (as per `kgclient.py`)
+            timeclass: Java time class objects supported by PostgreSQL
+                       (see: https://www.jooq.org/javadoc/dev/org.jooq/org/jooq/impl/SQLDataType.html)
+            rdb_url (str): URL of relational database
+            rdb_user (str): Username for relational database
+            rdb_password (str): Password for relational database
+        """
 
-        # Define path to properties file
-        fp = os.path.join(Path(__file__).parent.parent.parent, "resources", "airquality.properties" )
-
+        # 1) Create an instance of a RemoteStoreClient (to retrieve RDB connection)
         try:
-            ts_client = jpsBaseLibView.TimeSeriesClient(instant_class, fp)
-        except:
-            #logger.error("Unable to initialise TS client")
-            raise TSException("Unable to initialise TS client")
-        
-        return ts_client
+            self.connection = TSClient.jpsBaseLibView.RemoteRDBStoreClient(rdb_url, rdb_user, rdb_password)
+        except Exception as ex:
+            logger.error("Unable to initialise TS Remote Store client.")
+            raise TSException("Unable to initialise TS Remote Store client.") from ex
+
+        # 2) Initiliase TimeSeriesClient
+        try:
+            self.tsclient = TSClient.jpsBaseLibView.TimeSeriesClient(kg_client.kg_client, timeclass)
+        except Exception as ex:
+            logger.error("Unable to initialise TS client.")
+            raise TSException("Unable to initialise TS client.") from ex
+
+
+    @contextmanager
+    def connect(self):
+        """
+        Create context manager for RDB connection using getConnection method of Java
+        TimeSeries client (i.e. to ensure connection is closed after use)
+        """
+        conn = None
+        try:            
+            conn = self.connection.getConnection()
+            yield conn
+        finally:
+            if conn is not None:
+                conn.close()
 
 
     @staticmethod
     def create_timeseries(times: list, dataIRIs: list, values: list):
-        # Create Java TimeSeries object (i.e. to attach via TSClient)
-
-        # Create a JVM module view and use it to import the required java classes
-        jpsBaseLibView = jpsBaseLibGW.createModuleView()
-        jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
-        jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
-
+        """
+        Create Java TimeSeries object (i.e. to attach via TSClient)
+        
+        Arguments:
+            times (list): List of time stamps
+            dataIRIs (list): List of dataIRIs
+            values (list): List of list of values per dataIRI     
+        """
         try:
-            timeseries = jpsBaseLibView.TimeSeries(times, dataIRIs, values)
-        except:
-            #logger.error("Unable to create timeseries")
-            raise TSException("Unable to create timeseries")
+            timeseries = TSClient.jpsBaseLibView.TimeSeries(times, dataIRIs, values)
+        except Exception as ex:
+            logger.error("Unable to create timeseries.")
+            raise TSException("Unable to create timeseries.") from ex
         
         return timeseries
