@@ -27,7 +27,6 @@ public class TestGeneralRetrofitAgent {
 	@Before
 	public void setUp () {
 		//TODO Fill up the IRI in the variables.
-		jpsENIRI = "http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/";
 	}
 
 
@@ -102,7 +101,6 @@ public class TestGeneralRetrofitAgent {
 		//TODO create BUsInfo for slackBus in testENIRI
 		BusInfo slack = new BusInfo ();
 		gra.connectGeneratorToOptimalBus(testBusIRI, testGenIRI, slack);
-
 		//TODO Figure out the required query depending on testENIRI
 		JSONArray actual = caller.queryStore();
 
@@ -115,7 +113,17 @@ public class TestGeneralRetrofitAgent {
 
 	@Test
 	public void testConnectNuclearPowerGeneratorsOfPlantsToOptimalBus () {
+		GeneralRetrofitAgent gra = new GeneralRetrofitAgent();
+		//TODO create BUsInfo for slackBus in testENIRI
+		BusInfo slack = new BusInfo ();
+		gra.connectGeneratorToOptimalBus(testBusIRI, testGenIRI, slack);
+		//TODO Figure out the required query depending on testENIRI
+		JSONArray actual = caller.queryStore();
 
+		//TODO get test output from testing in Blazegraph
+		List<GeneratorInfo> expected = new ArrayList<>();
+
+		assertTrue(compareQueryResult(expected, actual));
 	}
 
 
