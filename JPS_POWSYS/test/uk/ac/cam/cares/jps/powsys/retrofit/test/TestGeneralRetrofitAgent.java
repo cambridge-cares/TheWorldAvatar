@@ -81,7 +81,18 @@ public class TestGeneralRetrofitAgent {
 
 	@Test
 	public void testAddGeneratorsToElectricalNetwork () {
+		GeneralRetrofitAgent gra = new GeneralRetrofitAgent();
+		List<String> input = new ArrayList<>();
+		gra.addPowerGeneratorsFromElectricalNetwork(testENIRI, input);
 
+		AccessAgentCaller caller = new AccessAgentCaller();
+		//TODO Figure out the required query depending on testENIRI
+		JSONArray actual = caller.queryStore();
+
+		//TODO get test output from testing in Blazegraph
+		List<GeneratorInfo> expected = new ArrayList<>();
+
+		assertTrue(compareQueryResult(expected, actual));
 	}
 
 	@Test
