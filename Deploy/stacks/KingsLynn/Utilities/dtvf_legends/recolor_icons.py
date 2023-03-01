@@ -3,71 +3,83 @@
 #      2) use different icons to represent the different types of stations
 
 import os
+import codecs
+import fitz
+import math
 
-from PIL import Image
 from pathlib import Path
+from svglib.svglib import svg2rlg
+from reportlab.graphics import renderPDF
 
-
-def recolor_icon(icon_path, source_rgb, target_hex):
-    
-    def _replace_color(pixel, source_rgb, target_rgb):
-        # Color replacement function that preserves the transition between color and white
-        # Check if the pixel is white or transparent
-        if pixel[3] == 0 or (pixel[0] == 255 and pixel[1] == 255 and pixel[2] == 255):
-            return pixel
-        if pixel[:3] == source_rgb:
-            # Set full saturation target color for pixels that match the source color
-            return target_rgb + (pixel[3],)
-        else:
-            # Adjust color/saturation for transition pixels
-            pixel_new = []
-            for p in range(3):
-                # Interpolate between white and the target color
-                # Relative interpolation factor
-                #adj = (pixel[p] - source_rgb[p]) / source_rgb[p]
-                #adj = int(min(255, (1 + adj) * target_rgb[p]))
-                # Absolute interpolation increment
-                adj = round((pixel[p] - source_rgb[p]) + target_rgb[p])
-                pixel_new.append(adj)
-            # Create RGBA tuple from RGB color and alpha value of the original pixel
-            return (*pixel_new, pixel[3])
-
-    # convert target hexcolor to RGB tuple
-    c = target_hex.lstrip('#')
-    target_rgb = tuple(int(c[i:i+2], 16) for i in (0, 2, 4))
-
-    # load the icon image
-    icon = Image.open(icon_path)
-    # convert the image to RGBA mode
-    icon = icon.convert('RGBA')
-    # get the image data as a list of pixels
-    pixels = icon.getdata()
-    # create a new list of pixels where non-white parts are replaced with the defined color
-    new_pixels = [_replace_color(pixel, source_rgb, target_rgb) for pixel in pixels]
-    # update the image with the new pixel data
-    icon.putdata(new_pixels)
-    return icon
-
+# Define target icon details
+res = 64  # 64 x 64 pixels
+dpi = 32
 
 #
 # 1) Create colored default icons to distinguish between data providers
 # 
 
 # Define input icon
-icon = 'ea-empty.png'
-fp1 = os.path.join(Path(__file__).parent.parent.parent, 'DTVF', 'data', 'icons', icon)
-# Define colors and labels for output icons
+icon = 'circle.svg'
+fp_in = os.path.join(Path(__file__).parent, icon)
+input_color = "#68BF56"
+# Define colors and names for output icons
 # 1) Metoffice weather stations
 # 2) Air quality stations
 # 3) Environment Agency flood monitoring stations
-names = ['metoffice', 'airquality', 'floodmonitoring']
-target_colors = ['#2b6cb0', '#7b2cbf', '#29a745']
-# Define "key" color of input icon to be replaced with the target colors
-source_color = (104, 191, 86)
+names = ['metoffice', 'ukair', 'floodmonitoring']
+target_colors = ['#7b2cbf', '#2b6cb0', '#29a745']
 
 for i in range(len(names)):
-    f = names[i] + '.png'
-    fp2 = os.path.join(Path(__file__).parent.parent.parent, 'DTVF', 'data', 'icons', f)
-    color_icon = recolor_icon(fp1, source_color, target_colors[i])
-    # save the recolored icon with a new filename
-    color_icon.save(fp2)
+    # Create output file path
+    fp_out = os.path.join(Path(__file__).parent, '{}.png'.format(names[i]))
+    temp = os.path.join(Path(__file__).parent, 'tmp.svg')
+
+    # Read SVG file
+    with codecs.open(fp_in, 'r', encoding='utf-8', errors='ignore') as f:
+        content = f.read()
+    # Change color
+    new_SVG = content.replace(input_color, target_colors[i])
+
+    # Save updated .svg as temporary file (deleted later)
+    with codecs.open(temp, 'w', encoding='utf-8', errors='ignore') as f:
+        f.write(new_SVG)
+    
+    # Convert svg to png: directly rendering to png does not support transparency
+    # https://github.com/deeplook/svglib/issues/171
+    # Convert svg to pdf in memory with svglib+reportlab    
+    drawing = svg2rlg(path=temp)
+    pdf = renderPDF.drawToString(drawing)
+
+    # Open pdf with fitz (pyMuPdf) to convert to PNG
+    doc = fitz.Document(stream=pdf)
+    pix = doc.load_page(0).get_pixmap(alpha=True, dpi=100)
+
+    # Adjust and save output png
+    n = int(pix.height/64)
+    n = math.floor(math.log(n)/math.log(2))
+    pix.shrink(n)
+    pix.set_dpi(dpi, dpi)
+    pix.save(fp_out)
+
+    # Delete temporary file
+    os.remove(temp)
+    
+
+# #
+# # 2) Create gray default icons to distinguish between station types
+# # 
+
+# # Define input icons
+# icons = ['airquality.png', 'flow.png', 'rainfall.png', 'temperature.png', 'water-level.png', 
+#          'weather.png', 'weather-for.png', 'weather-obs.png', 'wind.png']
+# target_color = '#808080'
+# # Define "key" color of input icon to be replaced with the target colors
+# source_color = (104, 191, 86)
+
+# for icon in icons:
+#     fp1 = os.path.join(Path(__file__).parent, icon)
+#     fp2 = os.path.join(Path(__file__).parent.parent.parent, 'DTVF', 'data', 'icons', icon)
+#     color_icon = recolor_icon(fp1, source_color, target_color)
+#     # save the recolored icon with a new filename
+#     color_icon.save(fp2)
