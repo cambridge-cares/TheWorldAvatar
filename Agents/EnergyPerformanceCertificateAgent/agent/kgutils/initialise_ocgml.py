@@ -8,15 +8,14 @@
 
 import os
 from pathlib import Path
-import requests
 
-import agentlogging
+from py4jps import agentlogging
 
-from epcdata.datamodel.iris import *
-from epcdata.errorhandling.exceptions import KGException
-from epcdata.kgutils.javagateway import jpsBaseLibGW
-from epcdata.kgutils.kgclient import KGClient
-from epcdata.utils.env_configs import OCGML_ENDPOINT
+from agent.datamodel.iris import *
+from agent.errorhandling.exceptions import KGException
+from agent.kgutils.javagateway import jpsBaseLibGW
+from agent.kgutils.kgclient import KGClient
+from agent.utils.env_configs import OCGML_ENDPOINT
 
 
 # Initialise logger

@@ -14,14 +14,14 @@ import uuid
 import urllib.parse
 import pandas as pd
 
-import agentlogging
+from py4jps import agentlogging
 
-from epcdata.datamodel.iris import *
-from epcdata.utils.api_endpoints import *
-from epcdata.errorhandling.exceptions import APIException
-from epcdata.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from epcdata.kgutils.kgclient import KGClient
-from epcdata.kgutils.querytemplates import check_instantiated_local_authority, \
+from agent.datamodel.iris import *
+from agent.utils.api_endpoints import *
+from agent.errorhandling.exceptions import APIException
+from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.kgutils.kgclient import KGClient
+from agent.kgutils.querytemplates import check_instantiated_local_authority, \
                                            ons_postcodes_per_localauthority, \
                                            instantiate_postcodes_for_district
 

@@ -9,15 +9,15 @@
 import os
 import warnings
 
-import agentlogging
+from py4jps import agentlogging
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
 
 # Initialise global variables to be read from Docker compose file
-global API_TOKEN, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE, \
-       OCGML_ENDPOINT
+global DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE, \
+       OCGML_ENDPOINT, NAMESPACE, ENCODED_AUTH
 
 
 def retrieve_settings():
@@ -26,19 +26,10 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global API_TOKEN, DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE, \
-           OCGML_ENDPOINT
+    global DATABASE, ONTOP_FILE, LAYERNAME, GEOSERVER_WORKSPACE, \
+           OCGML_ENDPOINT, NAMESPACE, ENCODED_AUTH
 
-    # Retrieve MetOffice API key
-    API_TOKEN = os.getenv('API_AUTH')    
-    if API_TOKEN is None:
-        logger.error('"API_AUTH" is missing in environment variables.')
-        raise ValueError('"API_AUTH" is missing in environment variables.')
-    if API_TOKEN == '':
-        logger.error('No "API_AUTH" value has been provided in environment variables.')
-        raise ValueError('No "API_AUTH" value has been provided in environment variables.')
-
-    # Retrieve ONTOP mapping file
+    # Retrieve OCGML_ENDPOINT with instantiated OntoCityGml data
     OCGML_ENDPOINT = os.getenv('OCGML_ENDPOINT')
     if OCGML_ENDPOINT is None:
         logger.error('"OCGML_ENDPOINT" is missing in environment variables.')
@@ -87,6 +78,23 @@ def retrieve_settings():
         logger.error('Invalid "ONTOP_FILE" has been provided in environment variables.')
         raise ValueError('Invalid "ONTOP_FILE" has been provided in environment variables.')
 
+    # Retrieve target Blazegraph name for data to instantiate
+    NAMESPACE = os.getenv('NAMESPACE')
+    if NAMESPACE is None:
+        logger.error('"NAMESPACE" name is missing in environment variables.')
+        raise ValueError('"NAMESPACE" name is missing in environment variables.')
+    if NAMESPACE == '':
+        logger.error('No "NAMESPACE" value has been provided in environment variables.')
+        raise ValueError('No "NAMESPACE" value has been provided in environment variables.')
+
+    # Retrieve encoded key for EPC API
+    ENCODED_AUTH = os.getenv('ENCODED_AUTH')    
+    if ENCODED_AUTH is None:
+        logger.error('"ENCODED_AUTH" is missing in environment variables.')
+        raise ValueError('"ENCODED_AUTH" is missing in environment variables.')
+    if ENCODED_AUTH == '':
+        logger.error('No "ENCODED_AUTH" value has been provided in environment variables.')
+        raise ValueError('No "ENCODED_AUTH" value has been provided in environment variables.')
 
 # Run when module is imported
 retrieve_settings()
