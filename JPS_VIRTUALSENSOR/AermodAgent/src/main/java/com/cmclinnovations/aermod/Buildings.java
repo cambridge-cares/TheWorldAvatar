@@ -130,10 +130,6 @@ public class Buildings {
                 LOGGER.error("Failed to create AERMOD buildings input file, terminating");
                 return 1;
             }
-            // if (createAermetInput() != 0) {
-            //     LOGGER.error("Failed to create AERMET input file, terminating");
-            //     return 1;
-            // }
             if (createAERMODSourceInput() != 0) {
                 LOGGER.error("Failed to create AERMOD sources input file, terminating");
                 return 1;
