@@ -11,6 +11,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -183,9 +184,7 @@ public class AccessAgent extends JPSAgent{
 	    
 		try {
 			logInputParams(requestParams, "", false);
-			
-			//TODO return as JSON Array
-			
+						
 			List<String> endpoints = StoreRouter.getEndpoints(targetIRI);
 			String queryIRI = endpoints.get(StoreRouter.QUERY_INDEX);
 			String updateIRI = endpoints.get(StoreRouter.UPDATE_INDEX);
@@ -193,14 +192,11 @@ public class AccessAgent extends JPSAgent{
 			if(queryIRI==null && updateIRI==null){
 				LOGGER.error("Endpoint could not be retrieved for the following resource ID:"+targetIRI);
 			}
-							
+					
 			JSONObject JSONresult = new JSONObject();
-			String result = null;
+			JSONresult.put(JPSConstants.QUERY_ENDPOINT, queryIRI);
+			JSONresult.put(JPSConstants.UPDATE_ENDPOINT, updateIRI);
 			
-			//get
-			//result = kbClient.get(graphIRI, accept);
-			JSONresult.put(JPSConstants.RESULT_KEY,result);
-		
 			return JSONresult;
 		
 		} catch (RuntimeException e) {

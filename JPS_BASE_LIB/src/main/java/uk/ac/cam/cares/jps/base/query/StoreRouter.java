@@ -213,7 +213,8 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 				String targetResourceLabel = getLabelFromTargetResourceID(targetResourceID);
 				LOGGER.info("Remote store. targetResourceLabel="+targetResourceLabel);
 				
-				endpoints = storeRouter.get(targetResourceLabel);			
+				endpoints = storeRouter.get(targetResourceLabel);		
+				
 			}
 		}else {
 			LOGGER.error("targetResourceID is null.");

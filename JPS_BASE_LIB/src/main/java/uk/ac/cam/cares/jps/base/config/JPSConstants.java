@@ -40,6 +40,9 @@ public interface JPSConstants {
 	static String RESULT_KEY = "result";
 	static String ASK_RESULT_KEY = "ASK";
 	
+	static String QUERY_ENDPOINT = "queryendpoint";
+	static String UPDATE_ENDPOINT = "updateendpoint";
+	
 	/**
 	 * If true then all read files are copied into the scenario bucket.
 	 * If false then copy-on-write, i.e. files are only copied into the scenario bucket if they are changed.
