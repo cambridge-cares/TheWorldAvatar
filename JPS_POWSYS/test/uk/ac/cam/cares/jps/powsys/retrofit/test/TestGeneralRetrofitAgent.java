@@ -16,8 +16,8 @@ import uk.ac.cam.cares.jps.powsys.retrofit.GeneratorInfo;
 
 public class TestGeneralRetrofitAgent {
 	private String jpsENIRI, testENIRI;
-	private JSONArray busIRI = new JSONArray();
-	private JSONArray genIRI = new JSONArray();
+	private List<BusInfo> testBusIRI = new JSONArray();
+	private List<GeneratorInfo> testGenIRI = new JSONArray();
 	private List<String[]> expectedBusQuery = new ArrayList<>();
 
 	private <T> boolean compareQueryResult(List<T> a, List<T> b) {
@@ -27,6 +27,7 @@ public class TestGeneralRetrofitAgent {
 	@Before
 	public void setUp () {
 		//TODO Fill up the IRI in the variables.
+		jpsENIRI = "http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/";
 	}
 
 
@@ -97,6 +98,18 @@ public class TestGeneralRetrofitAgent {
 
 	@Test
 	public void testConnectGeneratorToOptimalBus () {
+		GeneralRetrofitAgent gra = new GeneralRetrofitAgent();
+		//TODO create BUsInfo for slackBus in testENIRI
+		BusInfo slack = new BusInfo ();
+		gra.connectGeneratorToOptimalBus(testBusIRI, testGenIRI, slack);
+
+		//TODO Figure out the required query depending on testENIRI
+		JSONArray actual = caller.queryStore();
+
+		//TODO get test output from testing in Blazegraph
+		List<GeneratorInfo> expected = new ArrayList<>();
+
+		assertTrue(compareQueryResult(expected, actual));
 
 	}
 
