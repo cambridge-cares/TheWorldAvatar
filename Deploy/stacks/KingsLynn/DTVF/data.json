@@ -184,7 +184,7 @@
                     "layout": {
                         "visibility": "visible",
                         "icon-image": "metoffice",
-                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.6, 20, 0.8],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.75],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true,
                         "text-field": "{point_count_abbreviated}",
@@ -221,7 +221,7 @@
                     "layout": {
                         "visibility": "visible",
                         "icon-image": "floodmonitoring",
-                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.6, 20, 0.8],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.75],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true,
                         "text-field": "{point_count_abbreviated}",

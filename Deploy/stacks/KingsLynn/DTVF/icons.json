@@ -1,4 +1,7 @@
 {
+	"metoffice": "data/icons/metoffice.png",
+	"floodmonitoring": "data/icons/floodmonitoring.png",
+	"ukair": "data/icons/ukair.png",
 	"air-quality": "data/icons/air-quality.png",
 	"ea-empty": "data/icons/ea-empty.png",
 	"ea-flow": "data/icons/ea-flow.png",
