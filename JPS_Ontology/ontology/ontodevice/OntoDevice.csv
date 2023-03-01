@@ -3,17 +3,15 @@ OntoDevice,TBox,https://www.theworldavatar.com/kg/ontodevice/,https://www.w3.org
 OntoDevice,TBox,1.5,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoDevice,TBox,"OntoDevice is an ontology for describing devices, their capabilities and properties.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoDevice,TBox,https://saref.etsi.org/core/,http://www.w3.org/2002/07/owl#imports,,,,,,
-https://saref.etsi.org/core/Device,Class,,,,,,,https://saref.etsi.org/core/,Device
 Device,Class,https://saref.etsi.org/core/Device,EQUIVALENT-TO,,,,An object designed and manufactured to perform one or more functions.,https://www.theworldavatar.com/kg/ontodevice/,Device
 Device,Class,https://w3id.org/bot#Element,IS-A,,,,,https://www.theworldavatar.com/kg/ontodevice/,Device
-https://saref.etsi.org/core/Sensor,Class,https://saref.etsi.org/core/Device,IS-A,,,,,https://saref.etsi.org/core/,Sensor
-https://saref.etsi.org/core/Appliance,Class,https://saref.etsi.org/core/Device,IS-A,,,,,https://saref.etsi.org/core/,Appliance
-https://saref.etsi.org/core/Meter,Class,https://saref.etsi.org/core/Device,IS-A,,,,,https://saref.etsi.org/core/,Meter
 MicroController,Class,https://saref.etsi.org/core/Device,IS-A,,,,A microcontroller is an integrated circuit (IC) designed to handle a specific task in embedded systems.,https://www.theworldavatar.com/kg/ontodevice/,MicroController
 MobilePhone,Class,https://saref.etsi.org/core/Device,IS-A,,,,A portable telephone that can make and receive calls over a radio frequency link.,https://www.theworldavatar.com/kg/ontodevice/,Mobile phone
 SmartPhone,Class,MobilePhone,IS-A,,,,A portable computer device that combines mobile telephone and computing functions into one unit.,https://www.theworldavatar.com/kg/ontodevice/,Smart phone
 Microphone,Class,https://saref.etsi.org/core/Device,IS-A,,,,A transducer that converts sound into an electrical signal.,https://www.theworldavatar.com/kg/ontodevice/,Microphone
 Camera,Class,https://saref.etsi.org/core/Device,IS-A,,,,An optical instrument that can capture an image.,https://www.theworldavatar.com/kg/ontodevice/,Camera
+GPSDevice,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device used within Earth’s planetary atmosphere to determine its precise geographical location.,https://www.theworldavatar.com/kg/ontodevice/,GPS device
+https://www.theworldavatar.com/kg/ontoems/ReportingStation,Class,https://saref.etsi.org/core/Device,IS-A,,,,,https://www.theworldavatar.com/kg/ontodevice/,Reporting station
 ElectronicTag,Class,https://saref.etsi.org/core/Device,IS-A,,,,"A tag that uses a form of electronic identification technology (Bluetooth, RFID etc).",https://www.theworldavatar.com/kg/ontodevice/,Electronic tag
 RFIDTag,Class,ElectronicTag,IS-A,,,,An electronic tag that exchanges data with a RFID reader through radio waves.,https://www.theworldavatar.com/kg/ontodevice/,RFID tag
 PassiveRFIDTag,Class,RFIDTag,IS-A,,,,A passive RFID tag that functions via the electromagnetic energy that gets transmitted from the RFID reader. ,https://www.theworldavatar.com/kg/ontodevice/,Passive RFID tag
@@ -21,18 +19,15 @@ ActiveRFIDTag,Class,RFIDTag,IS-A,,,,An active RFID tag that requires batteries f
 OilMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device for measuring the flow of oil.,https://www.theworldavatar.com/kg/ontodevice/,Oil meter
 PollutionMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device for measuring air quality.,https://www.theworldavatar.com/kg/ontodevice/,Pollution meter
 WaterMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device that measure and communicate water usage from consumer to provider to facilitate water management and proper billing.,https://www.theworldavatar.com/kg/ontodevice/,Water meter
-MagnetoMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device that measures magnetic field or magnetic dipole moment.,https://www.theworldavatar.com/kg/ontodevice/,Magnetometer
-AcceleroMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A tool that measures proper acceleration.,https://www.theworldavatar.com/kg/ontodevice/,Accelerometer
+Magnetometer,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A device that measures magnetic field or magnetic dipole moment.,https://www.theworldavatar.com/kg/ontodevice/,Magnetometer
+Accelerometer,Class,https://saref.etsi.org/core/Meter,IS-A,,,,A tool that measures proper acceleration.,https://www.theworldavatar.com/kg/ontodevice/,Accelerometer
 ElectricityMeter,Class,https://saref.etsi.org/core/Meter,IS-A,,,,"A device that measures the amount of electric energy consumed by a residence, a business, or an electrically powered device.",https://www.theworldavatar.com/kg/ontodevice/,Electricity meter
-GPSSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A GPS Sensor or Receiver is a device used within Earth’s planetary atmosphere to determine its precise geographical location.,https://www.theworldavatar.com/kg/ontodevice/,GPS sensor
 GravitySensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that detect minute localized changes in the force of Earth’s gravity caused by variations in rock or other materials’ density underground.,https://www.theworldavatar.com/kg/ontodevice/,Gravity sensor
 CO2Sensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that is able to measure the concentration of carbon dioxide gas in the atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,CO2 sensor
 IlluminanceSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that is able to measure the level of illuminance.,https://www.theworldavatar.com/kg/ontodevice/,Illuminance sensor
-https://saref.etsi.org/core/TemperatureSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,,https://saref.etsi.org/core/,Temperature sensor
 HumiditySensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that is able to measure the level of humidity in the atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,Humidity sensor
 RFIDSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,"A sensor used to gather information from an RFID tag, which is used to track individual objects.",https://www.theworldavatar.com/kg/ontodevice/,RFID sensor
 SmartSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that is composed of one or more Sensors together with a MicroController.,https://www.theworldavatar.com/kg/ontodevice/,Smart sensor
-https://www.theworldavatar.com/kg/ontoems/ReportingStation,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,,https://www.theworldavatar.com/kg/ontodevice/,Reporting station
 Fridge,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is usually used for the preservation of items like food via temperature regulation.,https://www.theworldavatar.com/kg/ontodevice/,Fridge
 http://www.w3.org/ns/ssn/systems/SurvivalRange,Class,,,,,,,http://www.w3.org/ns/ssn/systems/,Survival range
 http://www.w3.org/ns/ssn/systems/OperatingRange,Class,,,,,,,http://www.w3.org/ns/ssn/systems/,Operating range
@@ -47,7 +42,6 @@ http://www.w3.org/ns/ssn/systems/Sensitivity,Class,http://www.w3.org/ns/ssn/syst
 http://www.w3.org/ns/ssn/systems/Condition,Class,,,,,,,http://www.w3.org/ns/ssn/systems/,Condition
 http://www.w3.org/ns/ssn/systems/OperatingProperty,Class,,,,,,,http://www.w3.org/ns/ssn/systems/,Operating property
 Setpoint,Class,,,,,,"The desired or target value for an essential variable, or process value (PV) of a control system.",https://www.theworldavatar.com/kg/ontodevice/,Setpoint
-https://saref.etsi.org/core/State,Class,,,,,,,https://saref.etsi.org/core/,State
 InOutState,Class,https://saref.etsi.org/core/State,IS-A,,,,The current state of something on whether it is inside or outside of a space or object.,https://www.theworldavatar.com/kg/ontodevice/,In out state
 PowerFactor,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio,IS-A,,,,"The ratio of working power, measured in kilowatts (kW), to apparent power, measured in kilovolt amperes (kVA).",https://www.theworldavatar.com/kg/ontodevice/,Power factor
 ScreenBrightness,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio,IS-A,,,,The brightness of the screen of a device measured as a ratio.,https://www.theworldavatar.com/kg/ontodevice/,Screen brightness
@@ -77,8 +71,8 @@ hasSystemCapability,Object Property,,,Device,http://www.w3.org/ns/ssn/systems/Sy
 hasOperatingRange,Object Property,,,Device,http://www.w3.org/ns/ssn/systems/OperatingRange,,A relationship between a device and its operating range.,https://www.theworldavatar.com/kg/ontodevice/,has operating range
 hasSurvivalRange,Object Property,,,Device,http://www.w3.org/ns/ssn/systems/SurvivalRange,,A relationship between a device and its survival range.,https://www.theworldavatar.com/kg/ontodevice/,has survival range
 hasSetpoint,Object Property,,,Device,Setpoint,,A relationship between a device and a setpoint.,https://www.theworldavatar.com/kg/ontodevice/,has setpoint
-hasQuantity,Object Property,,,Setpoint,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,A relationship between a setpoint and the quantity it represents.,https://www.theworldavatar.com/kg/ontodevice/,has quantity
-hasQuantity,Object Property,,,http://www.w3.org/ns/ssn/systems/OperatingProperty,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,A relationship between an operating property and the quantity it represents.,https://www.theworldavatar.com/kg/ontodevice/,has quantity
+hasQuantity,Object Property,,,Setpoint,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,A relationship between a setpoint or operating property and the quantity it represents.,https://www.theworldavatar.com/kg/ontodevice/,has quantity
+hasQuantity,Object Property,,,http://www.w3.org/ns/ssn/systems/OperatingProperty,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,A relationship between a setpoint or operating property and the quantity it represents.,https://www.theworldavatar.com/kg/ontodevice/,has quantity
 http://www.w3.org/ns/ssn/systems/inCondition,Object Property,,,http://www.w3.org/ns/ssn/systems/SystemCapability,http://www.w3.org/ns/ssn/systems/Condition,,,http://www.w3.org/ns/ssn/systems/,in condition
 http://www.w3.org/ns/ssn/systems/inCondition,Object Property,,,http://www.w3.org/ns/ssn/systems/OperatingRange,http://www.w3.org/ns/ssn/systems/Condition,,,http://www.w3.org/ns/ssn/systems/,in condition
 http://www.w3.org/ns/ssn/systems/inCondition,Object Property,,,http://www.w3.org/ns/ssn/systems/SurvivalRange,http://www.w3.org/ns/ssn/systems/Condition,,,http://www.w3.org/ns/ssn/systems/,in condition
@@ -93,7 +87,7 @@ sendsSignalTo,Object Property,,,Device,Device,,A relationship that describes a d
 hasGeoLocation,Object Property,,,Device,http://www.opengis.net/ont/sf#Point,,A relationship that describes a device's location.,https://www.theworldavatar.com/kg/ontodevice/,has geo location
 http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,has value
 http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,has unit
-http://www.opengis.net/ont/geosparql#asWKT,Data Property,,,http://www.opengis.net/ont/geosparql#Geometry,http://www.opengis.net/ont/geosparql#wktLiteral,,,http://www.opengis.net/ont/geosparql#,as WKT
+http://www.opengis.net/ont/geosparql#asWKT,Data Property,,,http://www.opengis.net/ont/sf#Geometry,http://www.opengis.net/ont/geosparql#wktLiteral,,,http://www.opengis.net/ont/geosparql#,as WKT
 http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,double,,A relationship that links a measure to a double value.,https://www.theworldavatar.com/kg/ontodevice/,has numerical value
 http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Device,String,,A relationship that links a device to a string label.,https://www.theworldavatar.com/kg/ontodevice/,label
 http://purl.org/dc/elements/1.1/description,Data Property,,,https://saref.etsi.org/core/State,String,,A relationship that links a state to a string value.,https://www.theworldavatar.com/kg/ontodevice/,description
