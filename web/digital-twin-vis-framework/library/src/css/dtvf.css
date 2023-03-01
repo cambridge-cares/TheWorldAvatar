@@ -26,7 +26,6 @@ h6 {
     font-weight: 700;
 }
 
-/* Mapbox Elements */
 #map {
     width: calc(100% - 500px);
     height: 100%;
@@ -35,28 +34,73 @@ h6 {
     background-color: #cad2d3;
 }
 
+
 .mapboxgl-popup-content {
     text-align: left;
-    font-size: 8pt;
-    width: auto;
-    max-width: 400px;
+    width: min-content;
+    min-width: 175px;
+    min-height: 20px;
     pointer-events: none;
-    background: linear-gradient(180deg,
-            rgba(245, 245, 255, 1) 80%,
-            rgba(230, 230, 240, 1) 100%);
+    background: linear-gradient(180deg,#f5f5ff 80%,#e6e6f0 100%);
+    font-family: Inter,sans-serif !important;
+    font-size: 10pt;
+    padding: 5px;
 }
 
-.mapboxgl-popup-content p {
-    font-style: italic;
-    color: grey;
+.mapboxgl-popup-content h3 {
+    width: max-content !important;
+    min-width: calc(100% - 10px);
+    
+    padding: 5px !important;
+    margin: 0px !important;
+    
+    white-space: nowrap;
+    display: inline-block;
 }
+
+.mapboxgl-popup-content .long-popup {
+    min-width: 400px;
+}
+
+#cesiumMetaBox {
+    width: min-content;
+    min-width: 175px;
+    min-height: 20px;
+    pointer-events: none;
+
+    background: linear-gradient(180deg,#f5f5ff 80%,#e6e6f0 100%);
+    font-family: Inter,sans-serif!important;
+    font-size: 10pt;
+    padding: 5px;
+        
+    position: absolute;
+    bottom: 100px;
+    left: 100px;
+
+    border-radius: 3px;
+    box-shadow: 3px 3px 3px gray;
+}
+#cesiumMetaBox h3 {
+    width: max-content !important;
+    min-width: calc(100% - 10px);
+    padding: 5px!important;
+    margin: 0!important;
+    white-space: nowrap;
+    display: inline-block;
+}
+#cesiumMetaBox .desc-popup {
+    margin-top: 20px;
+}
+#cesiumMetaBox .long-popup {
+    min-width: 400px;
+}
+
 .thumbnail {
     margin-left: 40px;
     width: 300px;
     height: 200px;
     object-fit: cover;
 }
-
 
 /* Side Panel */
 #sidePanel {
@@ -1182,26 +1226,6 @@ label[for="select-feature"] {
     margin-left: 10px;
     width: 54%;
     padding-left: 10px;
-}
-
-#cesiumMetaBox {
-    width: 200px;
-    min-height: 30px;
-    bottom: 100px;
-    left: 100px;
-
-    font-family: "Inter", sans-serif !important;
-    font-size: 10pt;
-    text-align: center;
-    line-height: 30px;
-
-    border-radius: 3px;
-    background-color: rgb(235, 235, 245);
-    color: black;
-    position: absolute;
-    box-shadow: 3px 3px 3px black;
-  
-    display: none;
 }
 
 .searchButton {

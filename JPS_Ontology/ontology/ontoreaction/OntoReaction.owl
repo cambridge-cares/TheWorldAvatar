@@ -1,17 +1,17 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#"
-     xml:base="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl"
+<rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontoreaction/"
+     xml:base="https://www.theworldavatar.com/kg/ontoreaction/"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:ontoreaction="https://www.theworldavatar.com/kg/ontoreaction/"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:OntoReaction="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
-    <owl:Ontology rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">19 November 2022</dc:date>
+    <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoreaction/">
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">06 February 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for describing reaction experiment.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.7</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -33,10 +33,12 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/commonlyHasUnit">
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#RunMaterialCost"/>
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#SpaceTimeYield"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/RunMaterialCost"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/RunMaterialCostPerKilogramProduct"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/SpaceTimeYield"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/kilogramPerLitrePerMinute-Time"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterlingPerKilogram"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterlingPerLitre"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -47,7 +49,7 @@
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#representsThermodynamicBehaviorOf">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemicalUNIONOutputChemical"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Chemical"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation links a phase system to a material. [OntoCAPE]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/material.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -58,14 +60,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehavior">
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemical"/>
-                    <rdf:Description rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#OutputChemical"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Chemical"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation designates the aspect system which represents the thermodynamic behavior of some material. [OntoCAPE]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/material.owl</rdfs:isDefinedBy>
@@ -126,7 +121,7 @@
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasCatalyst">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Catalyst"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Catalyst"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasCatalyst denotes the catalysts of a ChemicalReaction. A catalyst is a MolecularEntity or a ChemicalSpecies that is used to accelerate a ChemicalReaction.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -169,332 +164,345 @@
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasConversion -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasConversion -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasConversion">
-        <rdfs:subPropertyOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasPerformanceIndicator"/>
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Conversion"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasConversion">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Conversion"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its conversion performance indicator.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasEcoScore -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasEcoScore -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasEcoScore">
-        <rdfs:subPropertyOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasPerformanceIndicator"/>
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#EcoScore"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasEcoScore">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/EcoScore"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its eco score performance indicator.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasEnvironmentalFactor -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasEnvironmentalFactor -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasEnvironmentalFactor">
-        <rdfs:subPropertyOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasPerformanceIndicator"/>
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#EnvironmentalFactor"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasEnvironmentalFactor">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/EnvironmentalFactor"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its environmental factor performance indicator.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasEquipmentSettings -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasEquipmentSettings -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasEquipmentSettings">
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#EquipmentSettings"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasEquipmentSettings">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/EquipmentSettings"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation indicates the equipment settings which were generated for the reaction experiment.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasInputChemical -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasInputChemical -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasInputChemical">
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemical"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasInputChemical">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/InputChemical"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its input chemicals. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasOutputChemical -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasOutputChemical -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasOutputChemical">
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#OutputChemical"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasOutputChemical">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/OutputChemical"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its output chemicals. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasPerformanceIndicator -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasPerformanceIndicator">
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#PerformanceIndicator"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/PerformanceIndicator"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and the performance indicator calculated from the measured analytical data of its output chemical. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasReactionCondition -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasReactionCondition -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasReactionCondition">
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionCondition"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasReactionCondition">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionCondition"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and all its reaction conditions.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasResTime -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasResTime -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasResTime">
-        <rdfs:subPropertyOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasReactionCondition"/>
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ResidenceTime"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasResTime">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasReactionCondition"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ResidenceTime"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its residence time condition. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRunMaterialCost -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasRunMaterialCost -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRunMaterialCost">
-        <rdfs:subPropertyOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasPerformanceIndicator"/>
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#RunMaterialCost"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasRunMaterialCost">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/RunMaterialCost"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its run material cost performance indicator.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRxnPressure -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasRunMaterialCostPerKilogramProduct -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRxnPressure">
-        <rdfs:subPropertyOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasReactionCondition"/>
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionPressure"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasRunMaterialCostPerKilogramProduct">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/RunMaterialCostPerKilogramProduct"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its run material cost per kilogram of product produced performance indicator.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasRxnPressure -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasRxnPressure">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasReactionCondition"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionPressure"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its reaction pressure condition. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRxnScale -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasRxnScale -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRxnScale">
-        <rdfs:subPropertyOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasReactionCondition"/>
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionScale"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasRxnScale">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasReactionCondition"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionScale"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its reaction scale specified to an input chemical. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRxnTemperature -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasRxnTemperature -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRxnTemperature">
-        <rdfs:subPropertyOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasReactionCondition"/>
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionTemperature"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasRxnTemperature">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasReactionCondition"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionTemperature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its reaction temperature condition. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRxnType -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasRxnType -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRxnType">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasRxnType">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
         <rdfs:range rdf:resource="http://purl.obolibrary.org/obo/MOP_0000543"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a ChemicalReaction and a named reaction class it belongs to. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasSolvent -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasSolvent -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasSolvent">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasSolvent">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Solvent"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Solvent"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasSolvent denotes the solvents of a ChemicalReaction. A solvent is a MolecularEntity or a ChemicalSpecies that is used to host a ChemicalReaction.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasSpaceTimeYield -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasSpaceTimeYield -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasSpaceTimeYield">
-        <rdfs:subPropertyOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasPerformanceIndicator"/>
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#SpaceTimeYield"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasSpaceTimeYield">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/SpaceTimeYield"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its space time yield performance indicator.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasStoichiometryRatio -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasStoichiometryRatio -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasStoichiometryRatio">
-        <rdfs:subPropertyOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasReactionCondition"/>
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#StoichiometryRatio"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasStoichiometryRatio">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasReactionCondition"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/StoichiometryRatio"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and the stoichiometry ratio it applies to each input chemical. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasVariation -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasVariation -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasVariation">
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionVariation"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasVariation">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionVariation"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its variation. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasYield -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasYield -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasYield">
-        <rdfs:subPropertyOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasPerformanceIndicator"/>
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Yield"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasYield">
+        <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Yield"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its yield performance indicator.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#indicatesMultiplicityOf -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/indicatesMultiplicityOf -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#indicatesMultiplicityOf">
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#StoichiometryRatio"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemical"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/indicatesMultiplicityOf">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/StoichiometryRatio"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/InputChemical"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation indicates the multiplicity of the input chemical participating in a reaction experiment. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#indicatesUsageOf -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/indicatesUsageOf -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#indicatesUsageOf">
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionScale"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemical"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/indicatesUsageOf">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionScale"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/InputChemical"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation indicates the reaction scale in form of usage of an input chemical. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#isAssignedTo -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/isAssignedTo -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#isAssignedTo">
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#VapourtecR4Reactor"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/isAssignedTo">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4Reactor"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation indicates the vapourtec R4 reactor where a reaction experiment happened. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#isOccurenceOf -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/isOccurenceOf -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#isOccurenceOf">
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/isOccurenceOf">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and the chemical reaction it represents. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#isRealisedAs -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/isRealisedAs -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#isRealisedAs">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/isRealisedAs">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a chemical reaction and its concrete reaction experiment realisation. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#isVariationOf -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/isVariationOf -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#isVariationOf">
-        <rdfs:domain rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionVariation"/>
-        <rdfs:range rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/isVariationOf">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionVariation"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation links a variation to its parent reaction experiment. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#yieldLimitingSpecies -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/yieldLimitingSpecies -->
 
 
-    <owl:ObjectProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#yieldLimitingSpecies">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/yieldLimitingSpecies">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Conversion"/>
-                    <rdf:Description rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Yield"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoreaction/Conversion"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoreaction/Yield"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between yield or conversion of a reaction experiment and the yield limiting species based on which the performance indicator was computed. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
@@ -511,68 +519,68 @@
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#cdXML -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/cdXML -->
 
 
-    <owl:DatatypeProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#cdXML">
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/cdXML">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRDFILE -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasRDFILE -->
 
 
-    <owl:DatatypeProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRDFILE">
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasRDFILE">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRInChI -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasRInChI -->
 
 
-    <owl:DatatypeProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRInChI">
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasRInChI">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ordID -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/ordID -->
 
 
-    <owl:DatatypeProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ordID">
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/ordID">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#rxnCXSMILES -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/rxnCXSMILES -->
 
 
-    <owl:DatatypeProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#rxnCXSMILES">
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/rxnCXSMILES">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#rxnSMILES -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/rxnSMILES -->
 
 
-    <owl:DatatypeProperty rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#rxnSMILES">
+    <owl:DatatypeProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/rxnSMILES">
         <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:DatatypeProperty>
     
 
@@ -677,6 +685,13 @@
 
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterlingPerKilogram"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterlingPerLitre -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterlingPerLitre"/>
     
 
 
@@ -816,25 +831,25 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasCatalyst"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Catalyst"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Catalyst"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRxnType"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasRxnType"/>
                 <owl:allValuesFrom rdf:resource="http://purl.obolibrary.org/obo/MOP_0000543"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasSolvent"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Solvent"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasSolvent"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Solvent"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#isRealisedAs"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/isRealisedAs"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ChemicalReaction converts some ChemicalSpecies (or MolecularEntities) into some other ChemicalSpecies (or MolecularEntities). [OntoCAPE]</rdfs:comment>
@@ -858,7 +873,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Product">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A name-quantity pair that defines the name and corresponding stoichiometric coefficient of a chemical species or molecular entity participating in the reverse reaction. [OntoKin]</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
@@ -877,428 +892,444 @@
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#EquipmentSettings -->
+    <!-- https://www.theworldavatar.com/kg/ontolab/EquipmentSettings -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#EquipmentSettings"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/EquipmentSettings"/>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Catalyst -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/Catalyst -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Catalyst">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/Catalyst">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Species"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A substance that increases the rate of a reaction without modifying the overall standard Gibbs energy change in the reaction. [doi:10.1351/goldbook.C00876]</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Conversion -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/Chemical -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Conversion">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfSubstanceFraction"/>
-        <rdfs:subClassOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#PerformanceIndicator"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/Chemical">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#Material"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#yieldLimitingSpecies"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehavior"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A chemical is a type of OntoCAPE:Material used as the conceptual representation of chemicals used involved in a reaction experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/Conversion -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/Conversion">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfSubstanceFraction"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/PerformanceIndicator"/>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/yieldLimitingSpecies"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The conversion indicates, which portion of the originally used starting material has been converted into other chemical substances by a chemical reaction. [UDM https://github.com/PistoiaAlliance/UDM/blob/master/Docs/Glossary.md]</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#EcoScore -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/EcoScore -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#EcoScore">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/EcoScore">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/QuantityOfDimensionOne"/>
-        <rdfs:subClassOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#PerformanceIndicator"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/PerformanceIndicator"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#EnvironmentalFactor -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/EnvironmentalFactor -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#EnvironmentalFactor">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/EnvironmentalFactor">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MassFraction"/>
-        <rdfs:subClassOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#PerformanceIndicator"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/PerformanceIndicator"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The environmental factor (E-factor) of a reaction experiment is the ratio of the mass of waste (impurity) to mass of (desired/target) product. [doi:10.1039/B713736M]</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Impurity -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/Impurity -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Impurity">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/Impurity">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Product"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The product that is not the desired outcome of a reaction experiment. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemical -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/InputChemical -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemical">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#Material"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehavior"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An input chemical is a type of OntoCAPE:Material used as the feed to a reaction experiment. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/InputChemical">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Chemical"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An input chemical is a type of chemical used as the feed to a reaction experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemicalUNIONOutputChemical -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/OutputChemical -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemicalUNIONOutputChemical"/>
-    
-
-
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#OutputChemical -->
-
-
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#OutputChemical">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#Material"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehavior"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An output chemical is a type of OntoCAPE:Material collected as outcome from a reaction experiment. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/OutputChemical">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Chemical"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An output chemical is a type of chemical collected as outcome from a reaction experiment. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#PerformanceIndicator -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/PerformanceIndicator -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#PerformanceIndicator">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/PerformanceIndicator">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A quantity that is calculated from the measured analytical data of output chemical of a reaction experiment. It is used as objectives of a reaction optimisation problem. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionCondition -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/ReactionCondition -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionCondition">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/ReactionCondition">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A quantity that is used to specify the condition at which the reaction is to be conducted. It can be used as the optimisation variable in a reaction development process.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasConversion"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Conversion"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasConversion"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Conversion"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasEcoScore"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#EcoScore"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasEcoScore"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/EcoScore"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasEnvironmentalFactor"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#EnvironmentalFactor"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasEnvironmentalFactor"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/EnvironmentalFactor"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasEquipmentSettings"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#EquipmentSettings"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasEquipmentSettings"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontolab/EquipmentSettings"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasInputChemical"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemical"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasInputChemical"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/InputChemical"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasOutputChemical"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#OutputChemical"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasOutputChemical"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/OutputChemical"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasPerformanceIndicator"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#PerformanceIndicator"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/PerformanceIndicator"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasReactionCondition"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionCondition"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasReactionCondition"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionCondition"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRunMaterialCost"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#RunMaterialCost"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasRunMaterialCost"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/RunMaterialCost"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasSpaceTimeYield"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#SpaceTimeYield"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasRunMaterialCostPerKilogramProduct"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/RunMaterialCostPerKilogramProduct"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasStoichiometryRatio"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#StoichiometryRatio"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasSpaceTimeYield"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/SpaceTimeYield"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasVariation"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionVariation"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasStoichiometryRatio"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/StoichiometryRatio"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasYield"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Yield"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasVariation"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionVariation"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#isAssignedTo"/>
-                <owl:allValuesFrom rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#VapourtecR4Reactor"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasYield"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Yield"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasResTime"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/isAssignedTo"/>
+                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4Reactor"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasResTime"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ResidenceTime"/>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ResidenceTime"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRxnPressure"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasRxnPressure"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionPressure"/>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionPressure"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRxnScale"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasRxnScale"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionScale"/>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionScale"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#hasRxnTemperature"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasRxnTemperature"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionTemperature"/>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionTemperature"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#isOccurenceOf"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/isOccurenceOf"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A reaction experiment is a concrete realisation of a chemical reaction at a set of reaction conditions. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionPressure -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/ReactionPressure -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionPressure">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/ReactionPressure">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure"/>
-        <rdfs:subClassOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionCondition"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionCondition"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The pressure at which a reaction experiment is conducted. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionScale -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/ReactionScale -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionScale">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/ReactionScale">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
-        <rdfs:subClassOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionCondition"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionCondition"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#indicatesUsageOf"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/indicatesUsageOf"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemical"/>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/InputChemical"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reaction scale indicates the volume used of the reference input chemical. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionTemperature -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/ReactionTemperature -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionTemperature">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/ReactionTemperature">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/CelsiusTemperature"/>
-        <rdfs:subClassOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionCondition"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionCondition"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The temperature at which a reaction experiment is conducted. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionVariation -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/ReactionVariation -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionVariation">
-        <rdfs:subClassOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/ReactionVariation">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#isVariationOf"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/isVariationOf"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A reaction variation is defined as the same chemical reaction performed at a different set of reaction conditions compared to its original conditions. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ResidenceTime -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/ResidenceTime -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ResidenceTime">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/ResidenceTime">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Duration"/>
-        <rdfs:subClassOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionCondition"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionCondition"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The time required for air or reagent parcel to pass from the entrance to the exit of an instrument. Often this is approximated as the ratio of the interior volume of the device to the flow rate. [doi:10.1351/goldbook.R05309]</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#RunMaterialCost -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/RunMaterialCost -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#RunMaterialCost">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/RunMaterialCost">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificAmountOfMoney"/>
-        <rdfs:subClassOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#PerformanceIndicator"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total cost of input chemical during one reaction experiment. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/PerformanceIndicator"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total cost of input chemical during one reaction experiment, normally scaled by the volumetric amount of input chemicals. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Solvent -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/RunMaterialCostPerKilogramProduct -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Solvent">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/RunMaterialCostPerKilogramProduct">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/SpecificAmountOfMoney"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/PerformanceIndicator"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total cost of input chemical during one reaction experiment, scaled by per kilogram of product produced.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/Solvent -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/Solvent">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Species"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A solvent is the substance used to solve the chemical components of the chemical reaction process. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#SpaceTimeYield -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/SpaceTimeYield -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#SpaceTimeYield">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/SpaceTimeYield">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:subClassOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#PerformanceIndicator"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/PerformanceIndicator"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Space-time yield is a measure of reactor productivity calculated from mass of (desired/target) product formed, devided by the the reactor volume, and residence time. [doi:10.1002/cmtd.202000044]</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#StoichiometryRatio -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/StoichiometryRatio -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#StoichiometryRatio">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/StoichiometryRatio">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumeFraction"/>
-        <rdfs:subClassOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#ReactionCondition"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionCondition"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#indicatesMultiplicityOf"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/indicatesMultiplicityOf"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#InputChemical"/>
+                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/InputChemical"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ratio between an input chemical and the reference input chemical which is quantified by a reaction scale. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#TargetProduct -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/TargetProduct -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#TargetProduct">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/TargetProduct">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Product"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The product that is the desired outcome of a reaction experiment. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Yield -->
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/Yield -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Yield">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/Yield">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfSubstanceFraction"/>
-        <rdfs:subClassOf rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#PerformanceIndicator"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/PerformanceIndicator"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#yieldLimitingSpecies"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/yieldLimitingSpecies"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ratio expressing the efficiency of a mass conversion process.�[doi:10.1351/goldbook.Y06724]</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
 
 
-    <!-- https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#VapourtecR4Reactor -->
+    <!-- https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4Reactor -->
 
 
-    <owl:Class rdf:about="https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#VapourtecR4Reactor"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4Reactor"/>
 </rdf:RDF>
 
 

@@ -1,9 +1,16 @@
 package com.cmclinnovations.stack.services;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import com.cmclinnovations.stack.clients.core.EndpointNames;
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
@@ -25,6 +32,8 @@ public final class OntopService extends ContainerService {
 
     private final OntopEndpointConfig endpointConfig;
 
+    private Path postgresqlDriverScratchPath;
+
     public OntopService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(stackName, serviceManager, config);
 
@@ -35,6 +44,25 @@ public final class OntopService extends ContainerService {
 
     @Override
     public void doPreStartUpConfiguration() {
+
+        // Copy the PostgreSQL driver library from the stack-manager into the scratch
+        // volume so that the Ontop container can copy it
+        Pattern postgresqlDriverPattern = Pattern.compile(".*/postgresql-[0-9.]*\\.jar");
+        try (Stream<Path> postgresqlDrivers = Files.find(Path.of("/app/lib/org/postgresql/postgresql/"), 2, (path,
+                attributes) -> postgresqlDriverPattern.matcher(path.toString()).matches())) {
+            Optional<Path> possiblePostgresqlDriver = postgresqlDrivers.findFirst();
+            if (possiblePostgresqlDriver.isPresent()) {
+                Path postgresqlDriver = possiblePostgresqlDriver.get();
+                postgresqlDriverScratchPath = Path.of(StackClient.SCRATCH_DIR)
+                        .resolve(postgresqlDriver.getFileName());
+                Files.copy(postgresqlDriver, postgresqlDriverScratchPath, StandardCopyOption.REPLACE_EXISTING);
+                setEnvironmentVariableIfAbsent(ONTOP_DB_DRIVER_URL, postgresqlDriverScratchPath.toString());
+            }
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         ContainerSpec containerSpec = getContainerSpec();
 
         Optional<ContainerSpecConfig> dbConfigRef = containerSpec.getConfigs().stream().findFirst();
@@ -60,9 +88,14 @@ public final class OntopService extends ContainerService {
         setEnvironmentVariableIfAbsent("ONTOP_DEBUG", "false");
         checkEnvironmentVariableNonNull(OntopClient.ONTOP_MAPPING_FILE);
 
+        // Choose a preprocess command depending on where the PostgreSQL driver file is
+        // coming from
+        String driverURL = getEnvironmentVariable(ONTOP_DB_DRIVER_URL);
+        String getDriverCommand = driverURL.startsWith("/")
+                ? "mkdir -p /opt/ontop/jdbc && cp " + driverURL + " /opt/ontop/jdbc/"
+                : "wget -P /opt/ontop/jdbc " + driverURL;
         containerSpec
-                .withCommand(List.of("/bin/sh", "-c", "wget -P /opt/ontop/jdbc "
-                        + getEnvironmentVariable(ONTOP_DB_DRIVER_URL)
+                .withCommand(List.of("/bin/sh", "-c", getDriverCommand
                         + " && ./entrypoint.sh"));
     }
 
@@ -71,6 +104,16 @@ public final class OntopService extends ContainerService {
         OntopClient.getInstance().updateOBDA(null);
 
         writeEndpointConfig(endpointConfig);
+
+        // Remove the PostgreSQL driver file from the scratch volume
+        if (null != postgresqlDriverScratchPath) {
+            try {
+                Files.deleteIfExists(postgresqlDriverScratchPath);
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
     }
 
 }
