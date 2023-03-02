@@ -6,6 +6,7 @@ A module that provides all pytest fixtures and utility functions for all integra
 # Standard import
 import os
 import json
+from typing import List
 
 # Third party import
 import pytest
@@ -35,7 +36,7 @@ def gen_sample_ifc_file():
         or a simple model consisting of only one Wall
     """
 
-    def _gen_ifc_file(ifc_path, is_complex=False):
+    def _gen_ifc_file(ifc_path: str, is_complex=False):
         # Create a blank model
         model = ifcopenshell.file()
         # All projects must have one IFC Project element
@@ -105,7 +106,7 @@ def assert_asset_geometries():
     asset_list - A list containing the expected asset names
     """
 
-    def _setup_geom_assertions(asset_list):
+    def _setup_geom_assertions(asset_list: List[str]):
         for asset in asset_list:
             glbpath = "./data/glb/" + asset + ".glb"
             gltfpath = "./data/gltf/" + asset + ".gltf"
@@ -136,7 +137,7 @@ def tileset_content():
     The tileset's contents as a Python dictionary
     """
 
-    def _retrieve_tileset_contents(json_filepath):
+    def _retrieve_tileset_contents(json_filepath: str):
         # Read the results
         json_output = open(json_filepath, "r", encoding="utf-8")
         contents = json_output.read()  # Store as string
@@ -198,7 +199,8 @@ def sample_properties():
 # ----------------------------------------------------------------------------------
 
 def clear_loggers():
-    """Remove handlers from all loggers. Adopted from https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873"""
+    """Remove handlers from all loggers. Adopted from
+    https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873"""
     import logging
     loggers = [logging.getLogger()] + list(logging.Logger.manager.loggerDict.values())
     for logger in loggers:
@@ -207,12 +209,12 @@ def clear_loggers():
             logger.removeHandler(handler)
 
 
-def clear_triplestore(kgClient):
+def clear_triplestore(kg_client: KGClient):
     """Delete all triples"""
     query_delete = """
         DELETE WHERE {?s ?p ?o}
         """
-    kgClient.execute_update(query_delete)
+    kg_client.execute_update(query_delete)
 
 
 def create_ifcaxis2placement(ifcfile, point, dir1, dir2):

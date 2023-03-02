@@ -8,12 +8,11 @@ A test suite for the agent.ifc2tileset.tile_helper submodule.
 import os
 import json
 
-
 # Self import
 from agent.ifc2tileset.tile_helper import gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter
 
 
-def retrieve_tileset_contents(json_filepath):
+def retrieve_tileset_contents(json_filepath: str):
     """
     A test function to read the contents of a tileset.json
 
@@ -37,7 +36,7 @@ def test_jsonwriter():
     sample_tileset = {"testkey": "testvalue"}
     sample_name = "jsontest"
     # JSON output path
-    test_json = os.path.join("data", sample_name+".json")
+    test_json = os.path.join("data", sample_name + ".json")
     try:
         # Execute method
         jsonwriter(sample_tileset, sample_name)
@@ -81,6 +80,7 @@ def test_gen_solarpanel_tileset():
     finally:
         os.remove(solarpanel)  # Remove glTF
         os.remove(json_filepath)  # Remove tileset
+
 
 def test_gen_sewagenetwork_tileset_no_sewage():
     """

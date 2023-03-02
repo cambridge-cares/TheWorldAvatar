@@ -14,7 +14,8 @@ from agent.kgutils.const import ID_VAR
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
 
-def append_aggregate(aggregates_df, dictionary):
+
+def append_aggregate(aggregates_df: pd.DataFrame, dictionary: dict):
     """
     Appends the IFC id of aggregate elements into the dictionary according to file name
 
@@ -61,7 +62,7 @@ def append_individual_asset(asset_df, dictionary):
             dictionary[asset_df['file'].iloc[row]] = asset_df[ID_VAR].iloc[row]
 
 
-def gendict4split(dataframe):
+def gendict4split(dataframe: pd.DataFrame):
     """
     Creates a dictionary {filename : ifc_id} to split
     the IFC model into smaller IFC files
@@ -75,13 +76,13 @@ def gendict4split(dataframe):
     # Initialise a dictionary with the IFC classes to exclude from the building output model
     # Non-exhaustive. If required, add more classes in the format 'IfcFeatureType'
     dict_elements = {"building":
-                     ["IfcBuildingElementProxy", "IfcFurnishingElement",
-                      "IfcFlowTerminal", "IfcSpace", "IfcOpeningElement",
-                      "IfcFlowSegment"]}
+                         ["IfcBuildingElementProxy", "IfcFurnishingElement",
+                          "IfcFlowTerminal", "IfcSpace", "IfcOpeningElement",
+                          "IfcFlowSegment"]}
 
     if not dataframe.empty:
         # Initialise a list of file names for aggregated assets
-        aggregatelist= ["solarpanel","sewagenetwork","furniture"]
+        aggregatelist = ["solarpanel", "sewagenetwork", "furniture"]
         logger.debug("Appending aggregate assets to dictionary...")
         append_aggregate(dataframe.loc[dataframe['file'].isin(aggregatelist)], dict_elements)
 

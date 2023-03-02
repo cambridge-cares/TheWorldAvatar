@@ -40,7 +40,7 @@ def test_read_ifc_file():
     # Create a new file and execute method
     open(ifcfile, "x", encoding="utf-8")
     try:
-        result_path = read_ifc_file(["data","ifc"])
+        result_path = read_ifc_file(["data", "ifc"])
         assert result_path == expected_path
     finally:
         # Remove file once code has run and before assertions
@@ -63,7 +63,7 @@ def test_read_ifc_file_multiple_ifc_fails():
     Tests that the read_ifc_file() will fail if there are multiple IFC files
     """
     # Create two empty IFC files for testing
-    ifcfile = os.path.join("data","ifc", "temp.ifc")
+    ifcfile = os.path.join("data", "ifc", "temp.ifc")
     ifcfile2 = os.path.join("data", "ifc", "temp2.ifc")
     open(ifcfile, "x", encoding="utf-8")
     open(ifcfile2, "x", encoding="utf-8")
@@ -72,7 +72,7 @@ def test_read_ifc_file_multiple_ifc_fails():
         with pytest.raises(InvalidInputError) as exc_info:
             read_ifc_file(["data", "ifc"])
         assert exc_info.match(
-        r"^More than one IFC file is located at the ./data/ifc folder. Please place only ONE IFC file$")
+            r"^More than one IFC file is located at the ./data/ifc folder. Please place only ONE IFC file$")
     finally:
         os.remove(ifcfile)
         os.remove(ifcfile2)
