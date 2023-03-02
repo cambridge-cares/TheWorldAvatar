@@ -61,13 +61,14 @@ public class Buildings {
     public static List<String> BuildingProperties = new ArrayList<>() ;
 
     // Variables used to run AERMOD and its preprocessors
-    public static List<String> BPIPPRMBuildingInput = new ArrayList<>();
+    public static List<List<String>> BPIPPRMBuildingInput = new ArrayList<>();
     public static List<String> BPIPPRMStackInput = new ArrayList<>() ;
 
     public static Path simulationDirectory;
     public static Path bpipprmDirectory;
     public static Path aermodDirectory;
     public static Path aermetDirectory;
+    public static Path aermapDirectory;
     public static Polygon scope;
     public static int nx;
     public static int ny;
@@ -81,6 +82,8 @@ public class Buildings {
         this.bpipprmDirectory.toFile().mkdir();
         this.aermodDirectory = simulationDirectory.resolve("aermod");
         this.aermetDirectory = simulationDirectory.resolve("aermet");
+        this.aermapDirectory = simulationDirectory.resolve("aermap");
+        this.aermapDirectory.toFile().mkdir();
         this.scope = scope;
         this.nx = nx;
         this.ny = ny;
@@ -118,14 +121,37 @@ public class Buildings {
 
     }
 
-    public static int run() {
+    public int run() {
         try {
             getProperties();
-            if (createBPIPPRMInput() == 0) runBPIPPRM();
-            else {
-                LOGGER.error("Failed to create BPIPPRM input file, terminating");
+            if (createAERMAPSourceInput() != 0) {
+                LOGGER.error("Failed to create AERMAP source input, terminating");
                 return 1;
             }
+            if (createAERMAPReceptorInput(nx, ny) != 0) {
+                LOGGER.error("Failed to create AERMAP receptor input, terminating");
+                return 1;
+            }
+
+            if (runAERMAP() != 0 ) {
+                LOGGER.error("Failed to run AERMAP, terminating");
+                return 1;
+            }
+            if (processAERMAPOutput() != 0) {
+                LOGGER.error("Failed to process AERMAP output, terminating");
+                return 1;
+            }
+
+            if (createBPIPPRMInput() != 0) {
+                LOGGER.error("Failed to create BPIPPRM input, terminating");
+                return 1;
+            }
+
+            if (runBPIPPRM() != 0) {
+                LOGGER.error("Failed to run BPIPPRM, terminating");
+                return 1;
+            }
+
             if (createAERMODBuildingsInput() != 0) {
                 LOGGER.error("Failed to create AERMOD buildings input file, terminating");
                 return 1;
@@ -134,10 +160,10 @@ public class Buildings {
                 LOGGER.error("Failed to create AERMOD sources input file, terminating");
                 return 1;
             }
-            if (createAERMODReceptorInput(nx,ny) != 0) {
-                LOGGER.error("Failed to create AERMOD receptor input file, terminating");
-                return 1;
-            }
+            // if (createAERMODReceptorInput(nx,ny) != 0) {
+            //     LOGGER.error("Failed to create AERMOD receptor input file, terminating");
+            //     return 1;
+            // }
         } catch (Exception e) {
             return 1;
         }
@@ -289,7 +315,7 @@ public class Buildings {
 
             if (includeObject){
                 numberStacks++;
-                String InputLine = "\'Stk" + numberStacks + "\'" + " " + "0.0 " +
+                String InputLine = "\'Stk" + numberStacks + "\'" + " " + "BASE_ELEVATION " +
                         maxZ + " " + StackEastUTM + " " + StackNorthUTM + " \n" ;
                 BPIPPRMStackInput.add(InputLine);
                 StringBuffer averageCoordinate = new StringBuffer();
@@ -411,14 +437,16 @@ public class Buildings {
                 averageCoordinate.append(BuildingEastUTM).append("#").append(BuildingNorthUTM).append("#").append(maxZ);
                 BuildingProperties.add(averageCoordinate.toString());
 
-                String InputLine = "\'Build" + numberBuildings + "\' " + "1 " + "0.0" + " \n" ;
-                BPIPPRMBuildingInput.add(InputLine);
+                List<String> buildInfo = new ArrayList<>();
+
+                String InputLine = "\'Build" + numberBuildings + "\' " + "1 " + "BASE_ELEVATION" + " \n" ;
+                buildInfo.add(InputLine);
                 String BasePolygonVertices = BuildingGeometricQueryResult.getJSONObject(basePolygonIndex).getString("polygonData");
 
                 String [] BaseVertices = BasePolygonVertices.split("#");
                 int numCorners = BaseVertices.length/3;
                 InputLine = numCorners + " " + maxZ + " \n" ;
-                BPIPPRMBuildingInput.add(InputLine);
+                buildInfo.add(InputLine);
                 List<List<Double>> inputcoordinates = new ArrayList<> () ;
 
                 for (int j = 0; j < BaseVertices.length; j+=3 ){
@@ -431,22 +459,152 @@ public class Buildings {
                     Double VertexEastUTM = outputCoordinates.get(j).get(0);
                     Double VertexNorthUTM = outputCoordinates.get(j).get(1);
                     InputLine = VertexEastUTM + " " + VertexNorthUTM + " \n" ;
-                    BPIPPRMBuildingInput.add(InputLine);
+                    buildInfo.add(InputLine);
                 }
                 BuildingVertices.add(BasePolygonVertices);
-
+                BPIPPRMBuildingInput.add(buildInfo);
 
             }
 
         }
 
-        // Add the numbers of buildings and stacks as the last elements of the BPIPPRMStackInput and
-        // BPIPPRMBuildingInput arrays.However, this information must be written to the BPIPPRM input file first.
-        String StackLine = numberStacks + " \n" ;
-        String BuildingsLine = numberBuildings + " \n" ;
-        BPIPPRMStackInput.add(StackLine);
-        BPIPPRMBuildingInput.add(BuildingsLine);
     }
+
+
+    public static int createAERMAPSourceInput() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < StackProperties.size(); i++) {
+            String[] avecoord = StackProperties.get(i).split("#");
+            List<Double> inputcoords = Arrays.asList(Double.parseDouble(avecoord[0]), Double.parseDouble(avecoord[1]));
+            List<List<Double>> inputcoordinates = Arrays.asList(inputcoords);
+            List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates, DatabaseCoordSys, UTMCoordSys);
+            double StackEastUTM = outputcoordinates.get(0).get(0);
+            double StackNorthUTM = outputcoordinates.get(0).get(1);
+            String stkId = "Stk" + (i + 1);
+            sb.append(String.format("SO LOCATION %s POINT %f %f %f \n", stkId, StackEastUTM, StackNorthUTM, 0.0));
+        }
+
+        for (int i = 0; i < BuildingProperties.size(); i++) {
+            String[] avecoord = BuildingProperties.get(i).split("#");
+            List<Double> inputcoords = Arrays.asList(Double.parseDouble(avecoord[0]), Double.parseDouble(avecoord[1]));
+            List<List<Double>> inputcoordinates = Arrays.asList(inputcoords);
+            List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates, DatabaseCoordSys, UTMCoordSys);
+            double BuildEastUTM = outputcoordinates.get(0).get(0);
+            double BuildNorthUTM = outputcoordinates.get(0).get(1);
+            String buildId = "Build" + (i + 1);
+            sb.append(String.format("SO LOCATION %s POINT %f %f %f \n", buildId, BuildEastUTM, BuildNorthUTM, 0.0));
+        }
+
+        return writeToFile(aermapDirectory.resolve("aermapSources.dat"), sb.toString());
+    }
+
+    public static int createAERMAPReceptorInput(int nx, int ny) {
+
+        List<Double> xDoubles = new ArrayList<>();
+        List<Double> yDoubles = new ArrayList<>();
+
+        for (int i = 0; i < scope.getCoordinates().length; i++) {
+
+            double xc = scope.getCoordinates()[i].x;
+            double yc = scope.getCoordinates()[i].y;
+            List<Double> inputcoords = Arrays.asList(xc, yc);
+            List<List<Double>> inputcoordinates = Arrays.asList(inputcoords);
+            List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates, "EPSG:4326", UTMCoordSys);
+            xDoubles.add(outputcoordinates.get(0).get(0));
+            yDoubles.add(outputcoordinates.get(0).get(1));
+        }
+
+        double xlo = Collections.min(xDoubles);
+        double xhi = Collections.max(xDoubles);
+        double ylo = Collections.min(yDoubles);
+        double yhi = Collections.max(yDoubles);
+
+        double dx = (xhi - xlo)/nx;
+        double dy = (yhi - ylo)/ny;
+
+        StringBuilder sb = new StringBuilder("RE GRIDCART POL1 STA \n");
+        String rec = String.format("                 XYINC %f %d %f %f %d %f",xlo, nx, dx, ylo, ny, dy);
+        sb.append(rec + " \n");
+        sb.append("RE GRIDCART POL1 END \n");
+
+        return writeToFile(aermapDirectory.resolve("aermapReceptor.dat"),sb.toString());
+    }
+
+    public int runAERMAP() {
+
+        String AERMAP_INPUT = "aermap.inp";
+        // copy aermap input file
+        try (InputStream is = getClass().getClassLoader().getResourceAsStream("aermap.inp")) {
+            Files.copy(is, aermapDirectory.resolve(AERMAP_INPUT));
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Failed to copy {}", AERMAP_INPUT);
+            return 1;
+        }
+
+        try {
+            Process process = Runtime.getRuntime().exec(new String[]{EnvConfig.AERMAP_EXE, AERMAP_INPUT}, null, aermapDirectory.toFile());
+            if (process.waitFor() != 0) {
+                return 1;
+            }
+        } catch (IOException e) {
+            LOGGER.error("Error executing aermap");
+            LOGGER.error(e.getMessage());
+            return 1;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.error("Error executing aermap");
+            LOGGER.error(e.getMessage());
+            return 1;
+        }
+
+        return 0;
+    }
+
+    public static int processAERMAPOutput() {
+        // Update BPIPPRMBuildingInput and BPIPPRMStackInput
+        Path filepath = aermapDirectory.resolve("buildingSources.dat");
+
+        StringBuilder sb = new StringBuilder();
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(filepath.toString()));
+            String line = reader.readLine();
+            while (line != null) {
+                if (line.isBlank() || line.substring(0,2).equals("**")) continue;
+                if (line.contains("ELEVUNIT") ) sb.append(line + "\n");
+                else if (line.contains("STK")) {
+                    sb.append(line + "\n");
+                    String [] StackInfo = line.split("\\s+");
+                    String StackElevation = StackInfo[StackInfo.length - 1];
+                    int StackNum = Integer.parseInt(StackInfo[2].substring(3,4));
+                    String StackLine = BPIPPRMStackInput.get(StackNum-1);
+                    StackLine.replace("BASE_ELEVATION", StackElevation);
+                    BPIPPRMStackInput.set(StackNum-1, StackLine);
+                    String stackProp = StackProperties.get(StackNum-1);
+                    String propElevation = "#" + StackElevation;
+                    stackProp += propElevation;
+                    StackProperties.set(StackNum-1, propElevation);
+                }
+                else if (line.contains("BUILD")) {
+                    String [] buildInfo = line.split("\\s+");
+                    String buildElevation = buildInfo[buildInfo.length - 1] ;
+                    int buildNum = Integer.parseInt(buildInfo[2].substring(5,6));
+                    String BuildLine = BPIPPRMBuildingInput.get(buildNum-1).get(0);
+                    BuildLine.replace("BASE_ELEVATION", buildElevation);
+                    BPIPPRMBuildingInput.get(buildNum-1).set(0,BuildLine);
+                }
+                line = reader.readLine();
+            }
+            reader.close();
+            LOGGER.info(sb.toString());
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            return 1;
+        }
+        return 0;
+    }
+
 
 
 
@@ -465,14 +623,16 @@ public class Buildings {
             sb.append(st);
         }
 
-        int numberBuildingLines = BPIPPRMBuildingInput.size() ;
-        sb.append(BPIPPRMBuildingInput.get(numberBuildingLines - 1));
-        for (int i = 0; i < numberBuildingLines-1; i++) {
-            sb.append(BPIPPRMBuildingInput.get(i));
+        int numberBuildings = BPIPPRMBuildingInput.size() ;
+        sb.append(numberBuildings);
+        for (int i = 0; i < numberBuildings; i++) {
+            for (int j = 0; j < BPIPPRMBuildingInput.size(); j++) {
+                sb.append(BPIPPRMBuildingInput.get(i).get(j));
+            }
         }
-        int numberStackLines = BPIPPRMStackInput.size() ;
-        sb.append(BPIPPRMStackInput.get(numberStackLines - 1));
-        for (int i = 0; i < numberStackLines-1; i++) {
+        int numberStacks = BPIPPRMStackInput.size() ;
+        sb.append(numberStacks);
+        for (int i = 0; i < numberStacks; i++) {
             sb.append(BPIPPRMStackInput.get(i));
         }
         return writeToFile(bpipprmDirectory.resolve("bpipprm.inp"), sb.toString());
@@ -525,14 +685,14 @@ public class Buildings {
 
     public static int createAERMODBuildingsInput() {
 
-        BufferedReader reader;
+        
         StringBuilder sb = new StringBuilder();
         if (locindex == -1) return writeToFile(aermodDirectory.resolve("buildings.dat"), sb.toString());
 
         Path filepath = bpipprmDirectory.resolve("building.dat");
 
         try {
-            reader = new BufferedReader(new FileReader(filepath.toString()));
+            BufferedReader reader = new BufferedReader(new FileReader(filepath.toString()));
             String line = reader.readLine();
             while (line != null) {
                 line = line.stripLeading();
@@ -550,7 +710,6 @@ public class Buildings {
 
     public static int createAERMODSourceInput() {
         StringBuilder sb = new StringBuilder();
-        int numberStackLines = BPIPPRMStackInput.size();
 
         for (int i = 0; i < StackProperties.size(); i++) {
             String[] avecoord = StackProperties.get(i).split("#");

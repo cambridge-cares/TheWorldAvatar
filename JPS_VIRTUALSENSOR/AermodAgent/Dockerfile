@@ -50,6 +50,11 @@ WORKDIR /root/bpipprm_source
 RUN dos2unix gfortran_bpipprm.sh
 RUN ./gfortran_bpipprm.sh
 
+#build AERMAP (terrain preprocessor)
+COPY aermap_source /root/aermap_source/
+WORKDIR /root/aermap_source
+RUN dos2unix gfortran-aermap.sh
+RUN ./gfortran-aermap.sh
 
 # build AERMET (meteorological preprocessor)
 COPY aermet_source /root/aermet_source/
@@ -68,6 +73,7 @@ RUN ./gfortran-aermod.sh
 #==================================================================================================
 FROM tomcat:9 as agent
 
+COPY --from=aermod-builder /root/aermap_source/aermap /root/aermod/
 COPY --from=aermod_builder /root/bpipprm_source/bpipprm /root/aermod/
 COPY --from=aermod_builder /root/aermet_source/aermet /root/aermod/
 COPY --from=aermod_builder /root/aermod_source/aermod /root/aermod/
