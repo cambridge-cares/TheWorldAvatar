@@ -284,6 +284,8 @@ def get_all_pure_inputs(property_iris: list = []):
     #       computational overhead.
 
     # Remove any potential None values and duplicates
+    if not isinstance(property_iris, list):
+        property_iris = [property_iris]
     property_iris = [iri for iri in property_iris if iri]
     property_iris = list(set(property_iris))
 
