@@ -13,7 +13,8 @@ import pytest
 from . import testconsts as C
 
 
-def test_default(flaskapp):
+@pytest.mark.parametrize("expected_response", [C.DEFAULT_RESPONSE])
+def test_default(expected_response, flaskapp):
     """
     Tests the GET request for default route
     """
@@ -21,11 +22,15 @@ def test_default(flaskapp):
     assert flaskapp.get("/").status_code == 200
     # Perform GET request
     response = flaskapp.get("/")
-    assert response.data == bytes(C.DEFAULT_RESPONSE, 'utf-8')
+    assert response.data == bytes(expected_response, 'utf-8')
 
 
-def test_api_simple(initialise_client, flaskapp, gen_sample_ifc_file, sample_properties,
-                    tileset_content, assert_asset_geometries):
+@pytest.mark.parametrize(
+    "update_query, expected_assets, expected_response",
+    [(C.insert_wall_query, C.expected_assets1, C.SUCCESSFUL_API_RESPONSE)]
+)
+def test_api_simple(update_query, expected_assets, expected_response, initialise_client, flaskapp, gen_sample_ifc_file,
+                    sample_properties, tileset_content, assert_asset_geometries):
     """
     Tests the POST request for the api route on a simple IFC model
     """
@@ -34,7 +39,7 @@ def test_api_simple(initialise_client, flaskapp, gen_sample_ifc_file, sample_pro
     tileset = os.path.join("data", "tileset_bim.json")
     # Generate the test IFC triples
     kg_client = initialise_client
-    kg_client.execute_update(C.insert_wall_query)
+    kg_client.execute_update(update_query)
     kg_client.execute_update(C.insert_building_query)
     # Generate sample ifc file
     ifcpath = gen_sample_ifc_file("./data/ifc/wall.ifc", False)
@@ -47,10 +52,10 @@ def test_api_simple(initialise_client, flaskapp, gen_sample_ifc_file, sample_pro
     try:
         # Assert that request has successfully occurred
         assert response.status_code == 200
-        assert response.json["result"] == C.SUCCESSFUL_API_RESPONSE
+        assert response.json["result"] == expected_response
         # Assert that the tileset and geometry files are generated
         assert os.path.isfile(tileset)
-        assert_asset_geometries(C.expected_assets1)
+        assert_asset_geometries(expected_assets)
         # Assert tileset content contains the assetUrl passed and gltf files
         content = tileset_content(tileset)
         assert content["root"]["content"]["uri"] == "./gltf/building.gltf"
@@ -61,8 +66,12 @@ def test_api_simple(initialise_client, flaskapp, gen_sample_ifc_file, sample_pro
         os.remove(tileset)
 
 
-def test_api_complex(initialise_client, flaskapp, gen_sample_ifc_file, sample_properties,
-                     tileset_content, assert_asset_geometries):
+@pytest.mark.parametrize(
+    "update_query, expected_assets, expected_response",
+    [(C.insert_assets_query, C.expected_assets2, C.SUCCESSFUL_API_RESPONSE)]
+)
+def test_api_complex(update_query, expected_assets, expected_response, initialise_client, flaskapp, gen_sample_ifc_file,
+                     sample_properties, tileset_content, assert_asset_geometries):
     """
     Tests the POST request for the api route on a complex IFC model
     """
@@ -72,7 +81,7 @@ def test_api_complex(initialise_client, flaskapp, gen_sample_ifc_file, sample_pr
     tileset_solar = os.path.join("data", "tileset_solarpanel.json")
     # Generate the test IFC triples
     kg_client = initialise_client
-    kg_client.execute_update(C.insert_assets_query)
+    kg_client.execute_update(update_query)
     kg_client.execute_update(C.insert_building_query)
     # Generate sample ifc file
     ifcpath = gen_sample_ifc_file("./data/ifc/sample.ifc", True)
@@ -83,11 +92,11 @@ def test_api_complex(initialise_client, flaskapp, gen_sample_ifc_file, sample_pr
     try:
         # Assert that request has successfully occurred
         assert response.status_code == 200
-        assert response.json["result"] == C.SUCCESSFUL_API_RESPONSE
+        assert response.json["result"] == expected_response
         # Assert that the tilesets and geometry files are generated
         assert os.path.isfile(tileset)
         assert os.path.isfile(tileset_solar)
-        assert_asset_geometries(C.expected_assets2)
+        assert_asset_geometries(expected_assets)
         # Assert tileset content contains the assetUrl passed and gltf files
         content = tileset_content(tileset)
         assert content["root"]["contents"][0]["uri"] == "./gltf/furniture.gltf"
@@ -112,7 +121,8 @@ def test_api_wrong_request_type(flaskapp):
     assert flaskapp.get(route).status_code == 405
 
 
-def test_api_invalid_request(flaskapp):
+@pytest.mark.parametrize("expected_response", [C.INVALID_PARAM_API_RESPONSE])
+def test_api_invalid_request(expected_response, flaskapp):
     """
     Tests that invalid requests returns the Bad request status code
     """
@@ -122,11 +132,11 @@ def test_api_invalid_request(flaskapp):
     response = flaskapp.post(route, json={"asset url": "./gltf"})
     # Assert that request has failed with the right status and response
     assert response.status_code == 400
-    assert response.json["data"] == C.INVALID_PARAM_API_RESPONSE
+    assert response.json["data"] == expected_response
 
 
 @pytest.mark.parametrize(
-    "asseturl",
+    "asset_url",
     [
         C.invalid_asseturl1,
         C.invalid_asseturl2,
@@ -136,16 +146,16 @@ def test_api_invalid_request(flaskapp):
         C.invalid_asseturl6,
     ]
 )
-def test_api_invalid_asserturl_param(asseturl, flaskapp):
+def test_api_invalid_asserturl_param(asset_url, flaskapp):
     """
     Tests that invalid assetUrl params returns the Bad request status code
     """
     # Inputs
     route = "/api"
-    expected_response = "`assetUrl` parameter <" + asseturl
+    expected_response = "`assetUrl` parameter <" + asset_url
     expected_response += "> is invalid. It must start with `.`, `..`, or `http://`, and must not end with `/`"
     # Send the POST request
-    response = flaskapp.post(route, json={"assetUrl": asseturl})
+    response = flaskapp.post(route, json={"assetUrl": asset_url})
     # Assert that request has failed with the right status and response
     assert response.status_code == 400
     assert response.json["data"] == expected_response
