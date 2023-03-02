@@ -55,4 +55,4 @@ PUBCHEM500_JSONL_PATH = os.path.join(ENTITY_LINKING_DATA_DIR, r'pubchem5000_trim
 # print("JAVA_PATH", JAVA_PATH)
 # print("JAVA_DIR", JAVA_DIR)
 print(DATA_DIR)
-PRETRAINED_DIR = os.path.join(ROOT_DIR, r'bert_pretrained')
+PRETRAINED_DIR = os.path.join(DATA_DIR, r'bert_pretrained')
