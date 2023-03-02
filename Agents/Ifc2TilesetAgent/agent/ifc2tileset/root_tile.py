@@ -13,7 +13,6 @@ from py4jps import agentlogging
 # Self imports
 import agent.app as state
 import agent.config.config as properties
-from agent.kgutils import RDF_PREFIX, BOT_PREFIX, QueryBuilder, KGClient
 
 # Retrieve logger
 logger = agentlogging.get_logger("dev")

@@ -14,7 +14,6 @@ from py4jps import agentlogging
 from agent.utils import read_ifc_file, cleandir, validate_asset_url
 from agent.ifc2gltf import conv2gltf
 from agent.ifc2tileset import gen_tilesets
-from agent.exceptions import InvalidInputError
 from agent.config import set_properties
 
 # Initialise logger
