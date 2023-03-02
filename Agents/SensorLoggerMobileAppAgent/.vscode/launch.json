@@ -12,6 +12,7 @@
             "port": "${input:debug.port}",
             "preLaunchTask": "compose-deploy",
             "projectName": "${workspaceFolderBasename}"
+            ,"jvmArgs": "-version:17.0.6"
         },
         {
             "type": "java",
@@ -21,6 +22,7 @@
             "port": "${input:debug.port}",
             "preLaunchTask": "compose-build-deploy",
             "projectName": "${workspaceFolderBasename}"
+            ,"jvmArgs": "-version:17.0.6"
         },
         {
             "type": "java",
@@ -29,6 +31,7 @@
             "hostName": "localhost",
             "port": "${input:debug.port.read}",
             "projectName": "${workspaceFolderBasename}"
+            ,"jvmArgs": "-version:17.0.6"
         }
     ],
     "inputs": [

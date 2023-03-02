@@ -258,31 +258,6 @@ public class SensorLoggerMobileAppServlet extends JPSAgent {
         timer.cancel();
     }
 
-//    /**
-//     * Local server
-//     */
-//    private static final String BASEURI = "https://www.theworldavatar.com/kg/measure_";
-//    private static final String dbURL = "jdbc:postgresql://localhost:5432/develop";
-//    private static final String user = "postgres";
-//    private static final String password = "postgres";
-//    private static RemoteRDBStoreClient rdbStoreClient = new RemoteRDBStoreClient(dbURL, user, password);
-//    private static RemoteStoreClient storeClient = new RemoteStoreClient("http://127.0.0.1:9999/blazegraph/namespace/test/sparql", "http://127.0.0.1:9999/blazegraph/namespace/test/sparql");
-//    private static TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
-//
-//    private static final Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppServlet.class);
-//
-//    private static Long downsamplingRate;
-//    private static int downsamplingType;
-//    private static int timerDelay;
-//    private static int timerFrequency;
-//
-//    private static void readConfig() {
-//        ResourceBundle config = ResourceBundle.getBundle("config");
-//        downsamplingType = Integer.parseInt(config.getString("downsamplingType"));
-//        downsamplingRate = Long.valueOf(config.getString("downsamplingRate"));
-//        timerDelay = Integer.valueOf(config.getString("timerDelay"));
-//        timerFrequency = Integer.valueOf(config.getString("timerFrequency"));
-//    }
 
     /**
      * Stack server
