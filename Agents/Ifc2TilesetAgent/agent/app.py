@@ -72,10 +72,10 @@ def create_app():
         ifcopenshell.open(ifc_filepath)
 
         logger.info("Converting the model into glTF files...")
-        asset_data = conv2gltf(ifc_filepath, query_endpoint, update_endpoint)
+        asset_data, building_iri = conv2gltf(ifc_filepath, query_endpoint, update_endpoint)
 
         logger.info("Generating the tilesets...")
-        gen_tilesets(asset_data, query_endpoint, update_endpoint)
+        gen_tilesets(asset_data, building_iri)
 
         # Return the result in JSON format
         return jsonify({"result": "IFC model has successfully been converted. " +

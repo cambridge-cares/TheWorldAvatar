@@ -8,7 +8,7 @@ to split and convert the IFC model to glTF.
 from py4jps import agentlogging
 
 # Self imports
-from agent.ifc2gltf.kghelper import retrieve_metadata
+from agent.ifc2gltf.kghelper import retrieve_metadata, get_building_iri
 from agent.ifc2gltf.ifchelper import gendict4split, append_ifcconvert_command
 from agent.utils import run_shellcommand, retrieve_abs_filepath
 
@@ -26,10 +26,12 @@ def conv2gltf(input_ifc: str, query_endpoint: str, update_endpoint: str):
         query_endpoint - SPARQL QUERY endpoint
         update_endpoint - SPARQL UPDATE endpoint
     Returns:
-        A dataframe containing the individual assets and their metadata
+        - A dataframe containing the individual assets and their metadata
+        - The data IRI of the building
     """
     logger.info("Retrieving metadata from endpoint...")
     metadata = retrieve_metadata(query_endpoint, update_endpoint)
+    building_iri = get_building_iri(query_endpoint, update_endpoint)
 
     logger.info("Generating dictionary for splitting IFC assets.")
     dict_for_split, asset_data = gendict4split(metadata)
@@ -52,4 +54,4 @@ def conv2gltf(input_ifc: str, query_endpoint: str, update_endpoint: str):
         run_shellcommand(glb2gltf_command, True)
         logger.debug("gltf-pipeline Command executed: " + " ".join(glb2gltf_command))
     logger.info("Conversion to gltf completed...")
-    return asset_data
+    return asset_data, building_iri

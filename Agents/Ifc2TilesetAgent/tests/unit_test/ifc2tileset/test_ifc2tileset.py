@@ -9,7 +9,6 @@ import os
 
 # Third party import
 import pandas as pd
-from pytest_mock import MockFixture
 
 # Self import
 from agent.ifc2tileset import gen_tilesets
@@ -17,7 +16,7 @@ from tests.unit_test.ifc2tileset.test_tile_helper import retrieve_tileset_conten
 from tests.unit_test.ifc2tileset.test_asset_tiles import gen_sample_df
 
 
-def test_gen_tilesets_solarpanel(mocker: MockFixture):
+def test_gen_tilesets_solarpanel():
     """
     Tests gen_tilesets() for generating only solarpanel tileset
     """
@@ -25,20 +24,14 @@ def test_gen_tilesets_solarpanel(mocker: MockFixture):
     solarpanel = os.path.join("data", "gltf", "solarpanel.gltf")
     open(solarpanel, "x", encoding="utf-8")
 
-    # Initialise test case
-    endpoint = "endpoint"
-
     # JSON output path
     bim_json_filepath = os.path.join("data", "tileset_bim.json")
     solar_json_filepath = os.path.join("data", "tileset_solarpanel.json")
     sewage_json_filepath = os.path.join("data", "tileset_sewage.json")
 
-    # mock get_building_iri
-    mocker.patch("agent.ifc2tileset.root_tile.get_building_iri", return_value="buildingIri")
-
     try:
         # Execute method
-        gen_tilesets(pd.DataFrame(), endpoint, endpoint)
+        gen_tilesets(pd.DataFrame(), "buildingIri")
 
         # Test that only relevant tileset.json are created
         assert os.path.exists(solar_json_filepath)
@@ -56,7 +49,7 @@ def test_gen_tilesets_solarpanel(mocker: MockFixture):
         os.remove(solar_json_filepath)
 
 
-def test_gen_tilesets_sewage(mocker: MockFixture):
+def test_gen_tilesets_sewage():
     """
     Tests gen_tilesets() for generating only sewage tileset
     """
@@ -64,20 +57,14 @@ def test_gen_tilesets_sewage(mocker: MockFixture):
     sewage = os.path.join("data", "gltf", "sewagenetwork.gltf")
     open(sewage, "x", encoding="utf-8")
 
-    # Initialise test case
-    endpoint = "endpoint"
-
     # JSON output path
     bim_json_filepath = os.path.join("data", "tileset_bim.json")
     solar_json_filepath = os.path.join("data", "tileset_solarpanel.json")
     sewage_json_filepath = os.path.join("data", "tileset_sewage.json")
 
-    # mock get_building_iri
-    mocker.patch("agent.ifc2tileset.root_tile.get_building_iri", return_value="buildingIri")
-
     try:
         # Execute method
-        gen_tilesets(pd.DataFrame(), endpoint, endpoint)
+        gen_tilesets(pd.DataFrame(), "buildingIri")
 
         # Test that only relevant tileset.json are created
         assert os.path.exists(sewage_json_filepath)
@@ -95,7 +82,7 @@ def test_gen_tilesets_sewage(mocker: MockFixture):
         os.remove(sewage_json_filepath)
 
 
-def test_gen_tilesets_building(mocker: MockFixture):
+def test_gen_tilesets_building():
     """
     Tests gen_tilesets() for generating only the bim tileset without asset data
     """
@@ -103,20 +90,14 @@ def test_gen_tilesets_building(mocker: MockFixture):
     building = os.path.join("data", "gltf", "building.gltf")
     open(building, "x", encoding="utf-8")
 
-    # Initialise test case
-    endpoint = "endpoint"
-
     # JSON output path
     bim_json_filepath = os.path.join("data", "tileset_bim.json")
     solar_json_filepath = os.path.join("data", "tileset_solarpanel.json")
     sewage_json_filepath = os.path.join("data", "tileset_sewage.json")
 
-    # mock get_building_iri
-    mocker.patch("agent.ifc2tileset.root_tile.get_building_iri", return_value="buildingIri")
-
     try:
         # Execute method
-        gen_tilesets(pd.DataFrame(), endpoint, endpoint)
+        gen_tilesets(pd.DataFrame(), "buildingIri")
 
         # Test that only relevant tileset.json are created
         assert os.path.exists(bim_json_filepath)
@@ -135,23 +116,19 @@ def test_gen_tilesets_building(mocker: MockFixture):
         os.remove(bim_json_filepath)
 
 
-def test_gen_tilesets_asset(mocker: MockFixture):
+def test_gen_tilesets_asset():
     """
     Tests gen_tilesets() for generating the bim tileset with only asset data
     """
     # Initialise test case
-    endpoint = "endpoint"
     sampledf = gen_sample_df(3)
 
     # JSON output path
     bim_json_filepath = os.path.join("data", "tileset_bim.json")
 
-    # mock get_building_iri
-    mocker.patch("agent.ifc2tileset.root_tile.get_building_iri", return_value="buildingIri")
-
     try:
         # Execute method
-        gen_tilesets(sampledf, endpoint, endpoint)
+        gen_tilesets(sampledf, "buildingIri")
 
         # Test that only relevant tileset.json are created
         assert os.path.exists(bim_json_filepath)

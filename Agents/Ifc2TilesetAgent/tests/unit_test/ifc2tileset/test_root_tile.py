@@ -7,9 +7,6 @@ A test suite for the agent.ifc2tileset.root_tile submodule.
 # Standard library imports
 import os
 
-# Third party import
-from pytest_mock import MockFixture
-
 # Self import
 import agent.config.config as properties
 from agent.ifc2tileset.root_tile import root_tile, append_tileset_schema_and_metadata, gen_root_content
@@ -72,7 +69,7 @@ def get_minimal_tileset(building_iri: str):
     return tile
 
 
-def test_gen_root_content_no_building_no_furniture(mocker: MockFixture):
+def test_gen_root_content_no_building_no_furniture():
     """
     Tests gen_root_content() when there is no building and furniture.gltf detected
     """
@@ -80,17 +77,15 @@ def test_gen_root_content_no_building_no_furniture(mocker: MockFixture):
     # expected tileset is minimal
     building_iri = "test_iri"
     expected = get_minimal_tileset(building_iri)
-    # mock get_building_iri
-    mocker.patch("agent.ifc2tileset.root_tile.get_building_iri", return_value=building_iri)
 
     # act
-    actual = gen_root_content(ENDPOINT, ENDPOINT)
+    actual = gen_root_content("test_iri")
 
     # assert
     assert actual == expected
 
 
-def test_gen_root_content_only_building(mocker: MockFixture):
+def test_gen_root_content_only_building():
     """
     Tests gen_root_content() when there is only building.gltf
     """
@@ -100,16 +95,13 @@ def test_gen_root_content_only_building(mocker: MockFixture):
     expected = get_minimal_tileset(building_iri)
     expected["root"]["content"] = {"uri": "./gltf/building.gltf"}
 
-    # mock get_building_iri
-    mocker.patch("agent.ifc2tileset.root_tile.get_building_iri", return_value=building_iri)
-
     # Create a building.gltf for testing
     building = os.path.join("data", "gltf", "building.gltf")
     open(building, "x", encoding="utf-8")
 
     try:
         # act
-        actual = gen_root_content(ENDPOINT, ENDPOINT)
+        actual = gen_root_content("test_iri")
     finally:
         os.remove(building)
 
@@ -117,7 +109,7 @@ def test_gen_root_content_only_building(mocker: MockFixture):
     assert actual == expected
 
 
-def test_gen_root_content_with_building_and_furniture(mocker: MockFixture):
+def test_gen_root_content_with_building_and_furniture():
     """
     Tests gen_root_content() when there are both building and furniture.gltf available
     """
@@ -128,9 +120,6 @@ def test_gen_root_content_with_building_and_furniture(mocker: MockFixture):
     expected["root"]["contents"] = [
         {"uri": "./gltf/furniture.gltf"}, {"uri": "./gltf/building.gltf"}]
 
-    # mock get_building_iri
-    mocker.patch("agent.ifc2tileset.root_tile.get_building_iri", return_value=building_iri)
-
     # Create both glTF files for testing
     building = os.path.join("data", "gltf", "building.gltf")
     furniture = os.path.join("data", "gltf", "furniture.gltf")
@@ -140,7 +129,7 @@ def test_gen_root_content_with_building_and_furniture(mocker: MockFixture):
         open(furniture, "x", encoding="utf-8")
 
         # act
-        actual = gen_root_content(ENDPOINT, ENDPOINT)
+        actual = gen_root_content("test_iri")
     finally:
         os.remove(building)
         os.remove(furniture)
