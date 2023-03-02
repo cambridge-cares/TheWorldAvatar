@@ -32,6 +32,7 @@ public class EndpointConfig {
 
         OntopEndpointConfig ontopEndpointConfig = containerClient.readEndpointConfig("ontop", OntopEndpointConfig.class);
         this.ontopurl = ontopEndpointConfig.getUrl();
+
     }
     public String getKgurl() {
         return this.kgurl;

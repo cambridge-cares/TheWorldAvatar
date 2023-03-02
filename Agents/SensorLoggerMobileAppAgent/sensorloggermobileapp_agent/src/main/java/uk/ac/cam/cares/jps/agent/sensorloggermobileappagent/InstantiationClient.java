@@ -15,7 +15,7 @@ public class InstantiationClient {
 
 
         // Create context to work in, and also clear any old existing data
-        ModelContext context = new ModelContext("http://localhost:48888/test");
+        ModelContext context = new ModelContext("http://test-access-agent:8080/test");
 
         /**
          * Creating instances and randomUUID.

@@ -51,6 +51,8 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.InstantiationClient.instantiationMethod;
 
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
+
 
 @WebServlet("/mb")
 
@@ -111,6 +113,8 @@ public class SensorLoggerMobileAppServlet extends JPSAgent {
             timer = new Timer();
             timer.schedule(new instantiationTask(), 2000,5000); // 5000 milliseconds = 5 seconds
 
+            PostGISClient postGISClient = PostGISClient.getInstance();
+            postGISClient.createDatabase(EnvConfig.DATABASE);
         }
 
     }
@@ -393,7 +397,7 @@ public class SensorLoggerMobileAppServlet extends JPSAgent {
             else  //When time series does not exist create timeseries
             {
                 initTimeseriesIfNotExist(i, hashMap);
-                
+
 
             }
         }
@@ -574,10 +578,7 @@ public class SensorLoggerMobileAppServlet extends JPSAgent {
         }
 
         try (Connection conn = rdbStoreClient.getConnection()) {
-            // //Create POSTGIS Extension Automatically
-            // Statement stmt = conn.createStatement();
-            // String sql = "CREATE EXTENSION IF NOT EXISTS postgis";
-            // stmt.executeUpdate(sql);
+
 
             TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
             tsClient.initTimeSeries(dataIRIList, dataClass, timeUnit, conn);
