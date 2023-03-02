@@ -12,10 +12,11 @@ RUN cp -r TheWorldAvatar/MARIE_AND_BERT/Marie ./Marie  \
 && cp -r TheWorldAvatar/MARIE_AND_BERT/static ./static \
 && cp -r TheWorldAvatar/MARIE_AND_BERT/templates ./templates \
 && cp -r TheWorldAvatar/MARIE_AND_BERT/main.py ./main.py \
-&& cp -r TheWorldAvatar/MARIE_AND_BERT/requirements_linux.txt ./requirements_linux.txt \
-&& cp -r TheWorldAvatar/MARIE_AND_BERT/prestart.sh ./prestart.sh
+&& cp -r TheWorldAvatar/MARIE_AND_BERT/requirements_linux.txt ./requirements_linux.txt
+#&& cp -r TheWorldAvatar/MARIE_AND_BERT/prestart.sh ./prestart.sh
 #COPY prestart.sh prestart.sh
 
+RUN mkdir  -p /app/DATA
 #COPY requirements_linux.txt requirements_linux.txt
 RUN apt-get update && \
     apt-get install -y openjdk-11-jdk && \
@@ -25,7 +26,6 @@ RUN apt-get update && \
     rm -rf /var/cache/oracle-jdk8-installer
 ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
 RUN export JAVA_HOME
-#COPY script.sh script.sh
-RUN pip install STOUT-pypi==2.0.2
+RUN pip --default-timeout=10000 install --no-cache-dir -r requirements_linux.txt
 #RUN chmod +x ./script.sh
 #CMD [ "/bin/bash","-c","./script.sh"]
