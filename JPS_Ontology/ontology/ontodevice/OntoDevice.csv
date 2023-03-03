@@ -10,7 +10,7 @@ MobilePhone,Class,https://saref.etsi.org/core/Device,IS-A,,,,A portable telephon
 SmartPhone,Class,MobilePhone,IS-A,,,,A portable computer device that combines mobile telephone and computing functions into one unit.,https://www.theworldavatar.com/kg/ontodevice/,Smart phone
 Microphone,Class,https://saref.etsi.org/core/Device,IS-A,,,,A transducer that converts sound into an electrical signal.,https://www.theworldavatar.com/kg/ontodevice/,Microphone
 Camera,Class,https://saref.etsi.org/core/Device,IS-A,,,,An optical instrument that can capture an image.,https://www.theworldavatar.com/kg/ontodevice/,Camera
-GPSDevice,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device used within Earth’s planetary atmosphere to determine its precise geographical location.,https://www.theworldavatar.com/kg/ontodevice/,GPS device
+GPSDevice,Class,https://saref.etsi.org/core/Device,IS-A,,,,A device used within Earth's planetary atmosphere to determine its precise geographical location.,https://www.theworldavatar.com/kg/ontodevice/,GPS device
 https://www.theworldavatar.com/kg/ontoems/ReportingStation,Class,https://saref.etsi.org/core/Device,IS-A,,,,,https://www.theworldavatar.com/kg/ontodevice/,Reporting station
 ElectronicTag,Class,https://saref.etsi.org/core/Device,IS-A,,,,"A tag that uses a form of electronic identification technology (Bluetooth, RFID etc).",https://www.theworldavatar.com/kg/ontodevice/,Electronic tag
 RFIDTag,Class,ElectronicTag,IS-A,,,,An electronic tag that exchanges data with a RFID reader through radio waves.,https://www.theworldavatar.com/kg/ontodevice/,RFID tag
@@ -35,7 +35,6 @@ Setpoint,Class,,,,,,"The desired or target value for an essential variable, or p
 InOutState,Class,https://saref.etsi.org/core/State,IS-A,,,,The current state of something on whether it is inside or outside of a space or object.,https://www.theworldavatar.com/kg/ontodevice/,In out state
 PowerFactor,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio,IS-A,,,,"The ratio of working power, measured in kilowatts (kW), to apparent power, measured in kilovolt amperes (kVA).",https://www.theworldavatar.com/kg/ontodevice/,Power factor
 ScreenBrightness,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio,IS-A,,,,The brightness of the screen of a device measured as a ratio.,https://www.theworldavatar.com/kg/ontodevice/,Screen brightness
-https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,Class,,,,,,,https://www.theworldavatar.com/kg/ontotimeseries/,TimeSeries
 observes,Object Property,,,Device,https://saref.etsi.org/core/State,,A relationship between a device and the state that it is observing.,https://www.theworldavatar.com/kg/ontodevice/,observes
 measures,Object Property,,,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,A relationship between a device and a quantity that it is measuring.,https://www.theworldavatar.com/kg/ontodevice/,measures
 hasLength,Object Property,,,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Length,,A relationship between a device and its length.,https://www.theworldavatar.com/kg/ontodevice/,has length
@@ -49,9 +48,6 @@ hasSurvivalRange,Object Property,,,Device,http://www.w3.org/ns/ssn/systems/Survi
 hasSetpoint,Object Property,,,Device,Setpoint,,A relationship between a device and a setpoint.,https://www.theworldavatar.com/kg/ontodevice/,has setpoint
 hasQuantity,Object Property,,,Setpoint,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,A relationship between a setpoint or operating property and the quantity it represents.,https://www.theworldavatar.com/kg/ontodevice/,has quantity
 hasQuantity,Object Property,,,http://www.w3.org/ns/ssn/systems/OperatingProperty,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,A relationship between a setpoint or operating property and the quantity it represents.,https://www.theworldavatar.com/kg/ontodevice/,has quantity
-https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries,Object Property,,,https://saref.etsi.org/core/State,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,,,https://www.theworldavatar.com/kg/ontodevice/,has timeseries
-https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,,,https://www.theworldavatar.com/kg/ontodevice/,has timeseries
-https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries,Object Property,,,http://www.opengis.net/ont/sf#Point,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,,,https://www.theworldavatar.com/kg/ontodevice/,has timeseries
 isAttachedTo,Object Property,,,Device,https://w3id.org/bot#Element,,A relationship that describes a device being attached to another physical element or object.,https://www.theworldavatar.com/kg/ontodevice/,is attached to
 isConnectedTo,Object Property,,,Device,Device,,A relationship that describes a device being connected to another device where the operation of one device will affect the other.,https://www.theworldavatar.com/kg/ontodevice/,is connected to
 sendsSignalTo,Object Property,,,Device,Device,,A relationship that describes a device sending a signal to another device.,https://www.theworldavatar.com/kg/ontodevice/,sends signal to

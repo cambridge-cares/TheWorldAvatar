@@ -10,7 +10,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">03 March 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">04 March 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -239,20 +239,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries">
-        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-        <rdfs:domain rdf:resource="http://www.opengis.net/ont/sf#Point"/>
-        <rdfs:domain rdf:resource="https://saref.etsi.org/core/State"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has timeseries</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -290,13 +276,6 @@
 
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Mass"/>
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Measure -->
-
-
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
     
 
 
@@ -501,7 +480,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/GPSDevice">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device used within Earth’s planetary atmosphere to determine its precise geographical location.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device used within Earth's planetary atmosphere to determine its precise geographical location.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">GPS device</rdfs:label>
     </owl:Class>
@@ -766,16 +745,6 @@
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reporting station</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TimeSeries</rdfs:label>
     </owl:Class>
 </rdf:RDF>
 
