@@ -2,6 +2,9 @@
 TBOX_URL = 'https://github.com/cambridge-cares/TheWorldAvatar/raw/main/JPS_Ontology/ontology/ontoflood/OntoFlood TBox.owl'
 ABOX_URL = 'https://github.com/cambridge-cares/TheWorldAvatar/raw/main/JPS_Ontology/ontology/ontoflood/OntoFlood ABox.owl'
 
+###--- Derivation Markup ---###
+DERIVATION_INSTANCE_BASE_URL = 'https://www.theworldavatar.com/kg/derivation/'
+
 ###--- Common Base URLs ---###
 # External ontologies
 RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'

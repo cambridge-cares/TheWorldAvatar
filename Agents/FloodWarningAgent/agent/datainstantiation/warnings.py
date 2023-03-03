@@ -22,6 +22,9 @@ from agent.utils.stackclients import GdalClient, GeoserverClient, \
                                      OntopClient, PostGISClient, \
                                      create_geojson_for_postgis
 
+# Import PyDerivationAgent for derivation markup
+from pyderivationagent import PyDerivationClient
+
 from py4jps import agentlogging
 
 # Initialise logger
@@ -50,6 +53,13 @@ def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT,
 
     # Initialise KG Client
     kg_client = KGClient(query_endpoint, update_endpoint)
+
+    # Create a PyDerivationClient instance
+    derivation_client = PyDerivationClient(
+        derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
+        query_endpoint=query_endpoint,
+        update_endpoint=update_endpoint,
+    )
 
     if county:
         ### Update flood warnings for given county ###
@@ -106,6 +116,13 @@ def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT,
             deleted_warnings = \
                 delete_instantiated_flood_warnings(warnings_to_delete, kgclient=kg_client)
             print('Deleting finished.')
+
+        ### Derivation markup ###
+        # Update timestamps of updated flood warnings (pure inputs)
+        if warnings_to_update:
+            # NOTE: updateTimestamps() seems to delete unrelated time relationships
+            #       when called with an empty list; hence, only call if non-empty
+            derivation_client.updateTimestamps(warnings_to_update)
 
         # Print update summary 
         print(f'Instantiated areas: {instantiated_areas}')
