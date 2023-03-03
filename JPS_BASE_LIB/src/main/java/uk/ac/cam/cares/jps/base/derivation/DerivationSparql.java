@@ -3053,17 +3053,20 @@ public class DerivationSparql {
 		Variable oldTimestamp = sub.var();
 		Variable newTimestamp = sub.var();
 		ValuesPattern entityNewTimestampVP = new ValuesPattern(entity, newTimestamp);
-		instanceTimestampMap.forEach((en, ts) -> entityNewTimestampVP.addValuePairForMultipleVariables(
-				iri(en), Rdf.literalOf(ts)));
-		sub.select(timePosition, oldTimestamp, newTimestamp).where(entityNewTimestampVP,
-				entity.has(PropertyPaths.path(hasTime, inTimePosition), timePosition),
-				timePosition.has(numericPosition, oldTimestamp));
-		modify.delete(timePosition.has(numericPosition, oldTimestamp));
-		modify.insert(timePosition.has(numericPosition, newTimestamp));
-		modify.where(sub);
-		modify.prefix(prefixTime);
+		// only update instances if the new timestamps are provided
+		if (!instanceTimestampMap.isEmpty()) {
+			instanceTimestampMap.forEach((en, ts) -> entityNewTimestampVP.addValuePairForMultipleVariables(
+					iri(en), Rdf.literalOf(ts)));
+			sub.select(timePosition, oldTimestamp, newTimestamp).where(entityNewTimestampVP,
+					entity.has(PropertyPaths.path(hasTime, inTimePosition), timePosition),
+					timePosition.has(numericPosition, oldTimestamp));
+			modify.delete(timePosition.has(numericPosition, oldTimestamp));
+			modify.insert(timePosition.has(numericPosition, newTimestamp));
+			modify.where(sub);
+			modify.prefix(prefixTime);
 
-		storeClient.executeUpdate(modify.getQueryString());
+			storeClient.executeUpdate(modify.getQueryString());
+		}
 	}
 
 	/**
