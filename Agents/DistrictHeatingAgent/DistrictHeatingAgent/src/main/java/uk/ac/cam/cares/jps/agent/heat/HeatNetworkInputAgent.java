@@ -153,6 +153,7 @@ public class HeatNetworkInputAgent {
                 new UpdateBuilder()
                         .addInsert(NodeFactory.createURI(KB + "Consumer"), NodeFactory.createURI(OHN + "hasHeatDemand"), NodeFactory.createURI(KB + "HeatDemand"))
                         .addInsert(NodeFactory.createURI(KB + "Consumer"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "Consumer"))
+                        .addInsert(NodeFactory.createURI(KB + "Consumer"), NodeFactory.createURI(RDFS_LABEL), "Consumer")
                         .addInsert(NodeFactory.createURI(KB + "HeatDemand"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "HeatDemand"));
         UpdateRequest Consumer_ur = Consumer_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, Consumer_ur.toString());
@@ -225,6 +226,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "MunicipalUtility"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "MunicipalUtility"))
                         .addInsert(NodeFactory.createURI(KB + "IncinerationPlant"), NodeFactory.createURI(OHN + "providesHeatTo"), NodeFactory.createURI(KB + "HeatingNetwork"))
                         .addInsert(NodeFactory.createURI(KB + "IncinerationPlant"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "IncinerationPlant"))
+                        .addInsert(NodeFactory.createURI(KB + "IncinerationPlant"), NodeFactory.createURI(RDFS_LABEL), "IncinerationPlant")
                         .addInsert(NodeFactory.createURI(KB + "MunicipalUtility"), NodeFactory.createURI(OHN + "hasUpstreamGridConnection"), NodeFactory.createURI(KB + "GridConnectionUPMunicipal"))
                         .addInsert(NodeFactory.createURI(KB + "IncinerationPlant"), NodeFactory.createURI(OHN + "hasUpstreamGridConnection"), NodeFactory.createURI(KB + "GridConnectionUPEfW"))
                         .addInsert(NodeFactory.createURI(KB + "MunicipalUtility"), NodeFactory.createURI(OHN + "hasDownstreamGridConnection"), NodeFactory.createURI(KB + "GridConnectionDownMunicipal"))
@@ -290,11 +292,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "ElectricalPower" + "HeatGeneratorGT"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_POWER))
                         .addInsert(NodeFactory.createURI(KB + "ThermalLoad" + "HeatGeneratorGT"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_POWER))
                         .addInsert(NodeFactory.createURI(KB + "HeatGeneratorGT"), NodeFactory.createURI(OHN + "hasMinimumIdleTime"), NodeFactory.createURI(KB + "IdleTime" + "HeatGeneratorGT"))
-                        .addInsert(NodeFactory.createURI(KB + "IdleTime" + "HeatGeneratorGT"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DURATION))
-                        .addInsert(NodeFactory.createURI(KB + "HeatGeneratorGT"), NodeFactory.createURI(OHN + "hasCoGenElectricityAmount"), NodeFactory.createURI(KB + "CoGenElectricityAmount" + "HeatGeneratorGT"))
-                        .addInsert(NodeFactory.createURI(KB + "CoGenElectricityAmount" + "HeatGeneratorGT"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CoGenElectricityAmount"))
-                        .addInsert(NodeFactory.createURI(KB + "HeatGeneratorGT"), NodeFactory.createURI(OC_hasRevenue), NodeFactory.createURI(KB + "CoGenRevenueInTimeInterval"))
-                        .addInsert(NodeFactory.createURI(KB + "CoGenRevenueInTimeInterval"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CoGenRevenueInTimeInterval"));
+                        .addInsert(NodeFactory.createURI(KB + "IdleTime" + "HeatGeneratorGT"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DURATION));
         UpdateRequest GasTurbine_ur = GasTurbine_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, GasTurbine_ur.toString());
         omHasValueNonTS("ElectricalPower" + "HeatGeneratorGT", "MegaWatt", Value_RatedElectricalPower);
@@ -306,7 +304,7 @@ public class HeatNetworkInputAgent {
         UpdateBuilder Contract_ub =
                 new UpdateBuilder()
                         .addInsert(NodeFactory.createURI(KB + "Contract"), NodeFactory.createURI(RDFS_LABEL), "Contract")
-                        .addInsert(NodeFactory.createURI(KB + "Contract"), NodeFactory.createURI(OHN + "isFullfilledBy"), NodeFactory.createURI(KB + "IncinerationPlant"))
+                        .addInsert(NodeFactory.createURI(KB + "Contract"), NodeFactory.createURI(OHN + "isFulfilledBy"), NodeFactory.createURI(KB + "IncinerationPlant"))
                         .addInsert(NodeFactory.createURI(KB + "Contract"), NodeFactory.createURI(OHN + "hasMinAnnualPurchaseVolume"), NodeFactory.createURI(KB + "MinPurchase"))
                         .addInsert(NodeFactory.createURI(KB + "Contract"), NodeFactory.createURI(OHN + "hasMaxAnnualPurchaseVolume"), NodeFactory.createURI(KB + "MaxPurchase"))
                         .addInsert(NodeFactory.createURI(KB + "MinPurchase"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_Energy))
@@ -341,8 +339,10 @@ public class HeatNetworkInputAgent {
         UpdateBuilder CalendarEffect_ub =
                 new UpdateBuilder()
                         .addInsert(NodeFactory.createURI(KB + "CalendarEffect"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CalendarEffect"))  
-                        .addInsert(NodeFactory.createURI(KB + "IsPublicHoliday"), NodeFactory.createURI(OHN +"applicableLocation"), NodeFactory.createURI("http://purl.org/dc/terms/Location"))
-                        .addInsert(NodeFactory.createURI(KB + "IsSchoolVacation"), NodeFactory.createURI(OHN +"applicableLocation"), NodeFactory.createURI("http://purl.org/dc/terms/Location"))     
+                        .addInsert(NodeFactory.createURI(KB + "IsPublicHoliday"), NodeFactory.createURI(OHN +"applicableLocation"), NodeFactory.createURI("https://www.theworldavatar.com/aligned/Location_1"))
+                        .addInsert(NodeFactory.createURI(KB + "IsSchoolVacation"), NodeFactory.createURI(OHN +"applicableLocation"), NodeFactory.createURI("https://www.theworldavatar.com/aligned/Location_1"))   
+                        .addInsert(NodeFactory.createURI("https://www.theworldavatar.com/aligned/Location_1"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI("http://purl.org/dc/terms/Location"))
+                        .addInsert(NodeFactory.createURI("https://www.theworldavatar.com/aligned/Location_1"), NodeFactory.createURI(RDFS_LABEL), "Rheinland-Pfalz")   
                         .addInsert(NodeFactory.createURI(KB + "IsPublicHoliday"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "IsPublicHoliday"))
                         .addInsert(NodeFactory.createURI(KB + "IsSchoolVacation"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "IsSchoolVacation"))
                         .addInsert(NodeFactory.createURI(KB + "AirTemperature"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(EMS + "AirTemperature"));
@@ -360,7 +360,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "GasUnitCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "GasUnitCost"))
                         .addInsert(NodeFactory.createURI(KB + "HourlyLabourCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "HourlyLabourCost"))
                         .addInsert(NodeFactory.createURI(KB + "HourlyWearCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "HourlyWearCost"))
-                        .addInsert(NodeFactory.createURI(KB + "DemandDrivenWearCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "emandDrivenWearCost"));
+                        .addInsert(NodeFactory.createURI(KB + "DemandDrivenWearCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "DemandDrivenWearCost"));
         UpdateRequest UnitRate_ur = UnitRate_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, UnitRate_ur.toString());
 
@@ -441,18 +441,17 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "EnergyInTimeIntervalGA" + HeatGenerator_instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "EnergyInTimeInterval"))
                         .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OHN + "hasOperatingTime"), NodeFactory.createURI(KB + "DurationInTimeInterval" + HeatGenerator_instance))
                         .addInsert(NodeFactory.createURI(KB + "DurationInTimeInterval" + HeatGenerator_instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "DurationInTimeInterval"))
-                        .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OCP_hasCO2emission), NodeFactory.createURI(KB + "CO2EmissionInTimeInterval" + HeatGenerator_instance))
-                        .addInsert(NodeFactory.createURI(KB + "CO2EmissionInTimeInterval" + HeatGenerator_instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CO2EmissionInTimeInterval"))
                         .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OHN + "hasRatedThermalPower"), NodeFactory.createURI(KB + "ThermalLoad" + HeatGenerator_instance))
                         .addInsert(NodeFactory.createURI(KB + "ThermalLoad" + HeatGenerator_instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_POWER))
-                        .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OCP_hasFuelType), NodeFactory.createURI(KB + "NaturalGas" + HeatGenerator_instance))
-                        .addInsert(NodeFactory.createURI(KB + "NaturalGas" + HeatGenerator_instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OCP_FuelType))
-                        .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OHN + "hasHigherCalorificValue"), NodeFactory.createURI(KB + "HigherCalorificValue" + HeatGenerator_instance))
-                        .addInsert(NodeFactory.createURI(KB + "HigherCalorificValue" + HeatGenerator_instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "HigherCalorificValue"))
-                        .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OHN + "hasLowerCalorificValue"), NodeFactory.createURI(KB + "LowerCalorificValue" + HeatGenerator_instance))
-                        .addInsert(NodeFactory.createURI(KB + "LowerCalorificValue" + HeatGenerator_instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "LowerCalorificValue"))
-                        .addInsert(NodeFactory.createURI(KB + "NaturalGas" + HeatGenerator_instance), NodeFactory.createURI(OHN + "hasCO2Factor"), NodeFactory.createURI(KB + "NaturalGasCO2Factor" + HeatGenerator_instance))
-                        .addInsert(NodeFactory.createURI(KB + "NaturalGasCO2Factor" + HeatGenerator_instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CO2Factor"))
+                        
+                        .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OCP_hasFuelType), NodeFactory.createURI(KB + "NaturalGas"))
+                        .addInsert(NodeFactory.createURI(KB + "NaturalGas"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OCP_FuelType))
+                        .addInsert(NodeFactory.createURI(KB + "NaturalGas"), NodeFactory.createURI(OHN + "hasHigherCalorificValue"), NodeFactory.createURI(KB + "HigherCalorificValue" ))
+                        .addInsert(NodeFactory.createURI(KB + "HigherCalorificValue"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "HigherCalorificValue"))
+                        .addInsert(NodeFactory.createURI(KB + "NaturalGas"), NodeFactory.createURI(OHN + "hasLowerCalorificValue"), NodeFactory.createURI(KB + "LowerCalorificValue"))
+                        .addInsert(NodeFactory.createURI(KB + "LowerCalorificValue"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "LowerCalorificValue"))
+                        .addInsert(NodeFactory.createURI(KB + "NaturalGas"), NodeFactory.createURI(OHN + "hasCO2Factor"), NodeFactory.createURI(KB + "NaturalGasCO2Factor"))
+                        .addInsert(NodeFactory.createURI(KB + "NaturalGasCO2Factor"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CO2Factor"))
                         .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OC_HAS_COST), NodeFactory.createURI(KB + "StartUpCost"))
                         .addInsert(NodeFactory.createURI(KB + "StartUpCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "StartUpCost"))
                         .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OC_HAS_COST), NodeFactory.createURI(KB + "ShutDownCost"))
@@ -470,9 +469,9 @@ public class HeatNetworkInputAgent {
         UpdateRequest HeatGenerator_instance_ur = HeatGenerator_instance_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, HeatGenerator_instance_ur.toString());
         omHasValueNonTS("ThermalLoad" + HeatGenerator_instance, "MegaWatt", Value_ThermalLoad);
-        omHasValueNonTS("HigherCalorificValue" + HeatGenerator_instance, "KiloWattHourPerCubicMeter", Value_HCV);
-        omHasValueNonTS("LowerCalorificValue" + HeatGenerator_instance, "KiloWattHourPerCubicMeter", Value_LCV);
-        omHasValueNonTS("NaturalGasCO2Factor" + HeatGenerator_instance, "TonPerMegaWattHour", Value_CO2Factor);
+        omHasValueNonTS("HigherCalorificValue", "KiloWattHourPerCubicMeter", Value_HCV);
+        omHasValueNonTS("LowerCalorificValue", "KiloWattHourPerCubicMeter", Value_LCV);
+        omHasValueNonTS("NaturalGasCO2Factor", "TonPerMegaWattHour", Value_CO2Factor);
     }
 
 
@@ -484,7 +483,6 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_MEASURE))
                         .addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(OM_HAS_UNIT), NodeFactory.createURI(KB + Unit))
                         .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_UNIT))
-                        .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(OM_SYMBOL), Unit)
                         .addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(OM_Has_NUMERICAL_VALUE), NumericalValue);
         UpdateRequest omHasValueNonTS_ur = omHasValueNonTS_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, omHasValueNonTS_ur.toString());
@@ -497,8 +495,7 @@ public class HeatNetworkInputAgent {
                 new UpdateBuilder()
                         .addInsert(NodeFactory.createURI(TSIRI), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_MEASURE))
                         .addInsert(NodeFactory.createURI(TSIRI), NodeFactory.createURI(OM_HAS_UNIT), NodeFactory.createURI(KB + Unit))
-                        .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_UNIT))
-                        .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(OM_SYMBOL), Unit);
+                        .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_UNIT));
         UpdateRequest omHasValueTS_ur = omHasValueTS_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, omHasValueTS_ur.toString());
     }
