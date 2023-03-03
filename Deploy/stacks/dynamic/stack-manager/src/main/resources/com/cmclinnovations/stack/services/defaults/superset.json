@@ -4,7 +4,7 @@
         "Name": "superset",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "apache/superset:latest",
+                "Image": "apache/superset:pr-23227",
                 "Env": [
                     "APP_NAME=Dashboard",
                     "PUBLIC_ROLE_LIKE=Gamma"
