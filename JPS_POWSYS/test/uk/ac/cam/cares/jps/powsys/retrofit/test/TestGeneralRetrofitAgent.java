@@ -1,9 +1,12 @@
 package uk.ac.cam.cares.jps.powsys.retrofit.test;
 
 import org.junit.Test;
+import org.junit.Before;
 import static org.junit.Assert.*;
 import org.apache.jena.ontology.OntModel;
 import java.util.ArrayList;
+import java.util.List;
+import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
