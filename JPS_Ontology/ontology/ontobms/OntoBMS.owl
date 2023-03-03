@@ -1,18 +1,19 @@
 <?xml version="1.0"?>
 <rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontobms/"
      xml:base="https://www.theworldavatar.com/kg/ontobms/"
+     xmlns:ontobms="https://www.theworldavatar.com/kg/ontobms/"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:OntoBMS="https://www.theworldavatar.com/kg/ontobms/"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobms/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">19 January 2023</dc:date>
-        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+        <owl:imports rdf:resource="https://saref.etsi.org/saref4bldg/"/>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">03 March 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoBMS is an ontology for Building Management Systems.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
 
@@ -29,11 +30,24 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobms/conveys -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/conveys">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Substance"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the sustance being conveyed by a flow moving device (e.g. duct).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">conveys</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobms/hasConvectiveTransportRate -->
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasConvectiveTransportRate">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobms/ConvectiveTransportRate"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a continuous material amount and its convective transport rate.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
@@ -42,15 +56,93 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobms/hasFlowRate -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasFlowRate">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/HVAC"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the flow rate of a substance being processed or conveyed by a HVAC device.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has flow rate</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobms/hasHeatDuty -->
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasHeatDuty">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobms/HeatDuty"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the heat duty involved in a temperature change process.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has heat duty</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobms/hasInput -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasInput">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship describing a flow moving device (e.g. duct) having a directed connection (e.g. streamline) as an input.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has input</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobms/hasOutput -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasOutput">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship describing a flow moving device (e.g. duct) having a directed connection (e.g. streamline) as an output.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has output</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobms/hasPressure -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasPressure">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the pressure of a single phase.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has pressure</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobms/hasSashOpening -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasSashOpening">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobms/FumeHood"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobms/SashOpening"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the sash opening of a fumehood.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has sash opening</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobms/hasTemperature -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasTemperature">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship to describe the temperature of a single phase.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has temperature</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -73,23 +165,10 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/realizes">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#UnitOperation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#UnitOperation"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a device fulfilling an unit operation (Mixing, Separation etc).</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">realizes</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/sendsSignalTo -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/sendsSignalTo">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a device sending a signal to another device.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">sends signal to</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -109,151 +188,147 @@
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Frequency -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Frequency">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Frequency</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Frequency"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/HeatFlowRate -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/HeatFlowRate">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heat flow rate</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Length -->
-
-
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Length">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Length</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/HeatFlowRate"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/MassFlow -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/MassFlow">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mass flow</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/MassFlow"/>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Percentage -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Percentage"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Power -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Power">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Power</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pressure</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity -->
-
-
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Quantity</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/RelativeHumidity -->
-
-
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/RelativeHumidity">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relative humidity</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Volumetric flow rate</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate"/>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount -->
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Continuous material amount</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange -->
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#TemperatureChange -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#TemperatureChange">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature change</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
     
 
 
-    <!-- http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#UnitOperation -->
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#UnitOperation -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#UnitOperation">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit operation</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#UnitOperation"/>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobms/AirFlowRate -->
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/AirFlowRate">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rate of movement of air.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Air flow rate</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Substance -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Substance"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#DirectedConnection"/>
+    
+
+
+    <!-- https://saref.etsi.org/core/HVAC -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/HVAC"/>
+    
+
+
+    <!-- https://saref.etsi.org/core/State -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/State"/>
+    
+
+
+    <!-- https://saref.etsi.org/saref4bldg/Coil -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/Coil"/>
+    
+
+
+    <!-- https://saref.etsi.org/saref4bldg/Fan -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/Fan"/>
+    
+
+
+    <!-- https://saref.etsi.org/saref4bldg/FlowMovingDevice -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
+    
+
+
+    <!-- https://saref.etsi.org/saref4bldg/FlowTreatmentDevice -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/FlowTreatmentDevice"/>
+    
+
+
+    <!-- https://saref.etsi.org/saref4bldg/SolarDevice -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/SolarDevice"/>
     
 
 
@@ -261,7 +336,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/AirHandlingUnit">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/HVAC"/>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/HVAC"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that condition and distribute air within a building. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Air handling unit</rdfs:label>
@@ -269,26 +344,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobms/AlarmStatus -->
+    <!-- https://www.theworldavatar.com/kg/ontobms/AlarmState -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/AlarmStatus">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Status"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/AlarmState">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/State"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An alert status that is triggered due to an abnormal condition or change in condition.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Alarm status</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/BuildingDevice -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/BuildingDevice">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A tangible object designed to accomplish a particular task in a building.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Building device</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Alarm state</rdfs:label>
     </owl:Class>
     
 
@@ -297,7 +360,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/CAVSystem">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/HVAC"/>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/HVAC"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Constant Air Volume System that supply a constant airflow at a variable temperature.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CAV system</rdfs:label>
@@ -309,34 +372,10 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/CanopyHood">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/FlowTreatmentDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of fume hood that’s designed to vent non-toxic vapors like steam, heat and odors.</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowTreatmentDevice"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device designed to vent non-toxic vapors like steam, heat and odors.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Canopy hood</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/Coil -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/Coil">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/EnergyConversionDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A coil is a device used to provide heat transfer between non-mixing media.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Coil</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/Controller -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/Controller">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/DistributionControlDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A controller is a device that monitors inputs and controls outputs within a building automation system.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Controller</rdfs:label>
     </owl:Class>
     
 
@@ -349,18 +388,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Convective Transport Rate in the most general terms refers to the movement of molecules within fluid phases which is the sum of advective and diffusive transport.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Convective transport rate</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/Damper -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/Damper">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/FlowController"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A damper typically participates in an HVAC duct distribution system and is used to control or modulate the flow of air.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Damper</rdfs:label>
     </owl:Class>
     
 
@@ -389,50 +416,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobms/DamperStatus -->
+    <!-- https://www.theworldavatar.com/kg/ontobms/DamperState -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/DamperStatus">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Status"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The current status of a damper (whether it is opened or closed etc).</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/DamperState">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/State"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The current state of a damper.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Damper status</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/DistributionControlDevice -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/DistributionControlDevice">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/DistributionDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Represents devices of a building automation control system that are used to impart control over elements of a distribution system.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Distribution control device</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/DistributionDevice -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/DistributionDevice">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/BuildingDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Generalization of all devices that participate in a distribution system.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Distribution device</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/DistributionFlowDevice -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/DistributionFlowDevice">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/DistributionDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Represents devices of a distribution system that facilitate the distribution of energy or matter, such as air, water or power.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Distribution flow device</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Damper state</rdfs:label>
     </owl:Class>
     
 
@@ -441,7 +432,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/Duct">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/FlowMovingDevice"/>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A duct is a conduit or passage used in heating, ventilation, and air conditioning to deliver and remove air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Duct</rdfs:label>
@@ -453,7 +444,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/ElectricalCoil">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/Coil"/>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/Coil"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A coil that uses electricity to generate heat for heat transfer purposes.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electrical coil</rdfs:label>
@@ -485,38 +476,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobms/EnergyConversionDevice -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/EnergyConversionDevice">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/DistributionFlowDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device used to perform energy conversion or heat transfer and typically participates in a flow distribution system.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Energy conversion device</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontobms/ExhaustFan -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/ExhaustFan">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/Fan"/>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/Fan"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An exhaust fan pull odors, fumes, and moisture from an area and vent them outdoors for removal.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Exhaust fan</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/Fan -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/Fan">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/FlowMovingDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A fan is a device which imparts mechanical work on a gas.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fan</rdfs:label>
     </owl:Class>
     
 
@@ -525,58 +492,10 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/FanCoilUnit">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/HVAC"/>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/HVAC"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that consists of a fan, a coil, and other components, that are used to cool or heat the air recirculating within a room.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fan coil unit</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/Filter -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/Filter">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/FlowTreatmentDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A filter is an apparatus used to remove particulate or gaseous matter from fluids and gases.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Filter</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/FlowController -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/FlowController">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/DistributionFlowDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Flow Controller defines the occurrence of elements of a distribution system that are used to regulate flow through a distribution system. Examples include dampers, valves, switches, and relays.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Flow controller</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/FlowMovingDevice -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/FlowMovingDevice">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/DistributionFlowDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A flow moving device is used to distribute, circulate or perform conveyance of fluids, including liquids and gases (such as a pump or fan), and typically participates in a flow distribution system.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Flow moving device</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/FlowTreatmentDevice -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/FlowTreatmentDevice">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/DistributionFlowDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device typically used to remove unwanted matter from a fluid, either liquid or gas, and typically participates in a flow distribution system.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Flow treatment device</rdfs:label>
     </owl:Class>
     
 
@@ -585,22 +504,10 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/FumeHood">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/FlowTreatmentDevice"/>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowTreatmentDevice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that uses venting and air flow to protect users from hazardous substances such as vapors, gases, and particulates.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fume hood</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/HVAC -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/HVAC">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heating, Ventilation and Air Conditioning (HVAC) device that provides indoor environmental comfort.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HVAC</rdfs:label>
     </owl:Class>
     
 
@@ -629,38 +536,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobms/HumiditySetPoint -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/HumiditySetPoint">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/RelativeHumidity"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The desired or target value for an essential humidity variable, or process value (PV) of a control system.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Humidity set-point</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontobms/MakeupAirUnit -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/MakeupAirUnit">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/HVAC"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that provide a consistent and controlled solution to replacing the air within the space.</rdfs:comment>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/HVAC"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that provide a consistent and controlled solution to replacing the air within a space.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Makeup air unit</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/Mode -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/Mode">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Quality"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A mode is an option that indicates or allow a change in the method of operation of a device.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mode</rdfs:label>
     </owl:Class>
     
 
@@ -669,7 +552,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/Pipe">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/FlowMovingDevice"/>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A pipe is a tubular section or hollow cylinder, usually but not necessarily of circular cross-section, used mainly to convey fluids.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pipe</rdfs:label>
@@ -681,22 +564,10 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/Plenum">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/HVAC"/>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/HVAC"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A separate space provided for air circulation for heating, ventilation, and air-conditioning.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Plenum</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/PressureSetPoint -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/PressureSetPoint">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The desired or target value for an essential pressure variable, or process value (PV) of a control system.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pressure set-point</rdfs:label>
     </owl:Class>
     
 
@@ -705,22 +576,10 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/SashOpening">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The length of opening for a sash. </rdfs:comment>
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Percentage"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of opening for a sash. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sash opening</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/SolarDevice -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/SolarDevice">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/EnergyConversionDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A solar device converts solar radiation into other energy such as electric current or thermal energy.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solar device</rdfs:label>
     </owl:Class>
     
 
@@ -729,7 +588,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/SolarPanel">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/SolarDevice"/>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/SolarDevice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solar panels capture sunlight as a source of radiant energy, which is converted into electric energy in the form of direct current (DC) electricity.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solar panel</rdfs:label>
@@ -741,22 +600,10 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/Tee">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/FlowMovingDevice"/>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Tee is a connector between pipes to separate or combine some streams.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tee</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/TemperatureSetPoint -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/TemperatureSetPoint">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The desired or target value for an essential temperature variable, or process value (PV) of a control system.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature set-point</rdfs:label>
     </owl:Class>
     
 
@@ -765,7 +612,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/VAVSystem">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/HVAC"/>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/HVAC"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Variable Air Volume System that vary the airflow at a constant or varying temperature.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">VAV system</rdfs:label>
@@ -797,23 +644,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobms/Valve -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/Valve">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/FlowController"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A valve is used in a building services piping distribution system to control or modulate the flow of the fluid.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Valve</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontobms/WalkInFumeHood -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/WalkInFumeHood">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/FlowTreatmentDevice"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/FumeHood"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A larger fume hood designed to be able to house large laboratory instruments and equipment. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Walk-in fume hood</rdfs:label>
@@ -825,7 +660,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/WaterCoil">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/Coil"/>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/Coil"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A coil that uses water as a heat transfer medium.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Water coil</rdfs:label>
@@ -833,45 +668,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobms/WaterFlowRate -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/WaterFlowRate">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rate of movement of water.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Water flow rate</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontodevice/Device -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Device">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Device</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontodevice/Quality -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Quality"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Quality</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontodevice/Status -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Status"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Status</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Device"/>
 </rdf:RDF>
 
 
