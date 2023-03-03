@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  sensorloggermobileappquery_agent:
+    image: ghcr.io/shinzert/sensorloggermobileappquery_agent:1.0.0
+
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      - DATABASE=sensorlogger
+      - GEOSERVER_URL=http://host.docker.internal:3838/geoserver # specifying here because WMS endpoint does not work with container name
+    configs:
+      - postgis
+      - blazegraph
+      - geoserver
+      - ontop
+    secrets:
+      - postgis_password
+      - geoserver_password
+    ports:
+      - "10103:8080"
+    volumes:
+      - logs:/root/.jps
+    networks:
+      - stack
+
+volumes:
+  logs:
+    name: "logs"
+
