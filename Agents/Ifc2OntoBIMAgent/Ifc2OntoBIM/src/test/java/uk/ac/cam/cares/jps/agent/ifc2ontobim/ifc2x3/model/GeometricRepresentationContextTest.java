@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model;
 import org.apache.jena.rdf.model.Statement;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcProjectRepresentation;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;

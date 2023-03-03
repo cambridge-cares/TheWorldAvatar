@@ -22,11 +22,12 @@ public class IfcRoomRepresentation extends IfcAbstractRepresentation {
      * @param iri       The instance IRI to be created.
      * @param name      The name of this IFC object.
      * @param uid       The IFC uid generated for this object.
+     * @param placementIri The local placement IRI for the zone's position.
      * @param storeyIri The IRI of bot:Storey that is linked to this building instance.
      */
-    public IfcRoomRepresentation(String iri, String name, String uid, String storeyIri) {
+    public IfcRoomRepresentation(String iri, String name, String uid, String placementIri, String storeyIri) {
         // Initialise the super class
-        super(iri, OntoBimConstant.ROOM_REP_CLASS,  name, uid);
+        super(iri, OntoBimConstant.ROOM_REP_CLASS,  name, uid, placementIri);
         this.storeyIRI = storeyIri;
         // Generate a new bim Room IRI
         this.bimRoomIRI = this.getPrefix() + OntoBimConstant.ROOM_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();

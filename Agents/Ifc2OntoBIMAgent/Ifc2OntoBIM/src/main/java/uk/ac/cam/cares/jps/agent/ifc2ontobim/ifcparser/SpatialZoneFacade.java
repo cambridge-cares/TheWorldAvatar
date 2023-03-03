@@ -1,18 +1,15 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 
-import org.apache.jena.arq.querybuilder.Converters;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
-import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.GeometricRepresentationContext;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.IfcProjectRepresentation;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.*;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.base.IfcConstructBuilderTemplate;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.ArrayDeque;
 import java.util.LinkedHashSet;
@@ -170,6 +167,7 @@ public class SpatialZoneFacade {
             String iri = soln.get(CommonQuery.ZONE_VAR).toString();
             String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
             String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
+            String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
             Queue<String> latitude;
             // Add latitude values as a queue
             if (soln.contains(CommonQuery.LAT_DEGREE_VAR) && soln.contains(CommonQuery.LAT_MIN_VAR) &&
@@ -197,7 +195,7 @@ public class SpatialZoneFacade {
             String elev = QueryHandler.retrieveLiteral(soln, CommonQuery.ELEVATION_VAR);
             String project = soln.contains(CommonQuery.PROJECT_VAR) ?
                     zoneMappings.getProject(QueryHandler.retrieveIri(soln, CommonQuery.PROJECT_VAR)).getIri() : null;
-            IfcSiteRepresentation site = new IfcSiteRepresentation(iri, name, uid, project, latitude, longitude, elev);
+            IfcSiteRepresentation site = new IfcSiteRepresentation(iri, name, uid, placement, project, latitude, longitude, elev);
             zoneMappings.add(iri, site);
             site.constructStatements(statementSet);
         }
@@ -245,12 +243,13 @@ public class SpatialZoneFacade {
             String iri = soln.get(CommonQuery.ZONE_VAR).toString();
             String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
             String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
+            String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
             String elev = QueryHandler.retrieveLiteral(soln, CommonQuery.ELEVATION_VAR);
             String terElev = QueryHandler.retrieveLiteral(soln, CommonQuery.TER_ELEVATION_VAR);
             String project = soln.contains(CommonQuery.PROJECT_VAR) ?
                     zoneMappings.getProject(QueryHandler.retrieveIri(soln, CommonQuery.PROJECT_VAR)).getIri() : null;
             IfcSiteRepresentation site = zoneMappings.getSite(QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR));
-            IfcBuildingRepresentation building = new IfcBuildingRepresentation(iri, name, uid, project, site.getBotSiteIRI(), elev, terElev);
+            IfcBuildingRepresentation building = new IfcBuildingRepresentation(iri, name, uid, placement, project, site.getBotSiteIRI(), elev, terElev);
             zoneMappings.add(iri, building);
             building.constructStatements(statementSet);
         }
@@ -294,9 +293,10 @@ public class SpatialZoneFacade {
             String iri = soln.get(CommonQuery.ZONE_VAR).toString();
             String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
             String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
+            String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
             String elev = QueryHandler.retrieveLiteral(soln, CommonQuery.ELEVATION_VAR);
             IfcBuildingRepresentation building = zoneMappings.getBuilding(QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR));
-            IfcStoreyRepresentation storey = new IfcStoreyRepresentation(iri, name, uid, building.getBotBuildingIRI(), elev);
+            IfcStoreyRepresentation storey = new IfcStoreyRepresentation(iri, name, uid, placement, building.getBotBuildingIRI(), elev);
             zoneMappings.add(iri, storey);
             storey.constructStatements(statementSet);
         }
@@ -338,9 +338,10 @@ public class SpatialZoneFacade {
             String iri = soln.get(CommonQuery.ZONE_VAR).toString();
             String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
             String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
+            String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
             String storeyIri = QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR);
             IfcStoreyRepresentation storey = zoneMappings.getStorey(storeyIri);
-            IfcRoomRepresentation room = new IfcRoomRepresentation(iri, name, uid, storey.getBotStoreyIRI());
+            IfcRoomRepresentation room = new IfcRoomRepresentation(iri, name, uid, placement, storey.getBotStoreyIRI());
             zoneMappings.add(iri, room);
             room.constructStatements(statementSet);
         }

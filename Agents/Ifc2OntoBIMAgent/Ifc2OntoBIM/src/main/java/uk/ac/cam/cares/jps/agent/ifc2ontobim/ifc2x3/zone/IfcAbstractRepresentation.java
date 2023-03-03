@@ -18,22 +18,25 @@ public class IfcAbstractRepresentation {
     private final String prefix;
     private final String name;
     private final String uid;
+    private final String placementIri;
     protected static final String METRE_UNIT = "m";
 
     /**
      * Standard Constructor initialising the common inputs.
      *
-     * @param iri       The instance IRI to be created.
-     * @param className The name of the OntoBIM class.
-     * @param name      The name of this IFC object.
-     * @param uid       The IFC uid generated for this object.
+     * @param iri          The instance IRI to be created.
+     * @param className    The name of the OntoBIM class.
+     * @param name         The name of this IFC object.
+     * @param uid          The IFC uid generated for this object.
+     * @param placementIri The local placement IRI for the zone's position.
      */
-    public IfcAbstractRepresentation(String iri, String className, String name, String uid) {
+    public IfcAbstractRepresentation(String iri, String className, String name, String uid, String placementIri) {
         this.prefix = iri.contains(OntoBimConstant.HASH) ? StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.HASH) + OntoBimConstant.HASH :
                 StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.BACKSLASH) + OntoBimConstant.BACKSLASH;
         this.iri = this.prefix + className + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.name = name;
         this.uid = uid;
+        this.placementIri = placementIri;
     }
 
     protected String getIri() { return this.iri;}
@@ -44,6 +47,7 @@ public class IfcAbstractRepresentation {
 
     protected String getUid() { return this.uid;}
 
+    protected String getPlacementIri() { return this.placementIri;}
 
     /**
      * An abstract method that must be overridden and used in each subclass
@@ -64,5 +68,7 @@ public class IfcAbstractRepresentation {
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.RDF_TYPE, classIRI);
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.RDFS_LABEL, this.getName(), false);
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_ID, this.getUid(), false);
+        StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_LOCAL_POSITION, this.getPlacementIri());
+        StatementHandler.addStatement(statementSet, this.getPlacementIri(), OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_LOCAL_PLACEMENT_CLASS);
     }
 }

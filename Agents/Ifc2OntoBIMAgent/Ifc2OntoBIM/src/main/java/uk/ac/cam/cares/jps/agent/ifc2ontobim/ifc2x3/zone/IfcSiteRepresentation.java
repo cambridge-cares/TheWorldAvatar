@@ -34,14 +34,15 @@ public class IfcSiteRepresentation extends IfcAbstractRepresentation {
      * @param iri          The instance IRI to be created.
      * @param name         The name of this IFC object.
      * @param uid          The IFC uid generated for this object.
+     * @param placementIri The local placement IRI for the zone's position.
      * @param projectIri   The project's IFC representation IRI if this site is the root zone.
      * @param latitude     A queue of the latitude's degree, minute, second, and millionth-second values.
      * @param longitude    A queue of the longitude's degree, minute, second, and millionth-second values.
      * @param refElevation An optional field containing the reference elevation values stored in IFC.
      */
-    public IfcSiteRepresentation(String iri, String name, String uid, String projectIri, Queue<String> latitude, Queue<String> longitude, String refElevation) {
+    public IfcSiteRepresentation(String iri, String name, String uid, String placementIri, String projectIri, Queue<String> latitude, Queue<String> longitude, String refElevation) {
         // Initialise the super class
-        super(iri, OntoBimConstant.SITE_REP_CLASS, name, uid);
+        super(iri, OntoBimConstant.SITE_REP_CLASS, name, uid, placementIri);
         // Generate new site IRIs
         this.botSiteIRI = this.getPrefix() + OntoBimConstant.SITE_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         // Parse the latitude and longitude

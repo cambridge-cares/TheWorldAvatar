@@ -24,12 +24,13 @@ public class IfcStoreyRepresentation extends IfcAbstractRepresentation {
      * @param iri          The instance IRI to be created.
      * @param name         The name of this IFC object.
      * @param uid          The IFC uid generated for this object.
+     * @param placementIri The local placement IRI for the zone's position.
      * @param buildingIri  The IRI of bot:Building that is linked to this building instance.
      * @param refElevation An optional field containing the reference elevation values stored in IFC.
      */
-    public IfcStoreyRepresentation(String iri, String name, String uid, String buildingIri, String refElevation) {
+    public IfcStoreyRepresentation(String iri, String name, String uid, String placementIri, String buildingIri, String refElevation) {
         // Initialise the super class
-        super(iri, OntoBimConstant.STOREY_REP_CLASS,  name, uid);
+        super(iri, OntoBimConstant.STOREY_REP_CLASS,  name, uid, placementIri);
         this.buildingIRI = buildingIri;
         // Generate a new bot Storey IRI
         this.botStoreyIRI = this.getPrefix() + OntoBimConstant.STOREY_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();

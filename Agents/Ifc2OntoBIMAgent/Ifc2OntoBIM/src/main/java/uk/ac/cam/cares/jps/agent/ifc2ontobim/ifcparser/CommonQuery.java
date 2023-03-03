@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 
 /**
  * Provides reusable query statements for spatial zones.
@@ -34,6 +35,7 @@ public class CommonQuery {
     protected static final String MODEL_PRECISION_VAR = "?modelprecision";
     protected static final String NORTH_DIR_VAR = "?northdirection";
     protected static final String MODEL_PLACEMENT_VAR = "?modelplacement";
+    protected static final String PLACEMENT_VAR = "?placement";
     // IfcOwl Properties
     protected static final String EXPRESS_HASDOUBLE = "/express:hasDouble";
     protected static final String EXPRESS_HASINTEGER = "/express:hasInteger";
@@ -57,6 +59,7 @@ public class CommonQuery {
     protected static final String IFC_PROJECT_CONTEXT_PRECISION = NamespaceMapper.IFC_PREFIX + ":precision_IfcGeometricRepresentationContext";
     protected static final String IFC_PROJECT_WCS_CONTEXT = NamespaceMapper.IFC_PREFIX + ":worldCoordinateSystem_IfcGeometricRepresentationContext";
     protected static final String IFC_PROJECT_TRUE_NORTH = NamespaceMapper.IFC_PREFIX + ":trueNorth_IfcGeometricRepresentationContext";
+    protected static final String IFC_OBJ_PLACEMENT = NamespaceMapper.IFC_PREFIX + ":objectPlacement_IfcProduct";
     // IfcOwl Classes
     protected static final String IFCPROJECT = NamespaceMapper.IFC_PREFIX + ":IfcProject";
     protected static final String IFCSITE = NamespaceMapper.IFC_PREFIX + ":IfcSite";
@@ -66,6 +69,8 @@ public class CommonQuery {
     protected static final String RELAGG = NamespaceMapper.IFC_PREFIX + ":IfcRelAggregates";
     protected static final String IFCCOMPOUND_PLANE_ANGLE = NamespaceMapper.IFC_PREFIX + ":IfcCompoundPlaneAngleMeasure";
     protected static final String IFCGEOM_REP_CONTEXT = NamespaceMapper.IFC_PREFIX + ":IfcGeometricRepresentationContext";
+    protected static final String IFCLOCALPLACEMENT = NamespaceMapper.IFC_PREFIX + ":IfcLocalPlacement";
+
 
     /**
      * Add the statements for querying common metadata such as class name, their unique ifc ID, and name into the builder.
@@ -74,8 +79,11 @@ public class CommonQuery {
      */
     public static void addBaseQueryComponents(SelectBuilder builder) {
         builder.addVar(CommonQuery.UID_VAR)
-                .addVar(CommonQuery.NAME_VAR);
+                .addVar(CommonQuery.NAME_VAR)
+                .addVar(PLACEMENT_VAR);
         builder.addWhere(ZONE_VAR, IFC_ID + EXPRESS_HASSTRING, UID_VAR)
-                .addWhere(ZONE_VAR, IFC_NAME + EXPRESS_HASSTRING, NAME_VAR);
+                .addWhere(ZONE_VAR, IFC_NAME + EXPRESS_HASSTRING, NAME_VAR)
+                .addWhere(ZONE_VAR, IFC_OBJ_PLACEMENT, PLACEMENT_VAR)
+                .addWhere(PLACEMENT_VAR, QueryHandler.RDF_TYPE, IFCLOCALPLACEMENT);
     }
 }

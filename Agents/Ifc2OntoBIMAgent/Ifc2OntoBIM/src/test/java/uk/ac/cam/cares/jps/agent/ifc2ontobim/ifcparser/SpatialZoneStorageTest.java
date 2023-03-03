@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.IfcProjectRepresentation;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.*;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -80,7 +81,7 @@ class SpatialZoneStorageTest {
     @Test
     void testAddAndGetSite() {
         // Create a new sample representation
-        IfcSiteRepresentation sampleSite = new IfcSiteRepresentation(TEST_SITE_IRI, TEST_SITE_NAME, TEST_SITE_UID, null, null, null, TEST_ELEV.toString());
+        IfcSiteRepresentation sampleSite = new IfcSiteRepresentation(TEST_SITE_IRI, TEST_SITE_NAME, TEST_SITE_UID, null, null, null, null, TEST_ELEV.toString());
         // Execute method
         testMappings.add(TEST_SITE_IRI, sampleSite);
         // Assert if they are equals
@@ -91,7 +92,7 @@ class SpatialZoneStorageTest {
     void testAddAndGetBuilding() {
         // Create a new sample representation
         IfcBuildingRepresentation sampleBuilding = new IfcBuildingRepresentation(TEST_BUILDING_IRI, TEST_BUILDING_NAME,
-                TEST_BUILDING_UID, null, TEST_SITE_IRI, TEST_ELEV.toString(), TEST_ELEV.toString());
+                TEST_BUILDING_UID, null, null, TEST_SITE_IRI, TEST_ELEV.toString(), TEST_ELEV.toString());
         // Execute method
         testMappings.add(TEST_BUILDING_IRI, sampleBuilding);
         // Assert if they are equals
@@ -102,7 +103,7 @@ class SpatialZoneStorageTest {
     void testAddAndGetStorey() {
         // Create a new sample representation
         IfcStoreyRepresentation sampleStorey = new IfcStoreyRepresentation(TEST_STOREY_IRI, TEST_STOREY_NAME,
-                TEST_STOREY_UID, TEST_BUILDING_IRI, TEST_ELEV.toString());
+                TEST_STOREY_UID, null, TEST_BUILDING_IRI, TEST_ELEV.toString());
         // Execute method
         testMappings.add(TEST_STOREY_IRI, sampleStorey);
         // Assert if they are equals
@@ -113,7 +114,7 @@ class SpatialZoneStorageTest {
     void testAddAndGetRoom() {
         // Create a new sample representation
         IfcRoomRepresentation sampleRoom = new IfcRoomRepresentation(TEST_ROOM_IRI, TEST_ROOM_NAME,
-                TEST_ROOM_UID, TEST_STOREY_IRI);
+                TEST_ROOM_UID, null, TEST_STOREY_IRI);
         // Execute method
         testMappings.add(TEST_ROOM_IRI, sampleRoom);
         // Assert if they are equals

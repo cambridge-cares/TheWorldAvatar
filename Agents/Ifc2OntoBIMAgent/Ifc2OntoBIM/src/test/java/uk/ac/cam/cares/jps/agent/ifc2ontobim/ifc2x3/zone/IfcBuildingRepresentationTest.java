@@ -18,6 +18,7 @@ class IfcBuildingRepresentationTest {
     private static final String testClassName = "IfcBuildingRepresentation";
     private static final String testName = "Building Host";
     private static final String testUID = "0192auje134";
+    private static final String testPlacementIri = testBaseUri1+ "LocalPlacement_3131";
     private static final String testProjectIri = testBaseUri1 + "IfcProjectRepresentation_ba12";
     private static final String testSiteIri = testBaseUri1 + "Site_531";
     private static final Double testRefElev1 = 125.0;
@@ -34,35 +35,37 @@ class IfcBuildingRepresentationTest {
     @Test
     void testConstructor() {
         // First constructor
-        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testName, testUID, testProjectIri, testSiteIri, testRefElev1.toString(), testTerElev1.toString());
+        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testName, testUID, testPlacementIri, testProjectIri, testSiteIri, testRefElev1.toString(), testTerElev1.toString());
         // Test that the sample fields are correct
         assertEquals(testBaseUri1, sample.getPrefix());
         assertNotEquals(testIri1, sample.getIri());
         assertTrue(sample.getIri().contains(testBaseUri1 + testClassName + "_"));
         assertEquals(testName, sample.getName());
         assertEquals(testUID, sample.getUid());
+        assertEquals(testPlacementIri, sample.getPlacementIri());
         assertEquals(testRefElev1, sample.getRefElevation());
         assertEquals(testTerElev1, sample.getTerElevation());
         assertTrue(sample.getBotBuildingIRI().contains(sample.getPrefix() + "Building_"));
         // Second constructor
-        IfcBuildingRepresentation sample2 = new IfcBuildingRepresentation(testIri2, testName, testUID, null, testSiteIri, testRefElev1.toString(), testTerElev1.toString());
+        IfcBuildingRepresentation sample2 = new IfcBuildingRepresentation(testIri2, testName, testUID, testPlacementIri, null, testSiteIri, testRefElev1.toString(), testTerElev1.toString());
         // Test that the sample fields are correct
         assertEquals(testBaseUri2, sample2.getPrefix());
         assertNotEquals(testIri2, sample2.getIri());
         assertTrue(sample2.getIri().contains(testBaseUri2 + testClassName + "_"));
         assertEquals(testName, sample2.getName());
         assertEquals(testUID, sample2.getUid());
-        assertEquals(testRefElev1, sample.getRefElevation());
-        assertEquals(testTerElev1, sample.getTerElevation());
+        assertEquals(testPlacementIri, sample2.getPlacementIri());
+        assertEquals(testRefElev1, sample2.getRefElevation());
+        assertEquals(testTerElev1, sample2.getTerElevation());
         assertTrue(sample2.getBotBuildingIRI().contains(sample2.getPrefix() + "Building_"));
     }
 
     @Test
     void testConstructorRefElevation() {
-        IfcBuildingRepresentation sample1 = new IfcBuildingRepresentation(testIri1, testName, testUID, null, testSiteIri, testRefElev1.toString(), testTerElev1.toString());
-        IfcBuildingRepresentation sample2 = new IfcBuildingRepresentation(testIri1, testName, testUID, null, testSiteIri, testRefElevation1, testTerElevation1);
-        IfcBuildingRepresentation sample3 = new IfcBuildingRepresentation(testIri1, testName, testUID, null, testSiteIri, testRefElev2.toString(), testTerElev2.toString());
-        IfcBuildingRepresentation sample4 = new IfcBuildingRepresentation(testIri1, testName, testUID, null, testSiteIri, testRefElevation2, testTerElevation2);
+        IfcBuildingRepresentation sample1 = new IfcBuildingRepresentation(testIri1, testName, testUID, testPlacementIri, null, testSiteIri, testRefElev1.toString(), testTerElev1.toString());
+        IfcBuildingRepresentation sample2 = new IfcBuildingRepresentation(testIri1, testName, testUID, testPlacementIri, null, testSiteIri, testRefElevation1, testTerElevation1);
+        IfcBuildingRepresentation sample3 = new IfcBuildingRepresentation(testIri1, testName, testUID, testPlacementIri, null, testSiteIri, testRefElev2.toString(), testTerElev2.toString());
+        IfcBuildingRepresentation sample4 = new IfcBuildingRepresentation(testIri1, testName, testUID, testPlacementIri, null, testSiteIri, testRefElevation2, testTerElevation2);
         // Test that the sample fields are correct
         assertEquals(testRefElev1, sample1.getRefElevation());
         assertEquals(testRefElev1, sample2.getRefElevation());
@@ -78,7 +81,7 @@ class IfcBuildingRepresentationTest {
     void testConstructStatementsNoRefElev() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testName, testUID, testProjectIri, testSiteIri, null, testTerElev1.toString());
+        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testName, testUID, testPlacementIri, testProjectIri, testSiteIri, null, testTerElev1.toString());
         // Execute method
         sample.constructStatements(sampleSet);
         // Clean up results as one string
@@ -97,7 +100,7 @@ class IfcBuildingRepresentationTest {
     void testConstructStatementsNoTerElev() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testName, testUID, testProjectIri, testSiteIri, testRefElev1.toString(), null);
+        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testName, testUID, testPlacementIri, testProjectIri, testSiteIri, testRefElev1.toString(), null);
         // Execute method
         sample.constructStatements(sampleSet);
         // Clean up results as one string
@@ -116,7 +119,7 @@ class IfcBuildingRepresentationTest {
     void testConstructStatementsNoOptionalValues() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testName, testUID, null, testSiteIri, null, null);
+        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testName, testUID, testPlacementIri, null, testSiteIri, null, null);
         // Execute method
         sample.constructStatements(sampleSet);
         // Clean up results to a string
@@ -133,7 +136,7 @@ class IfcBuildingRepresentationTest {
     void testConstructStatements() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testName, testUID, testProjectIri, testSiteIri, testRefElev1.toString(), testTerElev1.toString());
+        IfcBuildingRepresentation sample = new IfcBuildingRepresentation(testIri1, testName, testUID, testPlacementIri, testProjectIri, testSiteIri, testRefElev1.toString(), testTerElev1.toString());
         // Execute method
         sample.constructStatements(sampleSet);
         // Clean up results as one string
@@ -153,6 +156,8 @@ class IfcBuildingRepresentationTest {
         expected.add(testBaseUri1 + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + testName);
         expected.add(testBaseUri1 + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + testUID);
         expected.add(testSiteIri + ", https://w3id.org/bot#hasBuilding, " + testBaseUri1 + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(testBaseUri1 + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + testPlacementIri);
+        expected.add(testPlacementIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
         return expected;
     }
 

@@ -25,9 +25,11 @@ class CommonQueryTest {
 
     private List<String> genExpectedQueryStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add("SELECT  \\?uid \\?name");
+        expected.add("SELECT  \\?uid \\?name \\?placement");
         expected.add("\\?zone ifc:globalId_IfcRoot/express:hasString \\?uid .");
-        expected.add("\\?zone ifc:name_IfcRoot/express:hasString \\?name}");
+        expected.add("\\?zone ifc:name_IfcRoot/express:hasString \\?name .");
+        expected.add("\\?zone     ifc:objectPlacement_IfcProduct  \\?placement .");
+        expected.add("\\?placement  rdf:type            ifc:IfcLocalPlacement}");
         return expected;
     }
 }
