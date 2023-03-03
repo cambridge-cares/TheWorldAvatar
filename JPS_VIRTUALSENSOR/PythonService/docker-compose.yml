@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   python-service:
-    image: docker.cmclinnovations.com/python-service:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/python-service:1.0.1
     deploy:
       mode: replicated
       replicas: 1
