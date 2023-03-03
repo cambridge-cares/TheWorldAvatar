@@ -7,6 +7,7 @@ POST http://localhost:5009/floodwarnings/update/all
 Content-Type: application/json
 
 { "query": {
-      "file_path": "/app/mock_api_responses/warning1.json"
+      "file_path": "/app/mock_api_responses/east_warning1.json"
+      //"file_path": "/app/mock_api_responses/no_warnings.json"
     }
 }
