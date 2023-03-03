@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone;
+package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model;
 
 import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.GeometricRepresentationContext;
