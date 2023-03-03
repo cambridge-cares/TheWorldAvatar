@@ -28,6 +28,8 @@ IlluminanceSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that
 HumiditySensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that is able to measure the level of humidity in the atmosphere.,https://www.theworldavatar.com/kg/ontodevice/,Humidity sensor
 RFIDSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,"A sensor used to gather information from an RFID tag, which is used to track individual objects.",https://www.theworldavatar.com/kg/ontodevice/,RFID sensor
 SmartSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that is composed of one or more Sensors together with a MicroController.,https://www.theworldavatar.com/kg/ontodevice/,Smart sensor
+PressureSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that senses pressure and converts it into an electric signal where the amount depends upon the pressure applied.,https://www.theworldavatar.com/kg/ontodevice/,Pressure sensor
+StatusSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that observes the status of another device.,https://www.theworldavatar.com/kg/ontodevice/,Status sensor
 Fridge,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is usually used for the preservation of items like food via temperature regulation.,https://www.theworldavatar.com/kg/ontodevice/,Fridge
 Setpoint,Class,,,,,,"The desired or target value for an essential variable, or process value (PV) of a control system.",https://www.theworldavatar.com/kg/ontodevice/,Setpoint
 InOutState,Class,https://saref.etsi.org/core/State,IS-A,,,,The current state of something on whether it is inside or outside of a space or object.,https://www.theworldavatar.com/kg/ontodevice/,In out state
