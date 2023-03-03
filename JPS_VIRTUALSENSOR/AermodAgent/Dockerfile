@@ -44,23 +44,23 @@ FROM ubuntu:22.10 as aermod_builder
 RUN apt update
 RUN apt install gfortran dos2unix -y
 
-#build BPIPPRM (buildings preprocessor)
-COPY bpipprm_source /root/bpipprm_source/
-WORKDIR /root/bpipprm_source
-RUN dos2unix gfortran_bpipprm.sh
-RUN ./gfortran_bpipprm.sh
-
 #build AERMAP (terrain preprocessor)
 COPY aermap_source /root/aermap_source/
 WORKDIR /root/aermap_source
 RUN dos2unix gfortran-aermap.sh
-RUN ./gfortran-aermap.sh
+# RUN ./gfortran-aermap.sh
+
+#build BPIPPRM (buildings preprocessor)
+COPY bpipprm_source /root/bpipprm_source/
+WORKDIR /root/bpipprm_source
+RUN dos2unix gfortran-bpipprm.sh
+RUN ./gfortran-bpipprm.sh
 
 # build AERMET (meteorological preprocessor)
 COPY aermet_source /root/aermet_source/
 WORKDIR /root/aermet_source
-RUN dos2unix gfortran-aermod_allwarn.sh
-RUN ./gfortran-aermod_allwarn.sh
+RUN dos2unix gfortran-aermet.sh
+RUN ./gfortran-aermet.sh
 
 # build AERMOD
 COPY aermod_source /root/aermod_source/
@@ -73,7 +73,7 @@ RUN ./gfortran-aermod.sh
 #==================================================================================================
 FROM tomcat:9 as agent
 
-COPY --from=aermod-builder /root/aermap_source/aermap /root/aermod/
+# COPY --from=aermod-builder /root/aermap_source/aermap /root/aermod/
 COPY --from=aermod_builder /root/bpipprm_source/bpipprm /root/aermod/
 COPY --from=aermod_builder /root/aermet_source/aermet /root/aermod/
 COPY --from=aermod_builder /root/aermod_source/aermod /root/aermod/

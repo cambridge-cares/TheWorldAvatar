@@ -1,0 +1,21 @@
+                                                                                                                                    
+CO STARTING                                                                                                                         
+   TITLEONE A Simple Example Problem for the AERMAP preprocessor
+   DATATYPE NED
+   DATAFILE ALPSMLC30_N001E103_DSM.tif
+   ANCHORXY REPLACED_BY_AERMOD_AGENT
+   RUNORNOT  RUN
+CO FINISHED                                                                                                                         
+
+SO STARTING
+   INCLUDED aermapSources.dat
+SO FINISHED                                                                                                                                    
+                                                                                                                                                                                                                                                           
+RE STARTING
+   INCLUDED aermapReceptors.dat 
+RE FINISHED                                                                                                                                                                                                                   
+                                                                                                                                  
+OU STARTING                                                                                                                         
+   RECEPTOR ../aermod/receptor.dat
+   SOURCLOC buildingSources.dat                                                                                         
+OU FINISHED

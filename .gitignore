@@ -119,3 +119,4 @@ JPS_VIRTUALSENSOR/DispersionVis/index.html
 obsolete/*
 **/credentials/
 JPS_VIRTUALSENSOR/ShipInputAgent/data/*
+*.tif

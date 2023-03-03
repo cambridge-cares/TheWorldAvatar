@@ -12,6 +12,7 @@ import org.locationtech.jts.io.WKTReader;
 import scala.Tuple2;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import org.apache.commons.io.IOUtils;
 
 import static java.lang.Math.min;
 
@@ -124,6 +126,11 @@ public class Buildings {
     public int run() {
         try {
             getProperties();
+            if (createAERMAPInputFile() != 0) {
+                LOGGER.error("Failed to create AERMAP input file, terminating");
+                return 1;
+            }
+
             if (createAERMAPSourceInput() != 0) {
                 LOGGER.error("Failed to create AERMAP source input, terminating");
                 return 1;
@@ -291,7 +298,6 @@ public class Buildings {
                         System.out.println(aveX+ ", " + aveY);
                         includeObject = false;
                         break;
-//                throw new RuntimeException("Stack outside poylgon");
                     }
 
                     radius = 0.0;
@@ -339,7 +345,6 @@ public class Buildings {
         JSONArray BuildingGeometricQueryResult = QueryClient.BuildingGeometricQuery(GeospatialQueryIRI,BuildingIRIString);
 
         objectIRIPrev = BuildingGeometricQueryResult.getJSONObject(0).getString("objectIRI");
-//        double minZ, maxZ;
         int numberBuildings = 0;
 
 
@@ -418,7 +423,6 @@ public class Buildings {
                         System.out.println(aveX+ ", " + aveY);
                         includeObject = false;
                         break;
-//                throw new RuntimeException("Stack outside poylgon");
                     }
 
                     outputCoordinates.clear();
@@ -468,6 +472,22 @@ public class Buildings {
 
         }
 
+    }
+
+    public int createAERMAPInputFile() {
+
+        int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180)/6);
+        String templateContent;
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("aermap.inp")) {
+            templateContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+            String simGrid = String.format("%f %f %f %f %d %d", 0.0, 0.0, 0.0, 0.0, centreZoneNumber, 0);
+            templateContent = templateContent.replace("REPLACED_BY_AERMOD_AGENT", simGrid);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Failed to read aermap.inp file");
+            return 1;
+        }
+        return writeToFile(aermapDirectory.resolve("aermap.inp"), templateContent);
     }
 
 
@@ -527,23 +547,51 @@ public class Buildings {
         sb.append(rec + " \n");
         sb.append("RE GRIDCART POL1 END \n");
 
-        return writeToFile(aermapDirectory.resolve("aermapReceptor.dat"),sb.toString());
+        return writeToFile(aermapDirectory.resolve("aermapReceptors.dat"),sb.toString());
     }
 
     public int runAERMAP() {
 
-        String AERMAP_INPUT = "aermap.inp";
-        // copy aermap input file
-        try (InputStream is = getClass().getClassLoader().getResourceAsStream("aermap.inp")) {
-            Files.copy(is, aermapDirectory.resolve(AERMAP_INPUT));
+        // Read data file names from aermap input file. Assuming that there is no "CO" before the "DATAFILE" keyword.
+        List<String> dataFiles = new ArrayList<>();
+        Path filepath = aermapDirectory.resolve("aermap.inp");
+
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(filepath.toString()));
+            String line = reader.readLine();
+            while (line != null) {
+                if (line.contains("DATAFILE")) {
+                    String [] linesplit = line.split("\\s+");
+                    dataFiles.add(linesplit[1]);
+
+                }
+                if (line.contains("CO FINISHED")) break; 
+                line = reader.readLine();
+            }
+            reader.close();
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
-            LOGGER.error("Failed to copy {}", AERMAP_INPUT);
             return 1;
         }
 
+        if (dataFiles.size() == 0) {
+            LOGGER.error("No elevation data files specified in aermap.inp");
+            return 1;
+        }
+
+        for (int i = 0; i < dataFiles.size(); i++) {
+            try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream(dataFiles.get(i))) {
+                Files.copy(inputStream, aermapDirectory.resolve(dataFiles.get(i)));
+            } catch (IOException e) {
+                LOGGER.error(e.getMessage());
+                LOGGER.error("Failed to copy the data file" + dataFiles.get(i));
+                return 1;
+            }
+        }
+
+
         try {
-            Process process = Runtime.getRuntime().exec(new String[]{EnvConfig.AERMAP_EXE, AERMAP_INPUT}, null, aermapDirectory.toFile());
+            Process process = Runtime.getRuntime().exec(new String[]{EnvConfig.AERMAP_EXE, "aermap.inp"}, null, aermapDirectory.toFile());
             if (process.waitFor() != 0) {
                 return 1;
             }
@@ -604,8 +652,6 @@ public class Buildings {
         }
         return 0;
     }
-
-
 
 
     /* Write out data to BPIPPRM input file and run this program. */
@@ -775,13 +821,12 @@ public class Buildings {
         return writeToFile(aermodDirectory.resolve("receptor.dat"),sb.toString());
     }
 
+}
+
+  // The following methods are deprecated.
 
 
-
-    // The following methods are deprecated.
-
-
-    /* Query stacks and buildings */
+    /* Query stacks and buildings 
     public static void getStacksBuildings () {
 
 
@@ -1033,9 +1078,4 @@ public class Buildings {
     }
 
 
-
-
-
-
-
-}
+    */

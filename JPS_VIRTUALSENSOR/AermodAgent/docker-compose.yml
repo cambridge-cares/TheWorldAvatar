@@ -12,8 +12,8 @@ services:
       - STACK_NAME=${STACK_NAME}
       - PYTHON_SERVICE_URL=http://python-service:5000/getAermodGeoJSON
       - NUMBER_BUILDINGS=10
-      - BPIPPRM_EXE=/root/aermod/bpipprm
       - AERMAP_EXE=/root/aermod/aermap
+      - BPIPPRM_EXE=/root/aermod/bpipprm
       - AERMET_EXE=/root/aermod/aermet # need to match Dockerfile
       - AERMOD_EXE=/root/aermod/aermod # need to match Dockerfile
       - WEATHER_AGENT=http://weatheragent:8080/WeatherAgent/UpdateStation
