@@ -10,30 +10,11 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodevice/">
         <owl:imports rdf:resource="https://saref.etsi.org/core/"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">01 March 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">03 March 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoDevice is an ontology for describing devices, their capabilities and properties.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Datatypes
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-
-    
-
-
-    <!-- http://www.opengis.net/ont/geosparql#wktLiteral -->
-
-
-    <rdfs:Datatype rdf:about="http://www.opengis.net/ont/geosparql#wktLiteral"/>
     
 
 
@@ -46,68 +27,6 @@
      -->
 
 
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit -->
-
-
-    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit">
-        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has unit</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue -->
-
-
-    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue">
-        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has value</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.w3.org/ns/ssn/systems/hasOperatingProperty -->
-
-
-    <owl:ObjectProperty rdf:about="http://www.w3.org/ns/ssn/systems/hasOperatingProperty">
-        <rdfs:domain rdf:resource="http://www.w3.org/ns/ssn/systems/OperatingRange"/>
-        <rdfs:range rdf:resource="http://www.w3.org/ns/ssn/systems/OperatingProperty"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/ns/ssn/systems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has operating property</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.w3.org/ns/ssn/systems/hasSystemProperty -->
-
-
-    <owl:ObjectProperty rdf:about="http://www.w3.org/ns/ssn/systems/hasSystemProperty">
-        <rdfs:domain rdf:resource="http://www.w3.org/ns/ssn/systems/SystemCapability"/>
-        <rdfs:range rdf:resource="http://www.w3.org/ns/ssn/systems/SystemProperty"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/ns/ssn/systems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has system property</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.w3.org/ns/ssn/systems/inCondition -->
-
-
-    <owl:ObjectProperty rdf:about="http://www.w3.org/ns/ssn/systems/inCondition">
-        <rdfs:domain rdf:resource="http://www.w3.org/ns/ssn/systems/OperatingRange"/>
-        <rdfs:domain rdf:resource="http://www.w3.org/ns/ssn/systems/SurvivalRange"/>
-        <rdfs:domain rdf:resource="http://www.w3.org/ns/ssn/systems/SystemCapability"/>
-        <rdfs:range rdf:resource="http://www.w3.org/ns/ssn/systems/Condition"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/ns/ssn/systems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">in condition</rdfs:label>
-    </owl:ObjectProperty>
     
 
 
@@ -337,66 +256,6 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
-    // Data properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-
-    
-
-
-    <!-- http://purl.org/dc/elements/1.1/description -->
-
-
-    <owl:DatatypeProperty rdf:about="http://purl.org/dc/elements/1.1/description">
-        <rdfs:domain rdf:resource="https://saref.etsi.org/core/State"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that links a state to a string value.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">description</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue -->
-
-
-    <owl:DatatypeProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue">
-        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that links a measure to a double value.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has numerical value</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.opengis.net/ont/geosparql#asWKT -->
-
-
-    <owl:DatatypeProperty rdf:about="http://www.opengis.net/ont/geosparql#asWKT">
-        <rdfs:domain rdf:resource="http://www.opengis.net/ont/sf#Geometry"/>
-        <rdfs:range rdf:resource="http://www.opengis.net/ont/geosparql#wktLiteral"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.opengis.net/ont/geosparql#</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">as WKT</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- http://www.w3.org/2000/01/rdf-schema#label -->
-
-
-    <owl:DatatypeProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#label">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
     // Classes
     //
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -409,262 +268,91 @@
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Amount of money</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Height -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Height">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Height</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Length -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Length">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Length</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Mass -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Mass">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mass</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Mass"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Measure -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measure</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Quantity</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ratio</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Unit -->
-
-
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unit</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio"/>
     
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Width -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Width">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Width</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.opengis.net/ont/geosparql#Geometry -->
-
-
-    <owl:Class rdf:about="http://www.opengis.net/ont/geosparql#Geometry">
-        <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#SpatialObject"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.opengis.net/ont/geosparql#</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Geometry</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.opengis.net/ont/geosparql#SpatialObject -->
-
-
-    <owl:Class rdf:about="http://www.opengis.net/ont/geosparql#SpatialObject"/>
-    
-
-
-    <!-- http://www.opengis.net/ont/sf#Geometry -->
-
-
-    <owl:Class rdf:about="http://www.opengis.net/ont/sf#Geometry">
-        <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Geometry"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.opengis.net/ont/sf#</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Geometry</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Width"/>
     
 
 
     <!-- http://www.opengis.net/ont/sf#Point -->
 
 
-    <owl:Class rdf:about="http://www.opengis.net/ont/sf#Point">
-        <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/sf#Geometry"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.opengis.net/ont/sf#</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Point</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.w3.org/ns/ssn/systems/Accuracy -->
-
-
-    <owl:Class rdf:about="http://www.w3.org/ns/ssn/systems/Accuracy">
-        <rdfs:subClassOf rdf:resource="http://www.w3.org/ns/ssn/systems/SystemProperty"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/ns/ssn/systems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Accuracy</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.w3.org/ns/ssn/systems/Condition -->
-
-
-    <owl:Class rdf:about="http://www.w3.org/ns/ssn/systems/Condition">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/ns/ssn/systems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Condition</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.w3.org/ns/ssn/systems/Frequency -->
-
-
-    <owl:Class rdf:about="http://www.w3.org/ns/ssn/systems/Frequency">
-        <rdfs:subClassOf rdf:resource="http://www.w3.org/ns/ssn/systems/SystemProperty"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/ns/ssn/systems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Frequency</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.w3.org/ns/ssn/systems/MeasurementRange -->
-
-
-    <owl:Class rdf:about="http://www.w3.org/ns/ssn/systems/MeasurementRange">
-        <rdfs:subClassOf rdf:resource="http://www.w3.org/ns/ssn/systems/SystemProperty"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/ns/ssn/systems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measurement range</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.opengis.net/ont/sf#Point"/>
     
 
 
     <!-- http://www.w3.org/ns/ssn/systems/OperatingProperty -->
 
 
-    <owl:Class rdf:about="http://www.w3.org/ns/ssn/systems/OperatingProperty">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/ns/ssn/systems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Operating property</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.w3.org/ns/ssn/systems/OperatingProperty"/>
     
 
 
     <!-- http://www.w3.org/ns/ssn/systems/OperatingRange -->
 
 
-    <owl:Class rdf:about="http://www.w3.org/ns/ssn/systems/OperatingRange">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/ns/ssn/systems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Operating range</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.w3.org/ns/ssn/systems/Precision -->
-
-
-    <owl:Class rdf:about="http://www.w3.org/ns/ssn/systems/Precision">
-        <rdfs:subClassOf rdf:resource="http://www.w3.org/ns/ssn/systems/SystemProperty"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/ns/ssn/systems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Precision</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.w3.org/ns/ssn/systems/Resolution -->
-
-
-    <owl:Class rdf:about="http://www.w3.org/ns/ssn/systems/Resolution">
-        <rdfs:subClassOf rdf:resource="http://www.w3.org/ns/ssn/systems/SystemProperty"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/ns/ssn/systems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Resolution</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.w3.org/ns/ssn/systems/Sensitivity -->
-
-
-    <owl:Class rdf:about="http://www.w3.org/ns/ssn/systems/Sensitivity">
-        <rdfs:subClassOf rdf:resource="http://www.w3.org/ns/ssn/systems/SystemProperty"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/ns/ssn/systems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sensitivity</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.w3.org/ns/ssn/systems/OperatingRange"/>
     
 
 
     <!-- http://www.w3.org/ns/ssn/systems/SurvivalRange -->
 
 
-    <owl:Class rdf:about="http://www.w3.org/ns/ssn/systems/SurvivalRange">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/ns/ssn/systems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Survival range</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.w3.org/ns/ssn/systems/SurvivalRange"/>
     
 
 
     <!-- http://www.w3.org/ns/ssn/systems/SystemCapability -->
 
 
-    <owl:Class rdf:about="http://www.w3.org/ns/ssn/systems/SystemCapability">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/ns/ssn/systems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">System capability</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- http://www.w3.org/ns/ssn/systems/SystemProperty -->
-
-
-    <owl:Class rdf:about="http://www.w3.org/ns/ssn/systems/SystemProperty">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/ns/ssn/systems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">System property</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.w3.org/ns/ssn/systems/SystemCapability"/>
     
 
 
@@ -916,18 +604,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontodevice/Noise -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Noise">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/SoundPressureLevel"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A sound, especially one that is loud or unpleasant or that causes disturbance. </rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Noise</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontodevice/OilMeter -->
 
 
@@ -1077,34 +753,6 @@
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TimeSeries</rdfs:label>
     </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontouom/SoundPressureLevel -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/SoundPressureLevel">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontouom/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sound pressure level</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Annotations
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-
-    <rdf:Description rdf:about="http://www.w3.org/2000/01/rdf-schema#label">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that links a device to a string label.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">label</rdfs:label>
-    </rdf:Description>
 </rdf:RDF>
 
 

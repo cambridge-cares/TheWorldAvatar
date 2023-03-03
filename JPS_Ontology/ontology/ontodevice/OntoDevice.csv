@@ -29,37 +29,11 @@ HumiditySensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A sensor that is
 RFIDSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,"A sensor used to gather information from an RFID tag, which is used to track individual objects.",https://www.theworldavatar.com/kg/ontodevice/,RFID sensor
 SmartSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that is composed of one or more Sensors together with a MicroController.,https://www.theworldavatar.com/kg/ontodevice/,Smart sensor
 Fridge,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is usually used for the preservation of items like food via temperature regulation.,https://www.theworldavatar.com/kg/ontodevice/,Fridge
-http://www.w3.org/ns/ssn/systems/SurvivalRange,Class,,,,,,,http://www.w3.org/ns/ssn/systems/,Survival range
-http://www.w3.org/ns/ssn/systems/OperatingRange,Class,,,,,,,http://www.w3.org/ns/ssn/systems/,Operating range
-http://www.w3.org/ns/ssn/systems/SystemCapability,Class,,,,,,,http://www.w3.org/ns/ssn/systems/,System capability
-http://www.w3.org/ns/ssn/systems/SystemProperty,Class,,,,,,,http://www.w3.org/ns/ssn/systems/,System property
-http://www.w3.org/ns/ssn/systems/Frequency,Class,http://www.w3.org/ns/ssn/systems/SystemProperty,IS-A,,,,,http://www.w3.org/ns/ssn/systems/,Frequency
-http://www.w3.org/ns/ssn/systems/Accuracy,Class,http://www.w3.org/ns/ssn/systems/SystemProperty,IS-A,,,,,http://www.w3.org/ns/ssn/systems/,Accuracy
-http://www.w3.org/ns/ssn/systems/MeasurementRange,Class,http://www.w3.org/ns/ssn/systems/SystemProperty,IS-A,,,,,http://www.w3.org/ns/ssn/systems/,Measurement range
-http://www.w3.org/ns/ssn/systems/Precision,Class,http://www.w3.org/ns/ssn/systems/SystemProperty,IS-A,,,,,http://www.w3.org/ns/ssn/systems/,Precision
-http://www.w3.org/ns/ssn/systems/Resolution,Class,http://www.w3.org/ns/ssn/systems/SystemProperty,IS-A,,,,,http://www.w3.org/ns/ssn/systems/,Resolution
-http://www.w3.org/ns/ssn/systems/Sensitivity,Class,http://www.w3.org/ns/ssn/systems/SystemProperty,IS-A,,,,,http://www.w3.org/ns/ssn/systems/,Sensitivity
-http://www.w3.org/ns/ssn/systems/Condition,Class,,,,,,,http://www.w3.org/ns/ssn/systems/,Condition
-http://www.w3.org/ns/ssn/systems/OperatingProperty,Class,,,,,,,http://www.w3.org/ns/ssn/systems/,Operating property
 Setpoint,Class,,,,,,"The desired or target value for an essential variable, or process value (PV) of a control system.",https://www.theworldavatar.com/kg/ontodevice/,Setpoint
 InOutState,Class,https://saref.etsi.org/core/State,IS-A,,,,The current state of something on whether it is inside or outside of a space or object.,https://www.theworldavatar.com/kg/ontodevice/,In out state
 PowerFactor,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio,IS-A,,,,"The ratio of working power, measured in kilowatts (kW), to apparent power, measured in kilovolt amperes (kVA).",https://www.theworldavatar.com/kg/ontodevice/,Power factor
 ScreenBrightness,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio,IS-A,,,,The brightness of the screen of a device measured as a ratio.,https://www.theworldavatar.com/kg/ontodevice/,Screen brightness
-http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Ratio
-Noise,Class,https://www.theworldavatar.com/kg/ontouom/SoundPressureLevel,IS-A,,,,"A sound, especially one that is loud or unpleasant or that causes disturbance. ",https://www.theworldavatar.com/kg/ontodevice/,Noise
-https://www.theworldavatar.com/kg/ontouom/SoundPressureLevel,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,https://www.theworldavatar.com/kg/ontouom/,Sound pressure level
-http://www.ontology-of-units-of-measure.org/resource/om-2/Length,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Length
-http://www.ontology-of-units-of-measure.org/resource/om-2/Height,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Length,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Height
-http://www.ontology-of-units-of-measure.org/resource/om-2/Width,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Length,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Width
-http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Amount of money
-http://www.ontology-of-units-of-measure.org/resource/om-2/Mass,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Mass
-http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Quantity
-http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Measure
-http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,Class,,,,,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,Unit
 https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,Class,,,,,,,https://www.theworldavatar.com/kg/ontotimeseries/,TimeSeries
-http://www.opengis.net/ont/sf#Point,Class,http://www.opengis.net/ont/sf#Geometry,IS-A,,,,,http://www.opengis.net/ont/sf#,Point
-http://www.opengis.net/ont/sf#Geometry,Class,http://www.opengis.net/ont/geosparql#Geometry,IS-A,,,,,http://www.opengis.net/ont/sf#,Geometry
-http://www.opengis.net/ont/geosparql#Geometry,Class,http://www.opengis.net/ont/geosparql#SpatialObject,IS-A,,,,,http://www.opengis.net/ont/geosparql#,Geometry
 observes,Object Property,,,Device,https://saref.etsi.org/core/State,,A relationship between a device and the state that it is observing.,https://www.theworldavatar.com/kg/ontodevice/,observes
 measures,Object Property,,,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,A relationship between a device and a quantity that it is measuring.,https://www.theworldavatar.com/kg/ontodevice/,measures
 hasLength,Object Property,,,Device,http://www.ontology-of-units-of-measure.org/resource/om-2/Length,,A relationship between a device and its length.,https://www.theworldavatar.com/kg/ontodevice/,has length
@@ -73,11 +47,6 @@ hasSurvivalRange,Object Property,,,Device,http://www.w3.org/ns/ssn/systems/Survi
 hasSetpoint,Object Property,,,Device,Setpoint,,A relationship between a device and a setpoint.,https://www.theworldavatar.com/kg/ontodevice/,has setpoint
 hasQuantity,Object Property,,,Setpoint,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,A relationship between a setpoint or operating property and the quantity it represents.,https://www.theworldavatar.com/kg/ontodevice/,has quantity
 hasQuantity,Object Property,,,http://www.w3.org/ns/ssn/systems/OperatingProperty,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,,A relationship between a setpoint or operating property and the quantity it represents.,https://www.theworldavatar.com/kg/ontodevice/,has quantity
-http://www.w3.org/ns/ssn/systems/inCondition,Object Property,,,http://www.w3.org/ns/ssn/systems/SystemCapability,http://www.w3.org/ns/ssn/systems/Condition,,,http://www.w3.org/ns/ssn/systems/,in condition
-http://www.w3.org/ns/ssn/systems/inCondition,Object Property,,,http://www.w3.org/ns/ssn/systems/OperatingRange,http://www.w3.org/ns/ssn/systems/Condition,,,http://www.w3.org/ns/ssn/systems/,in condition
-http://www.w3.org/ns/ssn/systems/inCondition,Object Property,,,http://www.w3.org/ns/ssn/systems/SurvivalRange,http://www.w3.org/ns/ssn/systems/Condition,,,http://www.w3.org/ns/ssn/systems/,in condition
-http://www.w3.org/ns/ssn/systems/hasOperatingProperty,Object Property,,,http://www.w3.org/ns/ssn/systems/OperatingRange,http://www.w3.org/ns/ssn/systems/OperatingProperty,,,http://www.w3.org/ns/ssn/systems/,has operating property
-http://www.w3.org/ns/ssn/systems/hasSystemProperty,Object Property,,,http://www.w3.org/ns/ssn/systems/SystemCapability,http://www.w3.org/ns/ssn/systems/SystemProperty,,,http://www.w3.org/ns/ssn/systems/,has system property
 https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries,Object Property,,,https://saref.etsi.org/core/State,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,,,https://www.theworldavatar.com/kg/ontodevice/,has timeseries
 https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,,,https://www.theworldavatar.com/kg/ontodevice/,has timeseries
 https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries,Object Property,,,http://www.opengis.net/ont/sf#Point,https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries,,,https://www.theworldavatar.com/kg/ontodevice/,has timeseries
@@ -85,9 +54,3 @@ isAttachedTo,Object Property,,,Device,https://w3id.org/bot#Element,,A relationsh
 isConnectedTo,Object Property,,,Device,Device,,A relationship that describes a device being connected to another device where the operation of one device will affect the other.,https://www.theworldavatar.com/kg/ontodevice/,is connected to
 sendsSignalTo,Object Property,,,Device,Device,,A relationship that describes a device sending a signal to another device.,https://www.theworldavatar.com/kg/ontodevice/,sends signal to
 hasGeoLocation,Object Property,,,Device,http://www.opengis.net/ont/sf#Point,,A relationship that describes a device's location.,https://www.theworldavatar.com/kg/ontodevice/,has geo location
-http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,has value
-http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,http://www.ontology-of-units-of-measure.org/resource/om-2/Unit,,,http://www.ontology-of-units-of-measure.org/resource/om-2/,has unit
-http://www.opengis.net/ont/geosparql#asWKT,Data Property,,,http://www.opengis.net/ont/sf#Geometry,http://www.opengis.net/ont/geosparql#wktLiteral,,,http://www.opengis.net/ont/geosparql#,as WKT
-http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue,Data Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,double,,A relationship that links a measure to a double value.,https://www.theworldavatar.com/kg/ontodevice/,has numerical value
-http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Device,String,,A relationship that links a device to a string label.,https://www.theworldavatar.com/kg/ontodevice/,label
-http://purl.org/dc/elements/1.1/description,Data Property,,,https://saref.etsi.org/core/State,String,,A relationship that links a state to a string value.,https://www.theworldavatar.com/kg/ontodevice/,description
