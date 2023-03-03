@@ -1,0 +1,12 @@
+// This is an example HTTP request to update all flood warnings using a provided .json file
+// instead of the actual call to the EA flood monitoring API
+
+// file_path: the path to the .json file to use within Docker container
+
+POST http://localhost:5009/floodwarnings/update/all
+Content-Type: application/json
+
+{ "query": {
+      "file_path": "/app/mock_api_responses/warning1.json"
+    }
+}

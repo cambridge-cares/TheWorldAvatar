@@ -18,6 +18,7 @@ services:
       - "5009:5000"
     volumes:
       - logs:/root/.jps
+      - ./resources/mock_api_responses:/app/mock_api_responses
     configs:
       - blazegraph
       - geoserver

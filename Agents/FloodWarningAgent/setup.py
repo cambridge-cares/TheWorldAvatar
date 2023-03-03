@@ -17,7 +17,7 @@ setup(
         'APScheduler==3.10.0',
         'Flask==2.1.0',
         'geojson==3.0.0',
-        'gunicorn==20.1.0',
+        'gunicorn==20.0.4',
         'JayDeBeApi==1.2.3',
         'pyderivationagent==1.4.1',
         'py4jps==1.0.33', 

@@ -104,12 +104,12 @@ The provided [Dockerfile] contains instructions to create Docker images for both
 
 ## Provided functionality
 
-Agent start-up will automatically register a recurring task to assimilate latest flood alerts and warning on an hourly basis in the background. Besides this recurring background task, additional HTTP requests can be sent (but might be delayed) to the agent. An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root http://localhost:5007/floodwarnings.
+Agent start-up will automatically register a recurring task to assimilate latest flood alerts and warning on an hourly basis in the background. Besides this recurring background task, additional HTTP requests can be sent (but might be delayed) to the agent. An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root http://localhost:5009/floodwarnings.
 
-- GET request to update all floos warnings and alerts (i.e. instantiate missing flood areas and flood warnings, update instantiated flood warnings, and delete obsolete flood warnings)
+- GET request to update all flood warnings and alerts (i.e. instantiate missing flood areas and flood warnings, update instantiated flood warnings, and delete obsolete flood warnings)
 > `/floodwarnings/update/all` 
 
-Example requests are provided in the [resources] folder.
+Example requests are provided in the [resources] folder. **Please note**: To reproduce flood alerts and warning in the King's Lynn area, a folder with *mocked* API responses is provided in the [resources] folder and mounted into the Docker container as volume. To instantiate those *mocked* API responses, please use the `HTTPRequest_update_all_mock` example HTTP request.
 
 
 

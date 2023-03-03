@@ -28,7 +28,7 @@ from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
-def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT, 
+def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT, 
                     update_endpoint=UPDATE_ENDPOINT):
     """
     Update instantiated flood warnings/alerts incl. associated flood areas in the KG, 
@@ -39,6 +39,7 @@ def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT,
     Arguments:
         county (str): County name for which to instantiate flood warnings (e.g. 'Hampshire')
                       Instantiates ALL current warnings if no county given
+        mock_api (str): Path to local .json file to mock API response
     """
 
     # Initialise return values
@@ -58,7 +59,7 @@ def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT,
         ### Update all flood warnings ###
         # 1) Retrieve current flood warnings from API
         logger.info("Retrieving current flood warnings from API ...")
-        current_warnings = retrieve_current_warnings()
+        current_warnings = retrieve_current_warnings(mock_api=mock_api)
         logger.info("Current flood warnings retrieved.")
 
         # 2) Retrieve instantiated flood warnings and flood areas from KG
