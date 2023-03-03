@@ -431,6 +431,9 @@ def delete_instantiated_flood_warnings(warnings_to_delete: list, query_endpoint=
     if not kgclient:
         kgclient = KGClient(query_endpoint, query_endpoint)
 
+    # Initialise list of iris for which to delete timestamps
+    delete_timestamps = []
+
     for warning in warnings_to_delete:
         # Retrieve associated flood area URI
         query = get_associated_flood_area(warning)
@@ -439,19 +442,29 @@ def delete_instantiated_flood_warnings(warnings_to_delete: list, query_endpoint=
         try:
             area = [r['area_iri'] for r in res][0]
         except Exception as ex:
-            logger.error('No associated flood area IRI could be retrieved for warning: {}.'.format(warning))
-            raise RuntimeError('No associated flood area IRI could be retrieved for warning: {}.'.format(warning)) from ex         
+            logger.warning('No associated flood area IRI could be retrieved for warning: {}: {}'.format(warning, str(ex)))
+            area = None
+        
+        if area:
+            # Ensure flood area is set inactive (to be suppressed from visualising)
+            num_rows = postgis_client.set_flood_area_activity(activity=False, area_uri=area)
+            if num_rows != 1:
+                logger.error(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
+                raise RuntimeError(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
 
-        # Create SPARQL delete query
+        # Append warning and derivation iris to list of iris for which to delete timestamps
+        query = get_instances_with_timestamps_to_delete(warning)
+        res = kgclient.performQuery(query)
+        # Unwrap results
+        delete_timestamps.extend([iri for r in res for iri in list(r.values())])
+
+        # Create SPARQL delete query for other triples
         query = delete_flood_warning(warning)
         # Perform update
         kgclient.performUpdate(query)
 
-        # Ensure flood area is set inactive (to be suppressed from visualising)
-        num_rows = postgis_client.set_flood_area_activity(activity=False, area_uri=area)
-        if num_rows != 1:
-            logger.error(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
-            raise RuntimeError(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
+    # Delete timestamps from derivation and warning IRI
+    #TODO: Use deleteTimestamps method from pyderivationclient
     
     return len(warnings_to_delete)
 

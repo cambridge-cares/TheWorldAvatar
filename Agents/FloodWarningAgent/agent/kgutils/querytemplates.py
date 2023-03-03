@@ -79,6 +79,22 @@ def get_associated_flood_area(flood_warning_iri: str) -> str:
     return query
 
 
+def get_instances_with_timestamps_to_delete(flood_warning_iri: str) -> str:
+    # Retrieve flood warning and (potentially) associated derivation instance
+    # for which to delete timestamps markup
+    query = f"""
+        SELECT ?warning_iri ?derivation_iri
+        WHERE {{
+            VALUES ?warning_iri {{ <{flood_warning_iri}> }}
+            ?warning_iri <{RDF_TYPE}> <{RT_FLOOD_ALERT_OR_WARNING}> . 
+            OPTIONAL {{ <{flood_warning_iri}> ^<{DERIV_DERIVED_FROM}> ?derivation_iri . }}
+        }}
+    """
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    return query
+
+
 #
 # INTERNAL SPARQL UPDATES
 #
@@ -284,7 +300,12 @@ def delete_flood_warning(warning_uri: str = None) -> str:
                 ?quantity_value <{RDF_TYPE}> <{OM_MEASURE}> ;
                                 <{OM_HAS_UNIT}> ?quantity_unit ; 
                                 <{OM_HAS_NUMERICALVALUE}> ?quantity_num_value .
-
+                
+                ?derivation_iri <{RDF_TYPE}> ?deriv_type ; 
+                                <{DERIV_DERIVED_FROM}> ?inputs ; 
+                                <{DERIV_DERIVED_USING}> ?agent . 
+                ?outputs <{DERIV_BELONGS_TO}> ?derivation_iri . 
+                
             }} WHERE {{
                 <{warning_uri}> <{RDF_TYPE}> <{RT_FLOOD_ALERT_OR_WARNING}> ; 
                                 <{FLOOD_HAS_SEVERITY}> ?severity_iri ;
@@ -318,9 +339,14 @@ def delete_flood_warning(warning_uri: str = None) -> str:
                                             <{OM_HAS_UNIT}> ?quantity_unit ; 
                                             <{OM_HAS_NUMERICALVALUE}> ?quantity_num_value .
                          }}
+                OPTIONAL {{ <{warning_uri}> ^<{DERIV_DERIVED_FROM}> ?derivation_iri . 
+                            ?derivation_iri <{RDF_TYPE}> ?deriv_type ; 
+                                            <{DERIV_DERIVED_FROM}> ?inputs ; 
+                                            <{DERIV_DERIVED_USING}> ?agent . 
+                            ?outputs <{DERIV_BELONGS_TO}> ?derivation_iri . 
+                 }}
             }}
         """
-        #TODO: include deletion of derivation markup (at end of lifetime of warning)
 
         # Remove unnecessary whitespaces
         query = ' '.join(query.split())
