@@ -3027,6 +3027,26 @@ public class DerivationSparql {
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 
+	void dropTimestampsOf(List<String> entities) {
+		ModifyQuery modify = Queries.MODIFY();
+		SelectQuery query = Queries.SELECT();
+
+		Variable entity = query.var();
+		Variable time = query.var();
+		Variable timeUnixIri = query.var();
+		Variable timestamp = query.var();
+		Variable trs = query.var();
+
+		ValuesPattern entityVP = new ValuesPattern(entity, entities.stream().map(e -> iri(e)).collect(Collectors.toList()));
+		TriplePattern tp1 = entity.has(hasTime, time);
+		TriplePattern tp2 = time.isA(InstantClass).andHas(inTimePosition, timeUnixIri);
+		TriplePattern tp3 = timeUnixIri.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, trs);
+
+		modify.delete(tp1, tp2, tp3).where(entityVP, tp1, tp2, tp3).prefix(prefixTime);
+
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+
 	/**
 	 * Updates timestamps of the given instances in one-go via SPARQL update with sub-query.
 	 * Nothing happen to the instances that do not have timestamp.

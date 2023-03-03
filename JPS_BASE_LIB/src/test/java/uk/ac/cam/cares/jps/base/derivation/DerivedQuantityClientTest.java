@@ -1009,6 +1009,33 @@ public class DerivedQuantityClientTest {
 	}
 
 	@Test
+	public void testDropTimestampsOf() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+
+		// add two timestamps and confirm they are there
+		devClient.addTimeInstance(input1);
+		devClient.addTimeInstance(input2);
+		Assert.assertNotNull(testKG.getIndividual(input1));
+		Assert.assertNotNull(testKG.getIndividual(input2));
+
+		// drop one timestamp and confirm it is gone, but the other is still there
+		devClient.dropTimestampsOf(Arrays.asList(input1));
+		Assert.assertNull(testKG.getIndividual(input1));
+		Assert.assertNotNull(testKG.getIndividual(input2));
+
+		// drop a non-existent timestamp and nothing should happen
+		Assert.assertNull(testKG.getIndividual(entity1));
+		devClient.dropTimestampsOf(Arrays.asList(entity1));
+		Assert.assertNull(testKG.getIndividual(entity1));
+
+		// drop a list of timestamps and confirm they are gone
+		devClient.dropTimestampsOf(Arrays.asList(input1, input2, entity1));
+		Assert.assertNull(testKG.getIndividual(input1));
+		Assert.assertNull(testKG.getIndividual(input2));
+		Assert.assertNull(testKG.getIndividual(entity1));
+	}
+
+	@Test
 	public void testRetrieveAgentInputIRIs() {
 		OntModel testKG = mockClient.getKnowledgeBase();
 		// add triples about agent
