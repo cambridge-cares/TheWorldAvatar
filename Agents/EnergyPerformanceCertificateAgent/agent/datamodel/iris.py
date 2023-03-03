@@ -2,6 +2,9 @@
 TBOX_URL = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl'
 # alternative: 'http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl'
 
+###--- Derivation Markup ---###
+DERIVATION_INSTANCE_BASE_URL = 'https://www.theworldavatar.com/kg/derivation/'
+
 ###--- Common Base URLs ---###
 # External ontologies
 DABGEO = 'http://www.purl.org/oema/infrastructure/'

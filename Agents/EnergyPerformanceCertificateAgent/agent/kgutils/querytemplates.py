@@ -273,6 +273,46 @@ def get_ocgml_crs():
     return query
 
 
+def get_all_pure_inputs(property_iris: list = []):
+    # Retrieve IRIs of all (potential) pure inputs instantiated/updated by EPC agent, i.e.
+    # - OBE properties (Building, Flat, Property)
+    # - OBE postal code
+    # - OBE floor area
+    # NOTE: Floor area is nested in optional clause to also retrieve buildings 
+    #       without floor area. As 'updateTimestamps' only updates already initialised
+    #       pure input time stamps, this design generalises better without unnecessary
+    #       computational overhead.
+
+    # Remove any potential None values and duplicates
+    if not isinstance(property_iris, list):
+        property_iris = [property_iris]
+    property_iris = [iri for iri in property_iris if iri]
+    property_iris = list(set(property_iris))
+
+    query = f"""
+        SELECT ?postcode ?property ?floor_area 
+        WHERE {{ 
+    """
+
+    if property_iris:
+        values = '> <'.join(property_iris)
+        values = '<' + values + '>'
+        query += f"VALUES ?property {{ {values} }}"
+    
+    query += f"""
+        ?property <{RDF_TYPE}>/<{RDFS_SUBCLASS_OF}>* <{OBE_PROPERTY}> ; 
+                  <{OBE_HAS_ADDRESS}>/<{OBE_HAS_POSTALCODE}> ?postcode . 
+        ?postcode <{RDF_TYPE}> <{OBE_POSTALCODE}> . 
+        OPTIONAL {{ ?property <{OBE_HAS_TOTAL_FLOOR_AREA}> ?floor_area . 
+                    ?floor_area <{RDF_TYPE}> <{OM_AREA}> . }}
+        }}
+    """
+
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    return query
+
+
 #
 # SPARQL UPDATES
 #
