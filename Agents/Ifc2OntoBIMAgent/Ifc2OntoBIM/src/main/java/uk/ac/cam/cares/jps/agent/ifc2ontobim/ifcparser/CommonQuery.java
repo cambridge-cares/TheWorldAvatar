@@ -78,8 +78,8 @@ public class CommonQuery {
      * @param builder A select builder object to append the statements to.
      */
     public static void addBaseQueryComponents(SelectBuilder builder) {
-        builder.addVar(CommonQuery.UID_VAR)
-                .addVar(CommonQuery.NAME_VAR)
+        builder.addVar(UID_VAR)
+                .addVar(NAME_VAR)
                 .addVar(PLACEMENT_VAR);
         builder.addWhere(ZONE_VAR, IFC_ID + EXPRESS_HASSTRING, UID_VAR)
                 .addWhere(ZONE_VAR, IFC_NAME + EXPRESS_HASSTRING, NAME_VAR)
