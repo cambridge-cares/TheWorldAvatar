@@ -22,9 +22,46 @@
                     "tiles": [
                         "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=buildings:buildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
+                },
+                {
+                    "id": "test_buildings",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=test:test&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
                 }
             ], 
             "layers": [
+                {
+                    "id": "test_buildings-layer-value",
+                    "name": "Test Buildings",
+                    "source": "test_buildings",
+                    "source-layer": "test",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 5,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case", 
+                            ["==", ["get", "value estimation"], null], "#000000", [
+                            "interpolate", ["linear"],
+                            ["number", ["get", "value estimation"]],
+                            100000, "#3887BE",
+                            1100000, "#DB1F1F"
+                        ]],
+                        "fill-extrusion-opacity": 0.8,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building height"],
+                            ["*", 1.4, ["to-number", ["get", "building height"]]],
+                            8
+                        ]
+                    }
+                },
                 {
                     "id": "aoi-layer",
                     "name": "This layer is the area of interest, i.e. greater King's Lynn area", 
@@ -65,7 +102,7 @@
                             "https://www.theworldavatar.com/kg/ontobuiltenv/Non-Domestic", "#1F77B4",
                             "#808080"
                           ],
-                        "fill-extrusion-opacity": 0.6,
+                        "fill-extrusion-opacity": 0.8,
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
                             "case",
@@ -95,7 +132,7 @@
                             100000, "#3887BE",
                             1100000, "#DB1F1F"
                         ]],
-                        "fill-extrusion-opacity": 0.4,
+                        "fill-extrusion-opacity": 0.8,
                         "fill-extrusion-base": 0,
                         "fill-extrusion-height": [
                             "case",
@@ -277,10 +314,10 @@
                         "fill-color": [
                             "match",
                             ["get", "severity"],
-                            "4", "#ADD8E6",
-                            "3", "#FFD34B",
-                            "2", "#FFA500",
-                            "1", "#FF0000",
+                            "4", "#add8e6",
+                            "3", "#ebc244",
+                            "2", "#ff8800",
+                            "1", "#c90a0a",
                             "#808080"
                           ],
                         "fill-opacity": 0.4,
