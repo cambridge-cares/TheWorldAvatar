@@ -492,7 +492,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/GravitySensor">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Sensor"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A sensor that detect minute localized changes in the force of Earth’s gravity caused by variations in rock or other materials’ density underground.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A sensor that detect minute localized changes in the force of Earth's gravity caused by variations in rock or other material's density underground.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gravity sensor</rdfs:label>
     </owl:Class>
