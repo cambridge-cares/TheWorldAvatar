@@ -30,6 +30,8 @@ public class NamespaceMapper {
     public static final String LIST_NAMESPACE= "https://w3id.org/list#";
     public static final String EXPRESS_PREFIX = "express";
     public static final String EXPRESS_NAMESPACE= "https://w3id.org/express#";
+    public static final String BUILDING_STRUCTURE_PREFIX = "ontobuildingstructure";
+    public static final String BUILDING_STRUCTURE_NAMESPACE= "http://www.theworldavatar.com/kg/ontobuildingstructure/";
     private static String baseNamespace = "http://default.org/";
     private static final String basePrefix = "inst";
 
@@ -70,6 +72,7 @@ public class NamespaceMapper {
         nsMapping.put(BIM_PREFIX, BIM_NAMESPACE);
         nsMapping.put(BOT_PREFIX, BOT_NAMESPACE);
         nsMapping.put(SKOS_PREFIX, SKOS_NAMESPACE);
+        nsMapping.put(BUILDING_STRUCTURE_PREFIX, BUILDING_STRUCTURE_NAMESPACE);
 
         // Duplicate IfcOwl namespaces for sub-queries - require bim as well
         nsMapping.put(IFC_PREFIX, IFC_NAMESPACE);

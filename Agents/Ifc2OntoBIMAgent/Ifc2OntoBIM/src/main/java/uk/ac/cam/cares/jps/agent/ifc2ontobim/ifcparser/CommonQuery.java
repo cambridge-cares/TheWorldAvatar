@@ -70,6 +70,8 @@ public class CommonQuery {
     protected static final String IFCCOMPOUND_PLANE_ANGLE = NamespaceMapper.IFC_PREFIX + ":IfcCompoundPlaneAngleMeasure";
     protected static final String IFCGEOM_REP_CONTEXT = NamespaceMapper.IFC_PREFIX + ":IfcGeometricRepresentationContext";
     protected static final String IFCLOCALPLACEMENT = NamespaceMapper.IFC_PREFIX + ":IfcLocalPlacement";
+    // IfcOwl Element Classes
+    protected static final String IFCDOOR = NamespaceMapper.IFC_PREFIX + ":IfcDoor";
 
 
     /**

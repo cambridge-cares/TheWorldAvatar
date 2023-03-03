@@ -67,6 +67,11 @@ public class OntoBimConstant {
     public static final String BIM_STOREY_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + STOREY_REP_CLASS;
     public static final String BIM_ROOM_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + ROOM_REP_CLASS;
     public static final String BIM_COMPOUND_PLANE_ANGLE = NamespaceMapper.BIM_NAMESPACE + "CompoundPlaneAngle";
+    // OntoBim element classes
+    public static final String ASSET_MODEL_REP_CLASS = "IfcModelRepresentation";
+    public static final String BIM_ASSET_MODEL_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + ASSET_MODEL_REP_CLASS;
+    public static final String DOOR_CLASS = "Door";
+    public static final String BIM_DOOR_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + DOOR_CLASS;
     // OntoBim geometry classes
     public static final String DIR_VEC_CLASS = "DirectionVector";
     public static final String BIM_DIR_VEC_CLASS = NamespaceMapper.BIM_NAMESPACE + DIR_VEC_CLASS;
