@@ -67,3 +67,5 @@ Utilities/data/inputs/*
 
 # Data files
 *.geojson
+Utilities/dtvf_legends/all_icons.svg
+Utilities/flood_warnings/*json
