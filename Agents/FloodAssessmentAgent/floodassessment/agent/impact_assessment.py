@@ -37,7 +37,7 @@ class FloodAssessmentAgent(DerivationAgent):
 
     def agent_output_concepts(self) -> list:
         # Output concept (i.e. result) of the Derivation
-        return [FLOOD_POPULATION, FLOOD_BUILDINGS, FLOOD_IMPACT]
+        return [FLOOD_POPULATION, FLOOD_BUILDING, FLOOD_IMPACT]
 
 
     def validate_inputs(self, http_request) -> bool:

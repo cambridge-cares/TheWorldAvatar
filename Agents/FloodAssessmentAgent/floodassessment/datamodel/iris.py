@@ -32,7 +32,7 @@ FLOOD_HAS_MONETARY_VALUE = FLOOD + 'hasMonetaryValue'
 FLOOD_HAS_TOTAL_MONETARY_VALUE = FLOOD + 'hasTotalMonetaryValue'
 FLOOD_AFFECTS = FLOOD + 'affects'
 FLOOD_POPULATION = FLOOD + 'Population'
-FLOOD_BUILDINGS = FLOOD + 'Buildings'
+FLOOD_BUILDING = FLOOD + 'Building'
 FLOOD_HAS_TOTAL_COUNT = FLOOD + 'hasTotalCount'
 # Flood concepts from ENVO (https://ontobee.org/ontology/ENVO)
 FLOOD_FLOOD = 'http://purl.obolibrary.org/obo/ENVO_01000710'

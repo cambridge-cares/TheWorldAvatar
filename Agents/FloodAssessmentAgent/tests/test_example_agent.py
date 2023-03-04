@@ -106,7 +106,7 @@ def test_monitor_derivations(
 
     # Assert that there's currently no instance having rdf:type of the output signature in the KG
     assert not sparql_client.check_if_triple_exist(None, dm.RDF_TYPE, dm.FLOOD_POPULATION)
-    assert not sparql_client.check_if_triple_exist(None, dm.RDF_TYPE, dm.FLOOD_BUILDINGS)
+    assert not sparql_client.check_if_triple_exist(None, dm.RDF_TYPE, dm.FLOOD_BUILDING)
     assert not sparql_client.check_if_triple_exist(None, dm.RDF_TYPE, dm.FLOOD_IMPACT)
 
     # Create derivation instance for new information
@@ -150,7 +150,7 @@ def test_monitor_derivations(
 
         # Assert that there's now an instance with rdf:type of the output signature in the KG
         #NOTE: Flood:Buildings will always get instantiated (even if no buildings are at risk)
-        assert sparql_client.check_if_triple_exist(None, dm.RDF_TYPE, dm.FLOOD_BUILDINGS)
+        assert sparql_client.check_if_triple_exist(None, dm.RDF_TYPE, dm.FLOOD_BUILDING)
 
         # Verify correct number of triples (incl. timestamp & agent triples)
         triples += expected_deriv_triples

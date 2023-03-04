@@ -139,7 +139,7 @@ class KGClient(PySparqlClient):
 
         # Affected buildings
         graph.add((URIRef(flood_iri), URIRef(FLOOD_AFFECTS), URIRef(buildings_iri)))
-        graph.add((URIRef(buildings_iri), URIRef(RDF_TYPE), URIRef(FLOOD_BUILDINGS)))
+        graph.add((URIRef(buildings_iri), URIRef(RDF_TYPE), URIRef(FLOOD_BUILDING)))
         graph.add((URIRef(buildings_iri), URIRef(FLOOD_HAS_TOTAL_COUNT), Literal(affected_buildings_count, datatype=XSD_INTEGER))) 
         if affected_buildings_value is not None:
             graph.add((URIRef(buildings_iri), URIRef(FLOOD_HAS_TOTAL_MONETARY_VALUE), URIRef(bldgs_money_iri)))
