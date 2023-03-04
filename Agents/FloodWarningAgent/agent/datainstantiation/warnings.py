@@ -111,10 +111,15 @@ def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT,
             updated_warnings = \
                 update_instantiated_flood_warnings(warnings_to_update, current_warnings, 
                                                    kgclient=kg_client)
+            # TODO: 'unifiedUpdateDerivation' inside 'update_instantiated_flood_warnings'
+            #       fails with NoSuchElementException: No value present
+            #                                       derivation_client=derivation_client)
             print('Updating finished.')
             
             # Derivation markup:
             # Update timestamps of updated flood warnings (pure inputs)
+            # TODO: To be alinged with derivation update inside 'update_instantiated_flood_warnings'
+            #       (either or)
             derivation_client.updateTimestamps(warnings_to_update)
 
         # 6) Delete inactive flood warnings
@@ -390,7 +395,8 @@ def instantiate_flood_warnings(warnings_data: list=[],
 
 
 def update_instantiated_flood_warnings(warnings_to_update: list, warnings_data_api: list,
-                                       query_endpoint=QUERY_ENDPOINT, kgclient=None):
+                                       query_endpoint=QUERY_ENDPOINT, kgclient=None,
+                                       derivation_client=None):
     """
     Update flood warnings and alerts in the KG (i.e. update list of flood warnings
     with data dicts as retrieved from API by 'retrieve_current_warnings')
@@ -440,6 +446,22 @@ def update_instantiated_flood_warnings(warnings_to_update: list, warnings_data_a
         if num_rows != 1:
             logger.error(f'Expected to change "severity" field for 1 flood area, but updated {num_rows}.')
             raise RuntimeError(f'Expected to change "severity" field for 1 flood area, but updated {num_rows}.')
+        
+        # Derivation markup:
+        # Request for derivation update with previously initialised derivation IRI
+        deriv_iri = retrieve_flood_assessment_derivation_iri(sparql_client=kgclient,
+                        flood_warning_iri=data['warning_uri'],
+                        flood_assessment_agent_iri=FLOOD_ASSESSMENT_AGENT_IRI)
+        if derivation_client and deriv_iri:            
+            logger.info(f"Request derivation update for: {data['warning_uri']}")
+            flood_assessment_derivation_markup(
+                derivation_client=derivation_client,
+                sparql_client=kgclient,
+                flood_warning_iri=data['warning_uri'],
+                affected_building_iris=[],
+                property_value_iris=[],
+                flood_assessment_derivation_iri=deriv_iri
+            )
     
     return len(data_to_update)
 
