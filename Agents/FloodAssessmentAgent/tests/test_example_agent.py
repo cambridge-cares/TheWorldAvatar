@@ -7,7 +7,6 @@ import copy
 import floodassessment.datamodel as dm
 
 from . import conftest as cf
-from tests.mockutils.env_configs_mock import DOCKERISED_TEST
 
 
 def test_example_triples():
@@ -51,7 +50,7 @@ def test_example_data_instantiation(initialise_clients):
         assert sparql_client.checkInstanceClass(warning, dm.FLOOD_ALERT_WARNING)
 
     # Verify that poundSterling symbol is correctly retrieved and decoded
-    # NOTE: `summarise_affected_property_values`` summarises only market values with
+    # NOTE: `summarise_affected_property_values` summarises only market values with
     #       correct poundSterling symbol --> passing this test implies that symbol
     #       is correctly retrieved and decoded
     market_value = sparql_client.summarise_affected_property_values(cf.MARKET_VALUES)
@@ -74,8 +73,6 @@ def test_monitor_derivations(
 ):
     """
         Test if derivation agent performs derivation update as expected
-        The global variable DOCKERISED_TEST controls if the test (incl. agent) is running locally
-        within memory or deployed in docker container (to mimic the production environment)
     """
 
     # -------------------------------------------------------------------------
@@ -125,10 +122,6 @@ def test_monitor_derivations(
 
     # Verify correct number of triples (incl. timestamp & agent triples)
     assert sparql_client.getAmountOfTriples() == triples    
-
-    if not DOCKERISED_TEST:
-        # Start the scheduler to monitor derivations if it's local agent test
-        agent._start_monitoring_derivations()
 
     if expect_exception:
         # Verify that agent throws (i.e. instantiates) correct Exception message for
@@ -202,12 +195,7 @@ def test_monitor_derivations(
 
     print("All check passed.")
 
-    # Shutdown the scheduler to clean up if it's local agent test
-    if not DOCKERISED_TEST:
-        agent.scheduler.shutdown()
 
-
-@pytest.mark.skipif(not DOCKERISED_TEST, reason="Test only applicable for Dockerised test")
 def test_wrongly_marked_up_derivations(
     initialise_clients, create_example_agent    
 ):

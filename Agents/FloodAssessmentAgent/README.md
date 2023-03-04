@@ -188,10 +188,10 @@ docker compose -f "docker-compose-test_dockerised.yml" up -d --build
 
 Depending on the system setup `docker compose` might need to be replaced with `docker-compose`. In case of issues with starting the tests, try pulling the required Blazegraph image manually beforehand via `docker pull docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT`. 
 
-To run the dockerised tests in Debug mode, both a `docker-compose-test_dockerised_debug.yml` and a suitable `launch.json` configuration have been provided. 
-**Please note** 
-- All occurrences of `localhost` need to be replaced with `host.docker.internal` in the `env_configs_mock.py` and `stack_configs_mock.py` files
-- The updated content of both files needs to be copied into the respective files in the `floodassessment\utils\` repository (This is necessary as the agent codes and tests are mounted as volumes instead of being copied (and adjusted) into the container)
+To run the dockerised tests in Debug mode, both a `docker-compose-test_dockerised_debug.yml` and a suitable `launch.json` configuration have been provided. Before starting to debug, please:
+
+- Copy the content of the `env_configs_mock.py` and `stack_configs_mock.py` files into the respective counterparts in the `floodassessment\utils\` repository (This is necessary as the agent codes and tests are mounted as volumes instead of being copied (and adjusted) into the container)
+- Adjust the import of `env_configs_mock` to `env_configs`
 - Please also note that some issues with attaching the Debugger have been observed (i.e. `connect ECONNREFUSED 127.0.0.1:5678 `) using VS Code. In case the Debugger does not attach right away, try attaching using the `Python: Reattach and Debug` configuration after the test container has been started. 
 
 &nbsp;
