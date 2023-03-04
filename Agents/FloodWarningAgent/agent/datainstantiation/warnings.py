@@ -14,7 +14,6 @@ from agent.datamodel.data_mapping import TIMECLASS, DOUBLE
 from agent.datainstantiation.ea_data import retrieve_current_warnings, \
                                             retrieve_flood_area_data
 from agent.datainstantiation.ons_data import retrieve_ons_county
-from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from agent.kgutils.querytemplates import *
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
@@ -24,6 +23,7 @@ from agent.utils.stackclients import GdalClient, GeoserverClient, \
 
 # Import PyDerivationAgent for derivation markup
 from pyderivationagent import PyDerivationClient
+from pyderivationagent import PySparqlClient
 
 from py4jps import agentlogging
 
@@ -51,8 +51,9 @@ def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT,
     updated_warnings = 0
     deleted_warnings = 0
 
-    # Initialise KG Client
-    kg_client = KGClient(query_endpoint, update_endpoint)
+    # Initialise KG Client with PySparqlClient instance
+    kg_client = PySparqlClient(query_endpoint=query_endpoint,
+                               update_endpoint=update_endpoint)
 
     # Create a PyDerivationClient instance
     derivation_client = PyDerivationClient(
@@ -155,9 +156,10 @@ def instantiate_flood_areas_and_warnings(areas_to_instantiate: list, areas_kg: d
     new_areas = 0
     new_warnings = 0
 
-    # Create KG client if not provided
+    # Create PySparqlClient instance if not provided
     if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
+        kgclient = PySparqlClient(query_endpoint=query_endpoint,
+                                  update_endpoint=query_endpoint)
 
     # Instantiate (potentially) missing flood areas
     if areas_to_instantiate:
@@ -232,9 +234,10 @@ def instantiate_flood_areas(areas_data: list=[],
         Dict with newly instantiated area IRIs as keys and History IRIs as values
     """
 
-    # Create KG client if not provided
+    # Create PySparqlClient instance if not provided
     if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
+        kgclient = PySparqlClient(query_endpoint=query_endpoint,
+                                  update_endpoint=query_endpoint)
 
     # Initialise relevant Stack Clients and parameters
     postgis_client = PostGISClient()
@@ -320,9 +323,10 @@ def instantiate_flood_warnings(warnings_data: list=[],
     # Initialise PostGIS client
     postgis_client = PostGISClient()
 
-    # Create KG client if not provided
+    # Create PySparqlClient instance if not provided
     if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
+        kgclient = PySparqlClient(query_endpoint=query_endpoint,
+                                  update_endpoint=query_endpoint)
 
     triples = ''
     for warning in warnings_data:
@@ -373,9 +377,10 @@ def update_instantiated_flood_warnings(warnings_to_update: list, warnings_data_a
     # Initialise PostGIS client
     postgis_client = PostGISClient()
 
-    # Create KG client if not provided
+    # Create PySparqlClient instance if not provided
     if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
+        kgclient = PySparqlClient(query_endpoint=query_endpoint,
+                                  update_endpoint=query_endpoint)
 
     # Extract relevant warning data
     data_to_update = [w for w in warnings_data_api if w.get('warning_uri') in warnings_to_update]
@@ -429,9 +434,10 @@ def delete_instantiated_flood_warnings(warnings_to_delete: list, query_endpoint=
     # Initialise PostGIS client
     postgis_client = PostGISClient()
 
-    # Create KG client if not provided
+    # Create PySparqlClient instance if not provided
     if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
+        kgclient = PySparqlClient(query_endpoint=query_endpoint,
+                                  update_endpoint=query_endpoint)
 
     # Initialise list of iris for which to drop timestamps markup
     drop_times = []
@@ -483,9 +489,10 @@ def get_instantiated_flood_warnings(query_endpoint=QUERY_ENDPOINT,
                          latest update timestamp as values
     """
 
-    # Create KG client if not provided
+    # Create PySparqlClient instance if not provided
     if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
+        kgclient = PySparqlClient(query_endpoint=query_endpoint,
+                                  update_endpoint=query_endpoint)
     
     # Retrieve instantiated flood warnings
     query = get_all_flood_warnings()
@@ -516,9 +523,10 @@ def get_instantiated_flood_areas(query_endpoint=QUERY_ENDPOINT,
                       Location IRIs as values
     """
 
-    # Create KG client if not provided
+    # Create PySparqlClient instance if not provided
     if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
+        kgclient = PySparqlClient(query_endpoint=query_endpoint,
+                                  update_endpoint=query_endpoint)
     
     # Retrieve instantiated flood warnings
     query = get_all_flood_areas()
