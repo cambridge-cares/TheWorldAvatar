@@ -4,6 +4,7 @@ ABOX_URL = 'https://github.com/cambridge-cares/TheWorldAvatar/raw/main/JPS_Ontol
 
 ###--- Derivation Markup ---###
 DERIVATION_INSTANCE_BASE_URL = 'https://www.theworldavatar.com/kg/derivation/'
+FLOOD_ASSESSMENT_AGENT_IRI = 'https://www.theworldavatar.com/resource/agents/Service__KL_FloodAssessment/Service'
 
 ###--- Common Base URLs ---###
 # External ontologies
@@ -24,7 +25,7 @@ ONS2 = 'http://statistics.data.gov.uk/def/geography/collection/'
 ONS3 = 'http://publishmydata.com/def/ontology/foi/'
 # CoMo / CARES ontologies
 FLOOD = 'https://www.theworldavatar.com/kg/ontoflood/'
-BUILT = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
+OBE = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 TS = 'https://www.theworldavatar.com/kg/ontotimeseries/'
 DERIV = 'https://www.theworldavatar.com/kg/ontoderivation/'
 # Knowledge base
@@ -114,6 +115,9 @@ FLOOD_FLOOD_WARNING = FLOOD + 'FloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b
 FLOOD_FLOOD_ALERT = FLOOD + 'FloodAlert_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b'
 FLOOD_WARNING_NO_LONGER_IN_FORCE = FLOOD + 'InactiveFloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b'
 
+# OntoBuiltEnv
+OBE_HASMARKETVALUE = OBE + 'hasMarketValue'
+
 # OntoTimeSeries
 TS_HAS_RDB = TS + 'hasRDB'
 TS_HAS_TIME_SERIES = TS + 'hasTimeSeries'
@@ -132,7 +136,6 @@ TIME_HAS_XSDDURATION = TIME + 'hasXSDDuration'
 TIME_INSTANT = TIME + 'Instant'
 TIME_INTERVAL = TIME + 'Interval'
 TIME_IN_XSDDATETIMESTAMP = TIME + 'inXSDDateTimeStamp'
-
 
 # Ontology of units of measure
 OM_AMOUNTOFMONEY = OM + 'AmountOfMoney'
@@ -195,8 +198,7 @@ ONS_MEMBER_OF = ONS3 + 'memberOf'
 
 # OM / UOM unit symbols
 OM_GBP = OM + 'poundSterling'
-# NOTE: There are reported issues with encoding of special characters, i.e. Blazegraph
-#       claiming to use utf-8 encoding while actually using iso-8859-1
-#       --> PoundSterling displayed wrongly in GUI but correctly retrieved within code
-# Details: https://github.com/blazegraph/database/issues/224
+# NOTE: There are issues with encoding of special characters; hence, all units are
+#       "properly" uploaded to KG at agent startup and decoded when retrieved
+#       For details see: kgutils.initialise_kg.instantiate_all_units()
 GBP_SYMBOL = '£'

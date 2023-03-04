@@ -7,7 +7,6 @@
 # flood warnings and alerts from the API and instantiate it in the KG
 
 import uuid
-
 from datetime import datetime as dt
 
 from agent.datamodel.data_mapping import TIMECLASS, DOUBLE
@@ -24,10 +23,12 @@ from agent.utils.stackclients import GdalClient, GeoserverClient, \
 # Import PyDerivationAgent for derivation markup
 from pyderivationagent import PyDerivationClient
 from pyderivationagent import PySparqlClient
-
-from py4jps import agentlogging
+from agent.datainstantiation.derivation_markup import retrieve_affected_property_info, \
+                                                      flood_assessment_derivation_markup, \
+                                                      retrieve_flood_assessment_derivation_iri
 
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
@@ -100,7 +101,8 @@ def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT,
             instantiated_areas, instantiated_warnings = \
                 instantiate_flood_areas_and_warnings(areas_to_instantiate, areas_kg,
                                                      warnings_to_instantiate, current_warnings, 
-                                                     kgclient=kg_client)
+                                                     kgclient=kg_client, 
+                                                     derivation_client=derivation_client)
             print('Instantiation finished.')
 
         # 5) Update outdated flood warnings
@@ -137,7 +139,8 @@ def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT,
 
 def instantiate_flood_areas_and_warnings(areas_to_instantiate: list, areas_kg: dict,
                                          warnings_to_instantiate: list, warnings_data_api: list,
-                                         query_endpoint=QUERY_ENDPOINT, kgclient=None):
+                                         query_endpoint=QUERY_ENDPOINT, kgclient=None,
+                                         derivation_client=None):
     """
     Instantiate flood areas and warnings in the KG with data dicts as retrieved 
     from API by 'retrieve_current_warnings' (flood area data retrieved as needed)
@@ -147,6 +150,7 @@ def instantiate_flood_areas_and_warnings(areas_to_instantiate: list, areas_kg: d
         areas_kg (dict): Dictionary with instantiated flood area URIs as keys and flood area IRIs as values
         warnings_to_instantiate (list): List of flood warning URIs to be instantiated
         warnings_data_api (list): List of dictionaries with flood warning data from API
+        derivation_client (PyDerivationClient): PyDerivationClient instance
 
     Returns:
         Number of newly instantiated flood areas and flood warnings as int
@@ -212,7 +216,8 @@ def instantiate_flood_areas_and_warnings(areas_to_instantiate: list, areas_kg: d
     # Add location IRIs to warning data
     for w in warning_data_to_instantiate:
         w['location_iri'] = area_location_map.get(w.get('area_uri'))
-    new_warnings = instantiate_flood_warnings(warning_data_to_instantiate, kgclient=kgclient)
+    new_warnings = instantiate_flood_warnings(warning_data_to_instantiate, kgclient=kgclient,
+                                              derivation_client=derivation_client)
 
     return new_areas, new_warnings
 
@@ -304,9 +309,9 @@ def instantiate_flood_areas(areas_data: list=[],
     return len(areas_data), area_location_map, area_history_map
 
 
-def instantiate_flood_warnings(warnings_data: list=[],
+def instantiate_flood_warnings(warnings_data: list=[], 
                                query_endpoint=QUERY_ENDPOINT,
-                               kgclient=None):
+                               kgclient=None, derivation_client=None):
     """
     Instantiate list of flood warning data dicts as retrieved from API by 'retrieve_current_warnings',
     further enriched with location_iri created by 'flood_area_instantiation_triples'
@@ -315,6 +320,7 @@ def instantiate_flood_warnings(warnings_data: list=[],
         warnings_data (list): List of dicts with relevant flood warnings/alerts data
         query_endpoint - SPARQL endpoint from which to retrieve data
         kgclient - pre-initialized KG client with endpoints
+        derivation_client (PyDerivationClient): PyDerivationClient instance
 
     Returns:
         Number (int) of instantiated flood warnings/alerts
@@ -352,6 +358,29 @@ def instantiate_flood_warnings(warnings_data: list=[],
         if num_rows != 1:
             logger.error(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
             raise RuntimeError(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
+        
+        # Derivation markup:
+        if derivation_client:
+            # 1) Retrieve list of affected buildings, i.e. buildings in flood area
+            affected_building_iris = postgis_client.get_buildings_within_floodarea(warning['area_uri'])
+            # 2) Retrieve building info for affected properties 
+            property_info_dct = retrieve_affected_property_info(kgclient, affected_building_iris)
+            property_value_iris = [property_info_dct[iri]['mv'] for iri in affected_building_iris if property_info_dct[iri]['mv']]
+            print(f'Number of affected properties: {len(property_info_dct)}')
+            # 3) Add derivation markup for the flood event
+            logger.info(f"Adding derivation markup for warning: {warning['warning_uri']}")
+            flood_assessment_derivation_markup(
+                derivation_client=derivation_client,
+                sparql_client=kgclient,
+                flood_warning_iri=warning['warning_uri'],
+                affected_building_iris=affected_building_iris,
+                property_value_iris=property_value_iris,
+                flood_assessment_derivation_iri=retrieve_flood_assessment_derivation_iri(
+                    sparql_client=kgclient,
+                    flood_warning_iri=warning['warning_uri'],
+                    flood_assessment_agent_iri=FLOOD_ASSESSMENT_AGENT_IRI,
+                )
+            )
 
     # Create INSERT query and perform update
     query = f"INSERT DATA {{ {triples} }}"
