@@ -78,15 +78,6 @@
         },
         {
             "type": "shell",
-            "label": "update-py4jps",
-            // TODO: Platform specific commands to be revisited at some point
-            // Linux (n/a option to be commented out):
-            "command": "bash ./build_py4jps_stackclients_resource.sh",   
-            // Windows (n/a option to be commented out): 
-            // "command": "build_py4jps_stackclients_resource.sh",      
-        },
-        {
-            "type": "shell",
             "label": "compose-dockerised-test",
             "command": "docker compose -f docker-compose-test_dockerised_debug.yml up -d --build"
         }
