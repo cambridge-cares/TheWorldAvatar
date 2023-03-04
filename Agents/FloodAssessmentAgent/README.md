@@ -155,7 +155,7 @@ deriv_iri = deriv_client.createAsyncDerivationForNewInfo(agent.agentIRI, deriv_i
 &nbsp;
 # 3. Agent Integration Test
 
-As this derivation agent modifies the knowledge graph automatically, it is  recommended to run integration tests before deploying it for production. A few integration tests are provided in the `tests` repository. Although the agent is designed to be deployed to a larger Docker stack, the integration tests can be run as standalone (dockerised) agent. Blazegraph and PostgreSQL are spun up as Docker containers using the `testcontainers` library.
+As this derivation agent modifies the knowledge graph automatically, it is  recommended to run integration tests before deploying it for production. A few integration tests are provided in the `tests` repository. Although the agent is designed to be deployed to a larger Docker stack, the integration tests can be run as standalone (dockerised) agent. Blazegraph is spun up as Docker containers using the `testcontainers` library.
 
 All tests are located in the `test_example_agent.py` file while all fixtures and utility functions are provided in the `conftest.py` file:
 
@@ -177,17 +177,22 @@ To run the integration tests, access to the `docker.cmclinnovations.com` registr
 4. `mockutils` folder: Python modules to mock Docker stack settings (i.e. settings normally retrieved from Stack Clients). When creating the dockerised test agent, those files will be used to overwrite the corresponding modules in `floodassessment\utils\` repository to ensure successful agent startup. Furthermore, they contain several settings required to run the tests.
 
 &nbsp;
-## To perform the dockerised agent integration tests, please follow these steps:
+## Dockerised agent integration tests
 
-The dockerised tests use one Docker container to initialise the Derivation agent and run pytest, and use Docker in Docker to spin up the required Blazegraph and Postgres testcontainer instances:
+The dockerised tests use one Docker container to initialise the Derivation agent and run pytest, and use Docker in Docker to spin up the required Blazegraph testcontainer instance:
 
 ```bash
 # Build and run Dockerised agent test
 docker compose -f "docker-compose-test_dockerised.yml" up -d --build
 ```
 
-To run the dockerised tests in Debug mode, both a `docker-compose-test_dockerised_debug.yml` and a suitable `launch.json` configuration have been provided. However, some issues with attaching the Debugger have been observed (i.e. `connect ECONNREFUSED 127.0.0.1:5678 `) using VS Code. Running the debug tests, furthermore, requires all occurrences of `localhost` to be replaced with `host.docker.internal` in the `env_configs_mock.py` and `stack_configs_mock.py` files as well as placing the updated content into the respective files in the `floodassessment\utils\` repository. This is necessary as the agent codes and tests are mounted as volumes instead of being copied (and adjusted) into the container.
+Depending on the system setup `docker compose` might need to be replaced with `docker-compose`. In case of issues with starting the tests, try pulling the required Blazegraph image manually beforehand via `docker pull docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT`. 
 
+To run the dockerised tests in Debug mode, both a `docker-compose-test_dockerised_debug.yml` and a suitable `launch.json` configuration have been provided. 
+**Please note** 
+- All occurrences of `localhost` need to be replaced with `host.docker.internal` in the `env_configs_mock.py` and `stack_configs_mock.py` files
+- The updated content of both files needs to be copied into the respective files in the `floodassessment\utils\` repository (This is necessary as the agent codes and tests are mounted as volumes instead of being copied (and adjusted) into the container)
+- Please also note that some issues with attaching the Debugger have been observed (i.e. `connect ECONNREFUSED 127.0.0.1:5678 `) using VS Code. In case the Debugger does not attach right away, try attaching using the `Python: Reattach and Debug` configuration after the test container has been started. 
 
 &nbsp;
 # Authors #

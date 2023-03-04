@@ -20,14 +20,25 @@
             ]
         },
         {
-            "name": "Python: Debug dockerised Tests",
             "type": "python",
+            "name": "Python: Debug dockerised Tests",
             "request": "attach",
+            "host": "localhost",
+            "port": 5678,
             "preLaunchTask": "compose-dockerised-test",
-            "connect": {
-                "host": "127.0.0.1",
-                "port": 5678
-            },
+            "pathMappings": [
+                {
+                    "localRoot": "${workspaceFolder}/",
+                    "remoteRoot": "/app/"
+                }
+            ]
+        },
+        {
+            "type": "python",
+            "name": "Python: Reattach and Debug",
+            "request": "attach",
+            "host": "localhost",
+            "port": 5678,
             "pathMappings": [
                 {
                     "localRoot": "${workspaceFolder}/",

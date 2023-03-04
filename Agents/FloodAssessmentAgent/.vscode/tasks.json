@@ -68,16 +68,6 @@
         },
         {
             "type": "shell",
-            "label": "update-compose-build-deploy",
-            "dependsOn": [
-                "update-py4jps",
-                "compose-build",
-                "compose-deploy"
-            ],
-            "dependsOrder": "sequence"
-        },
-        {
-            "type": "shell",
             "label": "compose-dockerised-test",
             "command": "docker compose -f docker-compose-test_dockerised_debug.yml up -d --build"
         }
