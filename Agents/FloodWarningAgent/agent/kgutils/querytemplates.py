@@ -6,13 +6,10 @@
 # The purpose of this module is to provide templates for (frequently)
 # required SPARQL queries
 
-import uuid
-
 from agent.datamodel import *
 
-from py4jps import agentlogging
-
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 

@@ -4,15 +4,13 @@
 ################################################
 
 import os
-
 from flask import Blueprint, request, jsonify
 
 from agent.datainstantiation.warnings import update_warnings
 from agent.errorhandling.exceptions import InvalidInput
 
-from py4jps import agentlogging
-
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 

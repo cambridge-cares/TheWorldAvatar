@@ -11,7 +11,6 @@ import glob
 import jaydebeapi
 import json
 import re
-
 from shapely.geometry import shape, MultiPolygon
 
 from agent.datainstantiation.ea_data import retrieve_flood_area_polygon
@@ -21,9 +20,8 @@ from agent.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, \
 from agent.utils.javagateway import stackClientsGw, jpsBaseLibGW
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, ONTOP_URL
 
-from py4jps import agentlogging
-
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 

@@ -17,9 +17,8 @@ from datetime import datetime as dt
 from agent.datamodel.data_mapping import *
 from agent.errorhandling.exceptions import APIException
 
-from py4jps import agentlogging
-
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
