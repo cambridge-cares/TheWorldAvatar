@@ -19,8 +19,8 @@ setup(
         'geojson==3.0.0',
         'gunicorn==20.0.4',
         'JayDeBeApi==1.2.3',
-        'pyderivationagent==1.4.1',
-        'py4jps==1.0.33', 
+        'pyderivationagent==1.4.4',
+        'py4jps==1.0.34', 
         'requests==2.28.2',
         'shapely==2.0.1',
     ]

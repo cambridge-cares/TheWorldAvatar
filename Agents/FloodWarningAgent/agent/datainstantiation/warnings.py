@@ -109,20 +109,21 @@ def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT,
                 update_instantiated_flood_warnings(warnings_to_update, current_warnings, 
                                                    kgclient=kg_client)
             print('Updating finished.')
+            
+            # Derivation markup:
+            # Update timestamps of updated flood warnings (pure inputs)
+            derivation_client.updateTimestamps(warnings_to_update)
 
         # 6) Delete inactive flood warnings
         if warnings_to_delete:
             print('Deleting inactive flood warnings ...')
-            deleted_warnings = \
+            deleted_warnings, drop_times_iris = \
                 delete_instantiated_flood_warnings(warnings_to_delete, kgclient=kg_client)
             print('Deleting finished.')
 
-        ### Derivation markup ###
-        # Update timestamps of updated flood warnings (pure inputs)
-        if warnings_to_update:
-            # NOTE: updateTimestamps() seems to delete unrelated time relationships
-            #       when called with an empty list; hence, only call if non-empty
-            derivation_client.updateTimestamps(warnings_to_update)
+            # Derivation markup:
+            # Drop timestamps of deleted flood warnings & derivation instances
+            derivation_client.dropTimestampsOf(drop_times_iris)
 
         # Print update summary 
         print(f'Instantiated areas: {instantiated_areas}')
@@ -422,6 +423,7 @@ def delete_instantiated_flood_warnings(warnings_to_delete: list, query_endpoint=
 
     Returns:
         Number of updated flood warnings as int
+        List of IRIs for which to drop timestamps markup
     """
     
     # Initialise PostGIS client
@@ -431,8 +433,8 @@ def delete_instantiated_flood_warnings(warnings_to_delete: list, query_endpoint=
     if not kgclient:
         kgclient = KGClient(query_endpoint, query_endpoint)
 
-    # Initialise list of iris for which to delete timestamps
-    delete_timestamps = []
+    # Initialise list of iris for which to drop timestamps markup
+    drop_times = []
 
     for warning in warnings_to_delete:
         # Retrieve associated flood area URI
@@ -456,17 +458,15 @@ def delete_instantiated_flood_warnings(warnings_to_delete: list, query_endpoint=
         query = get_instances_with_timestamps_to_delete(warning)
         res = kgclient.performQuery(query)
         # Unwrap results
-        delete_timestamps.extend([iri for r in res for iri in list(r.values())])
+        drop_times.extend([iri for r in res for iri in list(r.values())])
 
         # Create SPARQL delete query for other triples
         query = delete_flood_warning(warning)
         # Perform update
         kgclient.performUpdate(query)
 
-    # Delete timestamps from derivation and warning IRI
-    #TODO: Use deleteTimestamps method from pyderivationclient
-    
-    return len(warnings_to_delete)
+   
+    return len(warnings_to_delete), drop_times
 
 
 def get_instantiated_flood_warnings(query_endpoint=QUERY_ENDPOINT,
