@@ -14,6 +14,8 @@ services:
       - LAYERNAME=floodwarnings
       - GEOSERVER_WORKSPACE=floodwarnings
       - ONTOP_FILE=/app/resources/ontop.obda
+      # PostGIS table with building footprints
+      - BUILDINGS_TABLE=buildings
     ports:
       - "5009:5000"
     volumes:

@@ -23,7 +23,7 @@ def retrieve_env_vars():
 
     # Define global scope for global variables
     global NAMESPACE, DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, \
-           ONTOP_FILE
+           ONTOP_FILE, BUILDINGS_TABLE
 
     # Create error message
     def _error_msg(variable):
@@ -68,6 +68,13 @@ def retrieve_env_vars():
     elif not os.path.exists(ONTOP_FILE):
         logger.error('Invalid "ONTOP_FILE" has been provided in environment variables.')
         raise ValueError('Invalid "ONTOP_FILE" has been provided in environment variables.')
+    
+    # Retrieve PostGIS table name with building information (i.e. footprints)
+    # Required to derive and mark up buildings affected by specific flood warning
+    BUILDINGS_TABLE = os.getenv('BUILDINGS_TABLE')
+    if not BUILDINGS_TABLE:
+        logger.error(_error_msg('BUILDINGS_TABLE'))
+        raise ValueError(_error_msg('BUILDINGS_TABLE'))
 
 
 # Run when module is imported

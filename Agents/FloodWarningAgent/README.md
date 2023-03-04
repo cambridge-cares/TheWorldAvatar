@@ -23,7 +23,9 @@ DATABASE              # PostGIS/PostgreSQL database name (default: `postgres`, i
 LAYERNAME             # Geoserver layer name, ALSO table name for geospatial features in PostGIS
 GEOSERVER_WORKSPACE   
 ONTOP_FILE            # Path to ontop mapping file (i.e. path within Docker container)
+BUILDINGS_TABLE       # PostGIS table name containing building footprints
 ```
+After instantiating a new flood warning or alert, the `FloodWarningAgent` also instantiates the relevant derivation mark-up (i.e. to allow for automatic flood assessment by the [FloodAssessmentAgent] which is implemented using the Derivation Framework). To mark up affected buildings by a specific flood, PostGIS is used to geospatially assess all (previously) instantiated buildings within the flood area. Hence, the `BUILDINGS_TABLE` needs to be provided to the agent.
 
 ### **2) Accessing Github's Container registry**
 
@@ -127,8 +129,8 @@ Markus Hofmeister (mh807@cam.ac.uk), February 2023
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [py4jps]: https://pypi.org/project/py4jps/#description
 
-
 [Environment Agency Real Time flood-monitoring API]: https://environment.data.gov.uk/flood-monitoring/doc/reference#flood-warnings
+[FloodAssessmentAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAssessmentAgent
 [OntoFlood]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoflood
 [Stack-Clients]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-clients
 [Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
