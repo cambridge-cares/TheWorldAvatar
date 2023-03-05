@@ -13,7 +13,7 @@ from floodassessment.kg_operations.javagateway import stackClientsGw, jpsBaseLib
 from floodassessment.utils.env_configs import DATABASE#, WARNINGS_TABLE, BUILDINGS_TABLE
 from floodassessment.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
 
-FLOODAREA_TABLE = 'test'
+FLOODAREA_TABLE = 'floodwarnings'
 POPULATION_TABLE = 'population'
 
 # Initialise logger
@@ -31,7 +31,7 @@ class StackClient:
 
     # Create ONE Stack Clients view
     stackClients_view = stackClientsGw.createModuleView()
-    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.postgis")
+    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.postgis.PostGISClient")
 
 
 class PostGISClient(StackClient):
@@ -47,7 +47,7 @@ class PostGISClient(StackClient):
             self.conn_props = self.connection_properties()
         except Exception as ex:
             logger.error("Unable to retrieve JDBC connection properties.")
-            raise RuntimeError("Unable to retrieve JDBC connection properties.") from ex
+            raise Exception("Unable to retrieve JDBC connection properties.") from ex
 
     
     def connection_properties(self):
@@ -75,7 +75,6 @@ class PostGISClient(StackClient):
         This function uses PostGIS' geospatial capabilities to calculate the sum of
         the population within a specific flood area polygon, i.e. uses summary statistics
         of the population raster data within a given polygon area
-        ()
 
         flood_area_iri - IRI of flood area of interest
         population_raster_table - Name of table containing population raster data
@@ -96,11 +95,17 @@ class PostGISClient(StackClient):
                     # Fetching the SQL results from the cursor only works on first call
                     # Recurring calls return empty list and curs.execute needs to be run again
                     res = curs.fetchall()
-                    # Extract IRI results from list of tuples
-                    res = [r[0] for r in res]
-                    return res
+                    # Extract total sum from list of tuples
+                    counts = [r[0] for r in res if r[0]]
+                    if not counts:
+                        # Only None entries in list (e.g. if wrong area_iri provided)
+                        return None
+                    else:
+                        # Return total sum
+                        return int(sum(counts))
         except Exception as ex:
+            # Raised e.g. in case where specified tables do not exist
             logger.error(f'Unsuccessful JDBC interaction: {ex}')
-            raise RuntimeError('Unsuccessful JDBC interaction.') from ex
+            raise Exception('Unsuccessful JDBC interaction.') from ex
         
 

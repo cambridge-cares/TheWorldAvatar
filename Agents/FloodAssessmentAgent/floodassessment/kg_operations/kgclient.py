@@ -61,6 +61,25 @@ class KGClient(PySparqlClient):
             return res[0].get('flood')
         else:
             return None
+        
+
+    def get_associated_flood_area(self, alert_warning_iri:str) -> str:
+        # Retrieve flood area IRI associated with flood alert/warning
+
+        query = f"""
+            SELECT ?area
+            WHERE {{   
+            <{alert_warning_iri}> <{RDF_TYPE}> <{FLOOD_ALERT_WARNING}> ; 
+                                  ^<{RT_CURRENT_WARNING}> ?area .
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        if len(res) == 1:
+            return res[0].get('area')
+        else:
+            logger.error(f"Ambiguous flood area(s) instantiated for Flood Alert/Warning '{alert_warning_iri}'.")
+            raise Exception(f"Ambiguous flood area(s) instantiated for Flood Alert/Warning '{alert_warning_iri}'.")
 
 
     def summarise_affected_property_values(self, property_value_iris:list) -> int:

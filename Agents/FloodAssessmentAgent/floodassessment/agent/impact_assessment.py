@@ -17,6 +17,7 @@ from pyderivationagent import DerivationOutputs
 
 from floodassessment.datamodel.iris import *
 from floodassessment.kg_operations.kgclient import KGClient
+from floodassessment.utils.stackclients import PostGISClient
 
 
 class FloodAssessmentAgent(DerivationAgent):
@@ -121,10 +122,19 @@ class FloodAssessmentAgent(DerivationAgent):
         PostGIS' geospatial count over population density raster data within the
         boundary of the ArealExtendPolygon associated with the flood alert/warning
         """
-        #TODO: Implement this method using Ontop in the Stack, i.e. query 
-        #      Blazegraph using SERVICE keyword
+
+        # Initialise relevant PostGIS client
+        postgis_client = PostGISClient()
+
+        # Get flood area IRI associated with flood alert/warning
+        area_iri = self.sparql_client.get_associated_flood_area(flood_alert_warning_iri)
+
+        # Get number of affected population
+        # Returns int (number of affected people) or None (in case if no population data
+        # could be determined, i.e. nobody is affected or specified area is not present)
+        affected = postgis_client.get_number_of_affected_population(flood_area_iri=area_iri)
         
-        return None
+        return affected
 
 
     def estimate_potential_flood_impact(self, warning_iri:str = None,

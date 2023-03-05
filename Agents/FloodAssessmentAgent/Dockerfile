@@ -40,6 +40,9 @@ ENV AGENTDIR=${agentdir}
 RUN python -m pip install --upgrade pip
 RUN python -m pip install -r requirements.txt
 RUN python -m pip install -e .
+# Add JDBC driver to allow for retrieval of JDBC connection properties from PostGIS client
+# (required to execute (general) queries & updated, not already supported by PostGIS client)
+ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 
 # Install StackClients py4jps resource
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \

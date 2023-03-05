@@ -44,6 +44,8 @@ FLOOD_SEVERITY_SEVERE = FLOOD + 'SevereFloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc
 FLOOD_SEVERITY_WARNING = FLOOD + 'FloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b'            # Severity level 2
 FLOOD_SEVERITY_ALERT = FLOOD + 'FloodAlert_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b'                # Severity level 3
 FLOOD_SEVERITY_INACTIVE = FLOOD + 'InactiveFloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b'   # Severity level 4
+# RT (Environment Agency)
+RT_CURRENT_WARNING = RT + 'currentWarning'
 
 ###--- External IRIs ---###
 # Ontology of units of measure
