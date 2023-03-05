@@ -57,10 +57,8 @@ OM_SYMBOL = OM + 'symbol'
 OM_GBP = OM + 'poundSterling'
 
 # OM / UOM unit symbols
-# NOTE: There are reported issues with encoding of special characters, i.e. Blazegraph
-#       claiming to use utf-8 encoding while actually using iso-8859-1
-#       --> PoundSterling displayed wrongly in GUI but corrected when retrieved in code
-# Details: https://github.com/blazegraph/database/issues/224
+# NOTE: There are reported issues with encoding of special characters in Blazegraph
+#       (likely related to py4jps/py4j interface)
 GBP_SYMBOL = '£'
 
 # Data types

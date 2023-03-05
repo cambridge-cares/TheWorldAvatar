@@ -93,7 +93,7 @@ class FloodAssessmentAgent(DerivationAgent):
         to assess the estimated impact of a potential flood and generate
             1 IRI of Flood:Impact
             1 IRI of Flood:Population
-            1 IRI of Flood:Buildings
+            1 IRI of Flood:Building
             (including the respective instantiation of OM:AmountOfMoney + full
              set of triples due to ontology of units of measure representation)
         """
@@ -159,15 +159,14 @@ class FloodAssessmentAgent(DerivationAgent):
             affected_buildings_count = len(building_iris)
             affected_buildings_value = self.sparql_client.summarise_affected_property_values(estimation_iris)
 
-        #TODO: Retrieve potentially already instantiated flood instance
-        #      (otherwise new Flood instance will be created by derivation)
-        flood_iri = None
+        # Retrieve potentially already instantiated flood instance
+        # (if None if retrieved, new Flood instance will be created by derivation)
+        flood_iri = self.sparql_client.get_associated_flood_event(warning_iri)
 
         # Generate textual description of potential impact
-        #TODO: Potentially to be refined based on actual information from API
         impact_description = self.create_impact_description(severity)
 
-        # Create triples to instantiate for flood impact assessment
+        # Create triples to instantiate flood impact assessment
         g = self.sparql_client.instantiate_flood_impact(graph=g,
                                     flood_alert_warning_iri=warning_iri,
                                     affected_buildings_count=affected_buildings_count,
@@ -185,7 +184,7 @@ class FloodAssessmentAgent(DerivationAgent):
         Create textual description of flood impact, currently based on:
         https://environment.data.gov.uk/flood-monitoring/doc/reference#introduction
         """
-        # Initialise return value
+        # Initialise return value (for inactive flood alert/warning)
         impact_description = None
 
         if severity_iri == FLOOD_SEVERITY_SEVERE:

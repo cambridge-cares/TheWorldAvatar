@@ -44,6 +44,25 @@ class KGClient(PySparqlClient):
             raise Exception(f"Ambiguous severity instantiated for Flood Alert/Warning '{alert_warning_iri}'.")
 
 
+    def get_associated_flood_event(self, alert_warning_iri:str) -> str:
+        # Retrieve flood event IRI associated with flood alert/warning
+        # Returns string of flood event IRI or None
+
+        query = f"""
+            SELECT ?flood
+            WHERE {{   
+            <{alert_warning_iri}> <{RDF_TYPE}> <{FLOOD_ALERT_WARNING}> ; 
+                                  <{FLOOD_WARNS_ABOUT}> ?flood . 
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        if len(res) == 1:
+            return res[0].get('flood')
+        else:
+            return None
+
+
     def summarise_affected_property_values(self, property_value_iris:list) -> int:
         # Retrieve property market values from list of property value IRIs and summarise them
         # Returns sum of property value estimations as float
@@ -112,7 +131,6 @@ class KGClient(PySparqlClient):
             #      the agent requires the symbol to be instantiated with the KG beforehand, i.e.
             #      when uploading the ontology initially (using the EnergyPerformanceCertificate agent)
             return graph
-
 
         if not flood_iri:
             flood_iri = KB + 'Flood_' + str(uuid.uuid4())
