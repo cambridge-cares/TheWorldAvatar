@@ -10,11 +10,10 @@ import glob
 import jaydebeapi
 
 from floodassessment.kg_operations.javagateway import stackClientsGw, jpsBaseLibGW
-from floodassessment.utils.env_configs import DATABASE#, WARNINGS_TABLE, BUILDINGS_TABLE
+from floodassessment.utils.env_configs import DATABASE, FLOODWARNINGS_TABLE, \
+                                              POPULATION_TABLE
 from floodassessment.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD
 
-FLOODAREA_TABLE = 'floodwarnings'
-POPULATION_TABLE = 'population'
 
 # Initialise logger
 from py4jps import agentlogging
@@ -70,7 +69,7 @@ class PostGISClient(StackClient):
 
     def get_number_of_affected_population(self, flood_area_iri: str, 
                                           population_raster_table: str = POPULATION_TABLE,
-                                          flood_area_table: str = FLOODAREA_TABLE):
+                                          flood_area_table: str = FLOODWARNINGS_TABLE):
         """
         This function uses PostGIS' geospatial capabilities to calculate the sum of
         the population within a specific flood area polygon, i.e. uses summary statistics

@@ -28,6 +28,8 @@ Before building and deploying the Docker image, several key properties need to b
 # Stack & Stack Clients configuration
 STACK_NAME                    # Name of stack to which agent shall be deployed
 DATABASE                      # PostGIS/PostgreSQL database name (default: `postgres`)
+POPULATION_TABLE              # PostGIS table name containing population density raster data
+FLOODWARNINGS_TABLE           # PostGIS table name containing flood warning polygons
 NAMESPACE                     # Blazegraph namespace (within Stack) to monitor
 # Derivation Agent configuration
 ONTOAGENT_SERVICE_IRI         # IRI of OntoAgent service

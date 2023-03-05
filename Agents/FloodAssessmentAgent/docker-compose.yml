@@ -10,6 +10,9 @@ services:
       - DATABASE=postgres
       # Specify Blazegraph namespace
       - NAMESPACE=kingslynn
+      # Specify PostGIS table names containing population raster data and instantiated flood warnings
+      - POPULATION_TABLE=population
+      - FLOODWARNINGS_TABLE=floodwarnings
       #--- Derivation Agent parameters ---#
       # For details, see: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_derivation_agent/pyderivationagent/conf/agent_conf.py
       - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__KL_FloodAssessment/Service
