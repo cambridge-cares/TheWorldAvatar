@@ -69,18 +69,11 @@ def test_example_data_instantiation(initialise_clients):
 )
 def test_monitor_derivations(
     initialise_clients, create_example_agent, derivation_input_set, expect_exception, 
-    expected_deriv_triples, expected_deriv_types, expected_assessment, mocker
+    expected_deriv_triples, expected_deriv_types, expected_assessment
 ):
     """
         Test if derivation agent performs derivation update as expected
     """
-
-    # -------------------------------------------------------------------------
-    # Mock method call to assess number of people potentially affected by flood
-    # (normally to be assessed using PostGIS' geospatial capabilities via Ontop)
-    mocker.patch('floodassessment.agent.impact_assessment.FloodAssessmentAgent.estimate_number_of_affected_people',
-                 return_value=None)
-    # -------------------------------------------------------------------------
 
     # Get required clients from fixtures
     sparql_client, derivation_client = initialise_clients

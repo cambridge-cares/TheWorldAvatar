@@ -126,11 +126,17 @@ COPY ./docker-compose-testcontainers.yml ./docker-compose.yml
 # Adjust the logger_name to enable more logging information for tests
 RUN sed -i "s|logger_name='prod',|logger_name='dev',|g" ./$AGENTDIR/entry_point.py
 
-# Overwrite/Mock all stack interactions with pre-defined settings from testing Docker stack
+# Overwrite/Mock all stack interactions with pre-defined settings
 RUN cp ./tests/mockutils/env_configs_mock.py ./$AGENTDIR/utils/env_configs.py
 RUN cp ./tests/mockutils/stack_configs_mock.py ./$AGENTDIR/utils/stack_configs.py
 # Adjust relative import statement
 RUN sed -i "s|env_configs_mock|env_configs |g" ./$AGENTDIR/utils/stack_configs.py
+
+# Mock method call to assess number of people potentially affected by flood
+# Previous mock attempts (i.e. using mocker.patch() within 'test_example_agent.py') did not work,
+# likely due to the fact that agent handling the derivation is running 'independently' of python
+# scripts accessed by pytest --> hence, overwrite method call in 'impact_assessment.py' with None
+RUN sed -i "s|self.estimate_number_of_affected_people(warning_iri)|None|g" ./$AGENTDIR/agent/impact_assessment.py
 
 # Start dockerised agent app as well as pytest
 # (combining commands using & ensures they are started in parallel in background)

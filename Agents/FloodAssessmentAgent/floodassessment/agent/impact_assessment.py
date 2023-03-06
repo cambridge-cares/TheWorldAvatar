@@ -164,10 +164,17 @@ class FloodAssessmentAgent(DerivationAgent):
             affected_buildings_value = 0
             self.logger.info(f"Flood alert/warning '{warning_iri}' marked as inactive.")
         else:
-            # If flood alert/warning is active --> assess impact
-            affected_population = self.estimate_number_of_affected_people(warning_iri)
+            # If flood alert/warning is active --> assess impact            
             affected_buildings_count = len(building_iris)
             affected_buildings_value = self.sparql_client.summarise_affected_property_values(estimation_iris)
+
+            # Assess number of affected population
+            affected_population = self.estimate_number_of_affected_people(warning_iri)
+            # NOTE: For debug tests, the line above needs to be replaced with the
+            #       following line; this manual mocking is required as mocker.patch 
+            #       (or similar approaches) seem only to affect the code loaded by
+            #       pytest, while keeping the asynchronously running agent unaffected
+            #affected_population = None
 
         # Retrieve potentially already instantiated flood instance
         # (if None if retrieved, new Flood instance will be created by derivation)

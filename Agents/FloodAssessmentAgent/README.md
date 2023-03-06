@@ -181,20 +181,24 @@ To run the integration tests, access to the `docker.cmclinnovations.com` registr
 &nbsp;
 ## Dockerised agent integration tests
 
-The dockerised tests use one Docker container to initialise the Derivation agent and run pytest, and use Docker in Docker to spin up the required Blazegraph testcontainer instance:
+The dockerised tests use one Docker container to initialise the Derivation agent and run pytest, and use Docker in Docker to spin up the required Blazegraph testcontainer instance (depending on the system setup `docker compose` might need to be replaced with `docker-compose`):
 
 ```bash
 # Build and run Dockerised agent test
 docker compose -f "docker-compose-test_dockerised.yml" up -d --build
 ```
 
-Depending on the system setup `docker compose` might need to be replaced with `docker-compose`. In case of issues with starting the tests, try pulling the required Blazegraph image manually beforehand via `docker pull docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT`. 
-
 To run the dockerised tests in Debug mode, both a `docker-compose-test_dockerised_debug.yml` and a suitable `launch.json` configuration have been provided. Before starting to debug, please:
 
 - Copy the content of the `env_configs_mock.py` and `stack_configs_mock.py` files into the respective counterparts in the `floodassessment\utils\` repository (This is necessary as the agent codes and tests are mounted as volumes instead of being copied (and adjusted) into the container)
 - Adjust the import of `env_configs_mock` to `env_configs`
+- Uncomment the `affected_population = self.estimate_number_of_affected_people(warning_iri)` line (around line 172) within `impact_assessment.py` and replace with `affected_population = None`
 - Please also note that some issues with attaching the Debugger have been observed (i.e. `connect ECONNREFUSED 127.0.0.1:5678 `) using VS Code. In case the Debugger does not attach right away, try attaching using the `Python: Reattach and Debug` configuration after the test container has been started. 
+
+The tests have been successfully executed on both Windows and WSL; however, please note the following:
+- There seem to be internal communication issues when running the tests on Digital Ocean, causing an exception along the lines of ```Caused by: HttpException: -1 Unexpected error making the query: GET http://host.docker.internal:27149/blazegraph/namespace/kb/sparql?query=``` (this might be related to permission/priviliges issues)
+- Mocking of the PostGIS requiring method `estimate_number_of_affected_people` is currently hardcoded in the Dockerfile when creating the testing image. This is necessary, as `mocker.patch` seems to only affect Python scripts that are accessed by pytest; however, the agent actually handling the derivations is running asynchronously behind gunicorn and remains unaffected. This workaround might be revisited in the future.
+
 
 &nbsp;
 # Authors #
@@ -206,8 +210,6 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [Container registry on Github]: https://ghcr.io
 [Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
-[Github package repository]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
-[Java Development Kit version >=11]: https://adoptium.net/en-GB/temurin/releases/?version=11
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [py4jps]: https://pypi.org/project/py4jps/#description
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
@@ -224,7 +226,6 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 [JPS_BASE_LIB]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_BASE_LIB
 [OntoBuiltEnv]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontobuiltenv
 [OntoFlood]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_Ontology/ontology/ontoflood
-[HM Land Registry Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-PropertySalesInstantiationAgent/Agents/HMLandRegistryAgent
 [Property Value Estimation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent
 [spin up the stack]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md#spinning-up-a-stack
 [Stack Manager]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager
@@ -232,8 +233,6 @@ Markus Hofmeister (mh807@cam.ac.uk), November 2022
 [The World Avatar]: https://github.com/cambridge-cares/TheWorldAvatar
 
 <!-- data sources -->
-[Energy Performance Certificate data]: https://epc.opendatacommunities.org/docs/api
-[HM Land Registry Open Data]: https://landregistry.data.gov.uk/app/root/doc/ppd
 [EA Flood Monitoring]: https://environment.data.gov.uk/flood-monitoring/doc/reference#introduction
 
 <!-- files -->
