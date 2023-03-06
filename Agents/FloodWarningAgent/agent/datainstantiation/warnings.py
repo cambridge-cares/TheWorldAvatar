@@ -7,14 +7,12 @@
 # flood warnings and alerts from the API and instantiate it in the KG
 
 import uuid
-
 from datetime import datetime as dt
 
 from agent.datamodel.data_mapping import TIMECLASS, DOUBLE
 from agent.datainstantiation.ea_data import retrieve_current_warnings, \
                                             retrieve_flood_area_data
 from agent.datainstantiation.ons_data import retrieve_ons_county
-from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from agent.kgutils.querytemplates import *
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
@@ -22,13 +20,19 @@ from agent.utils.stackclients import GdalClient, GeoserverClient, \
                                      OntopClient, PostGISClient, \
                                      create_geojson_for_postgis
 
-from py4jps import agentlogging
+# Import PyDerivationAgent for derivation markup
+from pyderivationagent import PyDerivationClient
+from pyderivationagent import PySparqlClient
+from agent.datainstantiation.derivation_markup import retrieve_affected_property_info, \
+                                                      flood_assessment_derivation_markup, \
+                                                      retrieve_flood_assessment_derivation_iri
 
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
-def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT, 
+def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT, 
                     update_endpoint=UPDATE_ENDPOINT):
     """
     Update instantiated flood warnings/alerts incl. associated flood areas in the KG, 
@@ -39,6 +43,7 @@ def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT,
     Arguments:
         county (str): County name for which to instantiate flood warnings (e.g. 'Hampshire')
                       Instantiates ALL current warnings if no county given
+        mock_api (str): Path to local .json file to mock API response
     """
 
     # Initialise return values
@@ -47,8 +52,16 @@ def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT,
     updated_warnings = 0
     deleted_warnings = 0
 
-    # Initialise KG Client
-    kg_client = KGClient(query_endpoint, update_endpoint)
+    # Initialise KG Client with PySparqlClient instance
+    kg_client = PySparqlClient(query_endpoint=query_endpoint,
+                               update_endpoint=update_endpoint)
+
+    # Create a PyDerivationClient instance
+    derivation_client = PyDerivationClient(
+        derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
+        query_endpoint=query_endpoint,
+        update_endpoint=update_endpoint,
+    )
 
     if county:
         ### Update flood warnings for given county ###
@@ -58,7 +71,7 @@ def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT,
         ### Update all flood warnings ###
         # 1) Retrieve current flood warnings from API
         logger.info("Retrieving current flood warnings from API ...")
-        current_warnings = retrieve_current_warnings()
+        current_warnings = retrieve_current_warnings(mock_api=mock_api)
         logger.info("Current flood warnings retrieved.")
 
         # 2) Retrieve instantiated flood warnings and flood areas from KG
@@ -88,7 +101,8 @@ def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT,
             instantiated_areas, instantiated_warnings = \
                 instantiate_flood_areas_and_warnings(areas_to_instantiate, areas_kg,
                                                      warnings_to_instantiate, current_warnings, 
-                                                     kgclient=kg_client)
+                                                     kgclient=kg_client, 
+                                                     derivation_client=derivation_client)
             print('Instantiation finished.')
 
         # 5) Update outdated flood warnings
@@ -96,15 +110,20 @@ def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT,
             print('Updating flood warnings ...')
             updated_warnings = \
                 update_instantiated_flood_warnings(warnings_to_update, current_warnings, 
-                                                   kgclient=kg_client)
+                                                   kgclient=kg_client,
+                                                   derivation_client=derivation_client)
             print('Updating finished.')
 
         # 6) Delete inactive flood warnings
         if warnings_to_delete:
             print('Deleting inactive flood warnings ...')
-            deleted_warnings = \
+            deleted_warnings, drop_times_iris = \
                 delete_instantiated_flood_warnings(warnings_to_delete, kgclient=kg_client)
             print('Deleting finished.')
+
+            # Derivation markup:
+            # Drop timestamps of deleted flood warnings & derivation instances
+            derivation_client.dropTimestampsOf(drop_times_iris)
 
         # Print update summary 
         print(f'Instantiated areas: {instantiated_areas}')
@@ -117,7 +136,8 @@ def update_warnings(county=None, query_endpoint=QUERY_ENDPOINT,
 
 def instantiate_flood_areas_and_warnings(areas_to_instantiate: list, areas_kg: dict,
                                          warnings_to_instantiate: list, warnings_data_api: list,
-                                         query_endpoint=QUERY_ENDPOINT, kgclient=None):
+                                         query_endpoint=QUERY_ENDPOINT, kgclient=None,
+                                         derivation_client=None):
     """
     Instantiate flood areas and warnings in the KG with data dicts as retrieved 
     from API by 'retrieve_current_warnings' (flood area data retrieved as needed)
@@ -127,6 +147,7 @@ def instantiate_flood_areas_and_warnings(areas_to_instantiate: list, areas_kg: d
         areas_kg (dict): Dictionary with instantiated flood area URIs as keys and flood area IRIs as values
         warnings_to_instantiate (list): List of flood warning URIs to be instantiated
         warnings_data_api (list): List of dictionaries with flood warning data from API
+        derivation_client (PyDerivationClient): PyDerivationClient instance
 
     Returns:
         Number of newly instantiated flood areas and flood warnings as int
@@ -136,9 +157,10 @@ def instantiate_flood_areas_and_warnings(areas_to_instantiate: list, areas_kg: d
     new_areas = 0
     new_warnings = 0
 
-    # Create KG client if not provided
+    # Create PySparqlClient instance if not provided
     if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
+        kgclient = PySparqlClient(query_endpoint=query_endpoint,
+                                  update_endpoint=query_endpoint)
 
     # Instantiate (potentially) missing flood areas
     if areas_to_instantiate:
@@ -191,7 +213,8 @@ def instantiate_flood_areas_and_warnings(areas_to_instantiate: list, areas_kg: d
     # Add location IRIs to warning data
     for w in warning_data_to_instantiate:
         w['location_iri'] = area_location_map.get(w.get('area_uri'))
-    new_warnings = instantiate_flood_warnings(warning_data_to_instantiate, kgclient=kgclient)
+    new_warnings = instantiate_flood_warnings(warning_data_to_instantiate, kgclient=kgclient,
+                                              derivation_client=derivation_client)
 
     return new_areas, new_warnings
 
@@ -213,9 +236,10 @@ def instantiate_flood_areas(areas_data: list=[],
         Dict with newly instantiated area IRIs as keys and History IRIs as values
     """
 
-    # Create KG client if not provided
+    # Create PySparqlClient instance if not provided
     if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
+        kgclient = PySparqlClient(query_endpoint=query_endpoint,
+                                  update_endpoint=query_endpoint)
 
     # Initialise relevant Stack Clients and parameters
     postgis_client = PostGISClient()
@@ -282,9 +306,9 @@ def instantiate_flood_areas(areas_data: list=[],
     return len(areas_data), area_location_map, area_history_map
 
 
-def instantiate_flood_warnings(warnings_data: list=[],
+def instantiate_flood_warnings(warnings_data: list=[], 
                                query_endpoint=QUERY_ENDPOINT,
-                               kgclient=None):
+                               kgclient=None, derivation_client=None):
     """
     Instantiate list of flood warning data dicts as retrieved from API by 'retrieve_current_warnings',
     further enriched with location_iri created by 'flood_area_instantiation_triples'
@@ -293,6 +317,7 @@ def instantiate_flood_warnings(warnings_data: list=[],
         warnings_data (list): List of dicts with relevant flood warnings/alerts data
         query_endpoint - SPARQL endpoint from which to retrieve data
         kgclient - pre-initialized KG client with endpoints
+        derivation_client (PyDerivationClient): PyDerivationClient instance
 
     Returns:
         Number (int) of instantiated flood warnings/alerts
@@ -301,9 +326,10 @@ def instantiate_flood_warnings(warnings_data: list=[],
     # Initialise PostGIS client
     postgis_client = PostGISClient()
 
-    # Create KG client if not provided
+    # Create PySparqlClient instance if not provided
     if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
+        kgclient = PySparqlClient(query_endpoint=query_endpoint,
+                                  update_endpoint=query_endpoint)
 
     triples = ''
     for warning in warnings_data:
@@ -329,6 +355,28 @@ def instantiate_flood_warnings(warnings_data: list=[],
         if num_rows != 1:
             logger.error(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
             raise RuntimeError(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
+        
+        # Derivation markup:
+        if derivation_client:
+            # 1) Retrieve list of affected buildings, i.e. buildings in flood area
+            affected_building_iris = postgis_client.get_buildings_within_floodarea(warning['area_uri'])
+            # 2) Retrieve building info for affected properties 
+            property_info_dct = retrieve_affected_property_info(kgclient, affected_building_iris)
+            property_value_iris = [property_info_dct[iri]['mv'] for iri in affected_building_iris if property_info_dct[iri]['mv']]
+            print(f'Number of affected properties: {len(property_info_dct)}')
+            # 3) Add derivation markup for the flood event
+            logger.info(f"Adding derivation markup for warning: {warning['warning_uri']}")
+            flood_assessment_derivation_markup(
+                derivation_client=derivation_client,
+                flood_warning_iri=warning['warning_uri'],
+                affected_building_iris=affected_building_iris,
+                property_value_iris=property_value_iris,
+                flood_assessment_derivation_iri=retrieve_flood_assessment_derivation_iri(
+                    sparql_client=kgclient,
+                    flood_warning_iri=warning['warning_uri'],
+                    flood_assessment_agent_iri=FLOOD_ASSESSMENT_AGENT_IRI,
+                )
+            )
 
     # Create INSERT query and perform update
     query = f"INSERT DATA {{ {triples} }}"
@@ -338,7 +386,8 @@ def instantiate_flood_warnings(warnings_data: list=[],
 
 
 def update_instantiated_flood_warnings(warnings_to_update: list, warnings_data_api: list,
-                                       query_endpoint=QUERY_ENDPOINT, kgclient=None):
+                                       query_endpoint=QUERY_ENDPOINT, kgclient=None,
+                                       derivation_client=None):
     """
     Update flood warnings and alerts in the KG (i.e. update list of flood warnings
     with data dicts as retrieved from API by 'retrieve_current_warnings')
@@ -354,9 +403,10 @@ def update_instantiated_flood_warnings(warnings_to_update: list, warnings_data_a
     # Initialise PostGIS client
     postgis_client = PostGISClient()
 
-    # Create KG client if not provided
+    # Create PySparqlClient instance if not provided
     if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
+        kgclient = PySparqlClient(query_endpoint=query_endpoint,
+                                  update_endpoint=query_endpoint)
 
     # Extract relevant warning data
     data_to_update = [w for w in warnings_data_api if w.get('warning_uri') in warnings_to_update]
@@ -387,6 +437,21 @@ def update_instantiated_flood_warnings(warnings_to_update: list, warnings_data_a
         if num_rows != 1:
             logger.error(f'Expected to change "severity" field for 1 flood area, but updated {num_rows}.')
             raise RuntimeError(f'Expected to change "severity" field for 1 flood area, but updated {num_rows}.')
+        
+        # Derivation markup:
+        # 1) Update timestamp of flood warning as pure input
+        derivation_client.updateTimestamps([data['warning_uri']])
+        # 2) Request for derivation update for existing derivation IRI (i.e. 
+        #    updates the timestamp of derivation instance +  request update)
+        deriv_iri = retrieve_flood_assessment_derivation_iri(sparql_client=kgclient,
+                        flood_warning_iri=data['warning_uri'],
+                        flood_assessment_agent_iri=FLOOD_ASSESSMENT_AGENT_IRI)
+        if derivation_client and deriv_iri:
+            logger.info(f"Request derivation update for: {data['warning_uri']}")
+            flood_assessment_derivation_markup(
+                derivation_client=derivation_client,
+                flood_assessment_derivation_iri=deriv_iri
+            )
     
     return len(data_to_update)
 
@@ -404,14 +469,19 @@ def delete_instantiated_flood_warnings(warnings_to_delete: list, query_endpoint=
 
     Returns:
         Number of updated flood warnings as int
+        List of IRIs for which to drop timestamps markup
     """
     
     # Initialise PostGIS client
     postgis_client = PostGISClient()
 
-    # Create KG client if not provided
+    # Create PySparqlClient instance if not provided
     if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
+        kgclient = PySparqlClient(query_endpoint=query_endpoint,
+                                  update_endpoint=query_endpoint)
+
+    # Initialise list of iris for which to drop timestamps markup
+    drop_times = []
 
     for warning in warnings_to_delete:
         # Retrieve associated flood area URI
@@ -421,21 +491,29 @@ def delete_instantiated_flood_warnings(warnings_to_delete: list, query_endpoint=
         try:
             area = [r['area_iri'] for r in res][0]
         except Exception as ex:
-            logger.error('No associated flood area IRI could be retrieved for warning: {}.'.format(warning))
-            raise RuntimeError('No associated flood area IRI could be retrieved for warning: {}.'.format(warning)) from ex         
+            logger.warning('No associated flood area IRI could be retrieved for warning: {}: {}'.format(warning, str(ex)))
+            area = None
+        
+        if area:
+            # Ensure flood area is set inactive (to be suppressed from visualising)
+            num_rows = postgis_client.set_flood_area_activity(activity=False, area_uri=area)
+            if num_rows != 1:
+                logger.error(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
+                raise RuntimeError(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
 
-        # Create SPARQL delete query
+        # Append warning and derivation iris to list of iris for which to delete timestamps
+        query = get_instances_with_timestamps_to_delete(warning)
+        res = kgclient.performQuery(query)
+        # Unwrap results
+        drop_times.extend([iri for r in res for iri in list(r.values())])
+
+        # Create SPARQL delete query for other triples
         query = delete_flood_warning(warning)
         # Perform update
         kgclient.performUpdate(query)
 
-        # Ensure flood area is set inactive (to be suppressed from visualising)
-        num_rows = postgis_client.set_flood_area_activity(activity=False, area_uri=area)
-        if num_rows != 1:
-            logger.error(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
-            raise RuntimeError(f'Expected to change "active" field for 1 flood area, but updated {num_rows}.')
-    
-    return len(warnings_to_delete)
+   
+    return len(warnings_to_delete), drop_times
 
 
 def get_instantiated_flood_warnings(query_endpoint=QUERY_ENDPOINT,
@@ -452,9 +530,10 @@ def get_instantiated_flood_warnings(query_endpoint=QUERY_ENDPOINT,
                          latest update timestamp as values
     """
 
-    # Create KG client if not provided
+    # Create PySparqlClient instance if not provided
     if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
+        kgclient = PySparqlClient(query_endpoint=query_endpoint,
+                                  update_endpoint=query_endpoint)
     
     # Retrieve instantiated flood warnings
     query = get_all_flood_warnings()
@@ -485,9 +564,10 @@ def get_instantiated_flood_areas(query_endpoint=QUERY_ENDPOINT,
                       Location IRIs as values
     """
 
-    # Create KG client if not provided
+    # Create PySparqlClient instance if not provided
     if not kgclient:
-        kgclient = KGClient(query_endpoint, query_endpoint)
+        kgclient = PySparqlClient(query_endpoint=query_endpoint,
+                                  update_endpoint=query_endpoint)
     
     # Retrieve instantiated flood warnings
     query = get_all_flood_areas()

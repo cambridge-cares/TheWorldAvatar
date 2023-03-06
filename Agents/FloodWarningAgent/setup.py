@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='floodwarnings',
-    version='1.0.0',
+    version='1.1.0',
     author='Markus Hofmeister',
     author_email='mh807@cam.ac.uk',
     license='MIT',
@@ -15,11 +15,12 @@ setup(
     include_package_data=True,
     install_requires= [
         'APScheduler==3.10.0',
-        'Flask==2.2.2',
+        'Flask==2.1.0',
         'geojson==3.0.0',
-        'gunicorn==20.1.0',
+        'gunicorn==20.0.4',
         'JayDeBeApi==1.2.3',
-        'py4jps==1.0.33', 
+        'pyderivationagent==1.4.4',
+        'py4jps==1.0.34', 
         'requests==2.28.2',
         'shapely==2.0.1',
     ]
