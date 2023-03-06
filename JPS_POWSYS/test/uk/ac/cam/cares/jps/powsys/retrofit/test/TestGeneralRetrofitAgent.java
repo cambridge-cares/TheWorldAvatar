@@ -6,6 +6,7 @@ import static org.junit.Assert.*;
 import org.apache.jena.ontology.OntModel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.HashSet;
 import org.json.JSONArray;
 
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
@@ -19,12 +20,12 @@ import uk.ac.cam.cares.jps.powsys.retrofit.GeneratorInfo;
 
 public class TestGeneralRetrofitAgent {
 	private String jpsENIRI, testENIRI;
-	private List<BusInfo> testBusIRI = new JSONArray();
-	private List<GeneratorInfo> testGenIRI = new JSONArray();
+	private List<BusInfo> testBusIRI = new ArrayList<BusInfo>();
+	private List<GeneratorInfo> testGenIRI = new ArrayList<GeneratorInfo>();
 	private List<String[]> expectedBusQuery = new ArrayList<>();
 
 	private <T> boolean compareQueryResult(List<T> a, List<T> b) {
-
+		return new HashSet<>(a).equals(new HashSet<>(b));
 	}
 
 	@Before
