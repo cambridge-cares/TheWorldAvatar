@@ -194,11 +194,13 @@ public class Dataset {
             .andHas(Rdf.iri(DCTERMS.MODIFIED), Rdf.literalOfType(currentTime.toString(), XSD.DATETIME)));
 
             // blazegraph triples
-            String kgUrl = BlazegraphClient.getInstance().getEndpoint().getUrl(getNamespace());
-            Iri blazegraphService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
-            insertTriples.add(blazegraphService.isA(Rdf.iri(SparqlConstants.BLAZEGRAPH))
-            .andHas(Rdf.iri(DCAT.ENDPOINT_URL), kgUrl)
-            .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri));
+            if (getDataSubsets().stream().anyMatch(DataSubset::usesBlazegraph)) {
+                String kgUrl = BlazegraphClient.getInstance().getEndpoint().getUrl(getNamespace());
+                Iri blazegraphService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
+                insertTriples.add(blazegraphService.isA(Rdf.iri(SparqlConstants.BLAZEGRAPH))
+                .andHas(Rdf.iri(DCAT.ENDPOINT_URL), kgUrl)
+                .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri));
+            }
 
             Iri postgisService = null;
             if (getDataSubsets().stream().anyMatch(DataSubset::usesPostGIS)) {
@@ -208,6 +210,7 @@ public class Dataset {
                 postgisService = Rdf.iri(SparqlConstants.DEFAULT_NAMESPACE + UUID.randomUUID());
                 insertTriples.add(postgisService.isA(Rdf.iri(SparqlConstants.POSTGIS))
                 .andHas(Rdf.iri(DCAT.ENDPOINT_URL), jdbcUrl)
+                .andHas(Rdf.iri(SparqlConstants.HAS_DATABASE), getDatabase())
                 .andHas(Rdf.iri(DCAT.SERVES_DATASET), catalogIri));
             } 
                 
@@ -320,5 +323,6 @@ public class Dataset {
         static final String GEOSERVER = DEFAULT_NAMESPACE + "GeoServer";
         static final String USES_DATABASE = DEFAULT_NAMESPACE + "usesDatabase";
         static final String ONTOP = DEFAULT_NAMESPACE + "Ontop";
+        static final String HAS_DATABASE = DEFAULT_NAMESPACE + "hasDatabase";
     }
 }
