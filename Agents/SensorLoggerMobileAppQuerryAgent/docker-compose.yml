@@ -12,6 +12,7 @@ services:
     environment:
       - STACK_NAME=${STACK_NAME}
       - DATABASE=sensorlogger
+      - SCOPE_TABLE_NAME=scopes
       - GEOSERVER_URL=http://host.docker.internal:3838/geoserver # specifying here because WMS endpoint does not work with container name
     configs:
       - postgis
