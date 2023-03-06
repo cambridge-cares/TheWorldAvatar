@@ -195,8 +195,7 @@ To run the dockerised tests in Debug mode, both a `docker-compose-test_dockerise
 - Uncomment the `affected_population = self.estimate_number_of_affected_people(warning_iri)` line (around line 172) within `impact_assessment.py` and replace with `affected_population = None`
 - Please also note that some issues with attaching the Debugger have been observed (i.e. `connect ECONNREFUSED 127.0.0.1:5678 `) using VS Code. In case the Debugger does not attach right away, try attaching using the `Python: Reattach and Debug` configuration after the test container has been started. 
 
-The tests have been successfully executed on both Windows and WSL; however, please note the following:
-- There seem to be internal communication issues when running the tests on Digital Ocean, causing an exception along the lines of ```Caused by: HttpException: -1 Unexpected error making the query: GET http://host.docker.internal:27149/blazegraph/namespace/kb/sparql?query=``` (this might be related to permission/priviliges issues)
+The tests have been successfully executed on Windows, WSL, and native Linux. Please note the following:
 - Mocking of the PostGIS requiring method `estimate_number_of_affected_people` is currently hardcoded in the Dockerfile when creating the testing image. This is necessary, as `mocker.patch` seems to only affect Python scripts that are accessed by pytest; however, the agent actually handling the derivations is running asynchronously behind gunicorn and remains unaffected. This workaround might be revisited in the future.
 
 

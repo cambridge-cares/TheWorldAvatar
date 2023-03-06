@@ -34,6 +34,10 @@ services:
       - FILE_SERVER_PASSWORD=''
     ports:
       - 5013:5000
+    extra_hosts:
+      # To allow connecting to 'host.docker.internal' on Linux
+      # details: https://github.com/moby/libnetwork/pull/2348#issuecomment-1177610499
+      - "host.docker.internal:host-gateway"
     volumes:
       # To run docker inside docker, mount default Unix socket docker.sock as a volume
       # (https://devopscube.com/run-docker-in-docker/)
