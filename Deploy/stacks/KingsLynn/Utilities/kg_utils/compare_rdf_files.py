@@ -55,14 +55,24 @@ def get_unique_predicates_with_counts(nt_file_path, include_subjects=False):
     g = Graph()
     g.parse(nt_file_path, format="nt")
 
-    # Execute SPARQL query on the graph
-    result = g.query("""
-        SELECT ?s ?p ?o ?type
+    if include_subjects:
+        query = """
+        SELECT distinct ?s ?p ?o ?type
         WHERE {
             ?s ?p ?o . 
             OPTIONAL { ?s a ?type . }
         }
-    """)
+    """
+    else:
+        query = """
+            SELECT distinct ?s ?p ?o
+            WHERE {
+                ?s ?p ?o . 
+            }
+        """
+
+    # Execute SPARQL query on the graph
+    result = g.query(query)
     if include_subjects:
         res = []
         for row in result:
@@ -107,8 +117,8 @@ def align_uuids(rdf_file, replace_with='123'):
 if __name__ == '__main__':
 
     # Specify input file paths (relative path)
-    fp1 = r'..\data\outputs\run1.nt'
-    fp2 = r'..\data\outputs\run2.nt'
+    fp1 = r'..\data\outputs\clean_slate.nt'
+    fp2 = r'..\data\outputs\no_warnings.nt'
     # Specify output file paths
     fp3 = r'..\data\outputs\predicates.txt'
     fp4 = r'..\data\outputs\subject_predicate_pairs.txt'
