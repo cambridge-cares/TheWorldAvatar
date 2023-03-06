@@ -344,7 +344,7 @@ def delete_flood_warning(warning_uri: str = None) -> str:
                             OPTIONAL {{ ?derivation_iri <{RDF_TYPE}> ?deriv_type }} 
                             OPTIONAL {{ ?derivation_iri <{DERIV_DERIVED_FROM}> ?inputs }} 
                             OPTIONAL {{ ?derivation_iri <{DERIV_DERIVED_USING}> ?agent }} 
-                            OPTIONAL {{ ?derivation_iri <{DERIV_BELONGS_TO}> ?derivation_iri }} 
+                            OPTIONAL {{ ?outputs <{DERIV_BELONGS_TO}> ?derivation_iri }} 
                             OPTIONAL {{ ?derivation_iri <{DERIV_HAS_STATUS}> ?status . 
                                         ?status <{RDF_TYPE}> ?status_type }}
                  }}
