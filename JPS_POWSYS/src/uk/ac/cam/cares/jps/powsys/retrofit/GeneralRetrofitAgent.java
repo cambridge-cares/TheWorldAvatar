@@ -9,6 +9,7 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.RDFNode;
 import org.json.JSONObject;
+import org.json.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 import uk.ac.cam.cares.jps.base.query.sparql.QueryBuilder;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.powsys.util.Util;
+import java.util.Iterator;
 
 public class GeneralRetrofitAgent extends JPSAgent implements Prefixes, Paths {
 		
@@ -71,7 +73,7 @@ public class GeneralRetrofitAgent extends JPSAgent implements Prefixes, Paths {
 		builder.a("?baseKV", OPSMODE, "baseKV");
 		builder.prop("?entity", "?baseKV", OCPSYST, "isModeledBy", OCPMATH, "hasModelVariable");
 		builder.prop("?baseKV", "?baseKVvalue", PVALNUMVAL);
-		
+		logger.info("QUERY:" + builder.build().toString());
 		return builder.build().toString();
 	}
 
@@ -97,9 +99,30 @@ public class GeneralRetrofitAgent extends JPSAgent implements Prefixes, Paths {
 		" SELECT ?entity WHERE{ ?network OCPSYST:hasSubsystem ?entity FILTER CONTAINS(str(?entity), \"EGen\")}";
 	}
 	
-	protected List<String> getIRIList (JSONObject iri) {
+	protected List<String> getIRIList (ResultSet iri) {
 		//TODO CHeck the query result and get the IRI list
-		return new ArrayList<String>();
+		
+		//System.out.println(iri);
+		String qRes = JenaResultSetFormatter.convertToJSONW3CStandard(iri);
+		//logger.info(qRes);
+
+		//List<String[]> result = JenaResultSetFormatter.convertToListofStringArrays(qRes,"entity");
+
+		List<String> result = new ArrayList();
+		JSONObject jo = new JSONObject(qRes);
+		JSONArray array = jo.getJSONObject("results").getJSONArray("bindings");
+		for (int i=0; i<array.length(); i++) {
+			
+			JSONObject row = array.getJSONObject(i);
+			JSONObject simplifiedRow = new JSONObject();
+			for (String current : row.keySet()) {
+				String value =  row.getJSONObject(current).getString("value");
+				result.add(value);
+			}
+		}
+		logger.info("IRI:" + result);
+		
+		return result;
 	}
 
 	public List<BusInfo> queryBuses(OntModel model) {
@@ -110,21 +133,26 @@ public class GeneralRetrofitAgent extends JPSAgent implements Prefixes, Paths {
 
 		ResultSet resultSet = JenaHelper.query(model, queryBusIRI);
 
-		JSONObject iriBus = JenaResultSetFormatter.convertToSimplifiedList(resultSet);
+		//JSONObject iriBus = JenaResultSetFormatter.convertToSimplifiedList(resultSet);
+		//System.out.println("IRI BUS:"+iriBus);
+		//logger.info("BUS IRIs:" + iriBus);
 		//TODO CHeck the query result and get the IRI list
 		List<List<String[]>> buses = new ArrayList<List<String[]>>();
 
-		List <String> iriList = getIRIList(iriBus);
+		List <String> iriList = getIRIList(resultSet);
+		System.out.println("IRI BUS:" + iriList);
 		for (String iri : iriList) {
+			logger.info("Curr IRI:" + iri);
 			OntModel modelBus = JenaHelper.createModel(iri);
-			String queryBus = getQueryForBusIRI();
+			String queryBus = getQueryForSingleBus();
 
-			ResultSet resultSingle = JenaHelper.query(model, queryBus);
-			
+			String resultSingle = JenaResultSetFormatter.convertToJSONW3CStandard(JenaHelper.query(modelBus, queryBus));
+			logger.info("Single bus:" + resultSingle);
 			//queryResult.add(JenaResultSetFormatter.convertToJSONW3CStandard(resultSingle));
-			buses.add(JenaResultSetFormatter.convertToListofStringArrays(JenaResultSetFormatter.convertToJSONW3CStandard(resultSingle),"entity", "x", "y", "busnumber", "busnumbervalue", "bustypevalue", "vm", "vmvalue", "baseKVvalue"));
+			buses.add(JenaResultSetFormatter.convertToListofStringArrays(resultSingle,"entity", "x", "y", "busnumber", "busnumbervalue", "bustypevalue", "vm", "vmvalue", "baseKVvalue"));
+			
 		}
-
+		logger.info("buses:" + buses);
 		
 		for (List<String[]> bus : buses){
 			for (String[] current : bus) {
