@@ -2,9 +2,9 @@ package com.cmclinnovations.stack.services;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -81,7 +81,8 @@ public class PodmanService extends DockerService {
         try {
             String stackName = StackClient.getStackName();
             List<SecretInfoReport> existingStackSecrets = secretsApi
-                    .secretListLibpod(URLEncoder.encode("{\"name\":[\"^" + stackName + "_\"]}"));
+                    .secretListLibpod(
+                            URLEncoder.encode("{\"name\":[\"^" + stackName + "_\"]}", StandardCharsets.UTF_8));
 
             for (File secretFile : Path.of("/run/secrets").toFile()
                     .listFiles(file -> file.isFile() && !file.getName().startsWith(".git"))) {
@@ -157,9 +158,9 @@ public class PodmanService extends DockerService {
         String podName = getPodName(service.getContainerName());
         try {
             return new PodsApi(getClient().getPodmanClient()).podListLibpod(
-                    URLEncoder.encode("{\"name\":[\"" + podName + "\"]}", "UTF-8"))
+                    URLEncoder.encode("{\"name\":[\"" + podName + "\"]}", StandardCharsets.UTF_8))
                     .stream().findAny();
-        } catch (UnsupportedEncodingException | ApiException ex) {
+        } catch (ApiException ex) {
             throw new RuntimeException("Failed to retrieve Pod '" + podName + "'.", ex);
         }
     }
@@ -312,9 +313,9 @@ public class PodmanService extends DockerService {
                 container = new ContainersApi(getClient().getPodmanClient())
                         .containerListLibpod(true, 1, null, null, null, null,
                                 URLEncoder.encode("{\"name\":[\"" + containerName + "\"],\"pod\":[\""
-                                        + getPodName(containerName) + "\"]}", "UTF-8"))
+                                        + getPodName(containerName) + "\"]}", StandardCharsets.UTF_8))
                         .stream().findFirst();
-            } catch (ApiException | UnsupportedEncodingException ex) {
+            } catch (ApiException ex) {
                 throw new RuntimeException("Failed to retrieve state of Container '" + containerName + "'.", ex);
             }
 
