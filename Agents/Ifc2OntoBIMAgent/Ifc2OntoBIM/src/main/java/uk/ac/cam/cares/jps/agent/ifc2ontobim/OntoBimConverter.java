@@ -6,6 +6,7 @@ import org.apache.jena.riot.RDFParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.SpatialZoneFacade;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.SpatialZoneStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaclassifier.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement.IfcElementConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcgeometry.GeomConstructBuilderMediator;
@@ -74,6 +75,8 @@ public class OntoBimConverter {
         this.owlModel = RDFParser.create()
                 .source(ttlFilePath)
                 .toModel();
+        // Reset the values from previous iterations
+        SpatialZoneStorage.resetSingleton();
 
         // Retrieve and add namespaces to builder
         ConstructBuilder builder = new ConstructBuilder();

@@ -32,7 +32,7 @@ public class SpatialZoneFacade {
      * @param statementSet A list containing the new OntoBIM triples.
      */
     public static void genZoneTriples(Model owlModel, LinkedHashSet<Statement> statementSet) {
-        zoneMappings = new SpatialZoneStorage();
+        zoneMappings = SpatialZoneStorage.Singleton();
         execProjectQuery(owlModel, statementSet);
         execSiteQuery(owlModel, statementSet);
         execBuildingQuery(owlModel, statementSet);

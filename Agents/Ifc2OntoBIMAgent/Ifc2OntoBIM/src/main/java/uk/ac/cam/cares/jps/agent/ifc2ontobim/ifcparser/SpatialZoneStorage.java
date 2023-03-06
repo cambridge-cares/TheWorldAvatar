@@ -16,6 +16,8 @@ import java.util.HashMap;
  * @author qhouyee
  */
 public class SpatialZoneStorage {
+    // Single instance of this class
+    private static SpatialZoneStorage single_instance = null;
     private final HashMap<String, IfcProjectRepresentation> project;
     private final HashMap<String, IfcSiteRepresentation> sites;
     private final HashMap<String, IfcBuildingRepresentation> buildings;
@@ -25,14 +27,33 @@ public class SpatialZoneStorage {
     private static final String NON_EXISTING_ERROR = " does not exist in mappings!";
 
     /**
-     * Standard Constructor initialising the maps.
+     * Private Constructor initialising the maps.
      */
-    public SpatialZoneStorage() {
+    private SpatialZoneStorage() {
         this.project = new HashMap<>();
         this.sites = new HashMap<>();
         this.buildings = new HashMap<>();
         this.storeys = new HashMap<>();
         this.rooms = new HashMap<>();
+    }
+
+    /**
+     * A method to retrieve the singleton instance.
+     *
+     * @return The singleton instance of SpatialZoneStorage.
+     */
+    public static SpatialZoneStorage Singleton() {
+        if (single_instance == null) {
+            single_instance = new SpatialZoneStorage();
+        }
+        return single_instance;
+    }
+
+    /**
+     * A method to reset the singleton instance before running the code.
+     */
+    public static void resetSingleton() {
+        single_instance = new SpatialZoneStorage();
     }
 
     /**

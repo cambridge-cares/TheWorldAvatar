@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.IfcProjectRepresentation;
@@ -33,9 +34,14 @@ class SpatialZoneStorageTest {
     private static final Double TEST_ELEV = 125.0;
     private static final String NON_EXISTING_ERROR = NON_EXISTENT_IRI + " does not exist in mappings!";
 
+    @BeforeAll
+    static void genSingleton() {
+        testMappings = SpatialZoneStorage.Singleton();
+    }
+
     @BeforeEach
-    void genSampleStatements() {
-        testMappings = new SpatialZoneStorage();
+    void resetSingleton() {
+        SpatialZoneStorage.resetSingleton();
     }
 
     @Test
