@@ -110,7 +110,8 @@ def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT,
             print('Updating flood warnings ...')
             updated_warnings = \
                 update_instantiated_flood_warnings(warnings_to_update, current_warnings, 
-                                                   kgclient=kg_client)
+                                                   kgclient=kg_client,
+                                                   derivation_client=derivation_client)
             print('Updating finished.')
 
         # 6) Delete inactive flood warnings
