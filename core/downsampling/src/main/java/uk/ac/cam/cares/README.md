@@ -23,9 +23,9 @@ Aggregation (TimeSeries ts, Long resolution, int type)
 ```
 `ts` is the raw timeseries data that will be downsampled.
 
-`resolution` is the time interval in number of seconds that will be downsampled. `resolution` is in Long type. 
+`resolution` is the time interval in number of seconds that will be downsampled. `resolution` is in Long data type. 
 
-`type` is the type of [downsampling method](#Downsampling Type). Input the number 
+`type` is the type of [downsampling method](#Downsampling Type). Input the number as according to the designated number assigned to each type. 
 
 
 
@@ -37,16 +37,22 @@ Aggregation (TimeSeries ts, Long resolution, int type)
 
 ## Downsampling Type
 ### 1) Maximum
+Retrieves the maximum value of the points within a time resolution to represent the interval. 
 ### 2) Median
+Retrieves the median value of the points within a time resolution to represent the time interval.
 ### 3) Minimum
+Retrieves the median value of the points within a time resolution to represent the time interval.
 ### 4) Sum 
+Retrieves the sum value of all points within a time resolution to represent the time interval.
 ### 5) Average
+Retrieves the average value of the points within a time resolution to represent the time interval.
 ### 6) Count
+Retrieves the total number of all points within a time resolution to represent the time interval.
 ### 7) Instantaneous
-
+Retrieves the value of the point closest to the time resolution to represent the time interval.
 
 
 ## Output 
-
+A timeseries class which is down sampled. 
 ## Notes 
-1) Be sure to clean your data 
+1) Ensure there is no null data in each time resolution for the time-series to be downsampled. Data cleaning will be required to post-process of nonsensical data when null data is inputted. 
