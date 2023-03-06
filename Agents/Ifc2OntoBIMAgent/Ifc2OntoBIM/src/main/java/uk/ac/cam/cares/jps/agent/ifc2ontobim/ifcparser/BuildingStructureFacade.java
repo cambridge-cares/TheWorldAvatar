@@ -6,6 +6,8 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Door;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcAbstractRepresentation;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcBuildingRepresentation;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 
 import java.util.LinkedHashSet;
@@ -25,7 +27,7 @@ public class BuildingStructureFacade {
      * @param statementSet A list containing the new OntoBIM triples.
      */
     public static void genZoneTriples(Model owlModel, LinkedHashSet<Statement> statementSet) {
-        zoneMappings = new SpatialZoneStorage();
+        zoneMappings = SpatialZoneStorage.Singleton();
         execDoorQuery(owlModel, statementSet);
     }
 
@@ -36,8 +38,12 @@ public class BuildingStructureFacade {
      */
     private static String createDoorSelectQuery() {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
-        selectBuilder.addVar(CommonQuery.ZONE_VAR);
-        selectBuilder.addWhere(CommonQuery.ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCDOOR);
+        selectBuilder.addVar(CommonQuery.ZONE_VAR)
+                .addVar(CommonQuery.PARENT_ZONE_VAR);
+        selectBuilder.addWhere(CommonQuery.ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCDOOR)
+                .addWhere(CommonQuery.RELAGGR_VAR, QueryHandler.RDF_TYPE, CommonQuery.REL_SPATIAL_ZONE_ELEMENT)
+                .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_REL_ZONE, CommonQuery.PARENT_ZONE_VAR)
+                .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_REL_ELEMENT, CommonQuery.ZONE_VAR);
         CommonQuery.addBaseQueryComponents(selectBuilder);
         return selectBuilder.buildString();
     }
@@ -57,8 +63,22 @@ public class BuildingStructureFacade {
             String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
             String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
             String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
-            Door door = new Door(iri, name, uid, placement);
+            String hostZone = retrieveHostZone(soln);
+            Door door = new Door(iri, name, uid, placement, hostZone);
             door.constructStatements(statementSet);
         }
+    }
+
+    /**
+     * Retrieve the IRI of the zone hosting this element, usually in the IfcBuildingStorey or IfcSpace.
+     *
+     * @param soln The row of the query response to retrieve this zone IRI.
+     */
+    private static String retrieveHostZone(QuerySolution soln) {
+        String zoneIri = QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR);
+        if (zoneIri.contains(CommonQuery.IFCSTOREY_CLASS)) {
+            return zoneMappings.getStorey(zoneIri).getBotStoreyIRI();
+        }
+        return zoneMappings.getRoom(zoneIri).getBimRoomIRI();
     }
 }

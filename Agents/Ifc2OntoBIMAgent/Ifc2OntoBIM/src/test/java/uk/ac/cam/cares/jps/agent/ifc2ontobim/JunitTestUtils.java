@@ -23,7 +23,8 @@ public class JunitTestUtils {
     public static final String rdfsUri = "http://www.w3.org/2000/01/rdf-schema#";
     public static final String IFC2X3_ID_PROPERTY = ifc2x3Uri + "globalId_IfcRoot";
     public static final String IFC2X3_NAME_PROPERTY = ifc2x3Uri + "name_IfcRoot";
-
+    public static final String IFC2X3_HOST_ZONE_PROPERTY = ifc2x3Uri + "relatingStructure_IfcRelContainedInSpatialStructure";
+    public static final String IFC2X3_CONTAIN_ELEMENT_PROPERTY = ifc2x3Uri + "relatedElements_IfcRelContainedInSpatialStructure";
     public static void addPrefix(ConstructBuilder builder) {
         Map<String, String> nsMapping = new HashMap<>();
         nsMapping.put("rdfs", rdfsUri);

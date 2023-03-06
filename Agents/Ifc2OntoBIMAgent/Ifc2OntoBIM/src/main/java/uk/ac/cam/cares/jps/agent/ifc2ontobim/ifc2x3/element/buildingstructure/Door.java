@@ -15,6 +15,8 @@ import java.util.UUID;
  */
 public class Door extends IfcModelRepresentation {
     private final String elementIRI;
+    private final String hostZoneIRI;
+
 
     /**
      * Standard Constructor initialising the common inputs.
@@ -24,9 +26,10 @@ public class Door extends IfcModelRepresentation {
      * @param uid          The IFC uid generated for this object.
      * @param placementIri The local placement IRI for the zone's position.
      */
-    public Door(String iri, String name, String uid, String placementIri) {
+    public Door(String iri, String name, String uid, String placementIri, String hostZoneIri) {
         super(iri, name, uid, placementIri);
         this.elementIRI = this.getPrefix() + OntoBimConstant.DOOR_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
+        this.hostZoneIRI = hostZoneIri;
     }
 
     /**
@@ -37,6 +40,7 @@ public class Door extends IfcModelRepresentation {
     @Override
     public void constructStatements(LinkedHashSet<Statement> statementSet) {
         super.addIfcModelRepresentationStatements(statementSet);
+        StatementHandler.addStatement(statementSet, this.hostZoneIRI, OntoBimConstant.BOT_CONTAINS_ELEMENT,  this.elementIRI);
         StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_DOOR_CLASS);
         StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.BIM_HAS_IFC_REPRESENTATION, this.getIfcRepIri());
     }

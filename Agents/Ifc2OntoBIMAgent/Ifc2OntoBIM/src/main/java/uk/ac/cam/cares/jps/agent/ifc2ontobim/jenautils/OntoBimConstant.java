@@ -28,6 +28,7 @@ public class OntoBimConstant {
     public static final String BOT_HAS_BUILDING = NamespaceMapper.BOT_NAMESPACE + "hasBuilding";
     public static final String BOT_HAS_STOREY = NamespaceMapper.BOT_NAMESPACE + "hasStorey";
     public static final String BIM_HAS_ROOM = NamespaceMapper.BIM_NAMESPACE + "hasRoom";
+    public static final String BOT_CONTAINS_ELEMENT = NamespaceMapper.BOT_NAMESPACE + "containsElement";
     public static final String BIM_HAS_ID = NamespaceMapper.BIM_NAMESPACE + "hasIfcId";
     public static final String BIM_HAS_LAT = NamespaceMapper.BIM_NAMESPACE + "hasRefLatitude";
     public static final String BIM_HAS_LONG = NamespaceMapper.BIM_NAMESPACE + "hasRefLongitude";
@@ -70,6 +71,8 @@ public class OntoBimConstant {
     // OntoBim element classes
     public static final String ASSET_MODEL_REP_CLASS = "IfcModelRepresentation";
     public static final String BIM_ASSET_MODEL_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + ASSET_MODEL_REP_CLASS;
+    public static final String CEILING_CLASS = "Ceiling";
+    public static final String BIM_CEILING_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + CEILING_CLASS;
     public static final String DOOR_CLASS = "Door";
     public static final String BIM_DOOR_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + DOOR_CLASS;
     // OntoBim geometry classes

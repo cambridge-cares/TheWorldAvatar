@@ -50,6 +50,8 @@ public class CommonQuery {
     protected static final String IFC_STOREY_ELEV = NamespaceMapper.IFC_PREFIX + ":elevation_IfcBuildingStorey";
     protected static final String IFC_PARENT_ZONE_REL = NamespaceMapper.IFC_PREFIX + ":relatingObject_IfcRelDecomposes";
     protected static final String IFC_CHILD_ZONE_REL = NamespaceMapper.IFC_PREFIX + ":relatedObjects_IfcRelDecomposes";
+    protected static final String IFC_REL_ZONE = NamespaceMapper.IFC_PREFIX + ":relatingStructure_IfcRelContainedInSpatialStructure";
+    protected static final String IFC_REL_ELEMENT = NamespaceMapper.IFC_PREFIX + ":relatedElements_IfcRelContainedInSpatialStructure";
     protected static final String IFC_REF_LAT = NamespaceMapper.IFC_PREFIX + ":refLatitude_IfcSite";
     protected static final String IFC_REF_LONG = NamespaceMapper.IFC_PREFIX + ":refLongitude_IfcSite";
     protected static final String IFC_PROJECT_NAME = NamespaceMapper.IFC_PREFIX + ":longName_IfcProject";
@@ -64,9 +66,12 @@ public class CommonQuery {
     protected static final String IFCPROJECT = NamespaceMapper.IFC_PREFIX + ":IfcProject";
     protected static final String IFCSITE = NamespaceMapper.IFC_PREFIX + ":IfcSite";
     protected static final String IFCBUILDING = NamespaceMapper.IFC_PREFIX + ":IfcBuilding";
-    protected static final String IFCSTOREY = NamespaceMapper.IFC_PREFIX + ":IfcBuildingStorey";
-    protected static final String IFCSPACE = NamespaceMapper.IFC_PREFIX + ":IfcSpace";
+    protected static final String IFCSTOREY_CLASS = "IfcBuildingStorey";
+    protected static final String IFCSTOREY = NamespaceMapper.IFC_PREFIX + ":" + IFCSTOREY_CLASS;
+    protected static final String IFCSPACE_CLASS = "IfcSpace";
+    protected static final String IFCSPACE = NamespaceMapper.IFC_PREFIX + ":" + IFCSPACE_CLASS;
     protected static final String RELAGG = NamespaceMapper.IFC_PREFIX + ":IfcRelAggregates";
+    protected static final String REL_SPATIAL_ZONE_ELEMENT = NamespaceMapper.IFC_PREFIX + ":IfcRelContainedInSpatialStructure";
     protected static final String IFCCOMPOUND_PLANE_ANGLE = NamespaceMapper.IFC_PREFIX + ":IfcCompoundPlaneAngleMeasure";
     protected static final String IFCGEOM_REP_CONTEXT = NamespaceMapper.IFC_PREFIX + ":IfcGeometricRepresentationContext";
     protected static final String IFCLOCALPLACEMENT = NamespaceMapper.IFC_PREFIX + ":IfcLocalPlacement";
