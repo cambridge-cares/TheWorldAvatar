@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  floodwarnings_agent:
+    image: ghcr.io/cambridge-cares/floodwarnings_agent:1.0.0
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      # Target Blazegraph namespace
+      - NAMESPACE=floodwarnings
+      # Target PostGIS database name
+      # (default name "postgres" required for Ontop to work)
+      - DATABASE=postgres
+      # Target table name in PostGIS (also layer name in Geoserver)
+      - LAYERNAME=floodwarnings
+      - GEOSERVER_WORKSPACE=floodwarnings
+      - ONTOP_FILE=/app/resources/ontop.obda
+    ports:
+      - "5007:5000"
+    volumes:
+      - logs:/root/.jps
+    configs:
+      - blazegraph
+      - geoserver
+      - ontop
+      - postgis
+    secrets:
+      - geoserver_password
+      - postgis_password
+
+volumes:
+  logs:
+    name: "logs"

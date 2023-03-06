@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   aermod-agent:
-    image: ghcr.io/nagarajankarthik/aermod-agent:1.0.1-hotfix-aermod-agent-SNAPSHOT
+    image: docker.cmclinnovations.com/aermod-agent:1.0.1
     deploy:
       mode: replicated
       replicas: 1
