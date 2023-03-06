@@ -275,7 +275,7 @@ def delete_flood_warning(warning_uri: str = None) -> str:
                                 <{RT_TIME_MESSAGE_CHANGED}> ?time_message ; 
                                 <{RT_TIME_SEVERITY_CHANGED}> ?time_severity . 
                 ?area_iri <{RT_CURRENT_WARNING}> <{warning_uri}> . 
-                ?flood_event_iri <{RDF_TYPE}> <{ENVO_FLOOD}> ;
+                ?flood_event_iri <{RDF_TYPE}> ?flood_event_type ;
                                  <{FLOOD_HAS_LOCATION}> ?location_iri ;  
                                  <{FLOOD_RESULTS_IN}> ?impact_iri ; 
                                  <{FLOOD_AFFECTS}> ?affected_iri . 
@@ -310,7 +310,7 @@ def delete_flood_warning(warning_uri: str = None) -> str:
                                 <{FLOOD_HAS_SEVERITY}> ?severity_iri ;
                                 <{FLOOD_WARNS_ABOUT}> ?flood_event_iri . 
                 ?area_iri <{RT_CURRENT_WARNING}> <{warning_uri}> . 
-                ?flood_event_iri <{RDF_TYPE}> <{ENVO_FLOOD}> ;
+                ?flood_event_iri <{RDF_TYPE}> ?flood_event_type ;
                                  <{FLOOD_HAS_LOCATION}> ?location_iri . 
                 OPTIONAL {{ <{warning_uri}> <{RDFS_LABEL}> ?warning_label }}
                 OPTIONAL {{ <{warning_uri}> <{RT_MESSAGE}> ?warning_message }}
@@ -319,24 +319,26 @@ def delete_flood_warning(warning_uri: str = None) -> str:
                 OPTIONAL {{ <{warning_uri}> <{RT_TIME_SEVERITY_CHANGED}> ?time_severity }} 
 
                 OPTIONAL {{ ?flood_event_iri <{FLOOD_RESULTS_IN}> ?impact_iri . 
-                            ?impact_iri <{RDF_TYPE}> <{FLOOD_IMPACT}> ; 
-                                        <{FLOOD_HAS_MONETARY_VALUE}> ?impact_quantity . 
+                            ?impact_iri <{RDF_TYPE}> <{FLOOD_IMPACT}> . 
                             OPTIONAL {{ ?impact_iri <{FLOOD_HAS_CLASSIFICATION}> ?impact }} 
+                            OPTIONAL {{ ?impact_iri <{FLOOD_HAS_MONETARY_VALUE}> ?impact_quantity . 
                             ?impact_quantity <{RDF_TYPE}> ?impact_quantity_type ;
                                              <{OM_HAS_VALUE}> ?impact_quantity_value . 
                             ?impact_quantity_value <{RDF_TYPE}> <{OM_MEASURE}> ;
                                                    <{OM_HAS_UNIT}> ?impact_quantity_unit ; 
-                                                    <{OM_HAS_NUMERICALVALUE}> ?impact_quantity_num_value .
+                                                   <{OM_HAS_NUMERICALVALUE}> ?impact_quantity_num_value .
+                            }}
                          }}
                 OPTIONAL {{ ?flood_event_iri <{FLOOD_AFFECTS}> ?affected_iri . 
-                            ?affected_iri <{RDF_TYPE}> ?affected_type ;
-                                          <{FLOOD_HAS_TOTAL_COUNT}> ?affected_count ;
-                                          <{FLOOD_HAS_TOTAL_MONETARY_VALUE}> ?quantity .
+                            ?affected_iri <{RDF_TYPE}> ?affected_type . 
+                            OPTIONAL {{ ?affected_iri <{FLOOD_HAS_TOTAL_COUNT}> ?affected_count }}
+                            OPTIONAL {{ ?affected_iri <{FLOOD_HAS_TOTAL_MONETARY_VALUE}> ?quantity .
                             ?quantity <{RDF_TYPE}> ?quantity_type ;
                                       <{OM_HAS_VALUE}> ?quantity_value . 
                             ?quantity_value <{RDF_TYPE}> <{OM_MEASURE}> ;
                                             <{OM_HAS_UNIT}> ?quantity_unit ; 
                                             <{OM_HAS_NUMERICALVALUE}> ?quantity_num_value .
+                            }}
                          }}
                 OPTIONAL {{ <{warning_uri}> ^<{DERIV_DERIVED_FROM}> ?derivation_iri . 
                             OPTIONAL {{ ?derivation_iri <{RDF_TYPE}> ?deriv_type }} 
