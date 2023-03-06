@@ -80,11 +80,10 @@ def retrieve_affected_property_info(sparql_client: PySparqlClient, affected_prop
 
 def flood_assessment_derivation_markup(
     derivation_client: PyDerivationClient,
-    sparql_client: PySparqlClient,
-    flood_warning_iri: str,
-    affected_building_iris: List[str],
-    property_value_iris: List[str],
     flood_assessment_derivation_iri: str = None,
+    flood_warning_iri: str = None,
+    affected_building_iris: List[str] = [],
+    property_value_iris: List[str] = []
 ):
     if flood_assessment_derivation_iri is None:
         try:

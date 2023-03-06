@@ -111,16 +111,7 @@ def update_warnings(county=None, mock_api=None, query_endpoint=QUERY_ENDPOINT,
             updated_warnings = \
                 update_instantiated_flood_warnings(warnings_to_update, current_warnings, 
                                                    kgclient=kg_client)
-            # TODO: 'unifiedUpdateDerivation' inside 'update_instantiated_flood_warnings'
-            #       fails with NoSuchElementException: No value present
-            #                                       derivation_client=derivation_client)
             print('Updating finished.')
-            
-            # Derivation markup:
-            # Update timestamps of updated flood warnings (pure inputs)
-            # TODO: To be alinged with derivation update inside 'update_instantiated_flood_warnings'
-            #       (either or)
-            derivation_client.updateTimestamps(warnings_to_update)
 
         # 6) Delete inactive flood warnings
         if warnings_to_delete:
@@ -376,7 +367,6 @@ def instantiate_flood_warnings(warnings_data: list=[],
             logger.info(f"Adding derivation markup for warning: {warning['warning_uri']}")
             flood_assessment_derivation_markup(
                 derivation_client=derivation_client,
-                sparql_client=kgclient,
                 flood_warning_iri=warning['warning_uri'],
                 affected_building_iris=affected_building_iris,
                 property_value_iris=property_value_iris,
@@ -448,18 +438,17 @@ def update_instantiated_flood_warnings(warnings_to_update: list, warnings_data_a
             raise RuntimeError(f'Expected to change "severity" field for 1 flood area, but updated {num_rows}.')
         
         # Derivation markup:
-        # Request for derivation update with previously initialised derivation IRI
+        # 1) Update timestamp of flood warning as pure input
+        derivation_client.updateTimestamps([data['warning_uri']])
+        # 2) Request for derivation update for existing derivation IRI (i.e. 
+        #    updates the timestamp of derivation instance +  request update)
         deriv_iri = retrieve_flood_assessment_derivation_iri(sparql_client=kgclient,
                         flood_warning_iri=data['warning_uri'],
                         flood_assessment_agent_iri=FLOOD_ASSESSMENT_AGENT_IRI)
-        if derivation_client and deriv_iri:            
+        if derivation_client and deriv_iri:
             logger.info(f"Request derivation update for: {data['warning_uri']}")
             flood_assessment_derivation_markup(
                 derivation_client=derivation_client,
-                sparql_client=kgclient,
-                flood_warning_iri=data['warning_uri'],
-                affected_building_iris=[],
-                property_value_iris=[],
                 flood_assessment_derivation_iri=deriv_iri
             )
     
