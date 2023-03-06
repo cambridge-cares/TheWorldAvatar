@@ -20,9 +20,9 @@ setup(
         'geojson-rewind==1.0.3',
         'JayDeBeApi==1.2.3',
         'pandas==1.5.3',
-        'pyderivationagent==1.4.1',
+        'pyderivationagent==1.4.4',
         'pyproj==3.4.1',
-        'py4jps==1.0.33', 
+        'py4jps==1.0.34', 
         'requests==2.28.2'
     ]
 )

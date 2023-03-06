@@ -7,6 +7,7 @@
 # Environment Agency Real Time flood-monitoring API:
 # https://environment.data.gov.uk/flood-monitoring/doc/reference#flood-warnings
 
+import json
 import re
 import requests
 import time
@@ -16,9 +17,8 @@ from datetime import datetime as dt
 from agent.datamodel.data_mapping import *
 from agent.errorhandling.exceptions import APIException
 
-from py4jps import agentlogging
-
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
@@ -31,26 +31,31 @@ WARNINGS = 'https://environment.data.gov.uk/flood-monitoring/id/floods'
 #   flood area polygon: stable long term reference identifiers (resolvable URI)
 
 
-def retrieve_current_warnings(county: str = None) -> list:
+def retrieve_current_warnings(county: str = None, mock_api: str = None) -> list:
     """
     Retrieve current flood warnings and alerts from the Environment Agency API
 
     Arguments:
         county (str): County name for which to retrieve flood warnings (e.g. 'Hampshire')
                       Retrieves ALL current warnings if no county given
+        mock_api (str): Path to local .json file to mock API response
 
     Returns:
         to_instantiate (list): List of dicts with relevant flood warnings/alerts data
     """
 
-    # Construct URL
-    if county:
-        url = WARNINGS + '?county={}'.format(county)
+    if mock_api:
+        # Load mocked API response from local .json file
+        with open(mock_api, 'r') as f:
+            data = json.load(f)
     else:
-        url = WARNINGS
-
-    # Retrieve dictionary of all current flood warnings
-    data = retrieve_json_from_api(url)
+        # Construct URL
+        if county:
+            url = WARNINGS + '?county={}'.format(county)
+        else:
+            url = WARNINGS
+        # Retrieve dictionary of all current flood warnings
+        data = retrieve_json_from_api(url)
 
     # Extract relevant information
     # API: The 'items' element contains an array even if the list only has one entry

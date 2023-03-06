@@ -3027,6 +3027,26 @@ public class DerivationSparql {
 		storeClient.executeUpdate(modify.getQueryString());
 	}
 
+	void dropTimestampsOf(List<String> entities) {
+		ModifyQuery modify = Queries.MODIFY();
+		SelectQuery query = Queries.SELECT();
+
+		Variable entity = query.var();
+		Variable time = query.var();
+		Variable timeUnixIri = query.var();
+		Variable timestamp = query.var();
+		Variable trs = query.var();
+
+		ValuesPattern entityVP = new ValuesPattern(entity, entities.stream().map(e -> iri(e)).collect(Collectors.toList()));
+		TriplePattern tp1 = entity.has(hasTime, time);
+		TriplePattern tp2 = time.isA(InstantClass).andHas(inTimePosition, timeUnixIri);
+		TriplePattern tp3 = timeUnixIri.isA(TimePosition).andHas(numericPosition, timestamp).andHas(hasTRS, trs);
+
+		modify.delete(tp1, tp2, tp3).where(entityVP, tp1, tp2, tp3).prefix(prefixTime);
+
+		storeClient.executeUpdate(modify.getQueryString());
+	}
+
 	/**
 	 * Updates timestamps of the given instances in one-go via SPARQL update with sub-query.
 	 * Nothing happen to the instances that do not have timestamp.
@@ -3053,17 +3073,20 @@ public class DerivationSparql {
 		Variable oldTimestamp = sub.var();
 		Variable newTimestamp = sub.var();
 		ValuesPattern entityNewTimestampVP = new ValuesPattern(entity, newTimestamp);
-		instanceTimestampMap.forEach((en, ts) -> entityNewTimestampVP.addValuePairForMultipleVariables(
-				iri(en), Rdf.literalOf(ts)));
-		sub.select(timePosition, oldTimestamp, newTimestamp).where(entityNewTimestampVP,
-				entity.has(PropertyPaths.path(hasTime, inTimePosition), timePosition),
-				timePosition.has(numericPosition, oldTimestamp));
-		modify.delete(timePosition.has(numericPosition, oldTimestamp));
-		modify.insert(timePosition.has(numericPosition, newTimestamp));
-		modify.where(sub);
-		modify.prefix(prefixTime);
+		// only update instances if the new timestamps are provided
+		if (!instanceTimestampMap.isEmpty()) {
+			instanceTimestampMap.forEach((en, ts) -> entityNewTimestampVP.addValuePairForMultipleVariables(
+					iri(en), Rdf.literalOf(ts)));
+			sub.select(timePosition, oldTimestamp, newTimestamp).where(entityNewTimestampVP,
+					entity.has(PropertyPaths.path(hasTime, inTimePosition), timePosition),
+					timePosition.has(numericPosition, oldTimestamp));
+			modify.delete(timePosition.has(numericPosition, oldTimestamp));
+			modify.insert(timePosition.has(numericPosition, newTimestamp));
+			modify.where(sub);
+			modify.prefix(prefixTime);
 
-		storeClient.executeUpdate(modify.getQueryString());
+			storeClient.executeUpdate(modify.getQueryString());
+		}
 	}
 
 	/**

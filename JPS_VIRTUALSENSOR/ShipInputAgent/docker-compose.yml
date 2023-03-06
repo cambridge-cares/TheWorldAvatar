@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   ship-input-agent:
-    image: docker.cmclinnovations.com/ship-input-agent:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/ship-input-agent:1.0.0
     deploy:
       mode: replicated
       replicas: 1
