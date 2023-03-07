@@ -86,28 +86,7 @@ public class AccessAgentCaller{
         JSONObject joparams = (JSONObject) a[1];
         return Http.execute(Http.put(requestUrl, content, contentType, null, joparams));
 	}
-	
-	//TODO remove this
-	/**
-	 * cf. https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-get<br>
-	 * The method also allows to get non-RDF resources. 
-	 * 
-	 * @param datasetUrl triple store
-	 * @param targetUrl the named resource or named graph
-	 * @param accept for RDF resources only, available formats see {@link MediaType}, null allowed
-	 * @return
-	 */
-	public static String get(String datasetUrl, String targetUrl, String accept) {
 		
-        LOGGER.info("get for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
-
-		Object[] a = createRequestUrl(datasetUrl, targetUrl);
-		
-        String requestUrl = (String) a[0];
-        JSONObject joparams = (JSONObject) a[1];
-        return Http.execute(Http.get(requestUrl, accept, joparams));
-    }
-	
 	/**
 	 * Get the SPARQL endpoints for a target resource. The query and update endpoints 
 	 * can be extracted from the JSONObject using the keys
