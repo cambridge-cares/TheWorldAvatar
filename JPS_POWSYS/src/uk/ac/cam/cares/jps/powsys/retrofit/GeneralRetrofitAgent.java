@@ -100,21 +100,13 @@ public class GeneralRetrofitAgent extends JPSAgent implements Prefixes, Paths {
 	}
 	
 	protected List<String> getIRIList (ResultSet iri) {
-		//TODO CHeck the query result and get the IRI list
-		
-		//System.out.println(iri);
 		String qRes = JenaResultSetFormatter.convertToJSONW3CStandard(iri);
-		//logger.info(qRes);
-
-		//List<String[]> result = JenaResultSetFormatter.convertToListofStringArrays(qRes,"entity");
-
 		List<String> result = new ArrayList();
 		JSONObject jo = new JSONObject(qRes);
 		JSONArray array = jo.getJSONObject("results").getJSONArray("bindings");
 		for (int i=0; i<array.length(); i++) {
 			
 			JSONObject row = array.getJSONObject(i);
-			JSONObject simplifiedRow = new JSONObject();
 			for (String current : row.keySet()) {
 				String value =  row.getJSONObject(current).getString("value");
 				result.add(value);
@@ -133,26 +125,19 @@ public class GeneralRetrofitAgent extends JPSAgent implements Prefixes, Paths {
 
 		ResultSet resultSet = JenaHelper.query(model, queryBusIRI);
 
-		//JSONObject iriBus = JenaResultSetFormatter.convertToSimplifiedList(resultSet);
-		//System.out.println("IRI BUS:"+iriBus);
-		//logger.info("BUS IRIs:" + iriBus);
-		//TODO CHeck the query result and get the IRI list
 		List<List<String[]>> buses = new ArrayList<List<String[]>>();
 
 		List <String> iriList = getIRIList(resultSet);
 		System.out.println("IRI BUS:" + iriList);
 		for (String iri : iriList) {
-			logger.info("Curr IRI:" + iri);
 			OntModel modelBus = JenaHelper.createModel(iri);
 			String queryBus = getQueryForSingleBus();
 
 			String resultSingle = JenaResultSetFormatter.convertToJSONW3CStandard(JenaHelper.query(modelBus, queryBus));
-			logger.info("Single bus:" + resultSingle);
-			//queryResult.add(JenaResultSetFormatter.convertToJSONW3CStandard(resultSingle));
 			buses.add(JenaResultSetFormatter.convertToListofStringArrays(resultSingle,"entity", "x", "y", "busnumber", "busnumbervalue", "bustypevalue", "vm", "vmvalue", "baseKVvalue"));
 			
 		}
-		logger.info("buses:" + buses);
+		
 		
 		for (List<String[]> bus : buses){
 			for (String[] current : bus) {
