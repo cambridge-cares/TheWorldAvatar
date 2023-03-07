@@ -135,6 +135,7 @@ class KGClient(PySparqlClient):
 
     def get_ppi_iri(self, postcode_iri:str) -> str:
         # Retrieve IRI of Property Price Index for postcode
+        # Local authority is most granular geospatial resolution for UK HPI
         query = f"""
             SELECT DISTINCT ?ppi_iri
             WHERE {{        

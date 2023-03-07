@@ -77,13 +77,7 @@ def test_example_data_instantiation(initialise_clients):
         (cf.DERIVATION_INPUTS_1, cf.POSTCODE_1, cf.AVGPRICE_1, True),   # local agent instance test
         (cf.DERIVATION_INPUTS_2, cf.POSTCODE_2, cf.AVGPRICE_2, True),  
         (cf.DERIVATION_INPUTS_3, cf.POSTCODE_2, cf.AVGPRICE_2, True), 
-        (cf.DERIVATION_INPUTS_1, cf.POSTCODE_1, cf.AVGPRICE_1, False),  # deployed docker agent test
-        pytest.param(
-            cf.DERIVATION_INPUTS_2, cf.POSTCODE_2, cf.AVGPRICE_2, False, 
-            marks=pytest.mark.skip(reason="Mocking call to ONS API within Dockerised agent \
-                                           quite tricky as usual mocking functions not available \
-                                           outside testing environment and would require overwriting \
-                                           module imports when building the Docker image."))
+        (cf.DERIVATION_INPUTS_1, cf.POSTCODE_1, cf.AVGPRICE_1, False)  # deployed docker agent test
     ],
 )
 def test_monitor_derivations(
@@ -199,6 +193,92 @@ def test_monitor_derivations(
             assert j in derivation_input_set_copy
             derivation_input_set_copy.remove(j)
     assert len(derivation_input_set_copy) == 0
+
+    print("All check passed.")
+
+    # Shutdown the scheduler to clean up if it's local agent test
+    if local_agent_test:
+        agent.scheduler.shutdown()
+
+
+@pytest.mark.parametrize(
+    "derivation_input_set, local_agent_test",
+    [
+        (cf.DERIVATION_INPUTS_3, True),   # local agent instance test
+        (cf.DERIVATION_INPUTS_3, False)   # deployed docker agent test
+    ],
+)
+def test_monitor_derivations_no_tx(
+    initialise_clients, create_example_agent, derivation_input_set, local_agent_test, mocker    
+):
+    """
+        Test if derivation agent performs derivation update as expected, the `local_agent_test` 
+        parameter controls if the agent performing the update is instantiating in memory (for quick
+        debugging) or deployed in docker container (to mimic the production environment)
+    """
+    # -------------------------------------------------------------------------
+    # Mock call to ONS API and simply return empty list
+    mocker.patch('avgsqmpriceagent.agent.avgprice_estimation.AvgSqmPriceAgent.get_transactions_from_nearest_postcodes',
+                 return_value=[])
+    # -------------------------------------------------------------------------
+
+    # Get required clients from fixtures
+    sparql_client, derivation_client, rdb_url = initialise_clients
+
+    # Initialise all triples in test_triples + initialise time series in RDB
+    cf.initialise_triples(sparql_client)
+    cf.initialise_database(rdb_url)
+    cf.initialise_timeseries(kgclient=sparql_client, rdb_url=rdb_url, 
+                             rdb_user=cf.DB_USER, rdb_password=cf.DB_PASSWORD,
+                             dataIRI=cf.PRICE_INDEX_INSTANCE_IRI,
+                             dates=cf.DATES, values=cf.VALUES)
+
+    # Verify correct number of triples (not marked up with timestamp yet)
+    assert sparql_client.getAmountOfTriples() == (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES + cf.TS_TRIPLES)
+
+    # Create agent instance and register agent in KG
+    agent = create_example_agent(register_agent=True, random_agent_iri=local_agent_test)
+
+    # Assert that there's currently no instance having rdf:type of the output signature in the KG
+    assert not sparql_client.check_if_triple_exist(None, RDF.type.toPython(), dm.OBE_AVERAGE_SM_PRICE)
+
+    # Create derivation instance for new information
+    # As of pyderivationagent==1.3.0 this also initialises all timestamps for pure inputs
+    derivation_iri = derivation_client.createAsyncDerivationForNewInfo(agent.agentIRI, derivation_input_set)
+    print(f"Initialised successfully, created asynchronous derivation instance: {derivation_iri}")
+    
+    # Expected number of triples after derivation registration
+    triples = (cf.TBOX_TRIPLES + cf.ABOX_TRIPLES + cf.TS_TRIPLES)
+    triples += cf.TIME_TRIPLES_PER_PURE_INPUT * len(derivation_input_set) # timestamps for pure inputs
+    triples += cf.TIME_TRIPLES_PER_PURE_INPUT                             # timestamps for derivation instance
+    triples += len(derivation_input_set) + 1    # number of inputs + derivation instance type
+    triples += cf.AGENT_SERVICE_TRIPLES
+    triples += cf.DERIV_STATUS_TRIPLES
+    triples += cf.DERIV_INPUT_TRIPLES
+    triples += cf.DERIV_OUTPUT_TRIPLES
+
+    # Verify correct number of triples (incl. timestamp & agent triples)
+    assert sparql_client.getAmountOfTriples() == triples    
+
+    if local_agent_test:
+        # Patch RDB URL for TimeSeriesClient to ensure that Postgres is not accessed from inside the Container
+        mocker.patch('avgsqmpriceagent.kg_operations.tsclient.DB_URL', rdb_url)
+        # Start the scheduler to monitor derivations if it's local agent test
+        agent._start_monitoring_derivations()
+
+    # Query timestamp of the derivation for every 20 seconds until it's updated
+    derivation_finished = False
+    while not derivation_finished:
+        time.sleep(10)
+        if cf.get_derivation_status(derivation_iri, sparql_client) == "finished":
+            derivation_finished = True
+
+    # Query the output of the derivation instance
+    derivation_outputs = cf.get_derivation_outputs(derivation_iri, sparql_client)
+    assert derivation_outputs is None
+
+    # Verify correct number of triples
+    assert sparql_client.getAmountOfTriples() == triples + cf.DERIV_STATUS_TRIPLES
 
     print("All check passed.")
 

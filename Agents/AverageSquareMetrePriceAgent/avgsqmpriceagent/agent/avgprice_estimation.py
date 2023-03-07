@@ -150,7 +150,7 @@ class AvgSqmPriceAgent(DerivationAgent):
         """
 
         # Initialise return triples
-        triples = None
+        triples = ''
 
         if postcode_iri and ppi_iri:
         
@@ -213,11 +213,11 @@ class AvgSqmPriceAgent(DerivationAgent):
                 triples = self.sparql_client.instantiate_average_price(avg_price_iri=avgsm_price_iri,
                                                     postcode_iri=postcode_iri,
                                                     avg_price=avg)
-                update_query = f'INSERT DATA {{ {triples} }}'
-
-                # Create rdflib graph with update triples
-                g = Graph()
-                g.update(update_query)
+        
+        # Create rdflib graph with update triples
+        update_query = f'INSERT DATA {{ {triples} }}'
+        g = Graph()
+        g.update(update_query)
 
         return g
 

@@ -19,9 +19,9 @@ import os
 # Import mocked modules for all stack interactions (see `tests\__init__.py` for details)
 from tests.mockutils.stack_configs_mock import QUERY_ENDPOINT, UPDATE_ENDPOINT, THRESHOLD, \
                                                DATABASE, DB_USER, DB_PASSWORD
-
 from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDFROM, \
-                                              TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION
+                                              TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION, \
+                                              ONTODERIVATION_HASSTATUS
 from avgsqmpriceagent.datamodel.iris import *
 from pyderivationagent.conf import config_derivation_agent
 from avgsqmpriceagent.kg_operations.kgclient import KGClient
@@ -86,7 +86,7 @@ DERIVATION_INPUTS_2 = [POSTCODE_INSTANCE_IRI_2, PRICE_INDEX_INSTANCE_IRI,
                        TRANSACTION_INSTANCE_4_IRI, TRANSACTION_INSTANCE_5_IRI]
 POSTCODE_2 = 'DEF 456'
 AVGPRICE_2 = 3600
-# Test for postcodes without transaction records
+# Test for postcodes without transaction records 
 DERIVATION_INPUTS_3 = [POSTCODE_INSTANCE_IRI_2, PRICE_INDEX_INSTANCE_IRI]
 
 
@@ -356,6 +356,16 @@ def get_timestamp(derivation_iri: str, sparql_client):
         }}"""
     # the queried results must be converted to int, otherwise it will not be comparable
     return int(sparql_client.performQuery(query_timestamp)[0]['time'])
+
+
+def get_derivation_status(derivation_iri: str, sparql_client):
+    query_status = f"""
+        SELECT ?status WHERE {{
+            <{derivation_iri}> <{ONTODERIVATION_HASSTATUS}>/<{RDF_TYPE}> ?status .
+        }}"""
+    # extract status and convert result to lower case str
+    status = sparql_client.performQuery(query_status)[0]['status']
+    return status.rsplit('/', 1)[1].lower()
 
 
 def get_derivation_outputs(derivation_iri: str, sparql_client):
