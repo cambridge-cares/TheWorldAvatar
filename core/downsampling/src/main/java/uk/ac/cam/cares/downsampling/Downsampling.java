@@ -1,4 +1,4 @@
-package uk.ac.cam.cares;
+package uk.ac.cam.cares.downsampling;
 
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
