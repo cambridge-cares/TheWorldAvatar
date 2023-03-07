@@ -29,17 +29,7 @@
     <dependency>
       <groupId>com.cmclinnovations</groupId>
       <artifactId>stack-clients</artifactId>
-      <
-      <
-      <
-      <
-      <
-      <
-      < HEAD
       <version>1.8.2</version>
-      =======
-      <version>1.8.1</version>
-      >>>>>>> github/main
     </dependency>
 
     <dependency>
