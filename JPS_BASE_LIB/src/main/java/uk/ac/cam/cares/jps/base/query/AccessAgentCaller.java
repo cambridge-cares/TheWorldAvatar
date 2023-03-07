@@ -109,12 +109,16 @@ public class AccessAgentCaller{
     }
 	
 	/**
-	 * Get the SPARQL endpoints for a target resource. The query and update endpoints can be extracted from the JSONObject using the keys
-	 * JPSConstants.QUERY_ENDPOINT and JPSConstants.UPDATE_ENDPOINT.
+	 * Get the SPARQL endpoints for a target resource. The query and update endpoints 
+	 * can be extracted from the JSONObject using the keys
+	 * {@link uk.ac.cam.cares.jps.base.config.JPSConstants#QUERY_ENDPOINT JPSConstants.QUERY_ENDPOINT} 
+	 * and
+	 * {@link uk.ac.cam.cares.jps.base.config.JPSConstants#UPDATE_ENDPOINT JPSConstants.UPDATE_ENDPOINT}. 
+	 * <p>
 	 * This does not perform a SPARQL query/update.
 	 * 
 	 * @param targetResourceID
-	 * @return JSONArray with query and update endpoint
+	 * @return JSONObject with query and update endpoint
 	 */
 	public static JSONObject getEndpoints(String targetResourceID) {
 		
