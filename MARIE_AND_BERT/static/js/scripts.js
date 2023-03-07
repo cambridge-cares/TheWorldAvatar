@@ -229,7 +229,7 @@ function makeRequest(question, type, resultType, successFunction, promises) {
 		url: url,
 		data: data,
 		dataType: resultType,
-		timeout: (1000 * 60),
+		timeout: (10000 * 60),
 		success: function (data) {
 
 			successFunction(data);

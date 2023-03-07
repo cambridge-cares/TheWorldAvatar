@@ -37,7 +37,8 @@ class ChemicalNEL:
             self.marie_logger.info("5. Done loading the dictionaries for entity linking")
             self.fuzzyset = fuzzyset.FuzzySet(self.name_list)
         except:
-            self.marie_logger.critical(f"Failed at loading dictionaries for entity linking from {__name__}.__init__")
+            loadpath = os.path.join(DICTIONARY_DIR, dataset_name) if dataset_name is not None else 'dataset is not specified'
+            self.marie_logger.critical(f"Failed at loading dictionaries for entity linking from {loadpath}.__init__")
 
         self.ner = BertNEL()
 
