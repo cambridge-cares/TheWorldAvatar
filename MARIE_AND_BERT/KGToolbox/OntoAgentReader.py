@@ -2,6 +2,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 import pandas as pd
 import os
 import sys
+import json
 from sklearn.model_selection import train_test_split
 sys.path.append("")
 from KGToolbox.CreateNegSamplingDictionary import NegSamplingCreator
@@ -208,6 +209,42 @@ class OntoAgentReader:
         df_test.to_csv(os.path.join(self.full_dataset_dir, f"{self.agent}-test.txt"),
                        sep="\t", header=False, index=False)
         
+    def create_info_dictionaries(self):
+        data = []
+        with open(os.path.join(self.full_dataset_dir, f"{self.agent}-train.txt"), 'r') as file:
+            for line in file:
+                row = line.strip().split('\t')
+                data.append(tuple(row))
+
+        input_msg_part = set()
+        output_msg_part = set()
+        qualifier_msg_part = set()
+
+        for row in data:
+            if row[1]=='hasInput':
+                input_msg_part.add(row[2])
+            elif row[1] == 'hasOutput':
+                output_msg_part.add(row[2])
+            elif row[1] == 'hasQualifier':
+                qualifier_msg_part.add(row[2])
+
+        inputs = []
+        outputs = []
+        qualifiers = []
+
+        for row in data:
+            if row[0] in input_msg_part and row[1] == 'hasType':
+                inputs.append(row[2])
+            elif row[0] in output_msg_part and row[1] == 'hasType':
+                outputs.append(row[2])
+            elif row[0] in qualifier_msg_part and row[1] == 'hasType':
+                qualifiers.append(row[2])
+        
+        agent_dict = {'input': inputs, 'output': outputs, 'qualifier': qualifiers}
+        with open(os.path.join(self.full_dataset_dir, 'info_dict.json'), 'w') as f:
+            f.write(json.dumps(agent_dict))
+            f.close()
+        
     def run(self):
         triples=self.get_operation_output()+\
         self.get_operation_input()+\
@@ -224,6 +261,7 @@ class OntoAgentReader:
         my_extractor = HopExtractor(dataset_dir=f'CrossGraph/{self.agent}', dataset_name=self.agent)
         my_creator = NegSamplingCreator(dataset_dir=f'CrossGraph/{self.agent}', ontology=self.agent)
         my_creator.create_full_neg_dictionary()
+        self.create_info_dictionaries()
         
 if __name__ == "__main__":
     reader1 = OntoAgentReader('ontopceagent', False, namespace='ontopceagent')
