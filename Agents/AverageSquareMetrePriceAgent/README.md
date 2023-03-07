@@ -117,7 +117,7 @@ git config core.fileMode false
 &nbsp;
 # 2. Using the Agent
 
-The Average Square Metre Price Estimation Agent is intended to use the `asychronous mode` of the Derivation Framework to detect changes in instantiated [OntoBuiltEnv] properties (i.e. `total floor area`, `transaction records`, and `property price index`) and automatically update associated `average price per square metre` instances in the KG. As the agent adopts `pyderivationagent`, it also serves HTTP requests to handle synchronous derivations. However, it is (strongly) discouraged to invoke such HTTP request by ONESELF. 
+The Average Square Metre Price Estimation Agent is intended to use the `asychronous mode` of the Derivation Framework to detect changes in instantiated [OntoBuiltEnv] properties (i.e. `total floor area`, `transaction records`, and `property price index`) and automatically update associated `average price per square metre` instances in the KG. **Please note**: After initial markup on newly instantiated pure inputs, however, an initial synchronous derivation for new info will be requested to compute the average price on the spot. As the agent adopts `pyderivationagent`, it also serves HTTP requests to handle further synchronous derivations. However, it is (strongly) discouraged to invoke such HTTP request by ONESELF. 
 
 After successful agent start-up, an instructional page shall become available at the root (i.e. `/`) of the port specified in the [docker compose file]. The exact address depends on where the agent container is deployed (i.e. localhost, remote VM, ...), but takes a form like `http://165.232.172.16:5011/`.
 
@@ -174,6 +174,15 @@ To run the integration tests locally, access to the `docker.cmclinnovations.com`
     $ avg_venv\Scripts\activate.bat
     (avg_venv) $
     ```
+    `(Linux`)
+    ```
+    $ sudo apt-get install python3-pip
+    $ pip3 install virtualenv
+    $ python3 -m venv avg_venv
+    $ source avg_venv/bin/activate
+    (avg_venv) $
+    ```
+
 2. Install all required packages in virtual environment (the `-e` flag installs the project for-in place development and could be neglected):
     > **NOTE** The design of separating `setup.py` and `requirements.txt` in this agent is an effort to avoid version collision. The pinned versions of dependencies in the `requirements.txt` are the same versions that passed the integration tests. This file is called in the `Dockerfile` for publishing the production docker image.
 
@@ -183,13 +192,25 @@ To run the integration tests locally, access to the `docker.cmclinnovations.com`
 
     `(Windows)`
     ```bash
-    $ python -m pip install --upgrade pip
+    (avg_venv) $ python -m pip install --upgrade pip
     # Install pinned version of required packages, these are tested working versions
-    python -m pip install -r requirements.txt
+    (avg_venv) $ python -m pip install -r requirements.txt
     # Install the rest of required packages for development from setup.py, incl. pytest etc.
-    python -m pip install -e .[dev]
+    (avg_venv) $ python -m pip install -e .[dev]
     ```
-    Please note: If developing/testing in WSL2, `libpq-dev`, `python-dev`, and `gcc` might be required to build the `psycopg2` package.
+
+    Please note: If developing/testing in WSL2/Linux, `libpq-dev`, `python-dev`, and `gcc` might be required to build the `psycopg2` package:
+
+    `(Linux)`
+    ```bash
+    (avg_venv) $ python3 -m pip install --upgrade pip
+    # Install prerequsisites for building psycopg2
+    (avg_venv) $ sudo apt install libpq-dev python3-dev gcc -y
+    # Install pinned version of required packages, these are tested working version
+    (avg_venv) $ python3 -m pip install -r requirements.txt
+    # Install the rest of required packages for development from setup.py, incl. pytest etc.
+    (avg_venv) $ python3 -m pip install -e .[dev]
+    ```
 
 3. Build latest *StackClient* JAVA resource, copy `.jar` file and entire `lib` folder into `<tmp_stack>` repository, and install resource for py4jps (Please note that this requires [Java Development Kit version >=11]):
     ```bash
