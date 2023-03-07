@@ -14,7 +14,7 @@ gfortran -c ${COMPILE_FLAGS} mod_reports.f90
 gfortran -c ${COMPILE_FLAGS} mod_misc.f90
 gfortran -c ${COMPILE_FLAGS} aermet.f90            
 
-gfortran -o aermet ${LINK_FLAGS} file_units.mod main1.mod upperair.mod surface.mod onsite.mod pbl.mod read_input.mod reports.mod misc.mod aermet.o 
+gfortran -o aermet ${LINK_FLAGS} mod_file_units.o mod_main1.o mod_upperair.o mod_surface.o mod_onsite.o mod_pbl.o mod_read_input.o mod_reports.o mod_misc.o aermet.o 
 
 rm *.o
 rm *.mod

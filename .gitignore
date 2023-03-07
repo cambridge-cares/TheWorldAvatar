@@ -22,6 +22,7 @@
 .project
 .factorypath
 *.iml
+*.xml
 
 # Java:
 *.jar
@@ -120,3 +121,5 @@ obsolete/*
 **/credentials/
 JPS_VIRTUALSENSOR/ShipInputAgent/data/*
 *.tif
+**/settings.xml
+**/settings-security.xml

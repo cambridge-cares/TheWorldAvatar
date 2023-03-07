@@ -126,6 +126,8 @@ public class Buildings {
     public int run() {
         try {
             getProperties();
+
+            /* Currently unable to compile AERMAP code and copy executable in the Docker environment.  
             if (createAERMAPInputFile() != 0) {
                 LOGGER.error("Failed to create AERMAP input file, terminating");
                 return 1;
@@ -148,7 +150,11 @@ public class Buildings {
                 LOGGER.error("Failed to process AERMAP output, terminating");
                 return 1;
             }
-
+            */
+            if (updateElevationData() != 0) {
+                LOGGER.error("Failed to update elevation data, terminating");
+                return 1;
+            }
             if (createBPIPPRMInput() != 0) {
                 LOGGER.error("Failed to create BPIPPRM input, terminating");
                 return 1;
@@ -167,10 +173,10 @@ public class Buildings {
                 LOGGER.error("Failed to create AERMOD sources input file, terminating");
                 return 1;
             }
-            // if (createAERMODReceptorInput(nx,ny) != 0) {
-            //     LOGGER.error("Failed to create AERMOD receptor input file, terminating");
-            //     return 1;
-            // }
+            if (createAERMODReceptorInput(nx,ny) != 0) {
+                LOGGER.error("Failed to create AERMOD receptor input file, terminating");
+                return 1;
+            }
         } catch (Exception e) {
             return 1;
         }
@@ -632,7 +638,7 @@ public class Buildings {
                     String stackProp = StackProperties.get(StackNum-1);
                     String propElevation = "#" + StackElevation;
                     stackProp += propElevation;
-                    StackProperties.set(StackNum-1, propElevation);
+                    StackProperties.set(StackNum-1, stackProp);
                 }
                 else if (line.contains("BUILD")) {
                     String [] buildInfo = line.split("\\s+");
@@ -649,6 +655,29 @@ public class Buildings {
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
             return 1;
+        }
+        return 0;
+    }
+
+    public static int updateElevationData() {
+        
+        int numberBuildings = BPIPPRMBuildingInput.size();
+        for (int i = 0; i < numberBuildings; i++) {
+            String BuildLine = BPIPPRMBuildingInput.get(i).get(0);
+            BuildLine.replace("BASE_ELEVATION", "0.0");
+            BPIPPRMBuildingInput.get(i).set(0,BuildLine);
+        }
+        
+        int numberStacks = BPIPPRMStackInput.size() ;
+        for (int i = 0; i < numberStacks; i++) {
+            String StackLine = BPIPPRMStackInput.get(i);
+            StackLine.replace("BASE_ELEVATION", "0.0");
+            BPIPPRMStackInput.set(i, StackLine);
+            String stackProp = StackProperties.get(i);
+            String propElevation = "#0.0" ;
+            stackProp += propElevation;
+            StackProperties.set(i, stackProp);
+
         }
         return 0;
     }
@@ -759,6 +788,7 @@ public class Buildings {
 
         for (int i = 0; i < StackProperties.size(); i++) {
             String[] avecoord = StackProperties.get(i).split("#");
+            double StackBaseElevation = Double.parseDouble(avecoord[2]);
             List<Double> inputcoords = Arrays.asList(Double.parseDouble(avecoord[0]), Double.parseDouble(avecoord[1]));
             List<List<Double>> inputcoordinates = Arrays.asList(inputcoords);
             List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates, DatabaseCoordSys, UTMCoordSys);
@@ -777,7 +807,7 @@ public class Buildings {
             double velocityms = volumetricFlowRatem3s / stackAream2;
 
             String stkId = "Stk" + (i + 1);
-            sb.append(String.format("SO LOCATION %s POINT %f %f %f \n", stkId, StackEastUTM, StackNorthUTM, 0.0));
+            sb.append(String.format("SO LOCATION %s POINT %f %f %f \n", stkId, StackEastUTM, StackNorthUTM, StackBaseElevation));
             sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f \n", stkId,
                     massFlowrateInGs, StackHeight, gasTemperatureKelvin, velocityms, Diameter));
         }
