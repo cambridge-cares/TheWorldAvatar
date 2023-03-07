@@ -1,8 +1,11 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 
+import org.apache.jena.arq.querybuilder.Converters;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
  * Provides reusable query statements for spatial zones.
@@ -29,6 +32,7 @@ public class CommonQuery {
     protected static final String ELEVATION_VAR = "?elev";
     protected static final String TER_ELEVATION_VAR = "?terElev";
     protected static final String REP_CONTEXT_VAR = "?repcontext";
+    protected static final String REP_SUBCONTEXT_VAR = "?subcontext";
     protected static final String CONTEXT_REL_VAR = "?contextrelation";
     protected static final String PROJECT_VAR = "?project";
     protected static final String SPACE_DIMENSION_VAR = "?spacedimension";
@@ -36,6 +40,17 @@ public class CommonQuery {
     protected static final String NORTH_DIR_VAR = "?northdirection";
     protected static final String MODEL_PLACEMENT_VAR = "?modelplacement";
     protected static final String PLACEMENT_VAR = "?placement";
+    // Geometry variables
+    protected static final String PRODUCT_DEFINITION_VAR = "?productDefinitionShape";
+    protected static final String SHAPE_REP_VAR = "?shaperep";
+    protected static final String INST_SHAPE_REP_VAR = "?instshaperep";
+    protected static final String INST_SHAPE_REP_TYPE_VAR = "?shapereptype";
+    protected static final String GEOM_VAR = "?geometry";
+    protected static final String GEOM_TYPE_VAR = "?geomtype";
+    protected static final String MAPPED_ITEM_VAR = "?mappeditem";
+    protected static final String REP_MAP_VAR = "?representationmap";
+    protected static final String GEOM_AXIS_PLACEMENT_VAR = "?geomaxisplacement";
+    protected static final String CART_TRANSFORMER_VAR = "?cartesiantransformer";
     // IfcOwl Properties
     protected static final String EXPRESS_HASDOUBLE = "/express:hasDouble";
     protected static final String EXPRESS_HASINTEGER = "/express:hasInteger";
@@ -43,7 +58,7 @@ public class CommonQuery {
     protected static final String LIST_HAS_CONTENT = "list:hasContents";
     protected static final String LIST_HAS_NEXT = "list:hasNext";
     protected static final String IFC_ID = NamespaceMapper.IFC_PREFIX + ":globalId_IfcRoot";
-    protected static final String IFC_NAME= NamespaceMapper.IFC_PREFIX + ":name_IfcRoot";
+    protected static final String IFC_NAME = NamespaceMapper.IFC_PREFIX + ":name_IfcRoot";
     protected static final String IFC_SITE_ELEV = NamespaceMapper.IFC_PREFIX + ":refElevation_IfcSite";
     protected static final String IFC_BUILDING_ELEV = NamespaceMapper.IFC_PREFIX + ":elevationOfRefHeight_IfcBuilding";
     protected static final String IFC_BUILDING_TERELEV = NamespaceMapper.IFC_PREFIX + ":elevationOfTerrain_IfcBuilding";
@@ -61,6 +76,16 @@ public class CommonQuery {
     protected static final String IFC_PROJECT_CONTEXT_PRECISION = NamespaceMapper.IFC_PREFIX + ":precision_IfcGeometricRepresentationContext";
     protected static final String IFC_PROJECT_WCS_CONTEXT = NamespaceMapper.IFC_PREFIX + ":worldCoordinateSystem_IfcGeometricRepresentationContext";
     protected static final String IFC_PROJECT_TRUE_NORTH = NamespaceMapper.IFC_PREFIX + ":trueNorth_IfcGeometricRepresentationContext";
+    // IfcOwl geometry properties
+    protected static final String IFC_PRODUCT_REPRESENTATION = NamespaceMapper.IFC_PREFIX + ":representation_IfcProduct";
+    protected static final String IFC_PRODUCT_REPRESENTATIONS = NamespaceMapper.IFC_PREFIX + ":representations_IfcProductRepresentation";
+    protected static final String IFC_PRODUCT_REPRESENTATION_TYPE = NamespaceMapper.IFC_PREFIX + ":representationType_IfcRepresentation";
+    protected static final String IFC_REP_CONTEXT = NamespaceMapper.IFC_PREFIX + ":contextOfItems_IfcRepresentation";
+    protected static final String IFC_REP_ITEMS = NamespaceMapper.IFC_PREFIX + ":items_IfcRepresentation";
+    protected static final String IFC_MAPPING_SOURCE = NamespaceMapper.IFC_PREFIX + ":mappingSource_IfcMappedItem";
+    protected static final String IFC_MAPPING_TARGET = NamespaceMapper.IFC_PREFIX + ":mappingTarget_IfcMappedItem";
+    protected static final String IFC_MAPPING_ORIGIN = NamespaceMapper.IFC_PREFIX + ":mappingOrigin_IfcRepresentationMap";
+    protected static final String IFC_MAPPED_REP = NamespaceMapper.IFC_PREFIX + ":mappedRepresentation_IfcRepresentationMap";
     protected static final String IFC_OBJ_PLACEMENT = NamespaceMapper.IFC_PREFIX + ":objectPlacement_IfcProduct";
     // IfcOwl Classes
     protected static final String IFCPROJECT = NamespaceMapper.IFC_PREFIX + ":IfcProject";
@@ -74,7 +99,14 @@ public class CommonQuery {
     protected static final String REL_SPATIAL_ZONE_ELEMENT = NamespaceMapper.IFC_PREFIX + ":IfcRelContainedInSpatialStructure";
     protected static final String IFCCOMPOUND_PLANE_ANGLE = NamespaceMapper.IFC_PREFIX + ":IfcCompoundPlaneAngleMeasure";
     protected static final String IFCGEOM_REP_CONTEXT = NamespaceMapper.IFC_PREFIX + ":IfcGeometricRepresentationContext";
+    protected static final String IFCGEOM_REP_SUBCONTEXT = NamespaceMapper.IFC_PREFIX + ":IfcGeometricRepresentationSubContext";
+    // IfcOwl geometry classes
+    protected static final String IFC_PRODUCT_DEF_SHAPE = NamespaceMapper.IFC_PREFIX + ":IfcProductDefinitionShape";
+    protected static final String IFC_SHAPE_REP = NamespaceMapper.IFC_PREFIX + ":IfcShapeRepresentation";
+    protected static final String IFC_MAPPED_ITEM = NamespaceMapper.IFC_PREFIX + ":IfcMappedItem";
+    protected static final String IFC_REP_MAP = NamespaceMapper.IFC_PREFIX + ":IfcRepresentationMap";
     protected static final String IFCLOCALPLACEMENT = NamespaceMapper.IFC_PREFIX + ":IfcLocalPlacement";
+    protected static final String IFC_CART_TRANSFORMATION_OPERATOR = NamespaceMapper.IFC_PREFIX + ":IfcCartesianTransformationOperator3D";
     // IfcOwl Element Classes
     protected static final String IFCDOOR = NamespaceMapper.IFC_PREFIX + ":IfcDoor";
 
@@ -92,5 +124,64 @@ public class CommonQuery {
                 .addWhere(ZONE_VAR, IFC_NAME + EXPRESS_HASSTRING, NAME_VAR)
                 .addWhere(ZONE_VAR, IFC_OBJ_PLACEMENT, PLACEMENT_VAR)
                 .addWhere(PLACEMENT_VAR, QueryHandler.RDF_TYPE, IFCLOCALPLACEMENT);
+    }
+
+    /**
+     * Add the statements for querying common metadata such as class name, their unique ifc ID, and name into the builder.
+     *
+     * @param builder A select builder object to append the statements to.
+     */
+    public static void addElementModelRepresentationQueryComponents(SelectBuilder builder) {
+        builder.addVar(INST_SHAPE_REP_VAR)
+                .addVar(REP_SUBCONTEXT_VAR)
+                .addVar(GEOM_VAR)
+                .addVar(GEOM_TYPE_VAR)
+                .addVar(INST_SHAPE_REP_TYPE_VAR)
+                .addVar(GEOM_AXIS_PLACEMENT_VAR)
+                .addVar(CART_TRANSFORMER_VAR);
+        builder.addWhere(ZONE_VAR, IFC_PRODUCT_REPRESENTATION, PRODUCT_DEFINITION_VAR)
+                .addWhere(PRODUCT_DEFINITION_VAR, QueryHandler.RDF_TYPE, IFC_PRODUCT_DEF_SHAPE);
+        // Set up empty builders for subgroups and unions with necessary prefixes
+        SelectBuilder subgroupBuilder = new SelectBuilder();
+        NamespaceMapper.addSubqueryBuilderNamespaces(subgroupBuilder);
+        SelectBuilder unionBuilder = subgroupBuilder.clone();
+        // Query for the individual shape representation instances that are directly linked to specific geometries
+        subgroupBuilder.addWhere(PRODUCT_DEFINITION_VAR, IFC_PRODUCT_REPRESENTATIONS + "/" + LIST_HAS_CONTENT, INST_SHAPE_REP_VAR)
+                .addWhere(INST_SHAPE_REP_VAR, QueryHandler.RDF_TYPE, IFC_SHAPE_REP)
+                .addWhere(INST_SHAPE_REP_VAR, IFC_PRODUCT_REPRESENTATION_TYPE + EXPRESS_HASSTRING, INST_SHAPE_REP_TYPE_VAR)
+                .addWhere(INST_SHAPE_REP_VAR, IFC_REP_CONTEXT, REP_SUBCONTEXT_VAR)
+                .addWhere(REP_SUBCONTEXT_VAR, QueryHandler.RDF_TYPE, IFCGEOM_REP_SUBCONTEXT)
+                .addWhere(INST_SHAPE_REP_VAR, IFC_REP_ITEMS, GEOM_VAR)
+                .addWhere(GEOM_VAR, QueryHandler.RDF_TYPE, GEOM_TYPE_VAR);
+        // For the first sub-query, this should apply to all geom type except for IfcMappedItem
+        try {
+            subgroupBuilder.addFilter("!regex(str(" + GEOM_TYPE_VAR + ") ,'IfcMappedItem')");
+        } catch (ParseException e) {
+            throw new JPSRuntimeException(e);
+        }
+
+        // Query for the family representation instance when there is no geometry available for individual instances
+        // In these cases, individual instances are linked as a mapped item and are nested from the individual instances
+        unionBuilder.addWhere(PRODUCT_DEFINITION_VAR, IFC_PRODUCT_REPRESENTATIONS + "/" + LIST_HAS_CONTENT, SHAPE_REP_VAR)
+                .addWhere(SHAPE_REP_VAR, QueryHandler.RDF_TYPE, IFC_SHAPE_REP)
+                .addWhere(SHAPE_REP_VAR, IFC_PRODUCT_REPRESENTATION_TYPE + EXPRESS_HASSTRING, Converters.makeLiteral("MappedRepresentation"))
+                .addWhere(SHAPE_REP_VAR, IFC_REP_ITEMS, MAPPED_ITEM_VAR) // individual instances with no geometries
+                .addWhere(MAPPED_ITEM_VAR, QueryHandler.RDF_TYPE, IFC_MAPPED_ITEM)
+                .addWhere(MAPPED_ITEM_VAR, IFC_MAPPING_SOURCE, REP_MAP_VAR)
+                .addWhere(MAPPED_ITEM_VAR, IFC_MAPPING_TARGET, CART_TRANSFORMER_VAR) // Transforms origin location to new location
+                .addWhere(CART_TRANSFORMER_VAR, QueryHandler.RDF_TYPE, IFC_CART_TRANSFORMATION_OPERATOR)
+                .addWhere(REP_MAP_VAR, QueryHandler.RDF_TYPE, IFC_REP_MAP)
+                // Source placement structure is directly queried here as there is no IfcLocalPlacement instance in this specific case
+                .addWhere(REP_MAP_VAR, IFC_MAPPING_ORIGIN, GEOM_AXIS_PLACEMENT_VAR)
+                // Start of specific instance shape rep
+                .addWhere(REP_MAP_VAR, IFC_MAPPED_REP, INST_SHAPE_REP_VAR)
+                .addWhere(INST_SHAPE_REP_VAR, QueryHandler.RDF_TYPE, IFC_SHAPE_REP)
+                .addWhere(INST_SHAPE_REP_VAR, IFC_PRODUCT_REPRESENTATION_TYPE + EXPRESS_HASSTRING, INST_SHAPE_REP_TYPE_VAR)
+                .addWhere(INST_SHAPE_REP_VAR, IFC_REP_CONTEXT, REP_SUBCONTEXT_VAR) // Sub-context
+                .addWhere(REP_SUBCONTEXT_VAR, QueryHandler.RDF_TYPE, IFCGEOM_REP_SUBCONTEXT)
+                .addWhere(INST_SHAPE_REP_VAR, IFC_REP_ITEMS, GEOM_VAR) // Geometries
+                .addWhere(GEOM_VAR, QueryHandler.RDF_TYPE, GEOM_TYPE_VAR);
+        subgroupBuilder.addUnion(unionBuilder);
+        builder.addWhere(subgroupBuilder);
     }
 }

@@ -44,6 +44,13 @@ public class OntoBimConstant {
     public static final String BIM_HAS_PRECISION = NamespaceMapper.BIM_NAMESPACE + "hasPrecision";
     public static final String BIM_HAS_TRUE_NORTH= NamespaceMapper.BIM_NAMESPACE + "hasTrueNorth";
     public static final String BIM_HAS_WCS = NamespaceMapper.BIM_NAMESPACE + "hasWorldCoordinateSystem";
+    // OntoBIM element geometry properties
+    public static final String BIM_HAS_GEOM_REP = NamespaceMapper.BIM_NAMESPACE + "hasGeometricRepresentation";
+    public static final String BIM_HAS_REP_TYPE = NamespaceMapper.BIM_NAMESPACE + "hasRepresentationType";
+    public static final String BIM_HAS_SUBCONTEXT = NamespaceMapper.BIM_NAMESPACE + "hasSubContext";
+    public static final String BIM_HAS_REP_ITEM = NamespaceMapper.BIM_NAMESPACE + "hasRepresentationItem";
+    public static final String BIM_HAS_SOURCE_PLACEMENT = NamespaceMapper.BIM_NAMESPACE + "hasSourcePlacement";
+    public static final String BIM_HAS_TARGET_PLACEMENT = NamespaceMapper.BIM_NAMESPACE + "hasTargetPlacement";
     // OntoBIM modelling position properties
     public static final String BIM_HAS_LOCAL_POSITION = NamespaceMapper.BIM_NAMESPACE + "hasLocalPosition";
     // OntoBim classes
@@ -51,6 +58,8 @@ public class OntoBimConstant {
     public static final String BIM_PROJECT_CLASS = NamespaceMapper.BIM_NAMESPACE + PROJECT_CLASS;
     public static final String GEOM_CONTEXT_CLASS = "GeometricRepresentationContext";
     public static final String BIM_GEOM_CONTEXT_CLASS = NamespaceMapper.BIM_NAMESPACE + GEOM_CONTEXT_CLASS;
+    public static final String GEOM_SUB_CONTEXT_CLASS = "GeometricRepresentationSubContext";
+    public static final String BIM_GEOM_SUB_CONTEXT_CLASS = NamespaceMapper.BIM_NAMESPACE + GEOM_SUB_CONTEXT_CLASS;
     public static final String SITE_CLASS = "Site";
     public static final String BUILDING_CLASS = "Building";
     public static final String STOREY_CLASS = "Storey";
@@ -76,8 +85,12 @@ public class OntoBimConstant {
     public static final String DOOR_CLASS = "Door";
     public static final String BIM_DOOR_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + DOOR_CLASS;
     // OntoBim geometry classes
+    public static final String GEOM_MODEL_REP_CLASS = "ModelRepresentation3D";
+    public static final String BIM_GEOM_MODEL_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + GEOM_MODEL_REP_CLASS;
     public static final String DIR_VEC_CLASS = "DirectionVector";
     public static final String BIM_DIR_VEC_CLASS = NamespaceMapper.BIM_NAMESPACE + DIR_VEC_CLASS;
+    public static final String CART_TRANS_OPERATOR_CLASS = "CartesianTransformationOperator";
+    public static final String BIM_CART_TRANS_OPERATOR_CLASS = NamespaceMapper.BIM_NAMESPACE + CART_TRANS_OPERATOR_CLASS;
     public static final String LOCAL_PLACEMENT_CLASS = "LocalPlacement";
     public static final String BIM_LOCAL_PLACEMENT_CLASS = NamespaceMapper.BIM_NAMESPACE + LOCAL_PLACEMENT_CLASS;
     // OM classes

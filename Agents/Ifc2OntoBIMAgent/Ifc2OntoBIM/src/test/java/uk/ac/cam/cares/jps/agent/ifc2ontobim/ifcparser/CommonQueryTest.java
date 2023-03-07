@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.base.Sys;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
@@ -8,7 +9,7 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CommonQueryTest {
 
@@ -20,10 +21,22 @@ class CommonQueryTest {
         // Execute method
         CommonQuery.addBaseQueryComponents(builder);
         // Test result
-        JunitTestUtils.doesExpectedListExist(genExpectedQueryStatements(), builder.buildString());
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseQueryStatements(), builder.buildString());
     }
 
-    private List<String> genExpectedQueryStatements() {
+    @Test
+    void testAddElementModelRepresentationQueryComponents() {
+        // Set up a new builder
+        SelectBuilder builder = new SelectBuilder();
+        NamespaceMapper.addSubqueryBuilderNamespaces(builder);
+        // Execute method
+        CommonQuery.addElementModelRepresentationQueryComponents(builder);
+        // Test result
+        JunitTestUtils.doesExpectedListExist(genExpectedElementModelQueryStatements(), builder.buildString());
+        assertTrue(builder.buildString().contains(genExpectedElementModelUnionQuery()));
+    }
+
+    private List<String> genExpectedBaseQueryStatements() {
         List<String> expected = new ArrayList<>();
         expected.add("SELECT  \\?uid \\?name \\?placement");
         expected.add("\\?zone ifc:globalId_IfcRoot/express:hasString \\?uid .");
@@ -31,5 +44,52 @@ class CommonQueryTest {
         expected.add("\\?zone     ifc:objectPlacement_IfcProduct  \\?placement .");
         expected.add("\\?placement  rdf:type            ifc:IfcLocalPlacement}");
         return expected;
+    }
+
+    private List<String> genExpectedElementModelQueryStatements() {
+        List<String> expected = new ArrayList<>();
+        expected.add("SELECT  \\?instshaperep \\?subcontext \\?geometry \\?geomtype \\?shapereptype \\?geomaxisplacement \\?cartesiantransformer");
+        expected.add("\\?zone     ifc:representation_IfcProduct  \\?productDefinitionShape .");
+        expected.add("\\?productDefinitionShape\n" +
+                "              rdf:type              ifc:IfcProductDefinitionShape");
+        return expected;
+    }
+
+    private String genExpectedElementModelUnionQuery() {
+        return "{ ?productDefinitionShape ifc:representations_IfcProductRepresentation/list:hasContents ?instshaperep .\n" +
+                "        ?instshaperep\n" +
+                "                  rdf:type  ifc:IfcShapeRepresentation .\n" +
+                "        ?instshaperep ifc:representationType_IfcRepresentation/express:hasString ?shapereptype .\n" +
+                "        ?instshaperep\n" +
+                "                  ifc:contextOfItems_IfcRepresentation  ?subcontext .\n" +
+                "        ?subcontext  rdf:type           ifc:IfcGeometricRepresentationSubContext .\n" +
+                "        ?instshaperep\n" +
+                "                  ifc:items_IfcRepresentation  ?geometry .\n" +
+                "        ?geometry  rdf:type             ?geomtype\n" +
+                "        FILTER ( ! regex(str(?geomtype), \"IfcMappedItem\") )\n" +
+                "      }\n" +
+                "    UNION\n" +
+                "      { ?productDefinitionShape ifc:representations_IfcProductRepresentation/list:hasContents ?shaperep .\n" +
+                "        ?shaperep  rdf:type  ifc:IfcShapeRepresentation .\n" +
+                "        ?shaperep ifc:representationType_IfcRepresentation/express:hasString \"MappedRepresentation\" .\n" +
+                "        ?shaperep  ifc:items_IfcRepresentation  ?mappeditem .\n" +
+                "        ?mappeditem  rdf:type           ifc:IfcMappedItem ;\n" +
+                "                  ifc:mappingSource_IfcMappedItem  ?representationmap ;\n" +
+                "                  ifc:mappingTarget_IfcMappedItem  ?cartesiantransformer .\n" +
+                "        ?cartesiantransformer\n" +
+                "                  rdf:type              ifc:IfcCartesianTransformationOperator3D .\n" +
+                "        ?representationmap\n" +
+                "                  rdf:type              ifc:IfcRepresentationMap ;\n" +
+                "                  ifc:mappingOrigin_IfcRepresentationMap  ?geomaxisplacement ;\n" +
+                "                  ifc:mappedRepresentation_IfcRepresentationMap  ?instshaperep .\n" +
+                "        ?instshaperep\n" +
+                "                  rdf:type              ifc:IfcShapeRepresentation .\n" +
+                "        ?instshaperep ifc:representationType_IfcRepresentation/express:hasString ?shapereptype .\n" +
+                "        ?instshaperep\n" +
+                "                  ifc:contextOfItems_IfcRepresentation  ?subcontext .\n" +
+                "        ?subcontext  rdf:type           ifc:IfcGeometricRepresentationSubContext .\n" +
+                "        ?instshaperep\n" +
+                "                  ifc:items_IfcRepresentation  ?geometry .\n" +
+                "        ?geometry  rdf:type             ?geomtype}";
     }
 }

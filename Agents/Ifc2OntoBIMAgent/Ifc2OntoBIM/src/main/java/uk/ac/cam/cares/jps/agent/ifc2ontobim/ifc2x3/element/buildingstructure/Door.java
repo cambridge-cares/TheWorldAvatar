@@ -16,6 +16,7 @@ import java.util.UUID;
 public class Door extends IfcModelRepresentation {
     private final String elementIRI;
     private final String hostZoneIRI;
+    private final String geomRepIRI;
 
 
     /**
@@ -26,10 +27,11 @@ public class Door extends IfcModelRepresentation {
      * @param uid          The IFC uid generated for this object.
      * @param placementIri The local placement IRI for the zone's position.
      */
-    public Door(String iri, String name, String uid, String placementIri, String hostZoneIri) {
+    public Door(String iri, String name, String uid, String placementIri, String hostZoneIri, String geomRepIri) {
         super(iri, name, uid, placementIri);
         this.elementIRI = this.getPrefix() + OntoBimConstant.DOOR_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.hostZoneIRI = hostZoneIri;
+        this.geomRepIRI = geomRepIri;
     }
 
     /**
@@ -43,5 +45,6 @@ public class Door extends IfcModelRepresentation {
         StatementHandler.addStatement(statementSet, this.hostZoneIRI, OntoBimConstant.BOT_CONTAINS_ELEMENT,  this.elementIRI);
         StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_DOOR_CLASS);
         StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.BIM_HAS_IFC_REPRESENTATION, this.getIfcRepIri());
+        StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.BIM_HAS_GEOM_REP, this.geomRepIRI);
     }
 }
