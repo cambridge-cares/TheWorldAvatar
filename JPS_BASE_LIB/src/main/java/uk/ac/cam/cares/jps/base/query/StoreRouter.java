@@ -197,6 +197,12 @@ public class StoreRouter extends AbstractCachedRouter<String, List<String>>{
 		return kbClient;
 	}
 	
+	/**
+	 * Returns a the query and update endpoints based on a target resource ID
+	 * provided as the input.
+	 * @param targetResourceID
+	 * @return List of endpoints
+	 */
 	public static List<String> getEndpoints(String targetResourceID){
 		
 		List<String> endpoints = null;
