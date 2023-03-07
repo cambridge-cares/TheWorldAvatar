@@ -40,7 +40,13 @@ public interface JPSConstants {
 	static String RESULT_KEY = "result";
 	static String ASK_RESULT_KEY = "ASK";
 	
+	/**
+	 * Key to retrieve SPARQL query endpoint
+	 */
 	static String QUERY_ENDPOINT = "queryendpoint";
+	/**
+	 * Key to retrieve SPARQL update endpoint
+	 */
 	static String UPDATE_ENDPOINT = "updateendpoint";
 	
 	/**
