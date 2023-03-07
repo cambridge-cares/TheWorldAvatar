@@ -167,7 +167,7 @@ public class AccessAgent extends JPSAgent{
 	}
 		
 	 /**
-	 * Perform HTTP GET. This will "get" all triples (from specified graph).
+	 * Perform HTTP GET. This will return the SPARQL endpoints for the targetResourceID
 	 * @param requestParams
 	 * @return
 	 */
@@ -185,7 +185,7 @@ public class AccessAgent extends JPSAgent{
 		try {
 			logInputParams(requestParams, "", false);
 						
-			List<String> endpoints = StoreRouter.getEndpoints(targetIRI);
+			List<String> endpoints = getEndpointsFromStoreRouter(targetIRI);
 			String queryIRI = endpoints.get(StoreRouter.QUERY_INDEX);
 			String updateIRI = endpoints.get(StoreRouter.UPDATE_INDEX);
 			
@@ -203,6 +203,10 @@ public class AccessAgent extends JPSAgent{
 			logInputParams(requestParams, sparqlquery, true);
 			throw new JPSRuntimeException(e);
 		}
+	}
+	 
+	public List<String> getEndpointsFromStoreRouter(String targetIRI){
+		return StoreRouter.getEndpoints(targetIRI);
 	}
 	
 	/**
