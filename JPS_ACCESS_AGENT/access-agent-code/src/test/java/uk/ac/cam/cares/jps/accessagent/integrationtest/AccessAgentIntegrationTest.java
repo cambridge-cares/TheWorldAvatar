@@ -48,7 +48,7 @@ class AccessAgentIntegrationTest {
 	
 	//User defined variables
 	//set the desired access agent version number here
-	static final String ACCESS_AGENT_VERSION = "1.7.0-SNAPSHOT";
+	static final String ACCESS_AGENT_VERSION = "1.7.0";
 	
 	//////////////////////////////////////////////////
 	
@@ -185,21 +185,6 @@ class AccessAgentIntegrationTest {
         JSONObject result = ja.getJSONObject(0); 
 		assertEquals("TEST",result.get("o").toString());
 	}
-	
-	/*
-	@Test
-	void testGet() {
-		
-		//insert test data 
-		targetStoreClient.insert(null, testContent, testContentType);
-		
-		//test Get
-		String result = AccessAgentCaller.get(targetResourceID, null, testContentType);
-		JSONObject jo = new JSONObject(result);
-		String result2 = jo.getString("result");
-		assertEquals(IntegrationTestHelper.removeWhiteSpace(testContent), IntegrationTestHelper.removeWhiteSpace(result2));
-	}
-	*/
 	
 	@Test
 	void testGet() {
