@@ -5,16 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.HTTP;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DSL;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.downsampling;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.postgis.Point;
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -22,41 +20,31 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 
-import org.postgis.Point;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.sql.Statement;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.InstantiationClient.instantiationMethod;
 
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 
-@WebServlet("/mb")
+@WebServlet(urlPatterns = "/update")
 
-public class SensorLoggerMobileAppServlet extends JPSAgent {
+public class SensorLoggerMobileAppAgent extends JPSAgent {
     //Accelerometer list
     private static ArrayList<OffsetDateTime> accel_tsList = new ArrayList<>();
     private static List<Double> accelList_x = new ArrayList<>();
@@ -99,6 +87,7 @@ public class SensorLoggerMobileAppServlet extends JPSAgent {
     private static ArrayList<OffsetDateTime> brightness_tsList = new ArrayList<>();
     private static List<Double> brightnessList = new ArrayList<>();
     private static List<List<?>> brightness_lolValues= Arrays.asList(brightnessList);
+    private static int maxSize = accel_lolValues.size()+magnetometer_lolValues.size()+gravity_lolValues.size()+location_lolValues.size()+dBFS_lolValues.size()+lightValue_lolValues.size()+brightness_lolValues.size();
     private static String DEVICEID;
     private static final long serialVersionUID = 1L;
 
@@ -279,7 +268,7 @@ public class SensorLoggerMobileAppServlet extends JPSAgent {
     private static RemoteRDBStoreClient rdbStoreClient;
     private static RemoteStoreClient storeClient;
 
-    private static final Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppServlet.class);
+    private static final Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppAgent.class);
     private static final String BASEURI = "https://www.theworldavatar.com/kg/measure_";
 
     private static void readConfig() {
@@ -339,16 +328,18 @@ public class SensorLoggerMobileAppServlet extends JPSAgent {
 
     public static List<List<String>> tableHeaderList= Arrays.asList(accelerometerHeader,gravityHeader,lightHeader,locationHeader,magnetometerHeader,microphoneHeader, screenHeader);
     public static List<String> tableList = Arrays.asList(accelerometer, gravity,light, location,magnetometer,microphone,screen);
+    private static HashMap hashMap = new HashMap();
     public void tsInstantiation() throws Exception {
-        HashMap hashMap = new HashMap();
-        Boolean unitsWereInstantiated = false;
+//        HashMap hashMap = new HashMap();
 
         //Loop through each table
         for (int i = 0; i < tableList.size(); i++) {
-//            resetList(i);
 
-            if (checkIfTimeSeriesExists(i))//Check if dbTable exists
-            {
+
+            if (!timeseriesExists(i)){
+                initTimeseriesIfNotExist(i, hashMap);
+            }
+            else {
                 String IRIQuery;
 
                 IRIQuery = getQueryDataIRIFromDBTable(i);
@@ -366,44 +357,37 @@ public class SensorLoggerMobileAppServlet extends JPSAgent {
                     updateData(getTimeSeries);
                     System.out.println("Timeseries has been updated");
 
-                    unitsWereInstantiated = true;
                 }
             }
-            else  //When time series does not exist create timeseries
-            {
-                initTimeseriesIfNotExist(i, hashMap);
-
-
-            }
         }
-        if (unitsWereInstantiated==true)
-        { LOGGER.debug(String.format("Units were instantiated"));}
+        if (hashMap.size()!=maxSize)
+        { LOGGER.debug(String.format("Not all measuresIRI is collected"));}
         else{instantiationMethod(hashMap); LOGGER.debug(String.format("Units is now instantiated"));}
     }
 
-
-
-    /** Boolean operation that checks if timeseries exists by querying the DBTable, if DBTable returns 0 or catch exception, it does not exist
-     * @param i
-     * @return
-     */
-
-    private static boolean checkIfTimeSeriesExists(int i){
-        String IRIQuery;
-        try {
-            IRIQuery = getQueryDataIRIFromDBTable(i);
-            JSONArray dataIRIArray = rdbStoreClient.executeQuery(IRIQuery);
-            if (dataIRIArray.length() == 0){
-                return false;
-            }
-        }
-        // If central RDB lookup table ("dbTable") has not been initialised, the time series does not exist
-        catch (Exception e) {
-            return false;
-        }
-        return true;
+    static DSLContext getContext(Connection conn) {
+        return DSL.using(conn, SQLDialect.POSTGRES);
     }
 
+    private static boolean dbTableExists(Connection conn) {
+        String condition = String.format("table_name = '%s'", "dbTable");
+        return getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition).fetchOne(0, int.class) == 1;
+    }
+
+    private static boolean timeseriesExists(int i) throws SQLException {
+        if (!dbTableExists(rdbStoreClient.getConnection())){
+            return false;
+        }
+        String IRIQuery;
+        IRIQuery = getQueryDataIRIFromDBTable(i);
+        JSONArray dataIRIArray = rdbStoreClient.executeQuery(IRIQuery);
+        if (dataIRIArray.length() == 0){
+            return false;
+        } else {
+            return true;
+        }
+
+    }
 
     /** Initialize timeseries if it does not exist,
      * @param i table number
