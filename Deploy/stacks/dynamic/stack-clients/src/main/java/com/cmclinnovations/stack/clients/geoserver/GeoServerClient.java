@@ -84,7 +84,7 @@ public class GeoServerClient extends ContainerClient {
         if (!manager.getReader().existsWorkspace(workspaceName)) {
             logger.info("GeoServer workspace '{}' does not exists and cannot be deleted.", workspaceName);
         } else {
-            if (manager.getPublisher().removeWorkspace(workspaceName, false)) {
+            if (manager.getPublisher().removeWorkspace(workspaceName, true)) {
                 logger.info("GeoServer workspace '{}'' removed", workspaceName);
             } else {
                 throw new RuntimeException("GeoServer workspace " + workspaceName + "' could not be deleted.");
