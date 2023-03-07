@@ -57,3 +57,4 @@ The Downsampling library returns a timeseries class that has been downsampled.
 
 ## Notes 
 1) Ensure there is no null data in each time resolution for the time-series to be downsampled. Data cleaning will be required to post-process of nonsensical data when null data is inputted. 
+2) Downsampling library only processes `Double` class, modifications to the code may be required for other data class. 
