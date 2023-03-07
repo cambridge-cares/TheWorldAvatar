@@ -12,9 +12,9 @@ import java.util.List;
 public class Downsampling {
 
     /**
-     * @param ts Input timeseries
-     * @param resolution Input resolution - interval to be aggregated
-     * @param type Input type
+     * @param ts Input raw timeseries
+     * @param resolution Input resolution - interval to be aggregated in number of seconds
+     * @param type Input downsampling type
      * @return
      * @throws Exception
      */
@@ -36,6 +36,15 @@ public class Downsampling {
 
         return resampledTS;
     }
+
+    /**
+     * @param originalTimeList
+     * @param originalValueLists
+     * @param intervalInSeconds
+     * @param type
+     * @return
+     * @throws Exception
+     */
 
     public static List aggregationMethod(List<OffsetDateTime> originalTimeList, List<List<Double>> originalValueLists, long intervalInSeconds, int type) throws Exception {
         List<List<Double>> resampledValueLists = new ArrayList<>();
