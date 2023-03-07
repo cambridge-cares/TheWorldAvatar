@@ -41,6 +41,22 @@ class ModelRepresentation3DTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedCommonStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedOptionalStatements(), result);
+
+    }
+
+    @Test
+    void addModelRepresentation3DStatementsNoOptionalFields() {
+        // Set up
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        ModelRepresentation3D sample = new ModelRepresentation3D(testIri1, testSubContextIri, testGeomIri, null, null, null);
+        // Execute method
+        sample.addModelRepresentation3DStatements(sampleSet, testGeomClass);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedCommonStatements(), result);
+        JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalStatements(), result);
     }
 
     private List<String> genExpectedCommonStatements() {
@@ -50,6 +66,11 @@ class ModelRepresentation3DTest {
         expected.add(testSubContextIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");
         expected.add(testBaseUri1 + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + testGeomIri);
         expected.add(testGeomIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, " + testGeomClass);
+        return expected;
+    }
+
+    private List<String> genExpectedOptionalStatements() {
+        List<String> expected = new ArrayList<>();
         expected.add(testBaseUri1 + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"Brep");
         expected.add(testBaseUri1 + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSourcePlacement, " + testPlacementIri);
         expected.add(testPlacementIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
