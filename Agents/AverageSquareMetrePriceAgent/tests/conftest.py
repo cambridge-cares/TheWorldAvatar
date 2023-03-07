@@ -316,8 +316,8 @@ def get_avgsqmprice_details(sparql_client, avgsqmprice_iri):
                             <{OM_HAS_VALUE}> ?measure ; 
                             <{OBE_REPRESENTATIVE_FOR}> ?postcode_iri ; 
                             <{ONTODERIVATION_BELONGSTO}>/<{ONTODERIVATION_ISDERIVEDFROM}> ?input_iri . 
-        ?measure <{RDF_TYPE}> <{OM_MEASURE}> ;  
-                 <{OM_NUM_VALUE}> ?price . 
+        ?measure <{RDF_TYPE}> <{OM_MEASURE}> . 
+        OPTIONAL {{ ?measure <{OM_NUM_VALUE}> ?price }}
         ?postcode_iri <{RDF_TYPE}> <{OBE_POSTALCODE}> ; 
                       <{RDFS_LABEL}> ?postcode . 
         ?input_iri <{RDF_TYPE}> ?input_type . 
@@ -333,7 +333,8 @@ def get_avgsqmprice_details(sparql_client, avgsqmprice_iri):
         # Postcode
         postcode = list(set([x['postcode'] for x in response]))
         # Price
-        price = list(set([int(x['price']) for x in response]))
+        price = list(set([x.get('price') for x in response]))
+        price = [int(x) if x is not None else None for x in price]
 
         return inputs, postcode, price
 
@@ -356,16 +357,6 @@ def get_timestamp(derivation_iri: str, sparql_client):
         }}"""
     # the queried results must be converted to int, otherwise it will not be comparable
     return int(sparql_client.performQuery(query_timestamp)[0]['time'])
-
-
-def get_derivation_status(derivation_iri: str, sparql_client):
-    query_status = f"""
-        SELECT ?status WHERE {{
-            <{derivation_iri}> <{ONTODERIVATION_HASSTATUS}>/<{RDF_TYPE}> ?status .
-        }}"""
-    # extract status and convert result to lower case str
-    status = sparql_client.performQuery(query_status)[0]['status']
-    return status.rsplit('/', 1)[1].lower()
 
 
 def get_derivation_outputs(derivation_iri: str, sparql_client):

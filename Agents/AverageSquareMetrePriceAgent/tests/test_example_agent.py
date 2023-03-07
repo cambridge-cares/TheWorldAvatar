@@ -202,14 +202,15 @@ def test_monitor_derivations(
 
 
 @pytest.mark.parametrize(
-    "derivation_input_set, local_agent_test",
+    "derivation_input_set, expected_postcode, local_agent_test",
     [
-        (cf.DERIVATION_INPUTS_3, True),   # local agent instance test
-        (cf.DERIVATION_INPUTS_3, False)   # deployed docker agent test
+        (cf.DERIVATION_INPUTS_3, cf.POSTCODE_2, True),   # local agent instance test
+        (cf.DERIVATION_INPUTS_3, cf.POSTCODE_2, False)   # deployed docker agent test
     ],
 )
 def test_monitor_derivations_no_tx(
-    initialise_clients, create_example_agent, derivation_input_set, local_agent_test, mocker    
+    initialise_clients, create_example_agent, derivation_input_set, expected_postcode,
+    local_agent_test, mocker    
 ):
     """
         Test if derivation agent performs derivation update as expected, the `local_agent_test` 
@@ -267,18 +268,40 @@ def test_monitor_derivations_no_tx(
         agent._start_monitoring_derivations()
 
     # Query timestamp of the derivation for every 20 seconds until it's updated
-    derivation_finished = False
-    while not derivation_finished:
+    currentTimestamp_derivation = 0
+    while currentTimestamp_derivation == 0:
         time.sleep(10)
-        if cf.get_derivation_status(derivation_iri, sparql_client) == "finished":
-            derivation_finished = True
+        currentTimestamp_derivation = cf.get_timestamp(derivation_iri, sparql_client)
 
     # Query the output of the derivation instance
     derivation_outputs = cf.get_derivation_outputs(derivation_iri, sparql_client)
-    assert derivation_outputs is None
+    print(f"Generated derivation outputs that belongsTo the derivation instance: {', '.join(derivation_outputs)}")
 
-    # Verify correct number of triples
-    assert sparql_client.getAmountOfTriples() == triples + cf.DERIV_STATUS_TRIPLES
+    # Verify that there are 2 derivation outputs (i.e. AveragePrice and Measure IRIs)
+    assert len(derivation_outputs) == 2
+    assert dm.OBE_AVERAGE_SM_PRICE in derivation_outputs
+    assert len(derivation_outputs[dm.OBE_AVERAGE_SM_PRICE]) == 1
+    assert dm.OM_MEASURE in derivation_outputs
+    assert len(derivation_outputs[dm.OM_MEASURE]) == 1
+
+    # Verify that no average price details are instantiated
+    # Verify the values of the derivation output
+    avg_iri = derivation_outputs[dm.OBE_AVERAGE_SM_PRICE][0]
+    inputs, postcode, price = cf.get_avgsqmprice_details(sparql_client, avg_iri)
+    # Verify postcode
+    assert len(postcode) == 1
+    assert postcode[0] == expected_postcode
+    # Verify price
+    assert price[0] is None
+
+    # Verify inputs (i.e. derived from)
+    # Create deeepcopy to avoid modifying original cf.DERIVATION_INPUTS_... between tests
+    derivation_input_set_copy = copy.deepcopy(derivation_input_set)
+    for i in inputs:
+        for j in inputs[i]:
+            assert j in derivation_input_set_copy
+            derivation_input_set_copy.remove(j)
+    assert len(derivation_input_set_copy) == 0
 
     print("All check passed.")
 

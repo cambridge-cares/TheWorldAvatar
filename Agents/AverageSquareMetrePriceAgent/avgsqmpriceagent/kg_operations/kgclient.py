@@ -222,6 +222,26 @@ class KGClient(PySparqlClient):
             <{measure_iri}> <{OM_HAS_UNIT}> <{UOM_GBP_M2}> . 
         """
         return self.remove_unnecessary_whitespace(query)
+    
+
+    def instantiate_unavailable_average_price(self, postcode_iri, avg_price_iri) -> str:
+        # Returns INSERT DATA query to instantiate/update non-computable average
+        # square metre price (due to missing previous transactions)
+
+        # Specify comment to instantiate
+        comment = 'Average square metre price not computable'
+
+        # Create unique IRIs for new instances
+        measure_iri = KB + 'Measure_' + str(uuid.uuid4())
+        
+        query = f"""
+            <{avg_price_iri}> <{RDF_TYPE}> <{OBE_AVERAGE_SM_PRICE}> . 
+            <{avg_price_iri}> <{OBE_REPRESENTATIVE_FOR}> <{postcode_iri}> . 
+            <{avg_price_iri}> <{RDFS_COMMENT}> \"{comment}\"^^<{XSD_STRING}> . 
+            <{avg_price_iri}> <{OM_HAS_VALUE}> <{measure_iri}> . 
+            <{measure_iri}> <{RDF_TYPE}> <{OM_MEASURE}> . 
+        """
+        return self.remove_unnecessary_whitespace(query)
 
 
     def remove_unnecessary_whitespace(self, query: str) -> str:
