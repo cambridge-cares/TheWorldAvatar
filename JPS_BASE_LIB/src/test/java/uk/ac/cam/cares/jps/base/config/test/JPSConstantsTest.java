@@ -13,6 +13,7 @@ class JPSConstantsTest {
 		assertEquals(JPSConstants.KNOWLEDGE_BASE_JPS, "jps");
 		assertEquals(JPSConstants.KNOWLEDGE_BASE_PATH_JPS_DATASET, "/jps/dataset");
 		assertEquals(JPSConstants.ACCESS_AGENT_PATH, "/access-agent/access");
+		assertEquals(JPSConstants.RDB_ACCESS_AGENT_PATH, "/access-agent/rdbaccess");
 		assertEquals(JPSConstants.SCENARIO_NAME_BASE, "base");
 		assertEquals(JPSConstants.SCENARIO_SUBDIR_KB, "kb");
 		assertEquals(JPSConstants.SCENARIO_SUBDIR_DATA, "data");
@@ -40,6 +41,10 @@ class JPSConstantsTest {
 		assertEquals(JPSConstants.KNOWLEDGE_BASE_URL, "jps/kb");
 		assertTrue(JPSConstants.COPY_ON_READ);
 		assertEquals(JPSConstants.SCENARIO_OPTION_COPY_ON_READ, "copyonread");
+		assertEquals(JPSConstants.QUERY_ENDPOINT, "queryendpoint");
+		assertEquals(JPSConstants.UPDATE_ENDPOINT, "updateendpoint");
+		assertEquals(JPSConstants.RESULT_KEY, "result");
+		assertEquals(JPSConstants.ASK_RESULT_KEY, "ASK");
 	}
 
 }
