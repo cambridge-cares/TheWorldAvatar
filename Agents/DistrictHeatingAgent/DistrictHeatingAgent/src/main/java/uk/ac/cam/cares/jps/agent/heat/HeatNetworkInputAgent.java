@@ -35,7 +35,6 @@ public class HeatNetworkInputAgent {
 
     // IRIs for OntoHeatNet and others
     public static String OC_HAS_PART = "http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart";
-    public static String OC_HAS_COST = "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#hasCost";
     public static String OC_isOwnerOf = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isOwnerOf";
     public static String OC_hasRevenue = "http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#hasRevenue";
     public static String OCP_hasCO2emission = "http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#hasIndividualCO2Emission";
@@ -111,6 +110,39 @@ public class HeatNetworkInputAgent {
     public static String Aussentemperatur="";
     public static String Waermeeinspeisung="";
     public static String MHKWTempRuecklauf="";
+    public static String GasverbrauchGT="";
+    public static String GasbezugKessel4="";
+    public static String GasbezugKessel5="";
+    public static String GasbezugKessel6="";
+    public static String GTActive="";
+    public static String Kessel4Active="";
+    public static String Kessel5Active="";
+    public static String Kessel6Active="";
+    public static String CHPBonus="";
+    public static String Gridcharges="";
+    public static String HourlyLabourCostBoiler="";
+    public static String HourlyLabourCostGT="";
+    public static String HourlyWearCostBoiler="";
+    public static String HourlyWearCostGT="";
+    public static String DemandDrivenWearCostBoiler="";
+    public static String DemandDrivenWearCostGT="";
+    public static String PressureRuecklauf="";
+    public static String MHKWPressureV="";
+    public static String PressureVorlauf="";
+    public static String MHKWPressureRuecklauf="";
+    public static String MinHourlySupply="";
+    public static String MaxHourlySupply="";
+    public static String AvaiIncinerationPlant="";
+    public static String AvaiGT="";
+    public static String AvaiKessel4="";
+    public static String AvaiKessel5="";
+    public static String AvaiKessel6="";
+    public static String IsHoliday="";
+    public static String IsVacation="";
+    public static String GTWirkleistung="";
+    
+    
+    
 
     // The instantiation of static data
     public void dataInstantiation(String endpoint) {
@@ -183,34 +215,34 @@ public class HeatNetworkInputAgent {
         // For GridConnection part
         UpdateBuilder GridConnection_ub =
                 new UpdateBuilder()
-                        .addInsert(NodeFactory.createURI(KB + "GridConnectionUPMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperties"), NodeFactory.createURI(KB + "UPMunicipal" + "SHC"))
-                        .addInsert(NodeFactory.createURI(KB + "GridConnectionDownMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperties"), NodeFactory.createURI(KB + "DownMunicipal" + "SHC"))
-                        .addInsert(NodeFactory.createURI(KB + "GridConnectionUPEfW"), NodeFactory.createURI(OHN + "hasObservableProperties"), NodeFactory.createURI(KB + "UPEfW" + "SHC"))
-                        .addInsert(NodeFactory.createURI(KB + "GridConnectionDownEfW"), NodeFactory.createURI(OHN + "hasObservableProperties"), NodeFactory.createURI(KB + "DownEfW" + "SHC"))
+                        .addInsert(NodeFactory.createURI(KB + "GridConnectionUPMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "UPMunicipal" + "SHC"))
+                        .addInsert(NodeFactory.createURI(KB + "GridConnectionDownMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "DownMunicipal" + "SHC"))
+                        .addInsert(NodeFactory.createURI(KB + "GridConnectionUPEfW"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "UPEfW" + "SHC"))
+                        .addInsert(NodeFactory.createURI(KB + "GridConnectionDownEfW"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "DownEfW" + "SHC"))
                         .addInsert(NodeFactory.createURI(KB + "UPMunicipal" + "SHC"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_SHC))
                         .addInsert(NodeFactory.createURI(KB + "DownMunicipal" + "SHC"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_SHC))
                         .addInsert(NodeFactory.createURI(KB + "UPEfW" + "SHC"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_SHC))
                         .addInsert(NodeFactory.createURI(KB + "DownEfW" + "SHC"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_SHC))
-                        .addInsert(NodeFactory.createURI(KB + "GridConnectionUPMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperties"), NodeFactory.createURI(KB + "UPMunicipal" + "Density"))
-                        .addInsert(NodeFactory.createURI(KB + "GridConnectionDownMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperties"), NodeFactory.createURI(KB + "DownMunicipal" + "Density"))
-                        .addInsert(NodeFactory.createURI(KB + "GridConnectionUPEfW"), NodeFactory.createURI(OHN + "hasObservableProperties"), NodeFactory.createURI(KB + "UPEfW" + "Density"))
-                        .addInsert(NodeFactory.createURI(KB + "GridConnectionDownEfW"), NodeFactory.createURI(OHN + "hasObservableProperties"), NodeFactory.createURI(KB + "DownEfW" + "Density"))
+                        .addInsert(NodeFactory.createURI(KB + "GridConnectionUPMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "UPMunicipal" + "Density"))
+                        .addInsert(NodeFactory.createURI(KB + "GridConnectionDownMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "DownMunicipal" + "Density"))
+                        .addInsert(NodeFactory.createURI(KB + "GridConnectionUPEfW"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "UPEfW" + "Density"))
+                        .addInsert(NodeFactory.createURI(KB + "GridConnectionDownEfW"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "DownEfW" + "Density"))
                         .addInsert(NodeFactory.createURI(KB + "UPMunicipal" + "Density"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DENSITY))
                         .addInsert(NodeFactory.createURI(KB + "DownMunicipal" + "Density"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DENSITY))
                         .addInsert(NodeFactory.createURI(KB + "UPEfW" + "Density"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DENSITY))
                         .addInsert(NodeFactory.createURI(KB + "DownEfW" + "Density"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DENSITY))
-                        .addInsert(NodeFactory.createURI(KB + "GridConnectionUPMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperties"), NodeFactory.createURI(KB + "UPMunicipal" + "Pressure"))
-                        .addInsert(NodeFactory.createURI(KB + "GridConnectionDownMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperties"), NodeFactory.createURI(KB + "DownMunicipal" + "Pressure"))
-                        .addInsert(NodeFactory.createURI(KB + "GridConnectionUPEfW"), NodeFactory.createURI(OHN + "hasObservableProperties"), NodeFactory.createURI(KB + "UPEfW" + "Pressure"))
-                        .addInsert(NodeFactory.createURI(KB + "GridConnectionDownEfW"), NodeFactory.createURI(OHN + "hasObservableProperties"), NodeFactory.createURI(KB + "DownEfW" + "Pressure"))
+                        .addInsert(NodeFactory.createURI(KB + "GridConnectionUPMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "UPMunicipal" + "Pressure"))
+                        .addInsert(NodeFactory.createURI(KB + "GridConnectionDownMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "DownMunicipal" + "Pressure"))
+                        .addInsert(NodeFactory.createURI(KB + "GridConnectionUPEfW"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "UPEfW" + "Pressure"))
+                        .addInsert(NodeFactory.createURI(KB + "GridConnectionDownEfW"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "DownEfW" + "Pressure"))
                         .addInsert(NodeFactory.createURI(KB + "UPMunicipal" + "Pressure"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_PRESSURE))
                         .addInsert(NodeFactory.createURI(KB + "DownMunicipal" + "Pressure"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_PRESSURE))
                         .addInsert(NodeFactory.createURI(KB + "UPEfW" + "Pressure"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_PRESSURE))
                         .addInsert(NodeFactory.createURI(KB + "DownEfW" + "Pressure"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_PRESSURE))
-                        .addInsert(NodeFactory.createURI(KB + "GridConnectionUPMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperties"), NodeFactory.createURI(KB + "UPMunicipal" + "Temperature"))
-                        .addInsert(NodeFactory.createURI(KB + "GridConnectionDownMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperties"), NodeFactory.createURI(KB + "DownMunicipal" + "Temperature"))
-                        .addInsert(NodeFactory.createURI(KB + "GridConnectionUPEfW"), NodeFactory.createURI(OHN + "hasObservableProperties"), NodeFactory.createURI(KB + "UPEfW" + "Temperature"))
-                        .addInsert(NodeFactory.createURI(KB + "GridConnectionDownEfW"), NodeFactory.createURI(OHN + "hasObservableProperties"), NodeFactory.createURI(KB + "DownEfW" + "Temperature"))
+                        .addInsert(NodeFactory.createURI(KB + "GridConnectionUPMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "UPMunicipal" + "Temperature"))
+                        .addInsert(NodeFactory.createURI(KB + "GridConnectionDownMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "DownMunicipal" + "Temperature"))
+                        .addInsert(NodeFactory.createURI(KB + "GridConnectionUPEfW"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "UPEfW" + "Temperature"))
+                        .addInsert(NodeFactory.createURI(KB + "GridConnectionDownEfW"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "DownEfW" + "Temperature"))
                         .addInsert(NodeFactory.createURI(KB + "UPMunicipal" + "Temperature"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_TEMPERATURE))
                         .addInsert(NodeFactory.createURI(KB + "DownMunicipal" + "Temperature"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_TEMPERATURE))
                         .addInsert(NodeFactory.createURI(KB + "UPEfW" + "Temperature"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_TEMPERATURE))
@@ -255,9 +287,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "HeatGeneratorBoil5"), NodeFactory.createURI(RDFS_LABEL), "Boil5")
                         .addInsert(NodeFactory.createURI(KB + "MunicipalUtility"), NodeFactory.createURI(OC_isOwnerOf), NodeFactory.createURI(KB + "HeatGeneratorBoil6"))
                         .addInsert(NodeFactory.createURI(KB + "HeatGeneratorBoil6"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "HeatBoiler"))
-                        .addInsert(NodeFactory.createURI(KB + "HeatGeneratorBoil6"), NodeFactory.createURI(RDFS_LABEL), "Boil6")
-                        .addInsert(NodeFactory.createURI(KB + "MunicipalUtility"), NodeFactory.createURI(OC_HAS_COST), NodeFactory.createURI(KB + "MunicipalUtilityCost"))
-                        .addInsert(NodeFactory.createURI(KB + "MunicipalUtilityCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CostInTimeInterval"));
+                        .addInsert(NodeFactory.createURI(KB + "HeatGeneratorBoil6"), NodeFactory.createURI(RDFS_LABEL), "Boil6");
         UpdateRequest MunicipalUtility_ur = MunicipalUtility_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, MunicipalUtility_ur.toString());
 
@@ -317,7 +347,6 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "Tier_2"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "Tier"))
                         .addInsert(NodeFactory.createURI(KB + "Contract"), NodeFactory.createURI(OHN + "hasCurrentUnitPrice"), NodeFactory.createURI(KB + "UnitPrice_1"))
                         .addInsert(NodeFactory.createURI(KB + "UnitPrice_1"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "UnitPrice"))
-                        .addInsert(NodeFactory.createURI(KB + "Contract"), NodeFactory.createURI(OHN + "hasCurrentUnitPrice"), NodeFactory.createURI(KB + "UnitPrice_2"))
                         .addInsert(NodeFactory.createURI(KB + "UnitPrice_2"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "UnitPrice"))
                         .addInsert(NodeFactory.createURI(KB + "Tier_1"), NodeFactory.createURI(OHN + "hasUnitPrice"), NodeFactory.createURI(KB + "UnitPrice_1"))
                         .addInsert(NodeFactory.createURI(KB + "Tier_2"), NodeFactory.createURI(OHN + "hasUnitPrice"), NodeFactory.createURI(KB + "UnitPrice_2"))
@@ -339,8 +368,8 @@ public class HeatNetworkInputAgent {
         UpdateBuilder CalendarEffect_ub =
                 new UpdateBuilder()
                         .addInsert(NodeFactory.createURI(KB + "CalendarEffect"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CalendarEffect"))  
-                        .addInsert(NodeFactory.createURI(KB + "IsPublicHoliday"), NodeFactory.createURI(OHN +"applicableLocation"), NodeFactory.createURI("https://www.theworldavatar.com/aligned/Location_1"))
-                        .addInsert(NodeFactory.createURI(KB + "IsSchoolVacation"), NodeFactory.createURI(OHN +"applicableLocation"), NodeFactory.createURI("https://www.theworldavatar.com/aligned/Location_1"))   
+                        .addInsert(NodeFactory.createURI(KB + "IsPublicHoliday"), NodeFactory.createURI(OHN +"applicableLocation"), NodeFactory.createURI(KB + "IsPublicHoliday"+"Location_1"))
+                        .addInsert(NodeFactory.createURI(KB + "IsSchoolVacation"), NodeFactory.createURI(OHN +"applicableLocation"), NodeFactory.createURI(KB + "IsSchoolVacation"+"Location_1"))   
                         .addInsert(NodeFactory.createURI("https://www.theworldavatar.com/aligned/Location_1"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI("http://purl.org/dc/terms/Location"))
                         .addInsert(NodeFactory.createURI("https://www.theworldavatar.com/aligned/Location_1"), NodeFactory.createURI(RDFS_LABEL), "Rheinland-Pfalz")   
                         .addInsert(NodeFactory.createURI(KB + "IsPublicHoliday"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "IsPublicHoliday"))
@@ -387,7 +416,37 @@ public class HeatNetworkInputAgent {
         		GaspreisKessel=mapping.getIRI("GaspreisKessel");	
         		Aussentemperatur=mapping.getIRI("Aussentemperatur");			
         		Waermeeinspeisung=mapping.getIRI("Waermeeinspeisung");			
-        		MHKWTempRuecklauf=mapping.getIRI("MHKWTempRuecklauf");		
+        		MHKWTempRuecklauf=mapping.getIRI("MHKWTempRuecklauf");
+        		GasverbrauchGT=mapping.getIRI("GasverbrauchGT");
+        		GasbezugKessel4=mapping.getIRI("GasbezugKessel4");
+        		GasbezugKessel5=mapping.getIRI("GasbezugKessel5");
+        		GasbezugKessel6=mapping.getIRI("GasbezugKessel6");
+        		GTActive=mapping.getIRI("GTActive");
+        		Kessel4Active=mapping.getIRI("Kessel4Active");
+        		Kessel5Active=mapping.getIRI("Kessel5Active");
+        		Kessel6Active=mapping.getIRI("Kessel6Active");
+        		CHPBonus=mapping.getIRI("CHPBonus");
+        		Gridcharges=mapping.getIRI("Gridcharges");
+        		HourlyLabourCostBoiler=mapping.getIRI("HourlyLabourCostBoiler");
+        		HourlyLabourCostGT=mapping.getIRI("HourlyLabourCostGT");
+        		HourlyWearCostBoiler=mapping.getIRI("HourlyWearCostBoiler");
+        		HourlyWearCostGT=mapping.getIRI("HourlyWearCostGT");
+        		DemandDrivenWearCostBoiler=mapping.getIRI("DemandDrivenWearCostBoiler");
+        		DemandDrivenWearCostGT=mapping.getIRI("DemandDrivenWearCostGT");
+        		PressureRuecklauf=mapping.getIRI("PressureRuecklauf");
+        		MHKWPressureV=mapping.getIRI("MHKWPressureV");
+        		PressureVorlauf=mapping.getIRI("PressureVorlauf");
+        		MHKWPressureRuecklauf=mapping.getIRI("MHKWPressureRuecklauf");
+        		MinHourlySupply=mapping.getIRI("MinHourlySupply");
+        		MaxHourlySupply=mapping.getIRI("MaxHourlySupply");
+        		AvaiIncinerationPlant=mapping.getIRI("AvailncinerationPlant");
+        		AvaiGT=mapping.getIRI("AvaiGT");
+        		AvaiKessel4=mapping.getIRI("AvaiKessel4");
+        		AvaiKessel5=mapping.getIRI("AvaiKessel5");
+        		AvaiKessel6=mapping.getIRI("AvaiKessel6");
+        		IsHoliday=mapping.getIRI("IsHoliday");
+        		IsVacation=mapping.getIRI("IsVacation");
+        		GTWirkleistung=mapping.getIRI("GTWirkleistung");
         }
 
         UpdateBuilder TSIRI_ub =
@@ -407,7 +466,11 @@ public class HeatNetworkInputAgent {
         		.addInsert(NodeFactory.createURI(KB + "FuelCost" + "Boiler"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(GaspreisKessel))
         		.addInsert(NodeFactory.createURI(KB + "AirTemperature"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(Aussentemperatur))
         		.addInsert(NodeFactory.createURI(KB + "SumofEnergy"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(Waermeeinspeisung))
-        		.addInsert(NodeFactory.createURI(KB + "UPEfW" + "Temperature"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(MHKWTempRuecklauf));
+        		.addInsert(NodeFactory.createURI(KB + "UPEfW" + "Temperature"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(MHKWTempRuecklauf))
+        		.addInsert(NodeFactory.createURI(KB + "EnergyInTimeIntervalGA" + "HeatGeneratorGT"),NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(GasverbrauchGT))
+                .addInsert(NodeFactory.createURI(KB + "EnergyInTimeIntervalGA" + "HeatGeneratorBoil4"),NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(GasbezugKessel4))
+                .addInsert(NodeFactory.createURI(KB + "EnergyInTimeIntervalGA" + "HeatGeneratorBoil5"),NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(GasbezugKessel5))
+                .addInsert(NodeFactory.createURI(KB + "EnergyInTimeIntervalGA" + "HeatGeneratorBoil6"),NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(GasbezugKessel6));
         UpdateRequest TSIRI_ur = TSIRI_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, TSIRI_ur.toString());
       
@@ -427,6 +490,24 @@ public class HeatNetworkInputAgent {
         omHasValueTS("DegreeCelsius", Aussentemperatur);
         omHasValueTS("MegaWatt", Waermeeinspeisung);
         omHasValueTS("DegreeCelsius", MHKWTempRuecklauf);    
+        omHasValueTS("MegaWattHour", GasverbrauchGT); 
+        omHasValueTS("MegaWattHour", GasbezugKessel4);   
+        omHasValueTS("MegaWattHour", GasbezugKessel5);   
+        omHasValueTS("MegaWattHour", GasbezugKessel6);   
+        omHasValueTS("MegaWattHour", CHPBonus);
+        omHasValueTS("MegaWattHour", Gridcharges);
+        omHasValueTS("MegaWattHour", HourlyLabourCostBoiler);
+        omHasValueTS("MegaWattHour", HourlyLabourCostGT);
+        omHasValueTS("MegaWattHour", HourlyWearCostBoiler);
+        omHasValueTS("MegaWattHour", HourlyWearCostGT);
+        omHasValueTS("MegaWattHour", DemandDrivenWearCostBoiler);
+        omHasValueTS("MegaWattHour", DemandDrivenWearCostGT);
+        omHasValueTS("MegaWattHour", PressureRuecklauf);
+        omHasValueTS("MegaWattHour", MHKWPressureV);
+        omHasValueTS("MegaWattHour", PressureVorlauf);
+        omHasValueTS("MegaWattHour", MHKWPressureRuecklauf);
+        omHasValueTS("MegaWattHour", MinHourlySupply);
+        omHasValueTS("MegaWattHour", MaxHourlySupply);
     }    
 
     // For the instance of HeatGenerator part
@@ -438,6 +519,8 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OHN + "hasGeneratedHeatAmount"), NodeFactory.createURI(KB + "EnergyInTimeIntervalHA" + HeatGenerator_instance))
                         .addInsert(NodeFactory.createURI(KB + "EnergyInTimeIntervalHA" + HeatGenerator_instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "EnergyInTimeInterval"))
                         .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OHN + "hasConsumedGasAmount"), NodeFactory.createURI(KB + "EnergyInTimeIntervalGA" + HeatGenerator_instance))
+                        
+                        
                         .addInsert(NodeFactory.createURI(KB + "EnergyInTimeIntervalGA" + HeatGenerator_instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "EnergyInTimeInterval"))
                         .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OHN + "hasOperatingTime"), NodeFactory.createURI(KB + "DurationInTimeInterval" + HeatGenerator_instance))
                         .addInsert(NodeFactory.createURI(KB + "DurationInTimeInterval" + HeatGenerator_instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "DurationInTimeInterval"))
@@ -451,21 +534,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "NaturalGas"), NodeFactory.createURI(OHN + "hasLowerCalorificValue"), NodeFactory.createURI(KB + "LowerCalorificValue"))
                         .addInsert(NodeFactory.createURI(KB + "LowerCalorificValue"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "LowerCalorificValue"))
                         .addInsert(NodeFactory.createURI(KB + "NaturalGas"), NodeFactory.createURI(OHN + "hasCO2Factor"), NodeFactory.createURI(KB + "NaturalGasCO2Factor"))
-                        .addInsert(NodeFactory.createURI(KB + "NaturalGasCO2Factor"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CO2Factor"))
-                        .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OC_HAS_COST), NodeFactory.createURI(KB + "StartUpCost"))
-                        .addInsert(NodeFactory.createURI(KB + "StartUpCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "StartUpCost"))
-                        .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OC_HAS_COST), NodeFactory.createURI(KB + "ShutDownCost"))
-                        .addInsert(NodeFactory.createURI(KB + "ShutDownCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "ShutDownCost"))
-                        .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OC_HAS_COST), NodeFactory.createURI(KB + "VariableWearCost"))
-                        .addInsert(NodeFactory.createURI(KB + "VariableWearCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "VariableWearCost"))
-                        .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OC_HAS_COST), NodeFactory.createURI(KB + "FuelCost"))
-                        .addInsert(NodeFactory.createURI(KB + "FuelCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "FuelCost"))
-                        .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OC_HAS_COST), NodeFactory.createURI(KB + "EmissionCost"))
-                        .addInsert(NodeFactory.createURI(KB + "EmissionCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "EmissionCost"))
-                        .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OC_HAS_COST), NodeFactory.createURI(KB + "FixedWearCost"))
-                        .addInsert(NodeFactory.createURI(KB + "FixedWearCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "FixedWearCost"))
-                        .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OC_HAS_COST), NodeFactory.createURI(KB + "LabourCost"))
-                        .addInsert(NodeFactory.createURI(KB + "LabourCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "LabourCost"));
+                        .addInsert(NodeFactory.createURI(KB + "NaturalGasCO2Factor"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CO2Factor"));
         UpdateRequest HeatGenerator_instance_ur = HeatGenerator_instance_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, HeatGenerator_instance_ur.toString());
         omHasValueNonTS("ThermalLoad" + HeatGenerator_instance, "MegaWatt", Value_ThermalLoad);
