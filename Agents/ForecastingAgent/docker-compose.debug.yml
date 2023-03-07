@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   forecasting_agent_debug:
-    image: ghcr.io/cambridge-cares/forecasting_agent_debug:1.0.0
+    image: ghcr.io/cambridge-cares/forecasting_agent_debug:1.1.0
     environment:
       # Required environment variables for both Stack and "standalone" (i.e. outside stack) deployment
       - STACK_NAME=
@@ -12,17 +12,17 @@ services:
       - DATABASE=
       # Additional environment variables required for "standalone deployment"
       # (can be left blank for Stack deployment)
-      - DB_URL=jdbc:postgresql://host.docker.internal:9432/excel
+      - DB_URL=jdbc:postgresql://host.docker.internal:9431/forecasting
       - DB_USER=postgres
       - DB_PASSWORD=postgres
-      - QUERY_ENDPOINT=http://host.docker.internal:9999/blazegraph/namespace/excel/sparql
-      - UPDATE_ENDPOINT=http://host.docker.internal:9999/blazegraph/namespace/excel/sparql
+      - QUERY_ENDPOINT=http://host.docker.internal:9999/blazegraph/namespace/forecasting/sparql
+      - UPDATE_ENDPOINT=http://host.docker.internal:9999/blazegraph/namespace/forecasting/sparql
     build:
       # Path to dockerfile ('.' represents current directory with .yml file)
       context: .
       target: debug
     ports:
-      - "5000:5000"
+      - "5001:5000"
       - "5678:5678"
     volumes:
       - logs:/root/.jps

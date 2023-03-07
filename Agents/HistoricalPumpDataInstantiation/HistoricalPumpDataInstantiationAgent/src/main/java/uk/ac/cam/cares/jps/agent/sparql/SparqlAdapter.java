@@ -80,21 +80,25 @@ public class SparqlAdapter {
     private static String createInsertQuery(Map<String, List<String>> timeSeriesMap) {
         InsertBuilder builder = new InsertBuilder();
         QueryHandler.genInsertPrefixMapping(builder, BASE_URI);
-        // Add unit triples
-        builder.addTriples(OntologyConstant.OM_KWH, OntologyConstant.SKOS_NOTATION, OntologyConstant.KWH_LITERAL);
+        // Don't add unit triples here - these should be defined in OM.
+        //builder.addTriples(OntologyConstant.OM_KWH, OntologyConstant.SKOS_NOTATION, OntologyConstant.KWH_LITERAL);
         // For each pump, add their triples
         for (String pumpIRI : timeSeriesMap.keySet()) {
+            builder.addTriples(pumpIRI, OntologyConstant.RDFTYPE, OntologyConstant.PS_PUMPINGSTATION, 1);
             // Add Electricity consumption triples
             String elecQuantityIRI = OntologyConstant.BASE_PREFIX + SEMICOLON + ELECTRICITY_INST + UUID.randomUUID();
             builder.addTriples(pumpIRI, OntologyConstant.UBEMMP_CONSUMES_UTILITIES, elecQuantityIRI, 1);
             builder.addTriples(elecQuantityIRI, OntologyConstant.RDFTYPE, OntologyConstant.UBEMMP_ELECCONSUMPTION);
             builder.addTriples(elecQuantityIRI, OntologyConstant.OM_HASVALUE, timeSeriesMap.get(pumpIRI).get(0), 3);
             builder.addTriples(timeSeriesMap.get(pumpIRI).get(0), OntologyConstant.OM_HASUNIT, OntologyConstant.OM_KWH, 1);
+            builder.addTriples(timeSeriesMap.get(pumpIRI).get(0), OntologyConstant.RDFS_LABEL, OntologyConstant.CONSUMPTION_LITERAL, 1);
             // Add Utility cost triples
             String costQuantityIRI = OntologyConstant.BASE_PREFIX + SEMICOLON + COST_INST + UUID.randomUUID();
             builder.addTriples(pumpIRI, OntologyConstant.ONTOCAPE_HAS_UTILITY_COST, costQuantityIRI, 1);
             builder.addTriples(costQuantityIRI, OntologyConstant.RDFTYPE, OntologyConstant.HEATNETWORK_COST_INTERVAL);
             builder.addTriples(costQuantityIRI, OntologyConstant.OM_HASVALUE, timeSeriesMap.get(pumpIRI).get(1), 3);
+            builder.addTriples(timeSeriesMap.get(pumpIRI).get(1), OntologyConstant.OM_HASUNIT, OntologyConstant.OM_EUR, 1);
+            builder.addTriples(timeSeriesMap.get(pumpIRI).get(1), OntologyConstant.RDFS_LABEL, OntologyConstant.COST_LITERAL, 1);
         }
         return builder.buildString();
     }

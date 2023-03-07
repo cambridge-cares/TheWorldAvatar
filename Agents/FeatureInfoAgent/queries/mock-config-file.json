@@ -1,9 +1,10 @@
 {
+    
     "queries": [
         {
-            "class": "com.cmclinnovations.kg.ClassOne",
-            "metaFile": "classOneMeta.sparql",
-            "timeFile": "classOneTime.sparql",
+            "class": "https://www.theworldavatar.com/kg/ontoems/ReportingStation",
+            "metaFile": "station_meta.sparql",
+            "timeFile": "station_time.sparql",
             "timeLimit": 48,
             "databaseName": "database-one"
         },
@@ -16,9 +17,13 @@
         },
         {
             "class": "com.cmclinnovations.kg.ClassThree",
-            "metaFile": "classOneThree.sparql",
-            "timeFile": "classOneThree.sparql",
-            "databaseName": "database-three"
+            "metaFile": "classThreeMeta.sparql",
+            "timeFile": ""
+        },
+        {
+            "class": "com.cmclinnovations.kg.ClassFour",
+            "timeFile": "classFourTime.sparql",
+            "databaseName": "database-four"
         }
     ]
 }

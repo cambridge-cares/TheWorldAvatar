@@ -162,7 +162,7 @@ public final class ServiceManager {
         if (newService instanceof ContainerService) {
             ContainerService newContainerService = (ContainerService) newService;
 
-            DockerService dockerService = getOrInitialiseService(stackName, DockerService.TYPE);
+            DockerService dockerService = getOrInitialiseService(stackName, StackClient.getContainerEngineName());
             dockerService.doPreStartUpConfiguration(newContainerService);
             dockerService.startContainer(newContainerService);
             dockerService.doPostStartUpConfiguration(newContainerService);

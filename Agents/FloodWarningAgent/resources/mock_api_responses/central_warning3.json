@@ -1,0 +1,35 @@
+{ 
+  "@context" : "http://environment.data.gov.uk/flood-monitoring/meta/context.jsonld" ,
+  "meta" : { 
+    "publisher" : "Environment Agency" ,
+    "licence" : "http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" ,
+    "documentation" : "http://environment.data.gov.uk/flood-monitoring/doc/reference" ,
+    "version" : "0.9" ,
+    "comment" : "Status: Beta service" ,
+    "hasFormat" : [ "http://environment.data.gov.uk/flood-monitoring/id/floods.csv", "http://environment.data.gov.uk/flood-monitoring/id/floods.rdf", "http://environment.data.gov.uk/flood-monitoring/id/floods.ttl", "http://environment.data.gov.uk/flood-monitoring/id/floods.html" ]
+  }
+   ,
+  "items" : [ 
+    { 
+    "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/052FWTKLNKL1" ,
+    "description" : "Clenchwarton Road, Poppyfields, St Peter's Road, St Peter's Close, Hare Road, Sculthorpe Avenue, Ferry Road and Fox's Lane in West Lynn" ,
+    "eaAreaName" : "East Anglia" ,
+    "floodArea" : 
+      { 
+      "@id" : "https://environment.data.gov.uk/flood-monitoring/id/floodAreas/052FWTKLNKL1" ,
+      "county" : "Norfolk" ,
+      "notation" : "052FWTKLNKL1" ,
+      "polygon" : "http://environment.data.gov.uk/flood-monitoring/id/floodAreas/052FWTKLNKL1/polygon" ,
+      "riverOrSea" : "River Great Ouse"
+      },
+    "floodAreaID" : "052FWTKLNKL1" ,
+    "isTidal" : true ,
+    "message" : "River levels are expected to be high as a result of spring tides. The forecast high tide at King’s Lynn is 4.85mAOD at 04:35 tomorrow. Flooding of low-lying roads and footpaths as well as properties is expected, which may exist for one to two hours either side of high tide. We are closely monitoring the situation.",
+    "severity" : "Severe Flood Warning" ,
+    "severityLevel" : 1,
+    "timeMessageChanged" : "2023-02-25T09:00:00",
+    "timeRaised" : "2023-02-25T09:00:00",
+    "timeSeverityChanged" : "2023-02-25T18:00:00"
+    }
+  ]
+}

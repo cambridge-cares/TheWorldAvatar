@@ -14,6 +14,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -208,30 +210,30 @@ public class AccessAgentTest{
 	}
 	
 	@Test
-	public void testGetWithoutQuery() {
+	public void testGet() {
 		
-		// write a test file to temporary folder
-		String content =  "<http://www.theworldavatar.com/kb/species/species.owl#species_10> <http://www.w3.org/2008/05/skos#altLabel> \"Ar\" .\n";		
+		String queryEndpoint = "http://www.theworldavatar.com/test/sparql";
+		String updateEndpoint = "http://www.theworldavatar.com/test/sparql";
 		
-		MockStoreClient storeClient = new MockStoreClient();
-		storeClient.addTriple(	"<http://www.theworldavatar.com/kb/species/species.owl#species_10>",
-								"<http://www.w3.org/2008/05/skos#altLabel>",
-								"\"Ar\"");
-		
+		List<String> endpoints = new ArrayList<String>();
+		endpoints.add(StoreRouter.QUERY_INDEX,queryEndpoint);
+		endpoints.add(StoreRouter.UPDATE_INDEX,updateEndpoint);
+
 		AccessAgent agent = Mockito.spy(AccessAgent.class);
-		Mockito.doReturn(storeClient).when(agent).getStoreClient(any(String.class),any(boolean.class),any(boolean.class));
+		Mockito.doReturn(endpoints).when(agent).getEndpointsFromStoreRouter(any(String.class));
 		
 		JSONObject jo = new JSONObject();
 		jo.put(JPSConstants.REQUESTURL, "/jps/kb/test")
 			.put(JPSConstants.METHOD, "GET")
-			.put(JPSConstants.TARGETIRI, "mockstore")
-			.put(JPSConstants.HEADERS, "application/n-triples");
+			.put(JPSConstants.TARGETIRI, "test");
 		
-        JSONObject result = agent.performGet(jo);		
-		String strResult = result.getString("result"); 
-		
-		assertEquals(removeWhiteSpace(content), removeWhiteSpace(strResult));		
+        JSONObject result = agent.performGet(jo);		 
+	
+        assertNotNull(result);
+        assertEquals(queryEndpoint, result.getString(JPSConstants.QUERY_ENDPOINT));
+        assertEquals(updateEndpoint, result.getString(JPSConstants.UPDATE_ENDPOINT));
 	}
+	
 	
 	@Test
 	public void testPut() {
