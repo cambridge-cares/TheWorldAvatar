@@ -608,7 +608,7 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
 
     public List<Secret> getSecrets() {
         try (ListSecretsCmd listSecretsCmd = internalClient.listSecretsCmd()) {
-            return listSecretsCmd.exec().stream().collect(Collectors.toList());
+            return listSecretsCmd.withLabelFilter(getSecretLabels()).exec().stream().collect(Collectors.toList());
         }
     }
 
