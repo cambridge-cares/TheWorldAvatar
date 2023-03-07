@@ -53,7 +53,7 @@ AGENT_ENV = os.path.join(THIS_DIR,'agent_test.env')
 # Correct endpoints for DB_URL, QUERY_ENDPOINT, UPDATE_ENDPOINT will be retrieved
 # automatically from the respective Docker services
 
-# Provide names of respetive Docker services
+# Provide names of respective Docker services
 # NOTE These names need to match the ones given in the testing docker-compose.yml file
 KG_SERVICE = "blazegraph_agent_test"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"

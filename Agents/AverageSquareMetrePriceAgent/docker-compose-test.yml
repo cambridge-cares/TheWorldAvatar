@@ -14,7 +14,7 @@ services:
       #--- Stack & Stack Client parameters ---#
       - STACK_NAME=TESTS
       - DATABASE=postgres
-      - NAMESPACE=buildings
+      - NAMESPACE=test
       #--- Agent parameters ---#
       - THRESHOLD=''
       #--- Derivation Agent parameters ---#
