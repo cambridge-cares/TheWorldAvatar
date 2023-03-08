@@ -3,7 +3,7 @@
 The SensorLoggerMobileAppAgent is intended to receive HTTP POST requests containing JSON payload from the [SensorLogger mobile app](https://github.com/tszheichoi/awesome-sensor-logger). The agent retrieves JSON payload from the SensorLogger mobile app, parse the JSON Array and instantiate the data onto the knowledge graph using the timeseries client. The static relations are instantiated using the object graph mapper library.
 
 ## To deploy this agent with the stack
-1) Spin up the stack-manager
+1) Prepare the stack-manager
 
 The agent has been implemented to work with stack, which requires the stack to be [set up](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 
@@ -27,6 +27,20 @@ You'll need to provide  your credentials in single-word text files located like 
         repo_username.txt
         repo_password.txt
 ```
+
+3) Prepare JPS_Access Agent
+Change stack-name 
+Change port in routing.json
+Change port in bashUpload
+
+4) Spin up stack manager
+Add in storeRDB namespace in blazegraph
+
+5) Configure downsampling frequency
+
+6) 
+
+
 
 ## Debugging the agent
 #### Building the docker image 

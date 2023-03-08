@@ -329,8 +329,8 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
     public static List<List<String>> tableHeaderList= Arrays.asList(accelerometerHeader,gravityHeader,lightHeader,locationHeader,magnetometerHeader,microphoneHeader, screenHeader);
     public static List<String> tableList = Arrays.asList(accelerometer, gravity,light, location,magnetometer,microphone,screen);
     private static HashMap hashMap = new HashMap();
+    private static boolean staticInstantiated = false;
     public void tsInstantiation() throws Exception {
-//        HashMap hashMap = new HashMap();
 
         //Loop through each table
         for (int i = 0; i < tableList.size(); i++) {
@@ -360,9 +360,17 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
                 }
             }
         }
-        if (hashMap.size()!=maxSize)
-        { LOGGER.debug(String.format("Not all measuresIRI is collected"));}
-        else{instantiationMethod(hashMap); LOGGER.debug(String.format("Units is now instantiated"));}
+        if( hashMap.size()==maxSize && !staticInstantiated){
+            instantiationMethod(hashMap);
+            LOGGER.info(String.format("Units is now instantiated"));
+            staticInstantiated = true;
+        }
+        else if (hashMap.size()==maxSize && staticInstantiated)
+        {LOGGER.info(String.format("Units has been instantiated, InstantiationClient did not run"));}
+        else if (hashMap.size()!=maxSize)
+        { LOGGER.debug(String.format("Not all measuresIRIs are collected, InstantiationClient did not run"));}
+        else
+        {LOGGER.debug(String.format("Static relations was not instantiated"));}
     }
 
     static DSLContext getContext(Connection conn) {
