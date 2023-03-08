@@ -218,7 +218,7 @@ class KGClient(PySparqlClient):
             <{avg_price_iri}> <{OBE_REPRESENTATIVE_FOR}> <{postcode_iri}> . 
             <{avg_price_iri}> <{OM_HAS_VALUE}> <{measure_iri}> . 
             <{measure_iri}> <{RDF_TYPE}> <{OM_MEASURE}> . 
-            <{measure_iri}> <{OM_NUM_VALUE}> \"{avg_price}\"^^<{XSD_INTEGER}> . 
+            <{measure_iri}> <{OM_NUM_VALUE}> \"{avg_price}\"^^<{XSD_FLOAT}> . 
             <{measure_iri}> <{OM_HAS_UNIT}> <{UOM_GBP_M2}> . 
         """
         return self.remove_unnecessary_whitespace(query)
