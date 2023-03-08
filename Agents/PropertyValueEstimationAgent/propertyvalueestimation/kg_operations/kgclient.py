@@ -8,7 +8,7 @@
 
 import uuid
 import datetime as dt
-from rdflib import URIRef, Literal
+from rdflib import URIRef, Literal, Graph
 
 from py4jps import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
@@ -87,7 +87,7 @@ class KGClient(PySparqlClient):
         return res
 
 
-    def instantiate_property_value(self, graph, property_iri, property_value_iri, property_value) -> str:
+    def instantiate_property_value(self, graph, property_iri, property_value_iri, property_value) -> Graph:
         # Returns rdflib Graph with triples to instantiate/update property market value estimation
         # Create unique IRIs for new instances
         measure_iri = KB + 'Measure_' + str(uuid.uuid4())
@@ -103,6 +103,27 @@ class KGClient(PySparqlClient):
         #      There have been encoding issues within the KG with recurring instantiations; hence,
         #      the agent requires the symbol to be instantiated with the KG beforehand, i.e.
         #      when uploading the ontology initially (using the EnergyPerformanceCertificate agent)
+        return graph
+    
+
+    def instantiate_unavailable_property_value(self, graph, property_iri, property_value_iri) -> Graph:
+        # Returns rdflib Graph with triples to instantiate/update non-computable property market value estimation
+        # e.g. for cases where no previous transactions are available for given property and also no average price
+        #      for the associated postcode could be retrieved
+
+        # Specify comment to instantiate
+        comment = 'Property market value estimation not computable'
+
+        # Create unique IRIs for new instances
+        measure_iri = KB + 'Measure_' + str(uuid.uuid4())
+        
+        # Add triples to graph (RDF Triples to be provided as Python Tuples --> double brackets)
+        graph.add((URIRef(property_iri), URIRef(OBE_HAS_MARKET_VALUE), URIRef(property_value_iri)))
+        graph.add((URIRef(property_value_iri), URIRef(RDF_TYPE), URIRef(OM_AMOUNT_MONEY)))
+        graph.add((URIRef(property_value_iri), URIRef(OM_HAS_VALUE), URIRef(measure_iri)))
+        graph.add((URIRef(property_value_iri), URIRef(RDFS_COMMENT), Literal(comment, datatype=XSD_STRING)))
+        graph.add((URIRef(measure_iri), URIRef(RDF_TYPE), URIRef(OM_MEASURE)))
+
         return graph
 
 
