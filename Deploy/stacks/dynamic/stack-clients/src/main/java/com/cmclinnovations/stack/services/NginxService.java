@@ -17,6 +17,7 @@ import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.EndpointSpec;
 import com.github.dockerjava.api.model.PortConfig;
 import com.github.odiszapc.nginxparser.NgxBlock;
+import com.github.odiszapc.nginxparser.NgxComment;
 import com.github.odiszapc.nginxparser.NgxConfig;
 import com.github.odiszapc.nginxparser.NgxDumper;
 import com.github.odiszapc.nginxparser.NgxEntry;
@@ -179,6 +180,24 @@ public final class NginxService extends ContainerService implements ReverseProxy
             files.clear();
         }
 
+    }
+
+    public static void addOpenCORSForGetNginxSettings(NgxBlock locationBlock) {
+        NgxComment corsFixComment = new NgxComment("# Necessary to fix CORS problem");
+        locationBlock.addEntry(corsFixComment);
+
+        NgxParam allowOriginHeaderParam = new NgxParam();
+        allowOriginHeaderParam.addValue("add_header");
+        allowOriginHeaderParam.addValue("'Access-Control-Allow-Origin'");
+        allowOriginHeaderParam.addValue("'*'");
+        allowOriginHeaderParam.addValue("always");
+        locationBlock.addEntry(allowOriginHeaderParam);
+
+        NgxParam allowMethodsHeaderParam = new NgxParam();
+        allowMethodsHeaderParam.addValue("add_header");
+        allowMethodsHeaderParam.addValue("'Access-Control-Allow-Methods'");
+        allowMethodsHeaderParam.addValue("'GET'");
+        locationBlock.addEntry(allowMethodsHeaderParam);
     }
 
 }

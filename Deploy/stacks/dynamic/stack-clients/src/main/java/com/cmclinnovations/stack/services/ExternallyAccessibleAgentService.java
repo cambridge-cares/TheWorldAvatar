@@ -7,11 +7,11 @@ import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.github.odiszapc.nginxparser.NgxBlock;
 
-public class FeatureInfoAgentService extends ContainerService {
+public class ExternallyAccessibleAgentService extends ContainerService {
 
-    public static final String TYPE = "feature-info-agent";
+    public static final String TYPE = "externally-accessible-agent";
 
-    public FeatureInfoAgentService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
+    public ExternallyAccessibleAgentService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(stackName, serviceManager, config);
     }
 
