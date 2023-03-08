@@ -17,13 +17,19 @@ class BuildingStructureFacadeTest {
     private static Model sampleModel;
     private static final String TEST_BASE_URI = "http://www.theworldavatar.com/test/";
     // Element Instances
+    private static final String CEILING_CLASS = "IfcCovering";
+    private static final String CEILING_INST = TEST_BASE_URI + CEILING_CLASS + "_106932";
+    private static final String CEILING_NAME = "Stone ceiling";
     private static final String DOOR_CLASS = "IfcDoor";
     private static final String DOOR_INST = TEST_BASE_URI + DOOR_CLASS + "_5232";
     private static final String DOOR_NAME = "Iron door";
     // Generic element instances
     private static final String STOREY_INST = TEST_BASE_URI + "IfcBuildingStorey_3294";
     private static final String REL_AGG_INST = TEST_BASE_URI + "IfcRelAggregate_29214";
+    private static final String REL_TYPE_DEF_INST = TEST_BASE_URI + "IfcRelDefinesByType_51062";
+    private static final String COVERING_TYPE_INST = TEST_BASE_URI + "IfcCoveringType_37775";
     private static final String ELEMENT_ID = "01294juas";
+    // Generic element geometry instances
     private static final String ELEMENT_POSITION_INST = TEST_BASE_URI + "IfcLocalPlacement_1041";
     private static final String IFC_PRODUCT_DEF_SHAPE_INST = TEST_BASE_URI + "IfcProductDefinitionShape_3140";
     private static final String IFC_SHAPE_REP_INST = TEST_BASE_URI + "IfcShapeRepresentation_5108";
@@ -48,6 +54,7 @@ class BuildingStructureFacadeTest {
     private static final Resource shapeRep = ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcShapeRepresentation");
     private static final Resource geomRepSubContext = ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcGeometricRepresentationSubContext");
     private static final Resource facetedBrep = ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcFacetedBrep");
+    private static final Resource ifcTypeRel = ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelDefinesByType");
 
     @BeforeAll
     static void addTestZoneMappings() {
@@ -67,6 +74,56 @@ class BuildingStructureFacadeTest {
     @AfterAll
     static void resetZoneMappingsForOtherTests() {
         SpatialZoneStorage.resetSingleton();
+    }
+
+    @Test
+    void testExecCeilingQueryNonMappedGeometryRepresentation() {
+        // Set up
+        addBaseTriples(CEILING_INST, CEILING_CLASS, CEILING_NAME);
+        // Generate the triples that is applicable for all generic geometry representation except mapped representation
+        addGeometryTriples(sampleModel.getResource(CEILING_INST));
+        sampleModel.createResource(REL_TYPE_DEF_INST).addProperty(RDF.type, ifcTypeRel)
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatedObjects_IfcRelDefines"), sampleModel.getResource(CEILING_INST))
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatingType_IfcRelDefinesByType"),
+                        sampleModel.createResource(COVERING_TYPE_INST)
+                                .addProperty(RDF.type,  sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCoveringType"))
+                                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "predefinedType_IfcCoveringType"),  sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "CEILING"))
+                );
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        BuildingStructureFacade sample = new BuildingStructureFacade();
+        // Execute method
+        sample.execCeilingQuery(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Ceiling", CEILING_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(), result);
+        // The following statements are optional and should not exist
+        JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalGeomStatements(), result);
+    }
+
+    @Test
+    void testExecCeilingQueryMappedGeometryRepresentation() {
+        // Set up
+        addBaseTriples(CEILING_INST, CEILING_CLASS, CEILING_NAME);
+        // Generate the triples that is applicable for all generic geometry representation except mapped representation
+        addMappedGeometryTriples(sampleModel.getResource(CEILING_INST));
+        sampleModel.createResource(REL_TYPE_DEF_INST).addProperty(RDF.type, ifcTypeRel)
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatedObjects_IfcRelDefines"), sampleModel.getResource(CEILING_INST))
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatingType_IfcRelDefinesByType"),
+                        sampleModel.createResource(COVERING_TYPE_INST)
+                                .addProperty(RDF.type,  sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCoveringType"))
+                                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "predefinedType_IfcCoveringType"),  sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "CEILING"))
+                );
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        BuildingStructureFacade sample = new BuildingStructureFacade();
+        // Execute method
+        sample.execCeilingQuery(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Ceiling", CEILING_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedOptionalGeomStatements(), result);
     }
 
     @Test

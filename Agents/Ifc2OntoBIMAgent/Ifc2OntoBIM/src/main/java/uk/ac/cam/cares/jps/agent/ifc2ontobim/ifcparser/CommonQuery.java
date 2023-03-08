@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 import org.apache.jena.arq.querybuilder.Converters;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement.IfcElementConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -41,6 +42,9 @@ public class CommonQuery {
     public static final String NORTH_DIR_VAR = "?northdirection";
     public static final String MODEL_PLACEMENT_VAR = "?modelplacement";
     public static final String PLACEMENT_VAR = "?placement";
+    // Element supplementary variables
+    public static final String REL_TYPE_DEFINITION_VAR = "?reltypedefine";
+    public static final String ELEMENT_TYPE_VAR = "?elementtype";
     // Geometry variables
     public static final String PRODUCT_DEFINITION_VAR = "?productDefinitionShape";
     public static final String SHAPE_REP_VAR = "?shaperep";
@@ -77,6 +81,10 @@ public class CommonQuery {
     public static final String IFC_PROJECT_CONTEXT_PRECISION = NamespaceMapper.IFC_PREFIX + ":precision_IfcGeometricRepresentationContext";
     public static final String IFC_PROJECT_WCS_CONTEXT = NamespaceMapper.IFC_PREFIX + ":worldCoordinateSystem_IfcGeometricRepresentationContext";
     public static final String IFC_PROJECT_TRUE_NORTH = NamespaceMapper.IFC_PREFIX + ":trueNorth_IfcGeometricRepresentationContext";
+    // IfcOwl element supplementary properties
+    public static final String IFC_RELATED_OBJECT = NamespaceMapper.IFC_PREFIX + ":relatedObjects_IfcRelDefines";
+    public static final String IFC_RELATING_TYPE = NamespaceMapper.IFC_PREFIX + ":relatingType_IfcRelDefinesByType";
+    public static final String IFC_PREDEFINED_TYPE_COVERING = NamespaceMapper.IFC_PREFIX + ":predefinedType_IfcCoveringType";
     // IfcOwl geometry properties
     public static final String IFC_PRODUCT_REPRESENTATION = NamespaceMapper.IFC_PREFIX + ":representation_IfcProduct";
     public static final String IFC_PRODUCT_REPRESENTATIONS = NamespaceMapper.IFC_PREFIX + ":representations_IfcProductRepresentation";
@@ -109,7 +117,13 @@ public class CommonQuery {
     public static final String IFCLOCALPLACEMENT = NamespaceMapper.IFC_PREFIX + ":IfcLocalPlacement";
     public static final String IFC_CART_TRANSFORMATION_OPERATOR = NamespaceMapper.IFC_PREFIX + ":IfcCartesianTransformationOperator3D";
     // IfcOwl Element Classes
+    public static final String IFC_CEILING = NamespaceMapper.IFC_PREFIX + ":IfcCovering";
     public static final String IFCDOOR = NamespaceMapper.IFC_PREFIX + ":IfcDoor";
+    // IfcOwl element supplementary Classes
+    public static final String IFC_REL_TYPE_DEFINITION = NamespaceMapper.IFC_PREFIX + ":IfcRelDefinesByType";
+    public static final String IFC_COVERING_TYPE = NamespaceMapper.IFC_PREFIX + ":IfcCoveringType";
+    // IfcOwl enum
+    public static final String IFC_CEILING_ENUM = NamespaceMapper.IFC_PREFIX + ":CEILING";
 
     /**
      * Add the statements for querying common metadata such as class name, their unique ifc ID, and name into the builder.
