@@ -31,35 +31,24 @@ public class BuildingStructureFacade {
     }
 
     /**
-     * Creates the SPARQL SELECT query statements for IfcDoor.
-     *
-     * @return A string containing the SPARQL query to execute.
-     */
-    private static String createDoorSelectQuery() {
-        SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
-        selectBuilder.addVar(CommonQuery.ZONE_VAR)
-                .addVar(CommonQuery.PARENT_ZONE_VAR);
-        selectBuilder.addWhere(CommonQuery.ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCDOOR)
-                .addWhere(CommonQuery.RELAGGR_VAR, QueryHandler.RDF_TYPE, CommonQuery.REL_SPATIAL_ZONE_ELEMENT)
-                .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_REL_ZONE, CommonQuery.PARENT_ZONE_VAR)
-                .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_REL_ELEMENT, CommonQuery.ZONE_VAR);
-        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ZONE_VAR);
-        CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
-        return selectBuilder.buildString();
-    }
-
-    /**
      * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for IfcDoor.
      *
      * @param owlModel     The IfcOwl model containing the triples to query from.
      * @param statementSet A list containing the new OntoBIM triples.
      */
     private static void execDoorQuery(Model owlModel, LinkedHashSet<Statement> statementSet) {
-        String query = createDoorSelectQuery();
-        ResultSet results = QueryHandler.execSelectQuery(query, owlModel);
+        // Set up query builder and its query statements
+        SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
+        selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCDOOR);
+        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
+        CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
+        CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
+        // Query from the model
+        ResultSet results = QueryHandler.execSelectQuery(selectBuilder.buildString(), owlModel);
+        // Process query results
         while (results.hasNext()) {
             QuerySolution soln = results.nextSolution();
-            String iri = soln.get(CommonQuery.ZONE_VAR).toString();
+            String iri = soln.get(CommonQuery.ELEMENT_VAR).toString();
             String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
             String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
             String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);

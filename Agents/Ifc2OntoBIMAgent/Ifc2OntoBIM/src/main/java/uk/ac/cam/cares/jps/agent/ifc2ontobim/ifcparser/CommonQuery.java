@@ -16,6 +16,7 @@ public class CommonQuery {
     public static final String UID_VAR = "?uid";
     public static final String NAME_VAR = "?name";
     public static final String ZONE_VAR = "?zone";
+    public static final String ELEMENT_VAR = "?element";
     public static final String PARENT_ZONE_VAR = "?subzone";
     public static final String PHASE_VAR = "?phase";
     public static final String RELAGGR_VAR = "?relaggregates";
@@ -125,6 +126,18 @@ public class CommonQuery {
                 .addWhere(subjectVar, IFC_NAME + EXPRESS_HASSTRING, NAME_VAR)
                 .addWhere(subjectVar, IFC_OBJ_PLACEMENT, PLACEMENT_VAR)
                 .addWhere(PLACEMENT_VAR, QueryHandler.RDF_TYPE, IFCLOCALPLACEMENT);
+    }
+
+    /**
+     * Add the statements for relating each element to the zone they belong in.
+     *
+     * @param builder    A select builder object to append the statements to.
+     */
+    protected static void addElementHostZoneQueryComponents(SelectBuilder builder) {
+        builder.addVar(PARENT_ZONE_VAR);
+        builder.addWhere(RELAGGR_VAR, QueryHandler.RDF_TYPE, REL_SPATIAL_ZONE_ELEMENT)
+                .addWhere(RELAGGR_VAR, IFC_REL_ZONE, PARENT_ZONE_VAR)
+                .addWhere(RELAGGR_VAR, IFC_REL_ELEMENT, ELEMENT_VAR);
     }
 
     /**

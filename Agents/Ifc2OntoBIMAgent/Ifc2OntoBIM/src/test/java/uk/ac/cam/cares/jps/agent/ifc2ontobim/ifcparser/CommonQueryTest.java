@@ -27,6 +27,17 @@ class CommonQueryTest {
     }
 
     @Test
+    void testAddElementHostZoneQueryComponents() {
+        // Set up a new builder
+        SelectBuilder builder = new SelectBuilder();
+        NamespaceMapper.addSubqueryBuilderNamespaces(builder);
+        // Execute method
+        CommonQuery.addElementHostZoneQueryComponents(builder);
+        // Test result
+        JunitTestUtils.doesExpectedListExist(genExpectedElementContainerZoneStatements(), builder.buildString());
+    }
+
+    @Test
     void testAddElementModelRepresentationQueryComponents() {
         // Set up a new builder
         SelectBuilder builder = new SelectBuilder();
@@ -45,6 +56,16 @@ class CommonQueryTest {
         expected.add(TEST_ZONE_VAR_REGEX + " ifc:name_IfcRoot/express:hasString \\?name .");
         expected.add(TEST_ZONE_VAR_REGEX + "     ifc:objectPlacement_IfcProduct  \\?placement .");
         expected.add("\\?placement  rdf:type            ifc:IfcLocalPlacement}");
+        return expected;
+    }
+
+    private List<String> genExpectedElementContainerZoneStatements() {
+        List<String> expected = new ArrayList<>();
+        expected.add("SELECT  \\?subzone");
+        expected.add("\\?relaggregates\n" +
+                "              rdf:type              ifc:IfcRelContainedInSpatialStructure ;\n" +
+                "              ifc:relatingStructure_IfcRelContainedInSpatialStructure  \\?subzone ;\n" +
+                "              ifc:relatedElements_IfcRelContainedInSpatialStructure  \\?element");
         return expected;
     }
 
