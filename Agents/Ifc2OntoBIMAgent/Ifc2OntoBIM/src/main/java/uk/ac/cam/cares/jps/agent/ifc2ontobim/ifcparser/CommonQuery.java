@@ -110,19 +110,20 @@ public class CommonQuery {
     // IfcOwl Element Classes
     public static final String IFCDOOR = NamespaceMapper.IFC_PREFIX + ":IfcDoor";
 
-
     /**
      * Add the statements for querying common metadata such as class name, their unique ifc ID, and name into the builder.
      *
-     * @param builder A select builder object to append the statements to.
+     * @param builder    A select builder object to append the statements to.
+     * @param subjectVar The subject var, zone or element, for this builder.
      */
-    public static void addBaseQueryComponents(SelectBuilder builder) {
-        builder.addVar(UID_VAR)
+    public static void addBaseQueryComponents(SelectBuilder builder, String subjectVar) {
+        builder.addVar(subjectVar)
+                .addVar(UID_VAR)
                 .addVar(NAME_VAR)
                 .addVar(PLACEMENT_VAR);
-        builder.addWhere(ZONE_VAR, IFC_ID + EXPRESS_HASSTRING, UID_VAR)
-                .addWhere(ZONE_VAR, IFC_NAME + EXPRESS_HASSTRING, NAME_VAR)
-                .addWhere(ZONE_VAR, IFC_OBJ_PLACEMENT, PLACEMENT_VAR)
+        builder.addWhere(subjectVar, IFC_ID + EXPRESS_HASSTRING, UID_VAR)
+                .addWhere(subjectVar, IFC_NAME + EXPRESS_HASSTRING, NAME_VAR)
+                .addWhere(subjectVar, IFC_OBJ_PLACEMENT, PLACEMENT_VAR)
                 .addWhere(PLACEMENT_VAR, QueryHandler.RDF_TYPE, IFCLOCALPLACEMENT);
     }
 

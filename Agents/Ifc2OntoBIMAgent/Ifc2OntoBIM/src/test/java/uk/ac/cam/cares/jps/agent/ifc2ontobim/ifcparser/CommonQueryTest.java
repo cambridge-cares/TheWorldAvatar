@@ -12,6 +12,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CommonQueryTest {
+    private static final String TEST_ZONE_VAR = "?zone";
+    private static final String TEST_ZONE_VAR_REGEX = "\\" + TEST_ZONE_VAR;
 
     @Test
     void testAddBaseQueryComponents() {
@@ -19,7 +21,7 @@ class CommonQueryTest {
         SelectBuilder builder = new SelectBuilder();
         NamespaceMapper.addSubqueryBuilderNamespaces(builder);
         // Execute method
-        CommonQuery.addBaseQueryComponents(builder);
+        CommonQuery.addBaseQueryComponents(builder, TEST_ZONE_VAR);
         // Test result
         JunitTestUtils.doesExpectedListExist(genExpectedBaseQueryStatements(), builder.buildString());
     }
@@ -38,10 +40,10 @@ class CommonQueryTest {
 
     private List<String> genExpectedBaseQueryStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add("SELECT  \\?uid \\?name \\?placement");
-        expected.add("\\?zone ifc:globalId_IfcRoot/express:hasString \\?uid .");
-        expected.add("\\?zone ifc:name_IfcRoot/express:hasString \\?name .");
-        expected.add("\\?zone     ifc:objectPlacement_IfcProduct  \\?placement .");
+        expected.add("SELECT  " + TEST_ZONE_VAR_REGEX + " \\?uid \\?name \\?placement");
+        expected.add(TEST_ZONE_VAR_REGEX + " ifc:globalId_IfcRoot/express:hasString \\?uid .");
+        expected.add(TEST_ZONE_VAR_REGEX + " ifc:name_IfcRoot/express:hasString \\?name .");
+        expected.add(TEST_ZONE_VAR_REGEX + "     ifc:objectPlacement_IfcProduct  \\?placement .");
         expected.add("\\?placement  rdf:type            ifc:IfcLocalPlacement}");
         return expected;
     }

@@ -43,7 +43,7 @@ public class BuildingStructureFacade {
                 .addWhere(CommonQuery.RELAGGR_VAR, QueryHandler.RDF_TYPE, CommonQuery.REL_SPATIAL_ZONE_ELEMENT)
                 .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_REL_ZONE, CommonQuery.PARENT_ZONE_VAR)
                 .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_REL_ELEMENT, CommonQuery.ZONE_VAR);
-        CommonQuery.addBaseQueryComponents(selectBuilder);
+        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ZONE_VAR);
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
         return selectBuilder.buildString();
     }
