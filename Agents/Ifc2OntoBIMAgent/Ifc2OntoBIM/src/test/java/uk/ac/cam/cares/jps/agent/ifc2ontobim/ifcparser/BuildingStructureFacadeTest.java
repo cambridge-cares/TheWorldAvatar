@@ -90,8 +90,9 @@ class BuildingStructureFacadeTest {
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
         addGeometryTriples(sampleModel.getResource(DOOR_INST));
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        BuildingStructureFacade sample = new BuildingStructureFacade();
         // Execute method
-        BuildingStructureFacade.genZoneTriples(sampleModel, sampleSet);
+        sample.execDoorQuery(sampleModel, sampleSet);
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
@@ -107,8 +108,9 @@ class BuildingStructureFacadeTest {
         // Generate the alternate mapped geometry representation triples
         addMappedGeometryTriples(sampleModel.getResource(DOOR_INST));
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        BuildingStructureFacade sample = new BuildingStructureFacade();
         // Execute method
-        BuildingStructureFacade.genZoneTriples(sampleModel, sampleSet);
+        sample.execDoorQuery(sampleModel, sampleSet);
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence

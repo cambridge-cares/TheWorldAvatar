@@ -20,14 +20,10 @@ public class BuildingStructureFacade {
     private static SpatialZoneStorage zoneMappings;
 
     /**
-     * Generate zone triples
-     *
-     * @param owlModel     The IfcOwl model containing the triples to query from.
-     * @param statementSet A list containing the new OntoBIM triples.
+     * Standard Constructor retrieving the spatial zone singleton.
      */
-    public static void genZoneTriples(Model owlModel, LinkedHashSet<Statement> statementSet) {
+    public BuildingStructureFacade(){
         zoneMappings = SpatialZoneStorage.Singleton();
-        execDoorQuery(owlModel, statementSet);
     }
 
     /**
@@ -36,7 +32,7 @@ public class BuildingStructureFacade {
      * @param owlModel     The IfcOwl model containing the triples to query from.
      * @param statementSet A list containing the new OntoBIM triples.
      */
-    private static void execDoorQuery(Model owlModel, LinkedHashSet<Statement> statementSet) {
+    public void execDoorQuery(Model owlModel, LinkedHashSet<Statement> statementSet) {
         // Set up query builder and its query statements
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCDOOR);
