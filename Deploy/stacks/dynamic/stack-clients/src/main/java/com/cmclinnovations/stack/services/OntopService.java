@@ -5,18 +5,23 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
-import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
+import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.ContainerSpec;
 import com.github.dockerjava.api.model.ContainerSpecConfig;
+import com.github.odiszapc.nginxparser.NgxBlock;
+import com.github.odiszapc.nginxparser.NgxComment;
+import com.github.odiszapc.nginxparser.NgxParam;
 
 public final class OntopService extends ContainerService {
 
@@ -115,6 +120,27 @@ public final class OntopService extends ContainerService {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    public void addServerSpecificNginxSettingsToLocationBlock(NgxBlock locationBlock, Map<String, String> upstreams,
+            Entry<String, Connection> endpoint) {
+
+        if (locationBlock.getValue().endsWith("ui/")) {
+            locationBlock.addEntry(new NgxComment("# List of MIME types to filter (text/http included by default)"));
+            NgxParam subFilterTypesParam = new NgxParam();
+            subFilterTypesParam.addValue("sub_filter_types");
+            subFilterTypesParam.addValue("application/javascript");
+            locationBlock.addEntry(subFilterTypesParam);
+
+            locationBlock.addEntry(new NgxComment(
+                    "# Fixes an issue where all Ontop UI instances were saving their SPARQL endpoint URL to the same key-value pair"));
+            NgxParam subFilterParam = new NgxParam();
+            subFilterParam.addValue("sub_filter");
+            subFilterParam.addValue("'yasqe: {sparql: {endpoint: endpointUrl}}'");
+            subFilterParam.addValue("'yasqe: {sparql: {endpoint: endpointUrl}}, persistencyPrefix: endpointUrl'");
+            locationBlock.addEntry(subFilterParam);
         }
     }
 
