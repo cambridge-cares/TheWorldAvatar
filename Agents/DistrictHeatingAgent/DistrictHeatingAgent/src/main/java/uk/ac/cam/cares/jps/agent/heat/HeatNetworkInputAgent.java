@@ -313,7 +313,9 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "ElectricalPower" + "HeatGeneratorGT"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_POWER))
                         .addInsert(NodeFactory.createURI(KB + "MinThermalLoad" + "HeatGeneratorGT"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_POWER))
                         .addInsert(NodeFactory.createURI(KB + "HeatGeneratorGT"), NodeFactory.createURI(OHN + "hasMinimumIdleTime"), NodeFactory.createURI(KB + "IdleTime" + "HeatGeneratorGT"))
-                        .addInsert(NodeFactory.createURI(KB + "IdleTime" + "HeatGeneratorGT"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DURATION));
+                        .addInsert(NodeFactory.createURI(KB + "IdleTime" + "HeatGeneratorGT"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DURATION))
+                        .addInsert(NodeFactory.createURI(KB + "HeatGeneratorGT"), NodeFactory.createURI(OHN + "hasCoGenElectricityAmount"), NodeFactory.createURI(KB + "CoGenElectricityAmount" + "HeatGeneratorGT"))
+                        .addInsert(NodeFactory.createURI(KB + "CoGenElectricityAmount" + "HeatGeneratorGT"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CoGenElectricityAmount"));
         UpdateRequest GasTurbine_ur = GasTurbine_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, GasTurbine_ur.toString());
         omHasValueNonTS("ElectricalPower" + "HeatGeneratorGT", "MegaWatt", Value_RatedElectricalPower);
@@ -473,7 +475,8 @@ public class HeatNetworkInputAgent {
         		.addInsert(NodeFactory.createURI(KB + "DurationInTimeInterval" + "HeatGeneratorGT"),NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(GTActive))
                 .addInsert(NodeFactory.createURI(KB + "DurationInTimeInterval" + "HeatGeneratorBoil4"),NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(Kessel4Active))
                 .addInsert(NodeFactory.createURI(KB + "DurationInTimeInterval" + "HeatGeneratorBoil5"),NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI( Kessel5Active))
-                .addInsert(NodeFactory.createURI(KB + "DurationInTimeInterval" + "HeatGeneratorBoil6"),NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(Kessel6Active))
+                .addInsert(NodeFactory.createURI(KB + "DurationInTimeInterval" + "HeatGeneratorBoil6"),NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(Kessel6Active))    
+                .addInsert(NodeFactory.createURI(KB + "CoGenElectricityAmount" + "HeatGeneratorGT"),NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(GTWirkleistung))
                 .addInsert(NodeFactory.createURI(KB + "IncinerationPlant"), NodeFactory.createURI(OHN + "hasOperatingAvailability"), NodeFactory.createURI(AvaiIn))
                 .addInsert(NodeFactory.createURI(KB + "HeatGeneratorGT"), NodeFactory.createURI(OHN + "hasOperatingAvailability"), NodeFactory.createURI(AvaiGT))
                 .addInsert(NodeFactory.createURI(KB + "HeatGeneratorBoil4"), NodeFactory.createURI(OHN + "hasOperatingAvailability"), NodeFactory.createURI(AvaiKessel4))
@@ -517,6 +520,7 @@ public class HeatNetworkInputAgent {
         omHasValueTS("MegaWattHour", MHKWPressureRuecklauf);
         omHasValueTS("MegaWattHour", MinHourlySupply);
         omHasValueTS("MegaWattHour", MaxHourlySupply);
+        omHasValueTS("MegaWattHour", GTWirkleistung);
         omHasValueTS("HourSidereal", GTActive); 
         omHasValueTS("HourSidereal", Kessel4Active);
         omHasValueTS("HourSidereal", Kessel5Active);
@@ -558,9 +562,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "NaturalGas"), NodeFactory.createURI(OHN + "hasLowerCalorificValue"), NodeFactory.createURI(KB + "LowerCalorificValue"))
                         .addInsert(NodeFactory.createURI(KB + "LowerCalorificValue"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "LowerCalorificValue"))
                         .addInsert(NodeFactory.createURI(KB + "NaturalGas"), NodeFactory.createURI(OHN + "hasCO2Factor"), NodeFactory.createURI(KB + "NaturalGasCO2Factor"))
-                        .addInsert(NodeFactory.createURI(KB + "NaturalGasCO2Factor"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CO2Factor"))
-                        .addInsert(NodeFactory.createURI(KB + HeatGenerator_instance), NodeFactory.createURI(OHN + "hasGeneratedHeatAmount"), NodeFactory.createURI(KB + "EnergyInTimeIntervalGH" + HeatGenerator_instance)) 
-                        .addInsert(NodeFactory.createURI(KB + "EnergyInTimeIntervalGH" + HeatGenerator_instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "EnergyInTimeInterval"));
+                        .addInsert(NodeFactory.createURI(KB + "NaturalGasCO2Factor"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CO2Factor"));
         UpdateRequest HeatGenerator_instance_ur = HeatGenerator_instance_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, HeatGenerator_instance_ur.toString());
         omHasValueNonTS("ThermalLoad" + HeatGenerator_instance, "MegaWatt", Value_ThermalLoad);
