@@ -34,8 +34,6 @@ public class Stack {
 
         manager.initialiseService(name, "geoserver");
 
-        manager.initialiseService(name, "superset");
-
         manager.initialiseUserServices(name);
     }
 
