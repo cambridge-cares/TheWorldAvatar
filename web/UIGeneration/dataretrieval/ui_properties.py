@@ -7,8 +7,9 @@
 # datatype properties directly and indirectly associated with a class from
 # the KG by traversing through the range relationship of the object properties
 
-from SPARQLWrapper import SPARQLWrapper, JSON
+from SPARQLWrapper import SPARQLWrapper, JSON, POST, BASIC
 import requests, json as js
+import os
 from query_templates import get_property_query
 from json_templates import get_json_object, get_json_object_with_enum
 
@@ -46,6 +47,9 @@ def perform_query(endpoint: str, query: str):
     str: The results returned by the triple store against the query.
     """
     sparql_wrapper = SPARQLWrapper(endpoint)
+    sparql_wrapper.setHTTPAuth(BASIC)
+    sparql_wrapper.setCredentials(os.environ.get('BLAZEGRAPH_USER'), os.environ.get('BLAZEGRAPH_PASSWORD'))
+    sparql_wrapper.setMethod(POST)
     sparql_wrapper.setQuery(query)
     sparql_wrapper.setReturnFormat(JSON)
     return sparql_wrapper.query().convert()
@@ -74,7 +78,7 @@ def format_property_values(results: str):
     return property_values
 
 if __name__== '__main__':
-    sparql_endpoint = "http://localhost:8080/blazegraph/namespace/ontomatpassport/sparql"
+    sparql_endpoint = os.environ.get('COMO_ENDPOINT')
     product = "<http://www.theworldavatar.com/kg/ontomatpassport#Product>"
     component = "<http://www.theworldavatar.com/kg/ontomatpassport#Component>"
     form_types = []
