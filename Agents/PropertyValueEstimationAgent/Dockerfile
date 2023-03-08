@@ -1,6 +1,9 @@
 # Install the Property Market Value Estimation Agent in Docker container
 #==================================================================================================
 
+# Reference published Docker image for Stack-Client resources to use
+FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
@@ -17,8 +20,9 @@ ENV PYTHONUNBUFFERED=1
 # Install required software: git and openjdk-11
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
-# Copy stack-clients resource to be wrapped by py4jps
-COPY ./tmp_stack ./tmp_stack
+# Copy Stack-Client resource from published Docker image
+RUN mkdir -p ./tmp_stack
+COPY --from=stackclients /app ./tmp_stack
 
 # Set the default working directory & copy files to install Python
 WORKDIR /app
@@ -64,7 +68,7 @@ ENTRYPOINT python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask ru
 #------------------------------------------------------
 FROM base as prod
 # Install additional dependencies
-RUN pip install gunicorn
+RUN pip install gunicorn==20.0.4
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
