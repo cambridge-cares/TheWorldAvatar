@@ -120,8 +120,7 @@ public class SpatialZoneFacade {
      */
     private static String createSiteSelectQuery() {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
-        selectBuilder.addVar(CommonQuery.ZONE_VAR)
-                .addVar(CommonQuery.PROJECT_VAR)
+        selectBuilder.addVar(CommonQuery.PROJECT_VAR)
                 .addVar(CommonQuery.LAT_DEGREE_VAR).addVar(CommonQuery.LAT_MIN_VAR)
                 .addVar(CommonQuery.LAT_SEC_VAR).addVar(CommonQuery.LAT_MIL_SEC_VAR)
                 .addVar(CommonQuery.LONG_DEGREE_VAR).addVar(CommonQuery.LONG_MIN_VAR)
@@ -204,8 +203,7 @@ public class SpatialZoneFacade {
      */
     private static String createBuildingSelectQuery() {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
-        selectBuilder.addVar(CommonQuery.ZONE_VAR)
-                .addVar(CommonQuery.PROJECT_VAR)
+        selectBuilder.addVar(CommonQuery.PROJECT_VAR)
                 .addVar(CommonQuery.PARENT_ZONE_VAR)
                 .addVar(CommonQuery.ELEVATION_VAR)
                 .addVar(CommonQuery.TER_ELEVATION_VAR);
@@ -254,8 +252,7 @@ public class SpatialZoneFacade {
      */
     private static String createStoreySelectQuery() {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
-        selectBuilder.addVar(CommonQuery.ZONE_VAR)
-                .addVar(CommonQuery.PARENT_ZONE_VAR)
+        selectBuilder.addVar(CommonQuery.PARENT_ZONE_VAR)
                 .addVar(CommonQuery.ELEVATION_VAR);
         selectBuilder.addWhere(CommonQuery.ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCSTOREY)
                 .addOptional(CommonQuery.ZONE_VAR, CommonQuery.IFC_STOREY_ELEV + CommonQuery.EXPRESS_HASDOUBLE, CommonQuery.ELEVATION_VAR)
@@ -297,8 +294,7 @@ public class SpatialZoneFacade {
      */
     private static String createRoomSelectQuery() {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
-        selectBuilder.addVar(CommonQuery.ZONE_VAR)
-                .addVar(CommonQuery.PARENT_ZONE_VAR);
+        selectBuilder.addVar(CommonQuery.PARENT_ZONE_VAR);
         selectBuilder.addWhere(CommonQuery.ZONE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCSPACE)
                 .addWhere(CommonQuery.RELAGGR_VAR, QueryHandler.RDF_TYPE, CommonQuery.RELAGG)
                 .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_PARENT_ZONE_REL, CommonQuery.PARENT_ZONE_VAR)
