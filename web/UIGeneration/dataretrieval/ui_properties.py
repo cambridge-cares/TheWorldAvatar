@@ -77,18 +77,43 @@ def format_property_values(results: str):
                 range = result['range']['value']
                 range_label = result['rangeLabel']['value']
                 if label.lower() in property_values.keys():
-                    if previous_range_label in previous_range.split("#")[-1]:
+                    if previous_range_label == 'int':
                         del property_values[label.lower()]
                         property_values[label.lower()] = ""
                     if property_values[label.lower()] == "":
                         property_values[label.lower()] = range_label
                     else:
-                        property_values[label.lower()] = property_values[label.lower()] + "," + range_label
+                        property_values[label.lower()] = property_values[label.lower()] + ", " + range_label
                 else:
                       property_values[label.lower()] = range_label
                 previous_range = range
                 previous_range_label = range_label
     return property_values
+
+def format_enumerated_list(enumerated_list):
+    string_array = enumerated_list.split(", ")
+    sorted_list = sorted(string_array)
+    sorted_string = ", ".join(['"{}"'.format(s) for s in sorted_list])
+    return sorted_string
+
+def traverse_through_object_property(results, property_value_processed, property_values_formated, json_string):
+    for result in results["results"]["bindings"]:
+                # print(result['property']['value'], result['label']['value'], result['position']['value'], result['type']['value'], result['range']['value'], result['rangeLabel']['value'])
+                property = result['property']['value']
+                label = result['label']['value']
+                position = result['position']['value']
+                type = result['type']['value']
+                range = result['range']['value']
+                range_label = result['rangeLabel']['value']
+                if label.lower() == "properties":
+                     continue
+                if label.lower() not in property_value_processed:
+                    if "," in property_values_formated[label.lower()]:
+                        json_string.append((label.lower().replace(" ", "_"), get_json_object_with_enum(label, "TODO", "string" if range_label=="string" else "string", format_enumerated_list(property_values_formated[label.lower()]))))
+                    else:
+                        json_string.append((label.lower().replace(" ", "_"), get_json_object(label, "TODO", "string" if property_values_formated[label.lower()]=="string" else "string")))
+                property_value_processed.append(label.lower())
+    return json_string
 
 def generate_json_string():
     try:
@@ -101,38 +126,32 @@ def generate_json_string():
     form_types.append(product)
     form_types.append(component)
     results = get_ontological_properties(COMO_ENDPOINT, form_types[0])
-    property_values = format_property_values(results)
-    for key, value in property_values.items():
-        print(key, ':', value)      
+    property_values_formated = format_property_values(results)
+    # formats enum values
 
     property_value_processed = []
     json_string = []
-    for result in results["results"]["bindings"]:
-                # print(result['property']['value'], result['label']['value'], result['position']['value'], result['type']['value'], result['range']['value'], result['rangeLabel']['value'])
-                property = result['property']['value']
-                label = result['label']['value']
-                position = result['position']['value']
-                type = result['type']['value']
-                range = result['range']['value']
-                range_label = result['rangeLabel']['value']
-                if label.lower() not in property_value_processed:
-                    if "," in property_values[label.lower()]:
-                        json_string.append((label.lower().replace(" ", "_"), get_json_object_with_enum(label, "TODO", range_label, property_values[label.lower()])))
-                        # json_string.append(",")
-                        # print(get_json_object_with_enum(label.lower().replace(" ", "_"), label, "TODO", range_label, property_values[label.lower()]))
-                    else:
-                        # print(get_json_object(label.lower().replace(" ", "_"), label, "TODO", property_values[label.lower()]))
-                        json_string.append((label.lower().replace(" ", "_"), get_json_object(label, "TODO", property_values[label.lower()])))
-                        # json_string.append(",")
-                property_value_processed.append(label.lower())
+    label = "Type"
+    range_label = "string"
+    enumerated_list_provided = "Product" + ", " + "Component"
+    #
 
-    combined_json_dict = dict(json_string)
+    json_string.append((label.lower().replace(" ", "_"), get_json_object_with_enum(label, "TODO", range_label, format_enumerated_list(enumerated_list_provided))))
+    # 
+
+    traverse_through_object_property(results, property_value_processed, property_values_formated, json_string)
+
+    json_string = combined_json_dict = dict(json_string)
+    # print(combined_json_dict)
     return js.dumps(combined_json_dict)
 
 
 if __name__== '__main__':
 
-    print(generate_json_string())
+    print(generate_json_string().replace("[\"\\", "[").replace("\\\"","\"").replace("\"]","]"))
+    # original_string = "1, 3, 2"
+    # print(format_enumerated_list(original_string))
+
     # print(js.dumps(json_string))
     # Retrieves all datatype properties and object properties directly
     # connected to the ontological class. It is done by following
