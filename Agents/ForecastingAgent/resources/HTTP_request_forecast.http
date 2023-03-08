@@ -1,32 +1,41 @@
 # This file shows a sample http request to acces the forecastingAgent. The keys are descriped in the README.md file.
 
 # Docker deployment:
-POST http://127.0.0.1:5000/api/forecastingAgent/forecast
-# Stack deployment:
-#POST http://localhost:3838/forecastingAgent/forecast
+POST http://127.0.0.1:5001/forecast
+# Stack deployment (using stack-manager-input-config.json via stack-manager):
+#POST http://localhost:3840/forecastingAgent/forecast
 Content-Type: application/json
 
 { "query": {
-      // Heat supply
-      "iri": "<https://www.theworldavatar.com/kg/pms_dh/HeatDemand_d2da5bcf-f833-498d-8887-d8665027ba59>",
-      
-      // GeneratedHeatAmount Gas Turbine
-      //"iri": "<https://www.theworldavatar.com/kg/pms_dh/GeneratedHeatAmount_33ca9f5f-20c2-4368-bb10-17b4dd3dbf97>",
+      // Optional connection properties 
+      // Provided values overwrite default values from environment variables (i.e. from docker-compose.yml)
+      // To use default values, remove keys from HTTP request
+      //"namespace": "",
+      //"database": "",
+      //"query_endpoint": "",
+      //"update_endpoint": "",
+      //"db_url": "",
+      //"db_user": "",
+      //"db_password": ""
 
-      //Grid connection Temperature
-      //"iri": "https://www.theworldavatar.com/kg/pms_dh/Temperature_0d5a1129-b441-4a61-b983-dd578c52e3f5",
+      // DataIRI to forecast
+      "iri": "<https://www.theworldavatar.com/kg/pms_dh/Measure_e743e1fc-dfd9-4f6f-abe3-4ce9547f39a7>",
       
-      //Availability HeatBoiler
-      //"iri": "<https://www.theworldavatar.com/kg/pms_dh/OperatingAvailability_785c0fc9-0363-4cf3-983c-853f58586a4a>",
-
+      // Model configuration to use, see: forecasting\datamodel\data_mapping.py
       "use_model_configuration" : "DEFAULT",
       //"use_model_configuration" : "PIRMASENS",
       //"use_model_configuration" : "TFT_HEAT_SUPPLY",
+      
+      // Forecast start date
       //"forecast_start_date": "2019-01-31T00:00:00Z",
       //"forecast_start_date": "2019-08-12T09:00:00Z",
       //"forecast_start_date": "2020-10-17T01:00:00Z",
+
+      // Data history to use (i.e. number of timesteps prior to forecast_start_date)
       //"data_length": 42085,
       //"data_length": 168,
+
+      // Forecast length
       "horizon": 12
     }
 }
