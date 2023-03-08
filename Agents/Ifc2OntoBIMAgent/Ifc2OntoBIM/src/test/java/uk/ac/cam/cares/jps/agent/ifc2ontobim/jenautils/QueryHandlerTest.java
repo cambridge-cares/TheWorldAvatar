@@ -11,8 +11,13 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcRoomRepresentation;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcStoreyRepresentation;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.SpatialZoneStorage;
 
 
 import java.util.ArrayList;
@@ -31,8 +36,38 @@ class QueryHandlerTest {
     private static final String testHeightVar = "height";
     private static final String testDoubleLiteral = "102";
     private static final String testIriVar = "IRI";
-    private static final String testIri = "http://www.example.org/Test_124";
-
+    private static final String testBaseUri = "http://www.example.org/";
+    private static final String testIri = testBaseUri + "Test_124";
+    private static final String testParentZoneVar = "subzone";
+    private static final String testParentStoreyIri = testBaseUri + "IfcBuildingStorey_51076";
+    private static final String testParentRoomIri = testBaseUri + "IfcRoom_51076";
+    private static final String testShapeRepVar = "instshaperep";
+    private static final String testShapeRepIri = testBaseUri + "IfcShapeRepresentation_51076";
+    private static final String testSubContextVar = "subcontext";
+    private static final String testSubContextIri = testBaseUri + "GeometricRepresentationSubContext_5151";
+    private static final String testGeomVar = "geometry";
+    private static final String testGeomIri = testBaseUri + "FacetedBrep_32516";
+    private static final String testGeomType = JunitTestUtils.ifc2x3Uri + "IfcFacetedBrep";
+    private static final String testShapeRepTypeVar = "shapereptype";
+    private static final String testShapeRepType = "Faceted Brep";
+    private static final String testSourcePlacementVar = "geomaxisplacement";
+    private static final String testSourcePlacementIri = testBaseUri + "LocalPlacement_33352";
+    private static final String testTargetPlacementVar = "cartesiantransformer";
+    private static final String testTargetPlacementIri = testBaseUri + "CartesianTransformationOperator_610618";
+    private static SpatialZoneStorage zoneMappings;
+    private static IfcStoreyRepresentation storey;
+    private static IfcRoomRepresentation room;
+    @BeforeAll
+    static void addTestZoneMappings() {
+        // Create a new storey and room instance, which does not require any values except for the IRI
+        // This IRI is necessary to generate the respective zone IRI within the class
+        storey = new IfcStoreyRepresentation(testParentStoreyIri, null, null, null, null, null);
+        room = new IfcRoomRepresentation(testParentRoomIri, null, null, null, null);
+        // Add the storey and room to the singleton
+        zoneMappings = SpatialZoneStorage.Singleton();
+        zoneMappings.add(testParentStoreyIri, storey);
+        zoneMappings.add(testParentRoomIri, room);
+    }
 
     @Test
     void testInitSelectQueryBuilder() {
@@ -93,6 +128,64 @@ class QueryHandlerTest {
         assertNull(QueryHandler.retrieveLiteral(solution, "nonExisting"));
     }
 
+    @Test
+    void testRetrieveHostZoneForStorey() {
+        // Create a sample query solution for testing
+        QuerySolutionMap solution = new QuerySolutionMap();
+        solution.add(testParentZoneVar, ResourceFactory.createResource(testParentStoreyIri));
+        // Execute the method and ensure the expected host zone IRI belongs to the sample storey instance
+        assertEquals(storey.getBotStoreyIRI(), QueryHandler.retrieveHostZone(solution, zoneMappings));
+    }
+
+    @Test
+    void testRetrieveHostZoneForRoom() {
+        // Create a sample query solution for testing
+        QuerySolutionMap solution = new QuerySolutionMap();
+        solution.add(testParentZoneVar, ResourceFactory.createResource(testParentRoomIri));
+        // Execute the method and ensure the expected host zone IRI belongs to the sample room instance
+        assertEquals(room.getBimRoomIRI(), QueryHandler.retrieveHostZone(solution, zoneMappings));
+    }
+
+    @Test
+    void testRetrieveModelRepresentation3D() {
+        // Set up a sampleSet
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Create a sample query solution for testing
+        QuerySolutionMap solution = new QuerySolutionMap();
+        solution.add(testShapeRepVar, ResourceFactory.createResource(testShapeRepIri));
+        solution.add(testSubContextVar, ResourceFactory.createResource(testSubContextIri));
+        solution.add(testGeomVar, ResourceFactory.createResource(testGeomIri));
+        solution.add(testShapeRepTypeVar, ResourceFactory.createPlainLiteral(testShapeRepType));
+        solution.add(testSourcePlacementVar, ResourceFactory.createResource(testSourcePlacementIri));
+        solution.add(testTargetPlacementVar, ResourceFactory.createResource(testTargetPlacementIri));
+        // Execute the method and extract the result statements into a string
+        ModelRepresentation3D resultModel = QueryHandler.retrieveModelRepresentation3D(solution);
+        resultModel.addModelRepresentation3DStatements(sampleSet, testGeomType);
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedCommonModelRep3DStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedOptionalModelRep3DStatements(), result);
+    }
+
+    @Test
+    void testRetrieveModelRepresentation3DNoOptionalValues() {
+        // Set up a sampleSet
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Create a sample query solution for testing
+        QuerySolutionMap solution = new QuerySolutionMap();
+        solution.add(testShapeRepVar, ResourceFactory.createResource(testShapeRepIri));
+        solution.add(testSubContextVar, ResourceFactory.createResource(testSubContextIri));
+        solution.add(testGeomVar, ResourceFactory.createResource(testGeomIri));
+        // Execute the method and extract the result statements into a string
+        ModelRepresentation3D resultModel = QueryHandler.retrieveModelRepresentation3D(solution);
+        resultModel.addModelRepresentation3DStatements(sampleSet, testGeomType);
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedCommonModelRep3DStatements(), result);
+        // Verify that the following statements do not exist
+        JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalModelRep3DStatements(), result);
+    }
+
     private List<String> genInitQuery() {
         List<String> expected = new ArrayList<>();
         expected.add("PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
@@ -132,5 +225,25 @@ class QueryHandlerTest {
         builder.addConstruct("?storey", RDF.type, "bim:" + testConstructClass)
                 .addWhere("?storey", RDF.type, "bim:" + testClass);
         return builder.buildString();
+    }
+
+    private List<String> genExpectedCommonModelRep3DStatements() {
+        List<String> expected = new ArrayList<>();
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D");
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSubContext, " + testSubContextIri);
+        expected.add(testSubContextIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + testGeomIri);
+        expected.add(testGeomIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, " + testGeomType);
+        return expected;
+    }
+
+    private List<String> genExpectedOptionalModelRep3DStatements() {
+        List<String> expected = new ArrayList<>();
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + testShapeRepType);
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSourcePlacement, " + testSourcePlacementIri);
+        expected.add(testSourcePlacementIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTargetPlacement, " + testTargetPlacementIri);
+        expected.add(testTargetPlacementIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/CartesianTransformationOperator");
+        return expected;
     }
 }

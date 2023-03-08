@@ -63,41 +63,12 @@ public class BuildingStructureFacade {
             String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
             String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
             String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
-            String hostZone = retrieveHostZone(soln);
+            String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
             String geomType = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_TYPE_VAR);
-            ModelRepresentation3D geomModel = retrieveModelRepresentation3D(soln);
+            ModelRepresentation3D geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
             Door door = new Door(iri, name, uid, placement, hostZone, geomModel.getBimIri());
             door.constructStatements(statementSet);
             geomModel.addModelRepresentation3DStatements(statementSet, geomType);
         }
-    }
-
-    /**
-     * Retrieve the IRI of the zone hosting this element, usually in the IfcBuildingStorey or IfcSpace.
-     *
-     * @param soln The row of the query response to retrieve this zone IRI.
-     */
-    private static String retrieveHostZone(QuerySolution soln) {
-        String zoneIri = QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR);
-        if (zoneIri.contains(CommonQuery.IFCSTOREY_CLASS)) {
-            return zoneMappings.getStorey(zoneIri).getBotStoreyIRI();
-        }
-        return zoneMappings.getRoom(zoneIri).getBimRoomIRI();
-    }
-
-    /**
-     * Retrieve the geometry model representation of the element as a ModelRepresentation3D class.
-     *
-     * @param soln The row of the query response to retrieve this zone IRI.
-     */
-    private static ModelRepresentation3D retrieveModelRepresentation3D(QuerySolution soln) {
-        String shapeRepIri = soln.get(CommonQuery.INST_SHAPE_REP_VAR).toString();
-        String subContextIri = soln.get(CommonQuery.REP_SUBCONTEXT_VAR).toString();
-        String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
-        String shapeRepType = QueryHandler.retrieveLiteral(soln, CommonQuery.INST_SHAPE_REP_TYPE_VAR);
-        String sourcePlacementIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_AXIS_PLACEMENT_VAR);
-        String cartesianTransformerIri = QueryHandler.retrieveIri(soln, CommonQuery.CART_TRANSFORMER_VAR);
-        return new ModelRepresentation3D(shapeRepIri, subContextIri, geomIri,
-                shapeRepType, sourcePlacementIri, cartesianTransformerIri);
     }
 }
