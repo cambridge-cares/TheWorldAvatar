@@ -88,7 +88,9 @@ COPY ./avgsqmpriceagent ./avgsqmpriceagent
 COPY ./tests/mockutils/env_configs_mock.py ./avgsqmpriceagent/utils/env_configs.py
 COPY ./tests/mockutils/stack_configs_mock.py ./avgsqmpriceagent/utils/stack_configs.py
 # Adjust relative import statement
-RUN sed -i "s|env_configs_mock|env_configs |g" ./avgsqmpriceagent/utils/stack_configs.py
+RUN sed -i "s|env_configs_mock|env_configs|g" ./avgsqmpriceagent/utils/stack_configs.py
+# Ensure inter-container ccommunication (on the same host)
+RUN sed -i "s|localhost|host.docker.internal|g" ./avgsqmpriceagent/utils/stack_configs.py
 
 # Mocking call to ONS API within Dockerised agent quite tricky as usual mocking functions not available 
 # outside testing environment and would require overwriting module imports when building the Docker image

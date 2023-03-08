@@ -19,7 +19,7 @@ services:
       - THRESHOLD=''
       #--- Derivation Agent parameters ---#
       - ONTOAGENT_SERVICE_IRI=https://www.example.com/resource/agents/Service__KL_AvgSqmPrice/Service
-      - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5011/AvgSqmPrice
+      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5011/AvgSqmPrice
       - DERIVATION_INSTANCE_BASE_URL=https://www.example.com/kg/derivation/
       - DERIVATION_PERIODIC_TIMESCALE=5
       - REGISTER_AGENT=false
@@ -35,7 +35,11 @@ services:
       #--- Miscellaneous ---#
       - LOG4J_FORMAT_MSG_NO_LOOKUPS=true
     ports:
-      - "5010:5000"
+      - "5011:5000"
+    extra_hosts:
+      # To allow connecting to 'host.docker.internal' on Linux
+      # details: https://github.com/moby/libnetwork/pull/2348#issuecomment-1177610499
+      - "host.docker.internal:host-gateway"
 
   # Blazegraph
   blazegraph_agent_test:

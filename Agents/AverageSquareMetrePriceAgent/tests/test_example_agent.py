@@ -150,11 +150,6 @@ def test_monitor_derivations(
     assert sparql_client.getAmountOfTriples() == triples    
 
     if local_agent_test:
-        # Patch RDB URL for TimeSeriesClient to ensure that Postgres is not accessed from inside the Container
-        # If patching an object, you have to always patch the object as used in the module, e.g. 
-        # if you have imported it in the form: from x import y in your module module, you have to patch 
-        # module.y instead of x.y. Documentation: https://docs.python.org/3/library/unittest.mock.html#id6
-        mocker.patch('avgsqmpriceagent.kg_operations.tsclient.DB_URL', rdb_url)
         # Start the scheduler to monitor derivations if it's local agent test
         agent._start_monitoring_derivations()
 
@@ -262,8 +257,6 @@ def test_monitor_derivations_no_tx(
     assert sparql_client.getAmountOfTriples() == triples    
 
     if local_agent_test:
-        # Patch RDB URL for TimeSeriesClient to ensure that Postgres is not accessed from inside the Container
-        mocker.patch('avgsqmpriceagent.kg_operations.tsclient.DB_URL', rdb_url)
         # Start the scheduler to monitor derivations if it's local agent test
         agent._start_monitoring_derivations()
 

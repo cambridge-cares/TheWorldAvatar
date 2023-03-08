@@ -169,7 +169,7 @@ def get_postgres_service_url(session_scoped_container_getter):
 
 @pytest.fixture(scope="session")
 def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
-    # Retrieve "user-facing" endpoints for all clients/services relevant for testing
+    # Retrieve "externally-facing" endpoints for all clients/services relevant for testing
     # (i.e. invoked during testing from outside the Docker stack)
     # --> those shall be `localhost:...` even when agent is running as Docker container
     
@@ -211,10 +211,8 @@ def create_example_agent():
             agent_iri=agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
             derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=host_docker_internal_to_localhost(QUERY_ENDPOINT),
-            kg_update_url=host_docker_internal_to_localhost(UPDATE_ENDPOINT),
-            # NOTE For agent endpoint, we keep this as it is for now (i.e. start with http://host.docker.internal)
-            # As the agent endpoint is not accessed from outside the docker network
+            kg_url=QUERY_ENDPOINT,
+            kg_update_url=UPDATE_ENDPOINT,
             agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             max_thread_monitor_async_derivations=agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
             threshold=THRESHOLD,
@@ -228,10 +226,6 @@ def create_example_agent():
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
-
-def host_docker_internal_to_localhost(endpoint: str):
-    return endpoint.replace("host.docker.internal:", "localhost:")
-
 
 def initialise_triples(sparql_client):
     # Delete all triples before initialising prepared triples
