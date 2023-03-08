@@ -48,7 +48,20 @@ def perform_query(endpoint: str, query: str):
     """
     sparql_wrapper = SPARQLWrapper(endpoint)
     sparql_wrapper.setHTTPAuth(BASIC)
-    sparql_wrapper.setCredentials(os.environ.get('BLAZEGRAPH_USER'), os.environ.get('BLAZEGRAPH_PASSWORD'))
+    try:
+        BLAZEGRAPH_USER = os.environ.get('BLAZEGRAPH_USER')
+    except KeyError:
+        print("Error: BLAZEGRAPH_USER environment variable is not set.")
+
+    try:
+        BLAZEGRAPH_PASSWORD = os.environ.get('BLAZEGRAPH_PASSWORD')
+    except KeyError:
+        print("Error: BLAZEGRAPH_PASSWORD environment variable is not set.")
+
+    try:
+        sparql_wrapper.setCredentials(BLAZEGRAPH_USER, BLAZEGRAPH_PASSWORD)
+    except ValueError:
+         print("Error: either BLAZEGRAPH_USER or BLAZEGRAPH_PASSWORD is not correct.")
     sparql_wrapper.setMethod(POST)
     sparql_wrapper.setQuery(query)
     sparql_wrapper.setReturnFormat(JSON)
@@ -77,14 +90,17 @@ def format_property_values(results: str):
                 previous_range_label = range_label
     return property_values
 
-if __name__== '__main__':
-    sparql_endpoint = os.environ.get('COMO_ENDPOINT')
+def generate_json_string():
+    try:
+         COMO_ENDPOINT = os.environ.get('COMO_ENDPOINT')
+    except KeyError:
+        print("Error: COMO_ENDPOINT environment variable is not set.")
     product = "<http://www.theworldavatar.com/kg/ontomatpassport#Product>"
     component = "<http://www.theworldavatar.com/kg/ontomatpassport#Component>"
     form_types = []
     form_types.append(product)
     form_types.append(component)
-    results = get_ontological_properties(sparql_endpoint, form_types[0])
+    results = get_ontological_properties(COMO_ENDPOINT, form_types[0])
     property_values = format_property_values(results)
     for key, value in property_values.items():
         print(key, ':', value)      
@@ -111,9 +127,12 @@ if __name__== '__main__':
                 property_value_processed.append(label.lower())
 
     combined_json_dict = dict(json_string)
-    combined_json_string = js.dumps(combined_json_dict)
+    return js.dumps(combined_json_dict)
 
-    print(combined_json_string)
+
+if __name__== '__main__':
+
+    print(generate_json_string())
     # print(js.dumps(json_string))
     # Retrieves all datatype properties and object properties directly
     # connected to the ontological class. It is done by following
