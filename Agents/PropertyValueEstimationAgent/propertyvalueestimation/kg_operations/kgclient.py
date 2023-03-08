@@ -24,6 +24,29 @@ class KGClient(PySparqlClient):
     #
     # SPARQL QUERIES
     #
+    def get_property_iri(self, tx_iri: str = None, floor_area_iri: str = None) -> dict:
+        # Retrieve total floor area and property price index (representative for 
+        # associated property) of given floor area IRI
+        # Returns dictionary with keys: floor_area, avg_price, property_iri
+
+        triple1 = "" if not tx_iri else f"?property_iri <{OBE_HAS_LATEST_TRANSACTION}> <{tx_iri}>"
+        triple2 = "" if not floor_area_iri else f"?property_iri <{OBE_HAS_TOTAL_FLOOR_AREA}> <{floor_area_iri}>"
+        query = f"""
+            SELECT ?property_iri
+            WHERE {{ 
+            {{ {triple1} }}
+            UNION
+            {{ {triple2} }}
+            }}
+        """
+        query = self.remove_unnecessary_whitespace(query)
+        res = self.performQuery(query)
+        # Remove (potentially) empty result dicts from list
+        res = [r for r in res if r]
+
+        return res[0]
+    
+
     def get_transaction_details(self, tx_iri:str) -> dict:
         # Retrieve transaction details for given transaction IRI
         # Returns dictionary with keys: price, date, property_iri
@@ -97,7 +120,7 @@ class KGClient(PySparqlClient):
         graph.add((URIRef(property_value_iri), URIRef(RDF_TYPE), URIRef(OM_AMOUNT_MONEY)))
         graph.add((URIRef(property_value_iri), URIRef(OM_HAS_VALUE), URIRef(measure_iri)))
         graph.add((URIRef(measure_iri), URIRef(RDF_TYPE), URIRef(OM_MEASURE)))
-        graph.add((URIRef(measure_iri), URIRef(OM_NUM_VALUE), Literal(property_value, datatype=XSD_INTEGER)))
+        graph.add((URIRef(measure_iri), URIRef(OM_NUM_VALUE), Literal(property_value, datatype=XSD_FLOAT)))
         graph.add((URIRef(measure_iri), URIRef(OM_HAS_UNIT), URIRef(OM_GBP)))
         #NOTE: PoundSterling symbol '£' excluded from recurring updates 
         #      There have been encoding issues within the KG with recurring instantiations; hence,

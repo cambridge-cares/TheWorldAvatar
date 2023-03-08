@@ -9,6 +9,7 @@
 
 import uuid
 import pandas as pd
+import traceback
 from rdflib import Graph
 
 from pyderivationagent import DerivationAgent
@@ -192,14 +193,12 @@ class PropertyValueEstimationAgent(DerivationAgent):
                 # NOTE: This will cause an error if no AvgSqmPrice (i.e. actual numerical value)
                 #       (or floor area) is available
                 market_value = res['floor_area'] * res['avg_price']
-
-                #TODO: remove
-                #raise Exception('test')
         
         except Exception as ex:
             # Catch and log exception, but do not re-raise and instantiate non-computable
             # property estimate value instead
             self.logger.error('Error estimating property market value: {}'.format(ex))
+            self.logger.error(traceback.format_exc())
 
         if market_value:
             # Round property market value to full kGBP
@@ -210,6 +209,9 @@ class PropertyValueEstimationAgent(DerivationAgent):
                                                 property_value_iri=market_value_iri, 
                                                 property_value=market_value)
         else:
+            if not res['property_iri']:
+                res = self.sparql_client.get_property_iri(tx_iri=transaction_iri, 
+                                                          floor_area_iri=floor_area_iri)
             # In case PropertyValueEstimate cannot be assessed, instantiate AmountOfMoney
             # (and attached Measure) instance with RDFS comment that value is not computable
             # NOTE: This design is intended to ensure that no errors are experienced
