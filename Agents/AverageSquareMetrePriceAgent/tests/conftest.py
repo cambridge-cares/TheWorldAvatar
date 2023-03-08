@@ -80,11 +80,11 @@ DERIVATION_INPUTS_1 = [POSTCODE_INSTANCE_IRI_1, PRICE_INDEX_INSTANCE_IRI,
                        TRANSACTION_INSTANCE_1_IRI, TRANSACTION_INSTANCE_2_IRI, 
                        TRANSACTION_INSTANCE_3_IRI]
 POSTCODE_1 = 'ABC 123'
-# Test average against previously calculated average value from Excel (rounded)
-AVGPRICE_1 = 3351
 DERIVATION_INPUTS_2 = [POSTCODE_INSTANCE_IRI_2, PRICE_INDEX_INSTANCE_IRI,
                        TRANSACTION_INSTANCE_4_IRI, TRANSACTION_INSTANCE_5_IRI]
 POSTCODE_2 = 'DEF 456'
+# Test average against previously calculated average value from Excel (rounded)
+AVGPRICE_1 = 3351
 AVGPRICE_2 = 3600
 # Test for postcodes without transaction records 
 DERIVATION_INPUTS_3 = [POSTCODE_INSTANCE_IRI_2, PRICE_INDEX_INSTANCE_IRI]
@@ -110,6 +110,10 @@ DERIV_STATUS_TRIPLES = 2        # derivation status triples
 AGENT_SERVICE_TRIPLES = 5       # agent service triples
 DERIV_INPUT_TRIPLES = 2 + 3*3   # triples for derivation input message
 DERIV_OUTPUT_TRIPLES = 5        # triples for derivation output message
+DERIV_OUTPUT_COMPUATBLE = 6     # triples instantiated for successful avg price calculation
+                                # i.e. kgclient.instantiate_average_price
+DERIV_OUTPUT_NONCOMPUATBLE = 5  # triples instantiated for unsuccessful avg price calculation
+                                # i.e. kgclient.instantiate_unavailable_average_price
 
 
 # List of all transactions (to mock ONS API call)
