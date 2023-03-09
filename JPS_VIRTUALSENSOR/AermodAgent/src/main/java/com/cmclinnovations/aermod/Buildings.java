@@ -178,6 +178,7 @@ public class Buildings {
                 return 1;
             }
         } catch (Exception e) {
+            LOGGER.error(e.getMessage());
             return 1;
         }
 
@@ -659,19 +660,20 @@ public class Buildings {
         return 0;
     }
 
+    // This method should be called only if AERMAP was not run.
     public static int updateElevationData() {
         
         int numberBuildings = BPIPPRMBuildingInput.size();
         for (int i = 0; i < numberBuildings; i++) {
             String BuildLine = BPIPPRMBuildingInput.get(i).get(0);
-            BuildLine.replace("BASE_ELEVATION", "0.0");
+            BuildLine = BuildLine.replace("BASE_ELEVATION", "0.0");
             BPIPPRMBuildingInput.get(i).set(0,BuildLine);
         }
         
         int numberStacks = BPIPPRMStackInput.size() ;
         for (int i = 0; i < numberStacks; i++) {
             String StackLine = BPIPPRMStackInput.get(i);
-            StackLine.replace("BASE_ELEVATION", "0.0");
+            StackLine = StackLine.replace("BASE_ELEVATION", "0.0");
             BPIPPRMStackInput.set(i, StackLine);
             String stackProp = StackProperties.get(i);
             String propElevation = "#0.0" ;
@@ -699,14 +701,14 @@ public class Buildings {
         }
 
         int numberBuildings = BPIPPRMBuildingInput.size() ;
-        sb.append(numberBuildings);
+        sb.append(numberBuildings + " \n");
         for (int i = 0; i < numberBuildings; i++) {
-            for (int j = 0; j < BPIPPRMBuildingInput.size(); j++) {
+            for (int j = 0; j < BPIPPRMBuildingInput.get(i).size(); j++) {
                 sb.append(BPIPPRMBuildingInput.get(i).get(j));
             }
         }
         int numberStacks = BPIPPRMStackInput.size() ;
-        sb.append(numberStacks);
+        sb.append(numberStacks + " \n");
         for (int i = 0; i < numberStacks; i++) {
             sb.append(BPIPPRMStackInput.get(i));
         }
@@ -788,13 +790,10 @@ public class Buildings {
 
         for (int i = 0; i < StackProperties.size(); i++) {
             String[] avecoord = StackProperties.get(i).split("#");
-            double StackBaseElevation = Double.parseDouble(avecoord[2]);
-            List<Double> inputcoords = Arrays.asList(Double.parseDouble(avecoord[0]), Double.parseDouble(avecoord[1]));
-            List<List<Double>> inputcoordinates = Arrays.asList(inputcoords);
-            List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates, DatabaseCoordSys, UTMCoordSys);
-            double StackEastUTM = outputcoordinates.get(0).get(0);
-            double StackNorthUTM = outputcoordinates.get(0).get(1);
+            double StackEastUTM = Double.parseDouble(avecoord[0]);
+            double StackNorthUTM = Double.parseDouble(avecoord[1]);
             double StackHeight = Double.parseDouble(avecoord[2]);
+            double StackBaseElevation = Double.parseDouble(avecoord[3]);            
             double massFlowrateInTonYr = StackEmissions.get(i);
             double massFlowrateInGs = massFlowrateInTonYr * 1000 * 1000 / (365 * 24 * 60 * 60);
             double gasTemperatureKelvin = 890.0;
