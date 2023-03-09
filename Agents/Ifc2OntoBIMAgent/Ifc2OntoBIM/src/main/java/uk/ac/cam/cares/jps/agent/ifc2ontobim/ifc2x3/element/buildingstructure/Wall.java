@@ -25,7 +25,9 @@ public class Wall extends IfcModelRepresentation {
      * @param iri          The instance IRI to be created.
      * @param name         The name of this IFC object.
      * @param uid          The IFC uid generated for this object.
-     * @param placementIri The local placement IRI for the zone's position.
+     * @param placementIri The local placement IRI for the element's position.
+     * @param hostZoneIri  The IRI of the zone containing this element .
+     * @param geomRepIri   The IRI of the element's geometry representation.
      */
     public Wall(String iri, String name, String uid, String placementIri, String hostZoneIri, String geomRepIri) {
         super(iri, name, uid, placementIri);
@@ -42,7 +44,7 @@ public class Wall extends IfcModelRepresentation {
     @Override
     public void constructStatements(LinkedHashSet<Statement> statementSet) {
         super.addIfcModelRepresentationStatements(statementSet);
-        StatementHandler.addStatement(statementSet, this.hostZoneIRI, OntoBimConstant.BOT_CONTAINS_ELEMENT,  this.elementIRI);
+        StatementHandler.addStatement(statementSet, this.hostZoneIRI, OntoBimConstant.BOT_CONTAINS_ELEMENT, this.elementIRI);
         StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_WALL_CLASS);
         StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.BIM_HAS_IFC_REPRESENTATION, this.getIfcRepIri());
         StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.BIM_HAS_GEOM_REP, this.geomRepIRI);
