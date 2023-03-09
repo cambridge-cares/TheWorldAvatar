@@ -25,7 +25,7 @@ class SlabClassifierTest {
     void testAddClassMappingForFloor() {
         genSampleFloorStatements();
         Map<String, String> sampleMap = new HashMap<>();
-        CoveringClassifier.addClassMapping("bim:" + floorClass, testSet, sampleMap);
+        SlabClassifier.addClassMapping("bim:" + floorClass, testSet, sampleMap);
         assertTrue(sampleMap.size() == 2);
         assertEquals(floorClass, sampleMap.get(inst));
         assertEquals(floorClass, sampleMap.get(secondInst));
@@ -35,7 +35,7 @@ class SlabClassifierTest {
     void testAddClassMappingForRoof() {
         genSampleRoofStatements();
         Map<String, String> sampleMap = new HashMap<>();
-        CoveringClassifier.addClassMapping("bim:" + roofClass, testSet, sampleMap);
+        SlabClassifier.addClassMapping("bim:" + roofClass, testSet, sampleMap);
         assertTrue(sampleMap.size() == 2);
         assertEquals(roofClass, sampleMap.get(inst));
         assertEquals(roofClass, sampleMap.get(secondInst));

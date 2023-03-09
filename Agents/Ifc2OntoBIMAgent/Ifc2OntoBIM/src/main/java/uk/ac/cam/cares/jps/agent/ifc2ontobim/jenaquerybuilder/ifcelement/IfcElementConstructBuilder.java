@@ -73,9 +73,6 @@ public class IfcElementConstructBuilder extends IfcConstructBuilderTemplate {
             case "ifc:IfcStair":
                 IfcStairQuery.addSubElementsQueryComponents(builder);
                 break;
-            case "ifc:IfcCovering":
-                IfcCoveringQuery.addCeilingQueryComponents(builder);
-                break;
         }
 
         // Spatial location are usually the same for most elements except for the following classes

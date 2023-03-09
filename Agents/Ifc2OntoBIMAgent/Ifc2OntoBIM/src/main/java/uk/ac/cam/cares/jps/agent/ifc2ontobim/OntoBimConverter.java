@@ -5,6 +5,7 @@ import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.riot.RDFParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.BuildingStructureFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.SpatialZoneFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.SpatialZoneStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaclassifier.*;
@@ -118,6 +119,13 @@ public class OntoBimConverter {
      * @param statementSet Stores the relevant queried statements into this set.
      */
     private void genElementsStatements(ConstructBuilder builder, LinkedHashSet<Statement> statementSet) {
+        // Create a new helper object
+        BuildingStructureFacade buildingStructureHelper = new BuildingStructureFacade();
+        LOGGER.info("Retrieving and generating statements related to ceiling elements...");
+        buildingStructureHelper.addCeilingStatements(this.owlModel, statementSet);
+        this.storeInTempFiles(statementSet);
+        LOGGER.info("Stored statements for ceiling elements in temporary file");
+        // Generate the other elements using previous design pattern
         List<String> ifcElements = new ArrayList<>();
         ifcElements.add("ifc:IfcDoor");
         ifcElements.add("ifc:IfcWindow");
@@ -128,7 +136,6 @@ public class OntoBimConverter {
         ifcElements.add("ifc:IfcRoof");
         ifcElements.add("ifc:IfcWall");
         ifcElements.add("ifc:IfcWallStandardCase");
-        ifcElements.add("ifc:IfcCovering");
         ifcElements.add("ifc:IfcStair");
         ifcElements.add("ifc:IfcBuildingElementProxy");
         ifcElements.add("ifc:IfcFlowTerminal");
@@ -145,9 +152,6 @@ public class OntoBimConverter {
                     case "ifc:IfcSlabF":
                     case "ifc:IfcSlabR":
                         SlabClassifier.addClassMapping(ifcElement, statementSet, classMapping);
-                        break;
-                    case "ifc:IfcCovering":
-                        CoveringClassifier.addClassMapping(ifcElement, statementSet, classMapping);
                         break;
                 }
                 LOGGER.info("Retrieved statements related to elements of " + ifcElement);
