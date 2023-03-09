@@ -137,13 +137,17 @@ If the tagged object is "Out" for longer than allowed, the email content sent wi
 
 1) If tagged object is not a chemical container.
 ```
-The tagged object has been removed since 2023-02-23T09:25:13Z. The object has the following label asset 02 and tag ID 00000000000000A000009726 . 
+The tagged object has been removed since 2023-03-08 07:03:19 AM UTC. The object has the following label: asset 02 and tag ID: 00000000000000A000009726 . 
 ```
 2) If tagged object is a chemical container containing a chemical with GHS Hazard Statements.
 ```
-The chemical container with the following information has been removed since 2023-01-17T04:16:41Z. The container has the following label chemical container 01 and tag ID 00000000000000A000009727 and it is storing a chemical with the following label: KNO3. The chemical has the following GHS hazard statements: {H315:Causes skin irritation [Warning Skin corrosion/irritation]} . {H319:Causes serious eye irritation [Warning Serious eye damage/eye irritation]} . {H335:May cause respiratory irritation [Warning Specific target organ toxicity, single exposure; Respiratory tract irritation]} . {H272:May intensify fire; oxidizer [Danger Oxidizing liquids; Oxidizing solids]} . 
+The chemical container with the following information has been removed since 2023-03-08 07:03:19 AM UTC. The container has the following label: chemical container 01 and tag ID: 00000000000000A000009727 and it is storing a chemical with the following label: KNO3. The chemical has the following GHS hazard statements:
+H315 : Causes skin irritation [Warning Skin corrosion/irritation]
+H319 : Causes serious eye irritation [Warning Serious eye damage/eye irritation]
+H335 : May cause respiratory irritation [Warning Specific target organ toxicity, single exposure; Respiratory tract irritation]
+H272 : May intensify fire; oxidizer [Danger Oxidizing liquids; Oxidizing solids] 
 ```
 3) If tagged object is a chemical container containing a chemical without GHSHazardStatements.
 ```
-The chemical container with the following information has been removed since 2023-01-17T04:16:41Z. The container has the following label chemical container 01 and tag ID 00000000000000A000009727 and it is storing a chemical with the following label: Hydrogen.
+The chemical container with the following information has been removed since 2023-03-08 07:03:19 AM UTC. The container has the following label: chemical container 01 and tag ID: 00000000000000A000009727 and it is storing a chemical with the following label: Hydrogen.
 ```
