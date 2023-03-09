@@ -167,7 +167,7 @@ public class CommonQuery {
                 .addVar(INST_SHAPE_REP_TYPE_VAR)
                 .addVar(GEOM_AXIS_PLACEMENT_VAR)
                 .addVar(CART_TRANSFORMER_VAR);
-        builder.addWhere(ZONE_VAR, IFC_PRODUCT_REPRESENTATION, PRODUCT_DEFINITION_VAR)
+        builder.addWhere(ELEMENT_VAR, IFC_PRODUCT_REPRESENTATION, PRODUCT_DEFINITION_VAR)
                 .addWhere(PRODUCT_DEFINITION_VAR, QueryHandler.RDF_TYPE, IFC_PRODUCT_DEF_SHAPE);
         // Set up empty builders for subgroups and unions with necessary prefixes
         SelectBuilder subgroupBuilder = new SelectBuilder();
