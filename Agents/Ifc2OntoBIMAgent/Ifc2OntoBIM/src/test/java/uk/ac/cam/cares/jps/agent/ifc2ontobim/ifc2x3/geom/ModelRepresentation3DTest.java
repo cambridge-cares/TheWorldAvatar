@@ -21,6 +21,10 @@ class ModelRepresentation3DTest {
     private static final String testPlacementIri = testBaseUri1 + "LocalPlacement_515";
     private static final String testTransformOperatorIri = testBaseUri1 + "CartesianTransformationOperator_515";
     private static final String testGeomClass = JunitTestUtils.bimUri + "FacetedBrep";
+    private static final String testAdditionalGeomIri = testBaseUri1 + "ExtrudedAreaSolid_37216";
+    private static final String testAdditionalGeomIri2 = testBaseUri1 + "PolygonalBoundedHalfSpace_59158";
+    private static final String testAdditionalGeomClass = JunitTestUtils.bimUri + "ExtrudedAreaSolid";
+    private static final String testAdditionalGeomClass2 = JunitTestUtils.bimUri + "PolygonalBoundedHalfSpace";
 
     @Test
     void testConstructor() {
@@ -31,27 +35,62 @@ class ModelRepresentation3DTest {
     }
 
     @Test
-    void addModelRepresentation3DStatements() {
+    void testAppendGeometry() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         ModelRepresentation3D sample = new ModelRepresentation3D(testIri1, testSubContextIri, testGeomIri, testShapeRepType, testPlacementIri, testTransformOperatorIri);
         // Execute method
-        sample.addModelRepresentation3DStatements(sampleSet, testGeomClass);
+        sample.appendGeometry(testAdditionalGeomIri);
+        // Clean up results as one string
+        sample.addModelRepresentation3DStatements(sampleSet);
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generate expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedCommonStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedOptionalStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedAreaSolidStatements(), result);
+        // Ensure half space solid is not generated as it was not added
+        JunitTestUtils.doesExpectedListNotExist(genExpectedHalfSpaceSolidStatements(), result);
+    }
+
+    @Test
+    void testAppendGeometryMoreThanOnce() {
+        // Set up
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        ModelRepresentation3D sample = new ModelRepresentation3D(testIri1, testSubContextIri, testGeomIri, testShapeRepType, testPlacementIri, testTransformOperatorIri);
+        // Execute method
+        sample.appendGeometry(testAdditionalGeomIri);
+        sample.appendGeometry(testAdditionalGeomIri2);
+        // Clean up results as one string
+        sample.addModelRepresentation3DStatements(sampleSet);
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generate expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedCommonStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedOptionalStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedAreaSolidStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedHalfSpaceSolidStatements(), result);
+    }
+
+    @Test
+    void testAddModelRepresentation3DStatements() {
+        // Set up
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        ModelRepresentation3D sample = new ModelRepresentation3D(testIri1, testSubContextIri, testGeomIri, testShapeRepType, testPlacementIri, testTransformOperatorIri);
+        // Execute method
+        sample.addModelRepresentation3DStatements(sampleSet);
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedCommonStatements(), result);
         JunitTestUtils.doesExpectedListExist(genExpectedOptionalStatements(), result);
-
     }
 
     @Test
-    void addModelRepresentation3DStatementsNoOptionalFields() {
+    void testAddModelRepresentation3DStatementsNoOptionalFields() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         ModelRepresentation3D sample = new ModelRepresentation3D(testIri1, testSubContextIri, testGeomIri, null, null, null);
         // Execute method
-        sample.addModelRepresentation3DStatements(sampleSet, testGeomClass);
+        sample.addModelRepresentation3DStatements(sampleSet);
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
@@ -76,6 +115,20 @@ class ModelRepresentation3DTest {
         expected.add(testPlacementIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
         expected.add(testBaseUri1 + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTargetPlacement, " + testTransformOperatorIri);
         expected.add(testTransformOperatorIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/CartesianTransformationOperator");
+        return expected;
+    }
+
+    private List<String> genExpectedAreaSolidStatements() {
+        List<String> expected = new ArrayList<>();
+        expected.add(testBaseUri1 + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + testAdditionalGeomIri);
+        expected.add(testAdditionalGeomIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, " + testAdditionalGeomClass);
+        return expected;
+    }
+
+    private List<String> genExpectedHalfSpaceSolidStatements() {
+        List<String> expected = new ArrayList<>();
+        expected.add(testBaseUri1 + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + testAdditionalGeomIri2);
+        expected.add(testAdditionalGeomIri2 + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, " + testAdditionalGeomClass2);
         return expected;
     }
 }

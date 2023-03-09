@@ -1,11 +1,14 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom;
 
 import org.apache.jena.rdf.model.Statement;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.OntoBimConstant;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.StatementHandler;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.StringUtils;
 
+import java.util.ArrayDeque;
 import java.util.LinkedHashSet;
+import java.util.Queue;
 import java.util.UUID;
 
 /**
@@ -18,7 +21,8 @@ public class ModelRepresentation3D {
     private final String prefix;
     private final String repType;
     private final String subContext;
-    private final String geomIri;
+    private final Queue<String> geomIris;
+    private final Queue<String> geomTypes;
     private final String sourcePlacementIri;
     private final String targetPlacementIri;
 
@@ -37,7 +41,10 @@ public class ModelRepresentation3D {
                 StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.BACKSLASH) + OntoBimConstant.BACKSLASH;
         this.bimIri = this.prefix + OntoBimConstant.GEOM_MODEL_REP_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.subContext = subContextIri;
-        this.geomIri = geomIri;
+        // Initialise the queue and append the geometries
+        this.geomIris = new ArrayDeque<>();
+        this.geomTypes = new ArrayDeque<>();
+        appendGeometry(geomIri);
         // Optional fields: if the argument is null, the field will still be null
         this.repType = repType;
         this.sourcePlacementIri = sourcePlacementIri;
@@ -47,17 +54,35 @@ public class ModelRepresentation3D {
     public String getBimIri() { return this.bimIri;}
 
     /**
+     * Append geometry IRIs to the private queue object.
+     *
+     * @param geomIRI The element's geometry IRI.
+     */
+    public void appendGeometry(String geomIRI) {
+        // Add the geom IRI directly to the queue
+        this.geomIris.offer(geomIRI);
+        // Retrieve the geometry type from the IRI
+        String geomInst = geomIris.contains(StringUtils.HASHMARK) ?
+                StringUtils.getStringAfterLastCharacterOccurrence(geomIRI, StringUtils.HASHMARK) : StringUtils.getStringAfterLastCharacterOccurrence(geomIRI, StringUtils.SLASH);
+        String geomType = StringUtils.getStringBeforeFirstCharacterOccurrence(geomInst, StringUtils.UNDERSCORE);
+        this.geomTypes.offer(geomType);
+    }
+
+    /**
      * Generate ModelRepresentation3D statements required.
      *
      * @param statementSet The set containing the new ontoBIM triples.
-     * @param geomType     The geometry class of the element's geometry representation.
      */
-    public void addModelRepresentation3DStatements(LinkedHashSet<Statement> statementSet, String geomType) {
+    public void addModelRepresentation3DStatements(LinkedHashSet<Statement> statementSet) {
         StatementHandler.addStatement(statementSet, this.getBimIri(), OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_GEOM_MODEL_REP_CLASS);
         StatementHandler.addStatement(statementSet, this.getBimIri(), OntoBimConstant.BIM_HAS_SUBCONTEXT, this.subContext);
         StatementHandler.addStatement(statementSet, this.subContext, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_GEOM_SUB_CONTEXT_CLASS);
-        StatementHandler.addStatement(statementSet, this.getBimIri(), OntoBimConstant.BIM_HAS_REP_ITEM, this.geomIri);
-        StatementHandler.addStatement(statementSet, this.geomIri, OntoBimConstant.RDF_TYPE, geomType);
+        // While the queue is not empty, generate statements from the values
+        while (!this.geomIris.isEmpty()){
+            String geomIri = this.geomIris.poll();
+            StatementHandler.addStatement(statementSet, this.getBimIri(), OntoBimConstant.BIM_HAS_REP_ITEM, geomIri);
+            StatementHandler.addStatement(statementSet, geomIri, OntoBimConstant.RDF_TYPE, NamespaceMapper.BIM_NAMESPACE + this.geomTypes.poll());
+        }
         if (this.repType != null) {
             StatementHandler.addStatement(statementSet, this.getBimIri(), OntoBimConstant.BIM_HAS_REP_TYPE, this.repType, false);
         }

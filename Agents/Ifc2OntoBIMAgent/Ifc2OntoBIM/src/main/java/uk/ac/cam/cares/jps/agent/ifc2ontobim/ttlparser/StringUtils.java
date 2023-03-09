@@ -10,6 +10,7 @@ public class StringUtils {
     public static final String WHITESPACE = " ";
     public static final String UNDERSCORE = "_";
     public static final String HASHMARK = "#";
+    public static final String SLASH = "/";
 
     /**
      * Retrieve the substring from the starting character to the first appearance of a specified character.

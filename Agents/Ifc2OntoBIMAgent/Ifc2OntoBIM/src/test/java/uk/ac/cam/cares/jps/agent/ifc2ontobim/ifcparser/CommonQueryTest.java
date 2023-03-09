@@ -71,7 +71,7 @@ class CommonQueryTest {
 
     private List<String> genExpectedElementModelQueryStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add("SELECT  \\?instshaperep \\?subcontext \\?geometry \\?geomtype \\?shapereptype \\?geomaxisplacement \\?cartesiantransformer");
+        expected.add("SELECT  \\?instshaperep \\?subcontext \\?geometry \\?shapereptype \\?geomaxisplacement \\?cartesiantransformer");
         expected.add("\\?element  ifc:representation_IfcProduct  \\?productDefinitionShape");
         expected.add("\\?productDefinitionShape\n" +
                 "              rdf:type              ifc:IfcProductDefinitionShape");

@@ -163,7 +163,6 @@ public class CommonQuery {
         builder.addVar(INST_SHAPE_REP_VAR)
                 .addVar(REP_SUBCONTEXT_VAR)
                 .addVar(GEOM_VAR)
-                .addVar(GEOM_TYPE_VAR)
                 .addVar(INST_SHAPE_REP_TYPE_VAR)
                 .addVar(GEOM_AXIS_PLACEMENT_VAR)
                 .addVar(CART_TRANSFORMER_VAR);

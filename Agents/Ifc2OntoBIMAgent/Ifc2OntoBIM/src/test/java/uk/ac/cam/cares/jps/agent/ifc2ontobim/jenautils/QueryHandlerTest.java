@@ -47,7 +47,7 @@ class QueryHandlerTest {
     private static final String testSubContextIri = testBaseUri + "GeometricRepresentationSubContext_5151";
     private static final String testGeomVar = "geometry";
     private static final String testGeomIri = testBaseUri + "FacetedBrep_32516";
-    private static final String testGeomType = JunitTestUtils.ifc2x3Uri + "IfcFacetedBrep";
+    private static final String testGeomType = JunitTestUtils.bimUri + "FacetedBrep";
     private static final String testShapeRepTypeVar = "shapereptype";
     private static final String testShapeRepType = "Faceted Brep";
     private static final String testSourcePlacementVar = "geomaxisplacement";
@@ -160,7 +160,7 @@ class QueryHandlerTest {
         solution.add(testTargetPlacementVar, ResourceFactory.createResource(testTargetPlacementIri));
         // Execute the method and extract the result statements into a string
         ModelRepresentation3D resultModel = QueryHandler.retrieveModelRepresentation3D(solution);
-        resultModel.addModelRepresentation3DStatements(sampleSet, testGeomType);
+        resultModel.addModelRepresentation3DStatements(sampleSet);
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedCommonModelRep3DStatements(), result);
@@ -178,7 +178,7 @@ class QueryHandlerTest {
         solution.add(testGeomVar, ResourceFactory.createResource(testGeomIri));
         // Execute the method and extract the result statements into a string
         ModelRepresentation3D resultModel = QueryHandler.retrieveModelRepresentation3D(solution);
-        resultModel.addModelRepresentation3DStatements(sampleSet, testGeomType);
+        resultModel.addModelRepresentation3DStatements(sampleSet);
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedCommonModelRep3DStatements(), result);
