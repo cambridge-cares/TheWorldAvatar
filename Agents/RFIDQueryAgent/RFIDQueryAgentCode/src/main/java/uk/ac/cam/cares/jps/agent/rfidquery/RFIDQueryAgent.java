@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.TimeZone;
 import org.apache.logging.log4j.LogManager;
@@ -182,9 +183,12 @@ public class RFIDQueryAgent{
         }
         
         JSONObject values = new JSONObject();
-
+        Date date = new java.util.Date(latestTimeStamp.toEpochSecond()*1000);
+        SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss a z");
+        sdf.setTimeZone(TimeZone.getDefault());
+        Object ts = sdf.format(date);
         values.put("exceedThreshold", exceedThreshold);
-        values.put("timestamp", latestTimeStamp.toString());
+        values.put("timestamp", ts.toString());
         values.put("dataIRI", dataIRI);
         return values;
     }
@@ -200,11 +204,11 @@ public class RFIDQueryAgent{
         if (speciesLabel != null && map != null) {
             try {
                 EmailSender sender = new EmailSender();
-                String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp.toString() + ". \n The container has the following label " + objectLabel + " and tag ID " + tagStatusIRI.split("_")[2] + " and it is storing a chemical with the following label: " + speciesLabel + ". The chemical has the following GHS hazard statements: ";
+                String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp + ". \n The container has the following label: " + objectLabel + " and tag ID: " + tagStatusIRI.split("_")[2] + " and it is storing a chemical with the following label: " + speciesLabel + ". The chemical has the following GHS hazard statements: <br>";
                 for (int i = 0; i <= map.get("label").size() - 1; i++) {
                     LOGGER.info("The label from the map is " + map.get("label").get(i));
                     LOGGER.info("The comment from the map is " + map.get("comment").get(i));
-                    emailMessages = emailMessages.concat("{" + map.get("label").get(i) + ":" + map.get("comment").get(i) + "} . ");
+                    emailMessages = emailMessages.concat(map.get("label").get(i) + " : " + map.get("comment").get(i) + "<br>");
                 }
                 LOGGER.info("The email message is " + emailMessages);
                 sender.sendEmail("Alert!", emailMessages);
@@ -214,7 +218,7 @@ public class RFIDQueryAgent{
         } else if (speciesLabel != null && map == null) {
             try {
                 EmailSender sender = new EmailSender();
-                String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp.toString() + ". \n The container has the following label " + objectLabel + " and tag ID " + tagStatusIRI.split("_")[2] + " and it is storing a chemical with the following label: " + speciesLabel + ".";
+                String emailMessages = "The chemical container with the following information has been removed since " + latestTimeStamp + ". \n The container has the following label: " + objectLabel + " and tag ID: " + tagStatusIRI.split("_")[2] + " and it is storing a chemical with the following label: " + speciesLabel + ".";
 
                 LOGGER.info("The email message is " + emailMessages);
                 sender.sendEmail("Alert!", emailMessages);
@@ -225,7 +229,7 @@ public class RFIDQueryAgent{
             try {
                 EmailSender sender = new EmailSender();
                 String emailMessages;
-                emailMessages = "The tagged object has been removed since " + latestTimeStamp.toString() + ". The object has the following label " + objectLabel + " and tag ID " + tagStatusIRI.split("_")[2] + " .\n";
+                emailMessages = "The tagged object has been removed since " + latestTimeStamp.toString() + ". The object has the following label: " + objectLabel + " and tag ID: " + tagStatusIRI.split("_")[2] + " .\n";
                 sender.sendEmail("Alert!", emailMessages);
             } catch (Exception e) {
                 throw new JPSRuntimeException("Unable to send out alert email!");
