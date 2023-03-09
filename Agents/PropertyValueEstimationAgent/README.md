@@ -148,7 +148,7 @@ deriv_iri = deriv_client.createAsyncDerivationForNewInfo(agent.agentIRI, deriv_i
 &nbsp;
 # 3. Agent Integration Test
 
-As this derivation agent modifies the knowledge graph automatically, it is  recommended to run integration tests before deploying it for production. A few integration tests are provided in the `tests` repository. Although the agent is designed to be deployed to a larger Docker stack, the integration tests can both be run as local and as dockerised agent. In both cases Blazegraph and PostgreSQL are spun up as Docker containers using the `testcontainers` library. More specifically, the tests cover to following scenarios:
+As this derivation agent modifies the knowledge graph automatically, it is recommended to run integration tests before deploying it for production. A few integration tests are provided in the `tests` repository. Although the agent is designed to be deployed to a larger Docker stack, the integration tests can both be run as local and as dockerised agent. In both cases Blazegraph and PostgreSQL are spun up as Docker containers using the `testcontainers` library. More specifically, the tests cover to following scenarios:
 1) Non-dockerised agent deployed locally with Blazegraph and PostgreSQL spun up as `testcontainers`
 2) Agent deployed as Docker container with Blazegraph and PostgreSQL spun up as `testcontainers` from inside that container
 
