@@ -33,7 +33,7 @@ public class BuildingStructureFacade {
      * @param owlModel     The IfcOwl model containing the triples to query from.
      * @param statementSet A list containing the new OntoBIM triples.
      */
-    public void execCeilingQuery(Model owlModel, LinkedHashSet<Statement> statementSet) {
+    public void addCeilingStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
         // Set up query builder and its query statements
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_CEILING);
@@ -70,7 +70,7 @@ public class BuildingStructureFacade {
      * @param owlModel     The IfcOwl model containing the triples to query from.
      * @param statementSet A list containing the new OntoBIM triples.
      */
-    public void execDoorQuery(Model owlModel, LinkedHashSet<Statement> statementSet) {
+    public void addDoorStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
         // Set up query builder and its query statements
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCDOOR);

@@ -77,7 +77,7 @@ class BuildingStructureFacadeTest {
     }
 
     @Test
-    void testExecCeilingQueryNonMappedGeometryRepresentation() {
+    void testAddCeilingStatementsNonMappedGeometryRepresentation() {
         // Set up
         addBaseTriples(CEILING_INST, CEILING_CLASS, CEILING_NAME);
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
@@ -92,7 +92,7 @@ class BuildingStructureFacadeTest {
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         BuildingStructureFacade sample = new BuildingStructureFacade();
         // Execute method
-        sample.execCeilingQuery(sampleModel, sampleSet);
+        sample.addCeilingStatements(sampleModel, sampleSet);
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
@@ -103,7 +103,7 @@ class BuildingStructureFacadeTest {
     }
 
     @Test
-    void testExecCeilingQueryMappedGeometryRepresentation() {
+    void testAddCeilingStatementsMappedGeometryRepresentation() {
         // Set up
         addBaseTriples(CEILING_INST, CEILING_CLASS, CEILING_NAME);
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
@@ -118,7 +118,7 @@ class BuildingStructureFacadeTest {
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         BuildingStructureFacade sample = new BuildingStructureFacade();
         // Execute method
-        sample.execCeilingQuery(sampleModel, sampleSet);
+        sample.addCeilingStatements(sampleModel, sampleSet);
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
@@ -127,7 +127,7 @@ class BuildingStructureFacadeTest {
     }
 
     @Test
-    void testExecDoorQueryNonMappedGeometryRepresentation() {
+    void testAddDoorStatementsNonMappedGeometryRepresentation() {
         // Set up
         addBaseTriples(DOOR_INST, DOOR_CLASS, DOOR_NAME);
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
@@ -135,7 +135,7 @@ class BuildingStructureFacadeTest {
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         BuildingStructureFacade sample = new BuildingStructureFacade();
         // Execute method
-        sample.execDoorQuery(sampleModel, sampleSet);
+        sample.addDoorStatements(sampleModel, sampleSet);
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
@@ -146,7 +146,7 @@ class BuildingStructureFacadeTest {
     }
 
     @Test
-    void testExecDoorQueryMappedGeometryRepresentation() {
+    void testAddDoorStatementsMappedGeometryRepresentation() {
         // Set up
         addBaseTriples(DOOR_INST, DOOR_CLASS, DOOR_NAME);
         // Generate the alternate mapped geometry representation triples
@@ -154,7 +154,7 @@ class BuildingStructureFacadeTest {
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         BuildingStructureFacade sample = new BuildingStructureFacade();
         // Execute method
-        sample.execDoorQuery(sampleModel, sampleSet);
+        sample.addDoorStatements(sampleModel, sampleSet);
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
