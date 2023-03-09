@@ -28,12 +28,29 @@ import uk.ac.cam.cares.jps.base.query.RDBAccessAgentCaller;
  * @author csl37
  *
  */
-@Disabled("Requires the AccessAgent to be deployed on a TWA server.")
+//@Disabled("Requires the AccessAgent to be deployed on a TWA server.")
 class DeployedAccessAgentIntegrationTest {
 
 	String host = KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST);
 	String pathFirstPart = "/access-agent";
 	String scheme = "http";
+	
+	@Test
+	void testGetEndpoints() {
+
+		String targetTripleStore = "ontokin";
+		String expectedResult = "http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql";
+		
+		JSONObject result = AccessAgentCaller.getEndpoints(targetTripleStore);
+		
+		assertNotNull(result);
+		
+		String queryEndpoint = result.getString(JPSConstants.QUERY_ENDPOINT);
+		String updateEndpoint = result.getString(JPSConstants.UPDATE_ENDPOINT);
+		
+		assertEquals(expectedResult,queryEndpoint);
+		assertEquals(expectedResult,updateEndpoint);
+	}
 	
 	@Test
 	void testSparqlQuery() {
