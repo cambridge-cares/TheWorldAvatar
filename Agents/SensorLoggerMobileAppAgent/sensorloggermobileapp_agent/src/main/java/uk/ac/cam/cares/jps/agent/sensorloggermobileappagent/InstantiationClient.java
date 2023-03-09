@@ -27,7 +27,7 @@ public class InstantiationClient {
         //Smartphone
         Smartphone smartphone = context.createNewModel(Smartphone.class, "https://www.theworldavatar.com/kg/ontodevice/smartphone_"+UUID.randomUUID());
 
-        //Ontodevic:Sensors
+        //Ontodevice:Sensors
         Accelerometer accelerometer= context.createNewModel(Accelerometer.class, "https://www.theworldavatar.com/kg/ontodevice/accelerometer_"+UUID.randomUUID());
         Camera camera = context.createNewModel(Camera.class, "https://www.theworldavatar.com/kg/ontodevice/camera_"+UUID.randomUUID());
         Magnetometer magnetometer = context.createNewModel(Magnetometer.class, "https://www.theworldavatar.com/kg/ontodevice/magnetometer_"+UUID.randomUUID());
@@ -35,7 +35,18 @@ public class InstantiationClient {
         GPSSensor gpsSensor = context.createNewModel(GPSSensor.class, "https://www.theworldavatar.com/kg/ontodevice/gpsSensor_"+UUID.randomUUID());
         Microphone microphone = context.createNewModel(Microphone.class, "https://www.theworldavatar.com/kg/ontodevice/microphone_"+UUID.randomUUID());
 
-        //Measured classes
+        
+//        //Measured classes RDFType
+//        AccelerometerType accelerometerType= context.createNewModel(AccelerometerType.class, "https://www.theworldavatar.com/kg/ontodevice/accelerometer";
+//        CameraType cameraType = context.createNewModel(CameraType.class, "https://www.theworldavatar.com/kg/ontodevice/camera";
+//        MagnetometerType magnetometerType = context.createNewModel(MagnetometerType.class, "https://www.theworldavatar.com/kg/ontodevice/magnetometer";
+//        GravitySensorType gravitySensorType = context.createNewModel(GravitySensorType.class, "https://www.theworldavatar.com/kg/ontodevice/gravitySensor";
+//        GPSSensorType gpsSensorType = context.createNewModel(GPSSensorType.class, "https://www.theworldavatar.com/kg/ontodevice/gpsSensor";
+//        MicrophoneType microphoneType = context.createNewModel(MicrophoneType.class, "https://www.theworldavatar.com/kg/ontodevice/microphone";
+
+        
+        
+        //Measured classes instances
         Accel_x accel_x = context.createNewModel(Accel_x.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/accel_x_"+UUID.randomUUID());
         Accel_y accel_y = context.createNewModel(Accel_y.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/accel_y_"+UUID.randomUUID());
         Accel_z accel_z = context.createNewModel(Accel_z.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/accel_z_"+UUID.randomUUID());
@@ -365,4 +376,19 @@ public class InstantiationClient {
         @Getter @Setter @FieldAnnotation(value = "http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit",backward = true, innerType = Measure.class)
         protected ArrayList<Measure> unitsInstant;
     }
+
+
+//    /**
+//     * RDFType Instantiation
+//     */
+//    public static class AccelerometerType extends SensorLoggerModel{
+//        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#",innerType = SensorLoggerModel.class,backward = true)
+//        protected ArrayList<SensorLoggerModel> accelerationVariables;
+//    }
+//    public static class MagneticFluxDensityType extends SensorLoggerModel{
+//        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#",innerType = SensorLoggerModel.class,backward = true)
+//        protected ArrayList<SensorLoggerModel> magneticFluxDensityVariables;
+//    }
+
+
 }

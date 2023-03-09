@@ -87,7 +87,9 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
     private static ArrayList<OffsetDateTime> brightness_tsList = new ArrayList<>();
     private static List<Double> brightnessList = new ArrayList<>();
     private static List<List<?>> brightness_lolValues= Arrays.asList(brightnessList);
-    private static int maxSize = accel_lolValues.size()+magnetometer_lolValues.size()+gravity_lolValues.size()+location_lolValues.size()+dBFS_lolValues.size()+lightValue_lolValues.size()+brightness_lolValues.size();
+
+    //Add maxSize is all the measureIRI and 1 deviceIRI
+    private static int maxSize = accel_lolValues.size()+magnetometer_lolValues.size()+gravity_lolValues.size()+location_lolValues.size()+dBFS_lolValues.size()+lightValue_lolValues.size()+brightness_lolValues.size()+1;
     private static String DEVICEID;
     private static final long serialVersionUID = 1L;
 
