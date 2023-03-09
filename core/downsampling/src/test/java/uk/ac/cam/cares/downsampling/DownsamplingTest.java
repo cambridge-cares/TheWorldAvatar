@@ -8,8 +8,6 @@ import static org.junit.Assert.*;
 import org.testng.annotations.Test;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
-
-
 /**
  * This DownsamplingTest class tests all the methods in Downsampling class.
  */
@@ -25,7 +23,7 @@ public class DownsamplingTest {
      * Create sample timseries object through parsing a sample CSV data
      * @return
      */
-    private static <Int> TimeSeries getCSV(int dataSet) {
+    private static TimeSeries getDataset(int dataset) {
 
 
         List<List<?>> lolvalues = new ArrayList<>();
@@ -40,7 +38,7 @@ public class DownsamplingTest {
         List<OffsetDateTime> col1 = null;
         List<Double> col2 = null;
         List<Double> col3 = null;
-        if (dataSet == 1) {
+        if (dataset == 1) {
 
             col1 = Arrays.asList(
                     OffsetDateTime.parse("2023-02-17T11:13:42.775012200+08:00"),
@@ -61,9 +59,7 @@ public class DownsamplingTest {
             );
             col2 = Arrays.asList(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0);
             col3 = Arrays.asList(15.0, 14.0, 13.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0);
-        } else if (dataSet == 2) {
-
-
+        } else if (dataset == 2) {
             col1 = Arrays.asList(
                     OffsetDateTime.parse("2023-02-17T11:13:42.000000000+08:00"),
                     OffsetDateTime.parse("2023-02-17T11:13:43.000000000+08:00"),
@@ -83,8 +79,6 @@ public class DownsamplingTest {
             );
             col2 = Arrays.asList(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0);
             col3 = Arrays.asList(15.0, 14.0, 13.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0);
-
-
         }
         lolvalues.add(col2);
         lolvalues.add(col3);
@@ -94,7 +88,7 @@ public class DownsamplingTest {
 
     @Test
     public void aggregationMethodMaxTest () throws Exception {
-        ts= DownsamplingTest.getCSV(1);
+        ts= DownsamplingTest.getDataset(1);
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,1);
         List List1=resampledTS.getValues(randomDATAIRI1);
         List List2=resampledTS.getValues(randomDATAIRI2);
@@ -106,10 +100,9 @@ public class DownsamplingTest {
         assertEquals((double) 10,List2.get(1));
         assertEquals((double) 5,List2.get(2));
     }
-
     @Test
     public void aggregationMethodMedianTest () throws Exception {
-        ts= DownsamplingTest.getCSV(1);
+        ts= DownsamplingTest.getDataset(1);
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,2);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
@@ -123,10 +116,9 @@ public class DownsamplingTest {
         assertEquals((double) 8,List2.get(1));
         assertEquals((double) 3,List2.get(2));
     }
-
     @Test
     public void aggregationMethodMinTest () throws Exception {
-        ts= DownsamplingTest.getCSV(1);
+        ts= DownsamplingTest.getDataset(1);
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,3);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
@@ -140,10 +132,9 @@ public class DownsamplingTest {
         assertEquals((double) 6,List2.get(1));
         assertEquals((double) 1,List2.get(2));
     }
-
     @Test
     public void aggregationMethodSumTest () throws Exception {
-        ts= DownsamplingTest.getCSV(1);
+        ts= DownsamplingTest.getDataset(1);
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,4);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
@@ -158,10 +149,9 @@ public class DownsamplingTest {
         assertEquals((double) 40,List2.get(1));
         assertEquals((double) 15,List2.get(2));
     }
-
     @Test
     public void aggregationMethodAverageTest () throws Exception {
-        ts= DownsamplingTest.getCSV(1);
+        ts= DownsamplingTest.getDataset(1);
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,5);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
@@ -178,7 +168,7 @@ public class DownsamplingTest {
 
     @Test
     public void aggregationCountTest () throws Exception {
-        ts= DownsamplingTest.getCSV(1);
+        ts= DownsamplingTest.getDataset(1);
         TimeSeries resampledTS= downsampling.aggregation(ts,7L,6);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
@@ -191,7 +181,6 @@ public class DownsamplingTest {
         }catch (Exception e) {
             assertEquals(IndexOutOfBoundsException.class, e.getClass());
         }
-
 
         List List2=resampledTS.getValues(randomDATAIRI2);
         assertEquals((double) 7,List2.get(0));
@@ -207,7 +196,7 @@ public class DownsamplingTest {
 
     @Test
     public void instantaneousTest () throws Exception {
-        ts= DownsamplingTest.getCSV(2);
+        ts= DownsamplingTest.getDataset(2);
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,7);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
@@ -223,7 +212,6 @@ public class DownsamplingTest {
         assertEquals((double) 7,List1a.get(1));
         assertEquals((double) 10,List1a.get(2));
     }
-
 }
 
 

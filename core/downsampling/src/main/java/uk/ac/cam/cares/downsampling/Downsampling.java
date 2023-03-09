@@ -1,14 +1,12 @@
 package uk.ac.cam.cares.downsampling;
 
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
 
 /**
  * This Downsampling class parses Timeseries using "aggregation" method, retrieving the relevant Timeseries data and dataIRIs.
@@ -17,7 +15,6 @@ import java.util.List;
  */
 
 public class Downsampling {
-
     /**
      * @param ts Input raw timeseries
      * @param resolution Input resolution - interval to be aggregated in number of seconds

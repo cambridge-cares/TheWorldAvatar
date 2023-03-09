@@ -12,8 +12,8 @@ This downsampling library can be used to post-process and downsample Timeseries 
 2) Purpose and preservation of information
    - Consider the purpose when downsampling data, downsampling can be used for visualization of trends or statistical analysis to extract insights.
 3) Data outlier handling
-   - Determine the significance of outliers of your dataset. 
-   - Assess whether their removal of outlier is necessary to avoid misrepresentation of results.
+   - Determine the significance of outliers of the dataset. 
+   - Assess whether the removal of outlier is necessary to avoid misrepresentation of results.
 4) Downsampling resolution size
 
 ## User Guide
@@ -37,11 +37,6 @@ Note:
 ## Output
 Downsampling library returns a downsampled timeseries class.
 
-
-
-
-
-
 ## Downsampling Type
 ### 1) Maximum
 Retrieves the maximum value of the points within a time resolution to represent the time interval. 
@@ -57,9 +52,6 @@ Retrieves the average value of the points within a time resolution to represent 
 Retrieves the total number of all points within a time resolution to represent the time interval.
 ### 7) Instantaneous
 Retrieves the value of the point closest to the time resolution to represent the time interval.
-
-
-
 
 ## Notes 
 1) Ensure there is no null data in each time resolution for the time-series to be downsampled. Data cleaning will be required to post-process of nonsensical data when null data is inputted. 
