@@ -31,7 +31,7 @@ def test_gen_tilesets_solarpanel():
 
     try:
         # Execute method
-        gen_tilesets(pd.DataFrame(), "buildingIri")
+        gen_tilesets(pd.DataFrame(), "building_iri")
 
         # Test that only relevant tileset.json are created
         assert os.path.exists(solar_json_filepath)
@@ -64,7 +64,7 @@ def test_gen_tilesets_sewage():
 
     try:
         # Execute method
-        gen_tilesets(pd.DataFrame(), "buildingIri")
+        gen_tilesets(pd.DataFrame(), "building_iri")
 
         # Test that only relevant tileset.json are created
         assert os.path.exists(sewage_json_filepath)
@@ -82,6 +82,30 @@ def test_gen_tilesets_sewage():
         os.remove(sewage_json_filepath)
 
 
+def assert_tileset_metadata(tileset_content: dict):
+    assert "schema" in tileset_content
+    assert "classes" in tileset_content["schema"]
+    assert "TilesetMetaData" in tileset_content["schema"]["classes"]
+    assert tileset_content["schema"]["classes"]["TilesetMetaData"] == {
+        "name": "Tileset metadata",
+        "description": "A metadata class for the tileset",
+        "properties": {
+            "buildingIri": {
+                "description": "Data IRI of the building",
+                "type": "STRING"
+            }
+        }
+    }
+
+    assert "metadata" in tileset_content
+    assert tileset_content["metadata"] == {
+        "class": "TilesetMetaData",
+        "properties": {
+            "buildingIri": "building_iri"
+        }
+    }
+
+
 def test_gen_tilesets_building():
     """
     Tests gen_tilesets() for generating only the bim tileset without asset data
@@ -97,7 +121,7 @@ def test_gen_tilesets_building():
 
     try:
         # Execute method
-        gen_tilesets(pd.DataFrame(), "buildingIri")
+        gen_tilesets(pd.DataFrame(), "building_iri")
 
         # Test that only relevant tileset.json are created
         assert os.path.exists(bim_json_filepath)
@@ -108,8 +132,10 @@ def test_gen_tilesets_building():
         tileset_content = retrieve_tileset_contents(bim_json_filepath)
         # Test that the tileset contents are equivalent to the dictionary
         assert tileset_content["root"]["content"] == {
-            "uri": "./gltf/building.gltf"}
+            "uri": "./gltf/building.gltf"
+        }
         assert "children" not in tileset_content["root"]
+        assert_tileset_metadata(tileset_content)
     finally:
         # Remove files
         os.remove(building)
@@ -128,7 +154,7 @@ def test_gen_tilesets_asset():
 
     try:
         # Execute method
-        gen_tilesets(sampledf, "buildingIri")
+        gen_tilesets(sampledf, "building_iri")
 
         # Test that only relevant tileset.json are created
         assert os.path.exists(bim_json_filepath)
@@ -139,6 +165,7 @@ def test_gen_tilesets_asset():
         assert "children" in tileset_content["root"]
         assert "content" not in tileset_content["root"]
         assert "contents" not in tileset_content["root"]
+        assert_tileset_metadata(tileset_content)
     finally:
         # Remove files
         os.remove(bim_json_filepath)
