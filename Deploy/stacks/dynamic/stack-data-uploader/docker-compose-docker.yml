@@ -5,7 +5,6 @@ services:
       - blazegraph
       - postgis
       - geoserver
-      - superset
 
 configs:
   blazegraph:
@@ -16,7 +15,4 @@ configs:
     external: true
   geoserver:
     name: ${STACK_NAME}_geoserver
-    external: true
-  superset:
-    name: ${STACK_NAME}_superset
     external: true

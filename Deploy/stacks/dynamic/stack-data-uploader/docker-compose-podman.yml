@@ -8,8 +8,6 @@ services:
         target: /postgis
       - source: geoserver
         target: /geoserver
-      - source: superset
-        target: /superset
 
 secrets:
   blazegraph:
@@ -20,7 +18,4 @@ secrets:
     external: true
   geoserver:
     name: ${STACK_NAME}_geoserver
-    external: true
-  superset:
-    name: ${STACK_NAME}_superset
     external: true

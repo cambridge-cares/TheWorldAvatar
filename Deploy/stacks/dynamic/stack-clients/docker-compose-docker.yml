@@ -6,7 +6,6 @@ services:
       - postgis
       - geoserver
       - ontop
-      - superset
 
 configs:
   blazegraph:
@@ -20,7 +19,4 @@ configs:
     external: true
   ontop:
     name: ${STACK_NAME}_ontop
-    external: true
-  superset:
-    name: ${STACK_NAME}_superset
     external: true

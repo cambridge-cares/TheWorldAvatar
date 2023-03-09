@@ -10,8 +10,6 @@ services:
         target: /geoserver
       - source: ontop
         target: /ontop
-      - source: superset
-        target: /superset
 
 secrets:
   blazegraph:
@@ -25,7 +23,4 @@ secrets:
     external: true
   ontop:
     name: ${STACK_NAME}_ontop
-    external: true
-  superset:
-    name: ${STACK_NAME}_superset
     external: true

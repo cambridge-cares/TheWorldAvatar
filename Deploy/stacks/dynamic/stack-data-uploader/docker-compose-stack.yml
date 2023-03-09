@@ -41,6 +41,3 @@ secrets:
   geoserver_password:
     name: ${STACK_NAME}_geoserver_password
     external: true
-  superset_password:
-    name: ${STACK_NAME}_superset_password
-    external: true
