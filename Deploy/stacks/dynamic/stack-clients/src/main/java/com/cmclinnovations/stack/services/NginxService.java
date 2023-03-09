@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.cmclinnovations.stack.exceptions.InvalidTemplateException;
 import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
-import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.github.dockerjava.api.model.EndpointSpec;
 import com.github.dockerjava.api.model.PortConfig;
 import com.github.odiszapc.nginxparser.NgxBlock;
@@ -21,7 +21,6 @@ import com.github.odiszapc.nginxparser.NgxComment;
 import com.github.odiszapc.nginxparser.NgxConfig;
 import com.github.odiszapc.nginxparser.NgxDumper;
 import com.github.odiszapc.nginxparser.NgxEntry;
-import com.github.odiszapc.nginxparser.NgxParam;
 import com.github.odiszapc.nginxparser.javacc.NginxConfigParser;
 import com.github.odiszapc.nginxparser.javacc.ParseException;
 
@@ -54,9 +53,7 @@ public final class NginxService extends ContainerService implements ReverseProxy
             NginxConfigParser parser = new NginxConfigParser(inStream);
             NgxConfig defaultConfigTemplate = parser.parse();
             sender.addConfig(defaultConfigTemplate, "default.conf");
-        } catch (ParseException ex) {
-            throw new InvalidTemplateException(TEMPLATE_TYPE, SERVER_CONF_TEMPLATE, ex);
-        } catch (IOException ex) {
+        } catch (ParseException | IOException ex) {
             throw new InvalidTemplateException(TEMPLATE_TYPE, SERVER_CONF_TEMPLATE, ex);
         }
     }
@@ -86,9 +83,7 @@ public final class NginxService extends ContainerService implements ReverseProxy
             for (Entry<String, Connection> endpoint : service.getEndpoints().entrySet()) {
                 addLocation(service, locationConfigOut, upstreams, endpoint);
             }
-        } catch (ParseException ex) {
-            throw new InvalidTemplateException(TEMPLATE_TYPE, LOCATIONS_CONF_TEMPLATE, ex);
-        } catch (IOException ex) {
+        } catch (ParseException | IOException ex) {
             throw new InvalidTemplateException(TEMPLATE_TYPE, LOCATIONS_CONF_TEMPLATE, ex);
         }
 
@@ -104,9 +99,7 @@ public final class NginxService extends ContainerService implements ReverseProxy
                     sender.addConfig(upstreamConfigOut, service.getName() + "_upstream.conf");
 
                     sender.sendConfigs();
-                } catch (ParseException ex) {
-                    throw new InvalidTemplateException(TEMPLATE_TYPE, UPSTREAM_CONF_TEMPLATE, ex);
-                } catch (IOException ex) {
+                } catch (ParseException | IOException ex) {
                     throw new InvalidTemplateException(TEMPLATE_TYPE, UPSTREAM_CONF_TEMPLATE, ex);
                 }
             }
@@ -181,7 +174,7 @@ public final class NginxService extends ContainerService implements ReverseProxy
             files.put(filepath, fileContents.getBytes());
         }
 
-        public void sendConfigs() throws IOException {
+        public void sendConfigs() {
             sendFiles(files, "/etc/nginx/conf.d");
             executeCommand(CMD, "-s", "reload");
             files.clear();

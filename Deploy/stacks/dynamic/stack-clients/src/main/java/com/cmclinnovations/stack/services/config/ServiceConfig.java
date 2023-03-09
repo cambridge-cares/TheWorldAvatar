@@ -36,6 +36,10 @@ public class ServiceConfig {
         return dockerServiceSpec.getName();
     }
 
+    public void setName(String name) {
+        dockerServiceSpec.withName(name);
+    }
+
     public Map<String, Connection> getEndpoints() {
         return endpoints;
     }
