@@ -12,8 +12,8 @@
   "items" : [ 
     { 
     "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/052FWTKLNKL1" ,
-    "description" : "Clenchwarton Road, Poppyfields, St Peter's Road, St Peter's Close, Hare Road, Sculthorpe Avenue, Ferry Road and Fox's Lane in West Lynn" ,
-    "eaAreaName" : "East Anglia" ,
+    "description" : "Saddlebow, South Lynn, and Nelson Street, Queen Street, King Street, Central Road and Estuary Road in Kings Lynn" ,
+    "eaAreaName" : "King's Lynn river frontage and South Lynn" ,
     "floodArea" : 
       { 
       "@id" : "https://environment.data.gov.uk/flood-monitoring/id/floodAreas/052FWTKLNKL1" ,

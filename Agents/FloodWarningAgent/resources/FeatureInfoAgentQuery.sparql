@@ -58,6 +58,7 @@ WHERE {
     ?buildings rdf:type flood:Building ;
                flood:hasTotalMonetaryValue/om:hasValue ?measure . 
     ?measure om:hasNumericalValue ?value ; 
-             om:hasUnit/om:symbol ?unit .
+             om:hasUnit/om:symbol ?unit_init .
+	  BIND (replace(str(?unit_init), 'Â', '') as ?unit)
   } 
 }
