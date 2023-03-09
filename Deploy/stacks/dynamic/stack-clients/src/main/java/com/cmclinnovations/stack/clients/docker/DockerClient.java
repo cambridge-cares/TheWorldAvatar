@@ -631,4 +631,15 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
         }
     }
 
+    public String getHostName(String containerName) {
+        String containerId = getContainerId(containerName);
+        if (null != containerId) {
+            try (InspectContainerCmd inspectContainerCmd = internalClient.inspectContainerCmd(containerId)) {
+                return inspectContainerCmd.exec().getConfig().getHostName();
+            }
+        } else {
+            throw new RuntimeException("ContainerId must not be null");
+        }
+    }
+
 }
