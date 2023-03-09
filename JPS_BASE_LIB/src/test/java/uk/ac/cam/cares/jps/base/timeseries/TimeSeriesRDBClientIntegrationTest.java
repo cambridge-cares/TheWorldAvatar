@@ -770,5 +770,28 @@ public class TimeSeriesRDBClientIntegrationTest {
 			Assert.assertEquals(data1_1.get(0), oldestValue);
 		}
 	}
+
+	/**
+	 * checks if the schema is created if specified, and tables are created in the right schema
+	 * @throws SQLException
+	 */
+	@Test
+	public void testWithSchema() throws SQLException {
+		try (Connection conn = rdbStoreClient.getConnection()) {
+			String schema = "timeseries";
+			client.setSchema(schema);
+			// Initialise time series in knowledge base and database
+			String tableName = client.initTimeSeriesTable(dataIRI_1, dataClass_1, tsIRI_1, conn);
+
+			// check table is created
+			DSLContext context = DSL.using(conn, SQLDialect.POSTGRES);
+			Table<Record> tables = DSL.table(DSL.name("information_schema", "tables"));
+			org.jooq.Field<String> tableNameColumn = DSL.field("table_name", String.class);
+			org.jooq.Field<String> schemaColumn = DSL.field("table_schema", String.class);
+	
+			Condition condition = tableNameColumn.eq(tableName).and(schemaColumn.eq(schema));
+			Assert.assertTrue(context.fetchExists(selectFrom(tables).where(condition)));
+		}
+	}
 }
 

@@ -48,7 +48,7 @@ class AccessAgentIntegrationTest {
 	
 	//User defined variables
 	//set the desired access agent version number here
-	static final String ACCESS_AGENT_VERSION = "1.6.1";
+	static final String ACCESS_AGENT_VERSION = "1.7.0";
 	
 	//////////////////////////////////////////////////
 	
@@ -88,6 +88,7 @@ class AccessAgentIntegrationTest {
 	RemoteStoreClient targetStoreClient;
 	String targetStoreLabel;
 	String targetResourceID;
+	String targetStoreEndpointInternal;
 	
 	//////////////////////////////////////////////////
 	
@@ -111,7 +112,7 @@ class AccessAgentIntegrationTest {
 		}
 		
 		//Upload routing information
-		String targetStoreEndpointInternal = "http://" + TARGET_STORE_CONTAINER_ALIAS 
+		targetStoreEndpointInternal = "http://" + TARGET_STORE_CONTAINER_ALIAS 
 				+ ":" + BLAZEGRAPH_INTERNAL_PORT
 				+ "/blazegraph/namespace/"+TEST_NAMESPACE+"/sparql";
 		
@@ -187,15 +188,12 @@ class AccessAgentIntegrationTest {
 	
 	@Test
 	void testGet() {
+		JSONObject result = AccessAgentCaller.getEndpoints(targetResourceID);
+		String query = result.getString(JPSConstants.QUERY_ENDPOINT);
+		String update = result.getString(JPSConstants.UPDATE_ENDPOINT);
 		
-		//insert test data 
-		targetStoreClient.insert(null, testContent, testContentType);
-		
-		//test Get
-		String result = AccessAgentCaller.get(targetResourceID, null, testContentType);
-		JSONObject jo = new JSONObject(result);
-		String result2 = jo.getString("result");
-		assertEquals(IntegrationTestHelper.removeWhiteSpace(testContent), IntegrationTestHelper.removeWhiteSpace(result2));
+		assertEquals(IntegrationTestHelper.removeWhiteSpace(targetStoreEndpointInternal),IntegrationTestHelper.removeWhiteSpace(query));
+		assertEquals(IntegrationTestHelper.removeWhiteSpace(targetStoreEndpointInternal),IntegrationTestHelper.removeWhiteSpace(update));
 	}
 	
 	@Test

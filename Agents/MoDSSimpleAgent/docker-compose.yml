@@ -1,25 +1,20 @@
 version: "3.8"
 
 services:
-  mods_simple_agent:
-    image: docker.cmclinnovations.com/mods_simple_agent:0.0.1
+  modssimpleagent:
+    image: docker.cmclinnovations.com/modssimpleagent:0.2.0
     build: .
-    container_name: mods_simple_agent
+    container_name: modssimpleagent
     environment:
       DATA_DIR: /app/files
+      CMCL_LICENSE_PATH: "/run/secrets/mods_agent_licence"
     ports:
       - "58085:8080"
       - "8000:8000"
-    #    secrets:
-    #      - private_key
-    volumes:
-      #      - external_maven_repo:/root/.m2
-      - ./MoDSSimpleAgent/files:/app/files
+    secrets:
+      - mods_agent_licence
 
-#secrets:
-#  private_key:
-#    file: $PRIVATE_KEY_PATH
-
-#volumes:
-#  external_maven_repo:
-#    name: "external_maven_repo"
+# Secrets
+secrets:
+  mods_agent_licence:
+    file: ./secrets/docker-agent-licence.lic

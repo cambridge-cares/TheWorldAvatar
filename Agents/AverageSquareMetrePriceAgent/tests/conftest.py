@@ -15,14 +15,13 @@ import pytest
 import time
 import uuid
 import os
-import re
 
 # Import mocked modules for all stack interactions (see `tests\__init__.py` for details)
 from tests.mockutils.stack_configs_mock import QUERY_ENDPOINT, UPDATE_ENDPOINT, THRESHOLD, \
                                                DATABASE, DB_USER, DB_PASSWORD
-
 from pyderivationagent.data_model.iris import ONTODERIVATION_BELONGSTO, ONTODERIVATION_ISDERIVEDFROM, \
-                                              TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION
+                                              TIME_HASTIME, TIME_INTIMEPOSITION, TIME_NUMERICPOSITION, \
+                                              ONTODERIVATION_HASSTATUS
 from avgsqmpriceagent.datamodel.iris import *
 from pyderivationagent.conf import config_derivation_agent
 from avgsqmpriceagent.kg_operations.kgclient import KGClient
@@ -54,7 +53,7 @@ AGENT_ENV = os.path.join(THIS_DIR,'agent_test.env')
 # Correct endpoints for DB_URL, QUERY_ENDPOINT, UPDATE_ENDPOINT will be retrieved
 # automatically from the respective Docker services
 
-# Provide names of respetive Docker services
+# Provide names of respective Docker services
 # NOTE These names need to match the ones given in the testing docker-compose.yml file
 KG_SERVICE = "blazegraph_agent_test"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
@@ -81,12 +80,14 @@ DERIVATION_INPUTS_1 = [POSTCODE_INSTANCE_IRI_1, PRICE_INDEX_INSTANCE_IRI,
                        TRANSACTION_INSTANCE_1_IRI, TRANSACTION_INSTANCE_2_IRI, 
                        TRANSACTION_INSTANCE_3_IRI]
 POSTCODE_1 = 'ABC 123'
-# test against previously calculated average value from Excel (rounded)
-AVGPRICE_1 = 3351
 DERIVATION_INPUTS_2 = [POSTCODE_INSTANCE_IRI_2, PRICE_INDEX_INSTANCE_IRI,
                        TRANSACTION_INSTANCE_4_IRI, TRANSACTION_INSTANCE_5_IRI]
 POSTCODE_2 = 'DEF 456'
+# Test average against previously calculated average value from Excel (rounded)
+AVGPRICE_1 = 3351
 AVGPRICE_2 = 3600
+# Test for postcodes without transaction records 
+DERIVATION_INPUTS_3 = [POSTCODE_INSTANCE_IRI_2, PRICE_INDEX_INSTANCE_IRI]
 
 
 # ----------------------------------------------------------------------------------
@@ -109,6 +110,10 @@ DERIV_STATUS_TRIPLES = 2        # derivation status triples
 AGENT_SERVICE_TRIPLES = 5       # agent service triples
 DERIV_INPUT_TRIPLES = 2 + 3*3   # triples for derivation input message
 DERIV_OUTPUT_TRIPLES = 5        # triples for derivation output message
+DERIV_OUTPUT_COMPUATBLE = 6     # triples instantiated for successful avg price calculation
+                                # i.e. kgclient.instantiate_average_price
+DERIV_OUTPUT_NONCOMPUATBLE = 5  # triples instantiated for unsuccessful avg price calculation
+                                # i.e. kgclient.instantiate_unavailable_average_price
 
 
 # List of all transactions (to mock ONS API call)
@@ -168,7 +173,7 @@ def get_postgres_service_url(session_scoped_container_getter):
 
 @pytest.fixture(scope="session")
 def initialise_clients(get_blazegraph_service_url, get_postgres_service_url):
-    # Retrieve "user-facing" endpoints for all clients/services relevant for testing
+    # Retrieve "externally-facing" endpoints for all clients/services relevant for testing
     # (i.e. invoked during testing from outside the Docker stack)
     # --> those shall be `localhost:...` even when agent is running as Docker container
     
@@ -210,10 +215,8 @@ def create_example_agent():
             agent_iri=agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=agent_config.DERIVATION_PERIODIC_TIMESCALE,
             derivation_instance_base_url=agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=host_docker_internal_to_localhost(QUERY_ENDPOINT),
-            kg_update_url=host_docker_internal_to_localhost(UPDATE_ENDPOINT),
-            # NOTE For agent endpoint, we keep this as it is for now (i.e. start with http://host.docker.internal)
-            # As the agent endpoint is not accessed from outside the docker network
+            kg_url=QUERY_ENDPOINT,
+            kg_update_url=UPDATE_ENDPOINT,
             agent_endpoint=agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             max_thread_monitor_async_derivations=agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
             threshold=THRESHOLD,
@@ -227,10 +230,6 @@ def create_example_agent():
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
-
-def host_docker_internal_to_localhost(endpoint: str):
-    return endpoint.replace("host.docker.internal:", "localhost:")
-
 
 def initialise_triples(sparql_client):
     # Delete all triples before initialising prepared triples
@@ -315,8 +314,8 @@ def get_avgsqmprice_details(sparql_client, avgsqmprice_iri):
                             <{OM_HAS_VALUE}> ?measure ; 
                             <{OBE_REPRESENTATIVE_FOR}> ?postcode_iri ; 
                             <{ONTODERIVATION_BELONGSTO}>/<{ONTODERIVATION_ISDERIVEDFROM}> ?input_iri . 
-        ?measure <{RDF_TYPE}> <{OM_MEASURE}> ;  
-                 <{OM_NUM_VALUE}> ?price . 
+        ?measure <{RDF_TYPE}> <{OM_MEASURE}> . 
+        OPTIONAL {{ ?measure <{OM_NUM_VALUE}> ?price }}
         ?postcode_iri <{RDF_TYPE}> <{OBE_POSTALCODE}> ; 
                       <{RDFS_LABEL}> ?postcode . 
         ?input_iri <{RDF_TYPE}> ?input_type . 
@@ -332,7 +331,8 @@ def get_avgsqmprice_details(sparql_client, avgsqmprice_iri):
         # Postcode
         postcode = list(set([x['postcode'] for x in response]))
         # Price
-        price = list(set([int(x['price']) for x in response]))
+        price = list(set([x.get('price') for x in response]))
+        price = [int(x) if x is not None else None for x in price]
 
         return inputs, postcode, price
 

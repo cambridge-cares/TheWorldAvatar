@@ -44,19 +44,25 @@ public class ServiceConfig {
         return getContainerSpec().getImage();
     }
 
-    private Map<String, String> getEnvironment() {
+    private List<String> getContainerSpecEnv() {
         List<String> env = getContainerSpec().getEnv();
         if (null == env) {
             env = new ArrayList<>();
             getContainerSpec().withEnv(env);
-        } else {
-            if (environment.isEmpty()) {
-                environment.putAll(env.stream()
-                        .collect(Collectors.toMap(
-                                entry -> entry.split("=", 2)[0],
-                                entry -> entry.split("=", 2)[1])));
-            }
         }
+        return env;
+    }
+
+    public Map<String, String> getEnvironment() {
+        List<String> env = getContainerSpecEnv();
+
+        if (env.size() != environment.size()) {
+            environment.putAll(env.stream()
+                    .collect(Collectors.toMap(
+                            entry -> entry.split("=", 2)[0],
+                            entry -> entry.split("=", 2)[1])));
+        }
+
         return environment;
     }
 
@@ -68,10 +74,16 @@ public class ServiceConfig {
         return getEnvironment().get(key);
     }
 
-    @SuppressWarnings("java:S2259")
     public void setEnvironmentVariable(String key, String value) {
+        removeEnvironmentVariable(key);
+
         getEnvironment().put(key, value);
-        getContainerSpec().getEnv().add(key + "=" + value);
+        getContainerSpecEnv().add(key + "=" + value);
+    }
+
+    public void removeEnvironmentVariable(String key) {
+        getEnvironment().remove(key);
+        getContainerSpecEnv().removeIf(entry -> entry.startsWith(key + "="));
     }
 
     public ServiceSpec getDockerServiceSpec() {

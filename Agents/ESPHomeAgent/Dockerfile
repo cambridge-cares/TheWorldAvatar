@@ -42,7 +42,7 @@ ENV CLIENT_PROPERTIES="/root/client.properties"
 ENV ESPHOME_CLIENT_PROPERTIES="/root/esphome-client.properties"
 
 
-COPY --from=builder /root/esphome-agent-code/output/esphome-agent##1.2.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/esphome-agent-code/output/esphome-agent##1.3.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

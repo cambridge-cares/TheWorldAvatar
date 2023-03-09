@@ -34,6 +34,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 /**
  * requires docker to be installed to run, hence the @Ignore until everyone is
  * expected to have docker installed
+ * 
  * @author Kok Foong Lee
  *
  */
@@ -67,10 +68,12 @@ public class RemoteStoreIntegrationTest {
 	}
 
 	@Test
-	public void testUploadFile() throws URISyntaxException {
+	void testUploadFile() throws URISyntaxException {
 		// getResource returns URL with encodings. convert it to URI to remove them
 		// upload the file testOWL.owl to the test container
-		String filepath = new URI(getClass().getClassLoader().getResource(Paths.get("KBClientTest","testOWL.owl").toString()).toString()).getPath();
+		String filepath = new URI(
+				getClass().getClassLoader().getResource(Paths.get("KBClientTest", "testOWL.owl").toString()).toString())
+				.getPath();
 		File testOwl = new File(filepath);
 		storeClient.uploadFile(testOwl);
 		
@@ -83,7 +86,7 @@ public class RemoteStoreIntegrationTest {
 	}
 
 	@Test
-	public void testExecuteUpdateByPost() throws ParseException, IOException {
+	void testExecuteUpdateByPost() throws ParseException, IOException {
 		String s = "<http://" + UUID.randomUUID().toString() + ">";
 		String p = "<http://" + UUID.randomUUID().toString() + ">";
 		String o = "<http://" + UUID.randomUUID().toString() + ">";

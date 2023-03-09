@@ -1,0 +1,41 @@
+# This file shows a sample http request to acces the forecastingAgent. The keys are descriped in the README.md file.
+
+# Docker deployment:
+POST http://127.0.0.1:5001/forecast
+# Stack deployment (using stack-manager-input-config.json via stack-manager):
+#POST http://localhost:3840/forecastingAgent/forecast
+Content-Type: application/json
+
+{ "query": {
+      // Optional connection properties 
+      // Provided values overwrite default values from environment variables (i.e. from docker-compose.yml)
+      // To use default values, remove keys from HTTP request
+      //"namespace": "",
+      //"database": "",
+      //"query_endpoint": "",
+      //"update_endpoint": "",
+      //"db_url": "",
+      //"db_user": "",
+      //"db_password": ""
+
+      // DataIRI to forecast
+      "iri": "<https://www.theworldavatar.com/kg/pms_dh/Measure_e743e1fc-dfd9-4f6f-abe3-4ce9547f39a7>",
+      
+      // Model configuration to use, see: forecasting\datamodel\data_mapping.py
+      "use_model_configuration" : "DEFAULT",
+      //"use_model_configuration" : "PIRMASENS",
+      //"use_model_configuration" : "TFT_HEAT_SUPPLY",
+      
+      // Forecast start date
+      //"forecast_start_date": "2019-01-31T00:00:00Z",
+      //"forecast_start_date": "2019-08-12T09:00:00Z",
+      //"forecast_start_date": "2020-10-17T01:00:00Z",
+
+      // Data history to use (i.e. number of timesteps prior to forecast_start_date)
+      //"data_length": 42085,
+      //"data_length": 168,
+
+      // Forecast length
+      "horizon": 12
+    }
+}

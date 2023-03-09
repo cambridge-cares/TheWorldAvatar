@@ -22,7 +22,8 @@ The purpose of the Blazegraph is to store routing information used by the triple
 Routing information is stored in the default "kb" namespace and the triple store access agent is configured to use this is as the STOREROUTER_ENDPOINT.
 
 The uploading of routing information for the RDB Access Agent is described in the [Uploading Routing Information](#Uploading-routing-information) section below.
-### Spining up the Access Agent dev stack
+
+### Spinning up the Access Agent dev stack
 
 From the command line, in the access-agent-dev-stack directory, run:
 ```
@@ -30,14 +31,20 @@ docker-compose up -d --no-build
 ```
 Images for the two containers are pulled from the Cambridge CARES container registry on GitHub and CMCL Docker image registry. (Note: Credentials are required to pull from the CMCL registry. See https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry)
 
+### Spinning up the Access Agent as part of a stack
+
+Alternatively, if you want to spin up this agent as part of a stack, do not use `docker-compose`. Instead, do the following:
+- In the `access-agent.json` file within the `access-agent-dev-stack` folder, adjust the image version if applicable, and replace the placeholder for the stack name in the endpoint environment variables with the name of your stack.
+- Copy the `access-agent.json` file into the `inputs/config` folder of the stack manager.
+- Start the stack manager as usual. This should start an access agent container as part of your stack.
+
 ### Uploading Routing Information
 
 <b> Triple Store Access Agent: </b> 
 
-In order to upload routing information to the dev stack, populate the routing.json file in access-agent-dev-stack directory with the routing information you want to upload.
-You need to provide a "label", "queryEndpoint" and "updateEndpoint" for each store/namespace. The routing.json file contains two examples. Note: the host "localhost" in the endpoint url needs to be replaced by "host.docker.internal" (on Windows/Mac) or the docker network gateway IP (Windows/Mac/Linux).
-Then, run the bash script uploadRouting.sh.
-
+In order to upload routing information into a store router blazegraph namespace, populate the `routing.json` file in access-agent-dev-stack directory with the routing information you want to upload.
+You need to provide a `label`, `queryEndpoint` and `updateEndpoint` for each store/namespace. The `routing.json` file contains local, external, and stack examples. Note: the host `localhost` in the endpoint URL needs to be replaced by `host.docker.internal` (on Windows/Mac) or the docker network gateway IP (Windows/Mac/Linux).
+Then, run the bash script `uploadRouting.sh`. NB If running the access agent within a stack, the port number in the access agent URL in the script will need to be adjusted.
 ```
 bash ./uploadRouting.sh
 ```
@@ -66,7 +73,7 @@ database 'test'. Replace all occurrences of test with the name of the database a
 
 ### Calling the Agent in your dev environment 
 
-The triple store access agent and RDB access agent are accessible at localhost:48888, or host.docker.internal:48888 from inside a Docker container (on Windows/Mac).
+The triple store access agent and RDB access agent are accessible at `localhost:48888`, or `host.docker.internal:48888` from inside a Docker container (on Windows/Mac), or, if running the agent within a stack, `localhost:3838` (by default) from outside the stack, `<STACK NAME>-access-agent:8080` from within.
 
 The <b>Triple Store Access Agent</b> is usually called using the queryStore or updateStore found in the AccessAgentCaller and JPSAgent classes of JPS_BASE_LIB. Both methods take two arguments: the targetResourceID and the SPARQL query/update.
 
@@ -78,6 +85,10 @@ There are three ways to call your local TripleStoreAccess/RDBAccess agent:
 3. Alternatively, a full URL containing the correct host:port can be supplied as the targetResourceID e.g.
     ```
     http://localhost:48888/label or http://host.docker.internal:48888/label
+    ```
+    or, if running within a stack,
+    ```
+    http://<STACK NAME>-access-agent:8080/label,
     ```
     where the label corresponds to the label uploaded to the router.
 

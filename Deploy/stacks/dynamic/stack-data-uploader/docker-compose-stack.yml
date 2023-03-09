@@ -8,27 +8,22 @@ services:
         condition: none
     environment:
       - "STACK_NAME=${STACK_NAME}"
+      - "EXECUTABLE=${EXECUTABLE}"
     security_opt:
       - label=disable
     volumes:
-      - scratch:/stack_scratch
-      - /var/run/docker.sock:/var/run/docker.sock
+      - scratch:/stack_scratch:z
+      - $API_SOCK:/var/run/docker.sock
     networks:
       - stack
+    labels:
+      - "com.docker.compose.project=${STACK_NAME}"
 
 volumes:
   scratch:
     name: ${STACK_NAME}_scratch
     labels:
       - com.docker.stack.namespace:${STACK_NAME}
-
-configs:
-  postgis:
-    name: ${STACK_NAME}_postgis
-    external: true
-  geoserver:
-    name: ${STACK_NAME}_geoserver
-    external: true
 
 networks:
   stack:
@@ -37,6 +32,9 @@ networks:
     external: true
 
 secrets:
+  blazegraph_password:
+    name: ${STACK_NAME}_blazegraph_password
+    external: true
   postgis_password:
     name: ${STACK_NAME}_postgis_password
     external: true
