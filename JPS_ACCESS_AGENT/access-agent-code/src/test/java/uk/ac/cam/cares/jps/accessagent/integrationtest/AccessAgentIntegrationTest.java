@@ -27,9 +27,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.query.StoreRouter;
 
 /**
- * Integration tests for the Access Agent.
- * This uses the AccessAgentCaller methods in JPS_BASE_LIB 
- * to call the AccessAgent inside a Docker container.
+ * Integration tests for the (triple store) Access Agent using Test containers.
  *  
  * To test a new version of the AccessAgent:
  * 1. Build the new AccessAgent Docker image 

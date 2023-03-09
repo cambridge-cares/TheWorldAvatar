@@ -123,4 +123,4 @@ by updating the ACCESS_AGENT_VERSION variable in the AccessAgentIntegrationTest 
 before running the tests.
 
 The DeployedAccessAgentIntegrationTest can be run once the Access Agent has been deployed on The World Avatar server. 
-This will test the agent in a production environment and connection to the ontokgrouter and ontordbrouter endpoints.
+This will test the agent in a production environment including connections to the ontokgrouter and ontordbrouter endpoints.

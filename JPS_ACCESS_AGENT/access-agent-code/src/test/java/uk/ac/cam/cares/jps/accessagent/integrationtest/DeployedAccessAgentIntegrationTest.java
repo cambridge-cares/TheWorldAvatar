@@ -21,14 +21,14 @@ import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.RDBAccessAgentCaller;
 
 /**
- * The purpose of this class is to test the triple store and RDB access agent, 
- * deployed on The World Avatar server.
- * The tests are read-only, so SPARQL update is not tested.
+ * This tests the Access Agent DEPLOYED on TWA server. 
+ * 
+ * These tests are read-only, so SPARQL update is not tested.
  *   
  * @author csl37
  *
  */
-//@Disabled("Requires the AccessAgent to be deployed on a TWA server.")
+@Disabled("Requires the AccessAgent to be deployed on a TWA server.")
 class DeployedAccessAgentIntegrationTest {
 
 	String host = KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST);
