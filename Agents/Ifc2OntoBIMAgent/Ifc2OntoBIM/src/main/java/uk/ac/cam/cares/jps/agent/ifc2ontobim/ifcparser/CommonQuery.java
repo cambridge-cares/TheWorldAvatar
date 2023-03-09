@@ -118,7 +118,11 @@ public class CommonQuery {
     public static final String IFC_CART_TRANSFORMATION_OPERATOR = NamespaceMapper.IFC_PREFIX + ":IfcCartesianTransformationOperator3D";
     // IfcOwl Element Classes
     public static final String IFC_CEILING = NamespaceMapper.IFC_PREFIX + ":IfcCovering";
-    public static final String IFCDOOR = NamespaceMapper.IFC_PREFIX + ":IfcDoor";
+    public static final String IFC_COLUMN = NamespaceMapper.IFC_PREFIX + ":IfcColumn";
+    public static final String IFC_DOOR = NamespaceMapper.IFC_PREFIX + ":IfcDoor";
+    public static final String IFC_FLOOR = NamespaceMapper.IFC_PREFIX + ":IfcSlab";
+    public static final String IFC_WALL = NamespaceMapper.IFC_PREFIX + ":IfcWall";
+    public static final String IFC_WINDOW = NamespaceMapper.IFC_PREFIX + ":IfcWindow";
     // IfcOwl element supplementary Classes
     public static final String IFC_REL_TYPE_DEFINITION = NamespaceMapper.IFC_PREFIX + ":IfcRelDefinesByType";
     public static final String IFC_COVERING_TYPE = NamespaceMapper.IFC_PREFIX + ":IfcCoveringType";

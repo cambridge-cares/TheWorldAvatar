@@ -5,8 +5,7 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Ceiling;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Door;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 
@@ -23,12 +22,12 @@ public class BuildingStructureFacade {
     /**
      * Standard Constructor retrieving the spatial zone singleton.
      */
-    public BuildingStructureFacade(){
+    public BuildingStructureFacade() {
         this.zoneMappings = SpatialZoneStorage.Singleton();
     }
 
     /**
-     * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for IfcCovering.
+     * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for ceilings.
      *
      * @param owlModel     The IfcOwl model containing the triples to query from.
      * @param statementSet A list containing the new OntoBIM triples.
@@ -60,7 +59,7 @@ public class BuildingStructureFacade {
             String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
             ModelRepresentation3D geomModel;
             // If the element object has already been created previously
-            if (modelRepMappings.containsIri(iri)){
+            if (modelRepMappings.containsIri(iri)) {
                 // Retrieve the new geometry IRI and append it to the existing Model Representation 3D of this element
                 String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
                 geomModel = modelRepMappings.getModelRep(iri);
@@ -80,15 +79,15 @@ public class BuildingStructureFacade {
     }
 
     /**
-     * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for IfcDoor.
+     * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for columns.
      *
      * @param owlModel     The IfcOwl model containing the triples to query from.
      * @param statementSet A list containing the new OntoBIM triples.
      */
-    public void addDoorStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
+    public void addColumnStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
         // Set up query builder and its query statements
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
-        selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCDOOR);
+        selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_COLUMN);
         CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
         CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
@@ -106,7 +105,53 @@ public class BuildingStructureFacade {
             String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
             ModelRepresentation3D geomModel;
             // If the element object has already been created previously
-            if (modelRepMappings.containsIri(iri)){
+            if (modelRepMappings.containsIri(iri)) {
+                // Retrieve the new geometry IRI and append it to the existing Model Representation 3D of this element
+                String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
+                geomModel = modelRepMappings.getModelRep(iri);
+                geomModel.appendGeometry(geomIri);
+            } else {
+                // If it is not yet created, first generate a new Model Representation 3D object
+                geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
+                // Add the object into the mappings for its IRI
+                modelRepMappings.add(iri, geomModel);
+                // Construct the element's instance and its statements
+                Column column = new Column(iri, name, uid, placement, hostZone, geomModel.getBimIri());
+                column.constructStatements(statementSet);
+            }
+        }
+        // Construct all the Model Representation 3D statements
+        modelRepMappings.constructModelRepStatements(statementSet);
+    }
+
+    /**
+     * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for doors.
+     *
+     * @param owlModel     The IfcOwl model containing the triples to query from.
+     * @param statementSet A list containing the new OntoBIM triples.
+     */
+    public void addDoorStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
+        // Set up query builder and its query statements
+        SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
+        selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_DOOR);
+        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
+        CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
+        CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
+        // Query from the model
+        ResultSet results = QueryHandler.execSelectQuery(selectBuilder.buildString(), owlModel);
+        // Create new model representation mappings
+        ElementModelRepresentationStorage modelRepMappings = new ElementModelRepresentationStorage();
+        // Process query results
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            String iri = soln.get(CommonQuery.ELEMENT_VAR).toString();
+            String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
+            String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
+            String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
+            String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
+            ModelRepresentation3D geomModel;
+            // If the element object has already been created previously
+            if (modelRepMappings.containsIri(iri)) {
                 // Retrieve the new geometry IRI and append it to the existing Model Representation 3D of this element
                 String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
                 geomModel = modelRepMappings.getModelRep(iri);
@@ -119,6 +164,144 @@ public class BuildingStructureFacade {
                 // Construct the element's instance and its statements
                 Door door = new Door(iri, name, uid, placement, hostZone, geomModel.getBimIri());
                 door.constructStatements(statementSet);
+            }
+        }
+        // Construct all the Model Representation 3D statements
+        modelRepMappings.constructModelRepStatements(statementSet);
+    }
+
+    /**
+     * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for floors.
+     *
+     * @param owlModel     The IfcOwl model containing the triples to query from.
+     * @param statementSet A list containing the new OntoBIM triples.
+     */
+    public void addFloorStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
+        // Set up query builder and its query statements
+        SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
+        selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_FLOOR);
+        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
+        CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
+        CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
+        // Query from the model
+        ResultSet results = QueryHandler.execSelectQuery(selectBuilder.buildString(), owlModel);
+        // Create new model representation mappings
+        ElementModelRepresentationStorage modelRepMappings = new ElementModelRepresentationStorage();
+        // Process query results
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            String iri = soln.get(CommonQuery.ELEMENT_VAR).toString();
+            String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
+            String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
+            String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
+            String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
+            ModelRepresentation3D geomModel;
+            // If the element object has already been created previously
+            if (modelRepMappings.containsIri(iri)) {
+                // Retrieve the new geometry IRI and append it to the existing Model Representation 3D of this element
+                String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
+                geomModel = modelRepMappings.getModelRep(iri);
+                geomModel.appendGeometry(geomIri);
+            } else {
+                // If it is not yet created, first generate a new Model Representation 3D object
+                geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
+                // Add the object into the mappings for its IRI
+                modelRepMappings.add(iri, geomModel);
+                // Construct the element's instance and its statements
+                Floor floor = new Floor(iri, name, uid, placement, hostZone, geomModel.getBimIri());
+                floor.constructStatements(statementSet);
+            }
+        }
+        // Construct all the Model Representation 3D statements
+        modelRepMappings.constructModelRepStatements(statementSet);
+    }
+
+    /**
+     * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for walls.
+     *
+     * @param owlModel     The IfcOwl model containing the triples to query from.
+     * @param statementSet A list containing the new OntoBIM triples.
+     */
+    public void addWallStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
+        // Set up query builder and its query statements
+        SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
+        selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_WALL);
+        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
+        CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
+        CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
+        // Query from the model
+        ResultSet results = QueryHandler.execSelectQuery(selectBuilder.buildString(), owlModel);
+        // Create new model representation mappings
+        ElementModelRepresentationStorage modelRepMappings = new ElementModelRepresentationStorage();
+        // Process query results
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            String iri = soln.get(CommonQuery.ELEMENT_VAR).toString();
+            String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
+            String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
+            String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
+            String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
+            ModelRepresentation3D geomModel;
+            // If the element object has already been created previously
+            if (modelRepMappings.containsIri(iri)) {
+                // Retrieve the new geometry IRI and append it to the existing Model Representation 3D of this element
+                String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
+                geomModel = modelRepMappings.getModelRep(iri);
+                geomModel.appendGeometry(geomIri);
+            } else {
+                // If it is not yet created, first generate a new Model Representation 3D object
+                geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
+                // Add the object into the mappings for its IRI
+                modelRepMappings.add(iri, geomModel);
+                // Construct the element's instance and its statements
+                Wall wall = new Wall(iri, name, uid, placement, hostZone, geomModel.getBimIri());
+                wall.constructStatements(statementSet);
+            }
+        }
+        // Construct all the Model Representation 3D statements
+        modelRepMappings.constructModelRepStatements(statementSet);
+    }
+
+    /**
+     * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for windows.
+     *
+     * @param owlModel     The IfcOwl model containing the triples to query from.
+     * @param statementSet A list containing the new OntoBIM triples.
+     */
+    public void addWindowStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
+        // Set up query builder and its query statements
+        SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
+        selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_WINDOW);
+        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
+        CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
+        CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
+        // Query from the model
+        ResultSet results = QueryHandler.execSelectQuery(selectBuilder.buildString(), owlModel);
+        // Create new model representation mappings
+        ElementModelRepresentationStorage modelRepMappings = new ElementModelRepresentationStorage();
+        // Process query results
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            String iri = soln.get(CommonQuery.ELEMENT_VAR).toString();
+            String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
+            String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
+            String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
+            String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
+            ModelRepresentation3D geomModel;
+            // If the element object has already been created previously
+            if (modelRepMappings.containsIri(iri)) {
+                // Retrieve the new geometry IRI and append it to the existing Model Representation 3D of this element
+                String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
+                geomModel = modelRepMappings.getModelRep(iri);
+                geomModel.appendGeometry(geomIri);
+            } else {
+                // If it is not yet created, first generate a new Model Representation 3D object
+                geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
+                // Add the object into the mappings for its IRI
+                modelRepMappings.add(iri, geomModel);
+                // Construct the element's instance and its statements
+                Window window = new Window(iri, name, uid, placement, hostZone, geomModel.getBimIri());
+                window.constructStatements(statementSet);
             }
         }
         // Construct all the Model Representation 3D statements

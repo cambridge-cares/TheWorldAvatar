@@ -20,9 +20,21 @@ class BuildingStructureFacadeTest {
     private static final String CEILING_CLASS = "IfcCovering";
     private static final String CEILING_INST = TEST_BASE_URI + CEILING_CLASS + "_106932";
     private static final String CEILING_NAME = "Stone ceiling";
+    private static final String COLUMN_CLASS = "IfcColumn";
+    private static final String COLUMN_INST = TEST_BASE_URI + COLUMN_CLASS + "_18571";
+    private static final String COLUMN_NAME = "Stone column";
     private static final String DOOR_CLASS = "IfcDoor";
     private static final String DOOR_INST = TEST_BASE_URI + DOOR_CLASS + "_5232";
     private static final String DOOR_NAME = "Iron door";
+    private static final String FLOOR_CLASS = "IfcSlab";
+    private static final String FLOOR_INST = TEST_BASE_URI + FLOOR_CLASS + "_32194";
+    private static final String FLOOR_NAME = "Glass floor";
+    private static final String WALL_CLASS = "IfcWall";
+    private static final String WALL_INST = TEST_BASE_URI + WALL_CLASS + "_6165";
+    private static final String WALL_NAME = "Brickwall";
+    private static final String WINDOW_CLASS = "IfcWindow";
+    private static final String WINDOW_INST = TEST_BASE_URI + WINDOW_CLASS + "_81571";
+    private static final String WINDOW_NAME = "Steel windows";
     // Generic element instances
     private static final String STOREY_INST = TEST_BASE_URI + "IfcBuildingStorey_3294";
     private static final String REL_AGG_INST = TEST_BASE_URI + "IfcRelAggregate_29214";
@@ -129,6 +141,41 @@ class BuildingStructureFacadeTest {
     }
 
     @Test
+    void testAddColumnStatementsNonMappedGeometryRepresentation() {
+        // Set up
+        addBaseTriples(COLUMN_INST, COLUMN_CLASS, COLUMN_NAME);
+        // Generate the triples that is applicable for all generic geometry representation except mapped representation
+        addGeometryTriples(sampleModel.getResource(COLUMN_INST));
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        BuildingStructureFacade sample = new BuildingStructureFacade();
+        // Execute method
+        sample.addColumnStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Column", COLUMN_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(), result);
+        // The following statements are optional and should not exist
+        JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalGeomStatements(), result);
+    }
+
+    @Test
+    void testAddColumnStatementsMappedGeometryRepresentation() {
+        // Set up
+        addBaseTriples(COLUMN_INST, COLUMN_CLASS, COLUMN_NAME);
+        // Generate the alternate mapped geometry representation triples
+        addMappedGeometryTriples(sampleModel.getResource(COLUMN_INST));
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        BuildingStructureFacade sample = new BuildingStructureFacade();
+        // Execute method
+        sample.addColumnStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Column", COLUMN_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedOptionalGeomStatements(), result);
+    }
+    @Test
     void testAddDoorStatementsNonMappedGeometryRepresentation() {
         // Set up
         addBaseTriples(DOOR_INST, DOOR_CLASS, DOOR_NAME);
@@ -161,6 +208,114 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Door", DOOR_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedOptionalGeomStatements(), result);
+    }
+
+    @Test
+    void testAddFloorStatementsNonMappedGeometryRepresentation() {
+        // Set up
+        addBaseTriples(FLOOR_INST, FLOOR_CLASS, FLOOR_NAME);
+        // Generate the triples that is applicable for all generic geometry representation except mapped representation
+        addGeometryTriples(sampleModel.getResource(FLOOR_INST));
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        BuildingStructureFacade sample = new BuildingStructureFacade();
+        // Execute method
+        sample.addFloorStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Floor", FLOOR_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(), result);
+        // The following statements are optional and should not exist
+        JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalGeomStatements(), result);
+    }
+
+    @Test
+    void testAddFloorStatementsMappedGeometryRepresentation() {
+        // Set up
+        addBaseTriples(FLOOR_INST, FLOOR_CLASS, FLOOR_NAME);
+        // Generate the alternate mapped geometry representation triples
+        addMappedGeometryTriples(sampleModel.getResource(FLOOR_INST));
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        BuildingStructureFacade sample = new BuildingStructureFacade();
+        // Execute method
+        sample.addFloorStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Floor", FLOOR_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedOptionalGeomStatements(), result);
+    }
+
+    @Test
+    void testAddWallStatementsNonMappedGeometryRepresentation() {
+        // Set up
+        addBaseTriples(WALL_INST, WALL_CLASS, WALL_NAME);
+        // Generate the triples that is applicable for all generic geometry representation except mapped representation
+        addGeometryTriples(sampleModel.getResource(WALL_INST));
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        BuildingStructureFacade sample = new BuildingStructureFacade();
+        // Execute method
+        sample.addWallStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Wall", WALL_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(), result);
+        // The following statements are optional and should not exist
+        JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalGeomStatements(), result);
+    }
+
+    @Test
+    void testAddWallStatementsMappedGeometryRepresentation() {
+        // Set up
+        addBaseTriples(WALL_INST, WALL_CLASS, WALL_NAME);
+        // Generate the alternate mapped geometry representation triples
+        addMappedGeometryTriples(sampleModel.getResource(WALL_INST));
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        BuildingStructureFacade sample = new BuildingStructureFacade();
+        // Execute method
+        sample.addWallStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Wall", WALL_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedOptionalGeomStatements(), result);
+    }
+
+    @Test
+    void testAddWindowStatementsNonMappedGeometryRepresentation() {
+        // Set up
+        addBaseTriples(WINDOW_INST, WINDOW_CLASS, WINDOW_NAME);
+        // Generate the triples that is applicable for all generic geometry representation except mapped representation
+        addGeometryTriples(sampleModel.getResource(WINDOW_INST));
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        BuildingStructureFacade sample = new BuildingStructureFacade();
+        // Execute method
+        sample.addWindowStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Window", WINDOW_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(), result);
+        // The following statements are optional and should not exist
+        JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalGeomStatements(), result);
+    }
+
+    @Test
+    void testAddWindowStatementsMappedGeometryRepresentation() {
+        // Set up
+        addBaseTriples(WINDOW_INST, WINDOW_CLASS, WINDOW_NAME);
+        // Generate the alternate mapped geometry representation triples
+        addMappedGeometryTriples(sampleModel.getResource(WINDOW_INST));
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        BuildingStructureFacade sample = new BuildingStructureFacade();
+        // Execute method
+        sample.addWindowStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Window", WINDOW_NAME), result);
         JunitTestUtils.doesExpectedListExist(genExpectedOptionalGeomStatements(), result);
     }
 

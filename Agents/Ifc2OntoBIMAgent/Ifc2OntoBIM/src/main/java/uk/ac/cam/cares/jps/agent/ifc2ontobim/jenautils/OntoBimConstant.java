@@ -82,8 +82,16 @@ public class OntoBimConstant {
     public static final String BIM_ASSET_MODEL_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + ASSET_MODEL_REP_CLASS;
     public static final String CEILING_CLASS = "Ceiling";
     public static final String BIM_CEILING_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + CEILING_CLASS;
+    public static final String COLUMN_CLASS = "Column";
+    public static final String BIM_COLUMN_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + COLUMN_CLASS;
     public static final String DOOR_CLASS = "Door";
     public static final String BIM_DOOR_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + DOOR_CLASS;
+    public static final String FLOOR_CLASS = "Floor";
+    public static final String BIM_FLOOR_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + FLOOR_CLASS;
+    public static final String WALL_CLASS = "Wall";
+    public static final String BIM_WALL_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + WALL_CLASS;
+    public static final String WINDOW_CLASS = "Window";
+    public static final String BIM_WINDOW_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + WINDOW_CLASS;
     // OntoBim geometry classes
     public static final String GEOM_MODEL_REP_CLASS = "ModelRepresentation3D";
     public static final String BIM_GEOM_MODEL_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + GEOM_MODEL_REP_CLASS;
