@@ -21,14 +21,12 @@ import com.github.odiszapc.nginxparser.NgxComment;
 import com.github.odiszapc.nginxparser.NgxConfig;
 import com.github.odiszapc.nginxparser.NgxDumper;
 import com.github.odiszapc.nginxparser.NgxEntry;
+import com.github.odiszapc.nginxparser.NgxParam;
 import com.github.odiszapc.nginxparser.javacc.NginxConfigParser;
 import com.github.odiszapc.nginxparser.javacc.ParseException;
 
 public final class NginxService extends ContainerService implements ReverseProxyService {
 
-    /**
-     *
-     */
     private static final String EXTERNAL_PORT = "EXTERNAL_PORT";
 
     public static final String TYPE = "nginx";
