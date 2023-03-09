@@ -1,6 +1,6 @@
 # Description #
 
-This agent
+This project has been abandoned. As it stands, it remains incomplete and only partially functional.
 
 ## Installation ##
 
