@@ -1,17 +1,18 @@
 package uk.ac.cam.cares.downsampling;
 
-import java.io.*;
 import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
 import static org.junit.Assert.*;
 import org.testng.annotations.Test;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
-import com.opencsv.CSVReader;
 
+
+/**
+ * This DownsamplingTest class tests all the methods in Downsampling class.
+ */
 public class DownsamplingTest {
     Downsampling downsampling =new Downsampling();
 
@@ -24,124 +25,160 @@ public class DownsamplingTest {
      * Create sample timseries object through parsing a sample CSV data
      * @return
      */
-    private static TimeSeries getCSV(String csvStringName){
-        List<OffsetDateTime> column1 = new ArrayList<>();
-        List<Double> column2 = new ArrayList<>();
-        List<Double> column3 = new ArrayList<>();
-        List<List<?>> lolvalues= new ArrayList<>();
-        String randomDATAIRI1="randomDATAIRI1";
-        String randomDATAIRI2="randomDATAIRI2";
-        List <String> dataIRIlist= new ArrayList<>();
-
-        // Get the path of the CSV file in the resources folder
-        String filePath = DownsamplingTest.class.getClassLoader().getResource(csvStringName).getPath();
+    private static <Int> TimeSeries getCSV(int dataSet) {
 
 
-        // Create a CSVReader object
-        CSVReader reader = null;
-        try {
-            reader = new CSVReader(new FileReader(filePath));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-
-        // Read all the data from the CSV file into a list of String arrays
-        List<String[]> data = null;
-        try {
-            data = reader.readAll();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        List<List<?>> lolvalues = new ArrayList<>();
+        String randomDATAIRI1 = "randomDATAIRI1";
+        String randomDATAIRI2 = "randomDATAIRI2";
+        List<String> dataIRIlist = new ArrayList<>();
 
 
         dataIRIlist.add(randomDATAIRI1);
         dataIRIlist.add(randomDATAIRI2);
 
-        // Create a DateTimeFormatter for the OffsetDateTime column
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+        List<OffsetDateTime> col1 = null;
+        List<Double> col2 = null;
+        List<Double> col3 = null;
+        if (dataSet == 1) {
 
-        // Loop through the data and populate the 3 lists
-        for (String[] row : data) {
-            String dateTimeStr = row[0].replaceAll("\\P{Print}", "");
-            column1.add(OffsetDateTime.parse(dateTimeStr, formatter));
-            column2.add(Double.parseDouble(row[1]));
-            column3.add(Double.parseDouble(row[2]));
-        }
-        lolvalues.add(column2);
-        lolvalues.add(column3);
+            col1 = Arrays.asList(
+                    OffsetDateTime.parse("2023-02-17T11:13:42.775012200+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:43.775012200+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:44.775012200+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:45.775012200+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:46.775012200+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:47.775012200+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:48.775012200+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:49.775012200+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:50.775012200+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:51.775012200+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:52.775012200+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:53.775012200+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:54.775012200+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:55.775012200+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:56.775012200+08:00")
+            );
+            col2 = Arrays.asList(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0);
+            col3 = Arrays.asList(15.0, 14.0, 13.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0);
+        } else if (dataSet == 2) {
 
-        // Close the reader
-        try {
-            reader.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+            col1 = Arrays.asList(
+                    OffsetDateTime.parse("2023-02-17T11:13:42.000000000+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:43.000000000+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:44.000000000+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:45.500000000+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:46.000000000+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:47.000000000+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:48.000000000+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:49.000000000+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:50.000000000+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:51.100000000+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:52.000000000+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:53.000000000+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:54.000000000+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:55.000000000+08:00"),
+                    OffsetDateTime.parse("2023-02-17T11:13:56.000000000+08:00")
+            );
+            col2 = Arrays.asList(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0);
+            col3 = Arrays.asList(15.0, 14.0, 13.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0);
+
+
         }
-        ts= new TimeSeries(column1, dataIRIlist, lolvalues);
+        lolvalues.add(col2);
+        lolvalues.add(col3);
+        ts = new TimeSeries(col1, dataIRIlist, lolvalues);
         return ts;
     }
 
     @Test
-    private void aggregationMethodMaxTest () throws Exception {
-        ts= DownsamplingTest.getCSV("sampleDataSet.csv");
+    public void aggregationMethodMaxTest () throws Exception {
+        ts= DownsamplingTest.getCSV(1);
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,1);
         List List1=resampledTS.getValues(randomDATAIRI1);
         List List2=resampledTS.getValues(randomDATAIRI2);
         assertEquals((double) 5,List1.get(0));
         assertEquals((double) 10,List1.get(1));
         assertEquals((double) 15,List1.get(2));
+
+        assertEquals((double) 15,List2.get(0));
+        assertEquals((double) 10,List2.get(1));
+        assertEquals((double) 5,List2.get(2));
     }
 
     @Test
-    private void aggregationMethodMedianTest () throws Exception {
-        ts= DownsamplingTest.getCSV("sampleDataSet.csv");
+    public void aggregationMethodMedianTest () throws Exception {
+        ts= DownsamplingTest.getCSV(1);
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,2);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
+        List List2=resampledTS.getValues(randomDATAIRI2);
 
         assertEquals((double) 3,List1.get(0));
         assertEquals((double) 8,List1.get(1));
         assertEquals((double) 13,List1.get(2));
+
+        assertEquals((double) 13,List2.get(0));
+        assertEquals((double) 8,List2.get(1));
+        assertEquals((double) 3,List2.get(2));
     }
 
     @Test
-    private void aggregationMethodMinTest () throws Exception {
-        ts= DownsamplingTest.getCSV("sampleDataSet.csv");
+    public void aggregationMethodMinTest () throws Exception {
+        ts= DownsamplingTest.getCSV(1);
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,3);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
+        List List2=resampledTS.getValues(randomDATAIRI2);
 
         assertEquals((double) 1,List1.get(0));
         assertEquals((double) 6,List1.get(1));
         assertEquals((double) 11,List1.get(2));
+
+        assertEquals((double) 11,List2.get(0));
+        assertEquals((double) 6,List2.get(1));
+        assertEquals((double) 1,List2.get(2));
     }
 
     @Test
-    private void aggregationMethodSumTest () throws Exception {
-        ts= DownsamplingTest.getCSV("sampleDataSet.csv");
+    public void aggregationMethodSumTest () throws Exception {
+        ts= DownsamplingTest.getCSV(1);
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,4);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
+        List List2=resampledTS.getValues(randomDATAIRI2);
+
 
         assertEquals((double) 15,List1.get(0));
         assertEquals((double) 40,List1.get(1));
         assertEquals((double) 65,List1.get(2));
+
+        assertEquals((double) 65,List2.get(0));
+        assertEquals((double) 40,List2.get(1));
+        assertEquals((double) 15,List2.get(2));
     }
 
     @Test
-    private void aggregationMethodAverageTest () throws Exception {
-        ts= DownsamplingTest.getCSV("sampleDataSet.csv");
+    public void aggregationMethodAverageTest () throws Exception {
+        ts= DownsamplingTest.getCSV(1);
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,5);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
+        List List2=resampledTS.getValues(randomDATAIRI2);
 
         assertEquals((double) 3,List1.get(0));
         assertEquals((double) 8,List1.get(1));
         assertEquals((double) 13,List1.get(2));
+
+        assertEquals((double) 13,List2.get(0));
+        assertEquals((double) 8,List2.get(1));
+        assertEquals((double) 3,List2.get(2));
     }
 
     @Test
-    private void aggregationCountTest () throws Exception {
-        ts= DownsamplingTest.getCSV("sampleDataSet.csv");
+    public void aggregationCountTest () throws Exception {
+        ts= DownsamplingTest.getCSV(1);
         TimeSeries resampledTS= downsampling.aggregation(ts,7L,6);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
@@ -154,18 +191,37 @@ public class DownsamplingTest {
         }catch (Exception e) {
             assertEquals(IndexOutOfBoundsException.class, e.getClass());
         }
+
+
+        List List2=resampledTS.getValues(randomDATAIRI2);
+        assertEquals((double) 7,List2.get(0));
+        assertEquals((double) 7,List2.get(1));
+
+        //The 15th point out of bound
+        try{
+            assertEquals((double) 7,List2.get(2));
+        }catch (Exception e) {
+            assertEquals(IndexOutOfBoundsException.class, e.getClass());
+        }
     }
 
     @Test
-    private void instantaneousTest () throws Exception {
-        ts= DownsamplingTest.getCSV("sampleDataSet2.csv");
+    public void instantaneousTest () throws Exception {
+        ts= DownsamplingTest.getCSV(2);
         TimeSeries resampledTS= downsampling.aggregation(ts,5L,7);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
 
-        assertEquals((double) 5.0000001,List1.get(0));
-        assertEquals((double) 10.05,List1.get(1));
+        assertEquals((double) 6,List1.get(0));
+        assertEquals((double) 11,List1.get(1));
         assertEquals((double) 15,List1.get(2));
+
+        TimeSeries resampledTS2= downsampling.aggregation(ts,3L,7);
+
+        List List1a=resampledTS2.getValues(randomDATAIRI1);
+        assertEquals((double) 4,List1a.get(0));
+        assertEquals((double) 7,List1a.get(1));
+        assertEquals((double) 10,List1a.get(2));
     }
 
 }

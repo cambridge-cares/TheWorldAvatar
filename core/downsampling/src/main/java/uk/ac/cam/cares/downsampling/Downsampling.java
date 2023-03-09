@@ -9,16 +9,22 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+
+/**
+ * This Downsampling class parses Timeseries using "aggregation" method, retrieving the relevant Timeseries data and dataIRIs.
+ * "aggregationMethod" is then implemented to downsample the timeseries data based on the downsampling resolution and downsampling type.
+ * The resampled data will them be parsed into a Timeseries class and returned.
+ */
+
 public class Downsampling {
 
     /**
      * @param ts Input raw timeseries
      * @param resolution Input resolution - interval to be aggregated in number of seconds
      * @param type Input downsampling type
-     * @return
+     * @return Resampled timeseries
      * @throws Exception
      */
-
     public static TimeSeries aggregation(TimeSeries ts, Long resolution, int type) throws Exception {
         //Parsing timseries into list of list values and time list;
         List TSDataIRIS = ts.getDataIRIs();
@@ -42,10 +48,9 @@ public class Downsampling {
      * @param originalValueLists
      * @param intervalInSeconds
      * @param type
-     * @return
+     * @return A list which contains a list of resampled timestamps and a list of list of values.
      * @throws Exception
      */
-
     public static List aggregationMethod(List<OffsetDateTime> originalTimeList, List<List<Double>> originalValueLists, long intervalInSeconds, int type) throws Exception {
         List<List<Double>> resampledValueLists = new ArrayList<>();
 
@@ -53,13 +58,13 @@ public class Downsampling {
         for (int i = 0; i < originalValueLists.size(); i++) {
             resampledValueLists.add(new ArrayList<>());
         }
+
         List<OffsetDateTime> resampledTimeList = new ArrayList<>();
 
         OffsetDateTime startTime = originalTimeList.get(0).truncatedTo(ChronoUnit.SECONDS);
         OffsetDateTime endTime = originalTimeList.get(originalTimeList.size() - 1).truncatedTo(ChronoUnit.SECONDS);
-        if(startTime==endTime){throw new Exception("The start time and endtime is the same, timeseries is called too often than it can downsample");}
-        
-        int instantaneousCounter=0;
+        if(startTime==endTime){throw new Exception("The start time and end time is the same.");}
+
         for (OffsetDateTime currentTime = startTime; currentTime.isBefore(endTime); currentTime = currentTime.plusSeconds(intervalInSeconds)) {
             OffsetDateTime intervalEndTime = currentTime.plusSeconds(intervalInSeconds);
 
@@ -193,24 +198,30 @@ public class Downsampling {
 
             //Instantaneous
             else if (type == 7) {
-                // Find the closest originalTime to the current resampled time
-                while (instantaneousCounter < originalTimeList.size() - 1 && originalTimeList.get(instantaneousCounter + 1).isBefore(currentTime.plusSeconds(intervalInSeconds / 2))) {
-                    instantaneousCounter++;
-                }
-                OffsetDateTime closestTime = originalTimeList.get(instantaneousCounter);
 
                 while (it1.hasNext() && it2.hasNext()) {
                     List<Double> originalValueList = it1.next();
                     List<Double> resampledValueList = it2.next();
-                    double closestValue = originalValueList.get(instantaneousCounter);
-                    for (int j = instantaneousCounter + 1; j < originalTimeList.size(); j++) {
+                    double closestValue = originalValueList.get(0) ;
+                    for (int j = 0; j < originalTimeList.size()-1; j++) {
                         if (originalTimeList.get(j).isAfter(intervalEndTime)) {
                             break;
                         }
-                        if (Math.abs(originalTimeList.get(j).toEpochSecond() - closestTime.toEpochSecond())
-                                < Math.abs(originalTimeList.get(j).toEpochSecond() - currentTime.toEpochSecond())) {
-                            closestTime = originalTimeList.get(j);
+                        //Reached the last one
+                        if (j==originalTimeList.size()-1) {
                             closestValue = originalValueList.get(j);
+                            break;
+                        }
+
+                        if (Math.abs(originalTimeList.get(j).toEpochSecond() - intervalEndTime.toEpochSecond())
+                                < Math.abs(originalTimeList.get(j+1).toEpochSecond() - intervalEndTime.toEpochSecond())) {
+                            //
+                            closestValue = originalValueList.get(j);
+                        }else if (Math.abs(originalTimeList.get(j).toEpochSecond() - intervalEndTime.toEpochSecond())
+                                == Math.abs(originalTimeList.get(j+1).toEpochSecond() - intervalEndTime.toEpochSecond())) {
+                            closestValue = originalValueList.get(j);
+                        }else {
+                            closestValue = originalValueList.get(j+1);
                         }
                     }
                     resampledValueList.add(closestValue);
@@ -225,5 +236,4 @@ public class Downsampling {
 
         return result;
     }
-
 }
