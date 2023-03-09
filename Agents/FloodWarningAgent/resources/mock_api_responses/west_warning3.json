@@ -13,7 +13,7 @@
     { 
     "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/052FWTKLNWL" ,
     "description" : "Clenchwarton Road, Poppyfields, St Peter's Road, St Peter's Close, Hare Road, Sculthorpe Avenue, Ferry Road and Fox's Lane in West Lynn" ,
-    "eaAreaName" : "East Anglia" ,
+    "eaAreaName" : "Tidal River Great Ouse at West Lynn" ,
     "floodArea" : 
       { 
       "@id" : "https://environment.data.gov.uk/flood-monitoring/id/floodAreas/052FWTKLNWL" ,

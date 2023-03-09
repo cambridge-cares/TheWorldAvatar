@@ -12,8 +12,8 @@
   "items" : [ 
     { 
     "@id" : "http://environment.data.gov.uk/flood-monitoring/id/floods/052FWTKLNKL2" ,
-    "description" : "Clenchwarton Road, Poppyfields, St Peter's Road, St Peter's Close, Hare Road, Sculthorpe Avenue, Ferry Road and Fox's Lane in West Lynn" ,
-    "eaAreaName" : "East Anglia" ,
+    "description" : "Highgate, North End, North Lynn, South Wootton, Gaywood, Fairstead and Hardwick in Kings Lynn" ,
+    "eaAreaName" : "Urban area of King's Lynn" ,
     "floodArea" : 
       { 
       "@id" : "https://environment.data.gov.uk/flood-monitoring/id/floodAreas/052FWTKLNKL2" ,
