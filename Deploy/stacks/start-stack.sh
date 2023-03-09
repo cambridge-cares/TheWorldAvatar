@@ -82,7 +82,7 @@ if [ "$?" -ne 0 ]; then echo "$yml_fnames" ; exit "$?"; fi
 yml_fname_args=$(echo $yml_fnames |sed -e 's/ / -f /g' -e 's/^/-f /')
 
 # Write environment variables to file so that docker-compose can pick them up
-env_filename="env.txt"
+env_filename=".env"
 write_env_file $env_filename $stack $mode $use_test_config
 
 # Assemble arguments for docker-compose
@@ -90,7 +90,7 @@ project_name=$(get_project_name $stack $mode $use_test_config)
 compose_opts="$yml_fname_args --env-file $env_filename -p $project_name"
 
 # Examine secret files defined in the config files and set missing values where necessary
-set_missing_secrets $yml_fnames
+set_missing_secrets "$yml_fnames" "$mode"
 
 # For images that exist locally, but need to be updated from the registry, need to run docker pull explicitly
 if [ ! -z "$services_to_force_pull" ]; then

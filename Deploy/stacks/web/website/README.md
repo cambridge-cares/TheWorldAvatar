@@ -15,10 +15,22 @@ Please note the caveats below before continuing:
 	
 
 To build the image:
-	docker build --rm --target dev -t docker.cmclinnovations.com/website:1.0.0-SNAPSHOT-dev .
+	docker build --rm --target dev -t docker.cmclinnovations.com/website-dev:1.0.0-SNAPSHOT -f ./docker/Dockerfile
 	
 To run the image and generate a container:
-	docker run -d --restart always --network dev-web --name "website" -it docker.cmclinnovations.com/website:1.0.0-SNAPSHOT-dev
+	docker run -d --restart always --network dev-web --name "website" -it docker.cmclinnovations.com/website-dev:1.0.0-SNAPSHOT
+
+
+### Configuring Maven
+The Java code that this Image is setup to build needs access to [TheWorldAvatar Maven Repository](https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/). To allow access to this repository, developers will need to provide their credentials in single-word text files at the following locations:
+```
+./credentials/
+    repo_username.txt
+    repo_password.txt
+```
+
+The `repo_username.txt` file should contain your GitHub username, and the `repo_password.txt` file your GitHub [Personal Access Token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token), which must have a 'scope' that permits [publishing and installing packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages). These files **__must__** not be committed to the repository.
+
 
 
 ===== Development ======

@@ -1,0 +1,9 @@
+@prefix sio:	<http://semanticscience.org/resource/> .
+@prefix compound:	<http://rdf.ncbi.nlm.nih.gov/pubchem/compound/> .
+@prefix descriptor:	<http://rdf.ncbi.nlm.nih.gov/pubchem/descriptor/> .
+compound:CID1103444	sio:has-attribute	descriptor:CID1103444_Canonical_SMILES ,
+		descriptor:CID1103444_Compound_Identifier ,
+		descriptor:CID1103444_Covalent_Unit_Count ,
+		descriptor:CID1103444_Defined_Atom_Stereo_Count ,
+		descriptor:CID1103444_Defined_Bond_Stereo_Count ,
+		descriptor:CID1103444_Exact_Mass .

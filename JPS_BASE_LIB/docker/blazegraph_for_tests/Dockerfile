@@ -1,4 +1,4 @@
-FROM docker.cmclinnovations.com/openjdk:8-jre-alpine3.9
+FROM openjdk:8-jre-alpine3.9
 
 WORKDIR /blazegraph
 

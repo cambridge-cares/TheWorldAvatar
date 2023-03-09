@@ -36,7 +36,7 @@ import com.cmclinnovations.ontochemexp.model.converter.prime.PrimeConverter;
 import com.cmclinnovations.ontochemexp.model.exception.OntoChemExpException;
 
 import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService.RDFStoreType;
-import uk.ac.cam.cares.jps.blazegraph.KnowledgeRepository;
+import uk.ac.cam.cares.jps.base.upload.KnowledgeRepository;
 
 /**
  * A utility class that supports the following functionalities:<p>

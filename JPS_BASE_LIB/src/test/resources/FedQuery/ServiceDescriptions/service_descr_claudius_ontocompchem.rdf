@@ -1,0 +1,813 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+<rdf:Description rdf:nodeID="service">
+	<rdf:type rdf:resource="http://www.w3.org/ns/sparql-service-description#Service"/>
+	<endpoint xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.theworldavatar.com/blazegraph/namespace/ontocompchem/sparql"/>
+	<supportedLanguage xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/sparql-service-description#SPARQL10Query"/>
+	<supportedLanguage xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/sparql-service-description#SPARQL11Query"/>
+	<supportedLanguage xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/sparql-service-description#SPARQL11Update"/>
+	<feature xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/sparql-service-description#BasicFederatedQuery"/>
+	<feature xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.bigdata.com/rdf#/features/KB/Mode/Triples"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/RDF_XML"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/N-Triples"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/Turtle"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/N3"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://sw.deri.org/2008/07/n-quads/#n-quads"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_XML"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_JSON"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_CSV"/>
+	<inputFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_TSV"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/RDF_XML"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/N-Triples"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/Turtle"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/N3"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.wiwiss.fu-berlin.de/suhl/bizer/TriG/Spec/"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_XML"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_JSON"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_CSV"/>
+	<resultFormat xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:resource="http://www.w3.org/ns/formats/SPARQL_Results_TSV"/>
+	<defaultDataset xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:nodeID="defaultDataset"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultDataset">
+	<rdf:type rdf:resource="http://www.w3.org/ns/sparql-service-description#Dataset"/>
+	<rdf:type rdf:resource="http://rdfs.org/ns/void#Dataset"/>
+	<title xmlns="http://purl.org/dc/terms/">ontocompchem</title>
+	<Namespace xmlns="http://www.bigdata.com/rdf#/features/KB/">ontocompchem</Namespace>
+	<sparqlEndpoint xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/blazegraph/namespace/ontocompchem/sparql/ontocompchem/sparql"/>
+	<uriRegexPattern xmlns="http://rdfs.org/ns/void#">^.*</uriRegexPattern>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2000/01/rdf-schema"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2002/07/owl"/>
+	<vocabulary xmlns="http://rdfs.org/ns/void#" rdf:resource="https://como.cheng.cam.ac.uk/kb/compchem.owl/"/>
+	<defaultGraph xmlns="http://www.w3.org/ns/sparql-service-description#" rdf:nodeID="defaultGraph"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<rdf:type rdf:resource="http://www.w3.org/ns/sparql-service-description#Graph"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">16129351</triples>
+	<entities xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">5767378</entities>
+	<properties xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#int">46</properties>
+	<classes xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#int">38</classes>
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx375"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx375">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">8707761</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx376"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx376">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasValue"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1775148</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx377"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx377">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasUnit"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1765523</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx378"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx378">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasAtom"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">509006</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx379"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx379">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/isElement"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">509006</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx380"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx380">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasAtomCoordinateX"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">420972</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx381"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx381">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasAtomCoordinateY"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">420972</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx382"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx382">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasAtomCoordinateZ"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">420972</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx383"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx383">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasMass"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">420972</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx384"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx384">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/isCalculationOn"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">212018</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx385"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx385">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasMolecule"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">118070</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx386"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx386">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasNumberOfAtoms"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">88034</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx387"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx387">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasOutputFile"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">61837</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx388"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx388">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasParameter"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">60700</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx389"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx389">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasElectronicEnergy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">60128</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx390"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx390">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasBasisSet"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx391"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx391">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasMoleculeProperty"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx392"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx392">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasName"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx393"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx393">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasEnvironment"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx394"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx394">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasGeometryType"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx395"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx395">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasInitialization"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx396"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx396">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasLevelOfTheory"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx397"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx397">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasProgram"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx398"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx398">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasProgramVersion"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx399"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx399">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasRunDate"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx400"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx400">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasRotationalConstants"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30306</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx401"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx401">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasRotationalConstantsCount"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30306</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx402"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx402">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2002/07/owl#imports"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30301</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx403"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx403">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasFormalCharge"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30296</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx404"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx404">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasSpinMultiplicity"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30296</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx405"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx405">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasResult"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30020</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx406"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx406">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/hasVibrationCount"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30020</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx407"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx407">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasFrequencies"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30020</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx408"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx408">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasRotationalSymmetryNumber"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30020</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx409"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx409">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2002/07/owl#versionInfo"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1141</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx410"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx410">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasUniqueSpecies"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1069</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx411"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx411">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasHomoEnergy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">140</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx412"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx412">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasLumoEnergy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">140</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx413"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx413">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasLumoPlusOneEnergy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">140</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx414"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx414">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasLumoPlusTwoEnergy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">140</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx415"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx415">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasHomoMinusOneEnergy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">138</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx416"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx416">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasHomoMinusTwoEnergy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">138</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx417"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx417">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasUniqueSpeciesIRI"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">69</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx418"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx418">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="https://como.cheng.cam.ac.uk/kb/compchem.owl/hasUniqueSpeciesIRI"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">20</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx419"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx419">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#hasUniqueSpecies"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">10</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<propertyPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx420"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx420">
+	<property xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2000/01/rdf-schema#subClassOf"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx421"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx421">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2878396</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx422"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx422">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">2878396</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx423"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx423">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/FloatValue"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1744852</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx424"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx424">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/Atom"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">509006</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx425"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx425">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/Molecule"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">118338</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx426"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx426">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#OutputSource"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">61738</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx427"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx427">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/BasisSet"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx428"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx428">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/GeometryOptimization"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx429"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx429">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/MethodologyFeature"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx430"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx430">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/MoleculeProperty"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx431"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx431">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/SourcePackage"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx432"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx432">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#GeometryType"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx433"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx433">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#InitializationModule"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx434"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx434">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#LevelOfTheory"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30350</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx435"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx435">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#RotationalConstants"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30306</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx436"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx436">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/IntegerValue"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30296</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx437"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx437">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2002/07/owl#Ontology"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30210</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx438"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx438">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#ScfEnergy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30195</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx439"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx439">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#RotationalSymmetry"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30028</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx440"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx440">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/Frequency"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30020</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx441"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx441">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/VibrationalAnalysis"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">30020</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx442"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx442">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">29948</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx443"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx443">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#ElectronicAndZPEEnergy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">28791</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx444"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx444">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#ZeroPointEnergy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1142</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx445"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx445">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://purl.org/gc/6-311pGS"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">985</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx446"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx446">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">914</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx447"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx447">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G16"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">397</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx448"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx448">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#HomoEnergy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">140</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx449"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx449">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#LumoEnergy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">140</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx450"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx450">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#LumoPlusOneEnergy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">140</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx451"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx451">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#LumoPlusTwoEnergy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">140</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx452"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx452">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#HomoMinusOneEnergy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">138</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx453"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx453">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#HomoMinusTwoEnergy"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">138</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx454"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx454">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">130</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx455"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx455">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">8</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx456"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx456">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">5</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx457"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx457">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">3</triples>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="defaultGraph">
+	<classPartition xmlns="http://rdfs.org/ns/void#" rdf:nodeID="node1g2r17utlx458"/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1g2r17utlx458">
+	<class xmlns="http://rdfs.org/ns/void#" rdf:resource="http://data.nasa.gov/qudt/owl/qudt#FrequencyUnit"/>
+	<triples xmlns="http://rdfs.org/ns/void#" rdf:datatype="http://www.w3.org/2001/XMLSchema#long">1</triples>
+</rdf:Description>
+
+</rdf:RDF>

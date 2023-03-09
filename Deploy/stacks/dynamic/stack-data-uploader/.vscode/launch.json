@@ -1,0 +1,56 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": "${input:debug.port}",
+            "preLaunchTask": "compose-deploy",
+            "projectName": "${workspaceFolderBasename}"
+        },
+        {
+            "type": "java",
+            "name": "Build and Debug",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": "${input:debug.port}",
+            "preLaunchTask": "compose-build-deploy",
+            "projectName": "${workspaceFolderBasename}"
+        },
+        {
+            "type": "java",
+            "name": "Reattach and Debug",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": "${input:debug.port.read}",
+            "projectName": "${workspaceFolderBasename}"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "debug.port",
+            "type": "command",
+            // Get the next avaliable debug port and write it to the cache file
+            "command": "shellCommand.execute",
+            "args": {
+                "command": "bash ./stack.sh ports write",
+                "useFirstResult": true
+            }
+        },
+        {
+            "id": "debug.port.read",
+            "type": "command",
+            // Get the last debug port from the cache file
+            "command": "shellCommand.execute",
+            "args": {
+                "command": "bash ./stack.sh ports read",
+                "useFirstResult": true
+            }
+        }
+    ]
+}

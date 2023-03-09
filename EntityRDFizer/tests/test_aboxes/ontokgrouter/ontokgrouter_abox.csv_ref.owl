@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#"
+   xmlns:ns2="http://www.w3.org/2002/07/owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/ontolanduse">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ontolanduse/sparql</ns1:hasUpdateEndpoint>
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ontolanduse/sparql</ns1:hasQueryEndpoint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ontolanduse</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/citieskg-berlin">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">citieskg-berlin</rdfs:label>
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com:83/citieskg/namespace/berlin/sparql</ns1:hasUpdateEndpoint>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com:83/citieskg/namespace/berlin/sparql</ns1:hasQueryEndpoint>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/citieskg-singapore">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com:83/citieskg/namespace/singapore/sparql</ns1:hasUpdateEndpoint>
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com:83/citieskg/namespace/singapore/sparql</ns1:hasQueryEndpoint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">citieskg-singapore</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/airqualitystation">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/airqualitystation/sparql</ns1:hasQueryEndpoint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">airqualitystation</rdfs:label>
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/airqualitystation/sparql</ns1:hasUpdateEndpoint>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/ontosdg">
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ontosdg/sparql</ns1:hasUpdateEndpoint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ontosdg</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ontosdg/sparql</ns1:hasQueryEndpoint>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/ontocropenergy">
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ontocropenergy/sparql</ns1:hasQueryEndpoint>
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ontocropenergy/sparql</ns1:hasUpdateEndpoint>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ontocropenergy</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/ukpowerplant">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ukpowerplant</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlant</ns1:hasQueryEndpoint>
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlant/statements</ns1:hasUpdateEndpoint>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="N8d5046a221984122ab33318267da3ab3">
+    <ns2:imports rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/ukpowergrid">
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGrid</ns1:hasQueryEndpoint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ukpowergrid</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerGrid/statements</ns1:hasUpdateEndpoint>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/ships">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ships</rdfs:label>
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ships/sparql</ns1:hasQueryEndpoint>
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ships/sparql</ns1:hasUpdateEndpoint>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/ontocropmapgml">
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ontocropmapgml/sparql</ns1:hasQueryEndpoint>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ontocropmapgml</rdfs:label>
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ontocropmapgml/sparql</ns1:hasUpdateEndpoint>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/ontocompchem">
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ontocompchem/sparql</ns1:hasUpdateEndpoint>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ontocompchem</rdfs:label>
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ontocompchem/sparql</ns1:hasQueryEndpoint>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/ontospecies">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ontospecies</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ontospecies/sparql</ns1:hasQueryEndpoint>
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ontospecies/sparql</ns1:hasUpdateEndpoint>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/ontokin">
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql</ns1:hasUpdateEndpoint>
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ontokin/sparql</ns1:hasQueryEndpoint>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ontokin</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/matpp">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">matpp</rdfs:label>
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/matpp/sparql</ns1:hasQueryEndpoint>
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/matpp/sparql</ns1:hasUpdateEndpoint>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/weatherstation">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/weatherstation/sparql</ns1:hasUpdateEndpoint>
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/weatherstation/sparql</ns1:hasQueryEndpoint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">weatherstation</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/buildingsthehague">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">buildingsthehague</rdfs:label>
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/buildingsthehague/sparql</ns1:hasUpdateEndpoint>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/buildingsthehague/sparql</ns1:hasQueryEndpoint>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/ontogasgrid">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ontogasgrid</rdfs:label>
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql</ns1:hasQueryEndpoint>
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/ontogasgrid/sparql</ns1:hasUpdateEndpoint>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontokgrouter/jpsmetadata">
+    <ns1:hasUpdateEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/jpsmetadata/sparql</ns1:hasUpdateEndpoint>
+    <ns1:hasQueryEndpoint rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/blazegraph/namespace/jpsmetadata/sparql</ns1:hasQueryEndpoint>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">jpsmetadata</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontokgrouter/OntoKGRouter.owl#TargetResource"/>
+  </rdf:Description>
+</rdf:RDF>

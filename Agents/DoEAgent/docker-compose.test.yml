@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  doe_agent:
+    image: ghcr.io/cambridge-cares/doe_agent:1.0.0-SNAPSHOT
+    container_name: doe_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 7000:5000
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    env_file:
+      - ./doeagent/tests/agent.doe.env.test
+    secrets:
+      - email_auth
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "doeagent:create_app()", "--preload"]
+
+  # Blazegraph
+  blazegraph:
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    container_name: "blazegraph_doe_test"
+    ports:
+      - 27149:8080
+    environment:
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    # Add a secret to set the password for BASIC authentication
+    secrets:
+      - blazegraph_password
+
+# Secrets used to set runtime passwords
+secrets:
+  blazegraph_password:
+    file: doeagent/tests/dummy_services_secrets/blazegraph_passwd.txt
+  email_auth:
+    file: doeagent/tests/dummy_services_secrets/email_auth.json

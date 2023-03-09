@@ -1,0 +1,14 @@
+version: "3.8"
+
+# All Services
+services:
+
+  # Example DTVF implementation
+  example-mapbox-vis:
+    image: dtvf-visualisation:latest
+    container_name: "example-mapbox-vis"
+    ports:
+      - "80:80"
+    volumes:
+      - ./webspace:/var/www/html
+ 

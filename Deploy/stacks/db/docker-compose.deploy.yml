@@ -12,20 +12,22 @@
 
 version: "3.8"
 
-
 services:
 
   # Blazegraph
   blazegraph:
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/blazegraph:1.1.0
     container_name: "blazegraph${CONTAINER_NAME_SUFFIX}"
     environment:
-      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    # Set these environment variables for BASIC authentication
+#      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+#      BLAZEGRAPH_USER: bg_user
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
     # Add a secret to set the password for BASIC authentication
-    secrets:
-      - blazegraph_password
+#    secrets:
+#      - blazegraph_password
     volumes:
       - blazegraph_data:/data
 
@@ -33,10 +35,24 @@ services:
   blazegraph-geo:
     image: docker.cmclinnovations.com/blazegraph_geo:1.0.0-SNAPSHOT
     container_name: "blazegraph_geo${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
     volumes:
       - blazegraph_geo_data:/data
+
+  # File server
+  fileserver:
+    image: docker.cmclinnovations.com/fileserver:1.1.0-SNAPSHOT
+    container_name: "fileserver${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: unless-stopped
+    # Add secret to set BASIC authentication password
+    secrets:
+      - file_server_password
+    volumes:
+      - file_server_data:/app/fs_root
 
   # Postgres
   postgres:
@@ -44,6 +60,7 @@ services:
     container_name: "postgres${CONTAINER_NAME_SUFFIX}"
     pull_policy: if_not_present
     environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
       POSTGRES_HOST_AUTH_METHOD: scram-sha-256
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
       POSTGRES_PASSWORD_FILE: /run/secrets/postgres_password
@@ -58,6 +75,7 @@ services:
     image: docker.cmclinnovations.com/rdf4j:1.0.0-SNAPSHOT
     container_name: "rdf4j${CONTAINER_NAME_SUFFIX}"
     environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
       RDF4J_ADMIN_PASSWORD_FILE: /run/secrets/rdf4j_admin_password
       RDF4J_USER_PASSWORD_FILE: /run/secrets/rdf4j_user_password
     pull_policy: if_not_present
@@ -70,18 +88,18 @@ services:
       - rdf4j_data:/var/rdf4j
       - rdf4j_logs:/usr/local/tomcat/logs
 
-
 # The default network name is set using a docker-compose environment variable.
 # Please don't modify the contents of the 'networks' node below.
 networks:
   default:
     name: ${NETWORK_NAME}
 
-
 # Secrets used to set runtime passwords
 secrets:
   blazegraph_password:
-    file: blazegraph/secrets/blazegraph_password  
+    file: blazegraph/secrets/blazegraph_password
+  file_server_password:
+    file: fileserver/secrets/file_server_password
   postgres_password:
     file: postgres/secrets/postgres_password
   rdf4j_admin_password:
@@ -89,16 +107,11 @@ secrets:
   rdf4j_user_password:
     file: rdf4j/secrets/rdf4j_user_password
 
-
-# Volumes to handle triplestore data and logging
+# Volumes
 volumes:
   blazegraph_data:
-    name: "blazegraph_data"
   blazegraph_geo_data:
-    name: "blazegraph_geo_data"
+  file_server_data:
   postgres_data:
-    name: "postgres_data"
   rdf4j_data:
-    name: "rdf4j_data"
   rdf4j_logs:
-    name: "rdf4j_logs"

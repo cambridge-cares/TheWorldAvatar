@@ -32,12 +32,26 @@ slug: marie
 	<h3>Results</h3>
 	<br/>
 	<b><u>From the World Avatar</u></b>
+    <div id="chart_div">
+    </div>
 	<div id="chatbot-results" class="results-container"><img src="/user/images/spinner.svg" style="vertical-align: middle;" width="22px">  Loading, please wait...
 	</div>
 	<br/>
 </div>
 
 ### Example Questions
+
+<button type="submit" class="accordion">Questions answered by agents</button>
+<div class="accordion-panel">
+	To query computational quantum-related data about molecules.
+	<ul style="margin-left: 20px;">
+		<li><div class="sample-question">What is the heat capacity of methane</div></li>
+		<li><div class="sample-question">Show the power conversion efficiency of TiO2</div></li>
+		<li><div class="sample-question">c3h8's enthalpy at 181.09 fahrenheit</div></li>
+		<li><div class="sample-question">Molecular oxygen's entropy at 13.61 K and 101325 pascals</div></li>
+		<li><div class="sample-question">Power conversion efficiency of OPF with donor of ozone</div></li>
+	</ul>
+</div>
 
 <button type="submit" class="accordion">General Computational Quantum Chemistry</button>
 <div class="accordion-panel">
@@ -59,8 +73,8 @@ slug: marie
 	<ul>
 		<li><div class="sample-question">What is the lennard jones well depth of C2H2O2</div></li>
 		<li><div class="sample-question">Polarizability of C2H2O2</div></li>
-		<li><div class="sample-question">What is the dipole moment of C2H2O2</div></li>
-		<li><div class="sample-question">Rotational relaxation collision number of HOCH2O2H</div></li>
+		<!--<li><div class="sample-question">What is the dipole moment of C2H2O2</div></li>-->
+		<!--<li><div class="sample-question">Rotational relaxation collision number of HOCH2O2H</div></li>-->
 	</ul>
 </div>
 
@@ -80,8 +94,8 @@ slug: marie
 <div class="accordion-panel">
 	To query properties of a certain class of molecules.
 	<ul>
-		<li><div class="sample-question">Mass of aromatic hydrocarbons</div></li>
-		<li><div class="sample-question">Molecular model of aromatic hydrocarbons</div></li>
+		<!--<li><div class="sample-question">Mass of aromatic hydrocarbons</div></li>-->
+		<!--<li><div class="sample-question">Molecular model of aromatic hydrocarbons</div></li>-->
 		<li><div class="sample-question">Chemical structure of aromatic hydrocarbons</div></li>
 	</ul>
 </div>
@@ -90,7 +104,7 @@ slug: marie
 <div class="accordion-panel">
 	To find molecules meeting certain conditions.
 	<ul>
-		<li><div class="sample-question">Chemical formula of alkanol with heat capacity less than 15</div></li>
+		<!--<li><div class="sample-question">Chemical formula of alkanol with heat capacity less than 15</div></li>-->
 		<li><div class="sample-question">Mass of aromatic hydrocarbons with mass less than 170</div></li>
 		<li><div class="sample-question">Aromatic hydrocarbons with mass less than 170</div></li>
 		<li><div class="sample-question">Chemical formula of alkanol with heat capacity less than 15</div></li>
@@ -101,8 +115,8 @@ slug: marie
 <div class="accordion-panel">
 	To find molecules by their SMILES.
 	<ul>
-		<li><div class="sample-question">What is the molecular weight of c1ccccc1</div></li>
-		<li><div class="sample-question">Show me the molecular model of CH2=CHCHO</div></li>
+		<!--<li><div class="sample-question">What is the molecular weight of c1ccccc1</div></li>-->
+		<!--<li><div class="sample-question">Show me the molecular model of CH2=CHCHO</div></li>-->
 		<li><div class="sample-question">Show me the ionization energy of C1=CC=CC=C1</div></li>
 		<li><div class="sample-question">What is the heat capacity of c1=cc=cc=c1</div></li>
 	</ul>
@@ -115,7 +129,7 @@ slug: marie
 		<li><div class="sample-question">Molecular weight of ch4</div></li>
 		<li><div class="sample-question">Chemical structure of benzene</div></li>
 		<!--<li><div class="sample-question">Standard enthalpy of formation of methane</div></li>-->
-		<li><div class="sample-question">What is the conjugate base of ethanedionic acid</div></li>
+		<!--<li><div class="sample-question">What is the conjugate base of ethanedionic acid</div></li>-->
 	</ul>
 </div>
 <br>

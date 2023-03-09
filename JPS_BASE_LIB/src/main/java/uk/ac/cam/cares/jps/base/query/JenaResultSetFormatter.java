@@ -75,10 +75,21 @@ public class JenaResultSetFormatter {
 	 * @return
 	 */
 	public static JSONObject convertToSimplifiedList(String resultJSONW3CStandard) {
+		JSONArray joarray = convertToSimplifiedJsonArray(resultJSONW3CStandard);
 		JSONObject result = new JSONObject();
-		
-		JSONArray joarray = new JSONArray();
 		result.put("results", joarray);
+		return result;
+	}
+	
+	/**
+	 * Returns the result rows as JSON Array in the same format as {@link #convertToSimplifiedList(String)} but without the leading results JSON object, 
+	 * i.e. [ ... ] instead of { "results": [ ... ] }  
+	 * 
+	 * @param resultJSONW3CStandard a query result string according the official W3C JSON format as described in https://www.w3.org/TR/rdf-sparql-json-res/
+	 * @return
+	 */
+	public static JSONArray convertToSimplifiedJsonArray(String resultJSONW3CStandard) {
+		JSONArray joarray = new JSONArray();
 		
 		JSONObject jo = new JSONObject(resultJSONW3CStandard);
 		JSONArray array = jo.getJSONObject("results").getJSONArray("bindings");
@@ -94,7 +105,7 @@ public class JenaResultSetFormatter {
 			joarray.put(simplifiedRow);
 		}
 	
-		return result;
+		return joarray;
 	}
 	
 	/**
@@ -125,11 +136,11 @@ public class JenaResultSetFormatter {
 		return result;
 	}
 	
-	
 	public static List<String[]> convertToListofStringArraysWithKeys(String resultJSONW3CStandard, String[] keys) {
 		
-		List<String[]> result = new ArrayList<String[]>();		
-		JSONArray ja = new JSONArray(new JSONObject(resultJSONW3CStandard).getString("results"));
+		List<String[]> result = new ArrayList<String[]>();
+		JSONObject jo = JenaResultSetFormatter.convertToSimplifiedList(resultJSONW3CStandard);
+		JSONArray ja = jo.getJSONArray("results");
 	
 		for (int i=0; i<ja.length(); i++) {
 			String[] array = new String[keys.length];
@@ -143,6 +154,7 @@ public class JenaResultSetFormatter {
 		
 		return result;
 	}
+	
 	public static String[] getKeys(String resultJSONW3CStandard) {
 		
 		// "head": { "vars": [ "generation" , "emission" , "emissionvalue" , "emissionvaluenum" ] }
@@ -177,7 +189,7 @@ public class JenaResultSetFormatter {
 			jsonStringer.object().key(csvgroup.get(0)[0]).object().key("type").value(headertype[0]).key("value")
 					.value(csvgroup.get(y)[0]);
 			for (int h = 1; h < csvgroup.get(0).length; h++) {
-				jsonStringer.endObject().key(csvgroup.get(0)[h]).object().key("type").value(headertype[h]).key("value")
+				jsonStringer.endObject().key(csvgroup.get(0)[h]).object().key("type").value(headertype[h-1]).key("value")
 						.value(csvgroup.get(y)[h]);
 			}
 			jsonStringer.endObject().endObject();

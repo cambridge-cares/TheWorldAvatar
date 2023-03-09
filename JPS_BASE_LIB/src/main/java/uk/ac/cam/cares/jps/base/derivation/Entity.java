@@ -1,0 +1,79 @@
+package uk.ac.cam.cares.jps.base.derivation;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+public class Entity {
+	private String iri;
+	private String rdfType;
+	private Derivation belongsTo; // belongsTo this derivation
+	private boolean hasBelongsTo;
+	private List<Derivation> inputOf; // input of this derivation
+	private boolean isInputToDerivation;
+	private Long timestamp; // only if this is a pure input
+
+	public Entity(String iri) {
+		this.iri = iri;
+		this.hasBelongsTo = false;
+		this.isInputToDerivation = false;
+	}
+
+	public String getIri() {
+		return this.iri;
+	}
+
+	public void setBelongsTo(Derivation derivation) {
+		this.belongsTo = derivation;
+		this.hasBelongsTo = true;
+	}
+
+	public void setAsInput(Derivation derivation) {
+		if (this.isInputToDerivation) {
+			if (this.inputOf.stream().allMatch(d -> d.getIri() != derivation.getIri())) {
+				this.inputOf.add(derivation);
+			}
+		} else {
+			this.inputOf = new ArrayList<>(Arrays.asList(derivation));
+			this.isInputToDerivation = true;
+		}
+	}
+
+	public void setAsInput(List<Derivation> derivations) {
+		derivations.forEach(d -> {
+			this.setAsInput(d);
+		});
+	}
+
+	public List<Derivation> getInputOf() {
+		return this.inputOf;
+	}
+
+	public boolean isInputToDerivation() {
+		return this.isInputToDerivation;
+	}
+
+	public void setTimestamp(Long timestamp) {
+		this.timestamp = timestamp;
+	}
+
+	public Long getTimestamp() {
+		return this.timestamp;
+	}
+
+	public boolean hasBelongsTo() {
+		return this.hasBelongsTo;
+	}
+
+	public Derivation getBelongsTo() {
+		return this.belongsTo;
+	}
+
+	public void setRdfType(String rdfType) {
+		this.rdfType = rdfType;
+	}
+
+	public String getRdfType() {
+		return this.rdfType;
+	}
+}

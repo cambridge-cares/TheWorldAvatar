@@ -1,9 +1,11 @@
-# First stage: build war file
+# First stage: download dependencies
 #==================================================================================================
-FROM maven:3.6-openjdk-11-slim as builder
+FROM maven:3.6-openjdk-11-slim as retriever
 
 # Copy all files into root's home, including the source, pom file, ./m2 directory and credentials
-ADD . /root
+COPY ./pom.xml /root
+COPY ./docker/credentials /root/credentials
+COPY ./docker/.m2 /root/.m2
 
 # Populate settings templates with credentials, repo name
 WORKDIR /root/.m2
@@ -12,18 +14,33 @@ RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|"
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
 # Build
-WORKDIR /root/WeatherAgent
-RUN mvn clean install -DskipTests
+WORKDIR /root/
+RUN mvn clean dependency:resolve
+
 #==================================================================================================
 
-# Second stage: copy the downloaded dependency into a new image and build into an app
+# Second stage: build war file
+#==================================================================================================
+FROM maven:3.8.3-adoptopenjdk-11 as builder
+
+COPY --from=retriever /root/.m2 /root/.m2
+
+# Copy in Java source and build war
+WORKDIR /root/code
+
+COPY ./pom.xml ./
+COPY ./src ./src/
+COPY ./WEB-INF ./WEB-INF/
+
+RUN mvn package -DskipTests
+
+#==================================================================================================
+
+# third stage: copy the downloaded dependency into a new image and build into an app
 #==================================================================================================
 FROM tomcat:9.0 as agent
 
-WORKDIR /app
+COPY --from=builder /root/code/output/* $CATALINA_HOME/webapps/
+COPY ./docker/entrypoint.sh entrypoint.sh
 
-COPY --from=builder /root/WeatherAgent/output/WeatherAgent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
-
-# Start the Tomcat server
-ENTRYPOINT ["catalina.sh", "run"]
-#==================================================================================================
+ENTRYPOINT ["./entrypoint.sh"]

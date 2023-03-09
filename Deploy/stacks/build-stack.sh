@@ -1,13 +1,11 @@
 #!/bin/sh
 
-# Wrapper script for docker-compose that builds the requested stack in one of three
-# modes (dev/test/prod).
+# Wrapper script for docker-compose that builds the requested stack in either 'dev' or 'prod' mode.
 #
 # Each stack directory contains a base configuration file and, optionally, mode-specific configuration files.
 # That is:
 #   docker-compose.build.yml
 #   docker-compose.build.dev.yml (optional)
-#   docker-compose.build.test.yml (optional)
 #   docker-compose.build.prod.yml (optional)
 
 
@@ -19,7 +17,7 @@ if [ "$#" -lt 2 ]; then
   echo "  $0 [stack_name] [mode] <--push> <additional_args>"
   echo ""
   echo "      stack_name : the stack to build (agent/db/web)"
-  echo "            mode : configuration mode name (dev/test/prod)"
+  echo "            mode : configuration mode name (dev/prod)"
   echo "          --push : including this flag will push images to the registry once built"
   echo " additional_args : remaining arguments are passed on to 'docker-compose build'"
   echo ""
@@ -29,7 +27,7 @@ if [ "$#" -lt 2 ]; then
   exit 1
 fi
 
-default_build_args="--progress auto"
+default_build_args=""
 
 # Load common helper functions
 if [ -e ./common_funcs.sh ]; then
@@ -81,7 +79,7 @@ if [ "$?" -ne 0 ]; then echo "$yml_fnames" ; exit "$?"; fi
 yml_fname_args=$(echo $yml_fnames |sed -e 's/ / -f /g' -e 's/^/-f /')
 
 # Write environment variables to file so that docker-compose can pick them up
-env_filename="env.txt"
+env_filename=".env"
 write_env_file $env_filename $stack $mode $FALSE
 
 # Assemble arguments for docker-compose

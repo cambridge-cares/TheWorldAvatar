@@ -1,0 +1,56 @@
+file_server_upload_settings:
+    # file server upload url
+    url: http://localhost:48086/FileServer/
+    # file server secrets file
+    auth_file: dummy_fileserver_secrets_file
+    # if True, auth_file input is not needed
+    no_auth: True
+    # directory on the file server where all files should go
+    subdirs: dummy_subdir1/subdir2
+triple_store_upload_settings:
+    # triple store sparql upload endpoint
+    url: http://localhost:48083/blazegraph/namespace/kb/sparql/
+    auth_file: dummy_blazegraph-geo_secrets_file
+    no_auth: True
+# this section defines what type of files should be uploaded to the file server
+ocompchem:
+    qc_log_to_qc_json: # handler name, non-case specific
+        file_server_upload_settings:
+            # this defines which types of files should be uploaded to the file server
+            upload_file_types:
+                - qc_log
+    # handler 2
+    qc_json_to_oc_json:
+        file_server_upload_settings:
+            # this enables molecules png files upload (if files are present)
+            upload_file_types:
+                - oc_png
+        handler_kwargs:
+            # this enables molecules png files generation
+            generate_png: true
+
+    # handler 3
+    oc_csv_to_oc_owl:
+        triple_store_upload_settings:
+            # this defines which types of files should be uploaded to the file server
+            upload_file_types:
+                - oc_owl
+ospecies:
+    os_csv_to_os_owl:
+        triple_store_upload_settings:
+            upload_file_types:
+                - os_owl
+omops:
+    ominp_json_to_om_json:
+        file_server_upload_settings:
+            upload_file_types:
+                - ominp_xyz
+    om_csv_to_om_owl:
+        triple_store_upload_settings:
+            upload_file_types:
+                - om_owl
+opsscan:
+    ops_csv_to_ops_owl:
+        triple_store_upload_settings:
+            upload_file_types:
+                - ops_owl

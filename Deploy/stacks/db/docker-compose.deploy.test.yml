@@ -10,7 +10,6 @@
 
 version: "3.8"
 
-
 services:
 
   # Blazegraph
@@ -22,6 +21,14 @@ services:
   blazegraph-geo:
     ports:
       - 49083:8080
+
+  # File server
+  fileserver:
+    ports:
+      - 49086:8080
+      - 8000:8000
+    environment:
+      - JAVA_OPTS= -agentlib:jdwp=transport=dt_socket,address=*:8000,server=y,suspend=n
 
   # Postgres
   postgres:

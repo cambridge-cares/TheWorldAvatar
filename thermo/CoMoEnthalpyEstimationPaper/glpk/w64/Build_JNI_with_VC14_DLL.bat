@@ -40,3 +40,4 @@ path %path_build_jni%
 set INCLUDE=
 set LIB=
 pause
+

@@ -1,9 +1,20 @@
-Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
-Derivation,Class,,,,,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
-DerivationWithTimeSeries,Class,,,,,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
-isDerivedFrom,Object Property,,,Derivation,http://www.w3.org/2002/07/owl#Thing,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
-isDerivedFrom,Object Property,,,DerivationWithTimeSeries,http://www.w3.org/2002/07/owl#Thing,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
-isDerivedUsing,Object Property,,,Derivation,http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
-isDerivedUsing,Object Property,,,DerivationWithTimeSeries,http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
-belongsTo,Object Property,,,http://www.w3.org/2002/07/owl#Thing,Derivation,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
-belongsTo,Object Property,,,http://www.w3.org/2002/07/owl#Thing,DerivationWithTimeSeries,,,https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+OntoDerivation,TBox,https://www.theworldavatar.com/kg/ontoderivation/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoDerivation,TBox,1.10,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoDerivation,TBox,OntoDerivation is an ontology used to connect entities in the world avatar.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoDerivation,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
+Derivation,Class,,,,,,,https://www.theworldavatar.com/kg/ontoderivation/,Synchronous derivation
+DerivationWithTimeSeries,Class,,,,,,,https://www.theworldavatar.com/kg/ontoderivation/,Synchronous derivation with time series
+DerivationAsyn,Class,,,,,,,https://www.theworldavatar.com/kg/ontoderivation/,Asynchronous derivation
+Status,Class,,,,,,,https://www.theworldavatar.com/kg/ontoderivation/,Status
+Requested,Class,Status,IS-A,,,,,https://www.theworldavatar.com/kg/ontoderivation/,Requested
+InProgress,Class,Status,IS-A,,,,,https://www.theworldavatar.com/kg/ontoderivation/,InProgress
+Finished,Class,Status,IS-A,,,,,https://www.theworldavatar.com/kg/ontoderivation/,Finished
+Error,Class,Status,IS-A,,,,,https://www.theworldavatar.com/kg/ontoderivation/,Error
+isDerivedFrom,Object Property,,,Derivation UNION DerivationWithTimeSeries UNION DerivationAsyn,http://www.w3.org/2002/07/owl#Thing,,,https://www.theworldavatar.com/kg/ontoderivation/,is derived from
+isDerivedUsing,Object Property,,,Derivation UNION DerivationWithTimeSeries UNION DerivationAsyn,http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service,,,https://www.theworldavatar.com/kg/ontoderivation/,is derived using
+belongsTo,Object Property,,,http://www.w3.org/2002/07/owl#Thing,Derivation UNION DerivationWithTimeSeries UNION DerivationAsyn,,,https://www.theworldavatar.com/kg/ontoderivation/,belongs to
+hasStatus,Object Property,,,DerivationAsyn,Status,,,https://www.theworldavatar.com/kg/ontoderivation/,has status
+hasNewDerivedIRI,Object Property,,,Finished,http://www.w3.org/2002/07/owl#Thing,,,https://www.theworldavatar.com/kg/ontoderivation/,has new derived IRI
+retrievedInputsAt,Data Property,,,DerivationAsyn,http://www.w3.org/2001/XMLSchema#decimal,,,https://www.theworldavatar.com/kg/ontoderivation/,retrieved inputs at
+uuidLock,Data Property,,,DerivationAsyn,http://www.w3.org/2001/XMLSchema#string,,,https://www.theworldavatar.com/kg/ontoderivation/,uuid lock

@@ -14,19 +14,26 @@ metadata:
 
 	<table width="80%" style="margin: auto;">
 		<tr height="300px">
-			<td width="45%" style="text-align: center;" markdown="1">[![Search Engine](image://marie/search-engine-large.jpg?forceResize=250,250&classes=header-image)](/explore/marie)</td>
-			<td width="10%"></td>
-			<td width="45%" style="text-align: center;" markdown="1">[![UK Digital Twin](image://digital-twin/digital-twin-300.jpg?forceResize=250,250&classes=header-image)](/explore/digital-twin)</td>
+			<td width="30%" style="text-align: center;" markdown="1">[![Search Engine](image://marie/search-engine-large.jpg?forceResize=250,250&classes=header-image)](/explore/marie)</td>
+			<td width="5%"></td>
+			<td width="30%" style="text-align: center;" markdown="1">[![UK Digital Twin](image://digital-twin/digital-twin-300.jpg?forceResize=250,250&classes=header-image)](/explore/digital-twin)</td>
+			<td width="5%"></td>
+			<td width="30%" style="text-align: center;" markdown="1">[![CReDo](image://credo/thumbnail.jpg?forceResize=250,250&classes=header-image)](/explore/credo)</td>
 		</tr>
 		<tr>
-			<td width="45%" style="text-align: center;">
+			<td width="30%" style="text-align: center;">
 				<h5><a href="/explore/marie">Marie</a></h5>
-				<p style="font-size: 80%;">A proof-of-concept search engine for accessing chemical data from the World Avatar Knowledge Graph and the Wikidata Knowledge Graph.</p>
+				<p style="font-size: 80%;">A proof-of-concept, natural language search engine for accessing chemistry data from the World Avatar and Wikidata knowledge graphs.</p>
 			</td>
-			<td width="10%"></td>
-			<td width="45%" style="text-align: center; margin-left:15px;">
+			<td width="5%"></td>
+			<td width="30%" style="text-align: center; margin-left:15px;">
 				<h5><a href="/explore/digital-twin">UK Digital Twin</a></h5>
-				<p style="font-size: 80%;">A "Digital Twin", composed of distributed KGs and collaborative agents that share, and combine data to answer complex questions.</p>
+				<p style="font-size: 80%;">A connected digital twin, composed of distributed knowledge graphs and collaborative, intelligent agents that share, analyse, and combine data to answer complex questions.</p>
+			</td>
+			<td width="5%"></td>
+			<td width="30%" style="text-align: center; margin-left:15px;">
+				<h5><a href="/explore/credo">Climate Resilience</a></h5>
+				<p style="font-size: 80%;">The Climate Resilience Demonstrator (CReDo) is a pioneering climate change adaptation digital twin project that shows how connected data can improve climate adaptation and resilience.</p>
 			</td>
 		</tr>
 	</table>

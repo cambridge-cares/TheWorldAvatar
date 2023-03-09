@@ -144,7 +144,7 @@ app.use('/visualizeWorld', visualizeWorld);
 app.use('/ppmap', ppMap);
 
 var http = require('http').createServer(app);
-var io = require('socket.io')(http);
+const io = require('socket.io')(http, {'pingInterval': 200000, 'pingTimeout': 500000});
 io.set('transports', ['websocket','polling']);
 
 
@@ -221,7 +221,7 @@ epChangeEv.on('new', function (data) {
     //console.log('new endpoint modfication event');
     //todo: logic of subscription
     io.to(path.normalize(data.endpoint)+"_endpoint").emit("new", data.data);
-    
+
 })
 
 let qstr = `
@@ -268,7 +268,7 @@ WHERE {
 /*socket io***/
 
 io.on('connection', function(socket){
-    
+
 
 socket.on('join', function (uriSubscribeList) {
     //May be do some authorization
@@ -283,7 +283,7 @@ socket.on('join', function (uriSubscribeList) {
         epInformer.registerSubsriber( epUrl, uriList, qstr, socket.username);
         return;
     }
-    
+
     sl.forEach(function (uri2Sub) {
         let diskLoc = uri2Sub.uri.replace("http://www.theworldavatar.com", config.root)
             .replace("http://www.jparksimulator.com", config.root);
@@ -296,14 +296,14 @@ socket.on('join', function (uriSubscribeList) {
 		//console.log(rooms)
 		     // console.log(socket.id, "joined", diskLoc+affix);
 
-		
+
 
         //TODO:check client legnth first, if 0 ,first join, ask to register for data
 
 
         if(uri2Sub.withData){
             var clients = io.sockets.adapter.rooms[diskLoc+affix].sockets;
-            
+
 //to get the number of clients
             var numClients = (typeof clients !== 'undefined') ? Object.keys(clients).length : 0;
             logger.debug("number of clients in room: "+numClients);

@@ -1,13 +1,29 @@
+from io import TextIOBase
 import concurrent_log_handler
 import logging.config
 import sys
 import os
 
 
-class StreamToLogger(object):
+class StreamToLogger(TextIOBase):
     """
         Fake file-like stream object that redirects writes to a logger instance.
     """
+
+    # NOTE StreamToLogger is made to extend TextIOBase to prevent error like below when running pytest with docker-compose
+    # as part of dockerised test in developing pyderivationagent package:
+    # AttributeError: 'StreamToLogger' object has no attribute 'isatty'
+    #
+    # To reproduce the error, one may checkout to below commit and run "pytest -s --docker-compose=./docker-compose.test.yml" in the folder:
+    # https://github.com/cambridge-cares/TheWorldAvatar/tree/ab354e2a759d812c64bb5236ba37d1ba9e53e552/JPS_BASE_LIB/python_derivation_agent
+    #
+    # This error was due to below line in pytest checking if sys.stdout.isatty() is True/False
+    # https://github.com/pytest-dev/pytest/blob/main/src/_pytest/terminal.py#L332
+    #
+    # another fix is to provide "def isatty(self) -> bool:"" but extending TextIOBase seems to be a "safer"/"cleaner" fix,
+    # according to:
+    # https://stackoverflow.com/questions/19425736/how-to-redirect-stdout-and-stderr-to-logger-in-python#comment114971340_39215961
+
     def __init__(self, logger, log_level=logging.DEBUG):
         self.logger = logger
         self.log_level = log_level

@@ -1,0 +1,75 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+    xmlns:rt="http://environment.data.gov.uk/flood-monitoring/def/core/"
+    xmlns:version="http://purl.org/linked-data/version#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:void="http://rdfs.org/ns/void#"
+    xmlns:dct="http://purl.org/dc/terms/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:loc-geo="http://location.data.gov.uk/def/common/Geometry/"
+    xmlns:time="http://www.w3.org/2006/time#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:prov="http://www.w3.org/ns/prov#"
+    xmlns:spatialrelations="http://data.ordnancesurvey.co.uk/ontology/spatialrelations/"
+    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+    xmlns:jtext="http://jena.apache.org/text#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:j.0="http://purl.org/linked-data/api/vocab#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+  <rdf:Description rdf:about="http://environment.data.gov.uk/flood-monitoring/id/stations">
+    <rdfs:comment>Status: Beta service</rdfs:comment>
+    <dct:hasFormat rdf:resource="http://environment.data.gov.uk/flood-monitoring/id/stations.rdf"/>
+    <j.0:items rdf:parseType="Collection">
+      <rdf:Description rdf:about="http://environment.data.gov.uk/flood-monitoring/id/stations/1029TH">
+        <rt:stationReference>1029TH</rt:stationReference>
+        <rt:wiskiID>1029TH</rt:wiskiID>
+        <rt:town>Little Rissington</rt:town>
+        <rt:measures>
+          <rdf:Description rdf:about="http://environment.data.gov.uk/flood-monitoring/id/measures/1029TH-level-downstage-i-15_min-mASD">
+            <rt:parameterName>Water Level</rt:parameterName>
+            <rt:qualifier>Downstream Stage</rt:qualifier>
+            <rt:parameter>level</rt:parameter>
+            <rt:unitName>mASD</rt:unitName>
+            <rt:period rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >900</rt:period>
+          </rdf:Description>
+        </rt:measures>
+        <rdfs:label>Bourton Dickler</rdfs:label>
+        <geo:lat rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+        >51.874767</geo:lat>
+        <rt:RLOIid>7041</rt:RLOIid>
+        <geo:long rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+        >-1.740083</geo:long>
+        <rt:status rdf:resource="http://environment.data.gov.uk/flood-monitoring/def/core/statusActive"/>
+        <rt:dateOpened rdf:datatype="http://www.w3.org/2001/XMLSchema#date"
+        >1994-01-01</rt:dateOpened>
+        <rt:catchmentName>Cotswolds</rt:catchmentName>
+        <rt:stageScale rdf:resource="http://environment.data.gov.uk/flood-monitoring/id/stations/1029TH/stageScale"/>
+        <skos:notation>1029TH</skos:notation>
+        <spatialrelations:northing rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >219610</spatialrelations:northing>
+        <rt:riverName>River Dikler</rt:riverName>
+        <rt:measures>
+          <rdf:Description rdf:about="http://environment.data.gov.uk/flood-monitoring/id/measures/1029TH-level-stage-i-15_min-mASD">
+            <rt:parameterName>Water Level</rt:parameterName>
+            <rt:qualifier>Stage</rt:qualifier>
+            <rt:parameter>level</rt:parameter>
+            <rt:unitName>mASD</rt:unitName>
+            <rt:period rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >900</rt:period>
+          </rdf:Description>
+        </rt:measures>
+        <spatialrelations:easting rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >417990</spatialrelations:easting>
+      </rdf:Description>
+    </j.0:items>
+    <dct:hasFormat rdf:resource="http://environment.data.gov.uk/flood-monitoring/id/stations.html"/>
+    <dct:hasFormat rdf:resource="http://environment.data.gov.uk/flood-monitoring/id/stations.json"/>
+    <owl:versionInfo>0.9</owl:versionInfo>
+    <dct:publisher>Environment Agency</dct:publisher>
+    <dct:hasFormat rdf:resource="http://environment.data.gov.uk/flood-monitoring/id/stations.csv"/>
+    <rdfs:seeAlso rdf:resource="http://environment.data.gov.uk/flood-monitoring/doc/reference"/>
+    <dct:license>http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/</dct:license>
+  </rdf:Description>
+</rdf:RDF>

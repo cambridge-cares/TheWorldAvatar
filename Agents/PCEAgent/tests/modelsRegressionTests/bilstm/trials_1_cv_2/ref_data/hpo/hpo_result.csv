@@ -1,0 +1,2 @@
+,number,value,datetime_start,datetime_complete,duration,params_embedding_dim,params_lr,params_mlp_dropouts_0,params_mlp_layers,params_mlp_units_1,params_mlp_units_2,params_mlp_units_3,params_weight_decay,state
+0,0,1.0125252410932875,2021-03-26 10:56:25.511816,2021-03-26 10:56:38.512237,0 days 00:00:13.000421,16,0.00017826497151386962,0.027701578430639338,4,13,8,8,0.0014486833887239336,COMPLETE

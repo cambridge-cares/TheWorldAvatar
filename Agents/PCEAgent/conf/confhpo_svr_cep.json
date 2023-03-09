@@ -1,0 +1,53 @@
+{
+"goals":{
+    "hpo": true,
+    "contour_plot": false,
+    "best_trial_retraining": true,
+    "transfer_learning": false,
+    "predict": false
+},
+"numerical_settings":{
+    "seed": 1,
+    "cudnn_deterministic": true,
+    "cudnn_benchmark": false
+},
+"dataset":{
+    "src": "./data/processed/CEPDB_25000.csv",
+    "z-stand": "False",
+    "x_column": ["SMILES_str"],
+    "y_column": ["pce"],
+    "split": "ml_phase"
+    },
+"model":{
+    "name": "SVR",
+    "model_specific":{
+        "kernel": "rbf_kernel_phys_and_struct",
+        "gamma_structural": {"type":"loguniform","low":0.001,"high":20.0},
+        "C":{"type":"loguniform","low":0.1,"high":20.0},
+        "epsilon":{"type":"loguniform","low":0.0001,"high":1.0}
+    },
+    "fingerprint_specific":{
+        "type":"morgan",
+        "nBits":{"type":"categorical","choices": [128, 256, 512, 1024, 2048, 4096]},
+        "radius": {"type":"categorical","choices": [2, 3, 4, 5]},
+        "useChirality": true,
+        "useBondTypes": true
+    }
+},
+"training":{
+    "metric": "mse",
+    "cross_validation": false,
+    "direction": "minimize",
+    "trials": 20,
+    "study_name": "svr_cep25000_stratified",
+    "storage": "sqlite:///svr_cep25000_stratified.db",
+    "storage_timeout": 1000,
+    "load_if_exists": true,
+    "jobs": 1
+},
+"post_processing":{
+    "contour_plot_alt_dir": null,
+    "z_transform_inverse_prediction": true,
+    "regression_plot": true
+}
+}

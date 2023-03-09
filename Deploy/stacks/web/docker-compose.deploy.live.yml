@@ -10,7 +10,6 @@
 
 version: "3.8"
 
-
 services:
 
   # Flood Map
@@ -23,7 +22,7 @@ services:
     ports:
       - 40082:80
 
- # Reverse Proxy
+  # Reverse Proxy
   reverse-proxy:
     ports:
       - 80:80
@@ -38,3 +37,13 @@ services:
   uk-power-system:
     ports:
       - 40083:80
+
+  # CReDo visualisation
+  credo-vis:
+    ports:
+      - 40086:80
+
+  # CReDo GeoServer
+  credo-geoserver:
+    ports:
+      - ${GEOSERVER_PORT}:8080

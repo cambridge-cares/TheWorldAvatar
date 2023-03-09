@@ -1,2 +1,0 @@
-station_name,y,x,z,temperature(degree Celsius),pressure(hPa),humidity(percent),wind_speed(km/hour),wind_direction(degree),time_stamp
-Scheveningen,52.17,4.43,0,25,1000,65,3.4,237,2020-04-28T16:25:00

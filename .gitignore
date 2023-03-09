@@ -26,20 +26,22 @@
 *.jar
 *.war
 *.class
+log4j2.xml
 
 # Maven:
 target/
 
 # Python:
 __pycache__/
+site-packages/
 *.py[cod]
 *$py.class
 *.pkl
 *.egg-info/
 .venv
-venv/
+*venv/
 .env
-env/
+*env/
 
 # JavaScript:
 node_modules/
@@ -88,3 +90,25 @@ nlu.md
 /JPS_Chatbot/jps-chatbot/UI/source/Wikidata_Query/models
 /JPS_Chatbot/jps-chatbot/UI/source/wolfram_alpha_and_google/test/*.html
 /JPS_LDF/components/LDF_SERVER_JAVA/Server/WebContent/config.json
+JPS_Chatbot/jps-chatbot/UI/source/Agent_query/models/nlu/component_6_EmbeddingIntentClassifier.entity_tag_specs.json
+JPS_Chatbot/jps-chatbot/UI/data_preparation/files/FORMULA_NAME_DICT
+JPS_Chatbot/jps-chatbot/UI/data_preparation/files/ontocompchem_corpus
+JPS_Chatbot/jps-chatbot/UI/data_preparation/files/ontokin_corpus
+JPS_Chatbot/jps-chatbot/UI/data_preparation/Wiki_training_material_generation/03_create_training_question/test/data/rank_query_list_block
+JPS_Chatbot/jps-chatbot/UI/data_preparation/Wiki_training_material_generation/04_create_training_question/test/data/rank_query_list_block
+JPS_Chatbot/jps-chatbot/UI/data_preparation/files/FORMULA_URI_DICT
+JPS_Chatbot/jps-chatbot/UI/data_preparation/files/NAME_URI_DICT
+JPS_Chatbot/jps-chatbot/UI/data_preparation/files/FORMULA_URI_DICT
+JPS_Chatbot/jps-chatbot/UI/question-log.txt
+JPS_Chatbot/jps-chatbot/UI/source/Agent_query/models/fingerprint.json
+JPS_Chatbot/jps-chatbot/UI/source/Agent_query/models/nlu/checkpoint
+JPS_Chatbot/jps-chatbot/UI/source/Agent_query/models/nlu/metadata.json
+JPS_Chatbot/jps-chatbot/UI/data_preparation/files/NAME_URI_DICT
+JPS_Chatbot/jps-chatbot/UI/data_preparation/files/FORMULA_URI_DICT
+JPS_Chatbot/jps-chatbot/UI/data_preparation/files/NAME_URI_DICT
+JPS_Chatbot/jps-chatbot/UI/source/JPS_Query/models/nlu/component_6_EmbeddingIntentClassifier.entity_tag_specs.json
+JPS_Chatbot/jps-chatbot/UI/data_preparation/files/ONTOSPECIES_IDENDITIFERS_QUERY_RESULT
+JPS_Chatbot/jps-chatbot/UI/source/OntoSpeciesLog
+Agents/DistrictHeatingNetworkAgent/config/TSDataHeatingNetworkTest.csv
+Agents/DistrictHeatingNetworkAgent/credentials/repo_password.txt
+Agents/DistrictHeatingNetworkAgent/credentials/repo_username.txt

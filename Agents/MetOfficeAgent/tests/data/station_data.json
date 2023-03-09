@@ -1,0 +1,25 @@
+{
+    "station1": 
+        {
+            "elevation": "7.0",
+            "id": "100", 
+            "latitude": "57.6494",
+            "longitude": "-3.5606",
+            "name": "Test station 2",
+            "region": "gr",
+            "unitaryAuthArea": "Moray"
+        },
+    "station2":
+        {
+            "id": "200", 
+            "latitude": "51.6494",
+            "longitude": "-3.5606",
+            "name": "Test station 2"
+        },
+    "station3":
+        {
+            "id": "300", 
+            "latitude": "51.6794",
+            "longitude": "-3.57"
+        }
+}

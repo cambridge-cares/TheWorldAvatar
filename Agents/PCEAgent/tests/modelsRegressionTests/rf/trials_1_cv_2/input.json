@@ -1,0 +1,63 @@
+{
+"goals":{
+    "hpo": true,
+    "contour_plot": false,
+    "best_trial_retraining": true,
+    "transfer_learning": false,
+    "predict": false
+},
+"numerical_settings":{
+    "seed": 1,
+    "cudnn_deterministic": true,
+    "cudnn_benchmark": false
+},
+"logging_settings":{
+    "log_main_dir": "./tests/modelsRegressionTests/rf/trials_1_cv_2",
+    "log_sub_dir_prefix": "reg_test",
+    "log_config_file": "./tests/conf/logging.yaml",
+    "log_file_name": "oscml.log",
+    "use_date_time": false
+},
+"dataset":{
+    "src": "./data/processed/HOPV_15_revised_2_processed_homo_5fold.csv",
+    "z-stand": "False",
+    "x_column": ["smiles"],
+    "y_column": ["pce"],
+    "split": "ml_phase_fold_0"
+    },
+"model":{
+    "name": "RF",
+    "model_specific":{
+        "n_estimators":{"type":"int","low":16,"high":256},
+        "max_depth":{"type":"int","low":10,"high":100},
+        "min_samples_split":{"type":"int","low":2,"high":5},
+        "min_samples_leaf":{"type":"int","low":1,"high":5},
+        "max_features":{"type":"categorical","choices":[0.05, 0.1, 0.5, 1.0]},
+        "bootstrap": {"type":"categorical","choices":[true, false]},
+        "max_samples":{"type":"int","low":5,"high":50}
+    },
+    "fingerprint_specific":{
+        "type":"morgan",
+        "nBits":{"type":"categorical","choices": [128, 256, 512, 1024, 2048, 4096]},
+        "radius": {"type":"categorical","choices": [2, 3, 4, 5]},
+        "useChirality": true,
+        "useBondTypes": true
+        }
+    },
+"training":{
+    "metric": "mse",
+    "cross_validation": 2,
+    "direction": "minimize",
+    "trials": 1,
+    "study_name": "trials_1_cv_2",
+    "storage": "sqlite:///tests/modelsRegressionTests/rf/trials_1_cv_2/reg_test.db",
+    "storage_timeout": 1000,
+    "load_if_exists": true,
+    "jobs": 1
+    },
+"post_processing":{
+    "contour_plot_alt_dir": null,
+    "z_transform_inverse_prediction": true,
+    "regression_plot": false
+}
+}

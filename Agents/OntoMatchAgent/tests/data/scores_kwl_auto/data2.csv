@@ -1,0 +1,983 @@
+idx,type,pos,name,hasGISCoordinateSystem/hasProjectedCoordinate_x/hasValue/numericalValue,realizes/consumesPrimaryFuel,designCapacity/hasValue/numericalValue,hasGISCoordinateSystem/hasProjectedCoordinate_y/hasValue/numericalValue,hasYearOfBuilt/hasValue/numericalValue,isOwnedBy/hasName
+WRI1030164,['SolarPlant'],0,Artern_Solar_Power_Plant,11.3131,Solar,4.9,51.3606,,
+WRI1006129,['HydroelectricPlant'],1,Wasserburg,12.2207,Hydro,24.1,48.057,1938.0,VERBUND-Innkraftwerke GmbH
+WRI1006028,['HydroelectricPlant'],2,Rheinkraftwerk_Reckingen,8.3383,Hydro,19.0,47.5714,1938.0,EnBW Energie Baden-Württemberg AG
+WRI1006066,['HydroelectricPlant'],3,Teufelsbruck,12.2209,Hydro,25.0,48.0574,1938.0,VERBUND-Innkraftwerke GmbH
+WRI1006044,['HydroelectricPlant'],4,Schwammenauel,6.4791,Hydro,14.0,50.6285,1938.0,RWE Innogy GmbH
+WRI1005687,['HydroelectricPlant'],5,Gars,12.3111,Hydro,25.0,48.154,1938.0,VERBUND-Innkraftwerke GmbH
+WRI1005899,['HydroelectricPlant'],6,Kraftwerksgruppe_Pfreimd,12.2848,Hydro,127.0,49.53,1959.0,GDF SUEZ Energie Deutschland AG
+WRI1005682,['FossilFuelPlant'],7,Wachtberg_power_station,6.7931,Coal,118.0,50.8976,1959.0,Rwe Power Ag
+WRI1006030,['HydroelectricPlant'],8,Rheinkraftwerk_Säckingen,7.9557,Hydro,36.8,47.5585,1959.0,EnBW Energie Baden-Württemberg AG / Energiedienst AG
+WRI1006116,['HydroelectricPlant'],9,UPM_Schongau,10.9043,Hydro,10.5,47.8032,1959.0,UPM GmbH
+WRI1005985,['PowerPlant'],10,O10,6.8467,Other,94.2,51.0695,,Ineos Manufacturing Deutschland GmbH
+WRI1005947,['FossilFuelPlant'],11,MiRO,8.3244,Oil,70.0,49.0608,1995.0,Mineraloelraffinerie Oberrhein GmbH & Co. KG
+WRI1030176,['SolarPlant'],12,Espenhain_Solar_Power_Plant,12.4787,Solar,5.0,51.1966,,
+WRI1005766,['BiomassPlant'],13,HHKW_Berlin_Neukölln,13.5173,Biomass,16.5,52.4253,2005.0,RWE Energiedienstleistungen GmbH
+WRI1005610,['BiomassPlant'],14,BMKW_Bergkamen,7.6188,Biomass,17.7,51.637,2005.0,RWE Energiedienstleistungen GmbH
+WRI1005927,['FossilFuelPlant'],15,KWKK_Heidelberg,8.6728,Gas,13.5,49.4216,2002.0,RWE Energiedienstleistungen GmbH
+WRI1030223,['SolarPlant'],16,Mittelwasungen_Solar_Power_Plant,11.1246,Solar,2.1,50.2651,,
+WRI1006010,['FossilFuelPlant'],17,PWG,11.0554,Gas,10.6,47.7895,,Peißenberger Wärmegesellschaft mbH
+WRI1005729,['HydroelectricPlant'],18,Häusern,8.1879,Hydro,100.0,47.7546,1931.0,Schluchseewerk Aktiengesellschaft
+WRI1006128,['HydroelectricPlant'],19,Waldeck1Bringhausen,9.0468,Hydro,143.0,51.1671,1931.0,E.ON Kraftwerke GmbH
+WRI1006029,['HydroelectricPlant'],20,Rheinkraftwerk_Ryburg_Schwörstadt,7.8327,Hydro,30.0,47.5854,1931.0,EnBW Energie Baden-Württemberg AG
+WRI1030356,['SolarPlant'],21,Heretsried_Solar_Power_Plant,10.738,Solar,2.5,48.4644,,
+WRI1030313,['SolarPlant'],22,Liepolding_Bgen_Solar_Power_Plant,12.7437,Solar,2.5,48.8938,,
+WRI1030240,['SolarPlant'],23,Stockstadt_am_Main_Solar_Power_Plant,9.0579,Solar,2.5,49.9932,,
+WRI1030094,['SolarPlant'],24,Stafurt_2_Solar_Power_Plant,11.5811,Solar,2.5,51.8684,,
+WRI1006155,['WastePlant'],25,ZWSF,12.3626,Waste,2.5,52.535,2002.0,EEW Energy from Waste Premnitz GmbH
+WRI1030366,['SolarPlant'],26,Humlangen_Solar_Power_Plant,9.9562,Solar,2.5,48.2943,,
+WRI1030245,['SolarPlant'],27,Waldalgesheim_Solar_Power_Plant,7.8113,Solar,2.5,49.9474,,
+WRI1030114,['SolarPlant'],28,Walbeck_Solar_Power_Plant,11.4809,Solar,2.5,51.6556,,
+WRI1030035,['SolarPlant'],29,Suxdorf_Solar_Power_Plant,10.918,Solar,2.5,54.1688,,
+WRI1030130,['SolarPlant'],30,Lnnewitz_Solar_Power_Plant,13.2212,Solar,25.9,51.5495,,
+WRI1030289,['SolarPlant'],31,Lobbach_Lobenfeld_Solar_Power_Plant,8.8586,Solar,5.9,49.3451,,
+WRI1030317,['SolarPlant'],32,Schierling_Solar_Power_Plant,12.1775,Solar,2.4,48.8329,,
+WRI1030350,['SolarPlant'],33,Attenkirchen_Solar_Power_Plant,11.7475,Solar,2.0,48.5182,,
+WRI1030059,['SolarPlant'],34,Angermnde_Solar_Power_Plant,13.9981,Solar,1.7,53.0008,,
+WRI1030228,['SolarPlant'],35,Bogel_Solar_Power_Plant,7.8093,Solar,1.7,50.1886,,
+WRI1030353,['SolarPlant'],36,Froschham_Solar_Power_Plant,11.0995,Solar,4.2,48.4765,,
+WRI1030201,['SolarPlant'],37,Troisdorf_Oberlar_Solar_Power_Plant,7.1403,Solar,3.5,50.8067,,
+WRI1030346,['SolarPlant'],38,Gundelfingen___Gartner_Solar_Power_Plant,10.3783,Solar,1.0,48.546,,
+WRI1030178,['SolarPlant'],39,Grlitz_Solar_Power_Plant,14.9662,Solar,6.0,51.1853,,
+WRI1030236,['SolarPlant'],40,Leideneck_Solar_Power_Plant,7.365,Solar,1.0,50.0403,,
+WRI1030274,['SolarPlant'],41,Gollhofen_Solar_Power_Plant,10.1884,Solar,3.0,49.5756,,
+WRI1030221,['SolarPlant'],42,Polch_Solar_Power_Plant,7.3151,Solar,12.5,50.3156,,
+WRI1030122,['SolarPlant'],43,Apfelborn_Solar_Power_Plant,11.5474,Solar,2.0,51.5923,,
+WRI1030146,['SolarPlant'],44,Zwochau_Solar_Power_Plant,12.2528,Solar,3.8,51.4611,,
+WRI1030098,['SolarPlant'],45,Vockerode_Solar_Power_Plant,12.3392,Solar,9.6,51.8499,,
+WRI1030076,['SolarPlant'],46,Klausheide_Solar_Power_Plant,7.174,Solar,4.1,52.4601,,
+WRI1030135,['SolarPlant'],47,Schipkau_Solar_Power_Plant,13.8879,Solar,2.2,51.5103,,
+WRI1030075,['SolarPlant'],48,Rdersdorf_Solar_Power_Plant,13.7733,Solar,7.5,52.5004,,
+WRI1030365,['SolarPlant'],49,Staig_Solar_Power_Plant,9.9753,Solar,4.5,48.3092,,
+WRI1030081,['SolarPlant'],50,Reckahn_Solar_Power_Plant,12.5523,Solar,37.7,52.3449,,
+WRI1030383,['SolarPlant'],51,Frauental_Solar_Power_Plant,10.2413,Solar,3.3,48.0058,,
+WRI1030123,['SolarPlant'],52,Glebitzsch_Solar_Power_Plant,12.1924,Solar,3.9,51.5886,,
+WRI1030297,['SolarPlant'],53,Nordband_Solar_Power_Plant,6.8803,Solar,4.9,49.2439,,
+WRI1025887,['SolarPlant'],54,Solarpark_Elmenhorst,10.5034,Solar,25.0,53.5403,,
+WRI1030126,['SolarPlant'],55,Torgau_Solar_Power_Plant,12.9833,Solar,8.9,51.5732,,
+WRI1030200,['SolarPlant'],56,Ronneburg___Juwi_Solar_Power_Plant,12.1799,Solar,19.9,50.8398,,
+WRI1030231,['SolarPlant'],57,Untersteinach_Solar_Power_Plant,11.5303,Solar,10.0,50.1422,,
+WRI1030180,['SolarPlant'],58,Nessa_Solar_Power_Plant,12.0127,Solar,1.0,51.1372,,
+WRI1030189,['SolarPlant'],59,Weimar___Hydrema_Solar_Power_Plant,11.3403,Solar,1.0,50.994,,
+WRI1030155,['SolarPlant'],60,Riethnordhausen_Solar_Power_Plant,11.2458,Solar,7.3,51.4195,,
+WRI1030069,['SolarPlant'],61,Werneuchen___Enerparc_Solar_Power_Plant,13.7603,Solar,18.8,52.634,,
+WRI1030232,['SolarPlant'],62,Jesserndorf_Solar_Power_Plant,10.6846,Solar,1.0,50.0923,,
+WRI1030331,['SolarPlant'],63,Pfeffenhausen_Solar_Power_Plant,11.9387,Solar,5.6,48.6619,,
+WRI1025894,['SolarPlant'],64,Rothenburg_Solar_Power_Plant,14.9512,Solar,37.0,51.362,,
+WRI1030145,['SolarPlant'],65,Rola_Solar_Power_Plant,11.0559,Solar,6.0,51.4646,,
+WRI1030175,['SolarPlant'],66,Mhlhausen_Solar_Power_Plant,10.4751,Solar,4.4,51.2295,,
+WRI1030124,['SolarPlant'],67,Roitzsch___Capital_Stage_Solar_Power_Plant,12.2448,Solar,12.7,51.5811,,
+WRI1030209,['SolarPlant'],68,Langenhahn_Solar_Power_Plant,7.923,Solar,5.3,50.589,,
+WRI1030030,['SolarPlant'],69,Vil_Solar_Power_Plant,9.1691,Solar,4.0,54.5567,,
+WRI1030040,['SolarPlant'],70,Gribow_Solar_Power_Plant,13.4902,Solar,1.0,53.9597,,
+WRI1030310,['SolarPlant'],71,Lutstrut_Solar_Power_Plant,9.973,Solar,4.5,48.9277,,
+WRI1030319,['SolarPlant'],72,Abensberg_Solar_Power_Plant,11.9373,Solar,1.2,48.8082,,
+WRI1030292,['SolarPlant'],73,Rohrbuckel_Solar_Power_Plant,8.9867,Solar,1.1,49.3169,,
+WRI1030355,['SolarPlant'],74,Kemnat_Solar_Power_Plant,11.3003,Solar,1.1,48.4694,,
+WRI1030093,['SolarPlant'],75,Zahna_Solar_Power_Plant,12.7656,Solar,3.3,51.9172,,
+WRI1030266,['SolarPlant'],76,Moos_Solar_Power_Plant,9.8697,Solar,15.8,49.6845,,
+WRI1030147,['SolarPlant'],77,Wallhausen_Solar_Power_Plant,11.2152,Solar,5.4,51.4582,,
+WRI1030269,['SolarPlant'],78,Giebelstadt_Solar_Power_Plant,9.9653,Solar,28.0,49.6499,,
+WRI1025889,['SolarPlant'],79,Solarpark_Neie_Malxetal,14.6296,Solar,22.12467,51.6609,,
+WRI1030354,['SolarPlant'],80,Igenhausen_Solar_Power_Plant,11.0329,Solar,3.7,48.472,,
+WRI1030029,['SolarPlant'],81,Reuenkge_Solar_Power_Plant,8.9157,Solar,2.7,54.5839,,
+WRI1030321,['SolarPlant'],82,Hengersberg_Solar_Power_Plant,13.0793,Solar,1.5,48.784,,
+WRI1030267,['SolarPlant'],83,Richelbach_Solar_Power_Plant,9.3871,Solar,14.3,49.6838,,
+WRI1030090,['SolarPlant'],84,Zerbst_Solar_Power_Plant,12.1298,Solar,12.0,51.9955,,
+WRI1030194,['SolarPlant'],85,Grabsleben_Solar_Power_Plant,10.8301,Solar,2.2,50.9393,,
+WRI1030045,['SolarPlant'],86,Anklam_Solar_Power_Plant,13.6657,Solar,7.9,53.8347,,
+WRI1030182,['SolarPlant'],87,Borna_Solar_Power_Plant,12.4726,Solar,3.5,51.1284,,
+WRI1030307,['SolarPlant'],88,Dinkelsbhl_Solar_Power_Plant,10.3073,Solar,2.0,49.0505,,
+WRI1030073,['SolarPlant'],89,Neuenhagen_Solar_Power_Plant,13.7086,Solar,7.2,52.5371,,
+WRI1030298,['SolarPlant'],90,Westheim_Solar_Power_Plant,8.3208,Solar,2.9,49.2283,,
+WRI1030110,['SolarPlant'],91,Missen_Solar_Power_Plant,14.0594,Solar,10.1,51.7185,,
+WRI1030018,['SolarPlant'],92,Rodens_Solar_Power_Plant,8.6641,Solar,2.6,54.8925,,
+WRI1030092,['SolarPlant'],93,Lieberose_Solar_Power_Plant,14.4084,Solar,53.0,51.9241,,
+WRI1030258,['SolarPlant'],94,Morbach_Solar_Power_Plant,7.106,Solar,1.1,49.8261,,
+WRI1025892,['SolarPlant'],95,Ptnitz_Solar_Power_Plant,12.457,Solar,18.8,54.2666,,
+WRI1030233,['SolarPlant'],96,Heubach_Solar_Power_Plant,10.7784,Solar,4.8,50.0879,,
+WRI1030278,['SolarPlant'],97,Heckfeld_Solar_Power_Plant,9.6203,Solar,1.9,49.5608,,
+WRI1030064,['SolarPlant'],98,Kremmen_Solar_Power_Plant,13.0419,Solar,6.7,52.7473,,
+WRI1030225,['SolarPlant'],99,Coburg_Solar_Power_Plant,11.066,Solar,1.3,50.2133,,
+WRI1030179,['SolarPlant'],100,Groengottern_Solar_Power_Plant,10.5654,Solar,2.1,51.1407,,
+WRI1025904,['SolarPlant'],101,Cottbus_Drewitz_Solar_Power_Plant,14.5305,Solar,29.5,51.8917,,
+WRI1030229,['SolarPlant'],102,Bischwind_Solar_Power_Plant,10.8031,Solar,1.7,50.1632,,
+WRI1030129,['SolarPlant'],103,Oppin_Solar_Power_Plant,12.0475,Solar,6.9,51.5504,,
+WRI1030141,['SolarPlant'],104,Elsterheide_Solar_Power_Plant,14.3054,Solar,20.0,51.4728,,
+WRI1030077,['SolarPlant'],105,Briest_Solar_Power_Plant,12.4529,Solar,91.0,52.4371,,
+WRI1030142,['SolarPlant'],106,Sprotta_Solar_Power_Plant,12.7008,Solar,2.6,51.4726,,
+WRI1030102,['SolarPlant'],107,Westerwiehe_2_Solar_Power_Plant,8.5236,Solar,1.0,51.8178,,
+WRI1030339,['SolarPlant'],108,Fattendorf_Solar_Power_Plant,13.5719,Solar,1.6,48.595,,
+WRI1030022,['SolarPlant'],109,Uphusum_Solar_Power_Plant,8.8939,Solar,3.8,54.852,,
+WRI1030143,['SolarPlant'],110,Plessa_Solar_Power_Plant,13.602,Solar,3.1,51.4698,,
+WRI1030070,['SolarPlant'],111,Emlichheim_Solar_Power_Plant,6.8626,Solar,5.0,52.6223,,
+WRI1030295,['SolarPlant'],112,Hheind_Solar_Power_Plant,7.5806,Solar,2.1,49.2862,,
+WRI1025897,['SolarPlant'],113,Tutow_Solarpark_5,13.2272,Solar,19.3,53.915,,
+WRI1030033,['SolarPlant'],114,Cismar_Solar_Power_Plant,10.9522,Solar,2.8,54.1976,,
+WRI1030088,['SolarPlant'],115,Luckenwalde_Solar_Power_Plant,13.1635,Solar,6.0,52.1083,,
+WRI1030243,['SolarPlant'],116,Brimingen_Solar_Power_Plant,6.3503,Solar,1.9,49.97,,
+WRI1030264,['SolarPlant'],117,Freimersheim_Solar_Power_Plant,8.0716,Solar,7.3,49.7028,,
+WRI1030074,['SolarPlant'],118,Gardelegen___SZ_Solar_Power_Plant,11.4306,Solar,2.3,52.5307,,
+WRI1030328,['SolarPlant'],119,Tapfheim_Solar_Power_Plant,10.6935,Solar,1.3,48.6896,,
+WRI1030113,['SolarPlant'],120,Jocksdorf_Solar_Power_Plant,14.6261,Solar,103.9,51.6597,,
+WRI1030052,['SolarPlant'],121,Brenz_Solar_Power_Plant,11.6402,Solar,7.5,53.3835,,
+WRI1025899,['SolarPlant'],122,Ammerland_Solar_Power_Plant,8.1601,Solar,20.8,53.1799,,
+WRI1030128,['SolarPlant'],123,Senftenberg_Solar_Power_Plant,13.9878,Solar,18.0,51.5593,,
+WRI1030149,['SolarPlant'],124,Ruhland_Solar_Power_Plant,13.8874,Solar,2.2,51.4552,,
+WRI1030377,['SolarPlant'],125,Salmdorf_Solar_Power_Plant,11.7225,Solar,1.0,48.1315,,
+WRI1030205,['SolarPlant'],126,Nauroth_Solar_Power_Plant,7.8651,Solar,8.5,50.703,,
+WRI1030347,['SolarPlant'],127,Gundellfingen___Gehrlicher_Solar_Power_Plant,10.3557,Solar,2.7,48.5393,,
+WRI1030303,['SolarPlant'],128,Neckarsulm___Audi_Solar_Power_Plant,9.2276,Solar,1.9,49.202,,
+WRI1030153,['SolarPlant'],129,Oberrblingen_Solar_Power_Plant,11.315,Solar,8.1,51.435,,
+WRI1030100,['SolarPlant'],130,Wulfen_Solar_Power_Plant,11.9222,Solar,2.7,51.8221,,
+WRI1030250,['SolarPlant'],131,Preist_Solar_Power_Plant,6.6424,Solar,2.6,49.911,,
+WRI1030343,['SolarPlant'],132,Aidenbach_Solar_Power_Plant,13.0717,Solar,1.7,48.5727,,
+WRI1030066,['SolarPlant'],133,Metzdorf_Solar_Power_Plant,14.1568,Solar,6.0,52.6546,,
+WRI1030283,['SolarPlant'],134,Ahorn_Solar_Power_Plant,9.5163,Solar,6.4,49.4594,,
+WRI1030148,['SolarPlant'],135,Lauta_Solar_Power_Plant,14.1095,Solar,23.5,51.4567,,
+WRI1030260,['SolarPlant'],136,Kempfeld_Solar_Power_Plant,7.2509,Solar,2.7,49.7936,,
+WRI1030050,['SolarPlant'],137,Woldegk_Solar_Power_Plant,13.5638,Solar,9.0,53.4596,,
+WRI1030288,['SolarPlant'],138,Haloch_Solar_Power_Plant,8.2341,Solar,3.3,49.3644,,
+WRI1030168,['SolarPlant'],139,Dlzig_Solar_Power_Plant,12.2001,Solar,3.9,51.3508,,
+WRI1030138,['SolarPlant'],140,Nordhausen_Solar_Power_Plant,10.8254,Solar,3.0,51.489,,
+WRI1030367,['SolarPlant'],141,Stefanskirchen_Solar_Power_Plant,12.3414,Solar,1.2,48.271,,
+WRI1030262,['SolarPlant'],142,Repperndorf_Solar_Power_Plant,10.1044,Solar,8.3,49.7492,,
+WRI1030217,['SolarPlant'],143,Brohltal_Solar_Power_Plant,7.2298,Solar,1.5,50.4265,,
+WRI1030224,['SolarPlant'],144,Kaisersesch_Solar_Power_Plant,7.1644,Solar,9.3,50.2331,,
+WRI1030309,['SolarPlant'],145,Gelbelsee_Solar_Power_Plant,11.4471,Solar,1.8,48.9435,,
+WRI1030391,['SolarPlant'],146,Rickelshausen_Solar_Power_Plant,8.9224,Solar,6.0,47.7438,,
+WRI1030227,['SolarPlant'],147,Thundorf_Solar_Power_Plant,10.3032,Solar,2.1,50.1981,,
+WRI1025888,['SolarPlant'],148,Barderup_Solar_Power_Plant,9.4004,Solar,22.8,54.7112,,
+WRI1030302,['SolarPlant'],149,Chamerau_Solar_Power_Plant,12.736,Solar,1.3,49.2032,,
+WRI1030104,['SolarPlant'],150,Westerwiehe_1_Solar_Power_Plant,8.5154,Solar,2.0,51.8119,,
+WRI1030259,['SolarPlant'],151,Leiwen_Solar_Power_Plant,6.873,Solar,3.6,49.8005,,
+WRI1030380,['SolarPlant'],152,Penzing_Solar_Power_Plant,10.8953,Solar,3.7,48.0822,,
+WRI1030388,['SolarPlant'],153,Darast_Nord_Solar_Power_Plant,10.2164,Solar,3.6,47.9185,,
+WRI1030345,['SolarPlant'],154,Thierhaupten_Solar_Power_Plant,10.8974,Solar,5.0,48.5478,,
+WRI1030047,['SolarPlant'],155,Neubrandenburg_Solar_Power_Plant,13.3304,Solar,2.9,53.5447,,
+WRI1030348,['SolarPlant'],156,Lauingen___Gehrlicher_Solar_Power_Plant,10.4235,Solar,25.7,48.5369,,
+WRI1030306,['SolarPlant'],157,Stutensee_Solar_Power_Plant,8.4578,Solar,1.2,49.0761,,
+WRI1030037,['SolarPlant'],158,Busenwurth_Solar_Power_Plant,9.0315,Solar,12.2,54.0428,,
+WRI1030065,['SolarPlant'],159,Oranienburg_Solar_Power_Plant,13.2208,Solar,3.8,52.7321,,
+WRI1025895,['SolarPlant'],160,Solarpark_Finsterwalde,13.687,Solar,20.3862,51.7305,,
+WRI1025872,['SolarPlant'],161,Meuro_Solar_Power_Plant,13.9795,Solar,166.0,51.5446,,
+WRI1030166,['SolarPlant'],162,Panitzsch_Solar_Power_Plant,12.5477,Solar,7.5,51.3538,,
+WRI1030095,['SolarPlant'],163,Luckau_Solar_Power_Plant,13.7868,Solar,21.0,51.8683,,
+WRI1025885,['SolarPlant'],164,Solarpark_Marienflie,12.2014,Solar,25.55914,53.3366,,
+WRI1030042,['SolarPlant'],165,Bttel_Solar_Power_Plant,9.2263,Solar,31.5,53.9145,,
+WRI1030154,['SolarPlant'],166,Rackwitz_Solar_Power_Plant,12.3676,Solar,4.2,51.4292,,
+WRI1030246,['SolarPlant'],167,Herforst_Solar_Power_Plant,6.6864,Solar,1.6,49.9469,,
+WRI1030389,['SolarPlant'],168,Bad_Aibling_Solar_Power_Plant,11.9799,Solar,2.3,47.8798,,
+WRI1030316,['SolarPlant'],169,Neuschnau_Solar_Power_Plant,13.4482,Solar,1.2,48.8693,,
+WRI1030133,['SolarPlant'],170,Delitzsch___Fabrikstrae_Solar_Power_Plant,12.3269,Solar,2.7,51.5165,,
+WRI1025911,['SolarPlant'],171,Tutow_Solarpark_1_FF,13.2531,Solar,6.8,53.9226,,
+WRI1030252,['SolarPlant'],172,Haidenaab_Solar_Power_Plant,11.8316,Solar,3.2,49.8838,,
+WRI1030132,['SolarPlant'],173,Braschwitz_Solar_Power_Plant,12.0639,Solar,8.0,51.5183,,
+WRI1030271,['SolarPlant'],174,Vilseck_Solar_Power_Plant,11.7526,Solar,10.0,49.6282,,
+WRI1030296,['SolarPlant'],175,Plling_Solar_Power_Plant,11.4219,Solar,2.6,49.2849,,
+WRI1030263,['SolarPlant'],176,Ernsthof_Solar_Power_Plant,9.481,Solar,34.4,49.7081,,
+WRI1030057,['SolarPlant'],177,Perleberg_Solar_Power_Plant,11.8234,Solar,35.0,53.0734,,
+WRI1030349,['SolarPlant'],178,Sachsenham_Solar_Power_Plant,13.1431,Solar,1.2,48.5237,,
+WRI1030191,['SolarPlant'],179,Altenburg_Kieswerk_Solar_Power_Plant,12.4985,Solar,4.4,50.9796,,
+WRI1030159,['SolarPlant'],180,Lochau_Solar_Power_Plant,12.0772,Solar,3.3,51.3969,,
+WRI1030185,['SolarPlant'],181,Eckolstdt_Solar_Power_Plant,11.6283,Solar,8.5,51.0435,,
+WRI1030314,['SolarPlant'],182,Saalhaupt_Solar_Power_Plant,12.0587,Solar,2.6,48.8814,,
+WRI1025878,['SolarPlant'],183,Solarpark_Turnow,14.4073,Solar,34.8,51.9321,,
+WRI1030253,['SolarPlant'],184,Pssensheim_Solar_Power_Plant,10.1332,Solar,5.5,49.881,,
+WRI1030305,['SolarPlant'],185,Greding_Solar_Power_Plant,11.328,Solar,4.5,49.0897,,
+WRI1030222,['SolarPlant'],186,Birkig_Solar_Power_Plant,11.1191,Solar,1.2,50.2897,,
+WRI1030234,['SolarPlant'],187,Ebern___TUP_Solar_Power_Plant,10.7686,Solar,7.1,50.0824,,
+WRI1030051,['SolarPlant'],188,Ramin_Solar_Power_Plant,14.2864,Solar,9.0,53.4304,,
+WRI1030127,['SolarPlant'],189,Roitzsch___Enerparc_Solar_Power_Plant,12.2724,Solar,10.0,51.5697,,
+WRI1030121,['SolarPlant'],190,Lettewitz_Solar_Power_Plant,11.8638,Solar,13.3,51.6005,,
+WRI1030174,['SolarPlant'],191,Kodersdorf_Solar_Power_Plant,14.9078,Solar,3.8,51.2301,,
+WRI1030261,['SolarPlant'],192,Dllstadt_Solar_Power_Plant,10.2599,Solar,6.1,49.7912,,
+WRI1030384,['SolarPlant'],193,Ellighofen_Solar_Power_Plant,10.8571,Solar,3.5,48.0038,,
+WRI1030151,['SolarPlant'],194,Rothenschirmbach_Solar_Power_Plant,11.5534,Solar,1.2,51.4493,,
+WRI1030257,['SolarPlant'],195,Wrrstadt_Solar_Power_Plant,8.1322,Solar,5.6,49.8289,,
+WRI1030237,['SolarPlant'],196,Hasselbach_Solar_Power_Plant,7.4374,Solar,1.9,50.0322,,
+WRI1030089,['SolarPlant'],197,Schwege_Solar_Power_Plant,7.9332,Solar,8.2,52.0627,,
+WRI1030134,['SolarPlant'],198,Delitzsch___Ziehwerk_Solar_Power_Plant,12.3528,Solar,1.8,51.5154,,
+WRI1030325,['SolarPlant'],199,Mengkofen_Solar_Power_Plant,12.3842,Solar,21.7,48.6988,,
+WRI1030049,['SolarPlant'],200,Bandenitz_Solar_Power_Plant,11.2834,Solar,6.0,53.4846,,
+WRI1030308,['SolarPlant'],201,Aufroth_Solar_Power_Plant,12.5529,Solar,1.4,48.9614,,
+WRI1030293,['SolarPlant'],202,Seitendorf_Solar_Power_Plant,10.8513,Solar,1.8,49.316,,
+WRI1030099,['SolarPlant'],203,Hohenerxleben_Solar_Power_Plant,11.6594,Solar,1.3,51.8492,,
+WRI1030117,['SolarPlant'],204,Msthinsdorf_Solar_Power_Plant,12.0165,Solar,5.1,51.6361,,
+WRI1030027,['SolarPlant'],205,Bordelum_Solar_Power_Plant,8.9337,Solar,3.2,54.6194,,
+WRI1030083,['SolarPlant'],206,Saerbeck_Solar_Power_Plant,7.6185,Solar,5.7,52.2039,,
+WRI1030177,['SolarPlant'],207,Litten_Solar_Power_Plant,14.5194,Solar,38.3,51.1954,,
+WRI1030327,['SolarPlant'],208,Wisselsing_Solar_Power_Plant,12.9739,Solar,6.2,48.6965,,
+WRI1030242,['SolarPlant'],209,Spangdahlem_Solar_Power_Plant,6.6885,Solar,2.1,49.9831,,
+WRI1030358,['SolarPlant'],210,Horgau_Solar_Power_Plant,10.662,Solar,5.0,48.4009,,
+WRI1030332,['SolarPlant'],211,Hutthurm_Solar_Power_Plant,13.4617,Solar,1.6,48.6586,,
+WRI1030071,['SolarPlant'],212,Georgsdorf_Solar_Power_Plant,7.084,Solar,24.7,52.5909,,
+WRI1030361,['SolarPlant'],213,Pocking_1_Solar_Power_Plant,13.3016,Solar,10.0,48.3711,,
+WRI1030204,['SolarPlant'],214,Werdau_Solar_Power_Plant,12.3825,Solar,1.7,50.7144,,
+WRI1030272,['SolarPlant'],215,Haag_Solar_Power_Plant,10.6237,Solar,5.5,49.6267,,
+WRI1030371,['SolarPlant'],216,Lefchfeld_Nord_Solar_Park,10.8935,Solar,24.9,48.2205,,
+WRI1030291,['SolarPlant'],217,Pttlingen_Solar_Power_Plant,6.8779,Solar,4.9,49.3234,,
+WRI1030105,['SolarPlant'],218,Bernburg_Solar_Power_Plant,11.7142,Solar,10.0,51.7999,,
+WRI1030186,['SolarPlant'],219,Drrrhrsdorf_Solar_Power_Plant,14.0108,Solar,1.9,51.0277,,
+WRI1030323,['SolarPlant'],220,Plattling_Solar_Power_Plant,12.8953,Solar,1.6,48.7644,,
+WRI1030160,['SolarPlant'],221,Rietschen_Solar_Power_Plant,14.791,Solar,2.2,51.3929,,
+WRI1030335,['SolarPlant'],222,Deisenhofen_Solar_Power_Plant,10.5402,Solar,1.9,48.6221,,
+WRI1030150,['SolarPlant'],223,Wiesenena_Solar_Power_Plant,12.1909,Solar,5.2,51.4507,,
+WRI1030084,['SolarPlant'],224,Wnsdorf_Solar_Power_Plant,13.476,Solar,7.8,52.1844,,
+WRI1030277,['SolarPlant'],225,Mnchweiler_Solar_Power_Plant,7.895,Solar,1.7,49.5609,,
+WRI1030139,['SolarPlant'],226,Sangerhausen_Solar_Power_Plant,11.3229,Solar,1.0,51.4781,,
+WRI1030109,['SolarPlant'],227,Forst_Solar_Power_Plant,14.6298,Solar,3.6,51.721,,
+WRI1030169,['SolarPlant'],228,Althen_Solar_Power_Plant,12.5171,Solar,7.3,51.3457,,
+WRI1030206,['SolarPlant'],229,Viernau_Solar_Power_Plant,10.5631,Solar,1.6,50.659,,
+WRI1030230,['SolarPlant'],230,Ellscheid_Solar_Power_Plant,6.9303,Solar,5.0,50.1551,,
+WRI1030181,['SolarPlant'],231,Heinersdorf_Solar_Power_Plant,12.6234,Solar,7.1,51.1292,,
+WRI1030284,['SolarPlant'],232,Eckendorf_Solar_Power_Plant,12.2285,Solar,1.6,49.4455,,
+WRI1030333,['SolarPlant'],233,Bachhagel_Solar_Power_Plant,10.3384,Solar,1.8,48.6281,,
+WRI1030137,['SolarPlant'],234,Sietzsch_Solar_Power_Plant,12.1908,Solar,10.0,51.4896,,
+WRI1030215,['SolarPlant'],235,Deesen_Solar_Power_Plant,7.6997,Solar,4.1,50.5153,,
+WRI1030157,['SolarPlant'],236,Voigstedt_Solar_Power_Plant,11.3351,Solar,3.7,51.4013,,
+WRI1030273,['SolarPlant'],237,Dittwar_Solar_Power_Plant,9.6518,Solar,1.8,49.5806,,
+WRI1030312,['SolarPlant'],238,Oberehring_Solar_Power_Plant,12.3237,Solar,3.9,48.8991,,
+WRI1030211,['SolarPlant'],239,Rohr_Solar_Power_Plant,10.4902,Solar,4.7,50.5708,,
+WRI1030363,['SolarPlant'],240,Ulm_Eggingen_Solar_Power_Plant,9.8689,Solar,6.5,48.355,,
+WRI1030158,['SolarPlant'],241,Ranitz_Solar_Power_Plant,12.0801,Solar,7.1,51.3993,,
+WRI1025883,['SolarPlant'],242,Solarpark_Stedten,11.7383,Solar,28.34412,51.4333,,
+WRI1030091,['SolarPlant'],243,Calbe_2_Solar_Power_Plant,11.8042,Solar,4.3,51.9267,,
+WRI1030125,['SolarPlant'],244,Ilfeld_Solar_Power_Plant,10.7796,Solar,5.6,51.5744,,
+WRI1030372,['SolarPlant'],245,Kleinaitingen_Solar_Power_Plant,10.8664,Solar,5.0,48.2145,,
+WRI1030080,['SolarPlant'],246,Calvrde_Solar_Power_Plant,11.3071,Solar,1.3,52.3847,,
+WRI1030226,['SolarPlant'],247,Gelnhausen_Solar_Power_Plant,9.165,Solar,1.4,50.2127,,
+WRI1030078,['SolarPlant'],248,Brandenburg_Havel_Solar_Power_Plant,12.5165,Solar,20.0,52.4037,,
+WRI1030161,['SolarPlant'],249,Taucha_Solar_Power_Plant,12.507,Solar,5.3,51.3876,,
+WRI1030324,['SolarPlant'],250,Eging_am_See_Solar_Power_Plant,13.2554,Solar,2.2,48.7159,,
+WRI1030039,['SolarPlant'],251,Gnoien_Solar_Power_Plant,12.6925,Solar,6.4,53.978,,
+WRI1030322,['SolarPlant'],252,Sinzheim_Solar_Power_Plant,8.15,Solar,1.4,48.7805,,
+WRI1025908,['SolarPlant'],253,Eiche_Solar_Power_Plant,13.6031,Solar,26.5,52.5627,,
+WRI1030103,['SolarPlant'],254,Listerfehrda_Solar_Power_Plant,12.8626,Solar,2.9,51.8168,,
+WRI1030220,['SolarPlant'],255,Mengersgereuth_Hmmern_Solar_Power_Plant,11.102,Solar,1.4,50.3933,,
+WRI1030060,['SolarPlant'],256,Neuruppin_Solar_Power_Plant,12.792,Solar,7.9,52.946,,
+WRI1030385,['SolarPlant'],257,Bad_Drrheim_Solar_Power_Plant,8.6037,Solar,1.6,47.9933,,
+WRI1030046,['SolarPlant'],258,Gro_Stieten_Solar_Power_Plant,11.4629,Solar,6.9,53.8064,,
+WRI1030193,['SolarPlant'],259,Gotha_Solar_Power_Plant,10.6677,Solar,11.8,50.9393,,
+WRI1030218,['SolarPlant'],260,Schmidtheim_Solar_Power_Plant,6.5483,Solar,3.1,50.4125,,
+WRI1030304,['SolarPlant'],261,Cronheim_Solar_Power_Plant,10.6776,Solar,2.2,49.0937,,
+WRI1030063,['SolarPlant'],262,Finow_Solar_Power_Plant,13.7012,Solar,84.9,52.8224,,
+WRI1030116,['SolarPlant'],263,Rdgen_Solar_Power_Plant,12.1944,Solar,7.0,51.639,,
+WRI1030219,['SolarPlant'],264,Wlfersheim_Solar_Power_Plant,8.8275,Solar,5.3,50.3953,,
+WRI1030251,['SolarPlant'],265,Idenheim_Solar_Power_Plant,6.5593,Solar,3.9,49.8895,,
+WRI1030369,['SolarPlant'],266,Krumbach_Solar_Power_Plant,10.3431,Solar,5.2,48.2289,,
+WRI1030034,['SolarPlant'],267,Rostock_Solar_Power_Plant,12.0186,Solar,6.2,54.1731,,
+WRI1030212,['SolarPlant'],268,Schleiz_Solar_Power_Plant,11.7909,Solar,11.2,50.5497,,
+WRI1030043,['SolarPlant'],269,Wismar_Solar_Power_Plant,11.4851,Solar,8.6,53.8985,,
+WRI1030115,['SolarPlant'],270,Altdbern_Solar_Power_Plant,14.002,Solar,1.3,51.647,,
+WRI1030144,['SolarPlant'],271,Laubusch_Solar_Power_Plant,14.1321,Solar,3.0,51.4685,,
+WRI1030207,['SolarPlant'],272,Driedorf_Solar_Power_Plant,8.1834,Solar,5.0,50.6473,,
+WRI1030041,['SolarPlant'],273,Ecklak_Solar_Power_Plant,9.274,Solar,3.8,53.9246,,
+WRI1030276,['SolarPlant'],274,Oberlauda_Solar_Power_Plant,9.6413,Solar,2.2,49.5703,,
+WRI1030294,['SolarPlant'],275,Albersreuth_Solar_Power_Plant,10.9331,Solar,3.7,49.2979,,
+WRI1030067,['SolarPlant'],276,Werneuchen___SZ_Solar_Power_Plant,13.7523,Solar,2.2,52.6423,,
+WRI1030330,['SolarPlant'],277,Ergoldsbach_Solar_Power_Plant,12.1962,Solar,5.1,48.6759,,
+WRI1030197,['SolarPlant'],278,Jlich_Solar_Power_Plant,6.3876,Solar,1.5,50.915,,
+WRI1030112,['SolarPlant'],279,Herzberg_Solar_Power_Plant,13.2232,Solar,16.4,51.6731,,
+WRI1030021,['SolarPlant'],280,Humtrup_Solar_Power_Plant,8.8872,Solar,2.9,54.8521,,
+WRI1030337,['SolarPlant'],281,Allmanshofen_Solar_Power_Plant,10.8382,Solar,16.7,48.6148,,
+WRI1025898,['SolarPlant'],282,Mahlwinkel_Solar_Power_Plant,11.8192,Solar,18.8,52.387,,
+WRI1030068,['SolarPlant'],283,Klden_Solar_Power_Plant,11.6552,Solar,6.0,52.6416,,
+WRI1030214,['SolarPlant'],284,Waldbrunn_Solar_Power_Plant,8.1065,Solar,4.6,50.5174,,
+WRI1030048,['SolarPlant'],285,Pasewalk_Solar_Power_Plant,13.9799,Solar,4.8,53.5091,,
+WRI1025886,['SolarPlant'],286,Tutow_Solarpark_2_FF_Infrastruktur,13.2192,Solar,25.5,53.9214,,
+WRI1030131,['SolarPlant'],287,Hohenthurm_Solar_Power_Plant,12.1023,Solar,4.3,51.5258,,
+WRI1025909,['SolarPlant'],288,Barth_Solar_Power_Plant,12.7152,Solar,10.2,54.3434,,
+WRI1030300,['SolarPlant'],289,Schweizer_Berg_Solar_Power_Plant,6.8196,Solar,3.8,49.2175,,
+WRI1030265,['SolarPlant'],290,Ilbesheim_Solar_Power_Plant,8.0423,Solar,6.4,49.6931,,
+WRI1030374,['SolarPlant'],291,Egling_Solar_Power_Plant,11.0063,Solar,6.2,48.1828,,
+WRI1025902,['SolarPlant'],292,Welzow_II_Flughafen,14.1413,Solar,18.6,51.5891,,
+WRI1030203,['SolarPlant'],293,Bad_Endbach_Solar_Power_Plant,8.5209,Solar,7.3,50.7606,,
+WRI1030376,['SolarPlant'],294,Schwabstadl_Solar_Power_Plant,10.8514,Solar,10.0,48.1501,,
+WRI1030019,['SolarPlant'],295,Ellhft_Solar_Power_Plant,8.958,Solar,2.0,54.8912,,
+WRI1030028,['SolarPlant'],296,Norstedt_Solar_Power_Plant,9.1179,Solar,1.4,54.5888,,
+WRI1030082,['SolarPlant'],297,Glau_Solar_Power_Plant,13.1449,Solar,8.0,52.2394,,
+WRI1030370,['SolarPlant'],298,Oberottmarshausen_Solar_Power_Plant,10.8935,Solar,5.6,48.2205,,
+WRI1030119,['SolarPlant'],299,Dbern_Solar_Power_Plant,14.6169,Solar,6.3,51.6126,,
+WRI1030362,['SolarPlant'],300,Pocking_2_Solar_Power_Plant,13.2931,Solar,12.0,48.3696,,
+WRI1030061,['SolarPlant'],301,Ahlhorn_Solar_Power_Plant,8.2334,Solar,50.0,52.8886,,
+WRI1030108,['SolarPlant'],302,Kthen_Solar_Power_Plant,11.96,Solar,45.0,51.7212,,
+WRI1030156,['SolarPlant'],303,Grden_Solar_Power_Plant,13.5836,Solar,3.4,51.4044,,
+WRI1030163,['SolarPlant'],304,Krlitz_Solar_Power_Plant,12.7965,Solar,2.0,51.3623,,
+WRI1030056,['SolarPlant'],305,Karwitz_Solar_Power_Plant,11.0319,Solar,10.1,53.08,,
+WRI1030192,['SolarPlant'],306,Gerstungen_Solar_Power_Plant,10.0631,Solar,3.8,50.9669,,
+WRI1030379,['SolarPlant'],307,Hurlach_Solar_Power_Plant,10.8538,Solar,4.3,48.1074,,
+WRI1030280,['SolarPlant'],308,Hettenleidelheim_Solar_Power_Plant,8.0814,Solar,1.4,49.5418,,
+WRI1030136,['SolarPlant'],309,Rote_Jahne_Solar_Power_Plant,12.6807,Solar,13.2,51.5079,,
+WRI1030364,['SolarPlant'],310,Miegersbach_Solar_Power_Plant,11.2014,Solar,5.2,48.3232,,
+WRI1030279,['SolarPlant'],311,Beerfelden_Solar_Power_Plant,8.9561,Solar,1.4,49.56,,
+WRI1030216,['SolarPlant'],312,Reurieth_Solar_Power_Plant,10.6616,Solar,4.3,50.4633,,
+WRI1030390,['SolarPlant'],313,Mooshof_Solar_Power_Plant,8.9887,Solar,4.7,47.8134,,
+WRI1030196,['SolarPlant'],314,Klettbach_Solar_Power_Plant,11.1657,Solar,1.9,50.9204,,
+WRI1030023,['SolarPlant'],315,Wange_Solar_Power_Plant,8.6666,Solar,5.2,54.8445,,
+WRI1025884,['SolarPlant'],316,Solarpark_Amsdorf,11.735,Solar,28.344,51.4582,,
+WRI1030375,['SolarPlant'],317,Puchheim_Solar_Power_Plant,11.3434,Solar,1.1,48.1756,,
+WRI1025891,['SolarPlant'],318,Waldrehna_Solar_Power_Plant,13.601,Solar,52.7,51.7733,,
+WRI1030244,['SolarPlant'],319,Beilingen_Solar_Power_Plant,6.6737,Solar,2.1,49.9496,,
+WRI1030336,['SolarPlant'],320,Gergweis_Solar_Power_Plant,12.977,Solar,1.7,48.6196,,
+WRI1030106,['SolarPlant'],321,Cottbus_Solar_Power_Plant,14.3668,Solar,3.7,51.7589,,
+WRI1030290,['SolarPlant'],322,Gttelborn_Solar_Power_Plant,7.035,Solar,8.4,49.3386,,
+WRI1030032,['SolarPlant'],323,Ribnitz_Solar_Power_Plant,12.5055,Solar,2.6,54.2505,,
+WRI1030281,['SolarPlant'],324,Langenzenn_Solar_Power_Plant,10.79,Solar,2.2,49.4844,,
+WRI1030320,['SolarPlant'],325,Strakirchen_Solar_Power_Plant,12.7586,Solar,54.0,48.8074,,
+WRI1030326,['SolarPlant'],326,Gnannenweiler_Solar_Power_Plant,9.991,Solar,6.4,48.698,,
+WRI1030286,['SolarPlant'],327,Wetschhauser_Hof_Solar_Power_Plant,7.2159,Solar,4.1,49.4275,,
+WRI1030268,['SolarPlant'],328,Schneebergerhof_Solar_Power_Plant,7.8911,Solar,1.1,49.6779,,
+WRI1030025,['SolarPlant'],329,Niebll__GP_Joule_Solar_Power_Plant,8.8177,Solar,5.0,54.8002,,
+WRI1030058,['SolarPlant'],330,Wittenberge_Solar_Power_Plant,11.758,Solar,3.9,53.0172,,
+WRI1025907,['SolarPlant'],331,Solarpark_Baumgarten,11.8518,Solar,11.30404,53.8184,,
+WRI1030198,['SolarPlant'],332,Freiberg_Solar_Power_Plant,13.3746,Solar,3.0,50.9085,,
+WRI1030101,['SolarPlant'],333,Schnewalde_Solar_Power_Plant,13.2322,Solar,3.7,51.8214,,
+WRI1030235,['SolarPlant'],334,Rentweinsdorf_Solar_Power_Plant,10.8322,Solar,13.0,50.0695,,
+WRI1025906,['SolarPlant'],335,Solarpark_Baasdorf,13.4108,Solar,12.70439,52.7213,,
+WRI1030072,['SolarPlant'],336,Wustermark_Solar_Power_Plant,12.9516,Solar,3.0,52.5614,,
+WRI1030382,['SolarPlant'],337,Holzgnz_Solar_Power_Plant,10.2692,Solar,4.7,48.0228,,
+WRI1030111,['SolarPlant'],338,Neuhausen_Solar_Power_Plant,14.4243,Solar,10.6,51.6844,,
+WRI1030368,['SolarPlant'],339,Hrlkofen_Solar_Power_Plant,11.9467,Solar,3.7,48.2391,,
+WRI1025910,['SolarPlant'],340,Solarpark_Calau,13.9579,Solar,10.0515,51.7519,,
+WRI1030024,['SolarPlant'],341,Bosbll_Solar_Power_Plant,8.8474,Solar,4.4,54.8125,,
+WRI1030199,['SolarPlant'],342,Inden_Solar_Power_Plant,6.339,Solar,3.8,50.8436,,
+WRI1030301,['SolarPlant'],343,Biederbach_Solar_Power_Plant,10.7331,Solar,5.6,49.2042,,
+WRI1030086,['SolarPlant'],344,Tpchin___Enerparc_Solar_Power_Plant,13.5649,Solar,4.2,52.1667,,
+WRI1030055,['SolarPlant'],345,Rapshagen_Solar_Power_Plant,12.2407,Solar,9.4,53.2171,,
+WRI1030270,['SolarPlant'],346,Rockenhausen_Solar_Power_Plant,7.8412,Solar,1.8,49.6411,,
+WRI1030152,['SolarPlant'],347,Glesien_Solar_Power_Plant,12.2345,Solar,4.2,51.4452,,
+WRI1030162,['SolarPlant'],348,Allstedt_Solar_Power_Plant,11.4476,Solar,19.2,51.386,,
+WRI1030381,['SolarPlant'],349,Vogtsburg_Solar_Power_Plant,7.6065,Solar,7.8,48.073,,
+WRI1030044,['SolarPlant'],350,Krassow_Solar_Power_Plant,11.5827,Solar,8.5,53.8813,,
+WRI1025905,['SolarPlant'],351,Schwarzheide_Solar_Power_Plant,13.8424,Solar,12.73116,51.4937,,
+WRI1030054,['SolarPlant'],352,Dedelow_Solar_Power_Plant,13.786,Solar,3.8,53.3562,,
+WRI1030213,['SolarPlant'],353,Solms_Solar_Power_Plant,8.4139,Solar,2.9,50.5342,,
+WRI1030184,['SolarPlant'],354,Sontra_Solar_Power_Plant,9.923,Solar,1.1,51.0538,,
+WRI1030282,['SolarPlant'],355,Sankt_Wendel_Solar_Power_Plant,7.1247,Solar,3.3,49.4819,,
+WRI1025877,['SolarPlant'],356,Waldpolenz_Solar_Power_Plant,12.6554,Solar,45.0,51.3289,,
+WRI1030118,['SolarPlant'],357,Bitterfeld_Wolfen___GP_Joule_Solar_Power_Plant,12.3076,Solar,3.0,51.6166,,
+WRI1025893,['SolarPlant'],358,PVA_Dallgow_Dberitz,13.1163,Solar,20.956,52.5345,,
+WRI1030352,['SolarPlant'],359,Neuburg_Frstobl_Solar_Power_Plant,13.4059,Solar,1.3,48.5149,,
+WRI1030386,['SolarPlant'],360,Mekirch_Solar_Power_Plant,9.1071,Solar,1.0,47.976,,
+WRI1030247,['SolarPlant'],361,Alitzheim_Solar_Power_Plant,10.3305,Solar,8.5,49.9294,,
+WRI1030062,['SolarPlant'],362,Grneberg_Solar_Power_Plant,13.2193,Solar,7.5,52.8643,,
+WRI1030256,['SolarPlant'],363,Hinzerath_Solar_Power_Plant,7.1833,Solar,1.4,49.843,,
+WRI1030255,['SolarPlant'],364,Pferdsfeld_Solar_Power_Plant,7.5919,Solar,28.5,49.8594,,
+WRI1030171,['SolarPlant'],365,Markranstdt_Solar_Power_Plant,12.2191,Solar,4.1,51.3144,,
+WRI1030329,['SolarPlant'],366,Unterliezheim_Solar_Power_Plant,10.5418,Solar,1.5,48.6801,,
+WRI1030165,['SolarPlant'],367,Nemsdorf_Solar_Power_Plant,11.6712,Solar,4.8,51.3567,,
+WRI1030190,['SolarPlant'],368,Altenburg_Flugplatz_Solar_Power_Plant,12.5103,Solar,12.1,50.9894,,
+WRI1030241,['SolarPlant'],369,Bergrheinfeld___SZ_Solar_Power_Plant,10.1566,Solar,2.4,49.9889,,
+WRI1030079,['SolarPlant'],370,Frstenwalde_Solar_Power_Plant,14.0955,Solar,39.6,52.3888,,
+WRI1030338,['SolarPlant'],371,Vilshofen_an_der_Donau_Solar_Power_Plant,13.1785,Solar,2.0,48.5979,,
+WRI1030318,['SolarPlant'],372,Salching_Solar_Power_Plant,12.5671,Solar,1.3,48.8137,,
+WRI1030334,['SolarPlant'],373,Gttersdorf_Solar_Power_Plant,12.9651,Solar,1.3,48.626,,
+WRI1030195,['SolarPlant'],374,Oberseifertsdorf_Solar_Power_Plant,14.8011,Solar,10.0,50.9363,,
+WRI1030249,['SolarPlant'],375,Immenreuth_Solar_Power_Plant,11.8802,Solar,5.8,49.9171,,
+WRI1025896,['SolarPlant'],376,Solarpark_Burg,14.1116,Solar,20.0044,51.7743,,
+WRI1030053,['SolarPlant'],377,Zachow_Solar_Power_Plant,11.8763,Solar,5.5,53.3646,,
+WRI1025879,['SolarPlant'],378,Delitzsch_Solar_Power_Plant,12.2893,Solar,32.1,51.509,,
+WRI1030340,['SolarPlant'],379,Nordendorf_Solar_Power_Plant,10.8441,Solar,7.4,48.5882,,
+WRI1030036,['SolarPlant'],380,Meldorf_Solar_Power_Plant,9.0425,Solar,3.5,54.0836,,
+WRI1030275,['SolarPlant'],381,Gelchsheim_Solar_Power_Plant,10.0001,Solar,3.3,49.575,,
+WRI1030351,['SolarPlant'],382,Oberhrbach_Solar_Power_Plant,13.1066,Solar,1.9,48.5161,,
+WRI1030085,['SolarPlant'],383,Gerwisch_Solar_Power_Plant,11.7523,Solar,8.6,52.1841,,
+WRI1030208,['SolarPlant'],384,Oberdreis_Solar_Power_Plant,7.6851,Solar,2.9,50.6232,,
+WRI1030140,['SolarPlant'],385,Teutschenthal_Solar_Power_Plant,11.7896,Solar,7.1,51.4734,,
+WRI1030188,['SolarPlant'],386,Laisa_Solar_Power_Plant,8.6225,Solar,2.8,50.9941,,
+WRI1030097,['SolarPlant'],387,Stafurt_1_Solar_Power_Plant,11.6055,Solar,5.0,51.864,,
+WRI1030120,['SolarPlant'],388,Weeze_Solar_Power_Plant,6.1529,Solar,14.0,51.6055,,
+WRI1030311,['SolarPlant'],389,Sengkofen_Solar_Power_Plant,12.2929,Solar,2.0,48.9171,,
+WRI1030287,['SolarPlant'],390,Httigweiler_Solar_Power_Plant,7.0614,Solar,2.3,49.3843,,
+WRI1030173,['SolarPlant'],391,Kamenz_Solar_Power_Plant,14.1298,Solar,3.8,51.2947,,
+WRI1030202,['SolarPlant'],392,Breitungen_Solar_Power_Plant,10.3287,Solar,3.6,50.7789,,
+WRI1030359,['SolarPlant'],393,Schelklingen_Solar_Power_Plant,9.6414,Solar,4.9,48.3888,,
+WRI1030315,['SolarPlant'],394,Muggensturm_Solar_Power_Plant,8.2803,Solar,1.8,48.8807,,
+WRI1030238,['SolarPlant'],395,Erlasee_Solar_Power_Plant,9.9204,Solar,11.4,50.0029,,
+WRI1030254,['SolarPlant'],396,Riedstadt_Leeheim_Solar_Power_Plant,8.4595,Solar,1.9,49.8612,,
+WRI1030167,['SolarPlant'],397,Zweimen_Solar_Power_Plant,12.1334,Solar,4.0,51.352,,
+WRI1025882,['SolarPlant'],398,Solar_Schipkau_II_GmbH__Co_KG,13.7377,Solar,81.0,51.5683,,
+WRI1030239,['SolarPlant'],399,Goldbach_Solar_Power_Plant,9.2008,Solar,2.8,49.999,,
+WRI1030087,['SolarPlant'],400,Bitterfeld_Wolfen___Hinter_dem_Bahnhof_Solar_Power_Plant,13.0665,Solar,6.0,52.1123,,
+WRI1030183,['SolarPlant'],401,Bad_Wildungen_Solar_Power_Plant,9.1506,Solar,1.6,51.1263,,
+WRI1030373,['SolarPlant'],402,Aschheim_Solar_Power_Plant,11.714,Solar,1.0,48.1862,,
+WRI1030172,['SolarPlant'],403,Oschatz_Solar_Power_Plant,13.1089,Solar,3.8,51.3064,,
+WRI1030341,['SolarPlant'],404,Obertzdorf_Solar_Power_Plant,13.7106,Solar,1.7,48.5817,,
+WRI1030357,['SolarPlant'],405,Harthausen_Solar_Power_Plant,10.3481,Solar,4.5,48.4406,,
+WRI1025873,['SolarPlant'],406,Neuhardenberg_Solar_Power_Plant,14.2411,Solar,76.7,52.6123,,
+WRI1030031,['SolarPlant'],407,Treia_Solar_Power_Plant,9.2906,Solar,2.4,54.5022,,
+WRI1030020,['SolarPlant'],408,Klanxbll_Solar_Power_Plant,8.6481,Solar,6.0,54.8645,,
+WRI1030107,['SolarPlant'],409,Gahro_Solar_Power_Plant,13.6862,Solar,27.4,51.7306,,
+WRI1030285,['SolarPlant'],410,Mutterstadt_Solar_Power_Plant,8.319,Solar,1.6,49.4366,,
+WRI1025875,['SolarPlant'],411,Solarpark_Wittstock,12.5187,Solar,68.0,53.2018,,
+WRI1025874,['SolarPlant'],412,Templin_Solar_Power_Plant,13.5425,Solar,128.4,53.0295,,
+WRI1030038,['SolarPlant'],413,Barlt_Solar_Power_Plant,9.031,Solar,2.2,54.0218,,
+WRI1030344,['SolarPlant'],414,Kching_Solar_Power_Plant,13.0228,Solar,5.6,48.5553,,
+WRI1025880,['SolarPlant'],415,Ostseeflughafen_Stralsund,12.7109,Solar,31.55326,54.3426,,
+WRI1030096,['SolarPlant'],416,Peitz_Solar_Power_Plant,14.4116,Solar,3.0,51.8667,,
+WRI1030299,['SolarPlant'],417,Goodyear___Philippsburg_Solar_Power_Plant,8.4716,Solar,7.4,49.225,,
+WRI1030187,['SolarPlant'],418,Eisenach_Solar_Power_Plant,10.3254,Solar,3.3,51.0023,,
+WRI1030387,['SolarPlant'],419,Oberostendorf_Solar_Power_Plant,10.7634,Solar,2.6,47.9485,,
+WRI1030248,['SolarPlant'],420,Himmelstadt_Solar_Power_Plant,9.7401,Solar,4.3,49.9244,,
+WRI1030360,['SolarPlant'],421,Weil_Solar_Power_Plant,11.2861,Solar,1.4,48.3797,,
+WRI1025903,['SolarPlant'],422,Halberstadt_Solar_Power_Plant,11.0914,Solar,3.8,51.897,,
+WRI1030170,['SolarPlant'],423,Geusa_Solar_Power_Plant,11.9631,Solar,5.9,51.3398,,
+WRI1030342,['SolarPlant'],424,Lauingen___Juwi_Solar_Power_Plant,10.3857,Solar,2.8,48.5782,,
+WRI1030026,['SolarPlant'],425,Eggebek_Solar_Power_Plant,9.3457,Solar,83.2,54.6233,,
+WRI1030210,['SolarPlant'],426,Kalenberg_Solar_Power_Plant,6.5995,Solar,3.7,50.5717,,
+WRI1005571,['WastePlant'],427,Abfallentsorgungszentrum_Asdonkshof,6.5747,Waste,20.8,51.5224,1997.0,Kreis Weseler Abfallgesellschaft mbH & Co. KG (KWA)
+WRI1005960,['WastePlant'],428,Müllkraftwerk_Schwandorf,12.0879,Waste,54.0,49.31,1982.0,Zweckverband Müllverwertung Schwandorf
+WRI1006111,['BiomassPlant'],429,Biomass_Generator_23,6.8887,Biomass,11.4,51.8554,2006.0,Borchers Biomassekraftwerk GmbH
+WRI1005635,['FossilFuelPlant'],430,DKW_Nord,10.4866,Oil,11.4,48.0627,1988.0,Vereinigte Wertach-Elektrizitätswerke GmbH
+WRI1005992,['FossilFuelPlant'],431,PL_Werk_Appeldorn,6.3586,Gas,11.4,51.7297,2004.0,Pfeifer & Langen Kommanditgesellschaft
+WRI1006058,['FossilFuelPlant'],432,Steinitz,11.1033,Gas,11.4,52.83,1995.0,GDF SUEZ E&P DEUTSCHLAND GMBH
+WRI1005842,['FossilFuelPlant'],433,Industriekraftwerk_Breuberg,9.0117,Gas,11.4,49.8108,1999.0,Industriekraftwerk Breuberg GmbH / Pirelli Deutschland GmbH
+WRI1005634,['FossilFuelPlant'],434,DKW_Leinau,10.6117,Oil,11.4,47.9125,,Vereinigte Wertach-Elektrizitätswerke GmbH
+WRI1005623,['FossilFuelPlant'],435,Buschhaus_power_station,10.9768,Coal,352.0,52.1724,1985.0,Helmstedter Revier GmbH
+WRI1025871,['WindPlant'],436,Offshore_Windfarm_Danysk,7.1945,Wind,284.4,55.1416,2015.0,Vattenfall Europe Windkraft GmbH /   Stadtwerke München GmbH
+WRI1025869,['WindPlant'],437,Baltic_2,13.162,Wind,288.0,54.983,2015.0,
+WRI1025853,['WindPlant'],438,Windpark_Riffgat,6.475,Wind,113.4,53.692,2014.0,Offshore-Windpark RIFFGAT GmbH & Co. KG/EWE ERNEUERBARE ENERGIEN GmbH
+WRI1025855,['WindPlant'],439,Gode_Wind_1___Teil_1,6.994,Wind,263.1,54.041,2015.0,
+WRI1025857,['WindPlant'],440,Trianel_Windpark_Borkum,6.4667,Wind,200.0,54.0416,2015.0,Trianel Windkraftwerk Borkum GmbH & Co. KG
+WRI1025854,['WindPlant'],441,Borkum_Riffgrund_I,6.55,Wind,312.0,53.9667,2015.0,Borkum Riffgrund I Offshore Windpark A/S GmbH & Co. oHG
+WRI1025868,['WindPlant'],442,Bürgerwindpark_im_Kirchspiel_Medelby,9.1334,Wind,82.23,54.7776,2014.0,
+WRI1025845,['WindPlant'],443,Windpark_Druxberge,11.2742,Wind,116.7,52.1651,2003.0,Umspannwerke Druxberge GmbH & Co. KG   c/o Windstrom GmbH
+WRI1025864,['WindPlant'],444,Amrumbank_West,7.7999,Wind,301.32,54.5,2015.0,
+WRI1025842,['WindPlant'],445,Windpark_Klettwitz,13.8652,Wind,89.1,51.5452,2015.0,
+WRI1025870,['WindPlant'],446,Butendiek,7.774,Wind,288.0,55.019,2015.0,OWP Butendiek GmbH & Co. KG
+WRI1025860,['WindPlant'],447,OWP_Nordsee_Ost,7.683,Wind,295.2,54.445,2014.0,RWE International S.E.
+WRI1025848,['WindPlant'],448,Windpark_Hüselitz,11.7882,Wind,92.4,52.5174,2015.0,
+WRI1025861,['WindPlant'],449,Windpark_Fehmarn,11.1097,Wind,143.0,54.4856,2006.0,Fehmarn Netz GmbH & Co. OHG
+WRI1025849,['WindPlant'],450,Windpark_Arneburg_2,11.9387,Wind,117.0,52.7002,2001.0,SachsenFonds GmbH & Co. Windpark I KG
+WRI1025866,['WindPlant'],451,Windpark_Reußenköge,9.0139,Wind,189.312,54.6409,2013.0,UW Reußenköge GmbH
+WRI1025843,['WindPlant'],452,Windpark_Dahme,13.5491,Wind,76.5,51.8686,2005.0,Windpark Dahme GmbH & Co. KG
+WRI1025846,['WindPlant'],453,Windpark_Hakenstedt,11.2847,Wind,82.7,52.1663,1999.0,Umspannwerke Druxberge GmbH & Co. KG   c/o Windstrom GmbH
+WRI1025844,['WindPlant'],454,Windparks_Biere_und_Borne,11.6207,Wind,94.5,51.9605,1999.0,UWB Umspannwerk Betriebsgesellschaft Biere mbH    UWB Umspannwerk Betriebsgesellschaft Borne mbH
+WRI1025881,['WindPlant'],455,Windpark_Arneburg_2,11.9387,Wind,31.5,52.7002,2001.0,SachsenFonds GmbH & Co. Windpark I KG
+WRI1025859,['WindPlant'],456,Meerwind_SüdIOst,7.704,Wind,288.0,54.392,2014.0,WindMW GmbH
+WRI1025858,['WindPlant'],457,BARD_Offshore_1,5.98,Wind,400.0,54.36,,Ocean Breeze Energy GmbH & Co. KG
+WRI1025851,['WindPlant'],458,UW_Bertikow,14.048,Wind,340.0,53.2641,2003.0,ENERTRAG Aktiengesellschaft
+WRI1025847,['WindPlant'],459,SWM_Wind_Havelland_GmbH__Co_KG,12.5636,Wind,171.0,52.3869,2009.0,Stadtwerke München GmbH    HEAG Südhessische Energie AG (HSE)
+WRI1025865,['WindPlant'],460,Global_Tech_I,6.367,Wind,400.0,54.509,2015.0,HEAG Südhessische Energie AG /   Stadtwerke München GmbH
+WRI1005869,['FossilFuelPlant'],461,Kohlekraftwerk,6.6536,Coal,14.4,50.7055,2010.0,Smurfit Kappa Zülpich Papier GmbH
+WRI1005995,['FossilFuelPlant'],462,PL_Werk_Könnern,11.7581,Coal,20.3,51.6978,1993.0,Pfeifer & Langen Kommanditgesellschaft
+WRI1005977,['FossilFuelPlant'],463,Neurath_power_station,6.615,Coal,2068.0,51.0395,1974.0,RWE Power AG
+WRI1005734,['FossilFuelPlant'],464,Heizkraftwerk_3,6.8792,Coal,211.0,49.249,1989.0,STEAG Power Saar GmbH
+WRI1005817,['FossilFuelPlant'],465,HKW_West,8.6531,Coal,123.0,50.0984,1989.0,Mainova AG
+WRI1005686,['FossilFuelPlant'],466,G_Kraftwerk,6.6541,Coal,103.0,51.3689,1962.0,Currenta GmbH & Co. OHG
+WRI1006130,['FossilFuelPlant'],467,Wedel_power_station,9.7244,Coal,260.0,53.567,1961.0,Vattenfall Europe AG
+WRI1005979,['FossilFuelPlant'],468,Niederaussem_power_station,6.6685,Coal,3430.0,50.993,1979.0,RWE Power AG
+WRI1005889,['FossilFuelPlant'],469,Kraftwerk_N_230,6.6615,Coal,110.0,51.3698,1971.0,Currenta GmbH & Co. OHG
+WRI1005631,['FossilFuelPlant'],470,Deuben_power_station,12.0762,Coal,86.0,51.1119,1936.0,Mitteldeut Braunkohl (Mibrag)
+WRI1006069,['FossilFuelPlant'],471,Tiefstack_power_station,10.0632,Coal,194.0,53.5262,1993.0,Vattenfall Europe AG
+WRI1005800,['FossilFuelPlant'],472,Cologne_Merkenich_power_station,6.9643,Coal,75.3,51.0178,2010.0,Stadtwerke Köln GmbH (100% City of Cologne)
+WRI1005740,['FossilFuelPlant'],473,Heizkraftwerk_der_Sappi_Stockstadt_GmbH,9.0687,Coal,24.8,49.9774,1969.0,Sappi Stockstadt GmbH
+WRI1006125,['FossilFuelPlant'],474,Waehlitz_power_station,12.0762,Coal,31.0,51.1666,1994.0,Mitteldeut Braunkohl (Mibrag)
+WRI1005757,['FossilFuelPlant'],475,Pforzheim_power_station,8.7245,Coal,26.9,48.8973,1990.0,Heizkraftwerk Pforzheim GmbH
+WRI1005805,['FossilFuelPlant'],476,HKW_Nord_West,9.438,Coal,200.0,51.2529,,Volkswagen AG
+WRI1005982,['FossilFuelPlant'],477,Nord_2,11.6393,Coal,332.7,48.1805,1991.0,SWM Services GmbH
+WRI1005994,['FossilFuelPlant'],478,PL_Werk_Jülich,6.3693,Coal,24.6,50.9152,2004.0,Pfeifer & Langen Kommanditgesellschaft
+WRI1006019,['FossilFuelPlant'],479,Stuttgart_Muenster,9.2211,Coal,159.9,48.8158,1983.0,EnBW Energie Baden-Württemberg AG
+WRI1005699,['FossilFuelPlant'],480,GKM_Mannheim_power_station,8.4891,Coal,1958.0,49.4452,1980.0,Grosskraftwerk Mannheim
+WRI1005737,['FossilFuelPlant'],481,Altbach_power_station,9.3749,Coal,769.0,48.7176,1992.0,Energie Baden-Württemberg
+WRI1005879,['FossilFuelPlant'],482,Kraftwerk_Ensdorf,6.7709,Coal,389.0,49.2932,,Gemeinschaft nach Bruchteilen der Saarstahl AG (SAG) und Saarschmiede GmbH Freiformschmiede (SSF)
+WRI1005864,['FossilFuelPlant'],483,Klingenberg,13.497,Coal,164.0,52.4889,1981.0,Vattenfall Europe Wärme Aktiengesellschaft
+WRI1005742,['FossilFuelPlant'],484,Heizkraftwerk_FFO,14.546,Coal,45.0,52.346,1997.0,Stadtwerke Frankfurt (Oder) GmbH
+WRI1005619,['FossilFuelPlant'],485,Braunkohlekraftwerk_Lippendorf,12.3733,Coal,875.0,51.1821,1999.0,EnBW Energie Baden-Württemberg AG
+WRI1005878,['FossilFuelPlant'],486,Dessau_power_station,12.23,Coal,49.0,51.8269,1996.0,Kraftwerk Dessau GmbH
+WRI1005743,['FossilFuelPlant'],487,Flensburg_power_station,9.4324,Coal,195.0,54.8049,1986.0,Stadtwerke Flensburg GmbH
+WRI1005877,['FossilFuelPlant'],488,Kraftwerk_Bexbach,7.2371,Coal,721.0,49.3635,1983.0,STEAG GmbH
+WRI1005952,['FossilFuelPlant'],489,Modellkraftwerk,6.8792,Coal,179.0,49.249,1982.0,STEAG Power Saar GmbH
+WRI1006042,['FossilFuelPlant'],490,Scholven_power_station,7.0099,Coal,690.0,51.6024,1973.0,E.On Kraftwerke GmbH
+WRI1005679,['FossilFuelPlant'],491,FKK,9.484,Coal,33.5,51.2791,1988.0,Städtische Werke Energie + Wärme GmbH
+WRI1006094,['FossilFuelPlant'],492,Coal_Plant_1,12.1104,Coal,17.5,51.0489,2005.0,CropEnergies Bioethanol GmbH Zeitz
+WRI1005747,['FossilFuelPlant'],493,Heilbronn_power_station,9.2063,Coal,778.0,49.1773,1977.0,Energie Baden-Württemberg
+WRI1005760,['FossilFuelPlant'],494,Heizkraftwerk_Stuttgart_Gaisburg,9.2315,Coal,22.6,48.7825,2009.0,EnBW Energie Baden-Württemberg AG
+WRI1006096,['FossilFuelPlant'],495,Coal_Plant_2,8.0868,Coal,18.5,48.5272,1986.0,Koehler SE
+WRI1005765,['FossilFuelPlant'],496,Heyden_power_station,8.996,Coal,875.0,52.3828,1987.0,E.On Kraftwerke GmbH
+WRI1005818,['FossilFuelPlant'],497,HKW_West,10.7645,Coal,138.5,52.4422,1985.0,Volkswagen AG
+WRI1006134,['FossilFuelPlant'],498,Weisweiler_power_station,6.3211,Coal,1800.0,50.8392,1968.0,RWE Power AG
+WRI1006017,['FossilFuelPlant'],499,Reno_De_Medici,8.073,Coal,19.0,51.3914,,Reno De Medici Arnsberg GmbH
+WRI1005673,['FossilFuelPlant'],500,EZ1,12.1104,Coal,18.5,51.0489,1993.0,Südzucker AG Mannheim/Ochsenfurt  Werk Zeitz
+WRI1005950,['FossilFuelPlant'],501,Berlin_Moabit_power_station,13.3461,Coal,89.0,52.5374,1990.0,Vattenfall Europe AG
+WRI1005692,['FossilFuelPlant'],502,Kiel_power_station,10.1766,Coal,323.0,54.3394,1970.0,Gemeinschafts Kraftwerk Kiel
+WRI1005860,['FossilFuelPlant'],503,Kessel_4,6.486,Coal,9.3,50.777,1983.0,Papierfabrik Schoellershammer  Heinrich August Schoeller Söhne GmbH & Co. KG
+WRI1006041,['FossilFuelPlant'],504,Schkopau_power_station,11.9504,Coal,900.0,51.3985,1996.0,E.ON
+WRI1005697,['FossilFuelPlant'],505,GKH_Hannover_power_station,9.6486,Coal,272.0,52.42,1989.0,Gemeinschaftskraftwerk Hannover GmbH (GKH)
+WRI1005781,['FossilFuelPlant'],506,Wuppertal_Elberfeld_power_station,7.1187,Coal,85.0,51.2484,1989.0,WSW Wuppertaler Stadtwerke AG
+WRI1005809,['FossilFuelPlant'],507,HKW_Sachtleben,6.7054,Coal,27.5,51.4409,1962.0,Sachtleben Chemie GmbH
+WRI1005916,['FossilFuelPlant'],508,KW_Walsum,6.7187,Coal,1200.0,51.5267,,Steag GmbH
+WRI1075564,['FossilFuelPlant'],509,Chemiepark_Marl_power_station,,Coal,136.0,51.6846,1974.0,Infracor GmbH
+WRI1006056,['FossilFuelPlant'],510,Staudinger_power_station,8.9534,Coal,1132.0,50.0886,1992.0,E.On Kraftwerke GmbH
+WRI1005902,['FossilFuelPlant'],511,Hafen_power_station,8.7287,Coal,427.0,53.1249,1973.0,swb Erzeugung GmbH & Co. KG
+WRI1005915,['FossilFuelPlant'],512,KW_Voerde,6.6894,Coal,1390.0,51.5765,,Kraftwerk Voerde beschränkt haftende OHG
+WRI1005953,['FossilFuelPlant'],513,Hamburg_Moorburg,9.949,Coal,1600.0,53.489,2015.0,Vattenfall Europe AG
+WRI1006133,['FossilFuelPlant'],514,Weiher,7.0314,Coal,655.6,49.3341,1976.0,STEAG Power Saar GmbH
+WRI1005874,['FossilFuelPlant'],515,Kraftwerk,6.665,Coal,10.0,50.9456,1995.0,Martinswerk GmbH
+WRI1005935,['FossilFuelPlant'],516,Lippendorf_power_station,12.3733,Coal,875.0,51.1821,2000.0,Vattenfall Europe Generation AG
+WRI1005840,['FossilFuelPlant'],517,Industrie_Kraftwerk,6.5782,Coal,79.0,51.5649,1975.0,Solvay Chemicals GmbH
+WRI1006045,['FossilFuelPlant'],518,Schwarze_Pumpe_power_station,14.3531,Coal,1500.0,51.5348,1998.0,Vattenfall Europe AG
+WRI1006143,['FossilFuelPlant'],519,Wilhelmshaven_power_station,8.1462,Coal,757.0,53.5658,1976.0,E.On Kraftwerke GmbH
+WRI1006024,['FossilFuelPlant'],520,Berlin_Reuter_West_power_station,13.2426,Coal,564.0,52.5351,1988.0,Vattenfall Europe AG
+WRI1006123,['FossilFuelPlant'],521,Huerth_Ville__Berrenrath_power_station,6.8407,Coal,52.0,50.8614,1991.0,RWE Power AG
+WRI1005911,['FossilFuelPlant'],522,Lünen_power_station_KSBG,7.4643,Coal,473.0,51.614,1967.0,Steag GmbH
+WRI1005680,['FossilFuelPlant'],523,Fortuna_Nord,6.6636,Coal,15.0,50.9456,1984.0,RWE Power AG
+WRI1005993,['FossilFuelPlant'],524,PL_Werk_Euskirchen,6.8101,Coal,14.5,50.658,,Pfeifer & Langen Kommanditgesellschaft
+WRI1005777,['FossilFuelPlant'],525,Chemnitz_Nord_power_station,12.9231,Coal,56.8,50.857,1989.0,Eins Energie in Sachsen GmbH
+WRI1005903,['FossilFuelPlant'],526,Hastedt_power_station,8.8733,Coal,119.0,53.0601,1989.0,swb Erzeugung GmbH & Co. KG
+WRI1005705,['FossilFuelPlant'],527,Grubenheizkraftwerk,11.714,Coal,49.0,51.4627,1979.0,ROMONTA GmbH
+WRI1005676,['FossilFuelPlant'],528,Bremen_Farge_power_station,8.5162,Coal,350.0,53.2021,1969.0,GDF SUEZ Energie Deutschland AG
+WRI1005683,['FossilFuelPlant'],529,Frimmersdorf_power_station,6.5771,Coal,562.0,51.0574,1962.0,RWE Power AG
+WRI1005614,['FossilFuelPlant'],530,BoA_2,6.6133,Coal,2100.0,51.0365,2012.0,RWE Power AG
+WRI1005685,['FossilFuelPlant'],531,Buer_power_station,7.0094,Coal,70.0,51.6028,1985.0,E.On Kraftwerke Gmbh
+WRI1005792,['FossilFuelPlant'],532,HKW_I,6.752,Coal,95.0,51.4293,1985.0,Stadtwerke Duisburg AG
+WRI1005795,['FossilFuelPlant'],533,HKW_Karcherstr_Coal,7.7582,Coal,13.4,49.4346,1996.0,SWK - Stadtwerke Kaiserslautern
+WRI1005832,['FossilFuelPlant'],534,Ibbenbüren_B_power_station,7.7479,Coal,794.0,52.2888,1985.0,RWE Power AG
+WRI1005917,['FossilFuelPlant'],535,KW_West,6.6789,Coal,640.0,51.5796,1971.0,Steag GmbH
+WRI1006022,['FossilFuelPlant'],536,Berlin_Reuter_power_station,13.2461,Coal,124.0,52.5321,1969.0,Vattenfall Europe AG
+WRI1005804,['FossilFuelPlant'],537,HKW_Nord,10.7861,Coal,61.5,52.4328,2000.0,Volkswagen AG
+WRI1005885,['FossilFuelPlant'],538,Kraftwerk_L_57,6.6615,Coal,26.0,51.3698,1957.0,Currenta GmbH & Co. OHG
+WRI1005784,['FossilFuelPlant'],539,HKW_Erlangen_Coal,11.0015,Coal,17.4,49.5928,1980.0,Erlanger Stadtwerke AG
+WRI1005866,['FossilFuelPlant'],540,Rostock_power_station,12.1329,Coal,514.0,54.1428,1994.0,Kraftwerks- und Netzgesellschaft
+WRI1005584,['FossilFuelPlant'],541,Bergkamen_power_station,7.6191,Coal,717.0,51.637,1981.0,Gemeinschaftskraftwerk Bergkamen A oHG
+WRI1005752,['FossilFuelPlant'],542,Heizkraftwerk_Magirusstraße,9.9648,Coal,20.7,48.397,1978.0,Fernwärme Ulm GmbH
+WRI1005779,['FossilFuelPlant'],543,Cottbus_CHP_power_station,14.37,Coal,74.0,51.7602,1999.0,HKW Heizkraftwerksgesellschaft Cottbus mbH
+WRI1005906,['FossilFuelPlant'],544,Janschwalde_power_station,14.459,Coal,2790.0,51.8344,1985.0,Vattenfall Europe AG
+WRI1005904,['FossilFuelPlant'],545,Herne_power_station,7.1875,Coal,729.0,51.5508,1976.0,STEAG GmbH
+WRI1006073,['FossilFuelPlant'],546,Trianel_Kohlekraftwerk_Lünen,7.4653,Coal,746.0,51.6124,2013.0,Trianel Kohlekraftwerk Lünen GmbH & Co. KG
+WRI1006141,['FossilFuelPlant'],547,Westfalen,7.9696,Coal,1049.0,51.6805,2014.0,Kraftwerksgesellschaft Steinkohlendoppelblock Westfalen GmbH & Co. KG (GEKKO)
+WRI1075565,['FossilFuelPlant'],548,Walheim_power_station,9.1577,Coal,267.0,49.0177,1966.0,EnBW
+WRI1005928,['FossilFuelPlant'],549,KWM,10.0914,Coal,690.0,52.315,1979.0,Stadtwerke Hannover AG
+WRI1006026,['FossilFuelPlant'],550,Rheinhafen_Dampfkraftwerk,8.3065,Coal,1547.0,49.0134,,EnBW Energie Baden-Württemberg AG
+WRI1005883,['FossilFuelPlant'],551,Kraftwerk_II,7.0969,Coal,296.2,51.6804,1966.0,Evonik Degussa GmbH
+WRI1005616,['FossilFuelPlant'],552,Boxberg_power_station,14.5619,Coal,2585.0,51.4163,1989.0,Vattenfall Europe AG
+WRI1005754,['FossilFuelPlant'],553,Hkw_Offenbach_power_station,8.769,Coal,54.0,50.0652,1988.0,Evs Offenbach Ag
+WRI1005898,['FossilFuelPlant'],554,Kraftwerk_Werdohl_Elverlingsen,7.7057,Coal,310.0,51.2764,1982.0,Mark-E AG
+WRI1005612,['BiomassPlant'],555,BMKW_Königs_Wusterhausen,13.636,Biomass,17.1,52.3048,2003.0,MVV Energie AG
+WRI1006084,['BiomassPlant'],556,Biomass_Generator_6,11.1766,Biomass,9.6,48.4933,2007.0,Pfeifer Holz GmbH
+WRI1006061,['FossilFuelPlant'],557,STW,13.3944,Gas,13.5,50.8741,2007.0,Schoeller Technocell GmbH & Co. KG
+WRI1006018,['WastePlant'],558,Restabfallbehandlungsanlage,10.687,Waste,11.2,50.6388,2007.0,Zweckverband für Abfallwirtschaft Südwestthüringen (ZASt)
+WRI1005607,['BiomassPlant'],559,BMHKW_BinderHolz,11.5068,Biomass,15.1,48.7912,2007.0,BinderHolz Deutschland GmbH
+WRI1005965,['WastePlant'],560,MVA_Weisweiler,6.3212,Waste,24.0,50.8386,1996.0,RWE Power AG
+WRI1005868,['HydroelectricPlant'],561,Koepchenwerk,7.4531,Hydro,153.0,51.4105,1989.0,RWE Power AG
+WRI1005672,['WastePlant'],562,EVE,12.3626,Waste,14.5,52.535,2009.0,EEW Energy from Waste Premnitz GmbH
+WRI1005718,['FossilFuelPlant'],563,GuD_Tiefstack,10.0658,Gas,127.0,53.5267,2009.0,Vattenfall Europe Wärme Aktiengesellschaft
+WRI1005606,['BiomassPlant'],564,Blockheizkraftwerk_1,9.1558,Biomass,2.0,49.9882,,DS Smith Paper Deutschland GmbH
+WRI1005602,['BiomassPlant'],565,Biomassekraftwerk_Bischofferode,10.4131,Biomass,18.1,51.4899,2006.0,Stadtwerke Leipzig GmbH
+WRI1005611,['BiomassPlant'],566,BMKW_Flörsheim_Wicker,8.3772,Biomass,12.6,50.0226,2003.0,MVV Energie AG
+WRI1005773,['BiomassPlant'],567,HKW_Altenstadt,10.8587,Biomass,9.8,47.7971,1999.0,Heizkraftwerk Altenstadt GmbH & Co. KG
+WRI1006081,['BiomassPlant'],568,Biomass_Generator_3,12.3771,Biomass,19.7,53.1511,2002.0,
+WRI1006082,['BiomassPlant'],569,Biomass_Generator_4,8.9567,Biomass,19.9,51.8848,2000.0,GHP Glunz  Holzwerkstoffproduktion GmbH
+WRI1005599,['BiomassPlant'],570,Biomasse_Verstromungs_Anlage,7.45,Biomass,20.0,51.35,2004.0,Mark-E AG
+WRI1006139,['BiomassPlant'],571,Werkskraftwerk_Sappi_Ehingen,9.7262,Biomass,21.2,48.267,,Sappi Ehingen GmbH
+WRI1005755,['BiomassPlant'],572,Heizkraftwerk_Pforzheim_GmbH,8.725,Biomass,12.3,48.8971,2004.0,Heizkraftwerk Pforzheim GmbH
+WRI1006108,['BiomassPlant'],573,Biomass_Generator_20,13.5046,Biomass,12.6,51.4662,2004.0,Danpower GmbH
+WRI1006109,['BiomassPlant'],574,Biomass_Generator_21,14.2584,Biomass,18.3,52.1827,2001.0,
+WRI1006104,['BiomassPlant'],575,Biomass_Generator_15,9.3252,Biomass,28.4,49.5154,2003.0,Biomasseheizkraftwerk Odenwald GmbH
+WRI1005921,['BiomassPlant'],576,KWK_Gütersloh,8.4003,Biomass,12.1,51.9154,2001.0,Pfleiderer Gütersloh GmbH
+WRI1006059,['BiomassPlant'],577,Stora_Enso_Maxau,8.3113,Biomass,78.0,49.0393,2010.0,Stora Enso Maxau GmbH
+WRI1006088,['BiomassPlant'],578,Biomass_Generator_9,9.6718,Biomass,18.8,49.0115,2000.0,EnBW Klenk Holzenergie GmbH
+WRI1006106,['BiomassPlant'],579,Biomass_Generator_17,12.3248,Biomass,40.0,51.5152,2004.0,Danpower Energie Service GmbH
+WRI1006080,['BiomassPlant'],580,Biomass_Generator_2,10.2008,Biomass,15.7,48.6283,2004.0,Biomasse Heizkraftwerk Herbrechtingen GmbH
+WRI1005608,['BiomassPlant'],581,BMHKW_RE_Recklinghausen,7.2508,Biomass,14.0,51.604,2004.0,Ã–kotech Ingenieurgesellschaft mbh
+WRI1005593,['BiomassPlant'],582,Bio_HKW_Herbrechtingen,10.2009,Biomass,14.0,48.6285,2004.0,Biomasse-Heizkraftwerk-Herbrechtingen GmbH
+WRI1006151,['BiomassPlant'],583,Zellstoff_Stendal_GmbH,12.0112,Biomass,138.9,52.7271,,Zellstoff Stendal GmbH
+WRI1005600,['BiomassPlant'],584,Biomasseheizkraftwerk_Piesteritz,12.6185,Biomass,18.1,51.8712,2009.0,Stadtwerke Leipzig GmbH
+WRI1005961,['BiomassPlant'],585,Müllverwertung_Borsigstraße_MVB,10.0746,Biomass,20.0,53.5319,2005.0,MVB Müllverwertung Borsigstraße GmbH
+WRI1006089,['BiomassPlant'],586,Biomass_Generator_10,11.6562,Biomass,12.9,50.4978,2008.0,Klausner Holz Thüringen GmbH
+WRI1005930,['BiomassPlant'],587,Landesbergen_Biomasse,9.1101,Biomass,20.0,52.577,2005.0,Statkraft Markets GmbH
+WRI1006154,['BiomassPlant'],588,Zolling_power_station,11.7995,Biomass,528.0,48.4554,1986.0,GDF SUEZ Energie Deutschland AG
+WRI1006083,['BiomassPlant'],589,Biomass_Generator_5,8.0606,Biomass,12.4,49.9713,2004.0,Boehringer Ingelheim Pharma GmbH & Co. KG
+WRI1006086,['BiomassPlant'],590,Biomass_Generator_7,6.7085,Biomass,12.1,51.205,2008.0,Hummel Energiesysteme Neuss I
+WRI1006117,['BiomassPlant'],591,UPM_Schwedt,14.3194,Biomass,13.3,53.0867,2009.0,UPM GmbH Werk Schwedt
+WRI1005656,['BiomassPlant'],592,Emden_Biomasse,7.2062,Biomass,20.0,53.3422,2005.0,Statkraft Markets GmbH
+WRI1006107,['BiomassPlant'],593,Biomass_Generator_19,13.7781,Biomass,20.0,52.8515,2006.0,
+WRI1005609,['BiomassPlant'],594,BMK_Lünen,7.4813,Biomass,20.0,51.614,2006.0,STEAG New Energies GmbH
+WRI1006110,['BiomassPlant'],595,Biomass_Generator_22,10.4129,Biomass,53.5,51.4901,1999.0,Zellstoff- und Papierfabrik Rosenthal GmbH
+WRI1006038,['BiomassPlant'],596,SCA_Mannheim,8.4636,Biomass,59.2,49.5349,,SCA HYGIENE PRODUCTS GmbH
+WRI1005651,['BiomassPlant'],597,Egger_Kraftwerk_Briilon_1,8.6012,Biomass,18.0,51.4067,1990.0,Egger Kraftwerk Brilon GmbH
+WRI1005665,['BiomassPlant'],598,ENERTRAG_Netz_GmbH_UW_Bertikow,13.95,Biomass,20.0,53.2656,2003.0,ENERTRAG Aktiengesellschaft
+WRI1005613,['BiomassPlant'],599,BMKW_Mannheim,8.4602,Biomass,17.9,49.5164,2003.0,MVV Energie AG
+WRI1005596,['BiomassPlant'],600,Biomasse_Heizkraftwerk_Malchin,12.783,Biomass,9.8,53.7419,2003.0,envia THERM GmbH
+WRI1006087,['BiomassPlant'],601,Biomass_Generator_8,8.0732,Biomass,14.0,50.7021,2006.0,Biomasse HKW Siegerland GmbH & Co.KG
+WRI1006105,['BiomassPlant'],602,Biomass_Generator_16,11.8018,Biomass,10.2,51.9201,1996.0,ACR Biokraftwerk Calbe Invest GmbH & Co. KG
+WRI1006136,['BiomassPlant'],603,Werkskraftwerk_Sappi_Alfeld_1,9.8228,Biomass,16.8,51.9848,1988.0,Sappi Alfeld GmbH
+WRI1006142,['BiomassPlant'],604,Wi_Biebrich,8.2532,Biomass,31.7,50.0405,,InfraServ GmbH & Co. Wiesbaden KG
+WRI1005594,['BiomassPlant'],605,BioEnergie_Park_Klarsee,14.25,Biomass,17.8,53.3,2006.0,Geno Bioenergie Leasingfonds Erste GmbH & Co. KG
+WRI1006121,['BiomassPlant'],606,UTB,13.5173,Biomass,16.0,52.0778,2002.0,Pfleiderer Baruth GmbH
+WRI1005660,['BiomassPlant'],607,Energieanlage_3,12.3797,Biomass,18.6,53.149,2002.0,Kronoply GmbH
+WRI1005922,['BiomassPlant'],608,KWK_Neumarkt,11.4516,Biomass,15.6,49.2613,1997.0,Pfleiderer Neumarkt GmbH
+WRI1005595,['BiomassPlant'],609,BioHKW_I,9.9648,Biomass,13.2,48.397,2003.0,Fernwärme Ulm GmbH
+WRI1005604,['BiomassPlant'],610,BKF,8.7679,Biomass,12.4,50.1294,2004.0,Mainova AG
+WRI1006049,['FossilFuelPlant'],611,SKW_Diesel,10.3191,Oil,10.5,47.6835,1978.0,Allgäuer Ãœberlandwerk GmbH
+WRI1005601,['WastePlant'],612,Biomasseheizkraftwerk_Wiesbaden,8.25,Waste,10.5,50.0833,2014.0,ESWE BioEnergie GmbH
+WRI1005703,['NuclearPlant'],613,Grohnde,9.4135,Nuclear,1360.0,52.0356,1985.0,E.ON Kernkraft GmbH
+WRI1005963,['WastePlant'],614,MVA_Hamm,7.7442,Waste,14.6,51.6804,1985.0,MHB Hamm Betriebsführungsgesellschaft mbH
+WRI1006046,['HydroelectricPlant'],615,Serrig,6.5923,Hydro,12.1,49.567,1985.0,RWE Innogy GmbH
+WRI1006014,['FossilFuelPlant'],616,RAG_Anthrazit_Ibbenbüren_GmbH,7.7461,Gas,33.4,52.2859,1985.0,RAG Anthrazit Ibbenbüren GmbH
+WRI1005689,['HydroelectricPlant'],617,Geisling,12.344,Hydro,25.0,48.9748,1985.0,Rhein-Main-Donau AG
+WRI1005957,['WastePlant'],618,Müllheizkraftwerk_Kassel,9.5241,Waste,14.7,51.2976,1985.0,Müllheizkraftwerk Kassel GmbH
+WRI1005786,['FossilFuelPlant'],619,HKW_Fenne__GrubenNatural_Gaskraftwerk,6.8792,Gas,42.0,49.249,2003.0,STEAG New Energies GmbH
+WRI1005750,['FossilFuelPlant'],620,Heizkraftwerk_Krefeld,6.5853,Gas,12.6,51.3388,,SWK ENERGIE GmbH
+WRI1006002,['HydroelectricPlant'],621,Pielweichs,10.1813,Hydro,12.6,49.7943,1994.0,E.ON Kraftwerke GmbH
+WRI1005929,['HydroelectricPlant'],622,Landau,12.66,Hydro,12.6,48.6679,1984.0,E.ON Kraftwerke GmbH
+WRI1005670,['HydroelectricPlant'],623,Ettling,12.7978,Hydro,12.6,48.6961,1988.0,E.ON Kraftwerke GmbH
+WRI1005887,['FossilFuelPlant'],624,Kraftwerk_Meggle,12.1852,Gas,12.6,48.0564,2000.0,Molkerei MEGGLE Wasserburg GmbH & Co. KG
+WRI1005577,['WastePlant'],625,AMK___Abfallentsorgungsgesellschaft_des_Märkischen_Kreises_mbH,7.6967,Waste,12.6,51.3971,1981.0,AMK - Abfallentsorgungsgesellschaft des Märkischen Kreises mbH
+WRI1005788,['FossilFuelPlant'],626,HKW_Göttingen,9.9337,Gas,18.8,51.5534,1998.0,Georg-August-Universität Göttingen Stiftung Ã–ffentlichen Rechts
+WRI1006075,['HydroelectricPlant'],627,Trier,6.6245,Hydro,18.8,49.728,1961.0,RWE Innogy GmbH
+WRI1005919,['FossilFuelPlant'],628,KWH,9.7167,Gas,102.0,52.3667,1975.0,Stadtwerke Hannover AG
+WRI1005640,['WastePlant'],629,DT,6.8137,Waste,53.7,51.2228,2000.0,Stadtwerke Düsseldorf AG
+WRI1006115,['FossilFuelPlant'],630,UPM_Augsburg,10.9014,Gas,29.0,48.3801,1966.0,UPM GmbH
+WRI1005591,['FossilFuelPlant'],631,BHKW_Hauffstraße,9.1856,Gas,9.8,48.4939,2011.0,FairEnergie GmbH
+WRI1006144,['FossilFuelPlant'],632,Wilhelmshaven_Oil,8.1462,Oil,56.0,53.5658,1973.0,E.ON Kraftwerke GmbH
+WRI1005796,['FossilFuelPlant'],633,HKW_Karcherstr_Natural_Gas,7.7602,Gas,11.6,49.4347,1989.0,SWK - Stadtwerke Kaiserslautern
+WRI1005714,['FossilFuelPlant'],634,GuD_Kraftwerk_Hillegossen,8.5333,Gas,37.5,52.0333,2005.0,Stadtwerke Bielefeld GmbH
+WRI1005770,['FossilFuelPlant'],635,HKW_1,6.8616,Gas,23.1,51.4707,1972.0,Energieversorgung Oberhausen AG
+WRI1006101,['FossilFuelPlant'],636,Natural_Gas_Turbine_3,13.9776,Gas,36.0,51.1514,2014.0,Sachsenmilch Leppersdorf GmbH
+WRI1005971,['FossilFuelPlant'],637,Natural_Gasmotore,12.1341,Gas,23.3,47.8561,2011.0,Stadtwerke Rosenheim GmbH & Co. KG
+WRI1005657,['FossilFuelPlant'],638,Emden_Natural_Gas,7.2062,Gas,50.0,53.3422,1973.0,Statkraft Markets GmbH
+WRI1005783,['FossilFuelPlant'],639,HKW_Erfurt_Ost,11.0299,Gas,109.1,50.9848,,SWE Energie GmbH
+WRI1005758,['FossilFuelPlant'],640,Heizkraftwerk_Sindelfingen,8.9992,Gas,95.0,48.6972,,Daimler AG
+WRI1005909,['FossilFuelPlant'],641,KW_Kirchlengern,8.6482,Gas,201.5,52.1951,1980.0,Energieservice Westfalen Weser GmbH
+WRI1005763,['FossilFuelPlant'],642,Heizkraftwerke_an_der_Friedensbrücke,9.9231,Gas,122.0,49.8,,Heizkraftwerk Würzburg GmbH
+WRI1006150,['FossilFuelPlant'],643,X_Kraftwerk,6.9873,Gas,27.0,51.0144,1981.0,Currenta GmbH & Co. OHG
+WRI1005776,['FossilFuelPlant'],644,HKW_Bohrhügel,10.6987,Gas,13.5,50.6315,1995.0,Stadtwerke Suhl/Zella-Mehlis GmbH
+WRI1005925,['FossilFuelPlant'],645,KWK_Anlage_Krefeld_DT,6.6642,Gas,25.8,51.3392,2004.0,Cargill Deutschland GmbH
+WRI1005772,['FossilFuelPlant'],646,HKW_2,6.8616,Gas,24.5,51.4707,1995.0,Energieversorgung Oberhausen AG
+WRI1005768,['FossilFuelPlant'],647,HKW_Freiberg,7.8423,Gas,27.0,48.0056,2001.0,Universitätsklinikum Freiburg AdöR
+WRI1005721,['FossilFuelPlant'],648,GuD_Anlage_Rüsselsheim,8.4141,Gas,112.1,49.992,1999.0,Adam Opel AG
+WRI1006153,['FossilFuelPlant'],649,Zielitz,11.6796,Gas,52.0,52.2985,1996.0,K+S AG
+WRI1005968,['FossilFuelPlant'],650,Natural_Gasblock,6.7313,Gas,293.0,51.2214,1976.0,Stadtwerke Düsseldorf AG
+WRI1005845,['FossilFuelPlant'],651,Industriepark_Werk_Gendorf,12.7306,Gas,49.0,48.1768,2002.0,InfraServ GmbH & Co. Gendorf KG
+WRI1005824,['FossilFuelPlant'],652,HKW_Nord,10.5147,Gas,25.0,52.2786,1965.0,Braunschweiger Versorgungs-AG & Co. KG
+WRI1005711,['FossilFuelPlant'],653,GuD_Anlage_WVK,7.8452,Gas,60.1,48.0202,1998.0,Solvay Acetow GmbH
+WRI1005658,['FossilFuelPlant'],654,Emsland,7.3067,Gas,1837.0,52.4819,,RWE Generation SE
+WRI1006054,['FossilFuelPlant'],655,Spitzenlastkraftwerk_Wolfen,12.2289,Gas,40.0,51.6431,1997.0,envia THERM GmbH
+WRI1005712,['FossilFuelPlant'],656,GuD_Baunatal__VW_Werksgelände,9.4379,Gas,78.0,51.2531,2013.0,Volkswagen AG
+WRI1006146,['FossilFuelPlant'],657,Wintershall,9.9972,Gas,109.5,50.894,1967.0,K+S AG
+WRI1005681,['FossilFuelPlant'],658,Franken_1,11.0077,Gas,823.0,49.4208,,E.ON Kraftwerke GmbH
+WRI1005844,['FossilFuelPlant'],659,Industriekraftwerk_Ludwigshafen,8.4336,Gas,12.0,49.4532,2003.0,MVV Energie AG
+WRI1005774,['FossilFuelPlant'],660,HKW_Bad_Salzungen,10.2206,Gas,9.7,50.8003,1994.0,Thüringer Energie AG
+WRI1005814,['FossilFuelPlant'],661,HKW_Schwerin_Süd,11.3965,Gas,44.9,53.5779,1994.0,Energieversorgung Schwerin GmbH & Co. Erzeugung KG
+WRI1005751,['FossilFuelPlant'],662,Heizkraftwerk_Leipzig_Nord,12.3784,Gas,167.0,51.3512,1996.0,Stadtwerke Leipzig GmbH
+WRI1005719,['FossilFuelPlant'],663,GuD_Anlage,9.1558,Gas,47.0,49.9882,2013.0,DS Smith Paper Deutschland GmbH
+WRI1005626,['FossilFuelPlant'],664,Dampfkraftwerk_BGH___O1,12.8531,Gas,178.0,48.1835,2001.0,Wacker Chemie AG
+WRI1005870,['FossilFuelPlant'],665,Kombi_HKW,9.484,Gas,50.0,51.2791,1987.0,Städtische Werke Energie + Wärme GmbH
+WRI1005834,['FossilFuelPlant'],666,IHKW_Heidenheim,10.1506,Gas,26.5,48.6701,,Voith Dienstleistungen und Grundstücks GmbH & Co. KG
+WRI1005769,['FossilFuelPlant'],667,HKW_Helmshäger_Berg,13.385,Gas,14.7,54.0973,1996.0,Energieerzeugungsgesellschaft Greifswald GmbH
+WRI1005969,['FossilFuelPlant'],668,Natural_Gaskraftwerk_1,6.6536,Gas,45.3,50.7055,1966.0,Smurfit Kappa Zülpich Papier GmbH
+WRI1005871,['FossilFuelPlant'],669,Kombikraftwerk,12.592,Gas,46.6,51.4656,1993.0,Stora Enso Sachsen GmbH
+WRI1005710,['FossilFuelPlant'],670,GuD,6.7313,Gas,100.0,51.2214,2000.0,Stadtwerke Düsseldorf AG
+WRI1005888,['FossilFuelPlant'],671,Kraftwerk_Mitte,8.4316,Gas,490.0,49.5137,2005.0,BASF SE
+WRI1005934,['FossilFuelPlant'],672,Lichterfelde,13.3098,Gas,432.0,52.4252,,Vattenfall Europe Wärme AG
+WRI1005820,['FossilFuelPlant'],673,HKW_Wiesengrund,10.2906,Gas,22.1,50.9816,1993.0,ENAG/MainNatural Gas Energieanlagen GmbH
+WRI1005741,['FossilFuelPlant'],674,Heizkraftwerk_Evonik_Rheinfelden,7.8072,Gas,16.0,47.5708,1980.0,Evonik Degussa GmbH
+WRI1005720,['FossilFuelPlant'],675,GUD_Anlage_DREWSEN,10.2457,Gas,13.0,52.6235,2000.0,DREWSEN SPEZIALPAPIERE GmbH & Co.KG
+WRI1005843,['FossilFuelPlant'],676,Industriekraftwerk_Greifswald,13.6671,Gas,37.7,54.1379,2014.0,Industriekraftwerk Greifswald GmbH
+WRI1005641,['FossilFuelPlant'],677,Duisburg_Hamborn,6.7275,Gas,385.0,51.491,1958.0,ThyssenKrupp Steel Europe AG
+WRI1005799,['FossilFuelPlant'],678,HKW_Merkenich,6.964,Gas,15.5,51.0179,1965.0,RheinEnergie AG
+WRI1005724,['FossilFuelPlant'],679,GuD_Kraftwerk,8.4709,Gas,17.2,49.5307,2005.0,Energie- und Medienversorgung Sandhofer Straße GmbH & Co. KG
+WRI1005891,['FossilFuelPlant'],680,Kraftwerk_Plattling,12.8825,Gas,97.9,48.7874,2010.0,Daimler AG / UPM GmbH
+WRI1005775,['FossilFuelPlant'],681,HKW_Barmen,7.2003,Gas,82.0,51.2689,2005.0,WSW Energie & Wasser AG
+WRI1005816,['FossilFuelPlant'],682,HKW_West,8.6531,Gas,99.0,50.0984,1994.0,Mainova AG
+WRI1005586,['FossilFuelPlant'],683,BHKW,8.2816,Gas,13.0,49.0475,2013.0,Daimler AG
+WRI1005662,['FossilFuelPlant'],684,Energiezentrale_1992,11.7903,Gas,11.06,48.3591,1992.0,Flughafen München GmbH
+WRI1005886,['FossilFuelPlant'],685,Kraftwerk_Mainz,8.2379,Gas,434.2,50.0264,2001.0,Kraftwerke Mainz-Wiesbaden AG
+WRI1005789,['FossilFuelPlant'],686,HKW_Halle_Trotha,11.9643,Gas,254.0,51.481,,EVH GmbH
+WRI1005767,['FossilFuelPlant'],687,HKW_Brandenburg,13.9711,Gas,36.0,51.5122,1997.0,Stadtwerke Brandenburg an der Havel GmbH
+WRI1005793,['FossilFuelPlant'],688,HKW_IIIB,6.7478,Gas,274.0,51.3907,2005.0,Stadtwerke Duisburg AG
+WRI1005967,['FossilFuelPlant'],689,Natural_Gas__u_Dampfturbinenanlage_Südraum,6.9781,Gas,38.6,49.2137,2012.0,ZF Friedrichshafen AG
+WRI1005771,['FossilFuelPlant'],690,HKW_1_Werk_Offstein,8.221,Gas,30.0,49.5991,1992.0,Südzucker AG Mannheim/Ochsenfurt
+WRI1005715,['FossilFuelPlant'],691,GuD_Leuna,12.0193,Gas,52.0,51.2998,1998.0,InfraLeuna GmbH
+WRI1005790,['FossilFuelPlant'],692,HKW_Hiltrop,7.2503,Gas,44.0,51.508,2014.0,Stadtwerke Bochum Holding GmbH
+WRI1005996,['FossilFuelPlant'],693,PL_Werk_Lage,8.8073,Gas,10.2,51.9861,1980.0,Pfeifer & Langen Kommanditgesellschaft
+WRI1006003,['FossilFuelPlant'],694,PKV_Kraftwerk,8.1282,Gas,60.0,53.4032,1989.0,Papier- u. Kartonfabrik Varel GmbH & Co. KG
+WRI1005730,['FossilFuelPlant'],695,HBB,12.1193,Gas,24.0,47.796,2001.0,HBB Heizkraftwerk Bauernfeind Betreibergesellschaft mbh
+WRI1006047,['FossilFuelPlant'],696,Sigmundshall,9.3681,Gas,19.0,52.4185,1974.0,K+S AG
+WRI1005806,['FossilFuelPlant'],697,HKW_Pfaffenwald,9.1103,Gas,36.0,48.7508,,Universität Stuttgart
+WRI1005615,['FossilFuelPlant'],698,Bochum,7.2167,Gas,20.7,51.4833,2004.0,RWE Generation SE
+WRI1005798,['FossilFuelPlant'],699,HKW_Merheim,7.0852,Gas,15.8,50.9431,2001.0,RheinEnergie AG
+WRI1005813,['FossilFuelPlant'],700,HKW_Schwerin_Lankow,11.373,Gas,23.0,53.6539,1994.0,Energieversorgung Schwerin GmbH & Co. Erzeugung KG
+WRI1006113,['FossilFuelPlant'],701,Unterbreizbach,9.9775,Gas,33.6,50.8132,1965.0,K+S AG
+WRI1005723,['FossilFuelPlant'],702,GuD_Ikw_Staßfurt,11.5738,Gas,132.0,51.8655,1996.0,KWG-Kraftwerksgesellschaft Staßfurt mbH
+WRI1005810,['FossilFuelPlant'],703,HKW_Sandreuth,11.0606,Gas,150.0,49.4386,2005.0,N-ERGIE AG
+WRI1005706,['FossilFuelPlant'],704,Natural_Gas_Turbine_6,6.7319,Gas,217.8,51.2212,,Stadtwerke Düsseldorf AG
+WRI1005735,['FossilFuelPlant'],705,Heizkraftwerk_4,10.9028,Gas,18.0,48.3751,1976.0,Stadtwerke Augsburg Energie GmbH
+WRI1006098,['FossilFuelPlant'],706,Biomass_Generator_20,7.8857,Gas,10.7,49.8587,2006.0,Michelin Reifenwerke AG & Co. KGaA Standort Bad Kreuznach
+WRI1005587,['FossilFuelPlant'],707,BHKW_an_Klinkerweg,6.9473,Gas,10.2,51.2169,2000.0,Stadtwerke Erkrath GmbH
+WRI1005924,['FossilFuelPlant'],708,KWK_Anlage_Barby,11.8766,Gas,18.0,51.9832,1993.0,Cargill Deutschland GmbH
+WRI1005639,['FossilFuelPlant'],709,Dow_Stade,9.5079,Gas,173.0,53.6519,2014.0,Dow Deutschland Anlagengesellschaft mbH
+WRI1005708,['FossilFuelPlant'],710,Natural_Gas_Turbine_7,11.1329,Gas,18.6,49.4059,,Prinovis Ltd. & Co. KG
+WRI1005746,['FossilFuelPlant'],711,Heizkraftwerk_Hagen_Kabel,7.4917,Gas,230.0,51.411,1980.0,Mark-E AG
+WRI1005778,['FossilFuelPlant'],712,HKW_Chemnitz__Nord_II_Natural_Gas,12.9231,Gas,57.2,50.857,1986.0,eins energie in sachsen GmbH & Co. KG
+WRI1005831,['FossilFuelPlant'],713,Huntorf,8.4087,Gas,321.0,53.1897,1978.0,E.ON Kraftwerke GmbH
+WRI1006063,['FossilFuelPlant'],714,Süd_DT60,11.582,Gas,127.6,48.1351,2004.0,SWM Services GmbH
+WRI1005846,['FossilFuelPlant'],715,INEOS_Kraftwerk,6.6436,Gas,24.0,51.4693,1995.0,INEOS Solvents Germany GmbH
+WRI1006062,['FossilFuelPlant'],716,Süd_DT1,11.582,Gas,79.7,48.1351,1980.0,SWM Services GmbH
+WRI1005716,['FossilFuelPlant'],717,GuD_Marienehe,12.0819,Gas,108.0,54.1255,1996.0,Stadtwerke Rostock AG
+WRI1005691,['FossilFuelPlant'],718,Gemeinschaftskraftwerk_Irsching,11.58,Gas,1391.0,48.767,,Gemeinschaftskraftwerk Irsching GmbH
+WRI1005859,['FossilFuelPlant'],719,Kessel_2,6.486,Gas,2.9,50.777,1967.0,Papierfabrik Schoellershammer Heinrich August Schoeller Söhne GmbH & Co. KG
+WRI1006025,['FossilFuelPlant'],720,Rheinhafen_Dampfkraftwerk,8.304,Gas,353.0,49.013,1998.0,EnBW Energie Baden-Württemberg AG
+WRI1005812,['FossilFuelPlant'],721,HKW_Schwarza,11.3293,Gas,26.5,50.6869,,Energie- und Medienversorgung Schwarza GmbH
+WRI1005791,['FossilFuelPlant'],722,HKW_Humboldtstr,10.1267,Gas,31.0,54.3275,,Stadtwerke Kiel AG
+WRI1005661,['FossilFuelPlant'],723,Energiezentrale,7.2979,Gas,11.1,51.5744,1991.0,RÃœTGERS InfraTec GmbH
+WRI1005588,['FossilFuelPlant'],724,BHKW_H120,6.7865,Gas,16.9,51.2545,2012.0,Daimler AG
+WRI1005802,['FossilFuelPlant'],725,HKW_Niederrad,8.6279,Gas,126.0,50.0856,2005.0,Mainova AG
+WRI1005625,['FossilFuelPlant'],726,Co_Generation,8.3589,Gas,11.5,49.6633,1991.0,Grace GmbH & Co. KG
+WRI1005749,['FossilFuelPlant'],727,Heizkraftwerk_Karlstraße_2,7.0805,Gas,95.0,50.7338,2013.0,Energie- und Wasserversorgung Bonn/Rhein-Sieg GmbH
+WRI1006093,['FossilFuelPlant'],728,Natural_Gas_Turbine_1,7.936,Gas,28.0,49.2095,1975.0,Buchmann GmbH
+WRI1006068,['FossilFuelPlant'],729,Thyrow,13.3019,Gas,296.0,52.2302,,Vattenfall Europe Generation AG
+WRI1005861,['FossilFuelPlant'],730,Kesselhaus_Zuckerfabrik,13.7101,Gas,15.1,53.8563,1993.0,Suiker Unie GmbH
+WRI1005684,['FossilFuelPlant'],731,FS_Karton,6.6965,Gas,18.9,51.2171,1992.0,FS-Karton GmbH
+WRI1005736,['FossilFuelPlant'],732,Heizkraftwerk_5,8.6287,Gas,10.0,49.8828,1999.0,Merck KGaA
+WRI1005884,['FossilFuelPlant'],733,Kraftwerk_III,7.0969,Gas,139.0,51.6804,,Evonik Degussa GmbH
+WRI1005663,['FossilFuelPlant'],734,Energiezentrum_Mohn_Media,8.4088,Gas,22.0,51.9073,1994.0,Mohn Media Mohndruck GmbH
+WRI1005815,['FossilFuelPlant'],735,HKW_Südstadt,6.9573,Gas,35.0,50.917,1994.0,RheinEnergie AG
+WRI1005617,['FossilFuelPlant'],736,BP_Werk_Lingen,7.2952,Gas,66.0,52.5606,1996.0,BP Europa SE
+WRI1005739,['FossilFuelPlant'],737,Heizkraftwerk_Bomlitz,9.65,Gas,22.1,52.9,1912.0,Dow Wolff Cellulosics GmbH
+WRI1005926,['FossilFuelPlant'],738,KWK_Anlage_Krefeld_VM,6.6642,Gas,14.0,51.3392,2004.0,Cargill Deutschland GmbH
+WRI1005865,['FossilFuelPlant'],739,Knapsack_Natural_Gas_I,6.8424,Gas,1230.0,50.8617,,Statkraft Markets GmbH
+WRI1005761,['FossilFuelPlant'],740,Heizkraftwerk_West,8.3481,Gas,37.0,49.0144,1984.0,Stadtwerke Karlsruhe GmbH
+WRI1005822,['FossilFuelPlant'],741,HKW_Mitte,10.5147,Gas,137.3,52.2786,,Braunschweiger Versorgungs-AG & Co. KG
+WRI1005920,['FossilFuelPlant'],742,KWK_AOS_GmbH,9.502,Gas,30.7,53.6575,2012.0,Aluminium Oxid Stade GmbH
+WRI1005826,['FossilFuelPlant'],743,HKW3_UPM_Schongau,10.1144,Gas,65.0,48.1603,2015.0,UPM GmbH
+WRI1005572,['FossilFuelPlant'],744,ADS_Anlage,8.5311,Gas,96.5,50.0918,2012.0,Infraserv GmbH & Co. Höchst KG
+WRI1005698,['FossilFuelPlant'],745,GKL,9.7142,Gas,230.0,52.3729,,Stadtwerke Hannover AG
+WRI1005744,['FossilFuelPlant'],746,Heizkraftwerk_Gera_Nord,12.061,Gas,148.0,50.9076,1996.0,Energieversorgung Gera GmbH
+WRI1005695,['FossilFuelPlant'],747,GHD,12.4634,Gas,13.4,48.6403,1998.0,GHD Bayernwerk Natur GmbH & Co. KG
+WRI1005829,['FossilFuelPlant'],748,Holthausen,6.838,Gas,84.0,51.1756,1948.0,Henkel AG & Co.KGaA
+WRI1005636,['FossilFuelPlant'],749,Dormagen,6.8287,Gas,586.3,51.0791,2000.0,RWE Generation SE
+WRI1005895,['FossilFuelPlant'],750,Kraftwerk_Süd,8.4316,Gas,390.0,49.5136,1997.0,BASF SE
+WRI1006095,['FossilFuelPlant'],751,Natural_Gas_Turbine_2,10.3531,Gas,19.5,51.6627,1978.0,Smurfit Kappa Herzberger Papierfabrik GmbH
+WRI1005862,['FossilFuelPlant'],752,Kirchmöser,12.4181,Gas,160.0,52.3942,1994.0,E.ON Kraftwerke GmbH
+WRI1005759,['FossilFuelPlant'],753,Heizkraftwerk_Stendal,11.8325,Gas,22.0,52.6087,1994.0,VASA Kraftwerke-Pool GmbH & Co. KG
+WRI1005803,['FossilFuelPlant'],754,HKW_Niehl_2,6.988,Gas,413.0,50.9749,2005.0,RheinEnergie AG
+WRI1005852,['FossilFuelPlant'],755,KN_PFK_AG_EV,13.0166,Gas,12.75,51.0513,1993.0,Kübler & Niethammer Papierfabrik Kriebstein AG
+WRI1005713,['FossilFuelPlant'],756,GuD_Bitterfeld,12.327,Gas,106.0,51.6257,2000.0,envia THERM GmbH
+WRI1005671,['FossilFuelPlant'],757,EVC__GLOBALFOUNDRIES,13.715,Gas,34.3,51.127,1998.0,Energieversorgungscenter Dresden-Wilschdorf GmbH & Co. KG
+WRI1005821,['FossilFuelPlant'],758,HKW_Wörth,8.307,Gas,59.0,49.07,2008.0,Palm Power GmbH & Co. KG
+WRI1005574,['FossilFuelPlant'],759,Ahrensfelde,13.5587,Gas,150.0,52.5895,1990.0,Vattenfall Europe Generation AG
+WRI1006064,['FossilFuelPlant'],760,Süd_GT_61,11.582,Gas,444.6,48.1351,2004.0,SWM Services GmbH
+WRI1005839,['FossilFuelPlant'],761,ILK_GuD,12.0193,Gas,135.7,51.2998,1994.0,InfraLeuna GmbH
+WRI1005881,['FossilFuelPlant'],762,Kraftwerk_Grenzach_Wyhlen,7.7069,Gas,40.0,47.5397,2004.0,KGW - Kraftwerk Grenzach-Wyhlen GmbH
+WRI1005694,['FossilFuelPlant'],763,Gersteinwerk,7.7099,Gas,2004.5,51.6725,,RWE Generation SE
+WRI1005794,['FossilFuelPlant'],764,HKW_Jena,11.5857,Gas,182.0,50.8969,1996.0,Thüringer Energie AG
+WRI1005841,['FossilFuelPlant'],765,Industriekraftwerk_Bernburg_IKB,11.7544,Gas,66.0,51.8012,1994.0,Solvay Chemicals GmbH
+WRI1005807,['FossilFuelPlant'],766,HKW_Potsdam_Süd,13.1125,Gas,81.8,52.3661,1996.0,Energie und Wasser Potsdam GmbH
+WRI1005782,['FossilFuelPlant'],767,HKW_Eltmann,10.6514,Gas,57.0,49.984,2008.0,Palm Power GmbH & Co. KG
+WRI1005709,['FossilFuelPlant'],768,GTKW_Darmstadt,8.6501,Gas,94.6,49.8849,2013.0,HEAG Südhessische Energie AG (HSE)
+WRI1005745,['FossilFuelPlant'],769,Heizkraftwerk_Hafen,7.6413,Gas,100.2,51.9501,2005.0,Stadtwerke Münster GmbH
+WRI1006137,['FossilFuelPlant'],770,Werkskraftwerk_Sappi_Alfeld_2,9.8225,Gas,20.0,51.9851,1947.0,Sappi Alfeld GmbH
+WRI1005756,['FossilFuelPlant'],771,Heizkraftwerk_Pforzheim_GmbH,8.6653,Gas,52.5,48.8832,1969.0,Heizkraftwerk Pforzheim GmbH
+WRI1005801,['FossilFuelPlant'],772,HKW_Merkenich_Natural_Gas,6.9643,Gas,108.0,51.0178,2004.0,RheinEnergie AG
+WRI1006074,['FossilFuelPlant'],773,Trianel_Natural_Gaskraftwerk,7.9291,Gas,838.0,51.6739,2008.0,Trianel Natural Gaskraftwerk Hamm GmbH & Co. KG
+WRI1005738,['FossilFuelPlant'],774,Heizkraftwerk_AltbachDeizisau_Natural_Gas,9.3749,Gas,65.0,48.7176,,EnBW Energie Baden-Württemberg AG
+WRI1005875,['FossilFuelPlant'],775,Kraftwerk_2,9.6813,Gas,34.2,50.5691,,Papierfabrik Adolf Jass Schwarza GmbH
+WRI1005988,['FossilFuelPlant'],776,Obernburg,9.1482,Gas,100.0,49.8293,,Kraftwerk Obernburg GmbH
+WRI1005590,['FossilFuelPlant'],777,BHKW_Obere_Viehweide,9.0715,Gas,13.4,48.5109,2000.0,Stadtwerke Tübingen GmbH
+WRI1005652,['FossilFuelPlant'],778,Egger_Kraftwerk_Briilon_2,8.5999,Gas,13.5,51.4085,1996.0,Egger Kraftwerk Brilon GmbH
+WRI1005589,['FossilFuelPlant'],779,BHKW_Ludwigshafen,8.4336,Gas,12.5,49.4531,2008.0,MVV Energie AG
+WRI1005717,['FossilFuelPlant'],780,GuD_Schwarzheide,13.8891,Gas,122.0,51.4762,1994.0,BASF Schwarzheide GmbH
+WRI1005728,['FossilFuelPlant'],781,Hattorf,9.978,Gas,52.3,50.8126,,K+S AG
+WRI1005973,['FossilFuelPlant'],782,Natural_Gas_Turbine_9,6.9594,Gas,51.9,50.8305,1975.0,Basell Polyolefine GmbH
+WRI1005972,['FossilFuelPlant'],783,Natural_Gas_Turbine_8,10.9358,Gas,28.8,48.401,2004.0,Stadtwerke Augsburg Energie GmbH
+WRI1005825,['FossilFuelPlant'],784,HKW_West,8.8666,Gas,12.8,52.0262,2002.0,Stadtwerke Lemgo GmbH
+WRI1005668,['FossilFuelPlant'],785,Erweiterung_Energiezentrale_2003,11.7903,Gas,7.44,48.3591,2003.0,Flughafen München GmbH
+WRI1005948,['FossilFuelPlant'],786,Mitte,13.4209,Gas,444.0,52.5117,1996.0,Vattenfall Europe Wärme AG
+WRI1005780,['FossilFuelPlant'],787,HKW_Dresden_Nossener_Brücke,13.7086,Gas,263.0,51.0421,1995.0,DREWAG Stadtwerke Dresden GmbH
+WRI1005624,['FossilFuelPlant'],788,Charlottenburg,13.3111,Gas,633.0,52.5219,1975.0,Vattenfall Europe Wärme AG
+WRI1005785,['FossilFuelPlant'],789,HKW_Erlangen_Natural_Gas,11.0016,Gas,28.5,49.593,,Erlanger Stadtwerke AG
+WRI1005722,['FossilFuelPlant'],790,GuD_HKW_Neubrandenburg,13.2951,Gas,75.0,53.5745,1997.0,Neubrandenburger Stadtwerke GmbH / VASA Kraftwerkepool GmbH und Co. KG
+WRI1005762,['FossilFuelPlant'],791,Heizkraftwerk_zur_Papierfabrik,7.8619,Gas,18.1,52.618,1995.0,Delkeskamp Verpackungswerke GmbH
+WRI1005954,['FossilFuelPlant'],792,MT__Düren,6.49,Gas,14.0,50.7728,2011.0,Metsä Tissue GmbH Werk Düren
+WRI1005830,['FossilFuelPlant'],793,Huckingen,6.7167,Gas,606.0,51.3679,,Hüttenwerke Krupp Mannesmann GmbH
+WRI1005732,['FossilFuelPlant'],794,Heizkraftwerk_1,9.9508,Gas,22.5,53.5177,1992.0,ADM Hamburg Aktiengesellschaft
+WRI1005638,['FossilFuelPlant'],795,Dortmund,7.477,Gas,26.0,51.5197,2004.0,RWE Generation SE
+WRI1005642,['FossilFuelPlant'],796,Duisburg_Ruhrort,6.7306,Gas,315.0,51.4597,,ThyssenKrupp Steel Europe AG
+WRI1005733,['FossilFuelPlant'],797,Heizkraftwerk_2,8.5311,Gas,152.0,50.0918,,Infraserv GmbH & Co. Höchst KG
+WRI1005849,['NuclearPlant'],798,ISAR_2,12.2936,Nuclear,1485.0,48.6049,1988.0,
+WRI1005582,['WastePlant'],799,BEG,8.6179,Waste,14.0,53.5478,1977.0,Bremerhavener Entsorgungsgesellschaft mbH
+WRI1005989,['HydroelectricPlant'],800,Oberpeiching,10.8791,Hydro,11.9,48.6464,1954.0,Rhein-Main-Donau AG
+WRI1006091,['WastePlant'],801,Biomass_Generator_12,8.3659,Waste,11.9,49.6552,1990.0,Evonik Industries AG (Werk Worms)
+WRI1005669,['HydroelectricPlant'],802,Erzhausen,9.9245,Hydro,220.0,51.8991,1964.0,Statkraft Markets GmbH
+WRI1006021,['WastePlant'],803,Restmüllheizkraftwerk_Böblingen,9.0495,Waste,9.5,48.6855,1999.0,Zweckverband Restmüllheizkraftwerk Böblingen
+WRI1005621,['NuclearPlant'],804,BROKDORF,9.345,Nuclear,1480.0,53.8506,1986.0,
+WRI1005748,['WastePlant'],805,Heizkraftwerk_Karlstraße_1,7.0805,Waste,12.0,50.7338,1991.0,Energie- und Wasserversorgung Bonn/Rhein-Sieg GmbH
+WRI1005675,['HydroelectricPlant'],806,Fankel,7.2259,Hydro,16.4,50.1239,1963.0,RWE Innogy GmbH
+WRI1006039,['HydroelectricPlant'],807,Schärding_Neuhaus,13.4415,Hydro,48.0,48.4356,1963.0,Innwerk AG
+WRI1006077,['WastePlant'],808,Turbosatz_1,9.9941,Waste,22.7,49.793,,Zweckverband Abfallwirtschaft Raum Würzburg
+WRI1005944,['WastePlant'],809,MHKW_Pirmasens,7.5955,Waste,15.0,49.2282,1999.0,EEW Energy from Waste Saarbrücken GmbH
+WRI1006031,['WastePlant'],810,RMVA_Köln,6.9436,Waste,45.1,51.0003,1997.0,AVG Köln mbH
+WRI1005701,['WastePlant'],811,GMVA_Niederrhein,6.8344,Waste,61.5,51.4855,,GMVA Gemeinschafts-Müll-Verbrennungsanlage Niederrhein GmbH
+WRI1005945,['WastePlant'],812,MHKW_Rothensee,11.6791,Waste,58.4,52.1853,2005.0,Müllheizkraftwerk Rothensee GmbH
+WRI1006071,['WastePlant'],813,TREA_Breisgau,7.6161,Waste,13.6,47.8906,2005.0,EEW Energy from Waste Saarbrücken GmbH
+WRI1006092,['WastePlant'],814,Biomass_Generator_13,8.3659,Waste,6.9,49.6552,2011.0,Evonik Industries AG (Werk Worms)
+WRI1005581,['WastePlant'],815,AVA_Velsen,6.8345,Waste,15.8,49.2139,1997.0,AVA Velsen GmbH
+WRI1005645,['WastePlant'],816,EBS_HKW_Rostock,12.1412,Waste,17.0,54.1446,2009.0,Vattenfall Europe New Energy Ecopower GmbH
+WRI1005940,['WastePlant'],817,MHKW,8.8182,Waste,44.0,53.1146,,swb Entsorgung GmbH & Co. KG
+WRI1005833,['WastePlant'],818,IHKW_Andernach,7.4321,Waste,12.5,50.4349,2009.0,IHKW Industrieheizkraftwerk Andernach GmbH
+WRI1006072,['WastePlant'],819,TREA_Leuna,12.0193,Waste,32.6,51.2998,,MVV Energie AG
+WRI1005678,['WastePlant'],820,FHKW_Ludwigshafen,8.4262,Waste,28.0,49.4851,1967.0,Technische Werke Ludwigshafen AG
+WRI1005998,['WastePlant'],821,PD_energy_GmbH,12.2892,Waste,9.9,51.6296,2010.0,PD energy GmbH
+WRI1005964,['WastePlant'],822,MVA_Ingolstadt,11.4918,Waste,25.5,48.7645,1984.0,Zweckverband Müllverwertungsanlage Ingolstadt (MVA Ingolstadt)
+WRI1005962,['WastePlant'],823,MVA_Bielefeld,8.6072,Waste,34.0,52.0427,1981.0,MVA Bielefeld-Herford GmbH
+WRI1006023,['WastePlant'],824,Reuter_Waste_Facility,13.2461,Waste,36.0,52.5321,1998.0,Vattenfall Europe Wärme Aktiengesellschaft
+WRI1006085,['WastePlant'],825,Waste_Incinerator_1,6.9833,Waste,11.6,51.0167,2011.0,AVEA Entsorgungsbetriebe GmbH & Co. KG
+WRI1005943,['WastePlant'],826,MHKW_Mainz,8.2418,Waste,15.6,50.0259,2009.0,Entsorgungsgesellschaft Mainz mbH
+WRI1005573,['WastePlant'],827,AHKW_Neunkirchen,7.17,Waste,11.6,49.3386,1999.0,EEW Energy from Waste Saarbrücken GmbH
+WRI1006057,['WastePlant'],828,Steinbeis_Energie,9.4258,Waste,17.0,53.7818,2010.0,Steinbeis Energie GmbH
+WRI1005643,['WastePlant'],829,EBKW_Knapsack,6.8502,Waste,33.4,50.8577,2008.0,EBS - Kraftwerks GmbH
+WRI1005837,['WastePlant'],830,IKW_Rüdersdorf,13.8299,Waste,30.0,52.4903,2009.0,Vattenfall Europe New Energy Ecopower GmbH
+WRI1006036,['WastePlant'],831,RZR_Herten_II,7.1641,Waste,29.6,51.5573,2009.0,AGR Abfallentsorgungsgesellschaft Ruhrgebiet mbH
+WRI1005854,['WastePlant'],832,Karnap,6.9938,Waste,38.0,51.5154,1987.0,RWE Generation SE
+WRI1005941,['WastePlant'],833,MHKW_Burgkirchen,12.7361,Waste,12.5,48.1851,1994.0,Zweckverband Abfallverwertung Südostbayern
+WRI1005627,['WastePlant'],834,Dampfturbinenanlage_der_EBS_Kessel,11.7515,Waste,35.0,51.8026,2010.0,Solvay Chemicals GmbH
+WRI1005700,['WastePlant'],835,GKS,10.224,Waste,24.4,50.0297,1994.0,GKS Gemeinschaftskraftwerk Schweinfurt GmbH
+WRI1005942,['WastePlant'],836,MHKW_Frankfurt,8.636,Waste,72.5,50.1617,2006.0,Mainova AG
+WRI1005649,['WastePlant'],837,EEW_Göppingen,9.6713,Waste,11.0,48.6823,2009.0,EEW Energy from Waste Göppingen GmbH
+WRI1005664,['WastePlant'],838,Enertec_Hameln,9.3882,Waste,31.5,52.0988,2002.0,Enertec Hameln GmbH
+WRI1005811,['WastePlant'],839,HKW_Sandreuth,11.0606,Waste,18.0,49.4386,1996.0,N-ERGIE AG
+WRI1005727,['WastePlant'],840,Hamburger_Rieger,14.3374,Waste,18.7,51.5201,2013.0,Spreestromerzeugungs GmbH
+WRI1005949,['WastePlant'],841,MKVA_Krefeld,6.6373,Waste,33.1,51.3804,,EGK Entsorgungsgesellschaft Krefeld GmbH & Co.KG
+WRI1005959,['WastePlant'],842,Müllheizkraftwerk_Offenbach,8.769,Waste,10.4,50.0653,1972.0,Energieversorgung Offenbach AG
+WRI1005958,['WastePlant'],843,Müllheizkraftwerk_Wuppertal,7.1422,Waste,30.0,51.2251,1976.0,AWG Abfallwirtschaftsgesellschaft mbH Wuppertal
+WRI1006016,['WastePlant'],844,REMONDIS_Thermische_Abfallverwertung_GmbH,11.5763,Waste,24.0,51.8661,2008.0,REMONDIS Thermische Abfallverwertung GmbH
+WRI1006090,['WastePlant'],845,Biomass_Generator_11,10.2244,Waste,16.4,53.6183,1978.0,EEW Energy from Waste Stapelfeld GmbH
+WRI1005901,['WastePlant'],846,KW_Hafen,8.7289,Waste,33.0,53.1248,2009.0,swb Entsorgung GmbH & Co. KG
+WRI1006076,['WastePlant'],847,TRV_Buschhaus,10.9764,Waste,37.5,52.1714,1998.0,EEW Energy from Waste Helmstedt GmbH
+WRI1005580,['WastePlant'],848,AVA_GmbH,10.9356,Waste,10.0,48.4011,1993.0,AVA Abfallverwertung Augsburg GmbH
+WRI1006048,['WastePlant'],849,SITA_Abfallverwertung_GmbH,12.0197,Waste,25.4,51.1816,2005.0,SITA Abfallverwertung GmbH
+WRI1005797,['WastePlant'],850,HKW_Mannheim,8.4529,Waste,44.7,49.5224,,MVV Energie AG
+WRI1005946,['WastePlant'],851,MHKW__WKW,12.1341,Waste,9.0,47.8561,1988.0,Stadtwerke Rosenheim GmbH & Co. KG
+WRI1005650,['WastePlant'],852,EEW_Großräschen,14.0241,Waste,23.3,51.5929,2008.0,EEW Energy from Waste Großräschen GmbH
+WRI1006067,['WastePlant'],853,Thermische_Abfallbehandlung_Lauta_GmbH__Co_oHG,14.1121,Waste,15.7,51.4507,2004.0,Thermische Abfallbehandlung Lauta GmbH & Co. oHG
+WRI1005894,['WastePlant'],854,Kraftwerk_Schwedt_GmbH__CoKG,14.3214,Waste,28.9,53.0831,2011.0,Kraftwerk Schwedt GmbH & Co. KG
+WRI1005966,['WastePlant'],855,MVR_Müllverwertung_Rugenberger_Damm_GmbH__Co_KG,9.9348,Waste,24.0,53.5209,1999.0,MVR Müllverwertung Rugenberger Damm GmbH & Co. KG
+WRI1005648,['WastePlant'],856,EEW_Energy_from_Waste_Hannover_GmbH,9.853,Waste,22.5,52.4118,2005.0,EEW Energy from Waste Hannover GmbH
+WRI1006020,['WastePlant'],857,Restmüll_Heizkraftwerk_Stuttgart_Münster_Waste,9.2189,Waste,19.5,48.8125,2009.0,EnBW Energie Baden-Württemberg AG
+WRI1005863,['WastePlant'],858,Kläranlage,8.4074,Waste,12.0,48.5529,1992.0,BASF SE
+WRI1005896,['HydroelectricPlant'],859,Kraftwerk_Waldshut,8.1926,Hydro,150.0,47.6178,1951.0,Schluchseewerk Aktiengesellschaft
+WRI1006001,['NuclearPlant'],860,PHILIPPSBURG_2,8.4364,Nuclear,1468.0,49.2529,1984.0,
+WRI1005838,['PowerPlant'],861,ILK_EKT,11.7581,Other,14.0,51.7999,2000.0,InfraLeuna GmbH
+WRI1005974,['NuclearPlant'],862,NECKARWESTHEIM_2,9.1759,Nuclear,1400.0,49.0408,1989.0,
+WRI1005913,['HydroelectricPlant'],863,KW_Rheinfelden,7.8101,Hydro,46.7,47.5699,2010.0,Energiedienst AG
+WRI1005633,['PowerPlant'],864,DK_Kraftwerk,6.7385,Other,21.0,51.4191,2010.0,DK Recycling und Roheisen GmbH
+WRI1005696,['PowerPlant'],865,GichtNatural_Gaskraftwerk_Dillingen,6.7315,Other,85.0,49.3548,2010.0,Aktien-Gesellschaft der Dillinger Hüttenwerke  ROGESA Roheisengesellschaft Saar mbH und Zentralkokerei Saar GmbH  als Bruchteilsgemeinschaft
+WRI1005893,['PowerPlant'],866,Kraftwerk_Salzgitter,10.3958,Other,288.5,52.1579,2010.0,Salzgitter Flachstahl GmbH
+WRI1006007,['HydroelectricPlant'],867,PSW_Vianden,6.1783,Hydro,1096.0,49.9523,,SociÃ©tÃ© Electrique de l'Our S.A.
+WRI1006005,['HydroelectricPlant'],868,Prittriching,10.9049,Hydro,12.1,48.2106,1984.0,E.ON Kraftwerke GmbH
+WRI1006015,['HydroelectricPlant'],869,Rain,10.8978,Hydro,10.9,48.6924,1955.0,Rhein-Main-Donau AG
+WRI1005933,['HydroelectricPlant'],870,Leitzach_1,11.871,Hydro,136.0,47.8739,,Stadtwerke München GmbH
+WRI1006055,['HydroelectricPlant'],871,Stammham,12.8647,Hydro,23.2,48.2493,1955.0,VERBUND-Innkraftwerke GmbH
+WRI1006004,['HydroelectricPlant'],872,Prem,10.7976,Hydro,19.2,47.6927,1971.0,E.ON Kraftwerke GmbH
+WRI1005630,['HydroelectricPlant'],873,Detzem,6.8439,Hydro,24.0,49.8109,1962.0,RWE Innogy GmbH
+WRI1006037,['HydroelectricPlant'],874,Säckingen,7.954,Hydro,360.0,47.5654,1966.0,Schluchseewerk Aktiengesellschaft
+WRI1005980,['HydroelectricPlant'],875,Niederwartha,13.6098,Hydro,39.8,51.0915,1957.0,Vattenfall Europe Generation AG
+WRI1005674,['HydroelectricPlant'],876,Faimingen,10.4118,Hydro,10.1,48.5584,1965.0,Obere Donau Kraftwerke AG
+WRI1005855,['HydroelectricPlant'],877,Kaufering,10.8649,Hydro,16.7,48.084,1975.0,E.ON Kraftwerke GmbH
+WRI1005984,['HydroelectricPlant'],878,Nußdorf,12.1357,Hydro,36.6,47.7447,1982.0,Innwerk AG
+WRI1006070,['HydroelectricPlant'],879,Töging,12.5873,Hydro,85.3,48.2518,1924.0,VERBUND-Innkraftwerke GmbH
+WRI1006118,['HydroelectricPlant'],880,Uppenborn_1,11.9548,Hydro,25.0,48.4735,1930.0,Stadtwerke München GmbH
+WRI1005575,['HydroelectricPlant'],881,Altheim,14.3829,Hydro,17.8,51.5365,1951.0,E.ON Kraftwerke GmbH
+WRI1005764,['HydroelectricPlant'],882,Hemfurth,9.0468,Hydro,40.0,51.1671,1915.0,E.ON Kraftwerke GmbH
+WRI1005955,['HydroelectricPlant'],883,Müden,10.3604,Hydro,16.4,52.5219,1965.0,RWE Innogy GmbH
+WRI1005938,['HydroelectricPlant'],884,Meitingen,10.8651,Hydro,11.3,48.547,1922.0,Bayerische Elektrizitätswerke GmbH
+WRI1006065,['HydroelectricPlant'],885,Tannheim,10.1185,Hydro,12.3,48.008,1923.0,EnBW Energie Baden-Württemberg AG
+WRI1006009,['HydroelectricPlant'],886,Pumpspeicherwerk_Rönkhausen,7.9928,Hydro,138.0,51.2248,1969.0,Mark-E AG
+WRI1006043,['HydroelectricPlant'],887,Schwabstadl,10.867,Hydro,12.0,48.1484,1981.0,E.ON Kraftwerke GmbH
+WRI1005637,['HydroelectricPlant'],888,Dornau,10.9026,Hydro,16.6,47.8002,1960.0,E.ON Kraftwerke GmbH
+WRI1005827,['HydroelectricPlant'],889,Höchstädt,10.5827,Hydro,10.0,48.6032,1982.0,Mittlere Donau Kraftwerke AG
+WRI1006011,['HydroelectricPlant'],890,RADAG,8.1321,Hydro,79.5,47.5863,1933.0,Rheinkraftwerk Albbruck- Dogern AG
+WRI1006008,['HydroelectricPlant'],891,Pumpspeicherkraftwerk_Glems,9.2869,Hydro,90.0,48.505,1964.0,EnBW Energie Baden-Württemberg AG
+WRI1005847,['HydroelectricPlant'],892,Ingolstadt,11.4122,Hydro,19.8,48.7503,1971.0,Donau-Wasserkraft AG
+WRI1005702,['HydroelectricPlant'],893,Goldisthal,11.0209,Hydro,1052.0,50.5098,,Vattenfall Europe Generation AG
+WRI1005666,['HydroelectricPlant'],894,Enkirch,7.1278,Hydro,18.4,49.9767,1966.0,RWE Innogy GmbH
+WRI1005579,['HydroelectricPlant'],895,Aufkirchen,11.8588,Hydro,27.0,48.3067,1924.0,E.ON Kraftwerke GmbH
+WRI1005937,['HydroelectricPlant'],896,Markersbach,12.8798,Hydro,1045.2,50.5194,1980.0,Vattenfall Europe Generation AG
+WRI1006124,['HydroelectricPlant'],897,Vohburg,11.6012,Hydro,23.3,48.7781,1992.0,Donau-Wasserkraft AG
+WRI1005725,['HydroelectricPlant'],898,Gummering,12.398,Hydro,14.8,48.6225,1957.0,E.ON Kraftwerke GmbH
+WRI1005688,['HydroelectricPlant'],899,Geesthacht,10.3359,Hydro,119.1,53.426,1958.0,Vattenfall Europe Generation AG
+WRI1005853,['HydroelectricPlant'],900,Kachlet,13.4083,Hydro,53.7,48.5797,1927.0,Rhein-Main-Donau AG
+WRI1006135,['HydroelectricPlant'],901,Wendefurth,10.9188,Hydro,79.7,51.7422,,Vattenfall Europe Generation AG
+WRI1005585,['HydroelectricPlant'],902,Bertoldsheim,11.0209,Hydro,18.9,48.7359,1967.0,Donau-Wasserkraft AG
+WRI1005956,['HydroelectricPlant'],903,Mühltal,11.4854,Hydro,11.2,47.9963,1924.0,E.ON Kraftwerke GmbH
+WRI1005618,['HydroelectricPlant'],904,Braunau_Simbach,10.1284,Hydro,50.0,48.0638,1953.0,Innwerk AG
+WRI1005999,['HydroelectricPlant'],905,Perach,12.7499,Hydro,19.4,47.9536,1977.0,VERBUND-Innkraftwerke GmbH
+WRI1005867,['HydroelectricPlant'],906,Koblenz,7.5817,Hydro,16.0,50.3659,1951.0,RWE Innogy GmbH
+WRI1006119,['HydroelectricPlant'],907,Uppenborn_2,12.101,Hydro,18.0,48.5152,1951.0,Stadtwerke München GmbH
+WRI1005592,['HydroelectricPlant'],908,Bigge,7.8627,Hydro,15.0,51.0932,1965.0,Lister- und Lennekraftwerke GmbH
+WRI1005978,['HydroelectricPlant'],909,Niederaichbach,12.3023,Hydro,16.2,48.6039,1951.0,E.ON Kraftwerke GmbH
+WRI1005654,['HydroelectricPlant'],910,Eitting,11.8822,Hydro,26.0,48.3586,1925.0,E.ON Kraftwerke GmbH
+WRI1005653,['HydroelectricPlant'],911,Egglfing,13.3161,Hydro,40.4,48.3206,1944.0,Innwerk AG
+WRI1005629,['HydroelectricPlant'],912,Dettingen,9.3488,Hydro,11.0,48.5275,1927.0,EnBW Energie Baden-Württemberg AG
+WRI1006035,['HydroelectricPlant'],913,Rudolf_Fettweis_Werk_2,8.3557,Hydro,65.0,48.6732,1926.0,EnBW Energie Baden-Württemberg AG
+WRI1005932,['HydroelectricPlant'],914,Lehmen,7.459,Hydro,20.0,50.2747,1962.0,RWE Innogy GmbH
+WRI1006112,['HydroelectricPlant'],915,Unterbergen,10.9272,Hydro,12.4,48.2374,1983.0,E.ON Kraftwerke GmbH
+WRI1005851,['HydroelectricPlant'],916,Jochenstein,13.7085,Hydro,66.0,48.5196,1955.0,Innwerk AG
+WRI1006040,['HydroelectricPlant'],917,Scheuring,10.8833,Hydro,12.2,48.1802,1980.0,E.ON Kraftwerke GmbH
+WRI1006149,['HydroelectricPlant'],918,WKW,8.171,Hydro,24.0,47.5985,2009.0,Rheinkraftwerk Albbruck- Dogern AG
+WRI1006126,['HydroelectricPlant'],919,Walchensee,11.3371,Hydro,124.0,47.6314,1924.0,E.ON Kraftwerke GmbH
+WRI1005939,['HydroelectricPlant'],920,Merching,10.9773,Hydro,12.0,48.2704,1978.0,E.ON Kraftwerke GmbH
+WRI1006000,['HydroelectricPlant'],921,Pfrombach,11.9923,Hydro,22.3,48.4413,1929.0,E.ON Kraftwerke GmbH
+WRI1005931,['HydroelectricPlant'],922,Laufenburg,8.0494,Hydro,104.4,47.5559,1914.0,Energiedienst Holding AG
+WRI1006034,['HydroelectricPlant'],923,Roßhaupten,10.7355,Hydro,45.5,47.6515,1954.0,E.ON Kraftwerke GmbH
+WRI1005997,['HydroelectricPlant'],924,Passau_Ingling,13.4337,Hydro,43.2,48.5533,1965.0,Innwerk AG
+WRI1006152,['HydroelectricPlant'],925,Zeltingen,7.0232,Hydro,13.6,49.9511,1964.0,RWE Innogy GmbH
+WRI1005677,['HydroelectricPlant'],926,Feldkirchen,12.1561,Hydro,38.2,47.9609,1970.0,VERBUND-Innkraftwerke GmbH
+WRI1005986,['HydroelectricPlant'],927,Oberaudorf_Ebbs,12.199,Hydro,30.0,47.6413,1992.0,Innwerk AG
+WRI1006120,['HydroelectricPlant'],928,Urspring,10.8258,Hydro,10.1,47.716,1966.0,E.ON Kraftwerke GmbH
+WRI1006060,['HydroelectricPlant'],929,Straubing,12.5575,Hydro,21.5,48.8966,1994.0,Rhein-Main-Donau AG
+WRI1005628,['HydroelectricPlant'],930,Dessau,10.8257,Hydro,10.3,47.7393,1967.0,E.ON Kraftwerke GmbH
+WRI1005583,['HydroelectricPlant'],931,Bergheim,11.2732,Hydro,23.7,48.7508,1970.0,Donau-Wasserkraft AG
+WRI1006027,['HydroelectricPlant'],932,Rheinkraftwerk_Iffezheim,8.1122,Hydro,146.0,48.8314,,EnBW Energie Baden-Württemberg AG
+WRI1005632,['HydroelectricPlant'],933,Dingolfing,12.4837,Hydro,15.0,48.634,1957.0,E.ON Kraftwerke GmbH
+WRI1005576,['HydroelectricPlant'],934,Alzwerke_GmbH,12.8405,Hydro,45.0,48.1769,1922.0,Wacker Chemie AG
+WRI1005605,['HydroelectricPlant'],935,Bleiloch,11.7144,Hydro,79.8,50.5244,1932.0,Vattenfall Europe Generation AG
+WRI1006114,['HydroelectricPlant'],936,Unteropfingen,10.1284,Hydro,14.2,48.0613,1991.0,EnBW Energie Baden-Württemberg AG
+WRI1005731,['HydroelectricPlant'],937,Heimbach,6.4518,Hydro,16.0,50.6286,1905.0,RWE Innogy GmbH
+WRI1005976,['HydroelectricPlant'],938,Neuötting,12.6883,Hydro,26.1,48.2486,1951.0,VERBUND-Innkraftwerke GmbH
+WRI1005603,['HydroelectricPlant'],939,Bittenbrunn,11.1438,Hydro,20.2,48.7345,1969.0,Donau-Wasserkraft AG
+WRI1006006,['HydroelectricPlant'],940,PSW_Langenprozelten,9.5814,Hydro,164.0,50.0531,1974.0,Donau-Wasserkraft AG
+WRI1006127,['HydroelectricPlant'],941,Waldeck_2,9.0468,Hydro,480.0,51.1671,1974.0,E.ON Kraftwerke GmbH
+WRI1006132,['HydroelectricPlant'],942,Wehr,7.9182,Hydro,910.0,47.6453,1975.0,Schluchseewerk Aktiengesellschaft
+WRI1005975,['HydroelectricPlant'],943,Neef,7.1358,Hydro,16.4,50.0874,1966.0,RWE Innogy GmbH
+WRI1005667,['HydroelectricPlant'],944,Ering,13.1585,Hydro,36.5,48.2935,1942.0,Innwerk AG
+WRI1006147,['HydroelectricPlant'],945,Wintrich,6.9488,Hydro,20.0,49.8798,1965.0,RWE Innogy GmbH
+WRI1005655,['HydroelectricPlant'],946,Ellgau,10.8789,Hydro,9.7,48.5967,1952.0,Rhein-Main-Donau AG
+WRI1005828,['HydroelectricPlant'],947,Hohenwarte,11.4752,Hydro,377.6,50.6038,1966.0,Vattenfall Europe Generation AG
+WRI1005918,['HydroelectricPlant'],948,KW_Wyhlen,7.6581,Hydro,37.9,47.5524,1912.0,Energiedienst AG
+WRI1005876,['HydroelectricPlant'],949,Kraftwerk_3,12.6524,Hydro,18.5,48.1539,1920.0,Alzkraftwerke Heider GmbH
+WRI1006148,['HydroelectricPlant'],950,Witznau,8.2516,Hydro,220.0,47.6879,1943.0,Schluchseewerk Aktiengesellschaft
+WRI1005872,['HydroelectricPlant'],951,Kopswerk_I,10.0599,Hydro,247.0,46.9684,1968.0,EnBW Energie Baden-Württemberg AG
+WRI1005987,['HydroelectricPlant'],952,Obernach,11.2914,Hydro,12.8,47.5547,1955.0,E.ON Kraftwerke GmbH
+WRI1006140,['HydroelectricPlant'],953,Weserkraftwerk_Bremen,8.8649,Hydro,9.9,53.0611,2012.0,swb Erzeugung GmbH & Co. KG
+WRI1006033,['HydroelectricPlant'],954,Rosenheim,12.1533,Hydro,35.1,47.8383,1960.0,VERBUND-Innkraftwerke GmbH
+WRI1006052,['FossilFuelPlant'],955,Spitzenlastkraftwerk_Großkayna,11.9465,Oil,120.0,51.2919,1994.0,envia THERM GmbH
+WRI1005622,['FossilFuelPlant'],956,Brunsbüttel,9.2011,Oil,254.0,53.8925,1973.0,Vattenfall Europe Generation AG
+WRI1006131,['FossilFuelPlant'],957,Wedel,9.7285,Oil,101.0,53.5663,1972.0,Vattenfall Europe Generation AG
+WRI1006145,['FossilFuelPlant'],958,Wilmersdorf,13.3076,Oil,828.0,52.4816,1977.0,Vattenfall Europe Wärme AG
+WRI1006050,['FossilFuelPlant'],959,SKW_Natural_Gasturbine,10.3191,Oil,24.0,47.6835,1988.0,Allgäuer Ãœberlandwerk GmbH
+WRI1005991,['PowerPlant'],960,Oxea_GmbH,6.8011,Other,38.0,51.5246,1929.0,Oxea GmbH
+WRI1006053,['FossilFuelPlant'],961,Spitzenlastkraftwerk_Sermuth,12.7815,Oil,17.0,51.1614,1995.0,envia THERM GmbH
+WRI1006051,['FossilFuelPlant'],962,Spitzenlastanlage_Barmen,7.2003,Oil,60.0,51.2689,2008.0,WSW Energie & Wasser AG
+WRI1006012,['FossilFuelPlant'],963,Raffineriekraftwerk,12.0193,Oil,92.5,51.2998,1997.0,TOTAL Raffinerie Mitteldeutschland GmbH
+WRI1005850,['FossilFuelPlant'],964,Itzehoe,9.4495,Oil,88.0,53.9664,1972.0,E.ON Kraftwerke GmbH
+WRI1005890,['PowerPlant'],965,Kraftwerk_Nord,8.4074,Other,56.0,48.5529,1964.0,BASF SE
+WRI1005912,['FossilFuelPlant'],966,KW_Mittelsbüren,8.6852,Oil,198.0,53.1289,,swb Erzeugung GmbH & Co. KG
+WRI1005578,['FossilFuelPlant'],967,Audorf,9.7228,Oil,87.0,54.2907,1973.0,E.ON Kraftwerke GmbH
+WRI1005647,['FossilFuelPlant'],968,EEV,9.9696,Oil,38.0,53.4852,1993.0,Shell Deutschland Oil GmbH
+WRI1005880,['FossilFuelPlant'],969,Kraftwerk_Fulda,9.6861,Oil,24.8,50.5664,2011.0,RhönEnergie Fulda GmbH
+WRI1005897,['FossilFuelPlant'],970,Kraftwerk_Walheim,9.1574,Oil,136.0,49.0175,1981.0,EnBW Energie Baden-Württemberg AG
+WRI1005873,['FossilFuelPlant'],971,Kraftwerk,6.9594,Oil,66.3,50.8305,1962.0,Basell Polyolefine GmbH
+WRI1005882,['FossilFuelPlant'],972,Kraftwerk_Hausham,11.8398,Oil,92.8,47.7524,1982.0,Peissenberger Kraftwerksgesellschaft mbH Kraftwerk Hausham
+WRI1005951,['FossilFuelPlant'],973,Moabit_Oil,13.3461,Oil,51.0,52.5374,1971.0,Vattenfall Europe Wärme Aktiengesellschaft
+WRI1005835,['FossilFuelPlant'],974,IKS_PCK_Schwedt,14.2345,Oil,333.5,53.0982,,PCK Raffinerie GmbH
+WRI1006013,['FossilFuelPlant'],975,Raffineriekraftwerk_Köln_Godorf,6.9808,Oil,80.0,50.8548,2004.0,Steag GmbH
+WRI1005644,['PowerPlant'],976,EBS_Heizkraftwerk,14.6408,Other,23.5,52.1688,2011.0,EnBW Propower GmbH
+WRI1006097,['PowerPlant'],977,Biomass_Generator_14,7.4388,Other,16.0,51.5439,,Deutsche Natural Gasrußwerke GmbH & Co. KG
+WRI1005836,['PowerPlant'],978,IKW,14.627,Other,101.0,52.1674,2013.0,Arcelor Mittal Eisenhüttenstadt GmbH
+WRI1005819,['PowerPlant'],979,HKW_West_,8.653,Other,19.7,50.0985,1954.0,Mainova AG
+WRI1005856,['NuclearPlant'],980,Kernkraft_Gundremmingen,10.4016,Nuclear,2572.0,48.515,1984.0,Kernkraftwerk Gundremmingen GmbH (KGG)
+WRI1005659,['NuclearPlant'],981,EMSLAND,7.3204,Nuclear,1406.0,52.4716,1988.0,

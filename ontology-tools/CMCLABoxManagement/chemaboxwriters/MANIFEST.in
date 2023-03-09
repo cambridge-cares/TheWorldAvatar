@@ -1,1 +1,4 @@
-include chemaboxwriters/common/prefixes.json
+include chemaboxwriters/ontocompchem/oc_schema.yml
+include chemaboxwriters/ontospecies/os_schema.yml
+include chemaboxwriters/ontomops/om_schema.yml
+include chemaboxwriters/ontopesscan/ops_schema.yml

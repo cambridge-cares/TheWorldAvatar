@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.ac.cam.cares.species.eof.upload</groupId>
   <artifactId>EoFUpload</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
       <properties>
         <org.slf4j-version>1.6.6</org.slf4j-version>
         <rdf4j.version>2.4.2</rdf4j.version>

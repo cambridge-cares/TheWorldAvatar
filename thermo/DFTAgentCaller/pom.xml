@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.cmclinnovations</groupId>
   <artifactId>DFTAgentCaller</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <name>DFTAgentCaller</name>
   <description>The goal of this project is to call DFT Agent for performing calculations of those OntoSpecies entries that are not linked to any OntoCompChem instances.</description>
     <properties>

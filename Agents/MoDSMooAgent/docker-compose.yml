@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  moo_agent_eg:
+    image: moo_agent_eg:0.0.1
+    build: .
+    container_name: moo_agent_eg
+    environment: 
+      DATA_DIR: /app/files
+    ports:
+      - "58085:8080"
+      - "8000:8000"
+    secrets:
+      - private_key
+    volumes:
+      - external_maven_repo:/root/.m2
+      - ./MoDSMooAgent/files:/app/files
+
+secrets:
+  private_key:
+    file: $PRIVATE_KEY_PATH
+
+volumes:
+  external_maven_repo:
+    name: "external_maven_repo"      

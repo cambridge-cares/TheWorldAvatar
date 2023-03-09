@@ -17,6 +17,8 @@ services:
     container_name: "certbot-${MODE}"
     # After starting, run 'certbot renew' every 12 hours
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     restart: unless-stopped
     volumes:
       # Add a bind volume (shared with the reverse_proxy container) for the letsencrypt config dir
@@ -44,6 +46,25 @@ services:
         source: certbot-challenge
         target: /var/www/certbot
 
+  # FTP server for public documents
+  public-ftp:
+    image: docker.cmclinnovations.com/public-ftp:1.0.0
+    container_name: public-ftp
+    restart: always
+    env_file:
+        - public-ftp/variables.env
+    environment:
+        FTP_USER_HOME: /mount/ftp
+        FTP_USER_UID: 33
+        FTP_USER_GID: 33
+    ports:
+        - "21:21"
+        - "30000-30009:30000-30009"
+    volumes:
+      - ftp-data:/mount/ftp
+      - type: volume
+        source: certbot-challenge_alt
+        target: /var/lib/letsencrypt
 
 # Volumes
 volumes:
@@ -51,3 +72,5 @@ volumes:
     name: certbot-challenge
   certbot-challenge_alt:
     name: certbot-challenge_alt
+  ftp-data:
+    name: ftp-data

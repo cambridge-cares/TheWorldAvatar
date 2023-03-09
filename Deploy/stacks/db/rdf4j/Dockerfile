@@ -1,4 +1,4 @@
-FROM docker.cmclinnovations.com/eclipse/rdf4j-workbench:amd64-3.5.0
+FROM eclipse/rdf4j-workbench:amd64-3.5.0
 EXPOSE 8080
 
 # Install zip in order to modify .war files (need to be root)

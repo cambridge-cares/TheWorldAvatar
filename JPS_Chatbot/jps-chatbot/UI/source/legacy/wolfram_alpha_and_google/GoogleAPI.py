@@ -15,15 +15,15 @@ class GoogleAPI:
     def __init__(self):
         self.options = Options()
         self.options.add_argument('--headless')
-        self.options.add_argument('--disable-logging') 
+        self.options.add_argument('--disable-logging')
         address = '185.141.58.109:19596'
-        webdriver.DesiredCapabilities.FIREFOX['proxy'] = {
+        webdriver.DesiredCapabilities.CHROME['proxy'] = {
             "httpProxy": address,
             "sslProxy": address,
             "proxyType": "MANUAL"
         }
 
-        self.driver = webdriver.Firefox(options=self.options)
+        self.driver = webdriver.Chrome(options=self.options)
 
         self.url_template = 'https://www.google.com/search?hl=en&q=%s'
 
@@ -38,7 +38,6 @@ class GoogleAPI:
         print('it took ', end_time - start_time)
         return html_source
 
-
     def combine_key_components(self, key_components):
         pass
 
@@ -52,7 +51,7 @@ class GoogleAPI:
         # if ifM90 begins with 'People also search ...', then use wp-tabs
         if len(div_ifM) > 0:
             # a result is returned
-             div_result = div_ifM[0]
+            div_result = div_ifM[0]
         else:
             print('There is no ifM9O component, should turn to wp-tabs')
             return None
@@ -273,7 +272,6 @@ class GoogleAPI:
             return result
         else:
             return ""
-    
 
     # def run(self, question):
     #     ip = self.test_proxy_ip()
@@ -283,3 +281,8 @@ class GoogleAPI:
     #     print('=======================')
     #     print(ip)
     #     print('here is the ip')
+
+
+if __name__ == '__main__':
+    g = GoogleAPI()
+    g.run('what is the molecular weight of CH4')

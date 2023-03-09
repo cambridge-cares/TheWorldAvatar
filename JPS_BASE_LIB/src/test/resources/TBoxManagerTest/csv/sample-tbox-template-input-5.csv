@@ -1,0 +1,7 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+OntoKin,TBox,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,
+OntoKin,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,
+OntoKin,TBox,OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,
+OntoKin,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,
+Species,Class,http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies,EQUIVALENT-TO,,,,"An ensemble of chemically identical molecular entities (McNaught & Wilkinson, 1997).",http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl
+Rate Coefficient,Class,http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#ReactionRateCoefficient,EQUIVALENT-TO,,,,The coefficients used to evaluate the reaction rate expression.,http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl

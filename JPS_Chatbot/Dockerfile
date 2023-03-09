@@ -13,7 +13,7 @@ RUN sed -i "s|REPO_URL|${repo_url}|g;s|REPO_USERNAME|$(cat ../credentials/repo_u
 
 # Download Maven dependencies
 WORKDIR /root/
-RUN mvn -f pom.xml org.apache.maven.plugins:maven-dependency-plugin:unpack-dependencies
+RUN --mount=type=cache,target=/root/.m2/repository mvn -f pom.xml org.apache.maven.plugins:maven-dependency-plugin:unpack-dependencies
 
 # Download geckodriver
 RUN apt-get update && apt-get install wget -y
@@ -35,6 +35,7 @@ RUN apt-get update \
 # Copy in dependencies from first stage
 COPY --from=dependency_fetcher /root/dependencies/models_wiki ./UI/source/Wikidata_Query
 COPY --from=dependency_fetcher /root/dependencies/model_jps ./UI/source/JPS_Query
+COPY --from=dependency_fetcher /root/dependencies/models_agent ./UI/source/Agent_Query
 COPY --from=dependency_fetcher /root/geckodriver /usr/local/bin
 
 # Setup venv

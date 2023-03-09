@@ -1,0 +1,19 @@
+__pycache__/
+.mypy_cache/
+.pytest_cache
+build/
+dist/
+*~*
+.vscode/
+.idea/
+*venv/
+coverage.xml
+.coverage
+*.gv
+*.png
+assets
+
+## User defined
+*.egg-info
+*.env
+tmp_stack/**

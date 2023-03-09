@@ -1,0 +1,655 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:cpsys="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+   xmlns:cpsysv1="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#"
+   xmlns:dbo="http://dbpedia.org/ontology/"
+   xmlns:eipreal="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#"
+   xmlns:pow="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:sdo="https://schema.org/"
+>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0132_Waldpolenz_Energiepark_FF_2_DE">
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL245C24"/>
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <eipreal:designCapacity rdf:nodeID="ub1bL246C28"/>
+    <sdo:address rdf:nodeID="ub1bL249C17"/>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL248C23"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#SolarPlant"/>
+    <rdfs:label xml:lang="en">Waldpolenz Energiepark FF 2</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL33C17">
+    <sdo:addressRegion>Brandenburg</sdo:addressRegion>
+    <sdo:addressLocality>Ahrensfelde</sdo:addressLocality>
+    <sdo:streetAddress>Lindenberger Weg</sdo:streetAddress>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">16356</sdo:postalCode>
+    <sdo:addressCountry>DE</sdo:addressCountry>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0007_Ahrensfelde_DE">
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL60C23"/>
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#FossilFuelPlant"/>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL57C24"/>
+    <sdo:address rdf:nodeID="ub1bL61C17"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <eipreal:designCapacity rdf:nodeID="ub1bL58C28"/>
+    <rdfs:label xml:lang="en">Ahrensfelde</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL211C17">
+    <sdo:addressCountry>DE</sdo:addressCountry>
+    <sdo:addressLocality>Arnstorf</sdo:addressLocality>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">94424</sdo:postalCode>
+    <sdo:addressRegion>Bayern</sdo:addressRegion>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL172C17">
+    <sdo:streetAddress>Mühlenmarsch 1</sdo:streetAddress>
+    <sdo:addressCountry>DE</sdo:addressCountry>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">31061</sdo:postalCode>
+    <sdo:addressLocality>Alfeld</sdo:addressLocality>
+    <sdo:addressRegion>Niedersachsen</sdo:addressRegion>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL126C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL126C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL248C23">
+    <cpsysv1:hasName>SachsenFonds Solar II GmbH &amp; Co. KG</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL195C45">
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">21.0</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0029_Solarpark_Petzenbach_DE">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#SolarPlant"/>
+    <sdo:address rdf:nodeID="ub1bL211C17"/>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL207C24"/>
+    <eipreal:designCapacity rdf:nodeID="ub1bL208C28"/>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL210C23"/>
+    <rdfs:label xml:lang="en">Solarpark Petzenbach</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0012d_Werkskraftwerk_Sappi_Alfeld_DE">
+    <sdo:address rdf:nodeID="ub1bL172C17"/>
+    <rdfs:label xml:lang="en">Werkskraftwerk Sappi Alfeld</rdfs:label>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL171C23"/>
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#FossilFuelPlant"/>
+    <eipreal:designCapacity rdf:nodeID="ub1bL169C28"/>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL168C24"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL61C17">
+    <sdo:addressLocality>Ahrensfelde</sdo:addressLocality>
+    <sdo:streetAddress>Lindenberger Weg</sdo:streetAddress>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">16356</sdo:postalCode>
+    <sdo:addressCountry>DE</sdo:addressCountry>
+    <sdo:addressRegion>Brandenburg</sdo:addressRegion>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL197C23">
+    <cpsysv1:hasName>Dortmunder Energie- und Wasserversorgung GmbH</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL89C17">
+    <sdo:addressCountry>DE</sdo:addressCountry>
+    <sdo:streetAddress>Kraftwerkstrasse 34</sdo:streetAddress>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">79774</sdo:postalCode>
+    <sdo:addressRegion>Baden-Württemberg</sdo:addressRegion>
+    <sdo:addressLocality>Albbruck</sdo:addressLocality>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL220C45">
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">12.0</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL117C17">
+    <sdo:addressLocality>Albbruck</sdo:addressLocality>
+    <sdo:addressCountry>DE</sdo:addressCountry>
+    <sdo:addressRegion>Baden-Württemberg</sdo:addressRegion>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">79774</sdo:postalCode>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL274C23">
+    <cpsysv1:hasName>SachsenFonds Solar I GmbH &amp; Co. KG</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0010a_RADAG_DE">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL88C23"/>
+    <sdo:address rdf:nodeID="ub1bL89C17"/>
+    <rdfs:label xml:lang="en">RADAG</rdfs:label>
+    <eipreal:designCapacity rdf:nodeID="ub1bL86C28"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#HydroelectricPlant"/>
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL85C24"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL103C17">
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">79804</sdo:postalCode>
+    <sdo:addressRegion>Baden-Württemberg</sdo:addressRegion>
+    <sdo:addressCountry>DE</sdo:addressCountry>
+    <sdo:streetAddress>Zollstrasse</sdo:streetAddress>
+    <sdo:addressLocality>Dogern</sdo:addressLocality>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL182C45">
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">27.6</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL129C23">
+    <cpsysv1:hasName>Sappi Alfeld GmbH</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0012a_Werkskraftwerk_Sappi_Alfeld_DE">
+    <eipreal:designCapacity rdf:nodeID="ub1bL127C28"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL126C24"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#BiomassPlant"/>
+    <rdfs:label xml:lang="en">Werkskraftwerk Sappi Alfeld</rdfs:label>
+    <sdo:address rdf:nodeID="ub1bL130C17"/>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL129C23"/>
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL249C17">
+    <sdo:addressRegion>Sachsen</sdo:addressRegion>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4821</sdo:postalCode>
+    <sdo:addressLocality>Brandis</sdo:addressLocality>
+    <sdo:addressCountry>DE</sdo:addressCountry>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL184C23">
+    <cpsysv1:hasName>Windpark Balkum-Thiene GmbH &amp; Co. KG</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0014_Windpark_Alsleben_DE">
+    <eipreal:designCapacity rdf:nodeID="ub1bL195C28"/>
+    <sdo:address rdf:nodeID="ub1bL198C17"/>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL194C24"/>
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL197C23"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#WindPlant"/>
+    <rdfs:label xml:lang="en">Windpark Alsleben</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL126C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2003</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL208C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL208C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL58C45">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">37.5</cpsys:numericalValue>
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL144C17">
+    <sdo:addressCountry>DE</sdo:addressCountry>
+    <sdo:addressLocality>Alfeld</sdo:addressLocality>
+    <sdo:streetAddress>Mühlenmarsch 1</sdo:streetAddress>
+    <sdo:addressRegion>Niedersachsen</sdo:addressRegion>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">31061</sdo:postalCode>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL114C45">
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">28.0</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0011_Papierfabrik_Albbruck_DE">
+    <sdo:address rdf:nodeID="ub1bL117C17"/>
+    <rdfs:label xml:lang="en">Papierfabrik Albbruck</rdfs:label>
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#FossilFuelPlant"/>
+    <eipreal:designCapacity rdf:nodeID="ub1bL114C28"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL113C24"/>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL116C23"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL20C17">
+    <sdo:addressCountry>DE</sdo:addressCountry>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">52074</sdo:postalCode>
+    <sdo:addressRegion>Nordrhein-Westfalen</sdo:addressRegion>
+    <sdo:addressLocality>Aachen</sdo:addressLocality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0012c_Werkskraftwerk_Sappi_Alfeld_DE">
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL154C24"/>
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#HydroelectricPlant"/>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL157C23"/>
+    <sdo:address rdf:nodeID="ub1bL158C17"/>
+    <rdfs:label xml:lang="en">Werkskraftwerk Sappi Alfeld</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <eipreal:designCapacity rdf:nodeID="ub1bL155C28"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0006_Ahrensfelde_DE">
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#FossilFuelPlant"/>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL46C23"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL43C24"/>
+    <sdo:address rdf:nodeID="ub1bL47C17"/>
+    <eipreal:designCapacity rdf:nodeID="ub1bL44C28"/>
+    <rdfs:label xml:lang="en">Ahrensfelde</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL60C23">
+    <cpsysv1:hasName>Lausitz Energie Kraftwerke AG</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0013_DE">
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#WindPlant"/>
+    <eipreal:designCapacity rdf:nodeID="ub1bL182C28"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <sdo:address rdf:nodeID="ub1bL185C17"/>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL184C23"/>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL181C24"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL195C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL195C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL271C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2007</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0012b_Werkskraftwerk_Sappi_Alfeld_DE">
+    <rdfs:label xml:lang="en">Werkskraftwerk Sappi Alfeld</rdfs:label>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL143C23"/>
+    <sdo:address rdf:nodeID="ub1bL144C17"/>
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#FossilFuelPlant"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL140C24"/>
+    <eipreal:designCapacity rdf:nodeID="ub1bL141C28"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL236C17">
+    <sdo:addressLocality>Nordsee </sdo:addressLocality>
+    <sdo:streetAddress>90 km nordwestlich von Borkum</sdo:streetAddress>
+    <sdo:addressCountry>DE</sdo:addressCountry>
+    <sdo:addressRegion>AWZ</sdo:addressRegion>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL272C45">
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">24.1</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL71C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1990</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL113C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL113C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0039_Bard_Offshore_1_DE">
+    <eipreal:designCapacity rdf:nodeID="ub1bL233C28"/>
+    <sdo:address rdf:nodeID="ub1bL236C17"/>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL235C23"/>
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <rdfs:label xml:lang="en">Bard Offshore 1</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#WindPlant"/>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL232C24"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL100C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL100C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0134_Waldpolenz_Energiepark_FF_1_DE">
+    <sdo:address rdf:nodeID="ub1bL275C17"/>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL274C23"/>
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <rdfs:label xml:lang="en">Waldpolenz Energiepark FF 1</rdfs:label>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL271C24"/>
+    <eipreal:designCapacity rdf:nodeID="ub1bL272C28"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#SolarPlant"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0010b_WKW_DE">
+    <sdo:address rdf:nodeID="ub1bL103C17"/>
+    <rdfs:label xml:lang="en">WKW</rdfs:label>
+    <eipreal:designCapacity rdf:nodeID="ub1bL100C28"/>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL99C24"/>
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#HydroelectricPlant"/>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL102C23"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL194C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL194C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL44C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL44C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL223C17">
+    <sdo:addressLocality>Artern</sdo:addressLocality>
+    <sdo:addressRegion>Thüringen</sdo:addressRegion>
+    <sdo:addressCountry>DE</sdo:addressCountry>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6556</sdo:postalCode>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL154C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1912</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL169C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL169C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL261C23">
+    <cpsysv1:hasName>SachsenFonds Solar III GmbH &amp; Co. KG</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0005_Ahrensfelde_DE">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#FossilFuelPlant"/>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL29C24"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <sdo:address rdf:nodeID="ub1bL33C17"/>
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <rdfs:label xml:lang="en">Ahrensfelde</rdfs:label>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL32C23"/>
+    <eipreal:designCapacity rdf:nodeID="ub1bL30C28"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL262C17">
+    <sdo:addressLocality>Brandis</sdo:addressLocality>
+    <sdo:addressCountry>DE</sdo:addressCountry>
+    <sdo:addressRegion>Sachsen</sdo:addressRegion>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4821</sdo:postalCode>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL275C17">
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4821</sdo:postalCode>
+    <sdo:addressRegion>Sachsen</sdo:addressRegion>
+    <sdo:addressLocality>Brandis</sdo:addressLocality>
+    <sdo:addressCountry>DE</sdo:addressCountry>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL271C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL271C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL130C17">
+    <sdo:addressRegion>Niedersachsen</sdo:addressRegion>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">31061</sdo:postalCode>
+    <sdo:streetAddress>Mühlenmarsch 1</sdo:streetAddress>
+    <sdo:addressCountry>DE</sdo:addressCountry>
+    <sdo:addressLocality>Alfeld</sdo:addressLocality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0133_Waldpolenz_Energiepark_FF_3_DE">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#SolarPlant"/>
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL261C23"/>
+    <eipreal:designCapacity rdf:nodeID="ub1bL259C28"/>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL258C24"/>
+    <sdo:address rdf:nodeID="ub1bL262C17"/>
+    <rdfs:label xml:lang="en">Waldpolenz Energiepark FF 3</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0001_DE">
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <sdo:address rdf:nodeID="ub1bL20C17"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#WindPlant"/>
+    <eipreal:designCapacity rdf:nodeID="ub1bL18C28"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL17C24"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL169C45">
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2.8</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0008_Ahrensfelde_DE">
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#FossilFuelPlant"/>
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL71C24"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <sdo:address rdf:nodeID="ub1bL75C17"/>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL74C23"/>
+    <eipreal:designCapacity rdf:nodeID="ub1bL72C28"/>
+    <rdfs:label xml:lang="en">Ahrensfelde</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL99C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL99C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL171C23">
+    <cpsysv1:hasName>Sappi Alfeld GmbH</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL258C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2008</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL181C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL181C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL127C45">
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">13.0</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL198C17">
+    <sdo:addressRegion>Sachsen-Anhalt</sdo:addressRegion>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6425</sdo:postalCode>
+    <sdo:addressCountry>DE</sdo:addressCountry>
+    <sdo:addressLocality>Alsleben (Saale)</sdo:addressLocality>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/powsys/kwl/BNA0030_DE">
+    <pow:hasYearOfBuilt rdf:nodeID="ub1bL219C24"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <eipreal:designCapacity rdf:nodeID="ub1bL220C28"/>
+    <cpsysv1:isOwnedBy rdf:nodeID="ub1bL222C23"/>
+    <dbo:country rdf:resource="http://dbpedia.org/resource/Germany"/>
+    <sdo:address rdf:nodeID="ub1bL223C17"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#WindPlant"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL232C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL232C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL158C17">
+    <sdo:streetAddress>Mühlenmarsch 1</sdo:streetAddress>
+    <sdo:addressLocality>Alfeld</sdo:addressLocality>
+    <sdo:addressRegion>Niedersachsen</sdo:addressRegion>
+    <sdo:addressCountry>DE</sdo:addressCountry>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">31061</sdo:postalCode>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL235C23">
+    <cpsysv1:hasName>Ocean Breeze Energy GmbH &amp; Co. KG</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL100C45">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">24.0</cpsys:numericalValue>
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL245C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2008</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL44C45">
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">37.5</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL233C45">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">400.0</cpsys:numericalValue>
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL75C17">
+    <sdo:streetAddress>Lindenberger Weg</sdo:streetAddress>
+    <sdo:addressRegion>Brandenburg</sdo:addressRegion>
+    <sdo:addressLocality>Ahrensfelde</sdo:addressLocality>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">16356</sdo:postalCode>
+    <sdo:addressCountry>DE</sdo:addressCountry>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL114C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL114C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL18C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL18C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL155C45">
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.1</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL157C23">
+    <cpsysv1:hasName>Sappi Alfeld GmbH</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL168C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1994</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL259C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL259C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL86C45">
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">79.5</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL259C45">
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">8.0</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL18C45">
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">15.0</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL140C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL140C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL102C23">
+    <cpsysv1:hasName>Rheinkraftwerk Albbruck-Dogern AG</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL113C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2009</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL88C23">
+    <cpsysv1:hasName>Rheinkraftwerk Albbruck-Dogern AG</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL72C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL72C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL71C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL71C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL30C45">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">37.5</cpsys:numericalValue>
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL43C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL43C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL141C45">
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">11.0</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL58C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL58C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL246C45">
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">7.98</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL57C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1990</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL207C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2010</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL17C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1997</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL116C23">
+    <cpsysv1:hasName>Papierfabrik Albbruck GmbH</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL47C17">
+    <sdo:streetAddress>Lindenberger Weg</sdo:streetAddress>
+    <sdo:addressCountry>DE</sdo:addressCountry>
+    <sdo:addressRegion>Brandenburg</sdo:addressRegion>
+    <sdo:addressLocality>Ahrensfelde</sdo:addressLocality>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">16356</sdo:postalCode>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL245C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL245C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL32C23">
+    <cpsysv1:hasName>Lausitz Energie Kraftwerke AG</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL57C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL57C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL72C45">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">37.5</cpsys:numericalValue>
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL220C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL220C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL86C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL86C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL143C23">
+    <cpsysv1:hasName>Sappi Alfeld GmbH</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL219C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2002</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL232C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2013</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL182C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL182C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL154C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL154C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL181C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2007</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL141C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL141C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL208C45">
+    <cpsys:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">10.0</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL17C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL17C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL140C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1947</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL85C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL85C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL46C23">
+    <cpsysv1:hasName>Lausitz Energie Kraftwerke AG</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL127C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL127C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL185C17">
+    <sdo:addressRegion>Niedersachsen</sdo:addressRegion>
+    <sdo:addressCountry>DE</sdo:addressCountry>
+    <sdo:addressLocality>Alfhausen </sdo:addressLocality>
+    <sdo:postalCode rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">49594</sdo:postalCode>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL43C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1990</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL258C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL258C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL29C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL29C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL155C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL155C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL222C23">
+    <cpsysv1:hasName>e.disnatur Erneuerbare Energien GmbH</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL99C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2009</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL194C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2016</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL85C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1934</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL219C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL219C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL272C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL272C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL246C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL246C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL233C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL233C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL207C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL207C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL29C41">
+    <cpsys:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1990</cpsys:numericalValue>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL168C24">
+    <cpsys:hasValue rdf:nodeID="ub1bL168C41"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL30C28">
+    <cpsys:hasValue rdf:nodeID="ub1bL30C45"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL74C23">
+    <cpsysv1:hasName>Lausitz Energie Kraftwerke AG</cpsysv1:hasName>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="ub1bL210C23">
+    <cpsysv1:hasName>ESK Solarenergie GmbH &amp; Co. KG</cpsysv1:hasName>
+  </rdf:Description>
+</rdf:RDF>

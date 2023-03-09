@@ -14,6 +14,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
@@ -31,6 +32,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,7 +52,7 @@ public class Http {
      */
     private static final Logger LOGGER = LogManager.getLogger(Http.class);
 
-    private static final String JSON_PARAMETER_KEY = "query";
+    public static final String JSON_PARAMETER_KEY = "query";
     private static String hostPort = null;
 
     private static synchronized String getHostPort() {
@@ -92,7 +94,7 @@ public class Http {
             builder.setPort(port);
         }
 
-        if (keyOrValue != null) {
+        if (!ArrayUtils.isEmpty(keyOrValue)) {
             for (int i = 0; i < keyOrValue.length; i = i + 2) {
                 String key = keyOrValue[i];
                 String value = keyOrValue[i + 1];
@@ -173,7 +175,7 @@ public class Http {
         if (body == null) {
             return;
         }
-        String bodyAsString = toString(body);
+        String bodyAsString = serializeForResponse(body);
         resp.setContentType("text/plain");
         resp.setCharacterEncoding("UTF-8");
         try {
@@ -181,6 +183,18 @@ public class Http {
         } catch (IOException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
+    }
+        
+    public static String serializeForResponse(Object object) {
+        String message = null;
+        if (object instanceof String) {
+            message = (String) object;
+        } else if (object instanceof JSONObject || object instanceof JSONArray) {
+        	message = object.toString();
+        } else {
+            message = new Gson().toJson(object);
+        }
+        return message;
     }
 
     private static String toString(Object object) {
@@ -198,12 +212,12 @@ public class Http {
         String encoded = URLEncodedUtils.format(params, charset);
         return encoded.substring(6);
     }
-
+    
     public static String decodePercentage(String s) {
         Charset charset = Charset.forName("UTF-8");
         List<NameValuePair> pair = URLEncodedUtils.parse("query=" + s, charset);
         return pair.get(0).getValue();
-    }
+    }    
 
     public static URI createURIFlex(String urlOrPathOrKey, Object... params) throws URISyntaxException {
         URI result = null;

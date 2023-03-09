@@ -1,0 +1,59 @@
+version: "3.8"
+
+services:
+  hplc_postpro_agent:
+    image: ghcr.io/cambridge-cares/hplc_postpro_agent:1.0.0-SNAPSHOT
+    container_name: hplc_postpro_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AUTH_JSON_PATH: /run/secrets/email_auth
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+     - 7000:5000
+    # NOTE below network_mode is to make the agent able to connect to localhost
+    # which was required to download the file from file server
+    # https://forums.docker.com/t/docker-errors-invalidargument-host-network-mode-is-incompatible-with-port-bindings/103492/11
+    # this change is done together with the ones in agent.postproc.env.test
+    # where the triple store and file server URLs were defined
+    # network_mode: host
+    # Use extra_hosts instead
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    env_file:
+      - ./hplcpostproagent/tests/agent.hplc.postpro.env.test
+    secrets:
+      - email_auth
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "hplcpostproagent:create_app()", "--preload"]
+
+  # Blazegraph
+  blazegraph:
+    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    container_name: "blazegraph_hplc_postpro_test"
+    ports:
+      - 48082:8080
+    environment:
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    # Add a secret to set the password for BASIC authentication
+    secrets:
+      - blazegraph_password
+
+  # File server
+  fileserver:
+    image: docker.cmclinnovations.com/fileserver:1.1.0-SNAPSHOT
+    container_name: "fileserver_hplc_postpro_test"
+    ports:
+      - 48086:8080
+    # Add secret to set BASIC authentication password
+    secrets:
+      - file_server_password
+
+# Secrets used to set runtime passwords
+secrets:
+  blazegraph_password:
+    file: hplcpostproagent/tests/dummy_services_secrets/blazegraph_passwd.txt
+  file_server_password:
+    file: hplcpostproagent/tests/dummy_services_secrets/fileserver_passwd.txt
+  email_auth:
+    file: hplcpostproagent/tests/dummy_services_secrets/email_auth.json

@@ -12,19 +12,23 @@
 
 version: "3.8"
 
-
 services:
 
   # Flood Map
   flood-map:
     image: docker.cmclinnovations.com/flood-vis-${MODE}:1.0.0-SNAPSHOT
     container_name: "flood-map${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    pull_policy: if_not_present
     restart: unless-stopped
 
   # Land Use Crop Map
   land-use:
     image: docker.cmclinnovations.com/land-use-vis-${MODE}:1.0.0-SNAPSHOT
     container_name: "land-use${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -32,6 +36,8 @@ services:
   reverse-proxy:
     image: docker.cmclinnovations.com/reverse_proxy-${MODE}:1.0.0-SNAPSHOT
     container_name: "reverse_proxy${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: always
     volumes:
@@ -43,6 +49,8 @@ services:
   uk-gas-grid:
     image: docker.cmclinnovations.com/gas-grid-vis-${MODE}:1.0.0-SNAPSHOT
     container_name: "uk-gas-grid${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -50,6 +58,8 @@ services:
   uk-power-system:
     image: docker.cmclinnovations.com/power-system-vis-${MODE}:1.0.0-SNAPSHOT
     container_name: "uk-power-system${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
 
@@ -57,12 +67,70 @@ services:
   website:
     image: docker.cmclinnovations.com/website-${MODE}:1.0.0-SNAPSHOT
     container_name: "website${CONTAINER_NAME_SUFFIX}"
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
     pull_policy: if_not_present
     restart: unless-stopped
 
+  # CReDo visualisation
+  credo-vis:
+    image: docker.cmclinnovations.com/credo-vis:1.0.0-SNAPSHOT
+    container_name: "credo-vis${CONTAINER_NAME_SUFFIX}"
+    pull_policy: if_not_present
+    restart: unless-stopped
+    security_opt:
+      - label=disable
+    environment:
+      GEOSERVER_HOST: "credo-geoserver"
+      GEOSERVER_PORT: "8080"
+    volumes:
+      - vis_data:/var/www/html/data
+      - vis_docs:/var/www/html/docs
+
+  # CReDo GeoServer
+  credo-geoserver:
+    image: docker.cmclinnovations.com/credo-geoserver:${GEOSERVER_VERSION}
+    container_name: "credo-geoserver${CONTAINER_NAME_SUFFIX}"
+    environment:
+      GEOSERVER_PASSWORD_FILE: /run/secrets/geoserver_password
+      DATA_IN_DIR: "/inputs/${GEOTIF_DIR}"
+      GEOSERVER_HOST: "localhost"
+      GEOSERVER_PORT: "8080"
+    pull_policy: if_not_present
+    env_file:
+      - .env
+      - credo-geoserver/geoserver.env
+    restart: unless-stopped
+    # Add a secret to set the password for BASIC authentication
+    secrets:
+      - credo-geoserver_password
+    security_opt:
+      - label=disable
+    volumes:
+      - vis_data:/inputs
+      - credo-geoserver_datadir:${GEOSERVER_DATA_DIR}
+      - credo-geoserver_grib_cache:${GRIB_CACHE_DIR}
+      - credo-geoserver_gwc:${GEOWEBCACHE_CACHE_DIR}
+      - credo-geoserver_gwc_config:${GEOWEBCACHE_CONFIG_DIR}
+      - credo-geoserver_logs:${GEOSERVER_LOG_DIR}
+      - credo-geoserver_netcfd:${NETCDF_DATA_DIR}
 
 # The default network name is set using a docker-compose environment variable.
 # Please don't modify the contents of the 'networks' node below.
 networks:
   default:
     name: ${NETWORK_NAME}
+
+secrets:
+  credo-geoserver_password:
+    file: credo-geoserver/secrets/admin_password
+
+volumes:
+  vis_data: null
+  vis_docs: null
+  credo-geoserver_datadir: null
+  credo-geoserver_grib_cache: null
+  credo-geoserver_gwc: null
+  credo-geoserver_gwc_config: null
+  credo-geoserver_logs: null
+  credo-geoserver_netcfd: null

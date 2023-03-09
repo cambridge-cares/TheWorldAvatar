@@ -1,0 +1,37 @@
+version: 1
+formatters:
+  simple:
+    #format: '%(levelname)-8s %(filename)-25s line %(lineno)-4d %(message)s'
+    format: '%(asctime)s %(levelname)-8s %(message)s'
+  extended:
+    #format: '%(asctime)s %(name)-10s %(levelname)-8s %(filename)-25s %(lineno)-4d %(message)s - %(funcName)-10s'
+    format: '%(asctime)s %(levelname)-8s %(message)s - %(filename)s %(lineno)-4d %(funcName)s %(name)s [[%(threadName)s]]'
+handlers:
+  #console:
+    #class: logging.StreamHandler
+    #level: INFO
+    #formatter: simple
+  file_handler:
+    class: logging.FileHandler
+    filename: ./oscml.log
+    level: INFO
+    formatter: extended
+#  rotating_file_handler:
+#    class: logging.handlers.RotatingFileHandler
+#    filename: C:/tmp/logs/log/ml.log
+#    maxBytes: 2000
+#    backupCount: 5
+#    level: INFO
+#    formatter: extended
+#loggers:
+#  dev:
+#    handlers: [console, rotating_file_handler]
+#  test:
+#    handlers: [rotating_file_handler]
+loggers:
+  lightning:
+    level: INFO
+    handlers: [file_handler]
+root:
+  level: INFO
+  handlers: [file_handler]

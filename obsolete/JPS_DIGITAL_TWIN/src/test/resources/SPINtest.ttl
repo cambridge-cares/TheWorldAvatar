@@ -1,0 +1,144 @@
+@prefix : <http://topbraid.org/examples/purchases#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix sp: <http://spinrdf.org/sp#> .
+@prefix spin: <http://spinrdf.org/spin#> .
+@base <http://topbraid.org/examples/purchases> .
+
+<http://topbraid.org/examples/purchases> rdf:type owl:Ontology ;
+                                         owl:imports <http://spinrdf.org/spl> .
+
+#################################################################
+#    Data properties
+#################################################################
+
+
+:amount rdf:type owl:DatatypeProperty ;
+        rdfs:domain :Purchase ;
+        rdfs:range xsd:int ;
+        rdfs:comment "An amount, in dollars."^^xsd:string .
+		
+:pieces rdf:type owl:DatatypeProperty ;
+        rdfs:domain :MaterialsPurchase ;
+        rdfs:range xsd:int ;
+        rdfs:comment "Number of items."^^xsd:string .
+
+:amountPerPiece rdf:type owl:DatatypeProperty ;
+                rdfs:domain :MaterialsPurchase ;
+                rdfs:range xsd:int ;
+                rdfs:comment "Price per piece in dollars."^^xsd:string .
+
+#################################################################
+#    Classes
+#################################################################
+
+:MaterialsPurchase rdf:type owl:Class ;
+                   rdfs:subClassOf :Purchase .
+
+:Purchase rdf:type owl:Class ;
+          rdfs:subClassOf owl:Thing .
+
+:ServiceContract rdf:type owl:Class ;
+                 rdfs:subClassOf :Purchase .
+
+#################################################################
+#    Individuals
+#################################################################
+
+:purchase101 rdf:type owl:NamedIndividual ,
+                      :MaterialsPurchase ;
+             :amount "500"^^xsd:int ;
+			 :pieces "10"^^xsd:int ;
+             rdfs:label "exterior flange"^^xsd:string .
+
+:purchase102 rdf:type owl:NamedIndividual ,
+                      :ServiceContract ;
+             :amount "200"^^xsd:int ;
+             rdfs:label "exterior flange maintenance"^^xsd:string .
+
+:purchase103 rdf:type owl:NamedIndividual ,
+                      :MaterialsPurchase ;
+             :amount "580"^^xsd:int ;
+			 :pieces "10"^^xsd:int ;
+			 :amountPerPiece "58"^^xsd:int ;
+             rdfs:label "widget brace coupling"^^xsd:string .
+
+:purchase104 rdf:type owl:NamedIndividual ,
+                      :ServiceContract ;
+             :amount "100"^^xsd:int ;
+             rdfs:label "widget brace installation training"^^xsd:string .
+
+#################################################################
+#    Rules
+#################################################################
+
+:MaterialsPurchase
+	spin:rule [ 
+		a sp:Construct ;
+                sp:text """
+                    CONSTRUCT {
+                        ?this :amountPerPiece ?amountPerPiece .
+                    }
+                    WHERE {
+                        ?this :amount ?amount ;
+                              :pieces ?pieces .
+						BIND (?amount/?pieces AS ?amountPerPiece)
+                    }"""
+              ] .
+
+#################################################################
+#    Constraints
+#################################################################
+
+:MaterialsPurchase
+				spin:constraint [
+					a sp:Ask ;
+					sp:where (
+						[
+							sp:subject spin:_this ;
+							sp:object [
+								sp:varName "amount" ;
+							] ;
+							sp:predicate :amount ;
+						]
+						[
+							a sp:Filter ;
+							sp:expression [
+								a sp:gt ;
+								sp:arg1 [
+									sp:varName "amount" ;
+								] ;
+								sp:arg2 550 ;
+							] ;
+						]
+					) ;
+					rdfs:comment "Material purchase is larger than 550." ;
+				   ] ; .
+				   
+:ServiceContract
+				spin:constraint [
+					a sp:Ask ;
+					sp:where (
+						[
+							sp:subject spin:_this ;
+							sp:object [
+								sp:varName "amount" ;
+							] ;
+							sp:predicate :amount ;
+						]
+						[
+							a sp:Filter ;
+							sp:expression [
+								a sp:lt ;
+								sp:arg1 [
+									sp:varName "amount" ;
+								] ;
+								sp:arg2 150 ;
+							] ;
+						]
+					) ;
+					rdfs:comment "Service contract is smaller than 150." ;
+				   ] ; .

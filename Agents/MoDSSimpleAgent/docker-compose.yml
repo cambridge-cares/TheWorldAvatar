@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  modssimpleagent:
+    image: docker.cmclinnovations.com/modssimpleagent:0.2.0
+    build: .
+    container_name: modssimpleagent
+    environment:
+      DATA_DIR: /app/files
+      CMCL_LICENSE_PATH: "/run/secrets/mods_agent_licence"
+    ports:
+      - "58085:8080"
+      - "8000:8000"
+    secrets:
+      - mods_agent_licence
+
+# Secrets
+secrets:
+  mods_agent_licence:
+    file: ./secrets/docker-agent-licence.lic

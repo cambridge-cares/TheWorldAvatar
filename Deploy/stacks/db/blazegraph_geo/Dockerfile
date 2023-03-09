@@ -22,12 +22,12 @@ WORKDIR /root/
 RUN sed -i "s|REPO_URL|${repo_url}|g;s|GROUP_ID|${group_id}|;s|ARTIFACT_ID|${artifact_id}|g;s|ARTIFACT_VERSION|${artifact_version}|;s|ARTIFACT_FMT|${artifact_fmt}|" pom.xml
 
 # Download war
-RUN mvn -f pom.xml org.apache.maven.plugins:maven-dependency-plugin:unpack-dependencies
+RUN --mount=type=cache,target=/root/.m2/repository mvn -f pom.xml org.apache.maven.plugins:maven-dependency-plugin:unpack-dependencies
 #==================================================================================================
 
 # Second stage: copy the downloaded war into the the webapps dir of a tomcat image
 #==================================================================================================
-FROM docker.cmclinnovations.com/tomcat:9.0 as blazegraph_geo
+FROM tomcat:9.0 as blazegraph_geo
 
 # Copy in local,customised version of the Blazegraph .war file
 COPY --from=dependency_fetcher /root/blazegraph.war /usr/local/tomcat/webapps

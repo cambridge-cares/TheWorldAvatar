@@ -32,3 +32,4 @@ docker build --target final \
 # Try to push the newly built images
 docker push ${BUILD_STAGE} || true
 docker push ${FINAL_STAGE} || true
+

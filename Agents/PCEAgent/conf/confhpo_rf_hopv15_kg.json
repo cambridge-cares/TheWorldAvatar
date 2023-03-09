@@ -1,0 +1,95 @@
+{
+"goals":{
+    "hpo": true,
+    "contour_plot": false,
+    "best_trial_retraining": true,
+    "transfer_learning": false,
+    "predict": false
+},
+"numerical_settings":{
+    "seed": 1,
+    "cudnn_deterministic": true,
+    "cudnn_benchmark": false
+},
+"dataset":{
+    "querykg": true,
+    "kg_options": {
+        "sparqlEndPoint": "http://theworldavatar.com/blazegraph/namespace/opvhopv15/sparql",
+        "queryStr": 	[
+            "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>",
+            "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>",
+            "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>",
+            "PREFIX OntoChemExp: <http://www.theworldavatar.com/ontology/ontochemexp/OntoChemExp.owl#>",
+            "PREFIX OntoSpecies:<http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>",
+            "SELECT ?DonorSMILES ?PowerConversionEfficiencyValue",
+            "WHERE {",
+            "      ?exp OntoChemExp:hasCommonProperties ?commonProperties ;",
+            "           OntoChemExp:hasDataGroup ?dataGroup .",
+            "      ?commonProperties OntoChemExp:hasDimensionalQuantity ?DimQuantity1 .",
+            "      ?DimQuantity1 a OntoChemExp:JunctionArchitecture .",
+            "      ?DimQuantity1 OntoChemExp:hasValue ?JunctionArchitectureValue .",
+            "      FILTER regex(str(?JunctionArchitectureValue), 'bulk heterojunction')",
+            "      ?commonProperties OntoChemExp:hasDimensionalQuantity ?DimQuantity2 .",
+            "      ?DimQuantity2 a OntoChemExp:Acceptor .",
+            "      ?DimQuantity2 OntoChemExp:hasComponent ?AcceptorCompontent .",
+            "      ?AcceptorCompontent OntoChemExp:hasSpeciesLink ?AcceptorCompontentLink .",
+            "      ?AcceptorCompontentLink OntoChemExp:hasDatPreferredKey ?AcceptorType .",
+            "      FILTER (?AcceptorType != 'TiO2'^^xsd:string)",
+            "      ?commonProperties OntoChemExp:hasDimensionalQuantity ?DimQuantity3 .",
+            "      ?DimQuantity3 a OntoChemExp:Donor .",
+            "      ?DimQuantity3 OntoChemExp:hasComponent ?DonorCompontent .",
+            "      ?DonorCompontent OntoChemExp:hasSpeciesLink ?DonorCompontentLink .",
+            "      ?DonorCompontentLink OntoSpecies:SMILES ?DonorSMILES .",
+            "      ?dataGroup OntoChemExp:hasDataPoint ?DataPoint .",
+            "      ?DataPoint OntoChemExp:hasDataPointX ?DataPointX .",
+            "      ?DataPointX OntoChemExp:refersTo ?Measurement ;",
+            "                  OntoChemExp:hasValue ?PowerConversionEfficiencyValue .",
+            "      ?Measurement a OntoChemExp:PowerConversionEfficiency .",
+            "}"
+                ],
+        "kgdstcsv": "./data/processed/kgData.csv",
+        "split": [200, 30, 36]
+    },
+    "src": "./data/processed/HOPV_15_revised_2_processed_homo_5fold.csv",
+    "z-stand": "False",
+    "x_column": ["smiles"],
+    "y_column": ["pce"],
+    "split": "ml_phase"
+    },
+"model":{
+    "name": "RF",
+    "model_specific":{
+        "n_estimators":{"type":"int","low":16,"high":256},
+        "max_depth":{"type":"int","low":10,"high":100},
+        "min_samples_split":{"type":"int","low":2,"high":5},
+        "min_samples_leaf":{"type":"int","low":1,"high":5},
+        "max_features":{"type":"categorical","choices":[0.05, 0.1, 0.5, 1.0]},
+        "bootstrap": {"type":"categorical","choices":[true, false]},
+        "max_samples":{"type":"int","low":5,"high":50}
+    },
+    "fingerprint_specific":{
+        "type":"morgan",
+        "nBits":{"type":"categorical","choices": [128, 256, 512, 1024, 2048, 4096]},
+        "radius": {"type":"categorical","choices": [2, 3, 4, 5]},
+        "useChirality": true,
+        "useBondTypes": true
+        }
+    },
+"training":{
+    "metric": "mse",
+    "cross_validation": 5,
+    "nested_cross_validation": 0,
+    "direction": "minimize",
+    "trials": 100,
+    "study_name": "rf_hopv15_homo_kg",
+    "storage": "sqlite:///rf_hopv15_homo_kg.db",
+    "storage_timeout": 1000,
+    "load_if_exists": true,
+    "jobs": 1
+    },
+"post_processing":{
+    "contour_plot_alt_dir": null,
+    "z_transform_inverse_prediction": false,
+    "regression_plot": false
+}
+}

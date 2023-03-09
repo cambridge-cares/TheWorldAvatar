@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  stack-manager:
+    image: docker.cmclinnovations.com/stack-manager${IMAGE_SUFFIX}:1.8.3
+    environment:
+      EXTERNAL_PORT: "${EXTERNAL_PORT-3838}"
+    volumes:
+      - ./inputs/data:/inputs/data
+      - ./inputs/config:/inputs/config
+      # Add secret files here as Docker compose doesn't handle "secrets" well
+      # Ensure all secret files are mapped to the /run/secrets/ directory
+      # and are read only inside the container (add ":ro" on the end)
+      - ./inputs/secrets:/run/secrets:ro
+
+networks:
+  stack:
+    name: ${STACK_NAME}
+    driver: overlay
+    attachable: true

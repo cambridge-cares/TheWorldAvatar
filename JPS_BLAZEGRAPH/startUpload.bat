@@ -9,3 +9,4 @@ if "%lastLine%"=="Now the tool will stop. Run it again to finish the import." (
 	goto loop
 )
 echo Finished OWL/RDF file upload
+

@@ -1,0 +1,2 @@
+model_checkpoint_path: "component_6_EmbeddingIntentClassifier.tf_model"
+all_model_checkpoint_paths: "component_6_EmbeddingIntentClassifier.tf_model"

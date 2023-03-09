@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  thingsboard-agent:
+    image: thingsboard-agent:1.3.0
+    build: .
+    container_name: thingsboard-agent
+    pull_policy: if_not_present
+    ports:
+      - "1010:8080"

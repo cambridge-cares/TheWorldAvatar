@@ -1,0 +1,27 @@
+ '{Citychem-Singapore--testnotapm-00000}'                ! Simulation-ID, exact 38 characters long
+ '../INPUT/mcwind/temp_episode.asc'                    ! Input path of TAPM tapm_YYYYMMDD_YYYYMMDD.outa file ('' if not available)
+ ''                                                      ! Input path of CMAQ CONC.surface.YYYYJJJ files       ('' if not available)
+ './uect2.3/input/points.csv'               ! Filename of csv-file containing point source yearly emission data (full path)
+ './uect2.3/input/lines.csv'                ! Filename of csv-file containing line source yearly emission data  (full path) make it zero emission
+ './uect2.3/input/areas.csv'                ! Filename of csv-file containing area source yearly emission data  (full path)make it zero emission
+ '../INPUT/emis'                                        ! Output files path name 
+ 'user_log_lse.txt'                                          ! Log file (in output path) 
+ 'CC'                                                    ! City-scale model choice ['CC'=CityChem, 'TP'=TAPM]
+ 'PSE'                                                   ! Output type choice      ['PSE'=points, 'LSE'=lines, 'ASE'=areas, 'ALL'=all]
+ 1                                                      ! Output for CityChem as ASCII or Binary [1=ASCII, 2=Binary, 3=netCDF]
+ 1                 		                         ! Number of hours for output, one month (e.g. 744)
+ '20191118'                                              ! Start date of input FORMAT='YYYYMMDD'
+ '20191118'                                              ! End data of input   FORMAT='YYYYMMDD'
+ 2019,11,18,03                                              ! Start date of input FORMAT=YYYY,MM,DD,HH
+ 2019,11,18,03                                              ! End date of input   FORMAT=YYYY,MM,DD,HH
+ 35                                                      ! Number grid cells in x-direction of the model domain
+ 35                                                      ! Number grid cells in y-direction of the model domain
+ 100.0                                                   ! Horizontal resolution (grid width dx) in meters of gridded area source input
+ 2000.0                                                  ! Horizontal resolution (grid width dx) in meters of the model domain
+ 331600,119000                                           ! Grid Origo (south-west corner) in (truncated) UTM coordinates (x,y) of the model domain
+ '48N'                                                   ! UTM zone, e.g. '35N' 
+ 1                                                       ! Number of sources in the point input
+ 1                                                       ! Number of sources in the line input
+ 1                                                       ! Number of sources in the area input
+ 0                                                       ! Output netCDF area sources choice  [1=Yes, 0=No]
+ 0                                                       ! control if using timefactor for point emission rate calculation (=0, dont use; =1, use default time factor caculated in Citychem)

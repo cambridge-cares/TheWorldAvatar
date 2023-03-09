@@ -1,0 +1,1849 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:ns1="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#"
+   xmlns:ns2="http://www.w3.org/2004/02/skos/core#"
+   xmlns:ns3="http://www.w3.org/2002/07/owl#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/NF01">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Scattered rock</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Any naturally occurring scattered elements of a rocky nature. Includes small outcrops, areas of shingle or scree, small boulders, etc.
+This code should only be used only for scattered features within a land parcel which are too small to map individually but which - when added together - have a combined area of 0.01 ha or greater.
+Scattered features are also referred to as 'notional features'.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NF01</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC77">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC77</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Corn chamomile</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Corn chamomile- type arable crop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC78">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Corn cockle- type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC78</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Corn cockle</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AB8">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AB8</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Flower rich margins and plots</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">as per rest of cropping, TG01 or FA01</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/Trees">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Trees</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A tree is a perennial plant with an elongated stem, or trunk, supporting branches and leaves in most species. Trees are not a taxonomic group but include a variety of plant species that have independently evolved a trunk and branches as a way to tower above other plants to compete for sunlight. Trees tend to be long-lived, some reaching several thousand years old.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandCover"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC06">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Canary seed</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Canary Seed</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Canary seed- type arable crop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC06</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AB01">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Farm building</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AB01</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A building used for livestock husbandry, cultivation or the storage of crops, feed and machinery, and associated residences, i.e. farmhouses.</rdfs:comment>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG13">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sainfoin</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sainfoin-type leguminous and nitrogen-fixing crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes sainfoin.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG13</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC50">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Squash</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC50</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Pumpkins, Squashes, Marrows, Zucchini, Courgettes</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Squash-type arable crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC31">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tulip-type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes all tulips</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC31</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC62">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC62</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed arable crop - you can mark up to 5 different mixed crops on your land as different crops. Each mixed crop will be considered as a separate crop for crop diversification.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed crop - group 5</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed Crop-Group 5</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/IW03">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This code should only be used for a river or stream which:
+- is inside the land parcel and is not part of the parcel boundary
+- is greater than, or equal to, 4 metres wide over the majority of its length
+A river or stream is a body of water flowing in a definite channel towards the sea, a lake or into another river.</rdfs:comment>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">IW03</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Watercourse - river or stream (Rivers and Streams Type 3)</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG21">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pea (winter)-type leguminous and nitrogen-fixing crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Winter Peas</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG21</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Feed pea, Mange tout, Marrow fat pea, Snap pea, Snow pea, Vining pea.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG04">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Green beans-type leguminous and nitrogen- fixing crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes French beans, Green beans, Haricot beans, Runner beans.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG04</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Green Beans</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC44">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC44</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Potato</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Early potato,Maincrop potato, Seed potato; use AC28 for Sweet potato</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Potato-type arable crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AB6">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AB6</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Enhanced overwinter stubble</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FA01</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC55">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC55</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Water melon-type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Water melon</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC09">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Chicory</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Chicory, Endive, Italian chicory, Radiccio</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC09</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Chicory-type arable crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AB03">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AB03</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Animal shelter on bare soil</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">You don't need to declare it as a separate 'land use' with its own land use code. Instead, include its area within the main land use of the parcel it is in.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG12">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG12</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes sweet clover.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sweet clover-type leguminous and nitrogen-fixing crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/TC01">
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/PermanentCrops"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TC01</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Perennial Crops and Isolated Trees</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:isConnectedTo rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Trees"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Permanent crops other than nursery crops and short rotation coppice. TC01 Permanent crops are crops that occupy the land for 5 years or more (other than permanent grassland) and nursery crops and provide repeated harvests. They include nursery crops short rotation (code NU01) and short rotation coppice (code SR01).</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Permanent crops other than nursery crops and short rotation coppice</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC04">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Borage</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC04</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Borage</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Borage-type arable crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG20">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Broad beans, Field beans, Vetch.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Winter Field beans</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG20</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Field beans (winter)-type leguminous and nitrogen- fixing crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC65">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Feed oats, Naked oats, Porridge oats, Quaking oats</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Winter Oats</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Oats (winter)-type arable crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC65</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC23">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Parsnips</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC23</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Parsnip-type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Parsnips</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/ArableLand:TemporaryGrasslandFallowLandArableBufferStripsHedgesandArableLandExemptfromGreening">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Arable Land: Temporary Grassland, Fallow Land, Arable Buffer Strips, Hedges and Arable Land Exempt from Greening</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A sub-set of arable land, which is land that can be ploughed and used to grow crops. Temporary grassland is land that has been in grass or other herbaceous forage for five years or less. Fallow land is all arable land either included in the crop rotation system or maintained in good agricultural and environmental condition (GAEC), whether worked or not, but which will not be harvested for the duration of a crop year. A buffer strip is an area of land maintained in permanent vegetation that helps to control air, soil, and water quality, along with other environmental problems, dealing primarily on land that is used in agriculture. A hedge or hedgerow is a line of closely spaced shrubs and sometimes trees, planted and trained to form a barrier or to mark the boundary of an area, such as between neighbouring properties. Greening is the process of making living environments more environmentally friendly.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#AgriculturalLand"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/NA02">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An area of land which is normally agricultural but the intensity, nature, duration, and timing of non­agricultural activity significantly interferes with agricultural activity.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NA02</rdfs:label>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ineligible area or feature which is temporary and likely to change over time (Non-Agricultural Area)</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC69">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC69</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Winter Triticale</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Triticale (winter)</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triticale (winter)-type arable crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC18">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC18</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Millet</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Millet</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Millet-type arable crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/EnergyCrop">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Energy Crop</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Energy crops are low-cost and low-maintenance crops grown solely for energy production by combustion (not for food). The crops are processed into solid, liquid or gaseous fuels, such as pellets, bioethanol or biogas. The fuels are burned to generate electrical power or heat.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandCover"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/CW01">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Watercress</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Watercress - arable crop under water</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CW01</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LeguminousCrop">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandCover"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Crop plants in the legume family, which includes the plants that produce some beans, peas, and lentils. The word legume most commonly refers to the edible seed pods of these plants (the beans, peas, lentils, and other things that they bear as fruit).</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Leguminous Crop</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC30">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Triticale (spring)-type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Triticale (spring)</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Spring Triticale</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC30</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/NF02">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NF02</rdfs:label>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Scattered bracken or heather</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Scattered bracken - areas of bracken which are scattered in a land parcel, are not kept in a state suitable for grazing or are in an area where grasses and other herbaceous forage are not predominant.
+Scattered heather - areas of heather which are scattered in a land parcel and are not kept in a state suitable for grazing.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/PermanentGrasslandandPermanentGrasslandBufferStrips">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#AgriculturalLand"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Permanent Grassland and Permanent Grassland Buffer Strips</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Permanent grassland is land used permanently (for several consecutive years, normally 5 years or more) to grow herbaceous fodder, forage or energy purpose crops, through cultivation (sown) or naturally (self-seeded).</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/CodesYouMuseNotUse">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCodeType"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Codes You Muse Not Use</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Inelligible land use codes that appear in the Rural Payments Service which you should not use in your BPS application.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC26">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC26</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Spinach-type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Spinach</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Spinach</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/HEAT">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HEAT</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns1:isConnectedTo rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Grassland"/>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/CROMECode"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heather</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC08">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC08</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Celeriac, Celery</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Celery-type arable crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC34">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Broccoli, Brussels sprouts, Cabbages, Calabrese, Cauliflower, Chinese kale, Kale, Kohlrabi, Red cabbage, Savoy cabbage, White cabbage</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cabbage (spring)-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Spring Cabbage</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC34</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/NT01">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gallop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NT01</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A track with a grass or manmade surface that is used for horses to gallop on when being trained for horse racing. Grass gallops can exceptionally be considered part of the agricultural area of a land parcel but only if the applicant can prove that the non-agricultural activity does not significantly interfere with agricultural activity.</rdfs:comment>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/RO03">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Boulders</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An area of large, rounded rocks that are weathered or water-worn and have a diameter that is greater than 0.2 metres.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">RO03</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/ArableLand:ArableCropsforCropDiversification">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A sub-set of arable land, which is land that can be ploughed and used to grow crops. Crops grown on this land for crop diversification, which is the addition of new crops or cropping systems to maximise the productivity of land.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#AgriculturalLand"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Arable Land: Arable Crops for Crop Diversification</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC02">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes all Basils</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Basil-type arable crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC02</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/IW02">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">IW02</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This code should only be used for a river or stream which:
+- is inside the land parcel and is not part of the parcel boundary. - is less than 4 metres wide over the majority of its length.
+A river or stream is a body of water flowing in a definite channel towards the sea, a lake or into another river.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Watercourse - river or stream (Rivers and Streams Type 2)</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/RO02">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A mass of loose stones on the side of a steep rock face.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Scree</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">RO02</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC07">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carrot</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carrot-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC07</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Carrot</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/NF06">
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NF06</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Scattered natural features</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Natural features that are scattered in a land parcel, are not kept in a state suitable for grazing or cultivation, are not protected under cross compliance, and are not included under any other land use codes.
+This code should only be used only for scattered features within a land parcel which are too small to map individually but which - when added together - have a combined area of 0.01 ha or greater.
+Scattered features are also referred to as 'notional features'.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC41">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC41</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Radish</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Radish</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Radish-type arable crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/HS01">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hard standing</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A manmade, open ground surface built using aggregate, concrete-type construction materials.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HS01</rdfs:label>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/MW03">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reed bed</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MW03</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This code should only be used for reed beds which are not kept in a state suitable for grazing or are in an area where grasses and other herbaceous forage are not predominant.
+Grazeable reed beds in an area where grasses and other herbaceous forage remain predominant should be coded as permanent grassland.
+A reed bed is an area of tall, stiff marsh or water grass of various kinds.</rdfs:comment>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC37">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Brown mustard; Use AC38 for White or Yellow mustard</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Brown mustard-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Brown Mustard</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC37</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC49">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC49</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Tree chilli</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tree chilli-type arable crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/SA02">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An area of bare earth that is used for storage purposes. Includes storage of farm-related machinery, hay bales, etc.</rdfs:comment>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Storage area</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SA02</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC20">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Onion-type arable crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Chives, Garlic, Onions, Leeks, Scallions, Shallot, Spring Onions</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Onions</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC20</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC98">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Larkspur</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC98</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG07">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pea (spring)-type leguminous and nitrogen- fixing crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Spring Peas</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Feed pea, Mange tout, Marrow fat pea, Snap pea, Snow pea, Vining pea.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG07</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG09">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG09</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Black eye peas, Cowpeas.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cowpea</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cowpea-type leguminous and nitrogen-fixing crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC46">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Aubergine and Eggplant</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Aubergine-type arable crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC46</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/MW02">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tidal areas other than salt marshes.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tidal areas</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MW02</rdfs:label>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG11">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG11</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Lucerne (Alfalfa), Black medic .</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lucerne</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lucerne-type leguminous and nitrogen-fixing crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC81">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Poppy</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Poppy-type arable crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Poppy and Corn poppy</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC81</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC74">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Phacelia</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC74</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Phacelia-type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Phacelia</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC86">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Teasel</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Teasel-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC86</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/IW01">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rivers and streams less than 4 metres in width and forming part of a boundary (type 1)</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">IW01</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">You don't need to declare it as a separate 'land use' with its own land use code. Instead, include its area within the main land use of the parcel it is in.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC53">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC53</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Banana squash and Buttercup squash</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Banana squash-type arable crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/MT03">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A metalled or surfaced way that is clearly marked, permanent and forms part of a wider road network with, for example, road markings, road names or road numbers.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Road</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MT03</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC59">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed Crop-Group 2</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC59</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed arable crop - you can mark up to 5 different mixed crops on your land as different crops. Each mixed crop will be considered as a separate crop for crop diversification.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed crop - group 2</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC33">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Yam-type arable crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Yam</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC33</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AB11">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AB11</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cultivated areas for arable plants</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FA01 meeting some of the management requirements may mean land in this option will not qualify as EFA fallow.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC24">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rye (spring)-type arable crop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Spring Rye</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC24</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Rye (spring)</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/RD01">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">RD01</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Non-agricultural land, for example woodland, which is at your disposal and remains eligible for BPS because it is under a suitable Rural Development Programme agreement or the National Forest Changing Landscape Scheme and was used with entitlements to claim SPS in 2008.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Non-agricultural Land</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/ES01">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ES01</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This code does not relate to land and is for RPA use only.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Real estate services</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC14">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hemp</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hemp-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC14</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Hemp</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/OP2">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OP2</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Organic wild bird seed mixture</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC58 to AC62</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC42">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Horseradish (Cochlearia armoracia)</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC42</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Horseradish- type arable crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/CF03">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sand dunes</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An area of sand dunes (ridges of sand created by the wind).</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CF03</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC35">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Bok choi, Chinese cabbage (Pak choi), Turnip, Turnip rape</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Turnip</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Turnip-type arable crop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC35</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/PL01">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This code should only be used for banks which are inaccessible or not protected under cross compliance.
+A bank is a raised linear feature that is artificially constructed and predominantly made up of earth. A bank can have a vegetated, bare earth or stone surface.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Non-utilised Bank</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PL01</rdfs:label>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/UnknownVegetationorMixedVegetation">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unknown Vegetation or Mixed Vegetation</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Land where the vegetation present cannot be classified either due to not being known or having a variety of vegation, with no predominant type.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandCover"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG16">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG16</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed crop, where all the crops are leguminous. You can mark up to 5 different mixed crops made up of legumes on your land.
+These land uses will count for both crop diversification and ecological focus area.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed Crops - Group 2 Leguminous</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed crop - leguminous only 2</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG18">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG18</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed crop - leguminous only 4</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed crop, where all the crops are leguminous. You can mark up to 5 different mixed crops made up of legumes on your land.
+These land uses will count for both crop diversification and ecological focus area.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/NA01">
+    <ns1:isConnectedTo rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalLand"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NA01</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Non-vegetated or sparsely-vegetated Land</rdfs:label>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/CROMECode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/WA01">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WA01</rdfs:label>
+    <ns1:isConnectedTo rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Water"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/CROMECode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Water</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AB06">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Glasshouse, including polytunnels</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A horticultural building constructed largely of glass, which is on a hard standing or used to grow ineligible crops.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AB06</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AB1">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">as per rest of cropping, FA01 or TG01</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nectar flower mix</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AB1</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC39">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Crambe-type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Crambe, Seakale</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC39</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC45">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC45</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Tomato</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tomato</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tomato-type arable crop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC15">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lettuce</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC15</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Butterhead lettuce, Cos lettuce, Iceberg lettuce, Lettuce, Romaine lettuce</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lettuce-type arable crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/CROMECode">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCodeType"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CROME Code</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Code used by the Crop Map of England (CROME) to describe the land cover in England.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG19">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG19</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed crop, where all the crops are leguminous. You can mark up to 5 different mixed crops made up of legumes on your land.
+These land uses will count for both crop diversification and ecological focus area.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed crop - leguminous only 5</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC68">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Winter Rye</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC68</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Rye (winter)</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rye (winter)-type arable crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/MW05">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A coastal area with a sodium chloride content of at least 0.5%.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Saline habitats</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MW05</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC99">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nigella</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC99</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/BB01">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This code should only be used for stone walls which are not protected under cross compliance.
+Stone walls protected under cross compliance should be coded using the land use code for the main land use of the parcel.
+A stone wall is a wall structure built with stones, traditionally with loose field stones and mortar.</rdfs:comment>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Stone wall</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BB01</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC43">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC43</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Tobacco</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Tobacco-type arable crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/PG01">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns1:isConnectedTo rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Grassland"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Grass</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Permanent grassland</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">All land you are planning to count as permanent grassland for BPS. Also use this code for strips and margins of permanent grassland if you want these to count towards your total area of grassland to meet a greening exemption or to limit your area of arable land subject to crop diversification.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PG01</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG08">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG08</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Soya-type leguminous and nitrogen-fixing crop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Soya bean, Soybean.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Soya</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/CM01">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Peat production</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CM01</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This code should only be used for an area of land which is permanently used for peat production. An area of land is permanently used for peat production if the production has taken (or will take) place for 3 years or more.
+Peat production is an area of land used for peat extraction.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC67">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Industrial rape, Oilseed rape, Swede</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Winter Oilseed</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Oilseed (winter)-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC67</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC17">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Corn, Maize, Sweetcorn</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Maize-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC17</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Maize</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC11">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Dill-type arable crop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC11</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Dill</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/HS2">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TG01 and then PG01 after 5 years</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Take historic and archaeological features out of cultivation</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HS2</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG14">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG14</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Clover-type leguminous and nitrogen-fixing crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes clovers and some trefoil.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Clover</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AB15">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TG01 for years not in arable cropping</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Two year sown legume fallow</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AB15</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC28">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC28</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sweet potato-type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Sweet potato; use AC44 for Potato</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/MW01">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MW01</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Salt marsh</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This code should only be used for salt marshes which are not kept in a state suitable for grazing or are in an area where grasses and other herbaceous forage are not predominant.
+Grazeable salt marsh in an area where grasses and other herbaceous forage remain predominant should be coded as permanent grassland.
+Salt marsh is an area of coastal grassland which is frequently inundated by the sea.</rdfs:comment>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC27">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Strawberry-type arable crop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Strawberry</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Strawberry</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC27</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC58">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed Crop-Group 1</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC58</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed arable crop - group 1</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed arable crop - you can mark up to 5 different mixed crops on your land as different crops. Each mixed crop will be considered as a separate crop for crop diversification.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC22">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Parsley-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Parsley</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC22</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes All Parsleys</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/BF08">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BF08</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bank</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">You don't need to declare it as a separate 'land use' with its own land use code. Instead, include its area within the main land use of the parcel it is in.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC87">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC87</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Quinoa-type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Quinoa</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/HE02">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HE02</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bracken is an area covered predominantly by a type of fern (Pteridium aquilinum) found together with other species in heathland or hill sides. Heather is an area covered predominantly by common heather and various species of the Cassiope or Erica genus.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heathland and Bracken</rdfs:label>
+    <ns1:isConnectedTo rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Grassland"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bracken, heather and heathland</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/Grassland">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Grasslands are areas where the vegetation is dominated by grasses. However, sedge and rush can also be found along with variable proportions of legumes, like clover, and other herbs. Grasslands are one of the largest biomes on earth and dominate the landscape worldwide.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandCover"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Grassland</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC47">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Bell pepper, Chilli pepper</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pepper-type arable crop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC47</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC32">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC32</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wheat (spring)- type arable crop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Biscuit wheat, Common or Bread wheat, Durum wheat, Einkorn, Feed wheat, Red wheat, Spelt</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Spring Wheat</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/SW1">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SW1</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">4 to 6 metre buffer strip on cultivated land</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Record as per rest of field cropping, TG01</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/WD3">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WD3</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Woodland edges on arable land</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Record as per rest of field cropping</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG15">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG15</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed crop, where all the crops are leguminous. You can mark up to 5 different mixed crops made up of legumes on your land.
+These land uses will count for both crop diversification and ecological focus area.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed crop - leguminous only 1</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed Crops - Group 1 Leguminous</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC03">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Beet</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Beetroot, Chard, Field beet, Fodder beet, Mangolds, Redbeet, Sugar beet</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Beet type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC03</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG06">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lupins</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lupin-type leguminous and nitrogen-fixing crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Lupin</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG06</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/CF02">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Vegetated shingle</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CF02</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An area of water-worn pebbles which supports growth of vegetation.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/MT04">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Steel bar or continuous line of bars laid on the ground, usually forming a track used for the movement of trains.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MT04</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Railway</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/IW11">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">IW11</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Drain/Ditch/Dyke less than 4 metres in width and forming part of a boundary</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">You don't need to declare it as a separate 'land use' with its own land use code. Instead, include its area within the main land use of the parcel it is in.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC80">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Corn marigold- type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Corn marigold</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC80</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/MW04">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An area of sand or mud uncovered at low tide.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Intertidal habitats</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MW04</rdfs:label>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC94">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sweet William</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC94</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sweet William</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/BF02">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BF02</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hedge protected under cross compliance</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">You don't need to declare it as a separate 'land use' with its own land use code. Instead, include its area within the main land use of the parcel it is in.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/BF11">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Half Hedge</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/ArableLand:TemporaryGrasslandFallowLandArableBufferStripsHedgesandArableLandExemptfromGreening"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A hedge that you want to use as part of your ecological focus area. Use ‘BF11 ­ Half Hedge’ for the inside half of a hedge in land parcel.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BF11</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/MT05">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Airstrip – a stretch of land which has been cleared so that light aircraft can take off and land. Airport – an area of land where aircraft land and take off and which provides facilities for handling passengers, air freight and servicing aircraft.</rdfs:comment>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MT05</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Airstrip/airports</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC13">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC13</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fennel-type arable crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Fennel</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/WF03">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An area of fresh water, often artificially constructed, which is smaller than a lake. Includes artificially created scrapes which are winter feeding areas for wading birds.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WF03</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pond</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/ArableLand:LeguminousandNitrogen­fixingCropsforCropDiversificationandEcologicalFocusAreas">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#AgriculturalLand"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A sub-set of arable land, which is land that can be ploughed and used to grow crops. Nitrogen-fixing crops store nitrogen from the air in their roots and leguminous crops contribute to this nitrogen fixation.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Arable Land: Leguminous and Nitrogen­fixing Crops for Crop Diversification and Ecological Focus Areas</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AB09">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AB09</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The open ground, generally of hard standing or compacted earth, surrounding farm buildings.</rdfs:comment>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Farmyard</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC71">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC71</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Coriander</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Coriander-type arable crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Coriander</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG10">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bird's foot trefoil-type leguminous and nitrogen- fixing crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG10</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Bird's foot trefoil</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC90">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gladioli</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gladioli</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Alphabetical</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC90</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC85">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Hedge bedstraw</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hedge bedstraw-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC85</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC54">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC54</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Butternut squash-type arable crop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Butternut squash, Cheese pumpkin</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC05">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Buckwheat</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Buckwheat</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Buckwheat-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC05</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC10">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Daffodil</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes all daffodils</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC10</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Daffodil-type arable crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/BF15">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A buffer strip of permanent grassland, temporary grassland or fallow land that you want to use as part of your ecological focus area. For paper application you will not need to use this code as you must enter a length in the correct column in Part D.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BF15</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Buffer Strip</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/ArableLand:TemporaryGrasslandFallowLandArableBufferStripsHedgesandArableLandExemptfromGreening"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC57">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC57</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Melon-type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Melons other than Water melon</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC95">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC95</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wallflower</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/HE03">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A permanent pile of farm produce or refuse, for example straw, manure, compost, hay or silage. A heap is permanent if it has been kept at the same location for 3 years or more.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heap</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HE03</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC75">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC75</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Oca, New Zealand Yam</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Oca-type arable crop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AB3">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AB3</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Record as per rest of field cropping</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Beetle banks</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC79">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Corn flower- type arable crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC79</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Corn flower</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/NF08">
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This code can be used for a combination of more than one type of the scattered features described in this table.
+This code should only be used only for scattered features within a land parcel which are too small to map individually but which - when added together - have a combined area of 0.01 ha or greater.
+Scattered features are also referred to as 'notional features'.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NF08</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Scattered features - mixed</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AB9">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AB9</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Winter bird food</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC58 to AC62 or FA01 if declared for EFA fallow.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC38">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mustard</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC38</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mustard-type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes White or Yellow mustard; use AC37 for Brown mustard</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC88">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sunflower</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Sunflower</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC88</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sunflower-type arable crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/Water">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A body of water is any significant accumulation of water, generally on a planet's surface. The term most often refers to oceans, seas, and lakes, but it includes smaller pools of water such as ponds, wetlands, or more rarely, puddles. A body of water does not have to be still or contained; rivers, streams, canals, and other geographical features where water moves from one place to another are also considered bodies of water.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandCover"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Water</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/NR01">
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Residential dwelling, house</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NR01</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Residential dwellings, including domestic outbuildings.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/WO12">
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Woodland</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WO12</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Trees and Scrubs, short Woody plants, hedgerows</rdfs:label>
+    <ns1:isConnectedTo rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Trees"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An area of woodland preventing agricultural activity. Includes areas where the density of the trees prevents the growth of vegetative under- storey needed to support agricultural activity.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/NT03">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NT03</rdfs:label>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Track - natural surface</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This code should only be used for a natural, unsurfaced track or path which is not used as part of the agricultural activity carried out on the land parcel or is part of a transport network entering and exiting the land parcel.
+Natural paths and tracks which are used as part of the agricultural activity carried out on the land parcel and are not part of a transport network entering and exiting the land parcel should be coded using the land use code for the main land use of the parcel.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC63">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Feed barley, Malting barley, Two row barley, Six row barley</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Winter Barley</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Barley (winter)-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC63</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC64">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC64</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Winter Linseed</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Flax, Linseed</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Linseed (winter)-type arable crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/WF01">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This code should only be used for a drain, ditch or dyke which is inside the land parcel and is not part of the parcel boundary.
+A drain, ditch or dyke is an artificial channel used to carry excess water from low-lying areas.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Watercourse - ditch, drain or dyke</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WF01</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/NF04">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">If the area with scattered trees in is eligible, you don't need to declare it as a separate 'land use' with its own land use code. Instead, include its area within the main land use of the parcel it is in. If the area with scattered trees in is ineligible, use the code 'WO12 - Ineligible woodland'.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Scattered trees</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NF04</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC76">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">German chamomile-type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Chamomile, German Chamomile, Hungarian Chamomile, Kamilla, Wild Chamomile, Scentless Mayweed</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC76</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/UT06">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of permanent infrastructure on land that is not covered by other utility classifications. Examples include water tanks and butts.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">General Utility</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UT06</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/IW07">
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">IW07</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An area of land that is normally waterlogged throughout the year and consists of spongy moss and peat. Bogs most often occur in low lying flat areas with poor drainage, and in upland areas of high rainfall.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bog</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/NF05">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Any naturally occurring scattered elements of a watery nature. Includes small ponds, springs, etc.
+This code should only be used only for scattered features within a land parcel which are too small to map individually but which - when added together - have a combined area of 0.01 ha or greater.
+Scattered features are also referred to as 'notional features'.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Scattered water features</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NF05</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC72">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Corn gromwell</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Corn gromwell</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC72</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Corn gromwell- type arable crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/BF12">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Adjacent Hedge</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/ArableLand:TemporaryGrasslandFallowLandArableBufferStripsHedgesandArableLandExemptfromGreening"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BF12</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Use ‘BF12 ­ Adjacent Hedge’ as well as BF11 if you to want to add the other ‘outside’ half of the hedge but it can’t be claimed in another arable land parcel.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/RO04">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">RO04</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rocky outcrop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A protrusion of rocks above the ground in a conspicuous form.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC51">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC51</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Japanese pie squash</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Japanese pie squash-type arable crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC16">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC16</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Flax, Linseed</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Linseed (spring)-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Spring Linseed</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/NU01">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nursery crops are areas of young woody plants grown in the open air, on soil in greenhouses, or under polytunnels for later transplantation.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nursery Crops</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:isConnectedTo rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Trees"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NU01</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nursery Crops</rdfs:label>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/PermanentCrops"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC25">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Clary sage, Sages</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC25</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sage-type arable crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/SW3">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Record as per rest of field cropping, TG01 or PG01</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SW3</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In-field grass strips</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/TG01">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">All land you are planning to count as temporary grassland for BPS. Also use this code for strips and margins of temporary grassland if you want these to count towards your total area of grassland to meet a greening exemption or as a single ‘crop’ for crop diversification.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">TG01</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/ArableLand:TemporaryGrasslandFallowLandArableBufferStripsHedgesandArableLandExemptfromGreening"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temporary grassland</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC60">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC60</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed crop - group 3</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed arable crop - you can mark up to 5 different mixed crops on your land as different crops. Each mixed crop will be considered as a separate crop for crop diversification.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed Crop-Group 3</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/SR01">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Short Rotation Coppice</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/PermanentCrops"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Short rotation coppice</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SR01</rdfs:label>
+    <ns1:isConnectedTo rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/EnergyCrop"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Short rotation coppice includes areas planted with tree species that consist of woody, perennial crops, the rootstock or stools remaining in the ground after harvesting, with new shoots emerging in the following season.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/PL02">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PL02</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">If the area is eligible, use one of the following: FA01 - Fallow
+PG01 - Permanent Grassland
+If the area is ineligible, use the relevant code from the 'Non-agricultural areas and features on otherwise eligible land' list above.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/SW4">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Record as per rest of cropping, TG01 or PG01</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SW4</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">12 to 24 metre watercourse buffer strips on cultivated land</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/ArableLand:CatchandCoverCropsforEcologicalFocusAreas">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A sub-set of arable land, which is land that can be ploughed and used to grow crops. A catch crop is a fast-growing crop that is grown between successive plantings of a main crop; cover crops are plants that are planted to cover the soil rather than for the purpose of being harvested.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#AgriculturalLand"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Arable Land: Catch and Cover Crops for Ecological Focus Areas</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC91">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Echium</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC91</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/WO17">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A garden making up part of a residential dwelling.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Residential garden</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WO17</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/NF03">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This code should only be used for patches of scrub which are scattered in a land parcel and are not kept in a state suitable for grazing or are in an area where grasses and other herbaceous forage are not predominant.
+Includes patches of scrub which are too dense to be grazed.
+Scattered scrub which is grazeable and in an area where grasses and other herbaceous forage remain predominant should be coded as permanent grassland.
+This code should only be used only for scattered features within a land parcel which are too small to map individually but which - when added together - have a combined area of 0.01 ha or greater.
+Scattered features are also referred to as 'notional features'.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NF03</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Scattered scrub</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/MT01">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Manmade track (Metalled)</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A metalled or surfaced way that is clearly marked and permanent. Includes any manmade surface, such as areas of asphalt, concrete and gravel.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MT01</rdfs:label>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG17">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed crop - leguminous only 3</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed crop, where all the crops are leguminous. You can mark up to 5 different mixed crops made up of legumes on your land.
+These land uses will count for both crop diversification and ecological focus area.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG17</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC36">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Industrial rape, Oilseed rape, Swede</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Spring Oilseed</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Oilseed (spring)-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC36</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC83">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fox-glove-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC83</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Fox-glove</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/ST05">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ST05</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Structure</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A manmade structure that is not described under any other land use code. Examples include animal shelters or polytunnels on a hard standing.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AB16">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC58 to AC62 in the years when the mix is established</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AB16</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Autumn sown bumblebird mix</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/CA02">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cover Crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Any cover crop that is eligible under the ecological focus area rule. Read the BPS 2017 scheme rules (https://www.gov.uk/guidance/bps-2017) for more information.</rdfs:comment>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/ArableLand:CatchandCoverCropsforEcologicalFocusAreas"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CA02</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cover Crop</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC40">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC40</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rocket-type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Rocket</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC61">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC61</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed Crop-Group 4</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed arable crop - you can mark up to 5 different mixed crops on your land as different crops. Each mixed crop will be considered as a separate crop for crop diversification.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mixed crop - group 4</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/UT07">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A site where water is treated and supplied.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UT07</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Water treatment works</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/CF01">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cliff</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A feature representing a steep rock face, most commonly occurring where the land meets the sea. Cliffs may be semi-natural, in the case of disused mineral workings, or manmade in the case of rock faces resulting from construction activity.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CF01</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC01">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Spring Barley</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Barley (spring)-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC01</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Feed barley, Malting barley, Two row barley, Six row barley</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG05">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG05</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Lentil-type leguminous and nitrogen-fixing crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Lentils.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/UT01">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solar panels</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An area taken up by solar panels and solar panel arrays.
+Land parcels which contain solar panels are ineligible for BPS. If the panels are concentrated in one end of a field, the rest of the land can be eligible if the 2 areas are registered as individual land parcels and separated by a permanent boundary.</rdfs:comment>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">UT01</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC70">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cabbage (winter)-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC70</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Broccoli, Brussels sprouts, Cabbages, Calabrese, Cauliflower, Chinese kale, Kale, Kohlrabi, Red cabbage, Savoy cabbage, White cabbage</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Winter Cabbage</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC48">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC48</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Bishop's crown chilli, Lemon drop chilli</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Chilli-type arable crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/IW06">
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fen, marsh and swamp</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">IW06</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An area of low and flat waterlogged land.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC52">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Siam pumpkin, Seven year melon</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC52</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Siam pumpkin- type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Siam Pumpkin</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/BF01">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">You don't need to declare it as a separate 'land use' with its own land use code. Instead, include its area within the main land use of the parcel it is in.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Stone wall protected under cross compliance</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BF01</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC97">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC97</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Aster (Chinese)</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC73">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC73</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Camelina-type arable crop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Camelina, gold-of-pleasure, false flax</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/CM02">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This code should only be used for a site which is permanently used for the production of turf for fuel. A site is permanently used for the production of turf for fuel if the production has taken (or will take) place for 3 years or more.
+Turf for later replanting will be considered part of the agricultural area of the land parcel and should be coded as either permanent grassland or temporary grassland.
+Turf production is a site used for the production of turf, a surface layer of earth containing a dense growth of grass and its roots.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Turf production</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CM02</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC56">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC56</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cucumber- type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Cucumber</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC100">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Italian Ryegrass</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC100</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rygrass (Italian) (Solanum sisymbriifolium)</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC00">
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/CROMECode"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC00</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unknown or Mixed Vegetation</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/IW05">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Shingle</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An area of small, rounded pebbles.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">IW05</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AS01">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Archaeological site</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Use the code which best describes the land which the archaeological site is on.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AS01</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AB5">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AB5</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nesting plots for lapwing and stone curlew</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FA01</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC82">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC82</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Field forget-me-not-type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Forget-me-not</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/CA01">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Catch Crop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">CA01</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Any catch crop that is eligible under the ecological focus area rule. Read the BPS 2017 scheme rules (https://www.gov.uk/guidance/bps-2017) for more information.</rdfs:comment>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/ArableLand:CatchandCoverCropsforEcologicalFocusAreas"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/WO25">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WO25</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">This code should only be used for scrub which is not kept in a state suitable for grazing or is in an area where grasses and other herbaceous forage are not predominant. Includes scrub which is too dense to be grazed.
+Grazeable scrub in an area where grasses and other herbaceous forage remain predominant should be coded as permanent grassland.
+Scrub is an area of shrubs and bushes, including Rhododendrons, Gorse, Briar and Broom. See also 'Scattered scrub'.</rdfs:comment>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Scrub</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Land which is agricultural but contains non-agricultural areas or features.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Non-Agricultural Areas and Features on Otherwise Eligible Land</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#Non-AgriculturalLand"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/England">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#AdministrativeDivision"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">England is a country that is part of the United Kingdom. It shares land borders with Wales to its west and Scotland to its north. The Irish Sea lies northwest of England and the Celtic Sea to the southwest. England is separated from continental Europe by the North Sea to the east and the English Channel to the south.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">England</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/SW6">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">As per the rest of the field cropping during the period 1 May to 30 June</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Winter cover crops</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SW6</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/FA01">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Land lying fallow</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:isConnectedTo rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Grassland"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fallow Land</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">All land you are planning to count as fallow land for BPS or as part of your ecological focus area. To count as a ‘crop’ for crop diversification, fallow land must be kept fallow from 1 May 2017 to 30 June 2017. To count as part of an ecological focus area (EFA), fallow land must be kept fallow from 1 January 2017 to 30 June 2017.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/ArableLand:TemporaryGrasslandFallowLandArableBufferStripsHedgesandArableLandExemptfromGreening"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FA01</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/NF07">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Any manmade features which are scattered in a land parcel.
+This code should be used only for scattered features within a land parcel which are too small to map individually but which - when added together - have a combined area of 0.01 ha or greater.
+Scattered features are also referred to as notional features.</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Scattered manmade features</ns2:altLabel>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">NF07</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC93">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC93</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sticky Nightshade (Solanum sisymbriifolium)</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC21">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Oregano, Marjoram</rdfs:comment>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Oregano-type arable crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC21</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC19">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Oats (spring)-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC19</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Feed oats, Naked oats, Porridge oats, Quaking oats</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Spring Oats</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC92">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC92</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sorghum</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sorghum</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/WT2">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Buffering in-field ponds and ditches on arable land</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Record as per rest of cropping, TG01 or PG01</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">WT2</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/RL03">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sports and recreation</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">RL03</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An area used for permanent sports and recreational purposes.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC12">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Evening primrose-type arable crop</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Evening primrose</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC12</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG03">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Broad beans, Field beans, Vetch.</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Spring Field beans</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG03</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Field beans (spring)-type leguminous and nitrogen- fixing crop</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG01">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Chickpea.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Chickpea</rdfs:label>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG01</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Chickpea-type leguminous and nitrogen-fixing crop</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalLand">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Land upon which no agricultural activities are conducted and from which no agricultural products are derived.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Non-Agricultural Land</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandCover"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalLandUnderaRuralDevelopmentProgrammeAgreementortheNationalForestChangingLandscapesSchemeWoodlandCarbonFundHS2WoodlandFund">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Non-Agricultural Land Under a Rural Development Programme Agreement or the National Forest Changing Landscapes Scheme, Woodland Carbon Fund, HS2 Woodland Fund</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#Non-AgriculturalLand"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Non-agricultural land used with entitlements to claim for Single Payment Scheme (SPS) in 2008 and currently in certain options under an Rural Development Programme agreement or the National Forest Changing Landscapes Scheme, the Woodland Carbon Fund or the HS2 Woodland Fund which is eligible for Basic Payment Scheme.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/RL04">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">RL04</rdfs:label>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Golf course</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bunkers, greens, fairways and areas of rough that are part of the playing course. Includes putting greens and driving ranges.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC66">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Biscuit wheat, Common or Bread wheat, Durum wheat, Einkorn, Feed wheat, Red wheat, Spelt</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC66</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wheat (winter)-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Winter Wheat</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/MS04">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A site used for mineral extraction. Includes both currently operational and disused sites.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MS04</rdfs:label>
+    <ns1:hasLandUseType rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/Non-AgriculturalAreasandFeaturesonOtherwiseEligibleLand"/>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Mineral extraction site</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/BF16">
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fence</ns2:altLabel>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">You don't need to declare it as a separate 'land use' with its own land use code. Instead, include its area within the main land use of the parcel it is in.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">BF16</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC29">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC29</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Thyme-type arable crop</ns2:altLabel>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes all thymes</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/LG02">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fenugreek-type leguminous and nitrogen- fixing crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">LG02</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Fenugreek.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fenugreek</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AB4">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AB4</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Record as per rest of field cropping</rdfs:comment>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Skylark plots</ns2:altLabel>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC96">
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC96</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Samphire</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/PermanentCrops">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#AgriculturalLand"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A permanent crop is one produced from plants which last for many seasons, rather than being replanted after each harvest.</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Permanent Crops</rdfs:label>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC84">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hay rattle-type arable crop</ns2:altLabel>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC84</rdfs:label>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Hay-rattle</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/CodesforCountrysideStewardshipOptionswithMultipleCrops">
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Codes for Countryside Stewardship Options with Multiple Crops</rdfs:label>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCodeType"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Code used for rural payments application to Countryside Stewardship (CS), which provides financial incentives for farmers, woodland owners, foresters and land managers to look after and improve the environment.</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/CerealCrop">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cereal crops are mostly grasses cultivated for their edible seeds (actually a fruit called a caryopsis). Cereal grains are grown in greater quantities worldwide than any other type of crop and provide more food energy to the human race than any other crop.</rdfs:comment>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandCover"/>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cereal Crop</rdfs:label>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/kb/ontolanduse/AC89">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Includes Garden Cress. Use CW01 for Watercress</rdfs:comment>
+    <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AC89</rdfs:label>
+    <ns2:altLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cress-type arable crop (excluding Watercress)</ns2:altLabel>
+    <ns1:usedIn rdf:resource="http://www.theworldavatar.com/kb/ontolanduse/England"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl#LandUseCode"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="Nc51b55fd0a2f4bd99a138d8a03408727">
+    <ns3:imports rdf:resource="http://www.theworldavatar.com/ontology/ontolanduse/OntoLandUse.owl"/>
+  </rdf:Description>
+</rdf:RDF>

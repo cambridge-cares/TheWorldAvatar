@@ -6,17 +6,21 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.apache.commons.io.IOUtils;
+
+import com.opencsv.CSVReader;
 
 import net.lingala.zip4j.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -112,6 +116,25 @@ public class FileUtil {
 			throws IOException {
 		return new BufferedReader(new InputStreamReader(new FileInputStream(
 				filePathPlusName), "UTF-8"));
+	}
+	
+	/**
+	 * Reads a CSV file and returns the content as a list of lines. Each line</br>
+	 * is also codified as a list of elements.
+	 * 
+	 * @param fileName
+	 * @return
+	 * @throws IOException
+	 */
+	public static List<List<String>> openCSVSourceFile(String fileName) throws IOException {
+		List<List<String>> records = new ArrayList<List<String>>();
+		try (CSVReader csvReader = new CSVReader(new FileReader(fileName));) {
+			String[] values = null;
+			while ((values = csvReader.readNext()) != null) {
+				records.add(Arrays.asList(values));
+			}
+		}
+		return records;
 	}
 	
 	/**
