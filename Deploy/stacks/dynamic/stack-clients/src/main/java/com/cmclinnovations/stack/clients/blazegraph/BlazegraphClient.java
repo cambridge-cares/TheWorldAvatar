@@ -26,7 +26,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 public class BlazegraphClient extends ContainerClient implements ClientWithEndpoint {
 
-    private static final Pattern SERVICE_IRI_PATTERN = Pattern.compile("SERVICE\\s*<([a-z]+)>",
+    private static final Pattern SERVICE_IRI_PATTERN = Pattern.compile("SERVICE\\s*<ontop>",
             Pattern.CASE_INSENSITIVE);
 
     private static BlazegraphClient instance = null;
