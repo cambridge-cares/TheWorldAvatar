@@ -146,14 +146,20 @@ public class AermodAgent extends DerivationAgent {
             return;
         }
 
-        if (aermod.modifyDataFilePermissions() != 0) {
+        if (aermod.createVisSettingsFile(scope.getCentroid()) != 0) {
+            LOGGER.error("Failed to create settings file, terminating agent request");
+        }
+
+        if (aermod.modifyFilePermissions("data.json") != 0) {
             LOGGER.error("Failed to modify permissions for data.json, terminating");
             return;
         }
 
-        if (aermod.createVisSettingsFile(scope.getCentroid()) != 0) {
-            LOGGER.error("Failed to create settings file, terminating agent request");
+        if (aermod.modifyFilePermissions("settings.json") != 0) {
+            LOGGER.error("Failed to modify permissions for settings.json, terminating");
+            return;
         }
+
     }
     
     void updateDerivations(List<String> derivationsToUpdate) {

@@ -50,4 +50,8 @@ public final class StackClient {
         StackClient.inStack = inStack;
     }
 
+    public static String getContainerEngineName() {
+        return System.getenv().getOrDefault("EXECUTABLE", "docker");
+    }
+
 }

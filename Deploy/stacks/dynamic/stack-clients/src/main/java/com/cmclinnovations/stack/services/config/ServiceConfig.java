@@ -57,7 +57,7 @@ public class ServiceConfig {
         return env;
     }
 
-    private Map<String, String> getEnvironment() {
+    public Map<String, String> getEnvironment() {
         List<String> env = getContainerSpecEnv();
 
         if (env.size() != environment.size()) {

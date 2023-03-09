@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.clients.utils.FileUtils;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -162,7 +163,7 @@ public final class ServiceManager {
         if (newService instanceof ContainerService) {
             ContainerService newContainerService = (ContainerService) newService;
 
-            DockerService dockerService = getOrInitialiseService(stackName, DockerService.TYPE);
+            DockerService dockerService = getOrInitialiseService(stackName, StackClient.getContainerEngineName());
             dockerService.doPreStartUpConfiguration(newContainerService);
             dockerService.startContainer(newContainerService);
             dockerService.doPostStartUpConfiguration(newContainerService);

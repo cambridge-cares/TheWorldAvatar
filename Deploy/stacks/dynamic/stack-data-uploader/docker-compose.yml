@@ -2,14 +2,10 @@ version: '3.8'
 services:
   stack-data-uploader:
     image: docker.cmclinnovations.com/stack-data-uploader${IMAGE_SUFFIX}:1.9.1-55-create-new-namespace-per-scenario-SNAPSHOT
-    configs:
-      - blazegraph
-      - postgis
-      - geoserver
     secrets:
       - blazegraph_password
       - postgis_password
       - geoserver_password
     volumes:
-      - ./inputs/data:/inputs/data
+      - ./inputs/data:/inputs/data:z
       - ./inputs/config:/inputs/config
