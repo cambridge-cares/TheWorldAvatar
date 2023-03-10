@@ -11,14 +11,14 @@ import java.util.List;
 /**
  * This Downsampling class parses Timeseries using "aggregation" method, retrieving the relevant Timeseries data and dataIRIs.
  * "aggregationMethod" is then implemented to downsample the timeseries data based on the downsampling resolution and downsampling type.
- * The resampled data will them be parsed into a Timeseries class and returned.
+ * The resampled data will then be parsed into a Timeseries class and returned.
  */
 
 public class Downsampling {
     /**
-     * @param ts Input raw timeseries
-     * @param resolution Input resolution - interval to be aggregated in number of seconds
-     * @param type Input downsampling type
+     * @param ts Raw timeseries
+     * @param resolution Resolution - interval to be aggregated in seconds
+     * @param type Downsampling type
      * @return Resampled timeseries
      * @throws Exception
      */
@@ -41,11 +41,11 @@ public class Downsampling {
     }
 
     /**
-     * @param originalTimeList
-     * @param originalValueLists
-     * @param intervalInSeconds
-     * @param type
-     * @return A list which contains a list of resampled timestamps and a list of list of values.
+     * @param originalTimeList Raw timestamp list
+     * @param originalValueLists Raw list of list of values
+     * @param intervalInSeconds Resolution - interval to be aggregated in seconds
+     * @param type Downsampling type
+     * @return A list which contains a list of resampled timestamps and a resampled list of list of values.
      * @throws Exception
      */
     public static List aggregationMethod(List<OffsetDateTime> originalTimeList, List<List<Double>> originalValueLists, long intervalInSeconds, int type) throws Exception {

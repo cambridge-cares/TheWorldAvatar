@@ -13,24 +13,20 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
  */
 public class DownsamplingTest {
     Downsampling downsampling =new Downsampling();
-
     private static TimeSeries ts;
     private static String randomDATAIRI1="randomDATAIRI1";
     private static String randomDATAIRI2="randomDATAIRI2";
 
-
     /**
-     * Create sample timseries object through parsing a sample CSV data
-     * @return
+     * Declare sample dataset and parse into timeseries.
+     * @return Sample timeseries
      */
     private static TimeSeries getDataset(int dataset) {
-
 
         List<List<?>> lolvalues = new ArrayList<>();
         String randomDATAIRI1 = "randomDATAIRI1";
         String randomDATAIRI2 = "randomDATAIRI2";
         List<String> dataIRIlist = new ArrayList<>();
-
 
         dataIRIlist.add(randomDATAIRI1);
         dataIRIlist.add(randomDATAIRI2);

@@ -1,10 +1,10 @@
 # Downsampling
 ## Description
-This downsampling library can be used to post-process and downsample Timeseries data. The document outlines when to downsample a dataset, areas of consideration and a user guide on how it works. 
+This downsampling library is used to post-process and downsample Timeseries data. The document outlines when to downsample a dataset, areas of consideration and a user guide on how it works. 
 
 ## When to downsample a dataset
 - To reduce the size of data to prevent memory occupation of databases.
-- To remove duplicated data within a short time interval that takes up space but produces no value. Query response time will be longer for larger dataset.
+- To remove duplicated data within a short time interval that takes up space but produces no value. As query response time will be longer for larger dataset.
 
 ## Areas of consideration
 1) Downsampled data should be an accurate representation of the inherent nature/characteristics of the original data. 
@@ -24,7 +24,7 @@ aggregation (TimeSeries ts, Long resolution, int type)
 ```
 `ts` is the raw timeseries data that will be downsampled.
 
-`resolution` is the time interval in number of seconds that will be downsampled. `resolution` is in Long data type. 
+`resolution` is the time interval in seconds that will be downsampled. `resolution` is in Long data type. 
 
 `type` is the type of [downsampling method](#Downsampling-Type). Input the number according to the designated number assigned to each type. 
 
