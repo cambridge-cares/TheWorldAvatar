@@ -189,6 +189,11 @@ class BuildingStructureFacadeTest {
     void testAddDoorStatementsNonMappedGeometryRepresentation() {
         // Set up
         addBaseTriples(DOOR_INST, DOOR_CLASS, DOOR_NAME);
+        addWallAssemblyTriples(DOOR_INST);
+        // Get the singleton to add the assembly inst
+        ElementStorage elementMappings = ElementStorage.Singleton();
+        Wall wall = new Wall(WALL_INST, WALL_NAME, null, null, null, null, null);
+        elementMappings.add(WALL_INST, wall);
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
         addGeometryTriples(sampleModel.getResource(DOOR_INST));
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
@@ -199,6 +204,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Door", DOOR_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedAssemblyStatements("Door"), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(), result);
         // The following statements are optional and should not exist
         JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalGeomStatements(), result);
@@ -208,6 +214,11 @@ class BuildingStructureFacadeTest {
     void testAddDoorStatementsMappedGeometryRepresentation() {
         // Set up
         addBaseTriples(DOOR_INST, DOOR_CLASS, DOOR_NAME);
+        addWallAssemblyTriples(DOOR_INST);
+        // Get the singleton to add the assembly inst
+        ElementStorage elementMappings = ElementStorage.Singleton();
+        Wall wall = new Wall(WALL_INST, WALL_NAME, null, null, null, null, null);
+        elementMappings.add(WALL_INST, wall);
         // Generate the alternate mapped geometry representation triples
         addMappedGeometryTriples(sampleModel.getResource(DOOR_INST));
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
@@ -218,6 +229,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Door", DOOR_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedAssemblyStatements("Door"), result);
         JunitTestUtils.doesExpectedListExist(genExpectedOptionalGeomStatements(), result);
     }
 
@@ -360,20 +372,20 @@ class BuildingStructureFacadeTest {
     }
 
     @Test
-    void testAddDoorStatementsMoreThanOneNonMappedGeometryRepresentation() {
+    void testAddStatementsMoreThanOneNonMappedGeometryRepresentation() {
         // Set up
-        addBaseTriples(DOOR_INST, DOOR_CLASS, DOOR_NAME);
+        addBaseTriples(COLUMN_INST, COLUMN_CLASS, COLUMN_NAME);
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
-        addGeometryTriples(sampleModel.getResource(DOOR_INST));
+        addGeometryTriples(sampleModel.getResource(COLUMN_INST));
         addSecondGeometryTriples();
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         BuildingStructureFacade sample = new BuildingStructureFacade();
         // Execute method
-        sample.addDoorStatements(sampleModel, sampleSet);
+        sample.addColumnStatements(sampleModel, sampleSet);
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
-        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Door", DOOR_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Column", COLUMN_NAME), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(), result);
         JunitTestUtils.doesExpectedListExist(genExpectedSecondGeometricRepresentationStatements(), result);
         // The following statements are optional and should not exist
