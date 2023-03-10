@@ -4,6 +4,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Wall;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -13,8 +14,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ElementModelRepresentationStorageTest {
-    private static ElementModelRepresentationStorage testMappings;
+class ElementStorageTest {
+    private static ElementStorage testMappings;
     private static final String TEST_BASE_URI = "http://www.example.org/";
     private static final String NON_EXISTENT_IRI = TEST_BASE_URI + "DOES/NOT/EXIST_1223";
     private static final String TEST_ELEMENT_CLASS = "IfcDoor";
@@ -31,12 +32,18 @@ class ElementModelRepresentationStorageTest {
 
     @BeforeEach
     void init() {
-        testMappings = new ElementModelRepresentationStorage();
+        testMappings = new ElementStorage();
     }
 
     @Test
     void testGetModelRepFail() {
         JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> testMappings.getModelRep(NON_EXISTENT_IRI));
+        assertEquals(NON_EXISTING_ERROR, thrownError.getMessage());
+    }
+
+    @Test
+    void testGetWallFail() {
+        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> testMappings.getWall(NON_EXISTENT_IRI));
         assertEquals(NON_EXISTING_ERROR, thrownError.getMessage());
     }
 
@@ -51,17 +58,39 @@ class ElementModelRepresentationStorageTest {
     }
 
     @Test
-    void testContainsIri() {
+    void testAddAndGetWall() {
+        // Create a new sample representation
+        Wall sampleWall = new Wall(TEST_ELEMENT_IRI, null, null, null,null, null, null);
+        // Execute method
+        testMappings.add(TEST_ELEMENT_IRI, sampleWall);
+        // Assert if they are equals
+        assertEquals(sampleWall, testMappings.getWall(TEST_ELEMENT_IRI));
+    }
+
+    @Test
+    void testClear() {
+        // Create a new sample representation
+        ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SHAPE_REP_IRI, TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
+        // Execute method
+        testMappings.add(TEST_ELEMENT_IRI, sampleModelRep);
+        // Assert if they are equals
+        assertTrue(testMappings.containsModelRepIri(TEST_ELEMENT_IRI));
+        testMappings.clear();
+        assertFalse(testMappings.containsModelRepIri(TEST_ELEMENT_IRI));
+    }
+
+    @Test
+    void testContainsModelRepIri() {
         // Assert that non-existing IRIs return false
-        assertFalse(testMappings.containsIri(TEST_ELEMENT_IRI));
-        assertFalse(testMappings.containsIri(NON_EXISTENT_IRI));
+        assertFalse(testMappings.containsModelRepIri(TEST_ELEMENT_IRI));
+        assertFalse(testMappings.containsModelRepIri(NON_EXISTENT_IRI));
         // Create a new sample representation
         ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SHAPE_REP_IRI, TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
         // Execute method
         testMappings.add(TEST_ELEMENT_IRI, sampleModelRep);
         // Assert that non-existing IRIs return false and existing IRIs return true
-        assertTrue(testMappings.containsIri(TEST_ELEMENT_IRI));
-        assertFalse(testMappings.containsIri(NON_EXISTENT_IRI));
+        assertTrue(testMappings.containsModelRepIri(TEST_ELEMENT_IRI));
+        assertFalse(testMappings.containsModelRepIri(NON_EXISTENT_IRI));
     }
 
     @Test

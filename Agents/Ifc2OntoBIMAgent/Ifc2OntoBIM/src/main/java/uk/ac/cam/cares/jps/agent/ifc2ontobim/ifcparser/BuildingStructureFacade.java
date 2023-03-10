@@ -7,6 +7,7 @@ import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement.IfcElementConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 
 import java.util.LinkedHashSet;
@@ -19,12 +20,15 @@ import java.util.LinkedHashSet;
  */
 public class BuildingStructureFacade {
     private final SpatialZoneStorage zoneMappings;
+    private final ElementStorage modelRepMappings;
+
 
     /**
      * Standard Constructor retrieving the spatial zone singleton.
      */
     public BuildingStructureFacade() {
         this.zoneMappings = SpatialZoneStorage.Singleton();
+        this.modelRepMappings = new ElementStorage();
     }
 
     /**
@@ -48,8 +52,6 @@ public class BuildingStructureFacade {
                 .addWhere(CommonQuery.ELEMENT_TYPE_VAR, CommonQuery.IFC_PREDEFINED_TYPE_COVERING, CommonQuery.IFC_CEILING_ENUM);
         // Query from the model
         ResultSet results = QueryHandler.execSelectQuery(selectBuilder.buildString(), owlModel);
-        // Create new model representation mappings
-        ElementModelRepresentationStorage modelRepMappings = new ElementModelRepresentationStorage();
         // Process query results
         while (results.hasNext()) {
             QuerySolution soln = results.nextSolution();
@@ -60,23 +62,25 @@ public class BuildingStructureFacade {
             String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
             ModelRepresentation3D geomModel;
             // If the element object has already been created previously
-            if (modelRepMappings.containsIri(iri)) {
+            if (this.modelRepMappings.containsModelRepIri(iri)) {
                 // Retrieve the new geometry IRI and append it to the existing Model Representation 3D of this element
                 String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
-                geomModel = modelRepMappings.getModelRep(iri);
+                geomModel = this.modelRepMappings.getModelRep(iri);
                 geomModel.appendGeometry(geomIri);
             } else {
                 // If it is not yet created, first generate a new Model Representation 3D object
                 geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
                 // Add the object into the mappings for its IRI
-                modelRepMappings.add(iri, geomModel);
+                this.modelRepMappings.add(iri, geomModel);
                 // Construct the element's instance and its statements
                 Ceiling ceiling = new Ceiling(iri, name, uid, placement, hostZone, geomModel.getBimIri());
                 ceiling.constructStatements(statementSet);
             }
         }
         // Construct all the Model Representation 3D statements
-        modelRepMappings.constructModelRepStatements(statementSet);
+        this.modelRepMappings.constructModelRepStatements(statementSet);
+        // Clear all existing mappings
+        this.modelRepMappings.clear();
     }
 
     /**
@@ -94,8 +98,6 @@ public class BuildingStructureFacade {
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
         // Query from the model
         ResultSet results = QueryHandler.execSelectQuery(selectBuilder.buildString(), owlModel);
-        // Create new model representation mappings
-        ElementModelRepresentationStorage modelRepMappings = new ElementModelRepresentationStorage();
         // Process query results
         while (results.hasNext()) {
             QuerySolution soln = results.nextSolution();
@@ -106,23 +108,25 @@ public class BuildingStructureFacade {
             String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
             ModelRepresentation3D geomModel;
             // If the element object has already been created previously
-            if (modelRepMappings.containsIri(iri)) {
+            if (this.modelRepMappings.containsModelRepIri(iri)) {
                 // Retrieve the new geometry IRI and append it to the existing Model Representation 3D of this element
                 String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
-                geomModel = modelRepMappings.getModelRep(iri);
+                geomModel = this.modelRepMappings.getModelRep(iri);
                 geomModel.appendGeometry(geomIri);
             } else {
                 // If it is not yet created, first generate a new Model Representation 3D object
                 geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
                 // Add the object into the mappings for its IRI
-                modelRepMappings.add(iri, geomModel);
+                this.modelRepMappings.add(iri, geomModel);
                 // Construct the element's instance and its statements
                 Column column = new Column(iri, name, uid, placement, hostZone, geomModel.getBimIri());
                 column.constructStatements(statementSet);
             }
         }
         // Construct all the Model Representation 3D statements
-        modelRepMappings.constructModelRepStatements(statementSet);
+        this.modelRepMappings.constructModelRepStatements(statementSet);
+        // Clear all existing mappings
+        this.modelRepMappings.clear();
     }
 
     /**
@@ -140,8 +144,6 @@ public class BuildingStructureFacade {
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
         // Query from the model
         ResultSet results = QueryHandler.execSelectQuery(selectBuilder.buildString(), owlModel);
-        // Create new model representation mappings
-        ElementModelRepresentationStorage modelRepMappings = new ElementModelRepresentationStorage();
         // Process query results
         while (results.hasNext()) {
             QuerySolution soln = results.nextSolution();
@@ -152,23 +154,25 @@ public class BuildingStructureFacade {
             String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
             ModelRepresentation3D geomModel;
             // If the element object has already been created previously
-            if (modelRepMappings.containsIri(iri)) {
+            if (this.modelRepMappings.containsModelRepIri(iri)) {
                 // Retrieve the new geometry IRI and append it to the existing Model Representation 3D of this element
                 String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
-                geomModel = modelRepMappings.getModelRep(iri);
+                geomModel = this.modelRepMappings.getModelRep(iri);
                 geomModel.appendGeometry(geomIri);
             } else {
                 // If it is not yet created, first generate a new Model Representation 3D object
                 geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
                 // Add the object into the mappings for its IRI
-                modelRepMappings.add(iri, geomModel);
+                this.modelRepMappings.add(iri, geomModel);
                 // Construct the element's instance and its statements
                 Door door = new Door(iri, name, uid, placement, hostZone, geomModel.getBimIri());
                 door.constructStatements(statementSet);
             }
         }
         // Construct all the Model Representation 3D statements
-        modelRepMappings.constructModelRepStatements(statementSet);
+        this.modelRepMappings.constructModelRepStatements(statementSet);
+        // Clear all existing mappings
+        this.modelRepMappings.clear();
     }
 
     /**
@@ -186,8 +190,6 @@ public class BuildingStructureFacade {
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
         // Query from the model
         ResultSet results = QueryHandler.execSelectQuery(selectBuilder.buildString(), owlModel);
-        // Create new model representation mappings
-        ElementModelRepresentationStorage modelRepMappings = new ElementModelRepresentationStorage();
         // Process query results
         while (results.hasNext()) {
             QuerySolution soln = results.nextSolution();
@@ -198,23 +200,25 @@ public class BuildingStructureFacade {
             String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
             ModelRepresentation3D geomModel;
             // If the element object has already been created previously
-            if (modelRepMappings.containsIri(iri)) {
+            if (this.modelRepMappings.containsModelRepIri(iri)) {
                 // Retrieve the new geometry IRI and append it to the existing Model Representation 3D of this element
                 String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
-                geomModel = modelRepMappings.getModelRep(iri);
+                geomModel = this.modelRepMappings.getModelRep(iri);
                 geomModel.appendGeometry(geomIri);
             } else {
                 // If it is not yet created, first generate a new Model Representation 3D object
                 geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
                 // Add the object into the mappings for its IRI
-                modelRepMappings.add(iri, geomModel);
+                this.modelRepMappings.add(iri, geomModel);
                 // Construct the element's instance and its statements
                 Floor floor = new Floor(iri, name, uid, placement, hostZone, geomModel.getBimIri());
                 floor.constructStatements(statementSet);
             }
         }
         // Construct all the Model Representation 3D statements
-        modelRepMappings.constructModelRepStatements(statementSet);
+        this.modelRepMappings.constructModelRepStatements(statementSet);
+        // Clear all existing mappings
+        this.modelRepMappings.clear();
     }
 
     /**
@@ -258,8 +262,6 @@ public class BuildingStructureFacade {
         // it does not matter as the dimensions and positions given should suffice to generate the required geometry.
         // Query from the model
         ResultSet results = QueryHandler.execSelectQuery(selectBuilder.buildString(), owlModel);
-        // Create new model representation mappings
-        ElementModelRepresentationStorage modelRepMappings = new ElementModelRepresentationStorage();
         // Process query results
         while (results.hasNext()) {
             QuerySolution soln = results.nextSolution();
@@ -270,16 +272,16 @@ public class BuildingStructureFacade {
             String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
             ModelRepresentation3D geomModel;
             // If the element object has already been created previously
-            if (modelRepMappings.containsIri(iri)) {
+            if (this.modelRepMappings.containsModelRepIri(iri)) {
                 // Retrieve the new geometry IRI and append it to the existing Model Representation 3D of this element
                 String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
-                geomModel = modelRepMappings.getModelRep(iri);
+                geomModel = this.modelRepMappings.getModelRep(iri);
                 geomModel.appendGeometry(geomIri);
             } else {
                 // If it is not yet created, first generate a new Model Representation 3D object
                 geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
                 // Add the object into the mappings for its IRI
-                modelRepMappings.add(iri, geomModel);
+                this.modelRepMappings.add(iri, geomModel);
                 Wall wall;
                 // If there is a second geometry representation for the wall
                 if(soln.contains(CommonQuery.INST_SHAPE_REP_SEC_VAR)){
@@ -287,7 +289,7 @@ public class BuildingStructureFacade {
                     ModelRepresentation3D secGeomModel = QueryHandler.retrieveSecModelRepresentation3D(soln);
                     // Add the IRI with a suffix to add geom model into the mappings so that its statements can be constructed
                     // Note that when there is two different geometric representation, they only have one geometric representation each
-                    modelRepMappings.add(iri + "second", secGeomModel);
+                    this.modelRepMappings.add(iri + "second", secGeomModel);
                     // Construct the element's instance
                     wall = new Wall(iri, name, uid, placement, hostZone, geomModel.getBimIri(), secGeomModel.getBimIri());
                 } else {
@@ -296,10 +298,13 @@ public class BuildingStructureFacade {
                 }
                 // Always construct the statement regardless of which constructor initialised
                 wall.constructStatements(statementSet);
+                this.modelRepMappings.add(iri, wall);
             }
         }
         // Construct all the Model Representation 3D statements
-        modelRepMappings.constructModelRepStatements(statementSet);
+        this.modelRepMappings.constructModelRepStatements(statementSet);
+        // Clear all existing mappings
+        this.modelRepMappings.clear();
     }
 
     /**
@@ -317,8 +322,6 @@ public class BuildingStructureFacade {
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
         // Query from the model
         ResultSet results = QueryHandler.execSelectQuery(selectBuilder.buildString(), owlModel);
-        // Create new model representation mappings
-        ElementModelRepresentationStorage modelRepMappings = new ElementModelRepresentationStorage();
         // Process query results
         while (results.hasNext()) {
             QuerySolution soln = results.nextSolution();
@@ -329,22 +332,24 @@ public class BuildingStructureFacade {
             String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
             ModelRepresentation3D geomModel;
             // If the element object has already been created previously
-            if (modelRepMappings.containsIri(iri)) {
+            if (this.modelRepMappings.containsModelRepIri(iri)) {
                 // Retrieve the new geometry IRI and append it to the existing Model Representation 3D of this element
                 String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
-                geomModel = modelRepMappings.getModelRep(iri);
+                geomModel = this.modelRepMappings.getModelRep(iri);
                 geomModel.appendGeometry(geomIri);
             } else {
                 // If it is not yet created, first generate a new Model Representation 3D object
                 geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
                 // Add the object into the mappings for its IRI
-                modelRepMappings.add(iri, geomModel);
+                this.modelRepMappings.add(iri, geomModel);
                 // Construct the element's instance and its statements
                 Window window = new Window(iri, name, uid, placement, hostZone, geomModel.getBimIri());
                 window.constructStatements(statementSet);
             }
         }
         // Construct all the Model Representation 3D statements
-        modelRepMappings.constructModelRepStatements(statementSet);
+        this.modelRepMappings.constructModelRepStatements(statementSet);
+        // Clear all existing mappings
+        this.modelRepMappings.clear();
     }
 }

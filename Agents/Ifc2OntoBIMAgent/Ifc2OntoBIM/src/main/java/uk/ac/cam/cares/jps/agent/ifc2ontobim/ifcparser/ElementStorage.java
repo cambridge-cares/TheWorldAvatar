@@ -4,6 +4,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.Ifc2OntoBIMAgent;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Wall;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -12,30 +13,54 @@ import java.util.LinkedHashSet;
 
 /**
  * A class storing all the mappings for each element instance's IfcOwl IRI
- * to their Model representation 3D object generated in the agent.
+ * to their Model representation 3D object generated in the agent. It also
+ * stores the mappings for Assembly classes like Walls.
  *
  * @author qhouyee
  */
-public class ElementModelRepresentationStorage {
-    private final HashMap<String, ModelRepresentation3D> geometries;
+public class ElementStorage {
+    private HashMap<String, ModelRepresentation3D> geometries;
+    private HashMap<String, Wall> walls;
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
     private static final String NON_EXISTING_ERROR = " does not exist in mappings!";
 
     /**
      * Standard Constructor initialising the maps.
      */
-    public ElementModelRepresentationStorage() {
+    public ElementStorage() {
+        this.geometries = new HashMap<>();
+        this.walls = new HashMap<>();
+    }
+
+    /**
+     * Clears all the existing geometry mappings saved.
+     */
+    public void clear() {
         this.geometries = new HashMap<>();
     }
 
     /**
-     * Retrieve the site's Java object associated with the IRI input.
+     * Retrieve the model representation's Java object associated with the IRI input.
      *
      * @param iri The data IRI generated from IfcOwl.
      */
     public ModelRepresentation3D getModelRep(String iri) {
         if (this.geometries.containsKey(iri)) {
             return this.geometries.get(iri);
+        } else {
+            LOGGER.error(iri + NON_EXISTING_ERROR);
+            throw new JPSRuntimeException(iri + NON_EXISTING_ERROR);
+        }
+    }
+
+    /**
+     * Retrieve the wall's Java object associated with the IRI input.
+     *
+     * @param iri The data IRI generated from IfcOwl.
+     */
+    public Wall getWall(String iri) {
+        if (this.walls.containsKey(iri)) {
+            return this.walls.get(iri);
         } else {
             LOGGER.error(iri + NON_EXISTING_ERROR);
             throw new JPSRuntimeException(iri + NON_EXISTING_ERROR);
@@ -53,11 +78,21 @@ public class ElementModelRepresentationStorage {
     }
 
     /**
-     * Check if the mappings contain this IRI.
+     * A method to store the element IRI and its associated 3D model representation Java object as mappings.
+     *
+     * @param iri      The element's IRI generated from IfcOwl.
+     * @param wall     The Wall object generated from the iri.
+     */
+    public void add(String iri, Wall wall) {
+        this.walls.put(iri, wall);
+    }
+
+    /**
+     * Check if the mappings contain this IRI for the model representation 3D.
      *
      * @param iri The element's IRI generated from IfcOwl.
      */
-    public boolean containsIri(String iri) {
+    public boolean containsModelRepIri(String iri) {
         return this.geometries.containsKey(iri);
     }
 
