@@ -13,7 +13,7 @@ from py4jps import agentlogging
 # Self imports
 import agent.app as state
 import agent.config.config as properties
-from agent.ifc2tileset.tile_helper import make_tileset, make_root_tile
+from agent.ifc2tileset.tile_helper import make_tileset, make_root_tile, compute_bbox
 
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
@@ -71,12 +71,16 @@ def gen_root_content(building_iri: str):
 
         # If there are furniture, use the multiple nomenclature
         if fpath.is_file():
-            # Tileset Nomenclature for multiple geometry files = contents:[{}]
+            bbox = compute_bbox(["./data/glb/building.glb", "./data/glb/furniture.glb"])
             furniture_content = {"uri": state.asset_url + "furniture.gltf"}
-            root_tile = make_root_tile(bbox=properties.bbox_root, contents=[furniture_content, building_content])
+
+            # Tileset Nomenclature for multiple geometry files = contents:[{}]
+            root_tile = make_root_tile(bbox=bbox, contents=[furniture_content, building_content])
         else:
+            bbox = compute_bbox("./data/glb/building.glb")
+
             # Tileset Nomenclature for 1 geometry file = content:{}
-            root_tile = make_root_tile(bbox=properties.bbox_root, content=building_content)
+            root_tile = make_root_tile(bbox=bbox, content=building_content)
     else:
         root_tile = make_root_tile(bbox=properties.bbox_root)
 

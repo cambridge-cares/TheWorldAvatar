@@ -132,6 +132,11 @@ def test_gen_tilesets_building():
     building = os.path.join("data", "gltf", "building.gltf")
     open(building, "x", encoding="utf-8")
 
+    # Create sample glb file
+    building_glb = os.path.join("data", "glb", "building.glb")
+    m = C.sample_box_gen()
+    m.export(building_glb)
+
     # JSON output path
     bim_json_filepath = os.path.join("data", "tileset_bim.json")
     solar_json_filepath = os.path.join("data", "tileset_solarpanel.json")
@@ -152,6 +157,7 @@ def test_gen_tilesets_building():
         assert tileset_content["root"]["content"] == {
             "uri": "./gltf/building.gltf"
         }
+        assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_box_bbox)
         assert "children" not in tileset_content["root"]
         assert_tileset_metadata(tileset_content)
     finally:

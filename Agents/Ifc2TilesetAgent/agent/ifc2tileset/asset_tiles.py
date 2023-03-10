@@ -9,10 +9,11 @@ import pandas as pd
 # Self imports
 import agent.app as state
 import agent.config.config as properties
+from agent.ifc2tileset.schema import Tileset
 from agent.kgutils.const import NAME_VAR, ID_VAR, IRI_VAR
 
 
-def init_asset_tiles(tileset: dict):
+def init_asset_tiles(tileset: Tileset):
     """
     Initialise the tileset to receive asset information
 
