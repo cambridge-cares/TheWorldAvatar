@@ -16,7 +16,7 @@ services:
 
   # Access Agent
   access-agent:
-    image: ghcr.io/cambridge-cares/access-agent:1.6.1
+    image: ghcr.io/cambridge-cares/access-agent:1.7.0
     container_name: "access-agent${CONTAINER_NAME_SUFFIX}"
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
