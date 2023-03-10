@@ -60,9 +60,13 @@ class FileLoader:
         return entity2idx, idx2entity, rel2idx, idx2rel
 
     def load_all_heads_tensor(self):
-        all_species_indices_file = open(f'{self.full_dataset_dir}/all_species.pkl', 'rb')
-        all_species_indices = pickle.load(all_species_indices_file)
-        return all_species_indices
+        # TODO: load all the class indices, for MoPs, there are MoPs, CBU, Assembly model
+        all_heads_indices_file = open(f'{self.full_dataset_dir}/all_heads.pkl', 'rb')
+        all_heads_indices = pickle.load(all_heads_indices_file)
+        return all_heads_indices
+        # all_species_indices_file = open(f'{self.full_dataset_dir}/all_species.pkl', 'rb')
+        # all_species_indices = pickle.load(all_species_indices_file)
+        # return all_species_indices
 
 
 if __name__ == "__main__":
@@ -71,4 +75,4 @@ if __name__ == "__main__":
     file_loader = FileLoader(full_dataset_dir=os.path.join(DATA_DIR, dataset_dir),
                              dataset_name=dataset_name)
     all_heads = file_loader.load_all_heads_tensor()
-    print(all_heads)
+    # print(all_heads)

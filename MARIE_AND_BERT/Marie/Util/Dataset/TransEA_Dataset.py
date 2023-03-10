@@ -4,8 +4,11 @@ import pickle
 import random
 import time
 from random import choice
+
+import numpy as np
 import torch
 from Marie.Util.location import DATA_DIR
+from Marie.Util.NHopExtractor import HopExtractor
 
 
 class Dataset(torch.utils.data.Dataset):
@@ -14,17 +17,20 @@ class Dataset(torch.utils.data.Dataset):
     # in this case, each data unit contains a head, a rel, a tail
     # the output is the
 
-    def __init__(self, df, neg_rate=18, dataset_path=None, is_numerical=False):
+    def __init__(self, df, neg_rate=20, dataset_path=None, is_numerical=False, dataset_name=None):
         # TODO: make sure the
+        self.neg_rate = neg_rate
         if dataset_path is None:
             e2i_path = open(os.path.join(DATA_DIR, f'entity2idx.pkl'), 'rb')
             r2i_path = open(os.path.join(DATA_DIR, f'relation2idx.pkl'), 'rb')
-            hash_numerical_path = os.path.join(DATA_DIR, 'numerical_hash_dict.json')
+            hash_numerical_path = os.path.join(DATA_DIR, 'wikidata_numerical_value_no_unit.json')
         else:
             e2i_path = open(os.path.join(DATA_DIR, f'{dataset_path}/entity2idx.pkl'), 'rb')
             r2i_path = open(os.path.join(DATA_DIR, f'{dataset_path}/relation2idx.pkl'), 'rb')
-            hash_numerical_path = os.path.join(DATA_DIR, f'{dataset_path}/numerical_hash_dict.json')
+            # hash_numerical_path = os.path.join(DATA_DIR, f'{dataset_path}/wikidata_numerical_value_no_unit.json')
+            hash_numerical_path = os.path.join(DATA_DIR, f'{dataset_path}/node_value_dict.json')
 
+        self.hop_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, dataset_path), dataset_name=dataset_name)
         self.entity2idx = pickle.load(e2i_path)
         self.relation2idx = pickle.load(r2i_path)
         self.df = df
@@ -33,9 +39,62 @@ class Dataset(torch.utils.data.Dataset):
         self.candidates = [e for e in self.entity2idx.keys()]
         self.is_numerical = is_numerical
         self.hash_numerical_dict = json.loads(open(hash_numerical_path).read())
+        # self.neg_sample_dict_path = os.path.join(DATA_DIR, f'{dataset_path}/neg_sample_dict.json')
+        # self.neg_sample_dict = json.loads(open(self.neg_sample_dict_path).read())
+        self.triples = self.create_triples()
 
     def __len__(self):
-        return len(self.df)
+        return len(self.triples)
+
+    def multidimensional_shifting(self, num_samples, sample_size, elements, probabilities):
+        # replicate probabilities as many times as `num_samples`
+        replicated_probabilities = np.tile(probabilities, (num_samples, 1))
+        # get random shifting numbers & scale them correctly
+        random_shifts = np.random.random(replicated_probabilities.shape)
+        random_shifts /= random_shifts.sum(axis=1)[:, np.newaxis]
+        # shift by numbers & find largest (by finding the smallest of the negative)
+        shifted_probabilities = random_shifts - replicated_probabilities
+        return np.argpartition(shifted_probabilities, sample_size, axis=1)[:, :sample_size]
+
+    def create_triples(self):
+
+        all_triples = []
+        counter = 0
+        for triplet in self.df:
+            counter += 1
+            print(f"{counter} out of {len(self.df)}")
+            head = self.entity2idx[triplet[0]]
+            rel = self.relation2idx[triplet[1]]
+            tail = self.entity2idx[triplet[2]]
+            all_neighbours = self.hop_extractor.extract_neighbour_from_idx(head)
+            all_neighbours.remove(tail)
+            # fake_tail_list = random.sample(all_neighbours, min(self.neg_rate, len(all_neighbours)))
+            for fake_tail in all_neighbours:
+                fake_triple = (head, rel, fake_tail)
+                if self.is_numerical:
+                    numerical_value = self.hash_numerical_dict[triplet[2]]  # / 100
+                else:
+                    numerical_value = []
+                triple = ((head, rel, tail), fake_triple, numerical_value)
+                all_triples.append(triple)
+            # all_neighbours = random.randint(0, self.ent_num - 1)
+            # if all_neighbours is None:
+            #     return None
+            # for i in range(self.neg_rate):
+            #     triple = None
+            #     flag = True
+            #     while flag:
+            # fake_entity = random.randint(0, self.ent_num)
+            # fake_entity = random.choice(all_neighbours)
+
+            # triple_str = f'{head}_{rel}_{fake_entity}'
+            # flag = self.hop_extractor.check_triple_existence(triple_str)
+            # for the neg set, just replace the tail with something starting with the same prefix
+
+            # if triple is not None:
+            #     all_triples.append(triple)
+
+        return all_triples
 
     def triplet2idx(self, triplet):
         head = self.entity2idx[triplet[0]]
@@ -45,16 +104,17 @@ class Dataset(torch.utils.data.Dataset):
         fake_triple = (head, rel, fake_entity)
         # for the neg set, just replace the tail with something starting with the same prefix
         if self.is_numerical:
-            numerical_value = self.hash_numerical_dict[triplet[2]] / 100
+            numerical_value = self.hash_numerical_dict[triplet[2]]
         else:
             numerical_value = []
         return (head, rel, tail), fake_triple, numerical_value
 
     def __getitem__(self, idx):
-        START_TIME = time.time()
-        positive_set, negative_set, numerical_list = self.triplet2idx(self.df[idx])
+        # START_TIME = time.time()
+        # positive_set, negative_set, numerical_list = self.triplet2idx(self.df[idx])
         # print('Used time: ', time.time() - START_TIME)
-        return positive_set, negative_set, numerical_list
+        # return positive_set, negative_set, numerical_list
+        return self.triples[idx]
 
 
 if __name__ == '__main__':
@@ -86,3 +146,5 @@ if __name__ == '__main__':
     test_non_numerical_set = Dataset(train_triplets_non_numerical, dataset_path=dataset_path, is_numerical=False)
     train_non_numerical_dataloader = torch.utils.data.DataLoader(train_non_numerical_set, batch_size=32, shuffle=True)
     test_non_numerical_dataloader = torch.utils.data.DataLoader(test_non_numerical_set, batch_size=32, shuffle=True)
+    for x in test_numerical_dataloader:
+        print(x)
