@@ -101,10 +101,11 @@ def gen_tileset_assets(asset_df: pd.DataFrame, tileset: dict):
             # Add the asset name to establish a metadata skeleton
             'metadata': {
                 'class': "AssetMetaData",
-                'properties': {NAME_VAR: asset_df[NAME_VAR].iloc[row].split(":")[0],
-                               ID_VAR: asset_df[ID_VAR].iloc[row],
-                               IRI_VAR: asset_df[IRI_VAR].iloc[row]
-                               }
+                'properties': {
+                    NAME_VAR: asset_df[NAME_VAR].iloc[row].split(":")[0],
+                    ID_VAR: asset_df[ID_VAR].iloc[row],
+                    IRI_VAR: asset_df[IRI_VAR].iloc[row]
+               }
             }
         })
 

@@ -10,6 +10,7 @@ import yaml
 bbox_root = []
 bbox_child = []
 
+
 def set_properties(path):
     """
     Retrieves the properties stored in the YAML file
@@ -55,6 +56,7 @@ def set_bbox(x_center, y_center, z_center, length, width, height):
     # WIP: Difficulty in creating suitable bounding boxes from model automatically
     return [
         x_center, y_center, z_center,
-        length/2, 0 , 0, # half-length for x
-        0, width/2 , 0, # half-length for y
-        0, 0 , height/2] # half-length for z
+        length / 2, 0, 0,  # half-length for x
+        0, width / 2, 0,   # half-length for y
+        0, 0, height / 2   # half-length for z
+    ]
