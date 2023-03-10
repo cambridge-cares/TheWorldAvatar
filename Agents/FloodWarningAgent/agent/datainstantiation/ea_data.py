@@ -84,7 +84,7 @@ def retrieve_current_warnings(county: str = None, mock_api: str = None) -> list:
 
             # Add time of last change
             last_altered = [d['timeRaised'], d['timeMsgChanged'], d['timeSevChanged']]
-            last_altered = [dt.strptime(last, TIME_FORMAT) for last in last_altered]
+            last_altered = [dt.strptime(last, TIME_FORMAT) for last in last_altered if last]
             d['last_altered'] = max(last_altered)
             
             # Add to list of warnings to instantiate
@@ -137,7 +137,7 @@ def retrieve_flood_area_data(area_uri: str) -> dict:
         #   1) a rt:FloodArea and either
         #   2) a rt:FloodAlertArea or a rt:FloodWarningArea
         area['area_types'] = None if not data.get('type') else data['type']
-        area['area_types'] = [t.strip() for t in area['area_types']]
+        area['area_types'] = [t.strip() for t in area['area_types'] if t]
 
     return area
 
@@ -232,19 +232,21 @@ def assess_waterbody_type(waterbody: str) -> str:
                 return True
         return False
 
-    # Initialise list of all matching water bodies
-    matches = []    
-    for wb in list(WATERBODIES_API.keys()):
-        if _contains_word(wb, waterbody):
-            matches.append(WATERBODIES_API[wb])
-    # Get unique matches
-    matches = set(matches)
+    if waterbody:
+        # Initialise list of all matching water bodies
+        matches = []    
+        for wb in list(WATERBODIES_API.keys()):
+            if _contains_word(wb, waterbody):
+                matches.append(WATERBODIES_API[wb])
+        # Get unique matches
+        matches = set(matches)
 
-    # If description allows specific water body type to be identified, return it
-    if len(matches) == 1:
-        waterbody_type = matches.pop()
-    else:
-        # ... otherwise, return general 'waterbody'
-        waterbody_type = 'waterbody'
+        # If description allows specific water body type to be identified, return it ...
+        if len(matches) == 1:
+            waterbody_type = matches.pop()
 
-    return waterbody_type
+            return waterbody_type
+
+    # ... otherwise, return general 'waterbody'
+    # (also applies if no water body is provided)
+    return 'waterbody'
