@@ -7,7 +7,7 @@
 
   <groupId>com.cmclinnovations</groupId>
   <artifactId>stack-clients</artifactId>
-  <version>1.9.0-494-SNAPSHOT</version>
+  <version>1.10.0-494-SNAPSHOT</version>
 
   <name>Stack Clients</name>
   <url>https://www.cmclinnovations.com</url>
@@ -24,8 +24,10 @@
     <maven.compiler.target>11</maven.compiler.target>
     <maven.compiler.release>11</maven.compiler.release>
 
-    <!--yaml.file>https://storage.googleapis.com/libpod-master-releases/swagger-v4.3.yaml</yaml.file-->
-    <yaml.file>${project.basedir}/src/main/swagger/podman/swagger-v4.3.yaml</yaml.file>
+    <!--podman.file>https://storage.googleapis.com/libpod-master-releases/swagger-v4.3.yaml</podman.file-->
+    <podman.file>${project.basedir}/src/main/swagger/podman/swagger-v4.3.yaml</podman.file>
+
+    <superset.file>${project.basedir}/src/main/swagger/superset/openapi.yaml</superset.file>
 
   </properties>
 
@@ -151,6 +153,13 @@
       <version>1.32.0</version>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/io.swagger.core.v3/swagger-annotations -->
+    <dependency>
+      <groupId>io.swagger.core.v3</groupId>
+      <artifactId>swagger-annotations</artifactId>
+      <version>2.2.8</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -210,7 +219,7 @@
               <goal>generate</goal>
             </goals>
             <configuration>
-              <inputSpec>${yaml.file}</inputSpec>
+              <inputSpec>${podman.file}</inputSpec>
               <language>java</language>
               <modelPackage>${project.groupId}.swagger.podman.model</modelPackage>
               <apiPackage>${project.groupId}.swagger.podman.api</apiPackage>
@@ -233,6 +242,41 @@
         </executions>
       </plugin>
 
+      <plugin>
+        <groupId>io.swagger.codegen.v3</groupId>
+        <artifactId>swagger-codegen-maven-plugin</artifactId>
+        <version>3.0.39</version>
+        <executions>
+          <execution>
+            <?m2e execute onConfiguration?>
+            <id>generate-superset-swagger-client</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <inputSpec>${superset.file}</inputSpec>
+              <language>java</language>
+              <modelPackage>${project.groupId}.swagger.superset.model</modelPackage>
+              <apiPackage>${project.groupId}.swagger.superset.api</apiPackage>
+              <configOptions>
+                <dateLibrary>legacy</dateLibrary>
+                <library>jersey2</library>
+              </configOptions>
+              <addCompileSourceRoot>true</addCompileSourceRoot>
+              <generateApis>true</generateApis>
+              <generateApiTests>false</generateApiTests>
+              <generateApiDocumentation>false</generateApiDocumentation>
+              <generateModels>true</generateModels>
+              <modelsToGenerate></modelsToGenerate>
+              <generateModelTests>false</generateModelTests>
+              <generateModelDocumentation>false</generateModelDocumentation>
+              <generateSupportingFiles>true</generateSupportingFiles>
+              <supportingFilesToGenerate></supportingFilesToGenerate>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
 
   </build>
