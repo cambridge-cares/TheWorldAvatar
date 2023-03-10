@@ -3,12 +3,8 @@ package com.cmclinnovations.stack.clients.superset;
 import com.cmclinnovations.stack.clients.core.ClientWithEndpoint;
 import com.cmclinnovations.stack.clients.core.EndpointNames;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
-import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import com.cmclinnovations.swagger.superset.ApiClient;
-import com.cmclinnovations.swagger.superset.ApiException;
 import com.cmclinnovations.swagger.superset.Configuration;
-import com.cmclinnovations.swagger.superset.api.DatabaseApi;
-import com.cmclinnovations.swagger.superset.model.DatabaseRestApiPost;
 
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
