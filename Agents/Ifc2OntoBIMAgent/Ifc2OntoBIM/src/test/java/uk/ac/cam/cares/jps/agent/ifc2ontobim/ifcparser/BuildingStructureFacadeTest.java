@@ -45,6 +45,7 @@ class BuildingStructureFacadeTest {
     private static final String ELEMENT_POSITION_INST = TEST_BASE_URI + "IfcLocalPlacement_1041";
     private static final String IFC_PRODUCT_DEF_SHAPE_INST = TEST_BASE_URI + "IfcProductDefinitionShape_3140";
     private static final String IFC_SHAPE_REP_INST = TEST_BASE_URI + "IfcShapeRepresentation_5108";
+    private static final String IFC_SHAPE_REP_LIST_INST = TEST_BASE_URI + "IfcShapeRepresentation_List_5108";
     private static final String IFC_MAPPED_SHAPE_REP = TEST_BASE_URI + "IfcShapeRepresentation_8672";
     private static final String IFC_GEOM_SUB_CONTEXT_INST = TEST_BASE_URI + "IfcGeometricRepresentationSubContext_5108";
     private static final String FACETED_BREP_CLASS = "FacetedBrep";
@@ -56,9 +57,15 @@ class BuildingStructureFacadeTest {
     private static final String IFC_TARGET_TRANSFORMATION_OPERATOR_INST = TEST_BASE_URI + "IfcCartesianTransformationOperator3D_3098157";
     private static final String IFC_MAPPED_ITEM_INST = TEST_BASE_URI + "IfcMappedItem_185218";
     private static final String IFC_REP_MAP_INST = TEST_BASE_URI + "IfcRepresentationMap_3213";
+    // Second geometry type for walls
+    private static final String IFC_SEC_SHAPE_REP_INST = TEST_BASE_URI + "IfcShapeRepresentation_91871";
+    private static final String POLYLINE_CLASS = "Polyline";
+    private static final String IFC_POLYLINE_INST = TEST_BASE_URI + POLYLINE_CLASS + "_726358";
+    private static final String IFC_SEC_REP_TYPE_VAL = "Curve2D";
     // Properties
     private static final Property hasString = ResourceFactory.createProperty(JunitTestUtils.expressUri + "hasString");
     private static final Property hasContents = ResourceFactory.createProperty(JunitTestUtils.listUri + "hasContents");
+    private static final Property hasNext = ResourceFactory.createProperty(JunitTestUtils.listUri + "hasNext");
     private static final Property hasName = ResourceFactory.createProperty(JunitTestUtils.IFC2X3_NAME_PROPERTY);
     private static final Property hasId = ResourceFactory.createProperty(JunitTestUtils.IFC2X3_ID_PROPERTY);
     private static final Property objectPlacement = ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "objectPlacement_IfcProduct");
@@ -68,6 +75,7 @@ class BuildingStructureFacadeTest {
     private static final Resource shapeRep = ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcShapeRepresentation");
     private static final Resource geomRepSubContext = ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcGeometricRepresentationSubContext");
     private static final Resource facetedBrep = ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcFacetedBrep");
+    private static final Resource polyline = ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcPolyline");
     private static final Resource ifcTypeRel = ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelDefinesByType");
 
     @BeforeAll
@@ -284,6 +292,24 @@ class BuildingStructureFacadeTest {
     }
 
     @Test
+    void testAddWallStatementsWithTwoGeometries() {
+        // Set up
+        addBaseTriples(WALL_INST, WALL_CLASS, WALL_NAME);
+        // Generate the triples that is applicable for all generic geometry representation except mapped representation
+        addGeometryTriples(sampleModel.getResource(WALL_INST));
+        addMultipleGeometryTypeTriples();
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        BuildingStructureFacade sample = new BuildingStructureFacade();
+        // Execute method
+        sample.addWallStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Wall", WALL_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedMultipleGeometricRepresentationStatements(), result);
+    }
+
+    @Test
     void testAddWindowStatementsNonMappedGeometryRepresentation() {
         // Set up
         addBaseTriples(WINDOW_INST, WINDOW_CLASS, WINDOW_NAME);
@@ -325,7 +351,7 @@ class BuildingStructureFacadeTest {
         addBaseTriples(DOOR_INST, DOOR_CLASS, DOOR_NAME);
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
         addGeometryTriples(sampleModel.getResource(DOOR_INST));
-        addSecondGeometryTriples(sampleModel.getResource(DOOR_INST));
+        addSecondGeometryTriples();
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         BuildingStructureFacade sample = new BuildingStructureFacade();
         // Execute method
@@ -361,7 +387,7 @@ class BuildingStructureFacadeTest {
     }
 
     private void addGeometryTriples(Resource element) {
-        Resource shapeRepBlankNode = sampleModel.createResource();
+        Resource shapeRepBlankNode = sampleModel.createResource(IFC_SHAPE_REP_LIST_INST);
         sampleModel.add(element, ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representation_IfcProduct"),
                 // Create object resource and its properties
                 sampleModel.createResource(IFC_PRODUCT_DEF_SHAPE_INST)
@@ -379,10 +405,26 @@ class BuildingStructureFacadeTest {
                                 sampleModel.createResource(IFC_FACETED_BREP_INST).addProperty(RDF.type, facetedBrep)));
     }
 
-    private void addSecondGeometryTriples(Resource element) {
+    private void addSecondGeometryTriples() {
         sampleModel.getResource(IFC_SHAPE_REP_INST)
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "items_IfcRepresentation"),
                         sampleModel.createResource(IFC_FACETED_BREP_SEC_INST).addProperty(RDF.type, facetedBrep));
+    }
+
+    private void addMultipleGeometryTypeTriples() {
+        Resource shapeRepBlankNode = sampleModel.createResource();
+        sampleModel.getResource(IFC_SHAPE_REP_LIST_INST)
+                .addProperty(hasNext, shapeRepBlankNode);
+        sampleModel.add(shapeRepBlankNode, hasContents,
+                // Create object resource and its properties
+                sampleModel.createResource(IFC_SEC_SHAPE_REP_INST)
+                        .addProperty(RDF.type, shapeRep)
+                        .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representationType_IfcRepresentation"), // Blank Node
+                                sampleModel.createResource().addProperty(hasString, IFC_SEC_REP_TYPE_VAL)) // Blank Node's properties
+                        .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "contextOfItems_IfcRepresentation"),
+                                sampleModel.createResource(IFC_GEOM_SUB_CONTEXT_INST).addProperty(RDF.type, geomRepSubContext))
+                        .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "items_IfcRepresentation"),
+                                sampleModel.createResource(IFC_POLYLINE_INST).addProperty(RDF.type, polyline)));
     }
 
     private void addMappedGeometryTriples(Resource element) {
@@ -457,6 +499,17 @@ class BuildingStructureFacadeTest {
         List<String> expected = new ArrayList<>();
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + IFC_FACETED_BREP_SEC_INST);
         expected.add(IFC_FACETED_BREP_SEC_INST + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/" + FACETED_BREP_CLASS);
+        return expected;
+    }
+
+    private List<String> genExpectedMultipleGeometricRepresentationStatements() {
+        List<String> expected = new ArrayList<>();
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSubContext, " + IFC_GEOM_SUB_CONTEXT_INST);
+        expected.add(IFC_GEOM_SUB_CONTEXT_INST + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + IFC_POLYLINE_INST);
+        expected.add(IFC_POLYLINE_INST + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/" + POLYLINE_CLASS);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + IFC_REP_TYPE_VAL);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + IFC_SEC_REP_TYPE_VAL);
         return expected;
     }
 }

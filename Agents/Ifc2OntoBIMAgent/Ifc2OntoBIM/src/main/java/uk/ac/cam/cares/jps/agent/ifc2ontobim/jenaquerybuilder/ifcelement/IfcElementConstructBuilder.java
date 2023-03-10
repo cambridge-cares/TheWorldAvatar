@@ -66,10 +66,6 @@ public class IfcElementConstructBuilder extends IfcConstructBuilderTemplate {
             case "ifc:IfcWindow":
                 IfcOpeningQuery.addHostElementQueryComponents(builder);
                 break;
-            case "ifc:IfcWall":
-            case "ifc:IfcWallStandardCase":
-                IfcWallQuery.addSecondShapeRepresentationQueryComponents(builder);
-                break;
             case "ifc:IfcStair":
                 IfcStairQuery.addSubElementsQueryComponents(builder);
                 break;

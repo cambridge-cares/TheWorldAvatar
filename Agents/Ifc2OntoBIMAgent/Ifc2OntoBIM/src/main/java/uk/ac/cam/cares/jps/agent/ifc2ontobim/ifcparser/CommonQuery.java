@@ -35,6 +35,7 @@ public class CommonQuery {
     public static final String TER_ELEVATION_VAR = "?terElev";
     public static final String REP_CONTEXT_VAR = "?repcontext";
     public static final String REP_SUBCONTEXT_VAR = "?subcontext";
+    public static final String REP_SEC_SUBCONTEXT_VAR = "?secondsubcontext";
     public static final String CONTEXT_REL_VAR = "?contextrelation";
     public static final String PROJECT_VAR = "?project";
     public static final String SPACE_DIMENSION_VAR = "?spacedimension";
@@ -49,9 +50,13 @@ public class CommonQuery {
     public static final String PRODUCT_DEFINITION_VAR = "?productDefinitionShape";
     public static final String SHAPE_REP_VAR = "?shaperep";
     public static final String INST_SHAPE_REP_VAR = "?instshaperep";
+    public static final String INST_SHAPE_REP_SEC_VAR = "?secondinstshaperep";
     public static final String INST_SHAPE_REP_TYPE_VAR = "?shapereptype";
+    public static final String INST_SHAPE_REP_TYPE_SEC_VAR = "?secshapereptype";
     public static final String GEOM_VAR = "?geometry";
+    public static final String GEOM_SEC_VAR = "?secgeometry";
     public static final String GEOM_TYPE_VAR = "?geomtype";
+    public static final String GEOM_TYPE_SEC_VAR = "?secgeomtype";
     public static final String MAPPED_ITEM_VAR = "?mappeditem";
     public static final String REP_MAP_VAR = "?representationmap";
     public static final String GEOM_AXIS_PLACEMENT_VAR = "?geomaxisplacement";
@@ -122,6 +127,8 @@ public class CommonQuery {
     public static final String IFC_DOOR = NamespaceMapper.IFC_PREFIX + ":IfcDoor";
     public static final String IFC_FLOOR = NamespaceMapper.IFC_PREFIX + ":IfcSlab";
     public static final String IFC_WALL = NamespaceMapper.IFC_PREFIX + ":IfcWall";
+    public static final String IFC_WALL_STANDARD_CASE = NamespaceMapper.IFC_PREFIX + ":IfcWallStandardCase";
+
     public static final String IFC_WINDOW = NamespaceMapper.IFC_PREFIX + ":IfcWindow";
     // IfcOwl element supplementary Classes
     public static final String IFC_REL_TYPE_DEFINITION = NamespaceMapper.IFC_PREFIX + ":IfcRelDefinesByType";

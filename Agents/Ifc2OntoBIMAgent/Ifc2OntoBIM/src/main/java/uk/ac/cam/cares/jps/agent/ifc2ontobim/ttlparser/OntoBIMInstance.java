@@ -20,11 +20,8 @@ class OntoBIMInstance {
                 break;
             // Elements
             case "IfcRoof":
-            case "IfcWall":
-            case "IfcWallStandardCase":
             case "IfcDoor":
             case "IfcWindow":
-            case "IfcColumn":
             case "IfcStair":
             case "IfcStairFlight":
             case "IfcRailing":

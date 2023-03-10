@@ -54,6 +54,15 @@ class QueryHandlerTest {
     private static final String testSourcePlacementIri = testBaseUri + "LocalPlacement_33352";
     private static final String testTargetPlacementVar = "cartesiantransformer";
     private static final String testTargetPlacementIri = testBaseUri + "CartesianTransformationOperator_610618";
+    private static final String testSecShapeRepVar = "secondinstshaperep";
+    private static final String testSecShapeRepIri = testBaseUri + "IfcShapeRepresentation_151523";
+    private static final String testSecSubContextVar = "secondsubcontext";
+    private static final String testSecSubContextIri = testBaseUri + "GeometricRepresentationSubContext_3209";
+    private static final String testSecGeomVar = "secgeometry";
+    private static final String testSecGeomIri = testBaseUri + "Polyline_8771";
+    private static final String testSecGeomType = JunitTestUtils.bimUri + "Polyline";
+    private static final String testSecShapeRepTypeVar = "secshapereptype";
+    private static final String testSecShapeRepType = "Curve2D";
     private static SpatialZoneStorage zoneMappings;
     private static IfcStoreyRepresentation storey;
     private static IfcRoomRepresentation room;
@@ -186,6 +195,24 @@ class QueryHandlerTest {
         JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalModelRep3DStatements(), result);
     }
 
+    @Test
+    void testRetrieveSecModelRepresentation3D() {
+        // Set up a sampleSet
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Create a sample query solution for testing
+        QuerySolutionMap solution = new QuerySolutionMap();
+        solution.add(testSecShapeRepVar, ResourceFactory.createResource(testSecShapeRepIri));
+        solution.add(testSecSubContextVar, ResourceFactory.createResource(testSecSubContextIri));
+        solution.add(testSecGeomVar, ResourceFactory.createResource(testSecGeomIri));
+        solution.add(testSecShapeRepTypeVar, ResourceFactory.createPlainLiteral(testSecShapeRepType));
+        // Execute the method and extract the result statements into a string
+        ModelRepresentation3D resultModel = QueryHandler.retrieveSecModelRepresentation3D(solution);
+        resultModel.addModelRepresentation3DStatements(sampleSet);
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedSecModelRep3DStatements(), result);
+    }
+
     private List<String> genInitQuery() {
         List<String> expected = new ArrayList<>();
         expected.add("PREFIX  rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
@@ -244,6 +271,17 @@ class QueryHandlerTest {
         expected.add(testSourcePlacementIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
         expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTargetPlacement, " + testTargetPlacementIri);
         expected.add(testTargetPlacementIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/CartesianTransformationOperator");
+        return expected;
+    }
+
+    private List<String> genExpectedSecModelRep3DStatements() {
+        List<String> expected = new ArrayList<>();
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D");
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSubContext, " + testSecSubContextIri);
+        expected.add(testSecSubContextIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + testSecShapeRepType);
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + testSecGeomIri);
+        expected.add(testSecGeomIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, " + testSecGeomType);
         return expected;
     }
 }

@@ -125,11 +125,16 @@ public class OntoBimConverter {
         buildingStructureHelper.addCeilingStatements(this.owlModel, statementSet);
         this.storeInTempFiles(statementSet);
         LOGGER.info("Stored statements for ceiling elements in temporary file");
-        
+
         LOGGER.info("Retrieving and generating statements related to column elements...");
         buildingStructureHelper.addColumnStatements(this.owlModel, statementSet);
         this.storeInTempFiles(statementSet);
         LOGGER.info("Stored statements for column elements in temporary file");
+
+        LOGGER.info("Retrieving and generating statements related to wall elements...");
+        buildingStructureHelper.addWallStatements(this.owlModel, statementSet);
+        this.storeInTempFiles(statementSet);
+        LOGGER.info("Stored statements for wall elements in temporary file");
 
         // Generate the other elements using previous design pattern
         List<String> ifcElements = new ArrayList<>();
@@ -139,8 +144,6 @@ public class OntoBimConverter {
         ifcElements.add("ifc:IfcSlabF");
         ifcElements.add("ifc:IfcSlabR");
         ifcElements.add("ifc:IfcRoof");
-        ifcElements.add("ifc:IfcWall");
-        ifcElements.add("ifc:IfcWallStandardCase");
         ifcElements.add("ifc:IfcStair");
         ifcElements.add("ifc:IfcBuildingElementProxy");
         ifcElements.add("ifc:IfcFlowTerminal");

@@ -121,4 +121,18 @@ public class QueryHandler {
         return new ModelRepresentation3D(shapeRepIri, subContextIri, geomIri,
                 shapeRepType, sourcePlacementIri, cartesianTransformerIri);
     }
+
+    /**
+     * Retrieve the second geometry model representation of the element as a ModelRepresentation3D class.
+     *
+     * @param soln The row of the query response to retrieve this zone IRI.
+     */
+    public static ModelRepresentation3D retrieveSecModelRepresentation3D(QuerySolution soln) {
+        String shapeRepIri = retrieveIri(soln, CommonQuery.INST_SHAPE_REP_SEC_VAR);
+        String subContextIri = retrieveIri(soln, CommonQuery.REP_SEC_SUBCONTEXT_VAR);
+        String geomIri = retrieveIri(soln, CommonQuery.GEOM_SEC_VAR);
+        String shapeRepType = retrieveLiteral(soln, CommonQuery.INST_SHAPE_REP_TYPE_SEC_VAR);
+        return new ModelRepresentation3D(shapeRepIri, subContextIri, geomIri,
+                shapeRepType, null, null);
+    }
 }

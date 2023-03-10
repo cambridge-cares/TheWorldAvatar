@@ -23,12 +23,13 @@ class WallTest {
     private static final String testPlacementIri2 = testBaseUri2 + "LocalPlacement_8172";
     private static final String testHostZoneIRI = testBaseUri1 + "Storey_715";
     private static final String testGeomModelIRI = testBaseUri1 + "ModelRepresentation3D_715";
+    private static final String testSecGeomModelIRI = testBaseUri1 + "ModelRepresentation3D_5519";
     private static final String testClassName = "IfcModelRepresentation";
     private static final String testClass = JunitTestUtils.bimUri + testClassName;
 
     @Test
     void testConstructor() {
-        Wall sample = new Wall(testIri1, testName1, testUID1, testPlacementIri1, testHostZoneIRI, testGeomModelIRI);
+        Wall sample = new Wall(testIri1, testName1, testUID1, testPlacementIri1, testHostZoneIRI, testGeomModelIRI, null);
         // Test that the sample fields are correct
         assertEquals(testBaseUri1, sample.getPrefix());
         assertNotEquals(testIri1, sample.getIfcRepIri());
@@ -37,7 +38,7 @@ class WallTest {
         assertEquals(testUID1, sample.getUid());
         assertEquals(testPlacementIri1, sample.getPlacementIri());
 
-        Wall sample2 = new Wall(testIri2, testName2, testUID2, testPlacementIri2, testHostZoneIRI, testGeomModelIRI);
+        Wall sample2 = new Wall(testIri2, testName2, testUID2, testPlacementIri2, testHostZoneIRI, testGeomModelIRI, null);
         // Test that the sample fields are correct
         assertEquals(testBaseUri2, sample2.getPrefix());
         assertNotEquals(testIri2, sample2.getIfcRepIri());
@@ -48,16 +49,32 @@ class WallTest {
     }
 
     @Test
-    void testConstructStatements() {
+    void testConstructStatementsNoOptionalFields() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        Wall sample = new Wall(testIri1, testName1, testUID1, testPlacementIri1, testHostZoneIRI, testGeomModelIRI);
+        Wall sample = new Wall(testIri1, testName1, testUID1, testPlacementIri1, testHostZoneIRI, testGeomModelIRI, null);
         // Execute method
         sample.constructStatements(sampleSet);
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
-        // Generated expected statement lists and verify their existence
+        // Generate expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedCommonStatements(), result);
+        // Verify the optional statements are not generated
+        JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalStatements(), result);
+    }
+
+    @Test
+    void testConstructStatements() {
+        // Set up
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        Wall sample = new Wall(testIri1, testName1, testUID1, testPlacementIri1, testHostZoneIRI, testGeomModelIRI, testSecGeomModelIRI);
+        // Execute method
+        sample.constructStatements(sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generate expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedCommonStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedOptionalStatements(), result);
     }
 
     private List<String> genExpectedCommonStatements() {
@@ -71,6 +88,12 @@ class WallTest {
         expected.add(testBaseUri1 + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + testUID1);
         expected.add(testBaseUri1 + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + testPlacementIri1);
         expected.add(testPlacementIri1 + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
+        return expected;
+    }
+
+    private List<String> genExpectedOptionalStatements() {
+        List<String> expected = new ArrayList<>();
+        expected.add(testBaseUri1 + "Wall_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasGeometricRepresentation, " + testSecGeomModelIRI);
         return expected;
     }
 }

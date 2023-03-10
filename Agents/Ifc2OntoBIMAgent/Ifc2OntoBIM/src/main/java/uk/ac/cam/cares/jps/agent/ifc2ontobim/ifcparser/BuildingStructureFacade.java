@@ -13,6 +13,7 @@ import java.util.LinkedHashSet;
 
 /**
  * Provides functions to generate the triples for building structure elements.
+ * If you wish to know the basic query template, please look at columns.
  *
  * @author qhouyee
  */
@@ -225,10 +226,36 @@ public class BuildingStructureFacade {
     public void addWallStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
         // Set up query builder and its query statements
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
-        selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_WALL);
+        SelectBuilder optionalBuilder = selectBuilder.clone();
+        // Create a union group for both possible wall classes
+        SelectBuilder wallClassUnionBuilder = selectBuilder.clone();
+        SelectBuilder wallStandardClassUnionBuilder = selectBuilder.clone();
+        wallClassUnionBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_WALL);
+        wallStandardClassUnionBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_WALL_STANDARD_CASE);
+        wallClassUnionBuilder.addUnion(wallStandardClassUnionBuilder);
+        selectBuilder.addWhere(wallClassUnionBuilder);
+        // Add common properties
         CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
         CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
+        // Add class-specific properties
+        // Walls may sometimes consist of polyline as the main geometry with a different second geometric representation type
+        selectBuilder.addVar(CommonQuery.INST_SHAPE_REP_SEC_VAR);
+        selectBuilder.addVar(CommonQuery.REP_SEC_SUBCONTEXT_VAR);
+        selectBuilder.addVar(CommonQuery.GEOM_SEC_VAR);
+        selectBuilder.addVar(CommonQuery.INST_SHAPE_REP_TYPE_SEC_VAR);
+        optionalBuilder.addWhere(CommonQuery.PRODUCT_DEFINITION_VAR, CommonQuery.IFC_PRODUCT_REPRESENTATIONS + "/" + CommonQuery.LIST_HAS_NEXT +
+                        "/" + CommonQuery.LIST_HAS_CONTENT, CommonQuery.INST_SHAPE_REP_SEC_VAR)
+                .addWhere(CommonQuery.INST_SHAPE_REP_SEC_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_SHAPE_REP)
+                .addWhere(CommonQuery.INST_SHAPE_REP_SEC_VAR, CommonQuery.IFC_PRODUCT_REPRESENTATION_TYPE + CommonQuery.EXPRESS_HASSTRING, CommonQuery.INST_SHAPE_REP_TYPE_SEC_VAR)
+                .addWhere(CommonQuery.INST_SHAPE_REP_SEC_VAR, CommonQuery.IFC_REP_CONTEXT, CommonQuery.REP_SEC_SUBCONTEXT_VAR)
+                .addWhere(CommonQuery.REP_SEC_SUBCONTEXT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCGEOM_REP_SUBCONTEXT)
+                .addWhere(CommonQuery.INST_SHAPE_REP_SEC_VAR, CommonQuery.IFC_REP_ITEMS, CommonQuery.GEOM_SEC_VAR)
+                .addWhere(CommonQuery.GEOM_SEC_VAR, QueryHandler.RDF_TYPE, CommonQuery.GEOM_TYPE_SEC_VAR);
+        selectBuilder.addOptional(optionalBuilder);
+        // Note that I have excluded the IfcRelConnectsPathElements that indicates if the wall are connected to another wall,
+        // and at which end. This class seems only useful for visualising the IFC schema in IFC viewers. But for conversion,
+        // it does not matter as the dimensions and positions given should suffice to generate the required geometry.
         // Query from the model
         ResultSet results = QueryHandler.execSelectQuery(selectBuilder.buildString(), owlModel);
         // Create new model representation mappings
@@ -253,8 +280,21 @@ public class BuildingStructureFacade {
                 geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
                 // Add the object into the mappings for its IRI
                 modelRepMappings.add(iri, geomModel);
-                // Construct the element's instance and its statements
-                Wall wall = new Wall(iri, name, uid, placement, hostZone, geomModel.getBimIri());
+                Wall wall;
+                // If there is a second geometry representation for the wall
+                if(soln.contains(CommonQuery.INST_SHAPE_REP_SEC_VAR)){
+                    // Generate a second geom model
+                    ModelRepresentation3D secGeomModel = QueryHandler.retrieveSecModelRepresentation3D(soln);
+                    // Add the IRI with a suffix to add geom model into the mappings so that its statements can be constructed
+                    // Note that when there is two different geometric representation, they only have one geometric representation each
+                    modelRepMappings.add(iri + "second", secGeomModel);
+                    // Construct the element's instance
+                    wall = new Wall(iri, name, uid, placement, hostZone, geomModel.getBimIri(), secGeomModel.getBimIri());
+                } else {
+                    // Construct the element's instance
+                    wall = new Wall(iri, name, uid, placement, hostZone, geomModel.getBimIri(), null);
+                }
+                // Always construct the statement regardless of which constructor initialised
                 wall.constructStatements(statementSet);
             }
         }
