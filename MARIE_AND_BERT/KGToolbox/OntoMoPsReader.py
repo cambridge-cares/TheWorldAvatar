@@ -25,7 +25,7 @@ class OntoMopsReader:
     def __init__(self):
         # http://kg.cmclinnovations.com:81/blazegraph_geo/#query
         self.ontology = "OntoMoPs"
-        self.sub_ontology = "numerical"
+        self.sub_ontology = "numerical_with_implicit"
         self.full_dataset_dir = os.path.join(DATA_DIR, "CrossGraph", self.ontology, self.sub_ontology)
 
         self.property_stop_list = ["Volume", "label", "imports", "hasNumericalValue",
@@ -33,14 +33,17 @@ class OntoMopsReader:
                                    "hasValue", "hasOuterCoordinationNumber", "type",
                                    "hasReferenceDOI", "hasMOPFormula", "hasCCDCNumber"]
 
+        self.reversed_properties_list = ["isFunctioningAs", "hasAssemblyModel", "hasChemicalBuildingUnit"]
+
         self.numerical_property_list = ["hasMolecularWeight", "hasCharge"]
 
         self.file_creator = IntegratedTrainingFileCreator(sparql_namespace="ontomops", ontology=self.ontology,
                                                           sub_ontology=self.sub_ontology,
                                                           endpoint_url="http://kg.cmclinnovations.com:81/blazegraph_geo",
-                                                          same_frac=1.0, other_frac=0.1)
+                                                          same_frac=1.0, other_frac=1.0)
 
         self.query_blazegraph = self.file_creator.query_blazegraph
+        self.filter_singular_nodes = self.file_creator.filter_singular_nodes
         self.SPARQL_TEMPLATE_WITH_PREFIX = """
           PREFIX OntoMOPs: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
           PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
@@ -80,30 +83,6 @@ class OntoMopsReader:
                 numerical_triples.append((mopIRI, numerical_property, value))
         return triples, numerical_triples, node_value_dict
 
-    def filter_singular_nodes(self, triples):
-        node_count_dict = {}
-        singular_node_list = []
-        non_singular_triples = []
-        singular_triples = []
-        numerical_triples = []
-
-        for s, p, o in triples:
-            self.file_creator.update_count_dict(node_count_dict, s)
-            self.file_creator.update_count_dict(node_count_dict, o)
-
-        for node in node_count_dict:
-            if node_count_dict[node] == 1:
-                singular_node_list.append(node)
-
-        for s, p, o in triples:
-            row = (s, p, o)
-
-            if o in singular_node_list or s in singular_node_list:
-                singular_triples.append(row)
-            else:
-                non_singular_triples.append(row)
-
-        return singular_triples, non_singular_triples
 
     def query_all_triples(self):
         triples = []
@@ -127,7 +106,11 @@ class OntoMopsReader:
                 o = binding["o"]
                 print("EXCEPTION", o_type, o)
             if p not in self.property_stop_list:
-                triples.append((s, p, o))
+                if p not in self.reversed_properties_list:
+                    triples.append((s, p, o))
+                else:
+                    p = p + "Reversed"
+                    triples.append((o, p, s))
         return triples
 
     def get_all_triples(self):
@@ -140,6 +123,72 @@ class OntoMopsReader:
         else:
             triples = self.query_all_triples()
         return triples
+
+    def get_implicit_triples(self):
+
+        QUERY_CUB_TO_AM = """
+        PREFIX OntoMOPs: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
+        PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX Measure: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        SELECT DISTINCT  ?sub ?obj 
+        WHERE
+        {   
+        ?sub rdf:type <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#ChemicalBuildingUnit>.
+        ?mop OntoMOPs:hasChemicalBuildingUnit ?sub.
+        ?mop OntoMOPs:hasAssemblyModel ?obj.
+        }
+        GROUP BY ?sub ?obj
+        """
+
+        QUERY_SHAPE_TO_AM = """
+        PREFIX OntoMOPs: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
+        PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX Measure: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        SELECT distinct ?sub ?obj
+        WHERE
+        {   
+          ?shape OntoMOPs:hasSymbol ?sub .
+          ?obj OntoMOPs:hasPolyhedralShape ?shape.
+          ?mopIRI OntoMOPs:hasAssemblyModel ?obj.
+        }
+        """
+
+        QUERY_POINT_TO_MOP = """
+        PREFIX OntoMOPs: <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#>
+        PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>
+        PREFIX Measure: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        SELECT distinct ?sub ?obj
+        WHERE
+        { 
+          ?am rdf:type <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#AssemblyModel>.
+          ?am OntoMOPs:hasSymmetryPointGroup ?sub . 
+          ?obj OntoMOPs:hasAssemblyModel ?am.
+        }
+        """
+        query_list = [QUERY_CUB_TO_AM, QUERY_SHAPE_TO_AM, QUERY_POINT_TO_MOP]
+        implicit_relations = ["cbuToAM", "shapeToAM", "pointToMoP"]
+        triples = []
+        for query, relation in zip(query_list, implicit_relations):
+            rst = self.query_blazegraph(query)["results"]["bindings"]
+            for binding in rst:
+                sub = self.classify_and_shorten_node(binding["sub"])
+                obj = self.classify_and_shorten_node(binding["obj"])
+                triples.append((sub, relation, obj))
+
+        return triples
+
+
+    def classify_and_shorten_node(self, node):
+        node_type = node["type"]
+        if node_type == "literal":
+            return node["value"]
+        elif node_type == "uri":
+            return split_iri(node["value"])
+        else:
+            return node["value"]
 
     def get_mop_formula(self):
         mop_formula_dict = {}
@@ -155,59 +204,14 @@ class OntoMopsReader:
             formula = binding["MOPFormula"]["value"]
             mop_formula_dict[mopIRI] = formula
         return mop_formula_dict
-    
-    def get_assembly_models(self):
-        query = self.SPARQL_TEMPLATE_WITH_PREFIX % """
-        SELECT ?am ?label
-        WHERE
-        {  
-            ?am rdf:type <http://www.theworldavatar.com/ontology/ontomops/OntoMOPs.owl#AssemblyModel>.
-            ?am OntoMOPs:hasGenericBuildingUnit ?gbu1. 
-            ?gbu1 OntoMOPs:hasModularity ?modularity1.
-            ?gbu1 OntoMOPs:hasPlanarity ?planarity1.
-            ?gbuNumberIRI1 OntoMOPs:isNumberOf ?gbu1.
-            ?gbuNumberIRI1 OntoSpecies:value ?gbuNumber1.
-            ?am OntoMOPs:hasGenericBuildingUnit ?gbu2.
-            ?gbu2 OntoMOPs:hasModularity ?modularity2.
-            ?gbu2 OntoMOPs:hasPlanarity ?planarity2.
-            ?gbuNumberIRI2 OntoMOPs:isNumberOf ?gbu2.
-            ?gbuNumberIRI2 OntoSpecies:value ?gbuNumber2.
-            ?am OntoMOPs:hasSymmetryPointGroup ?symmPtGrp
-            FILTER(?gbu1 != ?gbu2)
-            BIND(
-            IF(?modularity1 > ?modularity2,
-            CONCAT("(", ?modularity1, "-", ?planarity1, ")", ?gbuNumber1, "(", ?modularity2, "-", ?planarity2, ")", ?gbuNumber2, "(", ?symmPtGrp, ")"),
-            IF(?modularity2 > ?modularity1,
-                CONCAT("(", ?modularity2, "-", ?planarity2, ")", ?gbuNumber2, "(", ?modularity1, "-", ?planarity1, ")", ?gbuNumber1, "(", ?symmPtGrp, ")"),
-                IF(?planarity1 = "pyramidal",
-                    CONCAT("(", ?modularity1, "-", ?planarity1, ")", ?gbuNumber1, "(", ?modularity2, "-", ?planarity2, ")", ?gbuNumber2, "(", ?symmPtGrp, ")"),
-                    CONCAT("(", ?modularity2, "-", ?planarity2, ")", ?gbuNumber2, "(", ?modularity1, "-", ?planarity1, ")", ?gbuNumber1, "(", ?symmPtGrp, ")")
-                )
-            )
-            )
-            AS ?label
-        )
-        }
-        """
-
-        am_label_dict = {}     
-        rst = self.query_blazegraph(query=query)["results"]["bindings"]
-        for binding in rst:
-            amIRI = binding["am"]["value"].split("/")[-1]
-            label = binding["label"]["value"]
-            if label in am_label_dict:
-                am_label_dict[label].append(amIRI)
-            else:
-                am_label_dict[label] = [amIRI]
-        
-        am_labels = list(am_label_dict.keys())
-
-        return am_label_dict, am_labels
 
     def run(self):
         all_triples = self.get_all_triples()
+        implicit_triples = self.get_implicit_triples()
         numerical_triples, numerical_values, node_value_dict = self.collect_lateral_data()
         all_triples += numerical_triples
+        all_triples += implicit_triples
+
         df_all = pd.DataFrame(all_triples)
         df_all.to_csv(f"{self.full_dataset_dir}/{self.sub_ontology}-train.txt", sep="\t", header=False, index=False)
         singular_triples, non_singular_triples = self.filter_singular_nodes(all_triples)
@@ -231,14 +235,9 @@ class OntoMopsReader:
         with open(os.path.join(self.full_dataset_dir, "node_value_dict.json"), "w") as f:
             f.write(json.dumps(node_value_dict))
             f.close()
-        
-        am_label_dict, am_lables = self.get_assembly_models()
-        with open(os.path.join(self.full_dataset_dir, "am_value.json"), "w") as f:
-            f.write(json.dumps(am_label_dict))
-            f.close()
-        with open(os.path.join(self.full_dataset_dir, "am_list.json"), "w") as f:
-            f.write(json.dumps(am_lables))
-            f.close()
+
+    def test(self):
+        self.get_implicit_triples()
 
 
 if __name__ == "__main__":
