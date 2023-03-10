@@ -96,6 +96,10 @@ class TransR(nn.Module):
     def forward(self, pos_triples, neg_triples, mode="non_numerical"):
         pos_triples = pos_triples.to(self.device)
         neg_triples = neg_triples.to(self.device)
+
+        pos_triples = torch.transpose(pos_triples, 0, 1)
+        neg_triples = torch.transpose(neg_triples, 0, 1)
+
         dist_pos = self.distance(pos_triples).to(self.device)
         dist_neg = self.distance(neg_triples).to(self.device)
         if mode == "non_numerical":
@@ -109,7 +113,7 @@ class TransR(nn.Module):
             return numerical_loss.to(self.device)
 
     def numerical_predict(self, triples):
-        true_value = triples[2].to(self.device) / 1000
+        true_value = triples[2].to(self.device)
         head_idx = triples[0].long().to(self.device)
         rel_idx = triples[1].long().to(self.device)
         head = self.ent_embedding(head_idx).to(self.device)
@@ -121,7 +125,7 @@ class TransR(nn.Module):
         bias = self.bias_embedding(rel_idx.to(self.device))[0].to(self.device)
         aV = torch.sum(head * attr, dim=1).to(self.device)
         value = (aV + bias).to(self.device)
-        print(true_value, value)
+        # print(true_value, value)
 
     def calculate_tail_embedding(self, triples):
         head_idx, rel_idx, tail_idx = triples
@@ -142,10 +146,8 @@ class TransR(nn.Module):
             # print(self.ent_embedding.weight[tail_idx].shape)
             # print(self.ent_embedding.weight[tail_idx])
 
-
-
     def numerical_forward(self, triples):
-        true_value = triples[3].to(self.device) / 1000
+        true_value = triples[3].to(self.device)
         head_idx = triples[0].long().to(self.device)
         rel_idx = triples[1].long().to(self.device)
         if len(rel_idx) == 0:
@@ -159,7 +161,9 @@ class TransR(nn.Module):
         bias = self.bias_embedding(rel_idx.to(self.device)).to(self.device)
         aV = torch.sum(head * attr, dim=1).to(self.device)
         value = (aV + bias[0]).to(self.device)
-        diff = torch.nn.functional.mse_loss(value.to(self.device), true_value.to(torch.float32).to(self.device))
+        # diff = torch.nn.functional.mse_loss(value.to(self.device), true_value.to(torch.float32).to(self.device))
+        # diff = torch.nn.functional.mse_loss(value.to(self.device), true_value.to(torch.float32).to(self.device))
+        diff = torch.abs(value - true_value).to(self.device)
         return diff.to(self.device)
 
     def predict(self, triples):
@@ -243,6 +247,10 @@ class TransR(nn.Module):
         :param triples:
         :return:
         """
+        # triples[0] = torch.transpose(triples[0], 0, 1)
+        # triples[1] = torch.transpose(triples[1], 0, 1)
+        # triples[2] = torch.transpose(triples[2], 0, 1)
+
         # =============== Copy the input tensors to GPU ======================
         e_h_idx = triples[0].type(torch.LongTensor).to(self.device)
         r_idx = triples[1].type(torch.LongTensor).to(self.device)
@@ -267,7 +275,6 @@ class TransR(nn.Module):
 
         # use l2 dissimilarity
         return (projected_e_h + r - projected_e_t).norm(p=2, dim=-1).to(self.device)
-
 
 # if __name__ == '__main__':
 #     train_triplets = [line.split('\t') for line in
