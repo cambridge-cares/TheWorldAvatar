@@ -7,7 +7,6 @@ from tqdm import tqdm
 
 sys.path.append("../../..")
 
-import json
 import os
 
 import pandas as pd
@@ -58,90 +57,64 @@ def evaluate_ranking(distances, all_tails, true_tail):
 class InferenceTrainer:
 
     def __init__(self, full_dataset_dir, ontology, batch_size=32, epoch_num=100, dim=20, learning_rate=1.0, gamma=1,
-                 test=False, use_projection=False, alpha=0.1, margin=5, resume=False, inference=True):
+                 test=False, use_projection=False, alpha=0.1, margin=5, resume=False, inference=True, global_neg=False,
+                 gpu_number = 1):
         self.full_dataset_dir = full_dataset_dir
         self.ontology = ontology
         self.learning_rate = learning_rate
         self.gamma = gamma
         self.dim = dim
+        self.gpu_number = gpu_number
         self.batch_size = batch_size
         self.test = test
         self.use_projection = use_projection
         self.alpha = alpha
         self.margin = margin
         self.resume = resume
+        self.global_neg = global_neg
         self.inference = inference
         self.my_extractor = HopExtractor(
             dataset_dir=self.full_dataset_dir,
             dataset_name=self.ontology)
         df_train = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-train-2.txt"), sep="\t", header=None)
         self.df_train = df_train
-        df_train_small = df_train.sample(frac=0.01)
-        df_test = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-test.txt"), sep="\t", header=None)
+        df_train_small = df_train.sample(frac=0.001)
         self.file_loader = FileLoader(full_dataset_dir=self.full_dataset_dir, dataset_name=self.ontology)
         self.entity2idx, self.idx2entity, self.rel2idx, self.idx2rel = self.file_loader.load_index_files()
+        numerical_eval_path = os.path.join(full_dir, f"numerical_eval.tsv")
 
-        if inference:
-            df_numerical = pd.read_csv(os.path.join(full_dir, f"numerical_eval.tsv"), sep="\t", header=None)
-
-            value_node_set = TransRInferenceDataset(df=self.df_train, full_dataset_dir=self.full_dataset_dir,
-                                                    ontology=self.ontology,
-                                                    mode="value_node")
-
-            value_node_eval_set = TransRInferenceDataset(df= df_train_small, full_dataset_dir=self.full_dataset_dir,
-                                                        ontology=self.ontology,
-                                                        mode="value_node_eval")
-
-            numerical_eval_set = TransRInferenceDataset(df_numerical, full_dataset_dir=self.full_dataset_dir,
-                                                        ontology=self.ontology,
-                                                        mode="numerical")
-
+        # ============================== TODO: clean up the training data loading mechanism ============================
         # ========================================== CREATE DATASET FOR TRAINING ================================
-            if not self.test:
-                test_set = TransRInferenceDataset(df_test, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology,
-                                                mode="test")
+        # 1. if test is used, use the df_train_small instead of the full dataset
+        # 2. Inference flag should only effect whether the evaluation uses inference
+        # =======================================================================================================
 
-                train_set = TransRInferenceDataset(df_train, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology,
-                                                mode="train")
-                self.train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
-            else:
-                test_set = TransRInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
+        # ================================== Load test set for inference =======================================
+        df_test = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-test.txt"), sep="\t", header=None)
+        test_set = TransRInferenceDataset(df_test, full_dataset_dir=self.full_dataset_dir,
+                                          ontology=self.ontology,
+                                          mode="test")
+        self.test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=test_set.candidate_max * self.gpu_number,
+                                                           shuffle=False)
+        # ================================== Load training set for general embedding ============================
+        if self.test:
+            print("Using small dataset for testing")
+            df_train = df_train_small
+
+        train_set = TransRInferenceDataset(df_train, full_dataset_dir=self.full_dataset_dir,
+                                           ontology=self.ontology,
+                                           mode="general_train", global_neg=False)
+        self.train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
+
+        # ==================================== Load evaluation set, which is a smaller training set ===============
+        train_set_eval = TransRInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
                                                 ontology=self.ontology,
-                                                mode="test")
-
-            train_set_small = TransRInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
-                                                 ontology=self.ontology,
-                                                 mode="train")
-
-            train_set_eval = TransRInferenceDataset(df_train_small, full_dataset_dir=self.full_dataset_dir,
-                                                ontology=self.ontology,
-                                                mode="train_eval")
-            self.test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=test_set.candidate_max * 2, shuffle=False)
-            self.train_dataloader_small = torch.utils.data.DataLoader(train_set_small, batch_size=batch_size, shuffle=True)
-
-            self.train_dataloader_eval = torch.utils.data.DataLoader(train_set_eval,
-                                                                 batch_size=train_set_eval.candidate_max * 2,
+                                                mode="general_train_eval")
+        self.train_dataloader_eval = torch.utils.data.DataLoader(train_set_eval,
+                                                                 batch_size=train_set_eval.ent_num * self.gpu_number,
                                                                  shuffle=False)
-            self.numerical_eval_set_dataloader = torch.utils.data.DataLoader(numerical_eval_set, batch_size=1,
-                                                                         shuffle=True)
+        # ===========================================================================================================
 
-            self.dataloader_value_node = torch.utils.data.DataLoader(value_node_set, batch_size=self.batch_size,
-                                                                    shuffle=True)
-            self.dataloader_value_node_eval = torch.utils.data.DataLoader(value_node_eval_set,
-                                                                        batch_size=value_node_eval_set.ent_num * 2,
-                                                                      shuffle=False)
-        else:
-            train_set = TransRInferenceDataset(df_train, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology, mode="agent_train", inference=False)
-            test_set = TransRInferenceDataset(df_test, full_dataset_dir=self.full_dataset_dir, ontology=self.ontology, mode="agent_test", inference=False)
-            train_set_eval = TransRInferenceDataset(df_train, full_dataset_dir=self.full_dataset_dir,
-                                                ontology=self.ontology,
-                                                mode="agent_train_eval", inference=False)
-            self.train_dataloader = torch.utils.data.DataLoader(train_set, batch_size=batch_size, shuffle=True)
-            self.train_dataloader_eval = torch.utils.data.DataLoader(train_set_eval,
-                                                                 batch_size=len(self.entity2idx.keys()),
-                                                                 shuffle=False)
-            self.test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=len(self.entity2idx.keys()), shuffle=False)
-        # =========================================================================================================
         self.use_cuda = torch.cuda.is_available()
         # self.use_cuda = False
         device = torch.device("cuda" if self.use_cuda else "cpu")
@@ -175,7 +148,6 @@ class InferenceTrainer:
             self.write_embeddings(self.model.bias_embedding, "bias_embedding")
             self.write_embeddings(self.model.proj_matrix, "proj_matrix")
 
-
     def write_embeddings(self, embedding, embedding_name):
         lines = []
         for embedding in embedding.weight.data:
@@ -185,6 +157,35 @@ class InferenceTrainer:
         with open(os.path.join(DATA_DIR, self.full_dataset_dir, f'{embedding_name}.tsv'), 'w') as f:
             f.write(content)
             f.close()
+
+    def inference_evaluation(self):
+
+        total_mrr, counter, filtered_counter, total_fmrr = 0, 0, 0, 0
+        hit_rate_list = []
+        filtered_hit_rate_list = []
+        for test_set in tqdm(self.test_dataloader):
+            heads, rels, all_tails, true_tail = test_set[0], test_set[1], test_set[2], test_set[3][0].item()
+            selected_idx = (all_tails >= 0)
+            heads, rels, all_tails = heads[selected_idx], rels[selected_idx], all_tails[selected_idx]
+            triples = torch.stack((heads, rels, all_tails)).type(torch.LongTensor)
+            if self.use_cuda:
+                distances = self.model.module.infer(triples)
+            else:
+                distances = self.model.infer(triples)
+            f_ranking, f_ranking_idx = evaluate_ranking(distances=distances, all_tails=all_tails,
+                                                        true_tail=true_tail)
+            filtered_counter += 1
+            counter += 1
+            total_fmrr += f_ranking
+            hit_rate_list.append(f_ranking_idx)
+            filtered_hit_rate_list.append(f_ranking_idx)
+
+        filtered_hit_rate_list = hit_rate(filtered_hit_rate_list)
+        total_fmrr = total_fmrr / filtered_counter
+        print("=================== Inference evaluation result ====================")
+        print(f"total infer fmrr: {total_fmrr}")
+        print(f"filtered infer hit rate: {filtered_hit_rate_list}")
+        print("====================================================================")
 
     def evaluate(self):
         with no_grad():
@@ -201,7 +202,8 @@ class InferenceTrainer:
                     distances = self.model.module.predict(triples=triples)
                 else:
                     distances = self.model.predict(triples=triples)
-                f_ranking, f_ranking_idx = evaluate_ranking(distances=distances, all_tails=all_tails, true_tail=true_tail)
+                f_ranking, f_ranking_idx = evaluate_ranking(distances=distances, all_tails=all_tails,
+                                                            true_tail=true_tail)
                 filtered_hit_rate_list.append(f_ranking_idx)
                 counter += 1
                 total_mrr += f_ranking
@@ -213,38 +215,15 @@ class InferenceTrainer:
             print(f"the training hit rate list is : {filtered_hit_rate_list}")
             print("===============================================================")
 
-            total_mrr, counter, filtered_counter, total_fmrr = 0, 0, 0, 0
-            hit_rate_list = []
-            filtered_hit_rate_list = []
-            for test_set in tqdm(self.test_dataloader):
-                heads, rels, all_tails, true_tail = test_set[0], test_set[1], test_set[2], test_set[3][0].item()
-                selected_idx = (all_tails >= 0)
-                heads, rels, all_tails = heads[selected_idx], rels[selected_idx], all_tails[selected_idx]
-                triples = torch.stack((heads, rels, all_tails)).type(torch.LongTensor)
-                if self.use_cuda:
-                    distances = self.model.module.infer(triples)
-                else:
-                    distances = self.model.infer(triples)
-                f_ranking, f_ranking_idx = evaluate_ranking(distances=distances, all_tails=all_tails, true_tail=true_tail)
-                filtered_counter += 1
-                counter += 1
-                total_fmrr += f_ranking
-                hit_rate_list.append(f_ranking_idx)
-                filtered_hit_rate_list.append(f_ranking_idx)
-
             if self.inference:
-                for numerical_eval_triples in self.numerical_eval_set_dataloader:
-                    if self.use_cuda:
-                        self.model.module.numerical_predict(numerical_eval_triples)
-                    else:
-                        self.model.numerical_predict(numerical_eval_triples)
+                self.inference_evaluation()
 
-            filtered_hit_rate_list = hit_rate(filtered_hit_rate_list)
-            total_fmrr = total_fmrr / filtered_counter
-            print("=================== Inference evaluation result ====================")
-            print(f"total infer fmrr: {total_fmrr}")
-            print(f"filtered infer hit rate: {filtered_hit_rate_list}")
-            print("====================================================================")
+            # # if self.inference:
+            # for numerical_eval_triples in self.numerical_eval_set_dataloader:
+            #     if self.use_cuda:
+            #         self.model.module.numerical_predict(numerical_eval_triples)
+            #     else:
+            #         self.model.numerical_predict(numerical_eval_triples)
 
     def train(self):
         """
@@ -256,31 +235,62 @@ class InferenceTrainer:
         total_train_loss = 0
         total_numerical_loss = 0
         total_non_numerical_loss = 0
-        if self.test:
-            self.train_dataloader = self.train_dataloader_small
-            # in test mode, use self.train_dataloader_small
-
+        # if self.test:
+        #     self.train_dataloader = self.train_dataloader_small
+        #     # in test mode, use self.train_dataloader_small
+        print("Starting the training")
         for pos, neg in tqdm(self.train_dataloader):
             self.optimizer.zero_grad()
             numerical_idx_list = (pos[3] != -999)
             pos = torch.transpose(torch.stack(pos), 0, 1)
-            pos_numerical = torch.transpose(pos[numerical_idx_list], 0, 1).to(self.device)
-            pos_non_numerical = torch.transpose(pos[~numerical_idx_list], 0,
-                                                1).to(self.device)  # create negative index list with ~
+            # pos_numerical = torch.transpose(pos[numerical_idx_list], 0, 1).to(self.device)
+            pos_numerical = pos[numerical_idx_list].to(self.device)
+            # print(pos_numerical)
+            # pos_non_numerical = torch.transpose(pos[~numerical_idx_list], 0, 1).to(self.device)
+            # create negative index list with ~
+            pos_non_numerical = pos[~numerical_idx_list].to(self.device)
             neg = torch.transpose(torch.stack(neg), 0, 1)
-            neg_numerical = torch.transpose(neg[numerical_idx_list], 0, 1).to(self.device)
-            neg_non_numerical = torch.transpose(neg[~numerical_idx_list], 0, 1).to(self.device)
+            # neg_numerical = torch.transpose(neg[numerical_idx_list], 0, 1).to(self.device)
+            neg_numerical = neg[numerical_idx_list].to(self.device)
+            # neg_non_numerical = torch.transpose(neg[~numerical_idx_list], 0, 1).to(self.device)
+            neg_non_numerical = neg[~numerical_idx_list].to(self.device)
+
             loss_non_numerical = self.model(pos_non_numerical, neg_non_numerical, mode="non_numerical")
-            if len(pos_numerical[0]) > 0:
-                loss_numerical = self.model(pos_numerical, neg_numerical, mode="numerical")
-                loss = loss_numerical.mean() + loss_non_numerical.mean()
-                loss.mean().backward()
-                total_train_loss += loss.cpu().mean()
-                total_numerical_loss += loss_numerical.cpu().mean()
-            else:
-                loss_non_numerical.mean().backward()
-                total_train_loss += loss_non_numerical.cpu().mean()
+            loss_non_numerical.mean().backward()
             total_non_numerical_loss += loss_non_numerical.cpu().mean()
+            self.optimizer.step()
+
+            if len(pos_numerical) > 0:
+                if len(pos_numerical[0]) > 0:
+                    if len(pos_numerical) == 1:
+                        pos_numerical = pos_numerical.repeat(self.gpu_number, 1)
+                        neg_numerical = neg_numerical.repeat(self.gpu_number, 1)
+                    loss_numerical = self.model(pos_numerical, neg_numerical, mode="numerical") * 0.0001
+                    loss_numerical.mean().backward()
+                    total_numerical_loss += loss_numerical.cpu().mean()
+                    self.optimizer.step()
+
+
+            #     total_train_loss += loss_non_numerical.cpu().mean()
+            # total_non_numerical_loss += loss_non_numerical.cpu().mean()
+
+            # print(pos_numerical)
+            # if len(pos_numerical[0]) > 0:
+
+            # if len(pos_numerical) > 0:
+            #     if len(pos_numerical[0] > 0):
+            #         loss_numerical = self.model(pos_numerical, neg_numerical, mode="numerical") * 0.001
+            #         loss = loss_numerical.mean() + loss_non_numerical.mean()
+            #         loss.backward()
+            #         total_train_loss += loss.cpu().mean()
+            #         total_numerical_loss += loss_numerical.cpu().mean()
+            #     else:
+            #         loss_non_numerical.mean().backward()
+            #         total_train_loss += loss_non_numerical.cpu().mean()
+            # else:
+            #     loss_non_numerical.mean().backward()
+            #     total_train_loss += loss_non_numerical.cpu().mean()
+            # total_non_numerical_loss += loss_non_numerical.cpu().mean()
 
             if self.use_cuda:
                 self.model.module.normalize_parameters()
@@ -296,15 +306,15 @@ class InferenceTrainer:
         for epoch in range(self.epoch_num + 1):
             print(f"Epoch: {epoch}")
             self.train()
-            if epoch % 10 == 0:
+            if epoch % 5 == 0:
                 self.scheduler.step()
                 self.evaluate()
                 self.export_embeddings()
                 print(f"Current learning rate: {self.scheduler.get_lr()}")
 
-        if self.inference:
-            self.calculate_value_node_embedding()
-            self.evaluate_value_node_embedding()
+        # if self.inference:
+        #     self.calculate_value_node_embedding()
+        #     self.evaluate_value_node_embedding()
         self.export_embeddings()
 
     def calculate_value_node_embedding(self):
@@ -321,13 +331,15 @@ class InferenceTrainer:
             counter = 0
             total_mrr = 0
             for triple in tqdm(self.dataloader_value_node_eval):
+
                 true_tail = triple[3][0].item()
                 all_tails = triple[2]
                 if self.use_cuda:
                     distances = self.model.module.distance(triple)
                 else:
                     distances = self.model.distance(triple)
-                f_ranking, f_ranking_idx = evaluate_ranking(distances=distances, all_tails=all_tails, true_tail=true_tail)
+                f_ranking, f_ranking_idx = evaluate_ranking(distances=distances, all_tails=all_tails,
+                                                            true_tail=true_tail)
                 filtered_hit_rate_list.append(f_ranking_idx)
                 counter += 1
                 total_mrr += f_ranking
@@ -339,7 +351,6 @@ class InferenceTrainer:
             print("===============================================================")
 
 
-
 if __name__ == "__main__":
     import argparse
 
@@ -347,6 +358,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", "--dimension", help="dimension of embedding")
     parser.add_argument("-lr", "--learning_rate", help="starting learning rate")
     parser.add_argument("-g", "--gamma", help="gamma for scheduler")
+    parser.add_argument("-o", "--ontology", help="main ontology used")
     parser.add_argument("-so", "--sub_ontology", help="name of the sub ontology")
     parser.add_argument("-bs", "--batch_size", help="size of mini batch")
     parser.add_argument("-test", "--test_mode", help="if true, the training will use a smaller training set")
@@ -355,7 +367,14 @@ if __name__ == "__main__":
     parser.add_argument("-margin", "--margin", help="margin for MarginRankLoss")
     parser.add_argument("-epoch", "--epoch", help="number of epochs")
     parser.add_argument("-resume", "--resume", help="resume the training by loading embeddings ")
+    parser.add_argument("-global_neg", "--global_neg", help="whether use all entities as negative samples")
+    parser.add_argument("-inference", "--inference", help="whether try to do inference with the ontology")
+    parser.add_argument("-gpu_num", "--gpu_number", help="number of gpus used")
     args = parser.parse_args()
+
+    gpu_number = 1
+    if args.gpu_number:
+        gpu_number = int(args.gpu_number)
 
     dim = 20
     if args.dimension:
@@ -385,9 +404,13 @@ if __name__ == "__main__":
     if args.epoch:
         epoch = int(args.epoch)
 
-    ontology = "test"
+    ontology = "ontospecies_new"
+    if args.ontology:
+        ontology = args.ontology
+
+    sub_ontology = None
     if args.sub_ontology:
-        ontology = args.sub_ontology
+        sub_ontology = args.sub_ontology
 
     test = False
     if args.test_mode:
@@ -416,6 +439,24 @@ if __name__ == "__main__":
         else:
             resume = False
 
+    global_neg = False
+    if args.global_neg:
+        if args.global_neg.lower() == "yes":
+            global_neg = True
+        elif args.global_neg.lower() == "no":
+            global_neg = False
+        else:
+            global_neg = False
+
+    inference = False
+    if args.inference:
+        if args.inference.lower() == "yes":
+            inference = True
+        elif args.inference.lower() == "no":
+            inference = False
+        else:
+            inference = False
+
     print(f"Dimension: {dim}")
     print(f"Learning rate: {learning_rate}")
     print(f"Gamma: {gamma}")
@@ -426,11 +467,22 @@ if __name__ == "__main__":
     print(f"Test: {test}")
     print(f"Epoch: {epoch}")
     print(f"Resume training: {resume}")
+    print(f"Number of GPUs: {gpu_number}")
 
-    full_dir = os.path.join(DATA_DIR, 'CrossGraph', f'{ontology}')
+    batch_size = batch_size * gpu_number
+
+
+    if sub_ontology:
+        full_dir = os.path.join(DATA_DIR, 'CrossGraph', f'{ontology}/{sub_ontology}')
+        ontology = sub_ontology
+    else:
+        full_dir = os.path.join(DATA_DIR, 'CrossGraph', f'{ontology}')
+
     my_trainer = InferenceTrainer(full_dataset_dir=full_dir, ontology=ontology, batch_size=32, dim=dim,
                                   learning_rate=learning_rate, test=test, use_projection=use_projection, alpha=alpha,
-                                  margin=margin, epoch_num=epoch, gamma=gamma, resume=resume, inference=False)
+                                  margin=margin, epoch_num=epoch, gamma=gamma, resume=resume, inference=inference,
+                                  global_neg=global_neg, gpu_number = gpu_number)
+
     my_trainer.run()
 # role_with_subclass_full_attributes_0.1
 # role_with_subclass_full_attributes_with_class
