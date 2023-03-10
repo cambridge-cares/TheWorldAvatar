@@ -8,12 +8,14 @@ A test suite for the agent.ifc2tileset submodule.
 import os
 
 # Third party import
+import numpy as np
 import pandas as pd
 
 # Self import
 from agent.ifc2tileset import gen_tilesets
 from tests.unit_test.ifc2tileset.test_tile_helper import retrieve_tileset_contents
 from tests.unit_test.ifc2tileset.test_asset_tiles import gen_sample_df
+from . import testconsts as C
 
 
 def test_gen_tilesets_solarpanel():
@@ -21,8 +23,13 @@ def test_gen_tilesets_solarpanel():
     Tests gen_tilesets() for generating only solarpanel tileset
     """
     # Create a solarpanel.gltf for testing
-    solarpanel = os.path.join("data", "gltf", "solarpanel.gltf")
-    open(solarpanel, "x", encoding="utf-8")
+    solarpanel_gltf = os.path.join("data", "gltf", "solarpanel.gltf")
+    open(solarpanel_gltf, "x", encoding="utf-8")
+
+    # Create sample glb file
+    solarpanel_glb = os.path.join("data", "glb", "solarpanel.glb")
+    m = C.sample_box_gen()
+    m.export(solarpanel_glb)
 
     # JSON output path
     bim_json_filepath = os.path.join("data", "tileset_bim.json")
@@ -43,9 +50,12 @@ def test_gen_tilesets_solarpanel():
         # Test that the tileset contents are equivalent to the dictionary
         assert tileset_content["root"]["content"] == {
             "uri": "./gltf/solarpanel.gltf"}
+        # Test that the bbox is correctly computed
+        assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_box_bbox)
     finally:
         # Remove files
-        os.remove(solarpanel)
+        os.remove(solarpanel_gltf)
+        os.remove(solarpanel_glb)
         os.remove(solar_json_filepath)
 
 
@@ -54,8 +64,13 @@ def test_gen_tilesets_sewage():
     Tests gen_tilesets() for generating only sewage tileset
     """
     # Create a sewagenetwork.gltf for testing
-    sewage = os.path.join("data", "gltf", "sewagenetwork.gltf")
-    open(sewage, "x", encoding="utf-8")
+    sewage_gltf = os.path.join("data", "gltf", "sewagenetwork.gltf")
+    open(sewage_gltf, "x", encoding="utf-8")
+
+    # Create sample glb file
+    sewage_glb = os.path.join("data", "glb", "sewagenetwork.glb")
+    m = C.sample_cone_gen()
+    m.export(sewage_glb)
 
     # JSON output path
     bim_json_filepath = os.path.join("data", "tileset_bim.json")
@@ -76,9 +91,12 @@ def test_gen_tilesets_sewage():
         # Test that the tileset contents are equivalent to the dictionary
         assert tileset_content["root"]["content"] == {
             "uri": "./gltf/sewagenetwork.gltf"}
+        # Test that the bbox is correctly computed
+        assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_cone_bbox)
     finally:
         # Remove files
-        os.remove(sewage)
+        os.remove(sewage_gltf)
+        os.remove(sewage_glb)
         os.remove(sewage_json_filepath)
 
 

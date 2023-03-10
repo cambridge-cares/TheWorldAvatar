@@ -7,3 +7,4 @@ numpy==1.23.5
 pandas==1.5.2
 py4jps==1.0.30
 PyYAML==6.0
+trimesh==3.20.2

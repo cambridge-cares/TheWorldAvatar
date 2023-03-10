@@ -18,7 +18,6 @@ def test_root_tile():
     """
     Tests root_tile()
     """
-    properties.bbox_root = []
     expected_tileset = {
         'asset': {'version': '1.1'},
         'geometricError': 1024,
@@ -28,7 +27,7 @@ def test_root_tile():
             "refine": "ADD",
         }
     }
-    assert expected_tileset == root_tile()
+    assert expected_tileset == root_tile([])
 
 
 def test_append_tileset_schema():
@@ -64,7 +63,7 @@ def test_append_tileset_schema():
 
 
 def get_minimal_tileset(building_iri: str):
-    tile = root_tile()
+    tile = root_tile(properties.bbox_root)
     append_tileset_schema_and_metadata(tile, building_iri)
     return tile
 

@@ -23,7 +23,7 @@ def test_init_asset_tiles():
     building_iri = "buildingIri"
 
     # Init root tile for input
-    tileset = root_tile()
+    tileset = root_tile(properties.bbox_root)
     append_tileset_schema_and_metadata(tileset, building_iri)
 
     # Execute method
@@ -198,7 +198,7 @@ def test_gen_tileset_assets():
     test_range = 8
     sample_df = gen_sample_df(test_range)
     building_iri = "buildingIri"
-    sample_tileset = root_tile()
+    sample_tileset = root_tile(properties.bbox_root)
     append_tileset_schema_and_metadata(sample_tileset, building_iri)
 
     # Execute test method

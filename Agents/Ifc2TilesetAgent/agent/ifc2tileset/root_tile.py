@@ -6,6 +6,7 @@ This module provides the root tile and its bounding boxes for all tilesets.
 
 # Standard library imports
 from pathlib import Path
+from typing import List
 
 # Third party imports
 from py4jps import agentlogging
@@ -18,7 +19,7 @@ import agent.config.config as properties
 logger = agentlogging.get_logger("dev")
 
 
-def root_tile():
+def root_tile(bbox: List[str]):
     """
     Defines a skeleton template for all tilesets as a dictionary
     to write into the required json format
@@ -28,7 +29,7 @@ def root_tile():
     """
     tileset = {'asset': {'version': '1.1'},
                'geometricError': 1024,
-               'root': {"boundingVolume": {"box": properties.bbox_root},
+               'root': {"boundingVolume": {"box": bbox},
                         "geometricError": 512,
                         "refine": "ADD",
                         }
@@ -77,7 +78,7 @@ def gen_root_content(building_iri: str):
         The tileset generated as a python dictionary
     """
     # Generate a minimal tileset
-    tileset = root_tile()
+    tileset = root_tile(properties.bbox_root)
     append_tileset_schema_and_metadata(tileset, building_iri)
 
     # Respective filepaths
