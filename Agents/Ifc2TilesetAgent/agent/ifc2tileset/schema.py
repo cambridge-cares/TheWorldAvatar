@@ -1,0 +1,56 @@
+from typing import TypedDict, List, Union, Literal
+
+
+# For python>=3.11, NotRequired can be used to denote non-compulsory keys of a TypedDict
+# Alternatively, as per https://peps.python.org/pep-0655/#interaction-with-total-false, we can define compulsory keys
+# in a base TypedDict, and non-compulsory keys in the derived class declared with total=False.
+
+
+# https://github.com/CesiumGS/3d-tiles/blob/main/specification/schema/asset.schema.json
+class Asset(TypedDict):
+    version: str
+
+
+# https://github.com/CesiumGS/3d-tiles/blob/main/specification/schema/boundingVolume.schema.json
+class BoundingVolume(TypedDict, total=False):
+    box: List[float]
+    region: List[float]
+    sphere: List[float]
+
+
+# https://github.com/CesiumGS/3d-tiles/blob/main/specification/schema/content.schema.json
+class _ContentBase(TypedDict):
+    uri: str
+
+
+class Content(_ContentBase, total=False):
+    boundingVolume: BoundingVolume
+
+
+# https://github.com/CesiumGS/3d-tiles/blob/main/specification/schema/tile.schema.json
+class _TileBase(TypedDict):
+    boundingVolume: BoundingVolume
+    geometricError: float
+
+
+class Tile(_TileBase, total=False):
+    viewerRequestVolume: dict
+    refine: Union[Literal["ADD"], Literal["REPLACE"], Literal["string"]]
+    transform: list
+    content: Content
+    # https://github.com/CesiumGS/3d-tiles/blob/main/extensions/3DTILES_multiple_contents/schema/tile.3DTILES_multiple_contents.schema.json
+    contents: List[Content]
+    children: List["Tile"]
+
+
+# https://github.com/CesiumGS/3d-tiles/blob/main/specification/schema/tileset.schema.json
+class _TilesetBase(TypedDict):
+    asset: Asset
+    geometricError: float
+    root: Tile
+
+
+class Tileset(_TilesetBase, total=False):
+    properties: dict
+    extensionUsed: list
+    extensionRequired: list
