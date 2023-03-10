@@ -237,6 +237,27 @@ class BuildingStructureFacadeTest {
     void testAddFloorStatementsNonMappedGeometryRepresentation() {
         // Set up
         addBaseTriples(FLOOR_INST, FLOOR_CLASS, FLOOR_NAME);
+        addFloorTriples(FLOOR_INST, "FLOOR");
+        // Generate the triples that is applicable for all generic geometry representation except mapped representation
+        addGeometryTriples(sampleModel.getResource(FLOOR_INST));
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        BuildingStructureFacade sample = new BuildingStructureFacade();
+        // Execute method
+        sample.addFloorStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Floor", FLOOR_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(), result);
+        // The following statements are optional and should not exist
+        JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalGeomStatements(), result);
+    }
+
+    @Test
+    void testAddFloorStatementsAlternateEnumName() {
+        // Set up
+        addBaseTriples(FLOOR_INST, FLOOR_CLASS, FLOOR_NAME);
+        addFloorTriples(FLOOR_INST, "BASESLAB");
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
         addGeometryTriples(sampleModel.getResource(FLOOR_INST));
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
@@ -256,8 +277,10 @@ class BuildingStructureFacadeTest {
     void testAddFloorStatementsMappedGeometryRepresentation() {
         // Set up
         addBaseTriples(FLOOR_INST, FLOOR_CLASS, FLOOR_NAME);
+        addFloorTriples(FLOOR_INST, "FLOOR");
         // Generate the alternate mapped geometry representation triples
         addMappedGeometryTriples(sampleModel.getResource(FLOOR_INST));
+        addFloorTriples(FLOOR_INST, "Floor");
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         BuildingStructureFacade sample = new BuildingStructureFacade();
         // Execute method
@@ -411,6 +434,17 @@ class BuildingStructureFacadeTest {
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.IFC2X3_HOST_ZONE_PROPERTY), storeyInst)
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.IFC2X3_CONTAIN_ELEMENT_PROPERTY), elementInst);
     }
+
+    private void addFloorTriples(String elementIRI, String elementEnum) {
+        sampleModel.createResource(REL_TYPE_DEF_INST).addProperty(RDF.type, ifcTypeRel)
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatedObjects_IfcRelDefines"), sampleModel.getResource(elementIRI))
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatingType_IfcRelDefinesByType"),
+                        sampleModel.createResource()
+                                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "predefinedType_IfcSlabType"),
+                                        sampleModel.createResource(JunitTestUtils.ifc2x3Uri + elementEnum))
+                );
+    }
+
 
     private void addWallAssemblyTriples(String elementIRI) {
         Resource openingElementNode = sampleModel.createResource().addProperty(RDF.type, ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcOpeningElement"));

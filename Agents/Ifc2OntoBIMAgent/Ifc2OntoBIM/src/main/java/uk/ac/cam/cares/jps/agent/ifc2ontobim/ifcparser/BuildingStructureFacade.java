@@ -201,6 +201,13 @@ public class BuildingStructureFacade {
         CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
         CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
+        // Add class-specific properties
+        // Restrict to certain IfcSlab types for floor
+        selectBuilder.addWhere(CommonQuery.REL_TYPE_DEFINITION_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_REL_TYPE_DEFINITION)
+                .addWhere(CommonQuery.REL_TYPE_DEFINITION_VAR, CommonQuery.IFC_RELATED_OBJECT, CommonQuery.ELEMENT_VAR)
+                .addWhere(CommonQuery.REL_TYPE_DEFINITION_VAR, CommonQuery.IFC_RELATING_TYPE, CommonQuery.ELEMENT_TYPE_VAR)
+                .addWhere(CommonQuery.ELEMENT_TYPE_VAR, CommonQuery.IFC_PREDEFINED_TYPE_SLAB, CommonQuery.SLAB_ENUM_VAR)
+                .addWhereValueVar(CommonQuery.SLAB_ENUM_VAR, CommonQuery.IFC_SLAB_FLOOR_ENUM, CommonQuery.IFC_SLAB_BASE_SLAB_ENUM);
         // Query from the model
         ResultSet results = QueryHandler.execSelectQuery(selectBuilder.buildString(), owlModel);
         // Process query results

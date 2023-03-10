@@ -131,6 +131,11 @@ public class OntoBimConverter {
         this.storeInTempFiles(statementSet);
         LOGGER.info("Stored statements for column elements in temporary file");
 
+        LOGGER.info("Retrieving and generating statements related to floor elements...");
+        buildingStructureHelper.addFloorStatements(this.owlModel, statementSet);
+        this.storeInTempFiles(statementSet);
+        LOGGER.info("Stored statements for floor elements in temporary file");
+
         LOGGER.info("Retrieving and generating statements related to wall elements...");
         buildingStructureHelper.addWallStatements(this.owlModel, statementSet);
         this.storeInTempFiles(statementSet);
@@ -149,7 +154,6 @@ public class OntoBimConverter {
         // Generate the other elements using previous design pattern
         List<String> ifcElements = new ArrayList<>();
         // Actual class is IfcSlab but added identifier to put into Map as separate keys
-        ifcElements.add("ifc:IfcSlabF");
         ifcElements.add("ifc:IfcSlabR");
         ifcElements.add("ifc:IfcRoof");
         ifcElements.add("ifc:IfcStair");

@@ -49,6 +49,7 @@ public class CommonQuery {
     public static final String OPENING_ELEMENT_VAR = "?openingelement";
     public static final String REL_FILLS_ELEMENT_VAR = "?relfillselement";
     public static final String REL_VOID_ELEMENT_VAR = "?relvoidelement";
+    public static final String SLAB_ENUM_VAR = "?slabenum";
     // Geometry variables
     public static final String PRODUCT_DEFINITION_VAR = "?productDefinitionShape";
     public static final String SHAPE_REP_VAR = "?shaperep";
@@ -93,6 +94,7 @@ public class CommonQuery {
     public static final String IFC_RELATED_OBJECT = NamespaceMapper.IFC_PREFIX + ":relatedObjects_IfcRelDefines";
     public static final String IFC_RELATING_TYPE = NamespaceMapper.IFC_PREFIX + ":relatingType_IfcRelDefinesByType";
     public static final String IFC_PREDEFINED_TYPE_COVERING = NamespaceMapper.IFC_PREFIX + ":predefinedType_IfcCoveringType";
+    public static final String IFC_PREDEFINED_TYPE_SLAB = NamespaceMapper.IFC_PREFIX + ":predefinedType_IfcSlabType";
     public static final String IFC_REL_FILLS_SUB_ELEMENT = NamespaceMapper.IFC_PREFIX + ":relatedBuildingElement_IfcRelFillsElement";
     public static final String IFC_REL_FILLS_OPENING = NamespaceMapper.IFC_PREFIX + ":relatingOpeningElement_IfcRelFillsElement";
     public static final String IFC_REL_VOIDS_OPENING = NamespaceMapper.IFC_PREFIX + ":relatedOpeningElement_IfcRelVoidsElement";
@@ -144,6 +146,8 @@ public class CommonQuery {
     public static final String IFC_COVERING_TYPE = NamespaceMapper.IFC_PREFIX + ":IfcCoveringType";
     // IfcOwl enum
     public static final String IFC_CEILING_ENUM = NamespaceMapper.IFC_PREFIX + ":CEILING";
+    public static final String IFC_SLAB_FLOOR_ENUM = NamespaceMapper.IFC_PREFIX + ":FLOOR";
+    public static final String IFC_SLAB_BASE_SLAB_ENUM = NamespaceMapper.IFC_PREFIX + ":BASESLAB";
 
     /**
      * Add the statements for querying common metadata such as class name, their unique ifc ID, and name into the builder.
