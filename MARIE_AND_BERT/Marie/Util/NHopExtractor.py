@@ -85,9 +85,9 @@ class HopExtractor:
                     neighbours = neighbour_rows.iloc[:, 0].values.tolist() + neighbour_rows.iloc[:, 2].values.tolist()
                     if entity in neighbours:
                         neighbours.remove(entity)
-                    # neighbours_idx = [self.entity2idx[n] for n in neighbours]
-                    # one_hop_dict[entity] = neighbours
-                    # one_hop_idx_dict[entity_idx] = neighbours_idx
+                    neighbours_idx = [self.entity2idx[n] for n in neighbours]
+                    one_hop_dict[entity] = neighbours
+                    one_hop_idx_dict[entity_idx] = neighbours_idx
                     counter += 1
                     print(f"{counter} out of {len(self.ent_labels)}")
 
@@ -130,8 +130,8 @@ class HopExtractor:
 if __name__ == "__main__":
     START_TIME = time.time()
     _ontology = "ontospecies_new"
-    _dataset_dir = f"CrossGraph/{_ontology}/role_only"
+    _dataset_dir = f"CrossGraph/{_ontology}/full"
     my_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, _dataset_dir),
-                                dataset_name="role_only")
+                                dataset_name="full")
 
     print(time.time() - START_TIME)
