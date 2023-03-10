@@ -10,7 +10,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobms/">
         <owl:imports rdf:resource="https://saref.etsi.org/saref4bldg/"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">03 March 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">10 March 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoBMS is an ontology for Building Management Systems.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -43,6 +43,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobms/hasAirFlowRate -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasAirFlowRate">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/HVAC"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the flow rate of air being processed or conveyed by a HVAC device.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has airflow rate</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobms/hasConvectiveTransportRate -->
 
 
@@ -52,19 +65,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a continuous material amount and its convective transport rate.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has convective transport rate</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/hasFlowRate -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasFlowRate">
-        <rdfs:domain rdf:resource="https://saref.etsi.org/core/HVAC"/>
-        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the flow rate of a substance being processed or conveyed by a HVAC device.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has flow rate</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -82,6 +82,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobms/hasHighLevelState -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasHighLevelState">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/MultiLevelState"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobms/HighLevelState"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a high level state of a multi-level state.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has high level state</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobms/hasInput -->
 
 
@@ -91,6 +104,32 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship describing a flow moving device (e.g. duct) having a directed connection (e.g. streamline) as an input.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has input</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobms/hasLowLevelState -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasLowLevelState">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/MultiLevelState"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobms/LowLevelState"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a low level state of a multi-level state.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has low level state</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobms/hasMediumLevelState -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/hasMediumLevelState">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/MultiLevelState"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobms/MediumLevelState"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a medium level state of a multi-level state.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has medium level state</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -290,6 +329,13 @@
     
 
 
+    <!-- https://saref.etsi.org/core/MultiLevelState -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/MultiLevelState"/>
+    
+
+
     <!-- https://saref.etsi.org/core/State -->
 
 
@@ -348,7 +394,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/AlarmState">
-        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/State"/>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/MultiLevelState"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An alert status that is triggered due to an abnormal condition or change in condition.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Alarm state</rdfs:label>
@@ -420,7 +466,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/DamperState">
-        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/State"/>
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/MultiLevelState"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The current state of a damper.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Damper state</rdfs:label>
@@ -524,14 +570,38 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobms/HighLevelState -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/HighLevelState">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/State"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The current state of a device at a high level.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">High level state</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobms/HighPlumeFan -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/HighPlumeFan">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobms/ExhaustFan"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An exhaust fan that dilute and disperse potentially hazardous exhaust or fumes quickly and safely.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A type of exhaust fan that dilute and disperse potentially hazardous exhaust or fumes quickly and safely.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">High plume fan</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobms/LowLevelState -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/LowLevelState">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/State"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The current state of a device at a low level.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Low level state</rdfs:label>
     </owl:Class>
     
 
@@ -544,6 +614,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device that provide a consistent and controlled solution to replacing the air within a space.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Makeup air unit</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobms/MediumLevelState -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/MediumLevelState">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/State"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The current state of a device at a medium level.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Medium level state</rdfs:label>
     </owl:Class>
     
 
@@ -592,6 +674,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solar panels capture sunlight as a source of radiant energy, which is converted into electric energy in the form of direct current (DC) electricity.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solar panel</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobms/SwitchState -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/SwitchState">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/MultiLevelState"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The current state of a switch.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Switch state</rdfs:label>
     </owl:Class>
     
 
