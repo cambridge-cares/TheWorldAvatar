@@ -102,6 +102,26 @@ Spinning a container up via the stack-manager provides the following benefits:
 * The URLs, usernames and passwords of other containers in the stack can be retrieved using the `ContainerClient::readEndpointConfig` method at runtime, rather than having to provide them through environment variables or `.properties` files.
 * Allows the classes and methods available through the stack-clients library to be used to add new data (particularly geospatial data) into the stack in a clean an consistent way.
 
+## Stack configuration
+
+By default the stack will start the default services and then all of the custom services.
+The list of services that are started can be modified by specifying a stack config file, with the same name as the stack being spun up, in the [stack-manager/inputs/config](./inputs/config/) directory.
+For example a stack called "test" could be configured by providing a file with the path `stack-manager/inputs/config/test.json`.
+
+The format of the stack configuration file is as follows:
+```json
+{
+    "services": {
+        "includes": [
+            # Non-default services to start in addition to the default ones. (Optional)
+        ],
+        "excludes": [
+            # Default and/or explicitly included services that should not be spun up. This will cause issues if another service requires one of the excluded ones. (Optional)
+        ]
+    }
+}
+```
+
 ## Debugging the Stack Manager in VSCode
 
 1. Add the following entry into top level node the JSON file `stack-manager/.vscode/settings.json`, creating the file if it doesn't exist.

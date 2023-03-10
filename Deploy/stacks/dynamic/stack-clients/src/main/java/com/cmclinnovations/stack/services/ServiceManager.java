@@ -190,7 +190,7 @@ public final class ServiceManager {
         return getService(otherServiceName);
     }
 
-    public void initialiseUserServices(String stackName) {
+    public void initialiseAllUserServices(String stackName) {
         userServices.forEach(serviceName -> initialiseService(stackName, serviceName));
     }
 
