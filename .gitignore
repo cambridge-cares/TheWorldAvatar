@@ -11,6 +11,7 @@
 *.rar
 *.tgz
 *.hdt
+*.mod
 
 # Integrated Development Environment (IDE)-specific files/folders:
 .vscode/

@@ -132,11 +132,17 @@ public class Aermod {
 
         String latSuffix = "N";
         String lonSuffix = "E";
+        int direction = -1;
         if (lat < 0 ) latSuffix = "S";
-        if (lon < 0) lonSuffix = "W";
+        if (lon < 0) {
+            lonSuffix = "W";
+            direction = 1;
+        }
         lat = Math.abs(lat);
         lon = Math.abs(lon);
+        int offset = (int)  Math.round(direction*lon*24/360);
         String location = String.format("%f%s %f%s", lat, latSuffix, lon, lonSuffix);
+        String locationOffset = String.format("%f%s %f%s %d", lat, latSuffix, lon, lonSuffix, offset);
         String newLine = System.getProperty("line.separator");
 
         StringBuilder sb = new StringBuilder("JOB \n");
@@ -148,7 +154,7 @@ public class Aermod {
                 .append("   EXTRACT  UAIR_EXTRACT.TXT \n")
                 .append("   QAOUT    UAIR_QAOUT.TXT \n")
                 .append("   XDATES    2022/9/23 TO 2022/9/23 \n")
-                .append("   LOCATION  99999  " + location + " \n")
+                .append("   LOCATION  99999  " + locationOffset + " \n")
                 .append(newLine)
                 .append("SURFACE \n")
                 .append("   DATA      weather_template.144 CD144 \n")

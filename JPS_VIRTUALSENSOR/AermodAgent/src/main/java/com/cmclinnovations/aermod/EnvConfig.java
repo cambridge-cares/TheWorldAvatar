@@ -5,6 +5,7 @@ public class EnvConfig {
     public static final String AERMAP_EXE = System.getenv("AERMAP_EXE");
     public static final String AERMET_EXE = System.getenv("AERMET_EXE");
     public static final String BPIPPRM_EXE = System.getenv("BPIPPRM_EXE");
+    public static final String NUMBER_SOURCES = System.getenv("NUMBER_SOURCES");
     public static final String NUMBER_BUILDINGS = System.getenv("NUMBER_BUILDINGS");
     public static final String AERMOD_EXE = System.getenv("AERMOD_EXE");
     public static final String DATABASE = System.getenv("DATABASE");
