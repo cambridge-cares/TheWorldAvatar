@@ -17,48 +17,11 @@ class IfcOpeningQueryTest {
     }
 
     @Test
-    void testAddHostElementQueryComponents() {
-        new IfcOpeningQuery().addHostElementQueryComponents(builder);
-        String query = builder.buildString();
-        String expected = this.genExpectedResultsForHostElement();
-        assertTrue(query.contains(expected));
-    }
-
-    @Test
-    void testAddHostElementQueryComponentsFail() {
-        ConstructBuilder failBuilder = new ConstructBuilder();
-        IllegalArgumentException thrownError = assertThrows(IllegalArgumentException.class,
-                () -> new IfcOpeningQuery().addHostElementQueryComponents(failBuilder));
-        assertTrue(thrownError.getMessage().contains("Predicate"));
-        assertTrue(thrownError.getMessage().contains("must be a Path, URI , variable, or a wildcard."));
-    }
-
-    @Test
     void testAddVoidRepresentationQueryComponents() {
         new IfcOpeningQuery().addVoidRepresentationQueryComponents(builder);
         String query = builder.buildString();
         String expected = this.genExpectedResultsForVoidRep();
         assertTrue(query.contains(expected));
-    }
-
-    private String genExpectedResultsForHostElement() {
-        StringBuilder expected = new StringBuilder();
-        expected.append("CONSTRUCT \n")
-                .append("  { \n")
-                .append("    ?hostelement bot:hasSubElement ?element .\n")
-                .append("  }\n")
-                .append("WHERE\n")
-                .append("  { ?relfillselement\n")
-                .append("              rdf:type              ifc:IfcRelFillsElement ;\n")
-                .append("              ifc:relatedBuildingElement_IfcRelFillsElement  ?element ;\n")
-                .append("              ifc:relatingOpeningElement_IfcRelFillsElement  ?openingelement .\n")
-                .append("    ?openingelement\n")
-                .append("              rdf:type              ifc:IfcOpeningElement .\n")
-                .append("    ?relvoidelement\n")
-                .append("              rdf:type              ifc:IfcRelVoidsElement ;\n")
-                .append("              ifc:relatedOpeningElement_IfcRelVoidsElement  ?openingelement ;\n")
-                .append("              ifc:relatingBuildingElement_IfcRelVoidsElement  ?hostelement}\n");
-        return expected.toString();
     }
 
     private String genExpectedResultsForVoidRep() {

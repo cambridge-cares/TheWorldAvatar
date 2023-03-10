@@ -28,15 +28,6 @@ class IfcElementConstructBuilderTest {
     }
 
     @Test
-    void testCreateSparqlQueryForDoor() {
-        String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcDoor", "ifc:IfcDoor");
-        // Check that some additional statements for door are called correctly
-        // Not all statements are verified as the relevant test has ensured output is correct
-        String expected = this.genExpectedResultsForDoor();
-        assertTrue(query.contains(expected));
-    }
-
-    @Test
     void testCreateSparqlQueryForFloor() {
         String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcSlabF", "ifc:IfcSlabF");
         // Check that some additional statements for floor are called correctly
@@ -159,21 +150,6 @@ class IfcElementConstructBuilderTest {
                 .append("        ?instshaperep\n")
                 .append("                  ifc:items_IfcRepresentation  ?geometry .\n")
                 .append("        ?geometry  rdf:type             ?geomtype");
-    }
-
-    private String genExpectedResultsForDoor() {
-        StringBuilder expected = new StringBuilder();
-        expected.append("?relfillselement\n")
-                .append("              rdf:type              ifc:IfcRelFillsElement ;\n")
-                .append("              ifc:relatedBuildingElement_IfcRelFillsElement  ?element ;\n")
-                .append("              ifc:relatingOpeningElement_IfcRelFillsElement  ?openingelement .\n")
-                .append("    ?openingelement\n")
-                .append("              rdf:type              ifc:IfcOpeningElement .\n")
-                .append("    ?relvoidelement\n")
-                .append("              rdf:type              ifc:IfcRelVoidsElement ;\n")
-                .append("              ifc:relatedOpeningElement_IfcRelVoidsElement  ?openingelement ;\n")
-                .append("              ifc:relatingBuildingElement_IfcRelVoidsElement  ?hostelement");
-        return expected.toString();
     }
 
     private List<String> genExpectedResultsForFloor() {

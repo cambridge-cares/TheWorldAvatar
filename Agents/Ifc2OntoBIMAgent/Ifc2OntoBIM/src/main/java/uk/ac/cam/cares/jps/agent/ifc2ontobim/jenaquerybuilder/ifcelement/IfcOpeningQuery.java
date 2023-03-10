@@ -11,9 +11,7 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
  * @author qhouyee
  */
 class IfcOpeningQuery {
-    private static final String HOST_ELEMENT_VAR = "?hostelement";
     private static final String OPENING_ELEMENT_VAR = "?openingelement";
-    private static final String REL_FILLS_ELEMENT_VAR = "?relfillselement";
     private static final String REL_VOID_ELEMENT_VAR = "?relvoidelement";
     private static final String VOID_TYPE_VAR = "?voidtype";
     private static final String VOID_PLACEMENT_VAR = "?voidplacement";
@@ -23,24 +21,7 @@ class IfcOpeningQuery {
     private static final String VOID_SUBCONTEXT_VAR = "?voidsubcontext";
     private static final String VOID_GEOM_VAR = "?voidgeometry";
     private static final String VOID_GEOM_TYPE_VAR = "?voidgeomtype";
-    
 
-
-    /**
-     * Add the statements for querying the host element of an element that fills a void/opening.
-     *
-     * @param builder Construct Builder object to add Construct query statements.
-     */
-    protected static void addHostElementQueryComponents(ConstructBuilder builder) {
-        builder.addConstruct(HOST_ELEMENT_VAR, "bot:hasSubElement", IfcElementConstructBuilder.ELEMENT_VAR);
-        builder.addWhere(REL_FILLS_ELEMENT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcRelFillsElement")
-                .addWhere(REL_FILLS_ELEMENT_VAR, "ifc:relatedBuildingElement_IfcRelFillsElement", IfcElementConstructBuilder.ELEMENT_VAR)
-                .addWhere(REL_FILLS_ELEMENT_VAR, "ifc:relatingOpeningElement_IfcRelFillsElement", OPENING_ELEMENT_VAR)
-                .addWhere(OPENING_ELEMENT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcOpeningElement")
-                .addWhere(REL_VOID_ELEMENT_VAR, QueryHandler.RDF_TYPE, "ifc:IfcRelVoidsElement")
-                .addWhere(REL_VOID_ELEMENT_VAR, "ifc:relatedOpeningElement_IfcRelVoidsElement", OPENING_ELEMENT_VAR)
-                .addWhere(REL_VOID_ELEMENT_VAR, "ifc:relatingBuildingElement_IfcRelVoidsElement", HOST_ELEMENT_VAR);
-    }
 
     /**
      * Add the statements for querying the voids/openings of an element and their inforamtion.
