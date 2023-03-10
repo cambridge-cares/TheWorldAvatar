@@ -70,7 +70,7 @@ public class SupersetService extends ContainerService {
 
         locationBlock.addEntry(new NgxComment("# "));
 
-        locationBlock.addEntry(new NgxComment("# Subsitution of redirect \"Location\" headder"));
+        locationBlock.addEntry(new NgxComment("# Substitution of redirect \"Location\" header"));
         NgxParam proxyRedirectParam = new NgxParam();
         proxyRedirectParam.addValue("proxy_redirect");
         proxyRedirectParam.addValue("~^(http://|https://|)([^/]*/)(?!"
@@ -79,7 +79,7 @@ public class SupersetService extends ContainerService {
                 .addValue("$scheme://$http_host/" + FileUtils.fixSlashs(externalPath.getPath(), false, true) + "$3");
         locationBlock.addEntry(proxyRedirectParam);
 
-        locationBlock.addEntry(new NgxComment("# List of MIME types to filter (text/http incuded by default)"));
+        locationBlock.addEntry(new NgxComment("# List of MIME types to filter (text/http included by default)"));
         NgxParam subFilterTypesParam = new NgxParam();
         subFilterTypesParam.addValue("sub_filter_types");
         SUB_FILTER_TYPES_LIST.stream().forEach(subFilterTypesParam::addValue);
@@ -99,7 +99,7 @@ public class SupersetService extends ContainerService {
         proxySetHeaderParam.addValue("\"\"");
         locationBlock.addEntry(proxySetHeaderParam);
 
-        locationBlock.addEntry(new NgxComment("# Substitutaion expressions for response body"));
+        locationBlock.addEntry(new NgxComment("# Substitution expressions for response body"));
         BODY_SUBSTITUTIONS_PATH_LIST.stream().forEach(subPath -> {
             NgxParam subFilterParam = new NgxParam();
             subFilterParam.addValue("sub_filter");
