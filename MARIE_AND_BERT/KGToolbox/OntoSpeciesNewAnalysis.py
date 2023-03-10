@@ -3,8 +3,9 @@ import os
 import random
 from pprint import pprint
 import sys
+sys.path.append("..")
 
-sys.path.append("")
+sys.path.append("../../..")
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
 from sklearn.model_selection import train_test_split
@@ -38,9 +39,9 @@ class OntoSpeciesNewAnalyzer:
         self.ontology = "ontospecies_new"
         self.sub_ontology = sub_ontology
         self.class_stop_list = ["rdf-schema#Resource", "rdf-schema#Class"]
-        self.file_creator = IntegratedTrainingFileCreator(sparql_namespace="copy_ontospecies_pubchem",
+        self.file_creator = IntegratedTrainingFileCreator(sparql_namespace="copy_ontospecies_marie",
                                                           ontology=self.ontology,
-                                                          sub_ontology=sub_ontology)
+                                                          sub_ontology=sub_ontology, same_frac=0.01, other_frac=0)
         self.query_blazegraph = self.file_creator.query_blazegraph
         self.species_role_dictionary, self.role_species_dictionary = self.get_roles_of_species()
         self.species_class_dict, self.class_species_dict = self.get_all_chemical_classes()
@@ -100,11 +101,13 @@ class OntoSpeciesNewAnalyzer:
         :param sample_num:
         :return:
         """
+        # print("triples for inference", triples_for_inference)
         # 1. make a list of species_role pair
         species_role_pair = []
         for triple in triples_for_inference:
             s, p, o = triple
-            if p.strip() == "hasRole":
+            # print(s, p, o)
+            if p.strip() == "hasUse":
                 pair_str = f"{s}_{o}"
                 if pair_str not in species_role_pair:
                     species_role_pair.append(pair_str)
@@ -114,10 +117,10 @@ class OntoSpeciesNewAnalyzer:
         selected_triples_for_training = []
         for triple in triples_for_inference:
             s, p, o = triple
-            if p.strip() == "hasRole":
-                pair_str = f"{s}_{o}"  # species_use
-            else:
-                pair_str = f"{o}_{s}"  # species_use
+            # if p.strip() == "hasRole":
+            #     pair_str = f"{s}_{o}"  # species_use
+            # else:
+            pair_str = f"{s}_{o}"  # species_use
             if pair_str in selected_species_role_pair:
                 selected_triples_for_inference.append(triple)
             else:
@@ -126,14 +129,14 @@ class OntoSpeciesNewAnalyzer:
 
         # random choose 100 pairs
 
-    def write_triples_to_tsv(self, numerical_triples, other_triples):
+    def write_triples_to_tsv(self, numerical_triples, other_triples, class_triples):
         # only remove triples with hasRole and hasSpecies
         # 1. sample 200 triples with hasRole and hasSpecies
         # 2. remove the 200 triples from the other_triples
-        inference_rels = ["hasRole", "hasSpecies"]
+        inference_rels = ["hasUse", "hasSpecies"]
         other_triples_for_inference = [triples for triples in other_triples if triples[1].strip() in inference_rels]
         # if you remove the hasRole between a species and a use, the hasSpecies
-
+        print("other triples for inference", other_triples_for_inference)
         test_other_triples, train_other_triples = self.filter_inference_triples(other_triples_for_inference,
                                                                                 sample_num=100)
         # train_other_triples = [triples for triples in other_triples if triples not in test_other_triples]
@@ -141,7 +144,7 @@ class OntoSpeciesNewAnalyzer:
         df.to_csv(os.path.join(self.sub_ontology_path, f"{self.sub_ontology}-train.txt"),
                   sep="\t", header=False, index=False)
 
-        df_train = pd.DataFrame(numerical_triples + train_other_triples)
+        df_train = pd.DataFrame(numerical_triples + train_other_triples + class_triples)
         df_test = pd.DataFrame(test_other_triples)
         df_train.to_csv(os.path.join(self.sub_ontology_path, f"{self.sub_ontology}-train-2.txt"),
                         sep="\t", header=False, index=False)
@@ -165,7 +168,10 @@ class OntoSpeciesNewAnalyzer:
 
     def create_triples_with_subclass(self):
         all_triples = []
+        counter = 0
         for species in self.species_class_dict:
+            counter += 1
+            print(f"{counter} out of {len(self.species_class_dict)}")
             full_class_list = self.species_class_dict[species]
             for class_list in full_class_list:
                 for _class in class_list:
@@ -173,12 +179,13 @@ class OntoSpeciesNewAnalyzer:
                         row = (species, "hasChemicalClass", _class)
                         all_triples.append(row)
 
-        for _class in self.class_species_dict:
-            if _class not in self.class_stop_list:
-                species_list = self.class_species_dict[_class]
-                for species in species_list:
-                    row = (_class, "hasInstance", species)
-                    all_triples.append(row)
+        # for _class in self.class_species_dict:
+        #     if _class not in self.class_stop_list:
+        #         species_list = self.class_species_dict[_class]
+        #         for species in species_list:
+        #             row = (_class, "hasInstance", species)
+        #             # TODO: temporarily remove hasInstance triples
+        #             # all_triples.append(row)
         return all_triples
 
     def create_triples_for_roles_of_species(self):
@@ -186,7 +193,7 @@ class OntoSpeciesNewAnalyzer:
         for species in self.species_role_dictionary:
             role_list = self.species_role_dictionary[species]
             for role in role_list:
-                row = (species, "hasRole", role)
+                row = (species, "hasUse", role)
                 all_triples.append(row)
 
         for role in self.role_species_dictionary:
@@ -195,6 +202,7 @@ class OntoSpeciesNewAnalyzer:
                 row = (role, "hasSpecies", species)
                 all_triples.append(row)
 
+        # print("triples for roles of species", all_triples)
         return all_triples
 
     def get_roles_of_species(self):
@@ -203,9 +211,8 @@ class OntoSpeciesNewAnalyzer:
         GET_ROLES_OF_SPECIES = """
         SELECT DISTINCT  ?species   ?role
         WHERE {
-          
-            ?species ?p ?role .
-            ?role rdf:type  <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Use> .
+            # ?species ?p ?role .
+            ?species <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasUse> ?role .
         }
         """
         rst = self.query_blazegraph(GET_ROLES_OF_SPECIES)["results"]["bindings"]
@@ -218,7 +225,7 @@ class OntoSpeciesNewAnalyzer:
         return species_role_dict, role_species_dict
 
     def get_chemical_class_tree(self, chemical_class):
-
+        print("Getting chemical class tree")
         query = """
         SELECT DISTINCT ?class   
         WHERE { <""" + chemical_class + """> rdf:type  ?class . 
@@ -240,7 +247,7 @@ class OntoSpeciesNewAnalyzer:
         WHERE {
           
           ?species rdf:type  <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species> . 	
-          ?species <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasChemicalClasses>  ?types . 
+          ?species <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasChemicalClass>  ?types . 
         } 
         """
 
@@ -252,10 +259,13 @@ class OntoSpeciesNewAnalyzer:
             chemical_classes = binding["types"]["value"]
             # if chemical_classes not in self.class_stop_list:
             chemical_class_list.append(chemical_classes)
-            sub_classes = self.get_chemical_class_tree(chemical_classes)
-            chemical_class_list.extend(sub_classes)
-            for c in sub_classes:
-                chemical_class_list.extend(self.get_chemical_class_tree(c))
+            # sub_classes = self.get_chemical_class_tree(chemical_classes)
+            # print("sub classes", sub_classes)
+            # x = input()
+            # chemical_class_list.extend(sub_classes)
+            # for c in sub_classes:
+            #     print("getting subclass", c)
+            #     chemical_class_list.extend(self.get_chemical_class_tree(c))
             for i, c in enumerate(chemical_class_list):
                 chemical_class_list[i] = c.split("/")[-1]
             species_class_dict = self.append_to_dict(species_class_dict, species, chemical_class_list)
@@ -297,14 +307,14 @@ class OntoSpeciesNewAnalyzer:
             chemical_class_triples = self.create_triples_with_subclass()
 
         other_triples = role_triples + chemical_class_triples  # numerical_triples
-        self.write_triples_to_tsv(other_triples=other_triples, numerical_triples=numerical_triples)
+        self.write_triples_to_tsv(other_triples=other_triples, numerical_triples=numerical_triples, class_triples = chemical_class_triples)
 
         # =================== STANDARD PACKAGE FOR FILES NEEDED ========================================
         self.file_creator.create_supporting_files_for_embedding(
-            inference_target_dictionary=self.role_species_dictionary)
+            inference_target_dictionary=self.role_species_dictionary, node_value_dict=self.node_value_dict)
         # ==============================================================================================
 
 
 if __name__ == "__main__":
-    my_analyzer = OntoSpeciesNewAnalyzer(sub_ontology="test")
+    my_analyzer = OntoSpeciesNewAnalyzer(sub_ontology="test_para")
     my_analyzer.run()
