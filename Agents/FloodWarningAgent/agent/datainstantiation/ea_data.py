@@ -169,7 +169,10 @@ def retrieve_flood_area_polygon(polygon_uri: str) -> dict:
     if props:
         # Extract relevant information
         props_new = {}
-        props_new['name'] = None if not props.get('AREA') else props['AREA'].replace('\n', ' ').replace('\u202F', ' ')
+        # Try to retrieve most detailed name first
+        props_new['name'] = None if not props.get('TA_NAME') else props['TA_NAME'].replace('\n', ' ').replace('\u202F', ' ')
+        if not props_new.get('name'):
+            props_new['name'] = None if not props.get('AREA') else props['AREA'].replace('\n', ' ').replace('\u202F', ' ')
         props_new['description'] = None if not props.get('DESCRIP') else props['DESCRIP'].replace('\n', ' ').replace('\u202F', ' ')
         # Assign updated properties to polygon
         poly['features'][0]['properties'] = props_new
