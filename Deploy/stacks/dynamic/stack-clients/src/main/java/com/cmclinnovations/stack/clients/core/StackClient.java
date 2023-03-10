@@ -1,5 +1,6 @@
 package com.cmclinnovations.stack.clients.core;
 
+import java.nio.file.Path;
 import java.util.Map;
 
 public final class StackClient {
@@ -9,6 +10,7 @@ public final class StackClient {
     public static final String PROJECT_NAME_LABEL = "com.docker.compose.project";
     public static final String SCRATCH_DIR = "/stack_scratch";
     public static final String GEOTIFFS_DIR = "/geotiffs";
+    public static final Path STACK_CONFIG_DIR = Path.of("/inputs/config");
 
     private static final String stackName;
 

@@ -65,7 +65,7 @@ To add a container after a stack has been spun up just add the configuration fil
 
 ### Configuration Files
 
-To do this add a `.json` file for each container into the [stack-manager/inputs/config](./inputs/config/) directory.
+To do this add a `.json` file for each container into the [stack-manager/inputs/config/services](./inputs/config/services/) directory.
 An example of the structure of this file, the one for the Ontop container, is as follows:
 ```json
 {
