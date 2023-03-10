@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Wall;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcStoreyRepresentation;
 
 import java.util.ArrayList;
@@ -183,6 +184,7 @@ class BuildingStructureFacadeTest {
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Column", COLUMN_NAME), result);
         JunitTestUtils.doesExpectedListExist(genExpectedOptionalGeomStatements(), result);
     }
+
     @Test
     void testAddDoorStatementsNonMappedGeometryRepresentation() {
         // Set up
@@ -313,6 +315,11 @@ class BuildingStructureFacadeTest {
     void testAddWindowStatementsNonMappedGeometryRepresentation() {
         // Set up
         addBaseTriples(WINDOW_INST, WINDOW_CLASS, WINDOW_NAME);
+        addWallAssemblyTriples(WINDOW_INST);
+        // Get the singleton to add the assembly inst
+        ElementStorage elementMappings = ElementStorage.Singleton();
+        Wall wall = new Wall(WALL_INST, WALL_NAME, null, null, null, null, null);
+        elementMappings.add(WALL_INST, wall);
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
         addGeometryTriples(sampleModel.getResource(WINDOW_INST));
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
@@ -323,6 +330,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Window", WINDOW_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedAssemblyStatements("Window"), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(), result);
         // The following statements are optional and should not exist
         JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalGeomStatements(), result);
@@ -332,6 +340,11 @@ class BuildingStructureFacadeTest {
     void testAddWindowStatementsMappedGeometryRepresentation() {
         // Set up
         addBaseTriples(WINDOW_INST, WINDOW_CLASS, WINDOW_NAME);
+        addWallAssemblyTriples(WINDOW_INST);
+        // Get the singleton to add the assembly inst
+        ElementStorage elementMappings = ElementStorage.Singleton();
+        Wall wall = new Wall(WALL_INST, WALL_NAME, null, null, null, null, null);
+        elementMappings.add(WALL_INST, wall);
         // Generate the alternate mapped geometry representation triples
         addMappedGeometryTriples(sampleModel.getResource(WINDOW_INST));
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
@@ -342,6 +355,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Window", WINDOW_NAME), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedAssemblyStatements("Window"), result);
         JunitTestUtils.doesExpectedListExist(genExpectedOptionalGeomStatements(), result);
     }
 
@@ -384,6 +398,18 @@ class BuildingStructureFacadeTest {
                 .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelContainedInSpatialStructure"))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.IFC2X3_HOST_ZONE_PROPERTY), storeyInst)
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.IFC2X3_CONTAIN_ELEMENT_PROPERTY), elementInst);
+    }
+
+    private void addWallAssemblyTriples(String elementIRI) {
+        Resource openingElementNode = sampleModel.createResource().addProperty(RDF.type, ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcOpeningElement"));
+        sampleModel.createResource(TEST_BASE_URI + "IfcRelFillsElement_314")
+                .addProperty(RDF.type, ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelFillsElement"))
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatedBuildingElement_IfcRelFillsElement"), sampleModel.getResource(elementIRI))
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatingOpeningElement_IfcRelFillsElement"), openingElementNode);
+        sampleModel.createResource(TEST_BASE_URI + "IfcRelVoidsElement_6171")
+                .addProperty(RDF.type, ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelVoidsElement"))
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatedOpeningElement_IfcRelVoidsElement"), openingElementNode)
+                .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatingBuildingElement_IfcRelVoidsElement"), sampleModel.createResource(WALL_INST));
     }
 
     private void addGeometryTriples(Resource element) {
@@ -476,6 +502,12 @@ class BuildingStructureFacadeTest {
         expected.add(IFC_GEOM_SUB_CONTEXT_INST + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + IFC_FACETED_BREP_INST);
         expected.add(IFC_FACETED_BREP_INST + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/" + FACETED_BREP_CLASS);
+        return expected;
+    }
+
+    private List<String> genExpectedAssemblyStatements(String elementClass) {
+        List<String> expected = new ArrayList<>();
+        expected.add(TEST_BASE_URI + "Wall_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobuildingstructure/consistsOf, " + TEST_BASE_URI + elementClass + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         return expected;
     }
 

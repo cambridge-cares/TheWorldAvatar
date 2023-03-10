@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 
 import org.apache.jena.rdf.model.Statement;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
@@ -30,9 +31,14 @@ class ElementStorageTest {
     private static final String TEST_SEC_GEOM_IRI = TEST_BASE_URI + TEST_SEC_GEOM_CLASS + "_33321";
     private static final String NON_EXISTING_ERROR = NON_EXISTENT_IRI + " does not exist in mappings!";
 
+    @BeforeAll
+    static void init() {
+        testMappings = ElementStorage.Singleton();
+    }
+
     @BeforeEach
-    void init() {
-        testMappings = new ElementStorage();
+    void resetSingleton() {
+        ElementStorage.resetSingleton();
     }
 
     @Test
@@ -60,7 +66,7 @@ class ElementStorageTest {
     @Test
     void testAddAndGetWall() {
         // Create a new sample representation
-        Wall sampleWall = new Wall(TEST_ELEMENT_IRI, null, null, null,null, null, null);
+        Wall sampleWall = new Wall(TEST_ELEMENT_IRI, null, null, null, null, null, null);
         // Execute method
         testMappings.add(TEST_ELEMENT_IRI, sampleWall);
         // Assert if they are equals

@@ -19,24 +19,45 @@ import java.util.LinkedHashSet;
  * @author qhouyee
  */
 public class ElementStorage {
-    private HashMap<String, ModelRepresentation3D> geometries;
-    private HashMap<String, Wall> walls;
+    // Single instance of this class
+    private static ElementStorage single_instance = null;
+    private static HashMap<String, ModelRepresentation3D> geometries;
+    private static HashMap<String, Wall> walls;
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
     private static final String NON_EXISTING_ERROR = " does not exist in mappings!";
 
     /**
      * Standard Constructor initialising the maps.
      */
-    public ElementStorage() {
+    private ElementStorage() {
         this.geometries = new HashMap<>();
         this.walls = new HashMap<>();
+    }
+
+    /**
+     * A method to retrieve the singleton instance.
+     *
+     * @return The singleton instance of SpatialZoneStorage.
+     */
+    public static ElementStorage Singleton() {
+        if (single_instance == null) {
+            single_instance = new ElementStorage();
+        }
+        return single_instance;
+    }
+
+    /**
+     * A method to reset the singleton instance before running the code.
+     */
+    public static void resetSingleton() {
+        single_instance = new ElementStorage();
     }
 
     /**
      * Clears all the existing geometry mappings saved.
      */
     public void clear() {
-        this.geometries = new HashMap<>();
+        single_instance.geometries = new HashMap<>();
     }
 
     /**

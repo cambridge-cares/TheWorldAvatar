@@ -28,7 +28,7 @@ public class BuildingStructureFacade {
      */
     public BuildingStructureFacade() {
         this.zoneMappings = SpatialZoneStorage.Singleton();
-        this.modelRepMappings = new ElementStorage();
+        this.modelRepMappings = ElementStorage.Singleton();
     }
 
     /**
@@ -320,6 +320,16 @@ public class BuildingStructureFacade {
         CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
         CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
+        // Add class-specific properties
+        // Add query for assembly element
+        selectBuilder.addVar(CommonQuery.ASSEMBLY_VAR)
+                .addWhere(CommonQuery.REL_FILLS_ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_REL_FILLS_ELEMENT)
+                .addWhere(CommonQuery.REL_FILLS_ELEMENT_VAR, CommonQuery.IFC_REL_FILLS_SUB_ELEMENT, IfcElementConstructBuilder.ELEMENT_VAR)
+                .addWhere(CommonQuery.REL_FILLS_ELEMENT_VAR, CommonQuery.IFC_REL_FILLS_OPENING, CommonQuery.OPENING_ELEMENT_VAR)
+                .addWhere(CommonQuery.OPENING_ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_OPENING_ELEMENT)
+                .addWhere(CommonQuery.REL_VOID_ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_REL_VOIDS_ELEMENT)
+                .addWhere(CommonQuery.REL_VOID_ELEMENT_VAR, CommonQuery.IFC_REL_VOIDS_OPENING, CommonQuery.OPENING_ELEMENT_VAR)
+                .addWhere(CommonQuery.REL_VOID_ELEMENT_VAR, CommonQuery.IFC_REL_VOIDS_ASSEMBLY, CommonQuery.ASSEMBLY_VAR);
         // Query from the model
         ResultSet results = QueryHandler.execSelectQuery(selectBuilder.buildString(), owlModel);
         // Process query results
@@ -330,6 +340,7 @@ public class BuildingStructureFacade {
             String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
             String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
             String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
+            String assemblyIri = QueryHandler.retrieveIri(soln, CommonQuery.ASSEMBLY_VAR);
             ModelRepresentation3D geomModel;
             // If the element object has already been created previously
             if (this.modelRepMappings.containsModelRepIri(iri)) {
@@ -342,8 +353,10 @@ public class BuildingStructureFacade {
                 geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
                 // Add the object into the mappings for its IRI
                 this.modelRepMappings.add(iri, geomModel);
+                // Retrieve the wall object hosting this window
+                Wall assembly = this.modelRepMappings.getWall(assemblyIri);
                 // Construct the element's instance and its statements
-                Window window = new Window(iri, name, uid, placement, hostZone, geomModel.getBimIri());
+                Window window = new Window(iri, name, uid, placement, hostZone, assembly.getElementIri(), geomModel.getBimIri());
                 window.constructStatements(statementSet);
             }
         }

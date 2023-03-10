@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 import org.apache.jena.arq.querybuilder.Converters;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement.IfcElementConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -46,6 +45,10 @@ public class CommonQuery {
     // Element supplementary variables
     public static final String REL_TYPE_DEFINITION_VAR = "?reltypedefine";
     public static final String ELEMENT_TYPE_VAR = "?elementtype";
+    public static final String ASSEMBLY_VAR = "?assemblyelement";
+    public static final String OPENING_ELEMENT_VAR = "?openingelement";
+    public static final String REL_FILLS_ELEMENT_VAR = "?relfillselement";
+    public static final String REL_VOID_ELEMENT_VAR = "?relvoidelement";
     // Geometry variables
     public static final String PRODUCT_DEFINITION_VAR = "?productDefinitionShape";
     public static final String SHAPE_REP_VAR = "?shaperep";
@@ -90,6 +93,10 @@ public class CommonQuery {
     public static final String IFC_RELATED_OBJECT = NamespaceMapper.IFC_PREFIX + ":relatedObjects_IfcRelDefines";
     public static final String IFC_RELATING_TYPE = NamespaceMapper.IFC_PREFIX + ":relatingType_IfcRelDefinesByType";
     public static final String IFC_PREDEFINED_TYPE_COVERING = NamespaceMapper.IFC_PREFIX + ":predefinedType_IfcCoveringType";
+    public static final String IFC_REL_FILLS_SUB_ELEMENT = NamespaceMapper.IFC_PREFIX + ":relatedBuildingElement_IfcRelFillsElement";
+    public static final String IFC_REL_FILLS_OPENING = NamespaceMapper.IFC_PREFIX + ":relatingOpeningElement_IfcRelFillsElement";
+    public static final String IFC_REL_VOIDS_OPENING = NamespaceMapper.IFC_PREFIX + ":relatedOpeningElement_IfcRelVoidsElement";
+    public static final String IFC_REL_VOIDS_ASSEMBLY = NamespaceMapper.IFC_PREFIX + ":relatingBuildingElement_IfcRelVoidsElement";
     // IfcOwl geometry properties
     public static final String IFC_PRODUCT_REPRESENTATION = NamespaceMapper.IFC_PREFIX + ":representation_IfcProduct";
     public static final String IFC_PRODUCT_REPRESENTATIONS = NamespaceMapper.IFC_PREFIX + ":representations_IfcProductRepresentation";
@@ -128,10 +135,12 @@ public class CommonQuery {
     public static final String IFC_FLOOR = NamespaceMapper.IFC_PREFIX + ":IfcSlab";
     public static final String IFC_WALL = NamespaceMapper.IFC_PREFIX + ":IfcWall";
     public static final String IFC_WALL_STANDARD_CASE = NamespaceMapper.IFC_PREFIX + ":IfcWallStandardCase";
-
     public static final String IFC_WINDOW = NamespaceMapper.IFC_PREFIX + ":IfcWindow";
+    public static final String IFC_OPENING_ELEMENT = NamespaceMapper.IFC_PREFIX + ":IfcOpeningElement";
     // IfcOwl element supplementary Classes
     public static final String IFC_REL_TYPE_DEFINITION = NamespaceMapper.IFC_PREFIX + ":IfcRelDefinesByType";
+    public static final String IFC_REL_FILLS_ELEMENT = NamespaceMapper.IFC_PREFIX + ":IfcRelFillsElement";
+    public static final String IFC_REL_VOIDS_ELEMENT = NamespaceMapper.IFC_PREFIX + ":IfcRelVoidsElement";
     public static final String IFC_COVERING_TYPE = NamespaceMapper.IFC_PREFIX + ":IfcCoveringType";
     // IfcOwl enum
     public static final String IFC_CEILING_ENUM = NamespaceMapper.IFC_PREFIX + ":CEILING";

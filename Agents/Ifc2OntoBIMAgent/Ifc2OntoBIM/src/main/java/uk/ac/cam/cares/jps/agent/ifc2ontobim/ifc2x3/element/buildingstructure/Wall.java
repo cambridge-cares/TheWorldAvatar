@@ -39,6 +39,8 @@ public class Wall extends IfcModelRepresentation {
         this.secGeomRepIRI = secGeomRepIri; // If the argument is null, the field will still be null
     }
 
+    public String getElementIri() { return this.elementIRI;}
+
     /**
      * Generate and add the statements required for this Class to the statement set input.
      *

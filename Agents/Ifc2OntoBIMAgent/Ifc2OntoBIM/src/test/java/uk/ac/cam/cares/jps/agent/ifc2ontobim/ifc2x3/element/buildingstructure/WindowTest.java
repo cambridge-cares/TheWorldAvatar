@@ -22,13 +22,14 @@ class WindowTest {
     private static final String testUID2 = "9sdg781";
     private static final String testPlacementIri2 = testBaseUri2 + "LocalPlacement_8172";
     private static final String testHostZoneIRI = testBaseUri1 + "Storey_715";
+    private static final String testAssemblyIRI = testBaseUri1 + "Wall_6135";
     private static final String testGeomModelIRI = testBaseUri1 + "ModelRepresentation3D_715";
     private static final String testClassName = "IfcModelRepresentation";
     private static final String testClass = JunitTestUtils.bimUri + testClassName;
 
     @Test
     void testConstructor() {
-        Window sample = new Window(testIri1, testName1, testUID1, testPlacementIri1, testHostZoneIRI, testGeomModelIRI);
+        Window sample = new Window(testIri1, testName1, testUID1, testPlacementIri1, testHostZoneIRI, testAssemblyIRI, testGeomModelIRI);
         // Test that the sample fields are correct
         assertEquals(testBaseUri1, sample.getPrefix());
         assertNotEquals(testIri1, sample.getIfcRepIri());
@@ -37,7 +38,7 @@ class WindowTest {
         assertEquals(testUID1, sample.getUid());
         assertEquals(testPlacementIri1, sample.getPlacementIri());
 
-        Window sample2 = new Window(testIri2, testName2, testUID2, testPlacementIri2, testHostZoneIRI, testGeomModelIRI);
+        Window sample2 = new Window(testIri2, testName2, testUID2, testPlacementIri2, testHostZoneIRI, testAssemblyIRI, testGeomModelIRI);
         // Test that the sample fields are correct
         assertEquals(testBaseUri2, sample2.getPrefix());
         assertNotEquals(testIri2, sample2.getIfcRepIri());
@@ -51,7 +52,7 @@ class WindowTest {
     void testConstructStatements() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        Window sample = new Window(testIri1, testName1, testUID1, testPlacementIri1, testHostZoneIRI, testGeomModelIRI);
+        Window sample = new Window(testIri1, testName1, testUID1, testPlacementIri1, testHostZoneIRI, testAssemblyIRI, testGeomModelIRI);
         // Execute method
         sample.constructStatements(sampleSet);
         // Clean up results as one string
@@ -71,6 +72,7 @@ class WindowTest {
         expected.add(testBaseUri1 + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + testUID1);
         expected.add(testBaseUri1 + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + testPlacementIri1);
         expected.add(testPlacementIri1 + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
+        expected.add(testAssemblyIRI + ", http://www.theworldavatar.com/kg/ontobuildingstructure/consistsOf, " + testBaseUri1 + "Window_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         return expected;
     }
 }

@@ -51,6 +51,8 @@ public class OntoBimConstant {
     public static final String BIM_HAS_REP_ITEM = NamespaceMapper.BIM_NAMESPACE + "hasRepresentationItem";
     public static final String BIM_HAS_SOURCE_PLACEMENT = NamespaceMapper.BIM_NAMESPACE + "hasSourcePlacement";
     public static final String BIM_HAS_TARGET_PLACEMENT = NamespaceMapper.BIM_NAMESPACE + "hasTargetPlacement";
+    public static final String BUILDING_STRUCTURE_CONSISTS_OF = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + "consistsOf";
+
     // OntoBIM modelling position properties
     public static final String BIM_HAS_LOCAL_POSITION = NamespaceMapper.BIM_NAMESPACE + "hasLocalPosition";
     // OntoBim classes
