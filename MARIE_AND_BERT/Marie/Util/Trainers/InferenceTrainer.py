@@ -78,7 +78,7 @@ class InferenceTrainer:
             dataset_name=self.ontology)
         df_train = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-train-2.txt"), sep="\t", header=None)
         self.df_train = df_train
-        df_train_small = df_train.sample(frac=0.001)
+        df_train_small = df_train.sample(frac=0.01)
         self.file_loader = FileLoader(full_dataset_dir=self.full_dataset_dir, dataset_name=self.ontology)
         self.entity2idx, self.idx2entity, self.rel2idx, self.idx2rel = self.file_loader.load_index_files()
         numerical_eval_path = os.path.join(full_dir, f"numerical_eval.tsv")
@@ -90,12 +90,13 @@ class InferenceTrainer:
         # =======================================================================================================
 
         # ================================== Load test set for inference =======================================
-        df_test = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-test.txt"), sep="\t", header=None)
-        test_set = TransRInferenceDataset(df_test, full_dataset_dir=self.full_dataset_dir,
-                                          ontology=self.ontology,
-                                          mode="test")
-        self.test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=test_set.candidate_max * self.gpu_number,
-                                                           shuffle=False)
+        if self.inference:
+            df_test = pd.read_csv(os.path.join(full_dir, f"{self.ontology}-test.txt"), sep="\t", header=None)
+            test_set = TransRInferenceDataset(df_test, full_dataset_dir=self.full_dataset_dir,
+                                              ontology=self.ontology,
+                                              mode="test")
+            self.test_dataloader = torch.utils.data.DataLoader(test_set, batch_size=test_set.candidate_max * self.gpu_number,
+                                                               shuffle=False)
         # ================================== Load training set for general embedding ============================
         if self.test:
             print("Using small dataset for testing")
@@ -113,7 +114,32 @@ class InferenceTrainer:
         self.train_dataloader_eval = torch.utils.data.DataLoader(train_set_eval,
                                                                  batch_size=train_set_eval.ent_num * self.gpu_number,
                                                                  shuffle=False)
-        # ===========================================================================================================
+        # ======================== Load training and evaluation set for singular nodes ==============================
+        # check whether singular-train.tsv exist
+        value_node_path = os.path.join(full_dir, f"{self.ontology}-singular-train.txt")
+        if os.path.exists(value_node_path):
+            print("Singular node training set exists", value_node_path)
+            # df_value_node = pd.read_csv(value_node_path, sep="\t", header=None)
+            df_value_node = self.df_train
+        else:
+            print("Singular node trianing set not exists", value_node_path)
+            df_value_node = self.df_train
+
+
+
+        value_node_eval_set = TransRInferenceDataset(df=df_train_small, full_dataset_dir=self.full_dataset_dir,
+                                                         ontology=self.ontology,
+                                                         mode="value_node_eval")
+        value_node_set = TransRInferenceDataset(df=df_value_node, full_dataset_dir=self.full_dataset_dir,
+                                                ontology=self.ontology,
+                                                mode="value_node")
+        self.dataloader_value_node = torch.utils.data.DataLoader(value_node_set, batch_size=self.batch_size,
+                                                                 shuffle=True)
+        self.dataloader_value_node_eval = torch.utils.data.DataLoader(value_node_eval_set,
+                                                                      batch_size=value_node_eval_set.ent_num,
+                                                                      shuffle=False)
+        # ============================================================================================================
+
 
         self.use_cuda = torch.cuda.is_available()
         # self.use_cuda = False
@@ -309,12 +335,14 @@ class InferenceTrainer:
             if epoch % 5 == 0:
                 self.scheduler.step()
                 self.evaluate()
+                self.calculate_value_node_embedding()
+                self.evaluate_value_node_embedding()
                 self.export_embeddings()
                 print(f"Current learning rate: {self.scheduler.get_lr()}")
 
         # if self.inference:
-        #     self.calculate_value_node_embedding()
-        #     self.evaluate_value_node_embedding()
+        self.calculate_value_node_embedding()
+        self.evaluate_value_node_embedding()
         self.export_embeddings()
 
     def calculate_value_node_embedding(self):
@@ -331,7 +359,6 @@ class InferenceTrainer:
             counter = 0
             total_mrr = 0
             for triple in tqdm(self.dataloader_value_node_eval):
-
                 true_tail = triple[3][0].item()
                 all_tails = triple[2]
                 if self.use_cuda:

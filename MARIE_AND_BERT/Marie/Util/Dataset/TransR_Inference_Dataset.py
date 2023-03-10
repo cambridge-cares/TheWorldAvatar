@@ -81,7 +81,9 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
             s = self.entity2idx[row[0]]
             p = self.rel2idx[row[1]]
             o = self.entity2idx[row[2]]
-            if row[1] in self.p_stop_list:
+            if row[2] in self.node_value_dict:
+            # if row[1] in self.p_stop_list:
+                print(row)
                 tail_all = range(0, self.ent_num)
                 for tail in tail_all:
                     triples.append((s, p, tail, o))
@@ -94,7 +96,9 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
             p = self.rel2idx[row[1]]
             o = self.entity2idx[row[2]]
             # if row[1] in self.p_stop_list:
-            triples.append((s, p, o))
+            if row[2] in self.node_value_dict:
+                print(row)
+                triples.append((s, p, o))
         return triples
 
     def create_train_small_triples_for_evaluation(self):
