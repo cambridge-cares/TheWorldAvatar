@@ -6,7 +6,6 @@ This module provides the root tile and its bounding boxes for all tilesets.
 
 # Standard library imports
 from pathlib import Path
-from typing import List
 
 # Third party imports
 from py4jps import agentlogging
@@ -14,32 +13,15 @@ from py4jps import agentlogging
 # Self imports
 import agent.app as state
 import agent.config.config as properties
+from agent.ifc2tileset.tile_helper import make_tileset, make_root_tile
 
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
 
 
-def root_tile(bbox: List[str]):
-    """
-    Defines a skeleton template for all tilesets as a dictionary
-    to write into the required json format
-
-    Returns:
-    The root tileset generated as a python dictionary
-    """
-    tileset = {'asset': {'version': '1.1'},
-               'geometricError': 1024,
-               'root': {"boundingVolume": {"box": bbox},
-                        "geometricError": 512,
-                        "refine": "ADD",
-                        }
-               }
-    return tileset
-
-
 def append_tileset_schema_and_metadata(tileset: dict, building_iri: str):
     """
-    Append tileset schema class and metadata to tileset
+    Append tileset schema.py class and metadata to tileset
 
     Arguments:
         tileset - the root tileset generated as a python dictionary
@@ -77,10 +59,6 @@ def gen_root_content(building_iri: str):
     Returns:
         The tileset generated as a python dictionary
     """
-    # Generate a minimal tileset
-    tileset = root_tile(properties.bbox_root)
-    append_tileset_schema_and_metadata(tileset, building_iri)
-
     # Respective filepaths
     building_file_path = "./data/gltf/building.gltf"
     bpath = Path(building_file_path)
@@ -89,15 +67,20 @@ def gen_root_content(building_iri: str):
 
     # In a special case where there is no building and furniture, no root content is added
     if bpath.is_file():
-        rootlist = []
-        if fpath.is_file():
-            rootlist += [{"uri": state.asset_url + "furniture.gltf"}]
+        building_content = {"uri": state.asset_url + "building.gltf"}
+
         # If there are furniture, use the multiple nomenclature
-        if rootlist:
-            rootlist += [{"uri": state.asset_url + "building.gltf"}]
+        if fpath.is_file():
             # Tileset Nomenclature for multiple geometry files = contents:[{}]
-            tileset["root"]["contents"] = rootlist
+            furniture_content = {"uri": state.asset_url + "furniture.gltf"}
+            root_tile = make_root_tile(bbox=properties.bbox_root, contents=[furniture_content, building_content])
         else:
             # Tileset Nomenclature for 1 geometry file = content:{}
-            tileset["root"]["content"] = {"uri": state.asset_url + "building.gltf"}
+            root_tile = make_root_tile(bbox=properties.bbox_root, content=building_content)
+    else:
+        root_tile = make_root_tile(bbox=properties.bbox_root)
+
+    tileset = make_tileset(root_tile)
+    append_tileset_schema_and_metadata(tileset, building_iri)
+
     return tileset

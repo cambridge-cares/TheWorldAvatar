@@ -13,26 +13,66 @@ import numpy as np
 import pytest
 
 # Self import
-from agent.ifc2tileset.tile_helper import gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter, get_bbox
+from agent.ifc2tileset.tile_helper import gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter, compute_bbox, \
+    make_tileset
 from . import testconsts as C
 
+
+def test_make_tileset():
+    # arrange
+    root_tile = {
+        "boundingVolume": {"box": []},
+        "geometricError": 512,
+        "refine": "ADD",
+    }
+    expected = {
+        "asset": {"version": "1.1"},
+        "geometricError": 1024,
+        "root": {
+            "boundingVolume": {"box": []},
+            "geometricError": 512,
+            "refine": "ADD",
+        }
+    }
+
+    # act
+    actual = make_tileset(root_tile)
+
+    # assert
+    assert expected == actual
 
 @pytest.mark.parametrize(
     "mesh_gen, expected",
     [(C.sample_box_gen, C.sample_box_bbox),
      (C.sample_cone_gen, C.sample_cone_bbox)]
 )
-def test_get_bbox(mesh_gen, expected, tmp_path):
+def test_compute_bbox_single_mesh(mesh_gen, expected, tmp_path):
     # arrange
     glb_path = tmp_path / "sample.glb"
     m = mesh_gen()
     m.export(glb_path)
 
     # act
-    actual = get_bbox(glb_path)
+    actual = compute_bbox(glb_path)
 
     # assert
     assert np.allclose(expected, actual)
+
+
+def test_compute_bbox_multi_mesh(tmp_path):
+    # arrange
+    glb_path1 = tmp_path / "sample1.glb"
+    glb_path2 = tmp_path / "sample2.glb"
+    m1 = C.sample_box_gen()
+    m2 = C.sample_cone_gen()
+    m1.export(glb_path1)
+    m2.export(glb_path2)
+
+    # act
+    actual = compute_bbox([glb_path1, glb_path2])
+
+    # assert
+    assert np.allclose(C.combined_bbox, actual)
 
 
 def retrieve_tileset_contents(json_filepath: str):

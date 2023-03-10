@@ -7,6 +7,8 @@ This module provides helper methods to generate separate tilesets and write to a
 # Standard library imports
 import json
 from pathlib import Path
+from typing import List, Union, Optional
+import os
 
 # Third party imports
 import numpy as np
@@ -15,18 +17,52 @@ from py4jps import agentlogging
 
 # Self imports
 import agent.app as state
-from agent.ifc2tileset.root_tile import root_tile
+from agent.ifc2tileset.schema import Tileset, Tile
 
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
 
 
-def get_bbox(gltf_file):
+def make_root_tile(bbox: Optional[List[float]] = None, **kwargs):
+    bounding_volume = {"box": bbox} if bbox is not None else {}
+    root_tile = Tile(
+        boundingVolume=bounding_volume,
+        geometricError=512,
+    )
+
+    for key, value in kwargs.items():
+        root_tile[key] = value
+
+    return root_tile
+
+
+def make_tileset(root_tile: Tile):
+    """
+    Defines a skeleton template for all tilesets as a dictionary
+    to write into the required json format
+
+    Returns:
+    The root tileset generated as a python dictionary
+    """
+    return Tileset(
+        asset={"version": "1.1"},
+        geometricError=1024,
+        root=root_tile
+    )
+
+
+PathLike = Union[str, bytes, os.PathLike]
+
+
+def compute_bbox(gltf: Union[PathLike, List[PathLike]]):
     """
     Computes bbox for a given glTF/GLB file
     """
-    m = trimesh.load(gltf_file, force="mesh")
-    vertices = np.array(m.vertices)
+    if not isinstance(gltf, list):
+        gltf = [gltf]
+
+    meshes = [trimesh.load(file, force="mesh") for file in gltf]
+    vertices = np.vstack([mesh.vertices for mesh in meshes])
 
     mins = vertices.min(axis=0)
     maxs = vertices.max(axis=0)
@@ -47,10 +83,12 @@ def gen_solarpanel_tileset():
     """
     solarpanel_file_path = "./data/gltf/solarpanel.gltf"
     solarpath = Path(solarpanel_file_path)
+
     if solarpath.is_file():
-        bbox = get_bbox("./data/glb/solarpanel.glb")
-        tileset = root_tile(bbox)
-        tileset["root"]["content"] = {"uri": state.asset_url + "solarpanel.gltf"}
+        bbox = compute_bbox("./data/glb/solarpanel.glb")
+        root_tile = make_root_tile(bbox=bbox, content={"uri": state.asset_url + "solarpanel.gltf"})
+        tileset = make_tileset(root_tile)
+
         jsonwriter(tileset, "tileset_solarpanel")
 
 
@@ -60,10 +98,12 @@ def gen_sewagenetwork_tileset():
     """
     sewage_file_path = "./data/gltf/sewagenetwork.gltf"
     sewagepath = Path(sewage_file_path)
+
     if sewagepath.is_file():
-        bbox = get_bbox("./data/glb/sewagenetwork.glb")
-        tileset = root_tile(bbox)
-        tileset["root"]["content"] = {"uri": state.asset_url + "sewagenetwork.gltf"}
+        bbox = compute_bbox("./data/glb/sewagenetwork.glb")
+        root_tile = make_root_tile(bbox=bbox, content={"uri": state.asset_url + "sewagenetwork.gltf"})
+        tileset = make_tileset(root_tile)
+
         jsonwriter(tileset, "tileset_sewage")
 
 

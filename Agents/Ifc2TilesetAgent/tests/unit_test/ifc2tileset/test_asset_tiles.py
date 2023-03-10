@@ -10,7 +10,8 @@ import pandas as pd
 # Self import
 import agent.config.config as properties
 from agent.ifc2tileset.asset_tiles import init_asset_tiles, gen_tileset_assets, appenddict_rec
-from agent.ifc2tileset.root_tile import root_tile, append_tileset_schema_and_metadata
+from agent.ifc2tileset.root_tile import make_tileset, append_tileset_schema_and_metadata
+from agent.ifc2tileset.schema import Tile
 
 
 def test_init_asset_tiles():
@@ -23,7 +24,8 @@ def test_init_asset_tiles():
     building_iri = "buildingIri"
 
     # Init root tile for input
-    tileset = root_tile(properties.bbox_root)
+    root_tile = Tile(boundingVolume={"box": properties.bbox_root}, geometricError=512)
+    tileset = make_tileset(root_tile)
     append_tileset_schema_and_metadata(tileset, building_iri)
 
     # Execute method
@@ -198,7 +200,8 @@ def test_gen_tileset_assets():
     test_range = 8
     sample_df = gen_sample_df(test_range)
     building_iri = "buildingIri"
-    sample_tileset = root_tile(properties.bbox_root)
+    root_tile = Tile(boundingVolume={"box": properties.bbox_root}, geometricError=512)
+    sample_tileset = make_tileset(root_tile)
     append_tileset_schema_and_metadata(sample_tileset, building_iri)
 
     # Execute test method

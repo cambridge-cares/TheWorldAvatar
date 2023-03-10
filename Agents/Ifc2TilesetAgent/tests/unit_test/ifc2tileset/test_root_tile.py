@@ -9,25 +9,10 @@ import os
 
 # Self import
 import agent.config.config as properties
-from agent.ifc2tileset.root_tile import root_tile, append_tileset_schema_and_metadata, gen_root_content
+from agent.ifc2tileset.root_tile import append_tileset_schema_and_metadata, gen_root_content
+from agent.ifc2tileset.tile_helper import make_tileset, make_root_tile
 
 ENDPOINT = "http://www.example.org/sparql"
-
-
-def test_root_tile():
-    """
-    Tests root_tile()
-    """
-    expected_tileset = {
-        'asset': {'version': '1.1'},
-        'geometricError': 1024,
-        'root': {
-            "boundingVolume": {"box": []},
-            "geometricError": 512,
-            "refine": "ADD",
-        }
-    }
-    assert expected_tileset == root_tile([])
 
 
 def test_append_tileset_schema():
@@ -63,7 +48,8 @@ def test_append_tileset_schema():
 
 
 def get_minimal_tileset(building_iri: str):
-    tile = root_tile(properties.bbox_root)
+    root_tile = make_root_tile(bbox=properties.bbox_root)
+    tile = make_tileset(root_tile)
     append_tileset_schema_and_metadata(tile, building_iri)
     return tile
 

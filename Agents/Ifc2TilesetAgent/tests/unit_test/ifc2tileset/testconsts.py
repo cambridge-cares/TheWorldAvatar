@@ -2,7 +2,7 @@ import trimesh
 
 
 def sample_box_gen():
-    return trimesh.creation.box(bounds=[[0, 0, 0], [10, 20, 30]])
+    return trimesh.creation.box(bounds=[[-4, -6, -10], [6, 4, 10]])
 
 
 def sample_cone_gen():
@@ -10,10 +10,10 @@ def sample_cone_gen():
 
 
 sample_box_bbox = [
-    5, 10, 15,
+    1, -1, 0,
     5, 0, 0,
-    0, 10, 0,
-    0, 0, 15
+    0, 5, 0,
+    0, 0, 10
 ]
 
 sample_cone_bbox = [
@@ -21,4 +21,11 @@ sample_cone_bbox = [
     5, 0, 0,
     0, 5, 0,
     0, 0, 10
+]
+
+combined_bbox = [
+    0.5, -0.5, 5,
+    5.5, 0, 0,
+    0, 5.5, 0,
+    0, 0, 15
 ]
