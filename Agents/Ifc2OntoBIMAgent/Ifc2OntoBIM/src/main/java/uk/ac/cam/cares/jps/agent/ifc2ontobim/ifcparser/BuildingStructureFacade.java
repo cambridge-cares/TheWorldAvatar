@@ -6,6 +6,7 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.*;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.GeometricVoid;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement.IfcElementConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
@@ -201,6 +202,7 @@ public class BuildingStructureFacade {
         CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
         CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
+        CommonQuery.addVoidRepresentationQueryComponents(selectBuilder);
         // Add class-specific properties
         // Restrict to certain IfcSlab types for floor
         selectBuilder.addWhere(CommonQuery.REL_TYPE_DEFINITION_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_REL_TYPE_DEFINITION)
@@ -219,20 +221,33 @@ public class BuildingStructureFacade {
             String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
             String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
             ModelRepresentation3D geomModel;
-            // If the element object has already been created previously
+            // If the element object has already been created in a previous row
             if (this.modelRepMappings.containsModelRepIri(iri)) {
-                // Retrieve the new geometry IRI and append it to the existing Model Representation 3D of this element
+                // This is a duplicate solution which may either have more geometries as part of the element's Model Representation 3D
+                // OR it has multiple geometric voids and should generate new ones
+                // Note that geometric voids usually have one geometry and does not require further appending to the void's Model Representation 3D
                 String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
-                geomModel = this.modelRepMappings.getModelRep(iri);
-                geomModel.appendGeometry(geomIri);
+                String voidShapeRepIRI = QueryHandler.retrieveIri(soln, CommonQuery.VOID_SHAPE_REP_VAR);
+                // Only append the geometry IRI to the element's existing Model Representation 3D if there are differences
+                if (geomIri!=null) {
+                    geomModel = this.modelRepMappings.getModelRep(iri);
+                    geomModel.appendGeometry(geomIri);
+                }
+                // If this is a distinct void shape rep, generate another void geometry statement
+                if (!this.modelRepMappings.containsModelRepIri(voidShapeRepIRI)) {
+                    QueryHandler.addVoidGeometryStatements(soln,  this.modelRepMappings.getFloor(iri).getIfcRepIri(), statementSet, this.modelRepMappings);
+                }
             } else {
                 // If it is not yet created, first generate a new Model Representation 3D object
                 geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
-                // Add the object into the mappings for its IRI
-                this.modelRepMappings.add(iri, geomModel);
                 // Construct the element's instance and its statements
                 Floor floor = new Floor(iri, name, uid, placement, hostZone, geomModel.getBimIri());
+                // Generate the void geometry statements and add void model representation into the mappings
+                QueryHandler.addVoidGeometryStatements(soln, floor.getIfcRepIri(), statementSet, this.modelRepMappings);
                 floor.constructStatements(statementSet);
+                // Add the object into the mappings for its IRI
+                this.modelRepMappings.add(iri, geomModel);
+                this.modelRepMappings.add(iri, floor);
             }
         }
         // Construct all the Model Representation 3D statements
@@ -306,7 +321,8 @@ public class BuildingStructureFacade {
                 // If there is a second geometry representation for the wall
                 if (soln.contains(CommonQuery.INST_SHAPE_REP_SEC_VAR)) {
                     // Generate a second geom model
-                    ModelRepresentation3D secGeomModel = QueryHandler.retrieveSecModelRepresentation3D(soln);
+                    ModelRepresentation3D secGeomModel = QueryHandler.retrieveModelRepresentation3D(soln, CommonQuery.INST_SHAPE_REP_SEC_VAR,
+                            CommonQuery.REP_SEC_SUBCONTEXT_VAR, CommonQuery.GEOM_SEC_VAR, CommonQuery.INST_SHAPE_REP_TYPE_SEC_VAR);
                     // Add the IRI with a suffix to add geom model into the mappings so that its statements can be constructed
                     // Note that when there is two different geometric representation, they only have one geometric representation each
                     this.modelRepMappings.add(iri + "second", secGeomModel);

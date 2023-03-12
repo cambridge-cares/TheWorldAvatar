@@ -49,6 +49,17 @@ class CommonQueryTest {
         assertTrue(builder.buildString().contains(genExpectedElementModelUnionQuery()));
     }
 
+    @Test
+    void testAddVoidRepresentationQueryComponents() {
+        // Set up a new builder
+        SelectBuilder builder = new SelectBuilder();
+        NamespaceMapper.addSubqueryBuilderNamespaces(builder);
+        // Execute method
+        CommonQuery.addVoidRepresentationQueryComponents(builder);
+        // Test result
+        JunitTestUtils.doesExpectedListExist(genExpectedGeometricVoidQueryStatements(), builder.buildString());
+    }
+
     private List<String> genExpectedBaseQueryStatements() {
         List<String> expected = new ArrayList<>();
         expected.add("SELECT  " + TEST_ZONE_VAR_REGEX + " \\?uid \\?name \\?placement");
@@ -114,5 +125,34 @@ class CommonQueryTest {
                 "        ?instshaperep\n" +
                 "                  ifc:items_IfcRepresentation  ?geometry .\n" +
                 "        ?geometry  rdf:type             ?geomtype}";
+    }
+
+    private List<String> genExpectedGeometricVoidQueryStatements() {
+        List<String> expected = new ArrayList<>();
+        expected.add("SELECT  \\?openingelement \\?voidtype \\?voidplacement \\?voidshaperep \\?voidshapereptype \\?voidgeometry \\?voidsubcontext");
+        expected.add("\\?relvoidelement\n" +
+                "                  rdf:type              ifc:IfcRelVoidsElement ;\n" +
+                "                  ifc:relatedOpeningElement_IfcRelVoidsElement  \\?openingelement ;\n" +
+                "                  ifc:relatingBuildingElement_IfcRelVoidsElement  \\?element .");
+        expected.add("\\?openingelement\n" +
+                "                  rdf:type              ifc:IfcOpeningElement");
+        expected.add("\\?openingelement ifc:objectType_IfcObject/express:hasString \\?voidtype");
+        expected.add("\\?openingelement\n" +
+                "                  ifc:objectPlacement_IfcProduct  \\?voidplacement");
+        expected.add("\\?voidplacement\n" +
+                "                  rdf:type              ifc:IfcLocalPlacement");
+        expected.add("\\?openingelement\n" +
+                "                  ifc:representation_IfcProduct  \\?voidproductDefinition");
+        expected.add("\\?voidproductDefinition ifc:representations_IfcProductRepresentation/list:hasContents \\?voidshaperep");
+        expected.add("\\?voidshaperep\n" +
+                "                  rdf:type  ifc:IfcShapeRepresentation");
+        expected.add("\\?voidshaperep ifc:representationType_IfcRepresentation/express:hasString \\?voidshapereptype");
+        expected.add("\\?voidshaperep\n" +
+                "                  ifc:contextOfItems_IfcRepresentation  \\?voidsubcontext");
+        expected.add("\\?voidsubcontext\n" +
+                "                  rdf:type              ifc:IfcGeometricRepresentationSubContext");
+        expected.add("\\?voidshaperep\n" +
+                "                  ifc:items_IfcRepresentation  \\?voidgeometry");
+        return expected;
     }
 }

@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 import org.apache.jena.arq.querybuilder.Converters;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement.IfcElementConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -35,6 +36,7 @@ public class CommonQuery {
     public static final String REP_CONTEXT_VAR = "?repcontext";
     public static final String REP_SUBCONTEXT_VAR = "?subcontext";
     public static final String REP_SEC_SUBCONTEXT_VAR = "?secondsubcontext";
+    public static final String VOID_SUB_CONTEXT_VAR = "?voidsubcontext";
     public static final String CONTEXT_REL_VAR = "?contextrelation";
     public static final String PROJECT_VAR = "?project";
     public static final String SPACE_DIMENSION_VAR = "?spacedimension";
@@ -57,8 +59,15 @@ public class CommonQuery {
     public static final String INST_SHAPE_REP_SEC_VAR = "?secondinstshaperep";
     public static final String INST_SHAPE_REP_TYPE_VAR = "?shapereptype";
     public static final String INST_SHAPE_REP_TYPE_SEC_VAR = "?secshapereptype";
+
+    public static final String VOID_REP_TYPE_VAR = "?voidshapereptype";
+    public static final String VOID_PRODUCT_DEFINITION_VAR = "?voidproductDefinition";
+    public static final String VOID_SHAPE_REP_VAR = "?voidshaperep";
+    public static final String VOID_PLACEMENT_VAR = "?voidplacement";
+    public static final String VOID_TYPE_VAR = "?voidtype";
     public static final String GEOM_VAR = "?geometry";
     public static final String GEOM_SEC_VAR = "?secgeometry";
+    public static final String VOID_GEOM_VAR = "?voidgeometry";
     public static final String GEOM_TYPE_VAR = "?geomtype";
     public static final String GEOM_TYPE_SEC_VAR = "?secgeomtype";
     public static final String MAPPED_ITEM_VAR = "?mappeditem";
@@ -100,6 +109,7 @@ public class CommonQuery {
     public static final String IFC_REL_VOIDS_OPENING = NamespaceMapper.IFC_PREFIX + ":relatedOpeningElement_IfcRelVoidsElement";
     public static final String IFC_REL_VOIDS_ASSEMBLY = NamespaceMapper.IFC_PREFIX + ":relatingBuildingElement_IfcRelVoidsElement";
     // IfcOwl geometry properties
+    public static final String IFC_OBJ_TYPE = NamespaceMapper.IFC_PREFIX + ":objectType_IfcObject";
     public static final String IFC_PRODUCT_REPRESENTATION = NamespaceMapper.IFC_PREFIX + ":representation_IfcProduct";
     public static final String IFC_PRODUCT_REPRESENTATIONS = NamespaceMapper.IFC_PREFIX + ":representations_IfcProductRepresentation";
     public static final String IFC_PRODUCT_REPRESENTATION_TYPE = NamespaceMapper.IFC_PREFIX + ":representationType_IfcRepresentation";
@@ -234,5 +244,34 @@ public class CommonQuery {
                 .addWhere(GEOM_VAR, QueryHandler.RDF_TYPE, GEOM_TYPE_VAR);
         subgroupBuilder.addUnion(unionBuilder);
         builder.addWhere(subgroupBuilder);
+    }
+
+    public static void addVoidRepresentationQueryComponents(SelectBuilder builder) {
+        SelectBuilder optionalBuilder = new SelectBuilder();
+        NamespaceMapper.addSubqueryBuilderNamespaces(optionalBuilder);
+        builder.addVar(OPENING_ELEMENT_VAR)
+                .addVar(VOID_TYPE_VAR)
+                .addVar(VOID_PLACEMENT_VAR)
+                .addVar(VOID_SHAPE_REP_VAR)
+                .addVar(VOID_REP_TYPE_VAR)
+                .addVar(VOID_GEOM_VAR)
+                .addVar(VOID_SUB_CONTEXT_VAR);
+        // Base Void attributes
+        optionalBuilder.addWhere(REL_VOID_ELEMENT_VAR, QueryHandler.RDF_TYPE, IFC_REL_VOIDS_ELEMENT)
+                .addWhere(REL_VOID_ELEMENT_VAR, IFC_REL_VOIDS_OPENING, OPENING_ELEMENT_VAR)
+                .addWhere(REL_VOID_ELEMENT_VAR, IFC_REL_VOIDS_ASSEMBLY, IfcElementConstructBuilder.ELEMENT_VAR)
+                .addWhere(OPENING_ELEMENT_VAR, QueryHandler.RDF_TYPE, IFC_OPENING_ELEMENT)
+                .addWhere(OPENING_ELEMENT_VAR, IFC_OBJ_TYPE + EXPRESS_HASSTRING, VOID_TYPE_VAR)
+                .addWhere(OPENING_ELEMENT_VAR, IFC_OBJ_PLACEMENT, VOID_PLACEMENT_VAR)
+                .addWhere(VOID_PLACEMENT_VAR, QueryHandler.RDF_TYPE, IFCLOCALPLACEMENT)
+                .addWhere(OPENING_ELEMENT_VAR, IFC_PRODUCT_REPRESENTATION, VOID_PRODUCT_DEFINITION_VAR)
+                .addWhere(VOID_PRODUCT_DEFINITION_VAR, IFC_PRODUCT_REPRESENTATIONS + "/" + LIST_HAS_CONTENT, VOID_SHAPE_REP_VAR);
+        // Void shape representation details
+        optionalBuilder.addWhere(VOID_SHAPE_REP_VAR, QueryHandler.RDF_TYPE, IFC_SHAPE_REP)
+                .addWhere(VOID_SHAPE_REP_VAR, IFC_PRODUCT_REPRESENTATION_TYPE + EXPRESS_HASSTRING, VOID_REP_TYPE_VAR)
+                .addWhere(VOID_SHAPE_REP_VAR, IFC_REP_CONTEXT, VOID_SUB_CONTEXT_VAR)
+                .addWhere(VOID_SUB_CONTEXT_VAR, QueryHandler.RDF_TYPE, IFCGEOM_REP_SUBCONTEXT)
+                .addWhere(VOID_SHAPE_REP_VAR, IFC_REP_ITEMS, VOID_GEOM_VAR);
+        builder.addOptional(optionalBuilder);
     }
 }

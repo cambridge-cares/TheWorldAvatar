@@ -14,9 +14,11 @@ import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Floor;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcRoomRepresentation;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcStoreyRepresentation;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.ElementStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.SpatialZoneStorage;
 
 
@@ -63,9 +65,25 @@ class QueryHandlerTest {
     private static final String testSecGeomType = JunitTestUtils.bimUri + "Polyline";
     private static final String testSecShapeRepTypeVar = "secshapereptype";
     private static final String testSecShapeRepType = "Curve2D";
+    // For testing Void shape rep
+    private static final String testFloorIRI = testBaseUri + "Floor_501238";
+    private static final String testVoidShapeRepVar = "voidshaperep";
+    private static final String testVoidShapeRepIri = testBaseUri + "IfcShapeRepresentation_11532";
+    private static final String testVoidPlacementVar = "voidplacement";
+    private static final String testVoidPlacementIri = testBaseUri + "LocalPlacement_3182";
+    private static final String testVoidTypeVar = "voidtype";
+    private static final String testVoidType = "Opening";
+    private static final String testVoidSubContextVar = "voidsubcontext";
+    private static final String testVoidSubContextIri = testBaseUri + "GeometricRepresentationSubContext_3209";
+    private static final String testVoidGeomVar = "voidgeometry";
+    private static final String testVoidGeomIri = testBaseUri + "ExtrudedAreaSolid_3151";
+    private static final String testVoidGeomType = JunitTestUtils.bimUri + "ExtrudedAreaSolid";
+    private static final String testVoidShapeRepTypeVar = "voidshapereptype";
+    private static final String testVoidShapeRepType = "SweptSolid";
     private static SpatialZoneStorage zoneMappings;
     private static IfcStoreyRepresentation storey;
     private static IfcRoomRepresentation room;
+
     @BeforeAll
     static void addTestZoneMappings() {
         // Create a new storey and room instance, which does not require any values except for the IRI
@@ -196,7 +214,7 @@ class QueryHandlerTest {
     }
 
     @Test
-    void testRetrieveSecModelRepresentation3D() {
+    void testRetrieveModelRepresentation3DForSecondRep() {
         // Set up a sampleSet
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         // Create a sample query solution for testing
@@ -206,11 +224,37 @@ class QueryHandlerTest {
         solution.add(testSecGeomVar, ResourceFactory.createResource(testSecGeomIri));
         solution.add(testSecShapeRepTypeVar, ResourceFactory.createPlainLiteral(testSecShapeRepType));
         // Execute the method and extract the result statements into a string
-        ModelRepresentation3D resultModel = QueryHandler.retrieveSecModelRepresentation3D(solution);
+        ModelRepresentation3D resultModel = QueryHandler.retrieveModelRepresentation3D(solution, testSecShapeRepVar, testSecSubContextVar, testSecGeomVar, testSecShapeRepTypeVar);
         resultModel.addModelRepresentation3DStatements(sampleSet);
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
-        JunitTestUtils.doesExpectedListExist(genExpectedSecModelRep3DStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedAdditionalModelRep3DStatements(testSecSubContextIri, testSecShapeRepType, testSecGeomIri, testSecGeomType), result);
+    }
+
+    @Test
+    void testAddVoidGeometryStatements() {
+        // Set up required objects
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        Floor sampleFloor = new Floor(testFloorIRI, null, null, null, null, null);
+        ElementStorage sampleElementMappings = ElementStorage.Singleton();
+        // Create a sample query solution for testing
+        QuerySolutionMap solution = new QuerySolutionMap();
+        solution.add(testVoidShapeRepVar, ResourceFactory.createResource(testVoidShapeRepIri));
+        solution.add(testVoidPlacementVar, ResourceFactory.createResource(testVoidPlacementIri));
+        solution.add(testVoidTypeVar, ResourceFactory.createPlainLiteral(testVoidType));
+        solution.add(testVoidSubContextVar, ResourceFactory.createResource(testVoidSubContextIri));
+        solution.add(testVoidGeomVar, ResourceFactory.createResource(testVoidGeomIri));
+        solution.add(testVoidShapeRepTypeVar, ResourceFactory.createPlainLiteral(testVoidShapeRepType));
+        // Execute the method and extract the result statements into a string
+        QueryHandler.addVoidGeometryStatements(solution, sampleFloor.getIfcRepIri(), sampleSet, sampleElementMappings);
+        // Verify that the void's model representation have been added to mappings
+        assertTrue(sampleElementMappings.containsModelRepIri(testVoidShapeRepIri));
+        // Generate all the result statements
+        sampleElementMappings.constructModelRepStatements(sampleSet);
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedGeometricVoidStatements(), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedAdditionalModelRep3DStatements(testVoidSubContextIri, testVoidShapeRepType, testVoidGeomIri, testVoidGeomType), result);
     }
 
     private List<String> genInitQuery() {
@@ -274,14 +318,25 @@ class QueryHandlerTest {
         return expected;
     }
 
-    private List<String> genExpectedSecModelRep3DStatements() {
+    private List<String> genExpectedAdditionalModelRep3DStatements(String subContextIRI, String shapeRepType, String geomIRI, String geomType) {
         List<String> expected = new ArrayList<>();
         expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D");
-        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSubContext, " + testSecSubContextIri);
-        expected.add(testSecSubContextIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");
-        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + testSecShapeRepType);
-        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + testSecGeomIri);
-        expected.add(testSecGeomIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, " + testSecGeomType);
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSubContext, " + subContextIRI);
+        expected.add(subContextIRI + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + shapeRepType);
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + geomIRI);
+        expected.add(geomIRI + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, " + geomType);
+        return expected;
+    }
+
+    private List<String> genExpectedGeometricVoidStatements() {
+        List<String> expected = new ArrayList<>();
+        expected.add(testBaseUri + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasVoid, " + testBaseUri + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(testBaseUri + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricVoid");
+        expected.add(testBaseUri + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasGeometricRepresentation, " + testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(testBaseUri + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasVoidType, \"" + testVoidType);
+        expected.add(testBaseUri + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + testVoidPlacementIri);
+        expected.add(testVoidPlacementIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
         return expected;
     }
 }

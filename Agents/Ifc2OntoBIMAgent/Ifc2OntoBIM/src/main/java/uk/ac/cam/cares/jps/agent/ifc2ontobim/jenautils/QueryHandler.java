@@ -4,9 +4,10 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.GeometricVoid;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.BuildingStructureFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.CommonQuery;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.ElementStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.SpatialZoneStorage;
 
 import java.util.*;
@@ -95,8 +96,8 @@ public class QueryHandler {
     /**
      * Retrieve the IRI of the zone hosting this element, usually in the Storey or Room concept.
      *
-     * @param soln          The row of the query response to retrieve this zone IRI.
-     * @param zoneMappings  The mappings of the zone's IfcOwl IRI to their class object instantiated.
+     * @param soln         The row of the query response to retrieve this zone IRI.
+     * @param zoneMappings The mappings of the zone's IfcOwl IRI to their class object instantiated.
      */
     public static String retrieveHostZone(QuerySolution soln, SpatialZoneStorage zoneMappings) {
         String zoneIri = retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR);
@@ -109,7 +110,7 @@ public class QueryHandler {
     /**
      * Retrieve the geometry model representation of the element as a ModelRepresentation3D class.
      *
-     * @param soln The row of the query response to retrieve this zone IRI.
+     * @param soln The row of the query response.
      */
     public static ModelRepresentation3D retrieveModelRepresentation3D(QuerySolution soln) {
         String shapeRepIri = soln.get(CommonQuery.INST_SHAPE_REP_VAR).toString();
@@ -123,16 +124,46 @@ public class QueryHandler {
     }
 
     /**
-     * Retrieve the second geometry model representation of the element as a ModelRepresentation3D class.
+     * An overloaded method to retrieve the geometry model representation of the element or geometric void
+     * depending on the input variables that is called.
      *
-     * @param soln The row of the query response to retrieve this zone IRI.
+     * @param soln The row of the query response.
      */
-    public static ModelRepresentation3D retrieveSecModelRepresentation3D(QuerySolution soln) {
-        String shapeRepIri = retrieveIri(soln, CommonQuery.INST_SHAPE_REP_SEC_VAR);
-        String subContextIri = retrieveIri(soln, CommonQuery.REP_SEC_SUBCONTEXT_VAR);
-        String geomIri = retrieveIri(soln, CommonQuery.GEOM_SEC_VAR);
-        String shapeRepType = retrieveLiteral(soln, CommonQuery.INST_SHAPE_REP_TYPE_SEC_VAR);
+    public static ModelRepresentation3D retrieveModelRepresentation3D(QuerySolution soln, String shapeRepVar,
+                                                                      String subContextVar, String geomVar, String shapeRepTypeVar) {
+        String shapeRepIri = retrieveIri(soln, shapeRepVar);
+        String subContextIri = retrieveIri(soln, subContextVar);
+        String geomIri = retrieveIri(soln, geomVar);
+        String shapeRepType = retrieveLiteral(soln, shapeRepTypeVar);
         return new ModelRepresentation3D(shapeRepIri, subContextIri, geomIri,
                 shapeRepType, null, null);
+    }
+
+    /**
+     * Retrieve the second geometry model representation of the element as a ModelRepresentation3D class.
+     * Adds the void model representation 3D into the mappings to construct its statements.
+     *
+     * @param soln              The row of the query response.
+     * @param elementIRI        The IRI of the element containing the void.
+     * @param statementSet      A list containing the new OntoBIM triples.
+     * @param modelRepMappings  The mappings for the model representation and their void IRI.
+     */
+    public static void addVoidGeometryStatements(QuerySolution soln, String elementIRI, LinkedHashSet<Statement> statementSet, ElementStorage modelRepMappings) {
+        if (soln.contains(CommonQuery.VOID_SHAPE_REP_VAR)) {
+            // Retrieve the common void parameters
+            String voidPlacementIRI = retrieveIri(soln, CommonQuery.VOID_PLACEMENT_VAR);
+            String voidType = retrieveLiteral(soln, CommonQuery.VOID_TYPE_VAR);
+            // Retrieve the Model Representation 3D parameters for the void
+            ModelRepresentation3D voidRep = retrieveModelRepresentation3D(soln, CommonQuery.VOID_SHAPE_REP_VAR,
+                    CommonQuery.VOID_SUB_CONTEXT_VAR, CommonQuery.VOID_GEOM_VAR, CommonQuery.VOID_REP_TYPE_VAR);
+            // Add the void's shape representation IRI to the mappings to
+            // distinguish their model representation if there are multiple voids
+            // as well as prevent us from creating a duplicate geometric void
+            String voidShapeRepIRI = retrieveIri(soln, CommonQuery.VOID_SHAPE_REP_VAR);
+            modelRepMappings.add(voidShapeRepIRI, voidRep);
+            // Create the geometric void instance and add its statements
+            GeometricVoid voidInst =  new GeometricVoid(elementIRI, voidRep.getBimIri(), voidType, voidPlacementIRI);
+            voidInst.addGeometricVoidStatements(statementSet);
+        }
     }
 }

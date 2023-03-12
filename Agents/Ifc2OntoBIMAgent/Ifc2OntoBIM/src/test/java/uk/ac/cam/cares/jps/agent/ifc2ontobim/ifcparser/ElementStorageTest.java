@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Floor;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Wall;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -54,6 +55,12 @@ class ElementStorageTest {
     }
 
     @Test
+    void testGetFloorFail() {
+        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> testMappings.getFloor(NON_EXISTENT_IRI));
+        assertEquals(NON_EXISTING_ERROR, thrownError.getMessage());
+    }
+
+    @Test
     void testAddAndGetModelRep() {
         // Create a new sample representation
         ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SHAPE_REP_IRI, TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
@@ -71,6 +78,16 @@ class ElementStorageTest {
         testMappings.add(TEST_ELEMENT_IRI, sampleWall);
         // Assert if they are equals
         assertEquals(sampleWall, testMappings.getWall(TEST_ELEMENT_IRI));
+    }
+
+    @Test
+    void testAddAndGetFloor() {
+        // Create a new sample representation
+        Floor sampleFloor = new Floor(TEST_ELEMENT_IRI, null, null, null, null, null);
+        // Execute method
+        testMappings.add(TEST_ELEMENT_IRI, sampleFloor);
+        // Assert if they are equals
+        assertEquals(sampleFloor, testMappings.getFloor(TEST_ELEMENT_IRI));
     }
 
     @Test

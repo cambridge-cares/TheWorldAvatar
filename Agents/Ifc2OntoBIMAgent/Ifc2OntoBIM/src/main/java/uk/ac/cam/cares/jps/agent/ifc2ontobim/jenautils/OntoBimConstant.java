@@ -51,6 +51,8 @@ public class OntoBimConstant {
     public static final String BIM_HAS_REP_ITEM = NamespaceMapper.BIM_NAMESPACE + "hasRepresentationItem";
     public static final String BIM_HAS_SOURCE_PLACEMENT = NamespaceMapper.BIM_NAMESPACE + "hasSourcePlacement";
     public static final String BIM_HAS_TARGET_PLACEMENT = NamespaceMapper.BIM_NAMESPACE + "hasTargetPlacement";
+    public static final String BIM_HAS_VOID = NamespaceMapper.BIM_NAMESPACE + "hasVoid";
+    public static final String BIM_HAS_VOID_TYPE = NamespaceMapper.BIM_NAMESPACE + "hasVoidType";
     public static final String BUILDING_STRUCTURE_CONSISTS_OF = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + "consistsOf";
 
     // OntoBIM modelling position properties
@@ -97,6 +99,8 @@ public class OntoBimConstant {
     // OntoBim geometry classes
     public static final String GEOM_MODEL_REP_CLASS = "ModelRepresentation3D";
     public static final String BIM_GEOM_MODEL_REP_CLASS = NamespaceMapper.BIM_NAMESPACE + GEOM_MODEL_REP_CLASS;
+    public static final String GEOM_VOID_CLASS = "GeometricVoid";
+    public static final String BIM_GEOM_VOID_CLASS = NamespaceMapper.BIM_NAMESPACE + GEOM_VOID_CLASS;
     public static final String DIR_VEC_CLASS = "DirectionVector";
     public static final String BIM_DIR_VEC_CLASS = NamespaceMapper.BIM_NAMESPACE + DIR_VEC_CLASS;
     public static final String CART_TRANS_OPERATOR_CLASS = "CartesianTransformationOperator";
