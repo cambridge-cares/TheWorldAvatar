@@ -46,6 +46,6 @@ public class Ceiling extends IfcModelRepresentation {
         StatementHandler.addStatement(statementSet, this.hostZoneIRI, OntoBimConstant.BOT_CONTAINS_ELEMENT, this.elementIRI);
         StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_CEILING_CLASS);
         StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.BIM_HAS_IFC_REPRESENTATION, this.getIfcRepIri());
-        StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.BIM_HAS_GEOM_REP, this.geomRepIRI);
+        StatementHandler.addStatement(statementSet, this.getIfcRepIri(), OntoBimConstant.BIM_HAS_GEOM_REP, this.geomRepIRI);
     }
 }

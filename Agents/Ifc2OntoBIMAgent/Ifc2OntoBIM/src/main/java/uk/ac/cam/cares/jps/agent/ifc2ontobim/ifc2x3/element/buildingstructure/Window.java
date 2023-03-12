@@ -51,6 +51,6 @@ public class Window extends IfcModelRepresentation {
         StatementHandler.addStatement(statementSet, this.assemblyIRI, OntoBimConstant.BUILDING_STRUCTURE_CONSISTS_OF, this.elementIRI);
         StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_WINDOW_CLASS);
         StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.BIM_HAS_IFC_REPRESENTATION, this.getIfcRepIri());
-        StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.BIM_HAS_GEOM_REP, this.geomRepIRI);
+        StatementHandler.addStatement(statementSet, this.getIfcRepIri(), OntoBimConstant.BIM_HAS_GEOM_REP, this.geomRepIRI);
     }
 }
