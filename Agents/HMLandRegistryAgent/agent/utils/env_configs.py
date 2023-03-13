@@ -9,15 +9,14 @@
 import os
 import warnings
 
-from py4jps import agentlogging
-
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
 def retrieve_settings():
     """
-        Reads settings from environment variables (as global variables).
+    Reads settings from environment variables (as global variables).
     """
 
     # Define global scope for global variables

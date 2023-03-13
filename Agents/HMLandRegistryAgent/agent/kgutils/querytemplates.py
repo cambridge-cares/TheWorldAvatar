@@ -8,11 +8,10 @@
 
 import uuid
 
-from py4jps import agentlogging
-
 from agent.datamodel.iris import *
 
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 

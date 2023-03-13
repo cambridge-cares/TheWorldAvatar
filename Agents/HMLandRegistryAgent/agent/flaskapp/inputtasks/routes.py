@@ -5,15 +5,12 @@
 
 from flask import Blueprint, request, jsonify
 
-from py4jps import agentlogging
-
 from agent.errorhandling.exceptions import InvalidInput
-from agent.datainstantiation.sales_instantiation import add_ocgml_building_data, \
-                                                        update_transaction_records, \
+from agent.datainstantiation.sales_instantiation import update_transaction_records, \
                                                         update_all_transaction_records
 
-
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
@@ -55,7 +52,7 @@ def api_update_transaction_records():
         return jsonify({'Instantiated property transactions': res[0],
                         'Updated property transactions': res[1]}), 200
     except Exception as ex:
-        logger.error('Unable to update property sales transactions.', ex)
+        logger.error('Unable to update property sales transactions: {}'.format(ex))
         return jsonify({'msg': 'Updating property sales transactions failed: ' + str(ex)}), 500
 
 
@@ -92,29 +89,5 @@ def api_update_all_transaction_records():
                         'Instantiated property price indices': res[2],
                         'Updated property price indices': res[3]}), 200
     except Exception as ex:
-        logger.error('Unable to update property sales transactions.', ex)
+        logger.error('Unable to update property sales transactions: {}'.format(ex))
         return jsonify({'msg': 'Updating property sales transactions failed: ' + str(ex)}), 500
-
-
-# Define route for API request to retrieve relevant building information from OCGML and 
-# instantiate according to OntoBuiltEnv
-@inputtasks_bp.route('/landregistry/add_ocgml_info', methods=['GET'])
-def api_add_ocgml_building_data():
-    # Check arguments (query parameters)
-    if len(request.args) > 0:
-        print("Query parameters provided, although not required. " \
-              + "Provided arguments will be neglected.")
-        logger.warning("Query parameters provided, although not required. \
-                        Provided arguments will be neglected.")
-    try:
-        # Retrieve and instantiate building elevation
-        res = add_ocgml_building_data()
-        return jsonify({'status': '200', 
-                        'Instantiated PostGIS footprints': res[0],
-                        'Already instantiated PostGIS footprints': res[1],
-                        'Deleted building elevations': res[2],
-                        'Instantiated building elevations': res[3]})
-
-    except Exception as ex:
-        logger.error("Unable to instantiate PostGIS features and/or OntoBuiltEnv building elevations.", ex)
-        return jsonify({'status': '500', 'msg': f'Instantiating OntoCityGml data failed.'})

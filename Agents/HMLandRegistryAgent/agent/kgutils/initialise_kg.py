@@ -9,15 +9,14 @@
 import os
 import requests
 
-from py4jps import agentlogging
-
 from agent.datamodel.iris import *
 from agent.datamodel.data_mapping import GBP_PER_SM, GBP
-from agent.kgutils.kgclient import KGClient
 from agent.errorhandling.exceptions import KGException
+from agent.kgutils.kgclient import KGClient
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
