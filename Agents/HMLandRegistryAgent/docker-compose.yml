@@ -12,8 +12,6 @@ services:
       # Layer name in geoserver, also table name in PostGIS
       - LAYERNAME=building_sales
       - GEOSERVER_WORKSPACE=buildings
-      - OCGML_ENDPOINT=
-      - ONTOP_FILE=/app/resources/ontop.obda
     ports:
       - "5008:5000"
     volumes:
@@ -22,7 +20,6 @@ services:
     configs:
       - blazegraph
       - geoserver
-      - ontop
       - postgis
     secrets:
       - geoserver_password

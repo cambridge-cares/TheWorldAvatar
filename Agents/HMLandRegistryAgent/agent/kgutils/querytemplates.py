@@ -109,9 +109,8 @@ def get_instantiated_properties_with_location_info(property_iris: list = None) -
                ?tx_iri
         WHERE {{
         {values_statement}
-        ?property_iri <{RDF_TYPE}> ?property_type . 
-        ?property_type <{RDFS_SUBCLASS}> <{OBE_PROPERTY}> . 
-        ?property_iri <{OBE_LOCATEDIN}> ?district_iri ; 
+        ?property_iri <{RDF_TYPE}> ?property_type ; 
+                      <{OBE_LOCATEDIN}> ?district_iri ; 
                       <{OBE_HAS_ADDRESS}> ?address_iri . 
         ?address_iri <{OBE_HAS_POSTALCODE}> ?postcode_iri . 
         ?postcode_iri <{RDFS_LABEL}> ?postcode . 
@@ -183,7 +182,7 @@ def update_transaction_record(property_iri:None, address_iri:None, tx_iri:None,
             <{property_iri}> <{OBE_HAS_ADDRESS}> <{address_iri}> . 
             OPTIONAL {{ <{property_iri}> <{OBE_HAS_LATEST_TRANSACTION}> <{tx_iri}> . 
                         <{tx_iri}> <{LRPPI_PRICE}> ?price ;
-                                <{LRPPI_DATE}> ?date . }}
+                                   <{LRPPI_DATE}> ?date . }}
             OPTIONAL {{ <{tx_iri}> <{OWL_SAME_AS}> ?ppd_tx }}
             OPTIONAL {{ <{address_iri}> <{OBE_IS_PRESUMED_MATCH_OF}> ?ppd_address }} 
             }}
@@ -232,151 +231,4 @@ def instantiate_property_price_index(district_iri, ppi_iri):
     # Remove unnecessary whitespaces
     query = ' '.join(query.split())
 
-    return query
-
-
-def get_ocgml_crs():
-    # Retrieve coordinate reference system (from OCGML endpoint)
-    query = f"""SELECT ?crs
-        WHERE {{ ?s <{OCGML_SRSNAME}> ?crs . }}
-    """
-
-    # Remove unnecessary whitespaces
-    query = ' '.join(query.split())
-    return query
-
-
-def get_matched_buildings() -> str:
-    # Retrieve all OntoBuiltEnv building with a OntoCityGml representations
-    query = f"""
-        SELECT DISTINCT ?obe_bldg
-        WHERE {{
-            ?obe_bldg <{OBE_HAS_OCGML_REPRESENTATION}> ?ocgml_bldg .
-        }}
-    """
-    # Remove unnecessary whitespaces
-    query = ' '.join(query.split())
-    return query
-
-
-def get_matched_ocgml_information(obe_endpoint, ocgml_endpoint, bldg_iris=[]) -> str:
-    # Retrieved relevant OCGML information for matched buildings (i.e. OBE building IRIs)
-    
-    # Create list of IRIs of interest
-    values = '> <'.join(bldg_iris)
-    values = '<' + values + '>'
-
-    query = f"""
-        SELECT DISTINCT ?obe_bldg ?surf (DATATYPE(?geom) as ?datatype) ?geom ?height
-        WHERE {{
-            SERVICE <{obe_endpoint}> {{
-                VALUES ?obe_bldg {{ {values} }}
-                 ?obe_bldg <{OBE_HAS_OCGML_REPRESENTATION}> ?ocgml_bldg .
-                }}
-            SERVICE <{ocgml_endpoint}> {{
-                ?ocgml_bldg <{OCGML_BLDG_HEIGHT}> ?height ;
-                            <{OCGML_FOOTPRINT}> ?footprint .
-                ?surf <{OCGML_ROOT_ID}> ?footprint ;
-       		          <{OCGML_GEOM_TYPE}> ?geom .
-       		    FILTER (!isBlank(?geom))
-            }}
-        }}
-    """
-
-    # Remove unnecessary whitespaces
-    query = ' '.join(query.split())
-    return query
-
-
-def delete_old_building_elevation(obe_bldg_iris):
-    # Delete (potentially) outdated OntoBuiltEnv building elevation triples
-
-    # Create list of IRIs of interest
-    values = '> <'.join(obe_bldg_iris)
-    values = '<' + values + '>'
-
-    query = f"""        
-        DELETE {{
-            ?bldg_iri <{OBE_HAS_GROUND_ELEVATION}> ?old_elev .
-            ?old_elev <{RDF_TYPE}> ?old_quant_type ;
-                        <{OM_HAS_VALUE}> ?old_measure .
-            ?old_measure <{RDF_TYPE}> ?old_measure_type ; 
-                            <{OM_NUM_VALUE}> ?old_value ;
-                            <{OM_HAS_UNIT}> ?old_unit .
-            ?old_unit <{RDF_TYPE}> ?old_unit_type ;
-                        <{OM_SYMBOL}> ?old_unit_symbol 
-        }}
-        WHERE {{
-                VALUES ?bldg_iri {{ {values} }}
-                ?bldg_iri <{OBE_HAS_OCGML_REPRESENTATION}> ?ocgml_bldg .
-                OPTIONAL {{ ?bldg_iri <{OBE_HAS_GROUND_ELEVATION}> ?old_elev 
-                OPTIONAL {{ ?old_elev <{RDF_TYPE}> ?old_quant_type ;
-                                      <{OM_HAS_VALUE}> ?old_measure .
-                            ?old_measure <{RDF_TYPE}> ?old_measure_type ;
-                                         <{OM_NUM_VALUE}> ?old_value }}
-                OPTIONAL {{ ?old_measure <{OM_HAS_UNIT}> ?old_unit .
-                            ?old_unit <{RDF_TYPE}> ?old_unit_type ;
-                                      <{OM_SYMBOL}> ?old_unit_symbol }}
-                }}
-        }}
-    """
-
-    # Remove unnecessary whitespaces
-    query = ' '.join(query.split())
-
-    return query
-
-def instantiate_building_elevation(elevation_data):
-    # Instantiate building elevation (as retrieved from OntoCityGml instances) 
-    # according to OntoBuiltEnv
-    # elevation_data: [{'unit': '...', 'obe_bldg': '...', 'elevation': '...'}, ...]
-
-    # Initialise data insert query
-    query = f"INSERT DATA {{"
-
-    for d in elevation_data:
-        # Create IRIs
-        elevation = KB + 'GroundElevation_' + str(uuid.uuid4())
-        measure = KB + 'Measure_' + str(uuid.uuid4())
-        if d['unit'] == 'm':
-            unit = OM_M
-        else:
-            unit = None
-            logger.warn('Building elevation specified in unknown unit, i.e. not metres.')
-
-        # Add triples to instantiate
-        query += f"""
-            <{d['obe_bldg']}> <{OBE_HAS_GROUND_ELEVATION}> <{elevation}> . 
-            <{elevation}> <{RDF_TYPE}> <{OM_HEIGHT}> . 
-            <{elevation}> <{OM_HAS_VALUE}> <{measure}> . 
-            <{measure}> <{RDF_TYPE}> <{OM_MEASURE}> . 
-            <{measure}> <{OM_NUM_VALUE}> "{d['elevation']}"^^<{XSD_FLOAT}>  . 
-        """
-        if unit:
-            query += f"""
-                <{measure}> <{OM_HAS_UNIT}> <{unit}> . 
-                <{unit}> <{RDF_TYPE}> <{OM_UNIT}> . 
-                <{unit}> <{OM_SYMBOL}> "{d['unit']}"^^<{XSD_STRING}> . 
-            """
-
-    # Close query
-    query += f"}}"
-
-    # Remove unnecessary whitespaces
-    query = ' '.join(query.split())
-
-    return query
-
-
-def get_property_value(prop_iri: str):
-    # Retrieve usages of OntoBuiltEnv buildings 
-    query = f"""
-        SELECT ?prop_value
-        WHERE {{
-        <{prop_iri}> <{OBE_HAS_LATEST_TRANSACTION}> ?transaction .
-        ?transaction <{LRPPI_PRICE}> ?prop_value .
-        }}
-    """
-    # Remove unnecessary whitespaces
-    query = ' '.join(query.split())
     return query

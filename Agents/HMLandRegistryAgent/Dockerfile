@@ -28,7 +28,6 @@ COPY --from=stackclients /app ./tmp_stack
 WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
-COPY ./resources/ontop.obda ./resources/ontop.obda
 # Add JDBC driver to allow for retrieval of JDBC connection properties from PostGIS client
 ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 

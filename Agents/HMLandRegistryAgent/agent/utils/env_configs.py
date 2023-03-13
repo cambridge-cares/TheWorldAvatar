@@ -20,7 +20,7 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DATABASE, NAMESPACE, LAYERNAME, GEOSERVER_WORKSPACE, OCGML_ENDPOINT, ONTOP_FILE
+    global DATABASE, NAMESPACE, LAYERNAME, GEOSERVER_WORKSPACE
 
     # Retrieve PostgreSQL/PostGIS database name
     DATABASE = os.getenv('DATABASE')
@@ -62,23 +62,6 @@ def retrieve_settings():
         logger.error('No "GEOSERVER_WORKSPACE" value has been provided in environment variables.')
         raise ValueError('No "GEOSERVER_WORKSPACE" value has been provided in environment variables.')
 
-    # Retrieve OCGML endpoint
-    OCGML_ENDPOINT = os.getenv('OCGML_ENDPOINT')
-    if OCGML_ENDPOINT is None:
-        logger.error('"OCGML_ENDPOINT" is missing in environment variables.')
-        raise ValueError('"OCGML_ENDPOINT" is missing in environment variables.')
-    if OCGML_ENDPOINT == '':
-        logger.error('No "OCGML_ENDPOINT" value has been provided in environment variables.')
-        raise ValueError('No "OCGML_ENDPOINT" value has been provided in environment variables.')
-
-    # Retrieve ONTOP mapping file
-    ONTOP_FILE = os.getenv('ONTOP_FILE')
-    if ONTOP_FILE is None:
-        logger.error('"ONTOP_FILE" is missing in environment variables.')
-        raise ValueError('"ONTOP_FILE" is missing in environment variables.')
-    elif not os.path.exists(ONTOP_FILE):
-        logger.error('Invalid "ONTOP_FILE" has been provided in environment variables.')
-        raise ValueError('Invalid "ONTOP_FILE" has been provided in environment variables.')
 
 # Run when module is imported
 retrieve_settings()

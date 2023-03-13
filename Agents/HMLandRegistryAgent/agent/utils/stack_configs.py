@@ -16,14 +16,13 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT, ONTOP_URL
+    global DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT
     
     # Create module views to relevant Stack clients
     stackClientsView = stackClientsGw.createModuleView()
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.docker.ContainerClient")
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig")
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig")
-    stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig")
 
     # Retrieve endpoint configurations from Stack clients
     containerClient = stackClientsView.ContainerClient()
@@ -33,9 +32,6 @@ def retrieve_settings():
     # PostgreSQL/PostGIS
     pg = stackClientsView.PostGISEndpointConfig("","","","","")
     pg_conf = containerClient.readEndpointConfig("postgis", pg.getClass())
-    # Ontop
-    ont = stackClientsView.OntopEndpointConfig("","","","","")
-    ont_conf = containerClient.readEndpointConfig("ontop", ont.getClass())
 
     # Extract PostgreSQL/PostGIS database URL
     DB_URL = pg_conf.getJdbcURL(DATABASE)
@@ -47,9 +43,6 @@ def retrieve_settings():
     # for Blazegraph)
     QUERY_ENDPOINT = bg_conf.getUrl(NAMESPACE)
     UPDATE_ENDPOINT = QUERY_ENDPOINT
-
-    # Extract ONTOP endpoint
-    ONTOP_URL = ont_conf.getUrl()
 
 
 # Run when module is imported

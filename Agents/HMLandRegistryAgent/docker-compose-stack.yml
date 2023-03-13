@@ -29,9 +29,6 @@ configs:
   geoserver:
     name: ${STACK_NAME}_geoserver
     external: true
-  ontop:
-    name: ${STACK_NAME}_ontop
-    external: true
   postgis:
     name: ${STACK_NAME}_postgis
     external: true

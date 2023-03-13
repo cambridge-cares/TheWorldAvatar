@@ -12,9 +12,8 @@ import json
 
 from agent.errorhandling.exceptions import StackException
 from agent.kgutils.javagateway import stackClientsGw, jpsBaseLibGW
-from agent.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, ONTOP_FILE
-from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, ONTOP_URL, \
-                                      QUERY_ENDPOINT
+from agent.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE
+from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT
 
 # Initialise logger
 from py4jps import agentlogging
@@ -36,48 +35,6 @@ class StackClient:
     stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.postgis.PostGISClient")
     stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.geoserver.GeoServerClient")
     stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings")
-    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.ontop.OntopClient")
-
-
-class OntopClient(StackClient):
-
-    def __init__(self, query_endpoint=ONTOP_URL):
-        # Initialise OntopClient as RemoteStoreClient
-        try:
-            self.ontop_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint)
-        except Exception as ex:
-            logger.error("Unable to initialise OntopClient.")
-            raise StackException("Unable to initialise OntopClient.") from ex
-    
-
-    def performQuery(self, query):
-        """
-        This function performs query to Ontop endpoint.
-        NOTE: Using Blazegraph with SERVICE keyword and ONTOP_URL seems to resolve
-              several connection issues observed when using Ontop client directly
-        Arguments:
-            query - SPARQL Query string
-        """
-        try:
-            response = self.ontop_client.execute(query)
-        except Exception as ex:
-            logger.error("SPARQL query not successful")
-            raise StackException("SPARQL query not successful.") from ex
-        return json.loads(response)
-
-    
-    @staticmethod
-    def upload_ontop_mapping():
-        # Upload mapping file using default properties from environment variables
-        try:
-            # Create JAVA path object to mapping file            
-            f = OntopClient.stackClients_view.java.io.File(ONTOP_FILE)
-            fp = f.toPath()
-            # Update ONTOP mapping (requires JAVA path object)
-            OntopClient.stackClients_view.OntopClient().updateOBDA(fp)
-        except Exception as ex:
-            logger.error("Unable to update OBDA mapping.")
-            raise StackException("Unable to update OBDA mapping.") from ex
 
 
 class PostGISClient(StackClient):

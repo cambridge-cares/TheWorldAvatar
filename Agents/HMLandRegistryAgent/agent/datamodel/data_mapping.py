@@ -18,6 +18,7 @@ from agent.kgutils.javagateway import jpsBaseLibGW
 GBP_PER_SM = '£ m-2'
 GBP = '£'
 
+#TODO:revisit mapping (incl. general property)
 OTHER_PROPERTY_TYPE = 'OTHER'
 PPD_PROPERTY_TYPES = {
     'SEMI-DETACHED': OBE_BUILDING,
@@ -31,12 +32,6 @@ PPD_PROPERTY_TYPES = {
 # However, YearMonth not supported by TimeSeriesCLient RDB implementation
 # --> Use to xsd:date, i.e. ISO 8601 YYYY-MM-DD
 TIME_FORMAT = 'YYYY-MM-DD'
-
-# Define full coordinate reference systems (CRS) for pyproj
-CRSs = {'EPSG:27700': 'urn:ogc:def:crs:EPSG::27700',
-        'EPSG:4326': 'urn:ogc:def:crs:EPSG::4326',
-        'crs_84': 'urn:ogc:def:crs:OGC::CRS84'
-        }
 
 ### Create required JAVA classes ###
 

@@ -14,13 +14,16 @@ import pandas as pd
 from fuzzywuzzy import fuzz, process
 
 from agent.datamodel.iris import *
-from agent.datamodel.data_mapping import TIME_FORMAT, DATACLASS
+from agent.datamodel.data_mapping import TIME_FORMAT, DATACLASS, PPD_PROPERTY_TYPES, \
+                                         OTHER_PROPERTY_TYPE
 from agent.errorhandling.exceptions import TSException
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from agent.kgutils.querytemplates import *
 from agent.utils.api_endpoints import HM_SPARQL_ENDPOINT
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.kgutils.stackclients import PostGISClient, GdalClient, GeoserverClient, \
+                                       create_geojson_for_postgis
 
 # Initialise logger
 from py4jps import agentlogging
@@ -57,6 +60,11 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
     if not kgclient_hm:
         kgclient_hm = KGClient(api_endpoint, api_endpoint)
 
+    # Initialise relevant Stack Clients and parameters
+    postgis_client = PostGISClient()
+    gdal_client = GdalClient()
+    geoserver_client = GeoserverClient()
+
     # 1) Retrieve location information for properties from list
     #    (i.e. required for query to HM Land Registry SPARQL endpoint)
     logger.info('Retrieving instantiated properties with location info ...')
@@ -66,35 +74,41 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
     # Create DataFrame from results and condition data
     obe = create_conditioned_dataframe_obe(res)
 
-    # Query Price Paid Data postcode by postcode (compromise between query speed and number of queries)
+    # Query Price Paid Data postcode by postcode (trade-off between query speed and number of queries)
     logger.info('Querying HM Land Registry Price Paid Data in batches of individual postcodes ...')
     for pc in obe['postcode'].unique():
         pc_data = obe[obe['postcode'] == pc].copy()
         pc_data.drop_duplicates(inplace=True)
 
         # 2) Retrieve Price Paid Data transaction records from HM Land Registry
-        logger.info('Retrieve Price Paid Data from Open SPARQL endpoint.')
+        logger.info('Retrieving Price Paid Data from Open SPARQL endpoint ...')
         query = get_transaction_data_for_postcodes(postcodes=[pc])
         res = kgclient_hm.performQuery(query)
 
         # Create DataFrame from results and condition data
-        logger.info('Condition retrieved Price Paid Data in DataFrame.')
+        logger.info('Conditioning retrieved Price Paid Data in DataFrame ...')
         ppd = create_conditioned_dataframe_ppd(res)
 
         # 3) Match addresses and retrieve transaction details
-        logger.info('Match addresses between instantiated EPC data and Price Paid Data addresses ...')
+        logger.info('Matching addresses between instantiated EPC data and Price Paid Data addresses ...')
         matched_tx = get_best_matching_transactions(obe_data=pc_data, ppd_data=ppd,
                                                     min_match_score=min_conf_score)
 
-        # 4) Update transaction records in KG
+        # 4) Update transaction records ...
         for tx in matched_tx:
             if tx['tx_iri']:
                 updated_tx += 1
             else:
                 instantiated_tx += 1
+            # 4.1) ... in KG
             update_query = update_transaction_record(**tx)
             if update_query:
-                kgclient_obe.performUpdate(update_query)     
+                kgclient_obe.performUpdate(update_query) 
+            
+            # 4.2) ... in PostGIS (to ensure proper styling)
+            create_geojson_for_postgis(tx, postgis_client, gdal_client, geoserver_client)
+            postgis_client.update_transaction_record(**tx)
+
     
     return instantiated_tx, updated_tx
 
@@ -195,16 +209,17 @@ def update_all_transaction_records(min_conf_score=90,
 
 def create_conditioned_dataframe_obe(sparql_results:list) -> pd.DataFrame:
         """
-            Parse SPARQL results from OBE namespace (i.e. instantiated EPC data)
-            as DataFrame and condition data to ensure proper comparison with 
-            HM Land Registry Data
+        Parse SPARQL results from OBE namespace (i.e. instantiated EPC data)
+        as DataFrame and condition data to ensure proper comparison with 
+        HM Land Registry Data
 
-            Arguments:
-                sparql_results - list of dicts with following keys
-                                 [property_iri, address_iri, postcode_iri, district_iri,
-                                  property_type, postcode, street, number, bldg_name, unit_name]
-            Returns:
-                DataFrame with dict keys as columns
+        Arguments:
+            sparql_results - list of dicts with following keys
+                                [property_iri, address_iri, postcode_iri, district_iri,
+                                property_type, postcode, street, number, bldg_name, unit_name,
+                                tx_iri]
+        Returns:
+            DataFrame with dict keys as columns
         """
         
         cols = ['property_iri', 'address_iri', 'postcode_iri', 'district_iri',
@@ -239,17 +254,17 @@ def create_conditioned_dataframe_obe(sparql_results:list) -> pd.DataFrame:
 
 def create_conditioned_dataframe_ppd(sparql_results:list) -> pd.DataFrame:
         """
-            Parse SPARQL results from HM endpoint (i.e. transaction data)
-            as DataFrame and condition data to ensure proper comparison with 
-            instantiated (address) data
+        Parse SPARQL results from HM endpoint (i.e. transaction data)
+        as DataFrame and condition data to ensure proper comparison with 
+        instantiated (address) data
 
-            Arguments:
-                sparql_results - list of dicts with following keys
-                                 [tx_iri, price, date, property_type, tx_category,
-                                  address_iri, paon, saon, street, town, postcode, 
-                                  district, county]
-            Returns:
-                DataFrame with dict keys as columns
+        Arguments:
+            sparql_results - list of dicts with following keys
+                                [tx_iri, price, date, property_type, tx_category,
+                                address_iri, paon, saon, street, town, postcode, 
+                                district, county]
+        Returns:
+            DataFrame with dict keys as columns
         """
 
         def replace_ands(nr_string):
@@ -305,26 +320,26 @@ def create_conditioned_dataframe_ppd(sparql_results:list) -> pd.DataFrame:
 
 def get_best_matching_transactions(obe_data, ppd_data, min_match_score=None) -> list:
     """
-        Find best match of instantiated address (i.e. OBE address) within 
-        Price Paid Data set queried from HM Land Registry and extract respective
-        transaction details
+    Find best match of instantiated address (i.e. OBE address) within 
+    Price Paid Data set queried from HM Land Registry and extract respective
+    transaction details
 
-        Matching procedure:
-            1) MUST MATCH: postcode + property type
-                           (postcode checking here not necessary as only called 
-                            for data from same postcode)
-            2) FUZZY MATCH: concatenated string of "street + number + building name + unit name"
-               (Matching done using fuzzywuzzy based on Levenshtein Distance)
+    Matching procedure:
+        1) MUST MATCH: postcode + property type
+                       (postcode checking here not necessary as only called 
+                        for data from same postcode)
+        2) FUZZY MATCH: concatenated string of "street + number + building name + unit name"
+           (Matching done using fuzzywuzzy based on Levenshtein Distance)
 
-        Arguments:
-            obe_data - Conditioned (address) data retrieved from KG
-                       (as returned by `create_conditioned_dataframe_obe`)
-            ppd_data - Conditioned (address) data retrieved from HM Land Registry
-                       (as returned by `create_conditioned_dataframe_ppd`)
-            min_match_score - Minimum fuzzy match score required before being
-                              considered as matched address
-        Returns:
-            List of dict(s) with transaction details to be updated/instantiated
+    Arguments:
+        obe_data - Conditioned (address) data retrieved from KG
+                   (as returned by `create_conditioned_dataframe_obe`)
+        ppd_data - Conditioned (address) data retrieved from HM Land Registry
+                   (as returned by `create_conditioned_dataframe_ppd`)
+        min_match_score - Minimum fuzzy match score required before being
+                          considered as matched address
+    Returns:
+        List of dict(s) with transaction details to be updated/instantiated
     """
     
     # Initialise return data, i.e. instantiated data + data to instantiate
@@ -356,6 +371,7 @@ def get_best_matching_transactions(obe_data, ppd_data, min_match_score=None) -> 
         # Find best match
         best = None
         if min_match_score:
+            # NOTE:
             matches = process.extract(addr, ppd_addr, scorer=fuzz.token_set_ratio)
             matches = [m for m in matches if m[1] >= min_match_score]
             if matches:
