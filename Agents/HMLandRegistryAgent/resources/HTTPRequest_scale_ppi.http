@@ -1,0 +1,15 @@
+// Example HTTP request to scale time series data for instantiated property price index
+
+// ppi_iri: IRI of instantiated property price index
+//          (without trailing '<' and '>')
+// scaler: Scaling factor by which to scale instantiated property price data
+//         (0.0 ... 1.0)
+
+POST http://165.232.172.16:5008/landregistry/update
+Content-Type: application/json
+
+{ "query": {
+      "ppi_iri": "https://www.theworldavatar.com/kg/ontobuiltenv/PropertyPriceIndex_0057c24c-20b1-4e93-9e75-261176ad924d",
+      "scaler": 0.9
+    }
+}

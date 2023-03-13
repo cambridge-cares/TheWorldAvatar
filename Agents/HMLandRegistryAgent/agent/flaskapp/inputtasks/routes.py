@@ -8,6 +8,7 @@ from flask import Blueprint, request, jsonify
 from agent.errorhandling.exceptions import InvalidInput
 from agent.datainstantiation.sales_instantiation import update_transaction_records, \
                                                         update_all_transaction_records
+from agent.datainstantiation.data_manipulation import scale_property_price_index
 
 # Initialise logger
 from py4jps import agentlogging
@@ -91,3 +92,34 @@ def api_update_all_transaction_records():
     except Exception as ex:
         logger.error('Unable to update property sales transactions: {}'.format(ex))
         return jsonify({'msg': 'Updating property sales transactions failed: ' + str(ex)}), 500
+    
+
+# Define route for API request to scale instantiated property price index data
+@inputtasks_bp.route('/landregistry/scale_ppi', methods=['POST'])
+def api_scale_property_price_index():
+    # Get received 'query' JSON object which holds all HTTP parameters
+    try:
+        query = request.json['query']
+    except Exception as ex:
+        logger.error('No JSON "query" object could be identified.')
+        raise InvalidInput('No JSON "query" object could be identified.') from ex
+    
+    # Retrieve property price index IRI which to scale
+    try:
+        ppi_iri = str(query['ppi_iri'])
+    except Exception as ex:
+        logger.error('Invalid "Property Price Index IRI" provided.')
+        raise InvalidInput('Invalid "Property Price Index IRI" provided.') from ex
+    # Retrieve scaling factor
+    try:
+        scaler = float(query['scaler'])
+    except Exception as ex:
+        logger.error('Invalid "Scaling Factor" provided.')
+        raise InvalidInput('Invalid "Scaling Factor" provided.') from ex
+    try:
+        # Scale property price index data
+        scale_property_price_index(ppi_iri=ppi_iri, scaler=scaler)
+        return jsonify({'msg': 'Property price index data scaled successfully'}), 200
+    except Exception as ex:
+        logger.error('Unable to scale property price index data: {}'.format(ex))
+        return jsonify({'msg': 'Unable to scale property price index data: ' + str(ex)}), 500
