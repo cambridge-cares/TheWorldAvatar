@@ -166,18 +166,21 @@ public class CommonQuery {
     /**
      * Add the statements for querying common metadata such as class name, their unique ifc ID, and name into the builder.
      *
-     * @param builder    A select builder object to append the statements to.
-     * @param subjectVar The subject var, zone or element, for this builder.
+     * @param builder      A select builder object to append the statements to.
+     * @param subjectVar   The subject var, zone or element, for this builder.
+     * @param uidVar       The uid var for this builder.
+     * @param nameVar      The name var for this builder.
+     * @param placementVar The placement var, zone or element, for this builder.
      */
-    public static void addBaseQueryComponents(SelectBuilder builder, String subjectVar) {
+    public static void addBaseQueryComponents(SelectBuilder builder, String subjectVar, String uidVar, String nameVar, String placementVar) {
         builder.addVar(subjectVar)
-                .addVar(UID_VAR)
-                .addVar(NAME_VAR)
-                .addVar(PLACEMENT_VAR);
-        builder.addWhere(subjectVar, IFC_ID + EXPRESS_HASSTRING, UID_VAR)
-                .addWhere(subjectVar, IFC_NAME + EXPRESS_HASSTRING, NAME_VAR)
-                .addWhere(subjectVar, IFC_OBJ_PLACEMENT, PLACEMENT_VAR)
-                .addWhere(PLACEMENT_VAR, QueryHandler.RDF_TYPE, IFCLOCALPLACEMENT);
+                .addVar(uidVar)
+                .addVar(nameVar)
+                .addVar(placementVar);
+        builder.addWhere(subjectVar, IFC_ID + EXPRESS_HASSTRING, uidVar)
+                .addWhere(subjectVar, IFC_NAME + EXPRESS_HASSTRING, nameVar)
+                .addWhere(subjectVar, IFC_OBJ_PLACEMENT, placementVar)
+                .addWhere(placementVar, QueryHandler.RDF_TYPE, IFCLOCALPLACEMENT);
     }
 
     /**

@@ -41,7 +41,7 @@ public class BuildingStructureFacade {
         // Set up query builder and its query statements
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_CEILING);
-        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
+        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR, CommonQuery.UID_VAR, CommonQuery.NAME_VAR, CommonQuery.PLACEMENT_VAR);
         CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
         // Query statements to restrict it to specifically ceiling
@@ -93,7 +93,7 @@ public class BuildingStructureFacade {
         // Set up query builder and its query statements
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_COLUMN);
-        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
+        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR, CommonQuery.UID_VAR, CommonQuery.NAME_VAR, CommonQuery.PLACEMENT_VAR);
         CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
         // Query from the model
@@ -139,7 +139,7 @@ public class BuildingStructureFacade {
         // Set up query builder and its query statements
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_DOOR);
-        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
+        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR, CommonQuery.UID_VAR, CommonQuery.NAME_VAR, CommonQuery.PLACEMENT_VAR);
         CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
         // Add class-specific properties
@@ -198,7 +198,7 @@ public class BuildingStructureFacade {
         // Set up query builder and its query statements
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_SLAB);
-        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
+        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR, CommonQuery.UID_VAR, CommonQuery.NAME_VAR, CommonQuery.PLACEMENT_VAR);
         CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
         CommonQuery.addVoidRepresentationQueryComponents(selectBuilder);
@@ -270,7 +270,7 @@ public class BuildingStructureFacade {
                 .addWhere(CommonQuery.REL_TYPE_DEFINITION_VAR, CommonQuery.IFC_RELATED_OBJECT, CommonQuery.ELEMENT_VAR)
                 .addWhere(CommonQuery.REL_TYPE_DEFINITION_VAR, CommonQuery.IFC_RELATING_TYPE, CommonQuery.ELEMENT_TYPE_VAR)
                 .addWhere(CommonQuery.ELEMENT_TYPE_VAR, CommonQuery.IFC_PREDEFINED_TYPE_SLAB, CommonQuery.IFC_SLAB_ROOF_ENUM);
-        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
+        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR, CommonQuery.UID_VAR, CommonQuery.NAME_VAR, CommonQuery.PLACEMENT_VAR);
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
         CommonQuery.addVoidRepresentationQueryComponents(selectBuilder);
         // Add class-specific properties for querying their spatial location
@@ -347,7 +347,7 @@ public class BuildingStructureFacade {
         wallClassUnionBuilder.addUnion(wallStandardClassUnionBuilder);
         selectBuilder.addWhere(wallClassUnionBuilder);
         // Add common properties
-        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
+        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR, CommonQuery.UID_VAR, CommonQuery.NAME_VAR, CommonQuery.PLACEMENT_VAR);
         CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
         // Add class-specific properties
@@ -426,7 +426,7 @@ public class BuildingStructureFacade {
         // Set up query builder and its query statements
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_WINDOW);
-        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
+        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR, CommonQuery.UID_VAR, CommonQuery.NAME_VAR, CommonQuery.PLACEMENT_VAR);
         CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
         // Add class-specific properties

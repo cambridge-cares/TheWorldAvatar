@@ -14,6 +14,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CommonQueryTest {
     private static final String TEST_ZONE_VAR = "?zone";
     private static final String TEST_ZONE_VAR_REGEX = "\\" + TEST_ZONE_VAR;
+    private static final String TEST_UID_VAR = "?uid";
+    private static final String TEST_UID_VAR_REGEX = "\\" + TEST_UID_VAR;
+    private static final String TEST_NAME_VAR = "?name";
+    private static final String TEST_NAME_VAR_REGEX = "\\" + TEST_NAME_VAR;
+    private static final String TEST_PLACEMENT_VAR = "?placement";
+    private static final String TEST_PLACEMENT_VAR_REGEX = "\\" + TEST_PLACEMENT_VAR;
 
     @Test
     void testAddBaseQueryComponents() {
@@ -21,7 +27,7 @@ class CommonQueryTest {
         SelectBuilder builder = new SelectBuilder();
         NamespaceMapper.addSubqueryBuilderNamespaces(builder);
         // Execute method
-        CommonQuery.addBaseQueryComponents(builder, TEST_ZONE_VAR);
+        CommonQuery.addBaseQueryComponents(builder, TEST_ZONE_VAR, TEST_UID_VAR, TEST_NAME_VAR, TEST_PLACEMENT_VAR);
         // Test result
         JunitTestUtils.doesExpectedListExist(genExpectedBaseQueryStatements(), builder.buildString());
     }
@@ -62,11 +68,11 @@ class CommonQueryTest {
 
     private List<String> genExpectedBaseQueryStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add("SELECT  " + TEST_ZONE_VAR_REGEX + " \\?uid \\?name \\?placement");
-        expected.add(TEST_ZONE_VAR_REGEX + " ifc:globalId_IfcRoot/express:hasString \\?uid .");
-        expected.add(TEST_ZONE_VAR_REGEX + " ifc:name_IfcRoot/express:hasString \\?name .");
-        expected.add(TEST_ZONE_VAR_REGEX + "     ifc:objectPlacement_IfcProduct  \\?placement .");
-        expected.add("\\?placement  rdf:type            ifc:IfcLocalPlacement}");
+        expected.add("SELECT  " + TEST_ZONE_VAR_REGEX + " " + TEST_UID_VAR_REGEX + " " + TEST_NAME_VAR_REGEX + " " + TEST_PLACEMENT_VAR_REGEX);
+        expected.add(TEST_ZONE_VAR_REGEX + " ifc:globalId_IfcRoot/express:hasString " + TEST_UID_VAR_REGEX + " .");
+        expected.add(TEST_ZONE_VAR_REGEX + " ifc:name_IfcRoot/express:hasString " + TEST_NAME_VAR_REGEX + " .");
+        expected.add(TEST_ZONE_VAR_REGEX + "     ifc:objectPlacement_IfcProduct  " + TEST_PLACEMENT_VAR_REGEX);
+        expected.add(TEST_PLACEMENT_VAR_REGEX + "  rdf:type            ifc:IfcLocalPlacement}");
         return expected;
     }
 
