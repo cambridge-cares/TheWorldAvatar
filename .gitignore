@@ -121,5 +121,5 @@ JPS_VIRTUALSENSOR/DispersionVis/index.html
 obsolete/*
 **/credentials/
 **/.m2/
-JPS_VIRTUALSENSOR/ShipInputAgent/data/*
+JPS_VIRTUALSENSOR/ShipInputAgent/data/*.json
 *.tif
