@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  python-service:
+    image: docker.cmclinnovations.com/python-service:1.0.1
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    build:
+      target: production
+    ports:
+      - 5000:5000
+    networks:
+      - stack

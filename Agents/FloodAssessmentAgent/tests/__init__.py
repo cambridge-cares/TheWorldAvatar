@@ -11,9 +11,10 @@
 #
 # ----------------------------------------------------------------------------------
 from . import mockutils
-from .mockutils import env_configs_mock, stack_configs_mock
+from .mockutils import env_configs_mock, stack_configs_mock, stackclients_mock
 import sys
 
 sys.modules["floodassessment.utils"] = mockutils
 sys.modules['floodassessment.utils.env_configs'] = env_configs_mock
 sys.modules['floodassessment.utils.stack_configs'] = stack_configs_mock
+sys.modules['floodassessment.utils.stackclients'] = stackclients_mock
