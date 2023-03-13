@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -476,10 +477,18 @@ public class DockerClient extends BaseClient implements ContainerManager<com.git
 
     public Optional<Container> getContainer(String containerName, boolean showAll) {
         try (ListContainersCmd listContainersCmd = internalClient.listContainersCmd()) {
-            return listContainersCmd.withNameFilter(List.of(containerName))
+            Pattern fullContainerNamePattern = Pattern
+                    .compile("/?" + StackClient.getStackName() + "-" + containerName + "(?:\\..*)?");
+            List<Container> possibleContainers = listContainersCmd.withNameFilter(List.of(containerName))
                     .withLabelFilter(StackClient.getStackNameLabelMap())
-                    .withShowAll(showAll).exec()
-                    .stream().findAny();
+                    .withShowAll(showAll).exec();
+            return possibleContainers
+                    .stream()
+                    .filter(container -> Stream.of(container.getNames())
+                            .anyMatch(name -> {
+                                return fullContainerNamePattern.matcher(name).matches();
+                            }))
+                    .findAny();
         }
     }
 

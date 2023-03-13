@@ -235,7 +235,8 @@ public class DockerService extends AbstractService
 
     public void startContainer(ContainerService service) {
 
-        Optional<Container> container = dockerClient.getContainer(service.getContainerName());
+        Optional<Container> container = dockerClient
+                .getContainer(StackClient.removeStackName(service.getContainerName()));
 
         if (container.isEmpty() || !container.get().getState().equalsIgnoreCase("running")) {
             // No container matching that config
@@ -438,7 +439,7 @@ public class DockerService extends AbstractService
                 containerSpecConfig.withConfigID(configID.get());
             } else {
                 throw new RuntimeException("Failed to find Config with name '"
-                        + containerSpecConfig.getConfigName() + ".");
+                        + containerSpecConfig.getConfigName() + "'.");
             }
         }
     }

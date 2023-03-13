@@ -9,6 +9,15 @@ public class Connection {
     private URI uri;
     private URI externalPath;
 
+    public Connection() {
+    }
+
+    public Connection(URL url, URI uri, URI externalPath) {
+        this.url = url;
+        this.uri = uri;
+        this.externalPath = externalPath;
+    }
+
     public URL getUrl() {
         return url;
     }
