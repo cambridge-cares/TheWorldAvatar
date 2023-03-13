@@ -20,21 +20,17 @@ import java.util.List;
 
 public class BuildingsTest {
 
-    String simulationDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\21\\";
+    String simulationDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\24\\";
 
     //    Two equivalent polygons which define a rectangular region within Jurong Island. The values in wkt are in EPSG:4326/WGS84 coordinates
     //    while those in wkt2 are in EPSG:3857 coordinates.
     // For EPSG:4326/Wgs84 format, longitude is specified before latitude.
-    String wkt = "POLYGON ((103.672485 1.259121, 103.716345 1.259121, 103.716345 1.281174, 103.672485 1.281174, 103.672485 1.259121))" ;
-    String wkt2 = "POLYGON ((11540768.2395 140175.9917, 11540768.2395 142631.5238, 11545650.7123 142631.5238, 11545650.7123 140175.9917, 11540768.2395 140175.9917))" ;
-
-    String wkt3 = "POLYGON ((103.651 1.217, 103.742 1.217, 103.742 1.308, 103.651 1.308, 103.651 1.217))" ;
+    
+    String wkt = "POLYGON ((103.651 1.217, 103.742 1.217, 103.742 1.308, 103.651 1.308, 103.651 1.217))" ;
     GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(),4326);
-    Polygon scope = (Polygon) new WKTReader(geometryFactory).read(wkt3);
-    int nx = 10;
-    int ny = 10;
-
-    private QueryClient queryClient;
+    Polygon scope = (Polygon) new WKTReader(geometryFactory).read(wkt);
+    int nx = 100;
+    int ny = 100;
 
     Buildings bp = new Buildings() ;
 
@@ -62,12 +58,26 @@ public class BuildingsTest {
         int numBuildings = 10;
         bp.init(Path.of(simulationDirectory), scope, srid, nx,ny);
         Assertions.assertTrue(bp.locindex > -1);
-//        bp.getStacksBuildings();
-        bp.getProperties();
+ 
+        bp.getProperties();      
 
         Assertions.assertEquals(bp.StackEmissions.size(),numStacks);
-        Assertions.assertEquals(bp.BPIPPRMStackInput.size(),1+numStacks);
+        Assertions.assertEquals(bp.BPIPPRMStackInput.size(),numStacks);
         Assertions.assertEquals(bp.BuildingVertices.size(),numBuildings);
+        bp.bpipprmDirectory = Path.of(simulationDirectory);
+        bp.aermodDirectory = Path.of(simulationDirectory);
+
+        int res1 = bp.updateElevationData();
+        Assertions.assertEquals(res1,0);
+        int res3 = bp.createBPIPPRMInput();
+        Assertions.assertEquals(res3,0);
+        int res2 = bp.createAERMODSourceInput();
+        Assertions.assertEquals(res2,0);
+        int res4 = bp.createAERMODReceptorInput(nx, ny);
+        Assertions.assertEquals(res4,0);
+
+
+
 
         /* 
 
