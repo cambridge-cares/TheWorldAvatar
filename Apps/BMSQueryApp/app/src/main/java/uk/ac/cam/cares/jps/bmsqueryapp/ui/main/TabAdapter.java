@@ -21,7 +21,7 @@ public class TabAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return new TabFragment(position);
+        return new VisualizationFragment();
     }
 
     @Override
