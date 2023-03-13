@@ -27,7 +27,7 @@ public final class ServiceManager {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final URL DEFAULT_CONFIG_DIR = ServiceManager.class.getResource("defaults");
-    private static final Path USER_CONFIG_DIR = Path.of("/inputs/config");
+    private static final Path USER_CONFIG_DIR = StackClient.STACK_CONFIG_DIR.resolve("services");
 
     @JsonProperty(value = "services")
     private final Map<String, ServiceConfig> serviceConfigs = new HashMap<>();
@@ -190,7 +190,7 @@ public final class ServiceManager {
         return getService(otherServiceName);
     }
 
-    public void initialiseUserServices(String stackName) {
+    public void initialiseAllUserServices(String stackName) {
         userServices.forEach(serviceName -> initialiseService(stackName, serviceName));
     }
 
