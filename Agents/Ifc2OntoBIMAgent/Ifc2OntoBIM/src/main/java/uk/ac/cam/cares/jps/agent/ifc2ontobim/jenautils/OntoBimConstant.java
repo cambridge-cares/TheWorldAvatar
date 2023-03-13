@@ -54,7 +54,11 @@ public class OntoBimConstant {
     public static final String BIM_HAS_VOID = NamespaceMapper.BIM_NAMESPACE + "hasVoid";
     public static final String BIM_HAS_VOID_TYPE = NamespaceMapper.BIM_NAMESPACE + "hasVoidType";
     public static final String BUILDING_STRUCTURE_CONSISTS_OF = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + "consistsOf";
-
+    // OntoBuildingStructure stair properties
+    public static final String BUILDING_STRUCTURE_HAS_RISER_NUM = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + "hasNumOfRiser";
+    public static final String BUILDING_STRUCTURE_HAS_TREAD_NUM = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + "hasNumOfTread";
+    public static final String BUILDING_STRUCTURE_HAS_RISER_HEIGHT = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + "hasRiserHeight";
+    public static final String BUILDING_STRUCTURE_HAS_TREAD_LENGTH = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + "hasTreadLength";
     // OntoBIM modelling position properties
     public static final String BIM_HAS_LOCAL_POSITION = NamespaceMapper.BIM_NAMESPACE + "hasLocalPosition";
     // OntoBim classes
@@ -94,6 +98,16 @@ public class OntoBimConstant {
     public static final String BIM_FLOOR_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + FLOOR_CLASS;
     public static final String ROOF_CLASS = "Roof";
     public static final String BIM_ROOF_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + ROOF_CLASS;
+    public static final String STAIR_CLASS = "Stair";
+    public static final String BIM_STAIR_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + STAIR_CLASS;
+    public static final String STAIR_FLIGHT_CLASS = "StairFlight";
+    public static final String BIM_STAIR_FLIGHT_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + STAIR_FLIGHT_CLASS;
+    public static final String STAIR_LANDING_CLASS = "Landing";
+    public static final String BIM_STAIR_LANDING_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + STAIR_LANDING_CLASS;
+    public static final String STAIR_RAILING_CLASS = "Railing";
+    public static final String BIM_STAIR_RAILING_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + STAIR_RAILING_CLASS;
+    public static final String STAIR_STRUCT_COMP_CLASS = "StairStructuralComponent";
+    public static final String BIM_STAIR_STRUCT_COMP_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + STAIR_STRUCT_COMP_CLASS;
     public static final String WALL_CLASS = "Wall";
     public static final String BIM_WALL_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + WALL_CLASS;
     public static final String WINDOW_CLASS = "Window";
