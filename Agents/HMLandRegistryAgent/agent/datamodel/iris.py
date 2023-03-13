@@ -1,6 +1,6 @@
 ###--- TBox and ABox URL ---###
-TBOX_URL = 'http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl'
-ABOX_URL = 'http://www.theworldavatar.com/kb/ontobuiltenv/OntoBuiltEnv.owl'
+TBOX_URL = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl'
+# alternative: 'http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl'
 
 ###--- Common Base URLs ---###
 # External ontologies

@@ -90,7 +90,7 @@ def instantiate_GBP_units():
     return query
 
 
-def upload_ontology(tbox_url=TBOX_URL, abox_url=ABOX_URL):
+def upload_ontology(tbox_url=TBOX_URL, abox_url=None):
     """
     Uploads TBox and ABox to KG namespace
 
@@ -117,7 +117,8 @@ def upload_ontology(tbox_url=TBOX_URL, abox_url=ABOX_URL):
     if not res:
         # Upload TBox and ABox if not already instantiated
         temp_fp = 'tmp.owl'
-        for i in [tbox_url, abox_url]:
+        to_upload = [f for f in [tbox_url, abox_url] in f]
+        for i in to_upload:
             try:
                 # Retrieve .owl file
                 logger.info(f'Retrieving {i} from TWA ...')
