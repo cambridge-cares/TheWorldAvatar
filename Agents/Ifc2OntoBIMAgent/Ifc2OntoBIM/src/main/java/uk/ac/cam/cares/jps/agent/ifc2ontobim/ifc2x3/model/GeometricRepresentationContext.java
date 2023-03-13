@@ -49,11 +49,11 @@ public class GeometricRepresentationContext {
      */
     public void constructStatements(LinkedHashSet<Statement> statementSet) {
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_GEOM_CONTEXT_CLASS);
-        StatementHandler.addStatementWithDoubleLiteral(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_SPACE_DIMENSION, this.dimension);
+        StatementHandler.addStatementWithNumberLiteral(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_SPACE_DIMENSION, this.dimension);
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_WCS, this.wcsIri);
         StatementHandler.addStatement(statementSet, this.wcsIri, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_LOCAL_PLACEMENT_CLASS);
         if (this.precision != null) {
-            StatementHandler.addStatementWithDoubleLiteral(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_PRECISION, this.precision);
+            StatementHandler.addStatementWithNumberLiteral(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_PRECISION, this.precision);
         }
         if (this.northDirIri != null) {
             StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_TRUE_NORTH, this.northDirIri);

@@ -60,14 +60,14 @@ public class StatementHandler {
     }
 
     /**
-     * Generate a statement with the given subject, predicate, and double literal, and append it to the statement set.
+     * Generate a statement with the given subject, predicate, and numerical literal, and append it to the statement set.
      *
      * @param statementSet Set of statements to append the newly generated statement.
      * @param subject      The subject node with a valid URI.
      * @param predicate    The predicate node with a valid URI.
-     * @param object       A double literal.
+     * @param object       A number literal, which can be doubles, integers, and more.
      */
-    public static void addStatementWithDoubleLiteral(LinkedHashSet<Statement> statementSet, String subject, String predicate, Double object) {
+    public static void addStatementWithNumberLiteral(LinkedHashSet<Statement> statementSet, String subject, String predicate, Number object) {
         // Validates the subject and predicate URI
         validateUri(subject);
         validateUri(predicate);

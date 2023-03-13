@@ -83,7 +83,7 @@ public class IfcBuildingRepresentation extends IfcAbstractRepresentation {
             StatementHandler.addStatement(statementSet, refElevHeightInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.HEIGHT_CLASS);
             StatementHandler.addStatement(statementSet, refElevHeightInst, OntoBimConstant.OM_HAS_VALUE, refElevMeasureInst);
             StatementHandler.addStatement(statementSet, refElevMeasureInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.MEASURE_CLASS);
-            StatementHandler.addStatementWithDoubleLiteral(statementSet, refElevMeasureInst, OntoBimConstant.OM_HAS_NUMERICAL_VALUE, this.refElevation);
+            StatementHandler.addStatementWithNumberLiteral(statementSet, refElevMeasureInst, OntoBimConstant.OM_HAS_NUMERICAL_VALUE, this.refElevation);
             StatementHandler.addStatement(statementSet, refElevMeasureInst, OntoBimConstant.OM_HAS_UNIT, refElevLengthInst);
             StatementHandler.addStatement(statementSet, refElevLengthInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.LENGTH_CLASS);
             StatementHandler.addStatement(statementSet, refElevLengthInst, OntoBimConstant.SKOS_NOTATION, METRE_UNIT, false);
@@ -97,7 +97,7 @@ public class IfcBuildingRepresentation extends IfcAbstractRepresentation {
             StatementHandler.addStatement(statementSet, terElevHeightInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.HEIGHT_CLASS);
             StatementHandler.addStatement(statementSet, terElevHeightInst, OntoBimConstant.OM_HAS_VALUE, terElevMeasureInst);
             StatementHandler.addStatement(statementSet, terElevMeasureInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.MEASURE_CLASS);
-            StatementHandler.addStatementWithDoubleLiteral(statementSet, terElevMeasureInst, OntoBimConstant.OM_HAS_NUMERICAL_VALUE, this.terrainElevation);
+            StatementHandler.addStatementWithNumberLiteral(statementSet, terElevMeasureInst, OntoBimConstant.OM_HAS_NUMERICAL_VALUE, this.terrainElevation);
             StatementHandler.addStatement(statementSet, terElevMeasureInst, OntoBimConstant.OM_HAS_UNIT, terElevLengthInst);
             StatementHandler.addStatement(statementSet, terElevLengthInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.LENGTH_CLASS);
             StatementHandler.addStatement(statementSet, terElevLengthInst, OntoBimConstant.SKOS_NOTATION, METRE_UNIT, false);

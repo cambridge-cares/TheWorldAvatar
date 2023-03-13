@@ -115,16 +115,16 @@ public class IfcSiteRepresentation extends IfcAbstractRepresentation {
             // Add the statements we are interested in
             StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_LAT, latInst);
             StatementHandler.addStatement(statementSet, latInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_COMPOUND_PLANE_ANGLE);
-            StatementHandler.addStatementWithDoubleLiteral(statementSet, latInst, OntoBimConstant.BIM_HAS_DEGREE, this.latitudeDegree);
-            StatementHandler.addStatementWithDoubleLiteral(statementSet, latInst, OntoBimConstant.BIM_HAS_MINUTE, this.latitudeMinute);
-            StatementHandler.addStatementWithDoubleLiteral(statementSet, latInst, OntoBimConstant.BIM_HAS_SEC, this.latitudeSecond);
-            StatementHandler.addStatementWithDoubleLiteral(statementSet, latInst, OntoBimConstant.BIM_HAS_MILSEC, this.latitudeMilSec);
+            StatementHandler.addStatementWithNumberLiteral(statementSet, latInst, OntoBimConstant.BIM_HAS_DEGREE, this.latitudeDegree);
+            StatementHandler.addStatementWithNumberLiteral(statementSet, latInst, OntoBimConstant.BIM_HAS_MINUTE, this.latitudeMinute);
+            StatementHandler.addStatementWithNumberLiteral(statementSet, latInst, OntoBimConstant.BIM_HAS_SEC, this.latitudeSecond);
+            StatementHandler.addStatementWithNumberLiteral(statementSet, latInst, OntoBimConstant.BIM_HAS_MILSEC, this.latitudeMilSec);
             StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_LONG, longInst);
             StatementHandler.addStatement(statementSet, longInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_COMPOUND_PLANE_ANGLE);
-            StatementHandler.addStatementWithDoubleLiteral(statementSet, longInst, OntoBimConstant.BIM_HAS_DEGREE, this.longitudeDegree);
-            StatementHandler.addStatementWithDoubleLiteral(statementSet, longInst, OntoBimConstant.BIM_HAS_MINUTE, this.longitudeMinute);
-            StatementHandler.addStatementWithDoubleLiteral(statementSet, longInst, OntoBimConstant.BIM_HAS_SEC, this.longitudeSecond);
-            StatementHandler.addStatementWithDoubleLiteral(statementSet, longInst, OntoBimConstant.BIM_HAS_MILSEC, this.longitudeMilSec);
+            StatementHandler.addStatementWithNumberLiteral(statementSet, longInst, OntoBimConstant.BIM_HAS_DEGREE, this.longitudeDegree);
+            StatementHandler.addStatementWithNumberLiteral(statementSet, longInst, OntoBimConstant.BIM_HAS_MINUTE, this.longitudeMinute);
+            StatementHandler.addStatementWithNumberLiteral(statementSet, longInst, OntoBimConstant.BIM_HAS_SEC, this.longitudeSecond);
+            StatementHandler.addStatementWithNumberLiteral(statementSet, longInst, OntoBimConstant.BIM_HAS_MILSEC, this.longitudeMilSec);
         }
         if (this.refElevation != null) {
             // Generate the instances
@@ -136,7 +136,7 @@ public class IfcSiteRepresentation extends IfcAbstractRepresentation {
             StatementHandler.addStatement(statementSet, heightInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.HEIGHT_CLASS);
             StatementHandler.addStatement(statementSet, heightInst, OntoBimConstant.OM_HAS_VALUE, measureInst);
             StatementHandler.addStatement(statementSet, measureInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.MEASURE_CLASS);
-            StatementHandler.addStatementWithDoubleLiteral(statementSet, measureInst, OntoBimConstant.OM_HAS_NUMERICAL_VALUE, this.refElevation);
+            StatementHandler.addStatementWithNumberLiteral(statementSet, measureInst, OntoBimConstant.OM_HAS_NUMERICAL_VALUE, this.refElevation);
             StatementHandler.addStatement(statementSet, measureInst, OntoBimConstant.OM_HAS_UNIT, lengthInst);
             StatementHandler.addStatement(statementSet, lengthInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.LENGTH_CLASS);
             StatementHandler.addStatement(statementSet, lengthInst, OntoBimConstant.SKOS_NOTATION, METRE_UNIT, false);
