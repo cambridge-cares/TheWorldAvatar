@@ -141,7 +141,7 @@ The default SPARQL endpoint, i.e. namespace, used to assimilate the sales data i
 &nbsp;
 ## Provided functionality
 
-An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5002/]. All requests are to be sent as POST requests and all available endpoints are listed below. Example requests are provided in the [resources] folder.
+An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5008/]. All requests are to be sent as POST requests and all available endpoints are listed below. Example requests are provided in the [resources] folder.
 
 - POST request to update transaction record(s) for single property/list of properties:
   > `/landregistry/update`
