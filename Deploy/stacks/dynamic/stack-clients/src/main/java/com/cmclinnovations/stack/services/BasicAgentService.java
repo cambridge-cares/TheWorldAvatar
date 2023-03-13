@@ -14,13 +14,18 @@ public class BasicAgentService extends ContainerService {
 
     public BasicAgentService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(stackName, serviceManager, config);
+
         endpointConfigMap = new HashMap<>();
-        config.getEndpoints().entrySet().forEach(entry -> {
-            String endpointConfigName = this.getName() + "-" + entry.getKey();
+
+        this.getConfig().getEndpoints().entrySet().forEach(entry -> {
             String url = entry.getValue().getUrl().toString().replace("localhost", this.getName());
             BasicEndpointConfig endpointConfig = new BasicEndpointConfig(endpointConfigName, url);
             endpointConfigMap.put(endpointConfigName, endpointConfig);
-            writeEndpointConfig(endpointConfig);
         });
+    }
+
+    @Override
+    public void doPostStartUpConfiguration() {
+        endpointConfigMap.entrySet().forEach(entry -> writeEndpointConfig(entry.getValue()));
     }
 }
