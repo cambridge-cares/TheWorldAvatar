@@ -9,7 +9,7 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**
- * Provides reusable query statements for spatial zones.
+ * Provides reusable query statements and common fields for IfcOwl queries.
  *
  * @author qhouyee
  */
@@ -193,7 +193,7 @@ public class CommonQuery {
     }
 
     /**
-     * Add the statements for querying common metadata such as class name, their unique ifc ID, and name into the builder.
+     * Add the statements for querying the geometric model representation of elements into the builder.
      *
      * @param builder A select builder object to append the statements to.
      */
@@ -250,6 +250,11 @@ public class CommonQuery {
         builder.addWhere(subgroupBuilder);
     }
 
+    /**
+     * Add the statements for querying the geometric void representation of elements into the builder.
+     *
+     * @param builder A select builder object to append the statements to.
+     */
     public static void addVoidRepresentationQueryComponents(SelectBuilder builder) {
         SelectBuilder optionalBuilder = new SelectBuilder();
         NamespaceMapper.addSubqueryBuilderNamespaces(optionalBuilder);
