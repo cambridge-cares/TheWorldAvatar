@@ -18,6 +18,7 @@ public class BasicAgentService extends ContainerService {
         endpointConfigMap = new HashMap<>();
 
         this.getConfig().getEndpoints().entrySet().forEach(entry -> {
+            String endpointConfigName = config.getName().substring(stackName.length() + 1) + "-" + entry.getKey();
             String url = entry.getValue().getUrl().toString().replace("localhost", this.getName());
             BasicEndpointConfig endpointConfig = new BasicEndpointConfig(endpointConfigName, url);
             endpointConfigMap.put(endpointConfigName, endpointConfig);
