@@ -1,10 +1,10 @@
 ################################################
 # Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 26 Sep 2022                            #
+# Date: 14 Feb 2023                            #
 ################################################
 
-# The purpose of this module is to provide functionality to 
-# interact with the StacClients
+# The purpose of this module is to provide functionality to interact with the
+# overarching Docker Stack using the Stack Clients wrapped by py4jps
 
 import glob
 import jaydebeapi
@@ -13,64 +13,75 @@ import json
 from py4jps import agentlogging
 from agent.errorhandling.exceptions import StackException
 from agent.kgutils.javagateway import stackClientsGw, jpsBaseLibGW
-from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, ONTOP_URL
+from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, ONTOP_URL, \
+                                      QUERY_ENDPOINT
 from agent.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, ONTOP_FILE
-
 
 # Initialise logger
 logger = agentlogging.get_logger("prod")
 
-class OntopClient:
-    
+
+class StackClient:
+    # Define parent class for all Stack Clients to minimise number of required
+    # JAVA resource views and import the required java classes
+
+    # Create ONE JPS_BASE_LIB view
+    jpsBaseLib_view = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+
+    # Create ONE Stack Clients view
+    stackClients_view = stackClientsGw.createModuleView()
+    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.gdal.GDALClient")
+    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions")
+    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.postgis.PostGISClient")
+    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.geoserver.GeoServerClient")
+    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings")
+    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.ontop.OntopClient")
+
+
+class OntopClient(StackClient):
+
     def __init__(self, query_endpoint=ONTOP_URL):
-
-        # create a JVM module view and use it to import the required java classes
-        self.jpsBaseLibView = jpsBaseLibGW.createModuleView()
-        jpsBaseLibGW.importPackages(self.jpsBaseLibView,"uk.ac.cam.cares.jps.base.query.*")
-
+        # Initialise OntopClient as RemoteStoreClient
         try:
-            # Initialise OntopClient as RemoteStoreClient
-            self.ontop_client = self.jpsBaseLibView.RemoteStoreClient(query_endpoint)
+            self.ontop_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint)
         except Exception as ex:
             logger.error("Unable to initialise OntopClient.")
             raise StackException("Unable to initialise OntopClient.") from ex
     
+
     def performQuery(self, query):
         """
-            This function performs query to Ontop endpoint.
-            Arguments:
-                query - SPARQL Query string
+        This function performs query to Ontop endpoint.
+        NOTE: Using Blazegraph with SERVICE keyword and ONTOP_URL seems to resolve
+              several connection issues observed when using Ontop client directly
+        Arguments:
+            query - SPARQL Query string
         """
         try:
             response = self.ontop_client.execute(query)
         except Exception as ex:
-            logger.error("SPARQL query not successful.")
+            logger.error("SPARQL query not successful")
             raise StackException("SPARQL query not successful.") from ex
         return json.loads(response)
 
     
     @staticmethod
     def upload_ontop_mapping():
-        # Initialise ONTOP client and upload mapping file using default properties
-        # from environment variables
-
-        # Create a JVM module view and use it to import the required java classes
-        stackClientsView = stackClientsGw.createModuleView()
-        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.ontop.OntopClient")
-
+        # Upload mapping file using default properties from environment variables
         try:
-            # Create JAVA path object to mapping file
-            f = stackClientsView.java.io.File(ONTOP_FILE)
+            # Create JAVA path object to mapping file            
+            f = OntopClient.stackClients_view.java.io.File(ONTOP_FILE)
             fp = f.toPath()
             # Update ONTOP mapping (requires JAVA path object)
-            stackClientsView.OntopClient().updateOBDA(fp)
+            OntopClient.stackClients_view.OntopClient().updateOBDA(fp)
         except Exception as ex:
             logger.error("Unable to update OBDA mapping.")
             raise StackException("Unable to update OBDA mapping.") from ex
 
 
-class PostGISClient:
-
+class PostGISClient(StackClient):
+    
     def __init__(self, dburl=DB_URL, dbuser=DB_USER, dbpassword=DB_PASSWORD,
                  database=DATABASE):
         self.dburl = dburl
@@ -87,8 +98,12 @@ class PostGISClient:
     
     def connection_properties(self):
         """
-            This function returns dictionary of JDBC connection properties 
-            to PostgreSQL database
+        This function returns dictionary of JDBC connection properties 
+        to PostgreSQL database
+        NOTE: This function is necessary as stack clients' PostGISClient does not provide
+              any general functionality to execute SQL queries; hence, they need to be
+              defined here and executed using jaydebeapi 
+              (which requires all JDBC properties incl. driver)
         """
         conn = []
         conn.append('org.postgresql.Driver')
@@ -106,7 +121,7 @@ class PostGISClient:
 
     def check_table_exists(self, table=LAYERNAME):
         """
-            This function checks whether a given table exists in the database
+        This function checks whether a given table exists in the database
         """
         try:
             with jaydebeapi.connect(*self.conn_props) as conn:
@@ -122,50 +137,13 @@ class PostGISClient:
             raise StackException('Unsuccessful JDBC interaction.') from ex
 
 
-    def check_polygon_feature_exists(self, geojson_geometry, feature_type, table=LAYERNAME):
-        """
-            This function checks whether an identical geo-feature already exists in PostGIS table
-            
-            Arguments:
-                geojson_geometry - GeoJSON Geometry fragments, i.e. only content of
-                                   'geometry' field of entire GeoJSON, e.g.
-                                   '{"type": "Polygon", 
-                                             "coordinates": [[[0.4391965267561903, 52.7499954541537], 
-                                                              [0.43934282344250064, 52.75000143684585], 
-                                                              ... ]]
-                                    }'
-
-            Returns True if point already exists, False otherwise
-        """
-        try:
-            with jaydebeapi.connect(*self.conn_props) as conn:
-                with conn.cursor() as curs:
-                    curs.execute(f'SELECT type=\'{feature_type}\' AND \
-                                   ST_Equals(wkb_geometry, ST_SetSRID(ST_GeomFromGeoJSON(\'{geojson_geometry}\'), 4326)) from {table}')
-                    # Fetching the SQL results from the cursor only works on first call
-                    # Recurring calls return empty list and curs.execute needs to be run again
-                    res = curs.fetchall()
-                    # Extract Boolean results from tuples and check for any Trues
-                    res = [r[0] for r in res]
-                    res = any(res)
-                    return res
-        except Exception as ex:
-            logger.error(f'Unsuccessful JDBC interaction: {ex}')
-            raise StackException('Unsuccessful JDBC interaction.') from ex
-
-
-class GdalClient:
+class GdalClient(StackClient):
     
     def __init__(self):
-
-        # Create a JVM module view and use it to import the required java classes
-        stackClientsView = stackClientsGw.createModuleView()
-        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.gdal.GDALClient")
-        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions")
-
+        # Initialise GdalClient with default upload/conversion settings
         try:
-            self.client = stackClientsView.GDALClient()
-            self.orgoptions = stackClientsView.Ogr2OgrOptions()
+            self.client = self.stackClients_view.GDALClient()
+            self.orgoptions = self.stackClients_view.Ogr2OgrOptions()
         except Exception as ex:
             logger.error("Unable to initialise GdalClient.")
             raise StackException("Unable to initialise GdalClient.") from ex
@@ -173,27 +151,23 @@ class GdalClient:
 
     def uploadGeoJSON(self, geojson_string, database=DATABASE, table=LAYERNAME):
         """
-            Calls StackClient function with default upload settings
+        Calls StackClient function with default upload settings
         """
         self.client.uploadVectorStringToPostGIS(database, table, geojson_string,
                                                 self.orgoptions, True)
 
 
-class GeoserverClient:
+class GeoserverClient(StackClient):
 
     def __init__(self):
 
-        # Create a JVM module view and use it to import the required java classes
-        stackClientsView = stackClientsGw.createModuleView()
-        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.geoserver.GeoServerClient")
-        stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings")
-
+        # Initialise Geoserver with default settings
         try:
-            self.client = stackClientsView.GeoServerClient()
-            self.vectorsettings = stackClientsView.GeoServerVectorSettings()
+            self.client = self.stackClients_view.GeoServerClient()
+            self.vectorsettings = self.stackClients_view.GeoServerVectorSettings()
         except Exception as ex:
             logger.error("Unable to initialise GeoServerClient.")
-            raise StackException("Unable to initialise GeoServerClient.") from ex
+            raise StackException("Unable to initialise GeoServerClient.") from ex   
 
 
     def create_workspace(self, workspace=GEOSERVER_WORKSPACE):
@@ -204,9 +178,37 @@ class GeoserverClient:
                                    geoserver_layer=LAYERNAME,
                                    postgis_database=DATABASE):
         """
-            Calls StackClient function with default settings
-            Please note: Postgis database table assumed to have same name as
-                         Geoserver layer
+        Calls StackClient function with default settings
+        Please note: Postgis database table assumed to have same name as
+                     Geoserver layer
         """
         self.client.createPostGISLayer(None, geoserver_workspace, postgis_database,
                                        geoserver_layer, self.vectorsettings)
+
+
+def create_geojson_for_postgis(building_iri : str, property_estimate : float = None,
+                               kg_endpoint: str = QUERY_ENDPOINT) -> str:
+    """
+    Create (Geo)JSON string for upload to PostGIS database
+
+    Initially, the GeoJSON needed to contain at least "name", "iri", and "endpoint"
+    for FeatureInfoAgent to work (i.e. be able to retrieve data from PostGIS)
+    This is no longer the case, but these properties are kept for consistency with
+    previous agent implementations, i.e. 
+    https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/MetOfficeAgent/agent/kgutils/stackclients.py
+
+    Further properties can be added as needed, i.e. for styling purposes
+    """
+
+    # Define properties
+    props = {
+        # Initially required by DTVF (potentially outdated, but kept for reference)
+        'iri': building_iri,
+        'name': building_iri.split('/')[-1].replace('>',''),
+        'endpoint': kg_endpoint,
+        # Property value estimate (upload required for styling purposes)
+        'price': property_estimate,
+    }
+
+    # Return (Geo)JSON string    
+    return props.dumps(props)

@@ -70,12 +70,16 @@ def create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT,
 
 def instantiate_GBP_units():
     """
-        Return SPARQL update to instantiate required all (both ascii and non-ascii) units
+        Return SPARQL update to instantiate all required (both ascii and non-ascii) units
     """
 
     # NOTE: There are reported issues with encoding of special characters, i.e. Blazegraph
     #       claiming to use utf-8 encoding while actually using iso-8859-1
     #       --> PoundSterling displayed wrongly in GUI but corrected when retrieved in code
+    # Details: https://github.com/blazegraph/database/issues/224
+    # NOTE Update: Encoding issue likely to happen somewhere along the py4jps/py4j 
+    #              communication chain as entire ontology of units of measure rdf file
+    #              can be uploaded with stack-data-uploader without similar issues
 
     query = f"""
         INSERT DATA {{
