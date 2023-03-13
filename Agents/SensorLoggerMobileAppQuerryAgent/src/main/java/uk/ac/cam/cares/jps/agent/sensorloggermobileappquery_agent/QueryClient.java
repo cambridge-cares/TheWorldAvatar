@@ -5,6 +5,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
@@ -32,10 +33,8 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.OffsetDateTime;
+import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,12 +45,12 @@ public class QueryClient {
     private RemoteStoreClient storeClient;
     private RemoteStoreClient ontopStoreClient;
     private RemoteRDBStoreClient rdbStoreClient;
-    private TimeSeriesClient<Long> tsClientLong;
+    private TimeSeriesClient<OffsetDateTime> tsClient;
     private TimeSeriesClient<Instant> tsClientInstant;
 
     // prefixes
     private static final String ONTO_EMS = "https://www.theworldavatar.com/kg/ontoems/";
-    public static final String PREFIX_DISP = "http://www.theworldavatar.com/kg/dispersion/";
+    public static final String PREFIX_DISP = "http://www.theworldavatar.com/kg/ontosensorloggermobileapp/";
     static final String OM_STRING = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     private static final Prefix P_OM = SparqlBuilder.prefix("om",iri(OM_STRING));
     private static final Prefix P_DISP = SparqlBuilder.prefix("disp", iri(PREFIX_DISP));
@@ -75,6 +74,7 @@ public class QueryClient {
     public static final String TEMPERATURE = OM_STRING + "Temperature";
     public static final String MASS_FLOW = OM_STRING + "MassFlow";
     private static final Iri SHIP = P_DISP.iri("Ship");
+    static final String PREFIX = "http://www.theworldavatar.com/kg/ontosensorloggermobileapp/kb/";
 
     // weather types
     private static final String CLOUD_COVER = ONTO_EMS + "CloudCover";
@@ -119,10 +119,10 @@ public class QueryClient {
         UNIT_MAP.put(WIND_DIRECTION, UNIT_DEGREE);
     }
 
-    public QueryClient(RemoteStoreClient storeClient, RemoteStoreClient ontopStoreClient, RemoteRDBStoreClient rdbStoreClient) {
+    QueryClient(RemoteStoreClient storeClient, RemoteStoreClient ontopStoreClient, RemoteRDBStoreClient rdbStoreClient) {
         this.storeClient = storeClient;
         this.ontopStoreClient = ontopStoreClient;
-        this.tsClientLong = new TimeSeriesClient<>(storeClient, Long.class);
+        this.tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
         this.tsClientInstant = new TimeSeriesClient<>(storeClient, Instant.class);
         this.rdbStoreClient = rdbStoreClient;
     }
@@ -145,17 +145,17 @@ public class QueryClient {
         return Long.parseLong(queryResult.getJSONObject(0).getString(value.getQueryString().substring(1)));
     }
 
-    List<PersonGPSPoint> getPersonGPSPointsWithinTimeAndScopeViaTSClient(long LowerBound, long UpperBound, Geometry scope) {
+    List<PersonGPSPoint> getPersonGPSPointsWithinTimeAndScopeViaTSClient(OffsetDateTime LowerBound, OffsetDateTime UpperBound, Geometry scope) {
 
 //        Map<String,String> measureToShipMap = getMeasureToShipMap();
         List<String> measures = new ArrayList<>();
-        measures.add("https://www.theworldavatar.com/kg/measure_605a09c9-d6c5-4ba7-bc28-fe595d698b41_geom_location_9fb11a87-fd8f-49b6-93f0-4d9247c5bd8d");
+        measures.add("https://www.theworldavatar.com/kg/measure_605a09c9-d6c5-4ba7-bc28-fe595d698b41_geom_location_aa0f99ba-6ff7-4a23-baac-b6d63a651f91");
 
         List<PersonGPSPoint> personGPSPoints = new ArrayList<>();
         try (Connection conn = rdbStoreClient.getConnection()) {
             measures.stream().forEach(measure -> {
 
-                TimeSeries<Long> ts = tsClientLong.getTimeSeriesWithinBounds(List.of(measure), LowerBound, UpperBound, conn);
+                TimeSeries<OffsetDateTime> ts = tsClient.getTimeSeriesWithinBounds(List.of(measure), LowerBound, UpperBound, conn);
 
                 if (ts.getValuesAsPoint(measure).size() > 1) {
                     LOGGER.warn("More than 1 point within this time interval");
@@ -164,17 +164,19 @@ public class QueryClient {
                 }
 
                 try {
-                    // this is to convert from org.postgis.Point to the Geometry class
-                    Point postgisPoint = ts.getValuesAsPoint(measure).get(0);
-                    String wktLiteral = postgisPoint.getTypeString() + postgisPoint.getValue();
+                    for (int i=0; i<ts.getValuesAsPoint(measure).size(); i++){
+                        // this is to convert from org.postgis.Point to the Geometry class
+                        Point postgisPoint = ts.getValuesAsPoint(measure).get(i);
+                        String wktLiteral = postgisPoint.getTypeString() + postgisPoint.getValue();
 
-                    Geometry point = new org.locationtech.jts.io.WKTReader().read(wktLiteral);
+                        Geometry point = new org.locationtech.jts.io.WKTReader().read(wktLiteral);
 
-                    if (scope.covers(point)) {
-                        // measureToShipMap.get(measure) gives the iri
-                        PersonGPSPoint personGPSPoint = new PersonGPSPoint(measure);
-                        personGPSPoint.setLocation(postgisPoint);
-                        personGPSPoints.add(personGPSPoint);
+                        if (scope.covers(point)) {
+                            // measureToShipMap.get(measure) gives the iri
+                            PersonGPSPoint personGPSPoint = new PersonGPSPoint(measure);
+                            personGPSPoint.setLocation(postgisPoint);
+                            personGPSPoints.add(personGPSPoint);
+                        }
                     }
                 } catch (ParseException e) {
                     LOGGER.error("Failed to parse WKT literal of point");
@@ -209,6 +211,36 @@ public class QueryClient {
         scopePolygon.setSRID(4326);
         return (Polygon) scopePolygon;
     }
+
+
+    void initialiseAgent() {
+        Iri hasType = iri("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#hasType");
+
+        Iri partIri = iri(PREFIX + UUID.randomUUID());
+
+
+        ModifyQuery modify = Queries.MODIFY();
+
+        modify.insert(partIri.has(hasType, SCOPE));
+
+        storeClient.executeUpdate(modify.getQueryString());
+    }
+
+
+    private static final Iri SCOPEIRI = P_DISP.iri("Scope");
+    void initialiseScopeDerivation(String scopeIri) {
+        ModifyQuery modify = Queries.MODIFY();
+        modify.insert(iri(scopeIri).isA(SCOPEIRI));
+
+
+        List<String> inputs = new ArrayList<>();
+        inputs.add(scopeIri);
+
+    }
+
+
+
+
 
 //    Map<String,String> getMeasureToShipMap() {
 //        SelectQuery query = Queries.SELECT();
