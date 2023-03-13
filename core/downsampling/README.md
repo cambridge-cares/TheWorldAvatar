@@ -1,41 +1,25 @@
 # Downsampling
 ## Description
-This downsampling library is used to post-process and downsample Timeseries data. The document outlines when to downsample a dataset, areas of consideration and a user guide on how it works. 
+This downsampling library is used to post-process and downsample Timeseries data. Downsampling reduces the size of data to prevent unnecessary consumption of memory in databases. Additionally, it can be used to remove duplicated data that takes up space but produces no value. Downsampling is also useful for visualization of trends or statistical analysis to extract insights.
 
-## When to downsample a dataset
-- To reduce the size of data to prevent memory occupation of databases.
-- To remove duplicated data within a short time interval that takes up space but produces no value. As query response time will be longer for larger dataset.
-
-## Areas of consideration
-1) Downsampled data should be an accurate representation of the inherent nature/characteristics of the original data. 
-   - Choose the appropriate downsampling method based on the characteristics of the original data.
-2) Purpose and preservation of information
-   - Consider the purpose when downsampling data, downsampling can be used for visualization of trends or statistical analysis to extract insights.
-3) Data outlier handling
-   - Determine the significance of outliers of the dataset. 
-   - Assess whether the removal of outlier is necessary to avoid misrepresentation of results.
-4) Downsampling resolution size
+The document outlines the user guide on how to use the downsampling library.
 
 ## User Guide
-
-## How to use downsampling method
+## How to use downsampling library
+### Method
+To downsample timseries data, call the `aggregation` method in this library.  
 ``` java
 aggregation (TimeSeries ts, Long resolution, int type)
 ```
-`ts` is the raw timeseries data that will be downsampled.
+### Inputs
+`ts` is the raw timeseries data that to be downsampled.
 
-`resolution` is the time interval in seconds that will be downsampled. `resolution` is in Long data type. 
+`resolution` is the time interval in seconds of the timeseries data that will be downsampled.
 
 `type` is the type of [downsampling method](#Downsampling-Type). Input the number according to the designated number assigned to each type. 
 
-Note:
-1) Downsampling aggregation follows the left time edge.
-- This downsampling method represents a time interval on the left time edge.
-2) Downsampling aggregation follows the left closing.
-- If a data timestamp lands exactly on the edge of a time interval, it falls under the previous/left time interval for downsampling.
-
-## Output
-Downsampling library returns a downsampled timeseries class.
+### Output
+Downsampling library returns a downsampled timeseries data.
 
 ## Downsampling Type
 ### 1) Maximum
@@ -54,5 +38,18 @@ Retrieves the total number of all points within a time resolution to represent t
 Retrieves the value of the point closest to the time resolution to represent the time interval.
 
 ## Notes 
-1) Ensure there is no null data in each time resolution for the time-series to be downsampled. Data cleaning will be required to post-process of nonsensical data when null data is inputted. 
-2) Downsampling library only processes `Double` class, modifications to the code may be required for other data class. 
+### Before using downsampling library
+The following should be considered before downsampling of data:
+1) Downsampled data should be an accurate representation of the inherent nature/characteristics of the original data.
+   - Choose the appropriate downsampling method based on the characteristics of the original data.
+2) Data outlier handling
+   - This library does not handle outliers and anomaly.
+   - Determine the significance of outliers of the dataset and assess whether the removal of outlier is necessary.
+3) Ensure there is no null data in each time resolution for the time-series to be downsampled. Data cleaning will be required to post-process of nonsensical data when null data is inputted. 
+4) Downsampling library only processes `Double` class, modifications to the code may be required for other data class.
+5) Downsampling aggregation follows the left time edge.
+   - This downsampling method represents a time interval on the left time edge.
+6) Downsampling aggregation follows the left closing.
+   - If a data timestamp lands exactly on the edge of a time interval, it falls under the previous/left time interval for downsampling.
+
+
