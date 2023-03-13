@@ -677,6 +677,7 @@ class BuildingStructureFacadeTest {
                                 )
                                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representation_IfcProduct"),
                                         sampleModel.createResource()
+                                                .addProperty(RDF.type, productDefShape)
                                                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representations_IfcProductRepresentation"),
                                                         sampleModel.createResource()
                                                                 .addProperty(hasContents, sampleModel.createResource(IFC_VOID_SHAPE_REP_INST)))

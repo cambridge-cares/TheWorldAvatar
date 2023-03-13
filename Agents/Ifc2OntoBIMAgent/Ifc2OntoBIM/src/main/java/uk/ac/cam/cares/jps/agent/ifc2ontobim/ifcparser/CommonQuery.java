@@ -61,7 +61,6 @@ public class CommonQuery {
     public static final String INST_SHAPE_REP_SEC_VAR = "?secondinstshaperep";
     public static final String INST_SHAPE_REP_TYPE_VAR = "?shapereptype";
     public static final String INST_SHAPE_REP_TYPE_SEC_VAR = "?secshapereptype";
-
     public static final String VOID_REP_TYPE_VAR = "?voidshapereptype";
     public static final String VOID_PRODUCT_DEFINITION_VAR = "?voidproductDefinition";
     public static final String VOID_SHAPE_REP_VAR = "?voidshaperep";
@@ -72,6 +71,7 @@ public class CommonQuery {
     public static final String VOID_GEOM_VAR = "?voidgeometry";
     public static final String GEOM_TYPE_VAR = "?geomtype";
     public static final String GEOM_TYPE_SEC_VAR = "?secgeomtype";
+    public static final String VOID_GEOM_TYPE_VAR = "?voidgeomtype";
     public static final String MAPPED_ITEM_VAR = "?mappeditem";
     public static final String REP_MAP_VAR = "?representationmap";
     public static final String GEOM_AXIS_PLACEMENT_VAR = "?geomaxisplacement";
@@ -183,7 +183,7 @@ public class CommonQuery {
     /**
      * Add the statements for relating each element to the zone they belong in.
      *
-     * @param builder    A select builder object to append the statements to.
+     * @param builder A select builder object to append the statements to.
      */
     protected static void addElementHostZoneQueryComponents(SelectBuilder builder) {
         builder.addVar(PARENT_ZONE_VAR);
@@ -211,13 +211,8 @@ public class CommonQuery {
         NamespaceMapper.addSubqueryBuilderNamespaces(subgroupBuilder);
         SelectBuilder unionBuilder = subgroupBuilder.clone();
         // Query for the individual shape representation instances that are directly linked to specific geometries
-        subgroupBuilder.addWhere(PRODUCT_DEFINITION_VAR, IFC_PRODUCT_REPRESENTATIONS + "/" + LIST_HAS_CONTENT, INST_SHAPE_REP_VAR)
-                .addWhere(INST_SHAPE_REP_VAR, QueryHandler.RDF_TYPE, IFC_SHAPE_REP)
-                .addWhere(INST_SHAPE_REP_VAR, IFC_PRODUCT_REPRESENTATION_TYPE + EXPRESS_HASSTRING, INST_SHAPE_REP_TYPE_VAR)
-                .addWhere(INST_SHAPE_REP_VAR, IFC_REP_CONTEXT, REP_SUBCONTEXT_VAR)
-                .addWhere(REP_SUBCONTEXT_VAR, QueryHandler.RDF_TYPE, IFCGEOM_REP_SUBCONTEXT)
-                .addWhere(INST_SHAPE_REP_VAR, IFC_REP_ITEMS, GEOM_VAR)
-                .addWhere(GEOM_VAR, QueryHandler.RDF_TYPE, GEOM_TYPE_VAR);
+        addModelRepQueryComponents(subgroupBuilder, PRODUCT_DEFINITION_VAR, INST_SHAPE_REP_VAR,
+                INST_SHAPE_REP_TYPE_VAR, REP_SUBCONTEXT_VAR, GEOM_VAR, GEOM_TYPE_VAR);
         // For the first sub-query, this should apply to all geom type except for IfcMappedItem
         try {
             subgroupBuilder.addFilter("!regex(str(" + GEOM_TYPE_VAR + ") ,'IfcMappedItem')");
@@ -272,15 +267,51 @@ public class CommonQuery {
                 .addWhere(OPENING_ELEMENT_VAR, QueryHandler.RDF_TYPE, IFC_OPENING_ELEMENT)
                 .addWhere(OPENING_ELEMENT_VAR, IFC_OBJ_TYPE + EXPRESS_HASSTRING, VOID_TYPE_VAR)
                 .addWhere(OPENING_ELEMENT_VAR, IFC_OBJ_PLACEMENT, VOID_PLACEMENT_VAR)
-                .addWhere(VOID_PLACEMENT_VAR, QueryHandler.RDF_TYPE, IFCLOCALPLACEMENT)
-                .addWhere(OPENING_ELEMENT_VAR, IFC_PRODUCT_REPRESENTATION, VOID_PRODUCT_DEFINITION_VAR)
-                .addWhere(VOID_PRODUCT_DEFINITION_VAR, IFC_PRODUCT_REPRESENTATIONS + "/" + LIST_HAS_CONTENT, VOID_SHAPE_REP_VAR);
+                .addWhere(VOID_PLACEMENT_VAR, QueryHandler.RDF_TYPE, IFCLOCALPLACEMENT);
         // Void shape representation details
-        optionalBuilder.addWhere(VOID_SHAPE_REP_VAR, QueryHandler.RDF_TYPE, IFC_SHAPE_REP)
-                .addWhere(VOID_SHAPE_REP_VAR, IFC_PRODUCT_REPRESENTATION_TYPE + EXPRESS_HASSTRING, VOID_REP_TYPE_VAR)
-                .addWhere(VOID_SHAPE_REP_VAR, IFC_REP_CONTEXT, VOID_SUB_CONTEXT_VAR)
-                .addWhere(VOID_SUB_CONTEXT_VAR, QueryHandler.RDF_TYPE, IFCGEOM_REP_SUBCONTEXT)
-                .addWhere(VOID_SHAPE_REP_VAR, IFC_REP_ITEMS, VOID_GEOM_VAR);
+        addModelRepQueryComponents(optionalBuilder, OPENING_ELEMENT_VAR, VOID_PRODUCT_DEFINITION_VAR, VOID_SHAPE_REP_VAR,
+                VOID_REP_TYPE_VAR, VOID_SUB_CONTEXT_VAR, VOID_GEOM_VAR, VOID_GEOM_TYPE_VAR);
         builder.addOptional(optionalBuilder);
+    }
+
+    /**
+     * Overloaded method including the element variable to link an element to their product definition if necessary
+     *
+     * @param builder              A select builder object to append the statements to.
+     * @param elementVar           The element variable.
+     * @param productDefinitionVar The product definition variable.
+     * @param shapeRepVar          The shape representation variable.
+     * @param shapeRepType         The shape representation type variable.
+     * @param subContextVar        The sub context variable.
+     * @param geomVar              The geometry variable.
+     * @param geomType             The geometry type variable.
+     */
+    public static void addModelRepQueryComponents(SelectBuilder builder, String elementVar, String productDefinitionVar, String shapeRepVar, String shapeRepType,
+                                                  String subContextVar, String geomVar, String geomType) {
+        builder.addWhere(elementVar, IFC_PRODUCT_REPRESENTATION, productDefinitionVar)
+                .addWhere(productDefinitionVar, QueryHandler.RDF_TYPE, IFC_PRODUCT_DEF_SHAPE);
+        addModelRepQueryComponents(builder, productDefinitionVar, shapeRepVar, shapeRepType, subContextVar, geomVar, geomType);
+    }
+
+    /**
+     * Add the statements for querying the model/shape representation into the builder.
+     *
+     * @param builder              A select builder object to append the statements to.
+     * @param productDefinitionVar The product definition variable.
+     * @param shapeRepVar          The shape representation variable.
+     * @param shapeRepType         The shape representation type variable.
+     * @param subContextVar        The sub context variable.
+     * @param geomVar              The geometry variable.
+     * @param geomType             The geometry type variable.
+     */
+    public static void addModelRepQueryComponents(SelectBuilder builder, String productDefinitionVar, String shapeRepVar, String shapeRepType,
+                                                  String subContextVar, String geomVar, String geomType) {
+        builder.addWhere(productDefinitionVar, IFC_PRODUCT_REPRESENTATIONS + "/" + LIST_HAS_CONTENT, shapeRepVar)
+                .addWhere(shapeRepVar, QueryHandler.RDF_TYPE, IFC_SHAPE_REP)
+                .addWhere(shapeRepVar, IFC_PRODUCT_REPRESENTATION_TYPE + EXPRESS_HASSTRING, shapeRepType)
+                .addWhere(shapeRepVar, IFC_REP_CONTEXT, subContextVar)
+                .addWhere(subContextVar, QueryHandler.RDF_TYPE, IFCGEOM_REP_SUBCONTEXT)
+                .addWhere(shapeRepVar, IFC_REP_ITEMS, geomVar)
+                .addWhere(geomVar, QueryHandler.RDF_TYPE, geomType);
     }
 }
