@@ -174,9 +174,9 @@ def update_all_transaction_records(min_conf_score=90,
             try:
                 with ts_client.connect() as conn:
                     ts_client.tsclient.initTimeSeries([ppi_iri], [DATACLASS], TIME_FORMAT,
-                                            conn)
+                                                      conn)
             except Exception as ex:
-                logger.error('Error initialising time series')
+                logger.error('Error initialising time series: {}'.format(ex))
                 raise TSException('Error initialising time series') from ex
             instantiated_ukhpi += 1
         else:
@@ -192,7 +192,7 @@ def update_all_transaction_records(min_conf_score=90,
             with ts_client.connect() as conn:
                 ts_client.tsclient.addTimeSeriesData(ts, conn)
         except Exception as ex:
-            logger.error('Error adding time series data')
+            logger.error('Error adding time series data: {}'.format(ex))
             raise TSException('Error adding time series data') from ex
     
     return (instantiated_tx, updated_tx, instantiated_ukhpi, updated_ukhpi)
