@@ -8,7 +8,6 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.BuildingStructureFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.SpatialZoneFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.SpatialZoneStorage;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaclassifier.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement.IfcElementConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcgeometry.GeomConstructBuilderMediator;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.*;
@@ -170,12 +169,6 @@ public class OntoBimConverter {
             String query = new IfcElementConstructBuilder().createSparqlQuery(tempBuilder, ifcElement, ifcElement);
             QueryHandler.queryConstructStatementsAsSet(query, this.owlModel, statementSet);
             if (!statementSet.isEmpty()) {
-                switch (ifcElement) {
-                    case "ifc:IfcSlabF":
-                    case "ifc:IfcSlabR":
-                        SlabClassifier.addClassMapping(ifcElement, statementSet, classMapping);
-                        break;
-                }
                 LOGGER.info("Retrieved statements related to elements of " + ifcElement);
                 this.storeInTempFiles(statementSet);
                 LOGGER.info("Stored statements for " + ifcElement + " in temporary file");

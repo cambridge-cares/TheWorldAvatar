@@ -57,37 +57,15 @@ public class IfcElementConstructBuilder extends IfcConstructBuilderTemplate {
     @Override
     protected void switchFunctionDependingOnInput(ConstructBuilder builder, String ifcClass, String bimClass) {
         switch (bimClass) {
-            case "ifc:IfcSlab":
-            case "ifc:IfcRoof":
-                IfcOpeningQuery.addVoidRepresentationQueryComponents(builder);
-                IfcSlabQuery.addSlabQueryComponents(builder, ifcClass);
-                break;
             case "ifc:IfcStair":
                 IfcStairQuery.addSubElementsQueryComponents(builder);
                 break;
         }
 
-        // Spatial location are usually the same for most elements except for the following classes
-        // -- IfcSlab that are classified as Roofs are usually not attached to any zone
-        if (!(ifcClass.equals("ifc:IfcSlabR") && bimClass.equals("ifc:IfcRoof"))) {
-            this.addSpatialLocationQueryComponents(builder);
-        }
         // Geometric representation are usually the same for most elements except for the following classes
         if (!bimClass.equals("ifc:IfcStair")) {
             this.addGeometricRepresentationQueryComponents(builder);
         }
-    }
-
-    /**
-     * Add the statements for relating each element to the zone they belong in.
-     *
-     * @param builder Construct Builder object to add Construct query statements.
-     */
-    private void addSpatialLocationQueryComponents(ConstructBuilder builder) {
-        builder.addConstruct(ZONE_VAR, "bot:containsElement", ELEMENT_VAR);
-        builder.addWhere(SPATIAL_REL_VAR, QueryHandler.RDF_TYPE, "ifc:IfcRelContainedInSpatialStructure")
-                .addWhere(SPATIAL_REL_VAR, "ifc:relatedElements_IfcRelContainedInSpatialStructure", ELEMENT_VAR)
-                .addWhere(SPATIAL_REL_VAR, "ifc:relatingStructure_IfcRelContainedInSpatialStructure", ZONE_VAR);
     }
 
     /**

@@ -20,23 +20,6 @@ class IfcElementConstructBuilderTest {
     }
 
     @Test
-    void testCreateSparqlQueryForColumn() {
-        String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcColumn", "ifc:IfcColumn");
-        String expected = this.genExpectedResultsForColumn();
-        // In the first test, check all common query statements are included
-        assertTrue(query.contains(expected));
-    }
-
-    @Test
-    void testCreateSparqlQueryForFloor() {
-        String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcSlabF", "ifc:IfcSlabF");
-        // Check that some additional statements for floor are called correctly
-        // Not all statements are verified as the relevant test has ensured output is correct
-        List<String> expected = this.genExpectedResultsForFloor();
-        expected.forEach(line -> assertTrue(query.contains(line)));
-    }
-
-    @Test
     void testCreateSparqlQueryForStair() {
         String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcStair", "ifc:IfcStair");
         // Check that some additional statements for stair are called correctly
@@ -49,14 +32,6 @@ class IfcElementConstructBuilderTest {
         assertFalse(query.contains(excluded.toString()));
     }
 
-    @Test
-    void testCreateSparqlQueryForRoof() {
-        String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcSlabR", "ifc:IfcSlabR");
-        // This query component must not be included
-        StringBuilder excluded = new StringBuilder();
-        appendSpatialLocationQueryComponents(excluded);
-        assertFalse(query.contains(excluded.toString()));
-    }
 
     @Test
     void testCreateSparqlQueryFail() {
@@ -67,52 +42,6 @@ class IfcElementConstructBuilderTest {
         assertTrue(thrownError.getMessage().contains("must be a Path, URI , variable, or a wildcard."));
     }
 
-    private String genExpectedResultsForColumn() {
-        StringBuilder expected = new StringBuilder();
-        expected.append("CONSTRUCT \n")
-                .append("  { \n")
-                .append("    ?element rdf:type ifc:IfcColumn .\n")
-                .append("    ?element bim:hasIfcId ?uid .\n")
-                .append("    ?element rdfs:label ?name .\n")
-                .append("    ?element bim:hasLocalPosition ?localplacement .\n")
-                .append("    ?localplacement rdf:type bim:LocalPlacement .\n")
-                .append("    ?element rdf:type bot:Element .\n")
-                .append("    ?zone bot:containsElement ?element .\n")
-                .append("    ?element bim:hasGeometricRepresentation ?instshaperep .\n")
-                .append("    ?instshaperep rdf:type bim:ModelRepresentation3D .\n")
-                .append("    ?instshaperep bim:hasRepresentationType ?shapereptype .\n")
-                .append("    ?instshaperep bim:hasSubContext ?subcontext .\n")
-                .append("    ?subcontext rdf:type bim:GeometricRepresentationSubContext .\n")
-                .append("    ?instshaperep bim:hasRepresentationItem ?geometry .\n")
-                .append("    ?geometry rdf:type ?geomtype .\n")
-                .append("    ?instshaperep bim:hasTargetPlacement ?cartesiantransformer .\n")
-                .append("    ?cartesiantransformer rdf:type bim:CartesianTransformationOperator .\n")
-                .append("    ?instshaperep bim:hasSourcePlacement ?geomaxisplacement .\n")
-                .append("    ?geomaxisplacement rdf:type bim:LocalPlacement .\n")
-                .append("  }\n")
-                .append("WHERE\n")
-                .append("  { ?element  rdf:type  ifc:IfcColumn .\n")
-                .append("    ?element ifc:globalId_IfcRoot/express:hasString ?uid .\n")
-                .append("    ?element ifc:name_IfcRoot/express:hasString ?name .\n")
-                .append("    ?element  ifc:objectPlacement_IfcProduct  ?localplacement .\n")
-                .append("    ?localplacement\n")
-                .append("              rdf:type              ifc:IfcLocalPlacement .\n")
-                .append("    ");
-        appendSpatialLocationQueryComponents(expected);
-        expected.append("    ?element  ifc:representation_IfcProduct  ?productDefinitionShape .\n")
-                .append("    ?productDefinitionShape\n")
-                .append("              rdf:type              ifc:IfcProductDefinitionShape\n")
-                .append("      ");
-        appendGeometricRepresentationQueryComponents(expected);
-        return expected.toString();
-    }
-
-    private void appendSpatialLocationQueryComponents(StringBuilder builder) {
-        builder.append("?spatialStructureRelationship\n")
-                .append("              rdf:type              ifc:IfcRelContainedInSpatialStructure ;\n")
-                .append("              ifc:relatedElements_IfcRelContainedInSpatialStructure  ?element ;\n")
-                .append("              ifc:relatingStructure_IfcRelContainedInSpatialStructure  ?zone .\n");
-    }
 
     private void appendGeometricRepresentationQueryComponents(StringBuilder builder) {
         builder.append("{ ?productDefinitionShape ifc:representations_IfcProductRepresentation/list:hasContents ?instshaperep .\n")
@@ -152,16 +81,6 @@ class IfcElementConstructBuilderTest {
                 .append("        ?geometry  rdf:type             ?geomtype");
     }
 
-    private List<String> genExpectedResultsForFloor() {
-        List<String> expected = new ArrayList<>();
-        expected.add("?reltypedefine\n" +
-                "              rdf:type              ifc:IfcRelDefinesByType ;\n" +
-                "              ifc:relatedObjects_IfcRelDefines  ?element ;\n" +
-                "              ifc:relatingType_IfcRelDefinesByType  ?elementtype .");
-        expected.add("?elementtype  ifc:predefinedType_IfcSlabType  ?slabEnum");
-        expected.add("VALUES ?slabEnum { ifc:FLOOR ifc:BASESLAB }");
-        return expected;
-    }
 
     private List<String> genExpectedResultsForStair() {
         List<String> expected = new ArrayList<>();
