@@ -201,11 +201,11 @@ def get_instance_query(ontological_class: str) -> str:
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
     PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
 
-    SELECT ?iri ?name
+    SELECT ?property ?label
     WHERE {
-        ?iri rdf:type %s .
-        ?iri rdfs:label ?name .
-    } ORDER BY ?name
+        ?property rdf:type %s .
+        ?property rdfs:label ?label .
+    } ORDER BY ?label
     ''' % ontological_class
     return query
 

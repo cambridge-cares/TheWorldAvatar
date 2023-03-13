@@ -8,12 +8,23 @@
 
 import json 
 
-def get_json_object(title, description, type):
+def get_json_property_values(title, description, type):
    
     data = {       
         "title": title,
         "description": description,
         "type": type    
+    }
+
+    return data
+
+def get_json_object_property(title, description, type):
+   
+    data = {       
+        "title": title,
+        "description": description,
+        "type": type,
+        "properties": {}
     }
 
     return data
@@ -27,7 +38,7 @@ def get_json_object(title, description, type):
     #     }
     # ''' %(name, title, description, type)
 
-def get_json_object_with_enum(title, description, type, enum):
+def get_json_property_values_with_enum(title, description, type, enum):
    
     data = {       
         "title": title,
