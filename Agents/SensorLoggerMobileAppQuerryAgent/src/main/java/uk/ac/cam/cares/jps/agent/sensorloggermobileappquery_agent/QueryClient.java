@@ -168,6 +168,7 @@ public class QueryClient {
                         // this is to convert from org.postgis.Point to the Geometry class
                         Point postgisPoint = ts.getValuesAsPoint(measure).get(i);
                         String wktLiteral = postgisPoint.getTypeString() + postgisPoint.getValue();
+                        OffsetDateTime timestamp = ts.getTimes().get(i);
 
                         Geometry point = new org.locationtech.jts.io.WKTReader().read(wktLiteral);
 
@@ -175,7 +176,10 @@ public class QueryClient {
                             // measureToShipMap.get(measure) gives the iri
                             PersonGPSPoint personGPSPoint = new PersonGPSPoint(measure);
                             personGPSPoint.setLocation(postgisPoint);
+                            personGPSPoint.setTime(timestamp);
                             personGPSPoints.add(personGPSPoint);
+                            
+
                         }
                     }
                 } catch (ParseException e) {
@@ -193,6 +197,10 @@ public class QueryClient {
 
         return personGPSPoints;
     }
+
+    
+
+
 
     /**
      * the result is the geo:wktLiteral type with IRI of SRID in front

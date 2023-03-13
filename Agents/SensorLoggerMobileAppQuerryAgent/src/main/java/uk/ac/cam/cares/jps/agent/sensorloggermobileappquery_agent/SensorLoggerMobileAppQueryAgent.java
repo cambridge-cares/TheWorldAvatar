@@ -7,14 +7,9 @@ import net.sf.jsqlparser.statement.select.Offset;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
-
 import org.locationtech.jts.*;
 import org.locationtech.jts.io.*;
 import org.locationtech.jts.geom.Geometry;
-
-
-
 
 import org.postgis.Polygon;
 import org.springframework.core.io.ClassPathResource;
@@ -32,12 +27,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -48,14 +45,16 @@ public class SensorLoggerMobileAppQueryAgent extends JPSAgent {
     static final String PREFIX = "http://www.theworldavatar.com/kg/sensorloggermobileappqueryagent/";
     private SLPostGISClient slPostGisClient;
     private QueryClient queryClient;
+    private RemoteRDBStoreClient remoteRDBStoreClient;
+    private TimeSeriesClient<OffsetDateTime> tsClient;
 
     @Override
     public void init() throws ServletException {
         EndpointConfig endpointConfig = EnvConfig.ENDPOINT_CONFIG;
         slPostGisClient = new SLPostGISClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
         RemoteStoreClient storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        RemoteRDBStoreClient remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-        TimeSeriesClient<Long> tsClient = new TimeSeriesClient<>(storeClient, Long.class);
+        remoteRDBStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
+        tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
         RemoteStoreClient ontopStoreClient = new RemoteStoreClient(endpointConfig.getOntopurl());
         queryClient = new QueryClient(storeClient,ontopStoreClient,remoteRDBStoreClient);
     }
@@ -123,34 +122,40 @@ public class SensorLoggerMobileAppQueryAgent extends JPSAgent {
             //     LOGGER.error("Probably failed to add ontop mapping");
             // }
 
-
-
-
-
-
-            // get ships within a scope and time
             List<PersonGPSPoint> personGPSPoints;
-            try {
 
-                // OffsetDateTime lowerBound = OffsetDateTime.parse("2023-03-07T11:13:42.775012200+08:00");
-                // OffsetDateTime upperBound = OffsetDateTime.parse("2023-03-10T11:13:42.775012200+08:00");
+            try {
+                // get personGPSPoints within a scope and time
                 personGPSPoints = queryClient.getPersonGPSPointsWithinTimeAndScopeViaTSClient(lowerBound,upperBound, convert(ewkt));
                 for (int i=0; i<personGPSPoints.size();i++)
                 {System.out.println(personGPSPoints.get(i).getLocation());}
-            
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+
+
+                //Get timestamps
+                OffsetDateTime startTimestamp = personGPSPoints.get(0).getTime();
+                OffsetDateTime endTimestamp = personGPSPoints.get(personGPSPoints.size()-1).getTime();
+                List<String> measures = new ArrayList<>();
+                measures.add("https://www.theworldavatar.com/kg/measure_605a09c9-d6c5-4ba7-bc28-fe595d698b41_accel_x_4b9b0325-011c-4c0f-9abd-f532ce04ab7a");
+                measures.add("https://www.theworldavatar.com/kg/measure_605a09c9-d6c5-4ba7-bc28-fe595d698b41_bearing_eec92b52-ecae-4736-beb6-027dc597f5de");
+                measures.add("https://www.theworldavatar.com/kg/measure_605a09c9-d6c5-4ba7-bc28-fe595d698b41_speed_f530183e-b0c0-4e6d-9194-68606d9824e5");
+
+                try (Connection conn = remoteRDBStoreClient.getConnection()) {
+                    measures.stream().forEach(measure -> {
+        
+                        TimeSeries ts = tsClient.getTimeSeriesWithinBounds(List.of(measure), startTimestamp, endTimestamp, conn);
+                        List<Double> valueList= ts.getValuesAsDouble(measure);
+                        System.out.println(valueList);
+                    });
+                }
             }
-
-
-
+            catch (SQLException e) {
+                LOGGER.error("Probably failed at closing connection");
+                LOGGER.error(e.getMessage());
+            }
+            catch (Exception e) {
+                LOGGER.error(e.getMessage());
+            }
         }
-
-
-
-    
-
     }
 
     public static Geometry convert(String ewkt) throws Exception {
@@ -159,15 +164,7 @@ public class SensorLoggerMobileAppQueryAgent extends JPSAgent {
         return polygon;
     }
 
-
-
-
-
     
-
-    
-
-
 
 
 
