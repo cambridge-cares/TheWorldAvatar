@@ -143,29 +143,38 @@ class GeoserverClient(StackClient):
                                        geoserver_layer, self.vectorsettings)
 
 
-def create_geojson_for_postgis(building_iri : str, property_estimate : float = None,
+def create_geojson_for_postgis(building_iri : str, value_estimate : float = None,
                                kg_endpoint: str = QUERY_ENDPOINT) -> str:
     """
     Create (Geo)JSON string for upload to PostGIS database
 
     Initially, the GeoJSON needed to contain at least "name", "iri", and "endpoint"
     for FeatureInfoAgent to work (i.e. be able to retrieve data from PostGIS)
-    This is no longer the case, but these properties are kept for consistency with
-    previous agent implementations, i.e. 
-    https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/MetOfficeAgent/agent/kgutils/stackclients.py
-
+    Strictly, those are no longer needed, but kept for consistency with previous implementations
     Further properties can be added as needed, i.e. for styling purposes
+
+    Arguments:
+        building_iri {str} -- IRI of building/property to be uploaded to PostGIS
+        value_estimate {float} -- Market value estimate of building (in GBP)
     """
 
-    # Define properties
-    props = {
-        # Initially required by DTVF (potentially outdated, but kept for reference)
-        'iri': building_iri,
-        'name': building_iri.split('/')[-1].replace('>',''),
-        'endpoint': kg_endpoint,
+    if building_iri:
+        # Define properties
+        props = {
+            # Initially required by DTVF (potentially outdated, but kept for reference)
+            'iri': building_iri,
+            'name': building_iri.split('/')[-1].replace('>',''),
+            'endpoint': kg_endpoint
+        }
         # Property value estimate (upload required for styling purposes)
-        'price': property_estimate,
-    }
+        try:
+            props['price']: float(value_estimate)
+        except Exception:
+            props['price']: None
+
+        geojson = props.dumps(props)
+    else:
+        geojson = None
 
     # Return (Geo)JSON string    
-    return props.dumps(props)
+    return geojson

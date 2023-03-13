@@ -18,14 +18,14 @@ from agent.kgutils.javagateway import jpsBaseLibGW
 GBP_PER_SM = '£ m-2'
 GBP = '£'
 
-#TODO:revisit mapping (incl. general property)
-OTHER_PROPERTY_TYPE = 'OTHER'
+# Mapping between PPD property types and instantiated OBE property types
+# PPD: https://www.gov.uk/guidance/about-the-price-paid-data
 PPD_PROPERTY_TYPES = {
     'SEMI-DETACHED': OBE_BUILDING,
     'TERRACED': OBE_BUILDING,
     'DETACHED': OBE_BUILDING,
     'FLAT-MAISONETTE': OBE_FLAT,
-    'OTHER': OTHER_PROPERTY_TYPE
+    'OTHER': OBE_PROPERTY
 }
 
 # Dates from HM Land Registry are reported in xsd:gYearMonth, i.e. ISO 8601 YYYY-MM

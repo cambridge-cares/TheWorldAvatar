@@ -14,8 +14,7 @@ import pandas as pd
 from fuzzywuzzy import fuzz, process
 
 from agent.datamodel.iris import *
-from agent.datamodel.data_mapping import TIME_FORMAT, DATACLASS, PPD_PROPERTY_TYPES, \
-                                         OTHER_PROPERTY_TYPE
+from agent.datamodel.data_mapping import TIME_FORMAT, DATACLASS, PPD_PROPERTY_TYPES
 from agent.errorhandling.exceptions import TSException
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
@@ -34,7 +33,7 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
                                api_endpoint=HM_SPARQL_ENDPOINT,
                                query_endpoint=QUERY_ENDPOINT, 
                                update_endpoint=UPDATE_ENDPOINT, 
-                               kgclient_obe=None, kgclient_hm=None):
+                               kg_client_obe=None, kg_client_hm=None):
     """
     Retrieves HM Land Registry's Price Paid data for provided properties from
     given endpoint and instantiates them in the KG according to OntoBuiltEnv
@@ -55,10 +54,10 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
     updated_tx = 0
 
     # Initialise KG clients
-    if not kgclient_obe:
-        kgclient_obe = KGClient(query_endpoint, update_endpoint)
-    if not kgclient_hm:
-        kgclient_hm = KGClient(api_endpoint, api_endpoint)
+    if not kg_client_obe:
+        kg_client_obe = KGClient(query_endpoint, update_endpoint)
+    if not kg_client_hm:
+        kg_client_hm = KGClient(api_endpoint, api_endpoint)
 
     # Initialise relevant Stack Clients and parameters
     postgis_client = PostGISClient()
@@ -69,7 +68,7 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
     #    (i.e. required for query to HM Land Registry SPARQL endpoint)
     logger.info('Retrieving instantiated properties with location info ...')
     query = get_instantiated_properties_with_location_info(property_iris=property_iris)
-    res = kgclient_obe.performQuery(query)
+    res = kg_client_obe.performQuery(query)
 
     # Create DataFrame from results and condition data
     obe = create_conditioned_dataframe_obe(res)
@@ -83,7 +82,7 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
         # 2) Retrieve Price Paid Data transaction records from HM Land Registry
         logger.info('Retrieving Price Paid Data from Open SPARQL endpoint ...')
         query = get_transaction_data_for_postcodes(postcodes=[pc])
-        res = kgclient_hm.performQuery(query)
+        res = kg_client_hm.performQuery(query)
 
         # Create DataFrame from results and condition data
         logger.info('Conditioning retrieved Price Paid Data in DataFrame ...')
@@ -103,11 +102,19 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
             # 4.1) ... in KG
             update_query = update_transaction_record(**tx)
             if update_query:
-                kgclient_obe.performUpdate(update_query) 
+                kg_client_obe.performUpdate(update_query) 
             
             # 4.2) ... in PostGIS (to ensure proper styling)
-            create_geojson_for_postgis(tx, postgis_client, gdal_client, geoserver_client)
-            postgis_client.update_transaction_record(**tx)
+            #TODO: check
+            # Create Geoserver layer when first data is uploaded to PostGIS
+            if not postgis_client.check_table_exists():
+                geoserver_client.create_workspace()
+                geoserver_client.create_postgis_layer()
+            # Upload latest property market value estimate to PostGIS
+            # (overwrites previous value if exists)
+            geojson_str = create_geojson_for_postgis(building_iri=tx.get('property_iri'),
+                                                     value_estimate=tx.get('price'))
+            gdal_client.uploadGeoJSON(geojson_str)
 
     
     return instantiated_tx, updated_tx
@@ -136,15 +143,15 @@ def update_all_transaction_records(min_conf_score=90,
     updated_ukhpi = 0
 
     # Initialise KG clients
-    kgclient_obe = KGClient(query_endpoint, update_endpoint)
-    kgclient_hm = KGClient(api_endpoint, api_endpoint)
+    kg_client_obe = KGClient(query_endpoint, update_endpoint)
+    kg_client_hm = KGClient(api_endpoint, api_endpoint)
     # Initialise TimeSeriesClient with default settings
-    ts_client = TSClient(kg_client=kgclient_obe)
+    ts_client = TSClient(kg_client=kg_client_obe)
 
     # 1) Retrieve all instantiated properties with associated postcodes
     logger.info('Retrieving instantiated properties with attached postcodes ...')
     query = get_all_properties_with_postcode()
-    res = kgclient_obe.performQuery(query)
+    res = kg_client_obe.performQuery(query)
 
     # 2) Update transaction records in KG in postcode batches
     batch_size = 100
@@ -160,14 +167,14 @@ def update_all_transaction_records(min_conf_score=90,
         # Update transaction records for list of property IRIs
         tx_new, tx_upd = update_transaction_records(property_iris=prop_iris, 
                             min_conf_score=min_conf_score, api_endpoint=api_endpoint,
-                            kgclient_obe=kgclient_obe, kgclient_hm=kgclient_hm)
+                            kg_client_obe=kg_client_obe, kg_client_hm=kg_client_hm)
         instantiated_tx += tx_new
         updated_tx += tx_upd
 
     # 3) Retrieve instantiated Admin Districts + potentially already instantiated
     #    Property Price Indices in OntoBuiltEnv
     logger.info('Updating UK House Price Index ...')
-    districts = get_admin_district_index_dict(kgclient_obe)
+    districts = get_admin_district_index_dict(kg_client_obe)
     for d in districts: 
         if not d['ukhpi']:
             # Instantiate Property Price Index (i.e. time series data IRI) if
@@ -177,7 +184,7 @@ def update_all_transaction_records(min_conf_score=90,
             logger.info('Instantiate UK House Price Index.')
             insert_query = instantiate_property_price_index(district_iri=d['local_authority'],
                                                             ppi_iri=ppi_iri)
-            kgclient_obe.performUpdate(insert_query)
+            kg_client_obe.performUpdate(insert_query)
             
             # Initialise TimeSeries with try-with-resources block
             try:
@@ -194,7 +201,7 @@ def update_all_transaction_records(min_conf_score=90,
         # 4) Retrieve Property Price Index from HM Land Registry
         logger.info('Update UK House Price Index data.')
         ts = create_ukhpi_timeseries(local_authority_iri=d['ons_district'], 
-                                     ppi_iri=d['ukhpi'], kgclient_hm=kgclient_hm)
+                                     ppi_iri=d['ukhpi'], kg_client_hm=kg_client_hm)
 
         # 5) Update Property Price Index time series data in KG
         try:
@@ -363,7 +370,7 @@ def get_best_matching_transactions(obe_data, ppd_data, min_match_score=None) -> 
         
         # Extract PPD addresses of same property type (in same postcode)
         prop = row['property_type']
-        ppd_addr = ppd_data[ppd_data['property_type'].isin([prop, OTHER_PROPERTY_TYPE])]
+        ppd_addr = ppd_data[ppd_data['property_type'].isin([prop, OBE_PROPERTY])]
 
         # Extract list of PPD addresses
         ppd_addr = ppd_addr['ppd_address'].tolist()
@@ -371,7 +378,9 @@ def get_best_matching_transactions(obe_data, ppd_data, min_match_score=None) -> 
         # Find best match
         best = None
         if min_match_score:
-            # NOTE:
+            # NOTE: Compared Levenshtein algorithm with Damerau-Levenshtein algo, 
+            #       and the latter one performed better using the 'token_set_ratio'
+            #       scoring method --> used here
             matches = process.extract(addr, ppd_addr, scorer=fuzz.token_set_ratio)
             matches = [m for m in matches if m[1] >= min_match_score]
             if matches:
@@ -422,7 +431,7 @@ def get_admin_district_index_dict(kglient) -> list:
 
 
 def create_ukhpi_timeseries(local_authority_iri, ppi_iri, months=240,
-                            api_endpoint=HM_SPARQL_ENDPOINT, kgclient_hm=None):
+                            api_endpoint=HM_SPARQL_ENDPOINT, kg_client_hm=None):
     """
     Retrieve UKHPI data for a given local authority ONS IRI 
 
@@ -436,12 +445,12 @@ def create_ukhpi_timeseries(local_authority_iri, ppi_iri, months=240,
     """
 
     # Initialise KG client
-    if not kgclient_hm:
-        kgclient_hm = KGClient(api_endpoint, api_endpoint)
+    if not kg_client_hm:
+        kg_client_hm = KGClient(api_endpoint, api_endpoint)
 
     query = get_ukhpi_monthly_data_for_district(ons_local_authority_iri=local_authority_iri, 
                                                 months=months)
-    res = kgclient_hm.performQuery(query)
+    res = kg_client_hm.performQuery(query)
 
     # Condition data
     cols = ['month', 'ukhpi_value']
