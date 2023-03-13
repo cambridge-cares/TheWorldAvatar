@@ -4,7 +4,7 @@ This downsampling library is used to post-process and downsample Timeseries data
 
 The document outlines the user guide on how to use the downsampling library.
 
-## User Guide
+# User Guide
 ## How to use downsampling library
 ### Method
 To downsample timseries data, call the `aggregation` method in this library.  
