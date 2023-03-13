@@ -51,6 +51,8 @@ public class CommonQuery {
     public static final String OPENING_ELEMENT_VAR = "?openingelement";
     public static final String REL_FILLS_ELEMENT_VAR = "?relfillselement";
     public static final String REL_VOID_ELEMENT_VAR = "?relvoidelement";
+    public static final String REL_SPATIAL_STRUCTURE_VAR = "?relspatialstructure";
+    public static final String ROOF_SLAB_VAR = "?roofslab";
     public static final String SLAB_ENUM_VAR = "?slabenum";
     // Geometry variables
     public static final String PRODUCT_DEFINITION_VAR = "?productDefinitionShape";
@@ -144,7 +146,8 @@ public class CommonQuery {
     public static final String IFC_CEILING = NamespaceMapper.IFC_PREFIX + ":IfcCovering";
     public static final String IFC_COLUMN = NamespaceMapper.IFC_PREFIX + ":IfcColumn";
     public static final String IFC_DOOR = NamespaceMapper.IFC_PREFIX + ":IfcDoor";
-    public static final String IFC_FLOOR = NamespaceMapper.IFC_PREFIX + ":IfcSlab";
+    public static final String IFC_SLAB = NamespaceMapper.IFC_PREFIX + ":IfcSlab";
+    public static final String IFC_ROOF = NamespaceMapper.IFC_PREFIX + ":IfcRoof";
     public static final String IFC_WALL = NamespaceMapper.IFC_PREFIX + ":IfcWall";
     public static final String IFC_WALL_STANDARD_CASE = NamespaceMapper.IFC_PREFIX + ":IfcWallStandardCase";
     public static final String IFC_WINDOW = NamespaceMapper.IFC_PREFIX + ":IfcWindow";
@@ -158,6 +161,7 @@ public class CommonQuery {
     public static final String IFC_CEILING_ENUM = NamespaceMapper.IFC_PREFIX + ":CEILING";
     public static final String IFC_SLAB_FLOOR_ENUM = NamespaceMapper.IFC_PREFIX + ":FLOOR";
     public static final String IFC_SLAB_BASE_SLAB_ENUM = NamespaceMapper.IFC_PREFIX + ":BASESLAB";
+    public static final String IFC_SLAB_ROOF_ENUM = NamespaceMapper.IFC_PREFIX + ":ROOF";
 
     /**
      * Add the statements for querying common metadata such as class name, their unique ifc ID, and name into the builder.

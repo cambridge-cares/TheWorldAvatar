@@ -6,7 +6,6 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.*;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.GeometricVoid;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement.IfcElementConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
@@ -198,7 +197,7 @@ public class BuildingStructureFacade {
     public void addFloorStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
         // Set up query builder and its query statements
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
-        selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_FLOOR);
+        selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_SLAB);
         CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
         CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
         CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
@@ -235,7 +234,7 @@ public class BuildingStructureFacade {
                 }
                 // If this is a distinct void shape rep, generate another void geometry statement
                 if (!this.modelRepMappings.containsModelRepIri(voidShapeRepIRI)) {
-                    QueryHandler.addVoidGeometryStatements(soln,  this.modelRepMappings.getFloor(iri).getIfcRepIri(), statementSet, this.modelRepMappings);
+                    QueryHandler.addVoidGeometryStatements(soln, this.modelRepMappings.getFloor(iri).getIfcRepIri(), statementSet, this.modelRepMappings);
                 }
             } else {
                 // If it is not yet created, first generate a new Model Representation 3D object
@@ -248,6 +247,80 @@ public class BuildingStructureFacade {
                 // Add the object into the mappings for its IRI
                 this.modelRepMappings.add(iri, geomModel);
                 this.modelRepMappings.add(iri, floor);
+            }
+        }
+        // Construct all the Model Representation 3D statements
+        this.modelRepMappings.constructModelRepStatements(statementSet);
+        // Clear all existing mappings
+        this.modelRepMappings.clear();
+    }
+
+    /**
+     * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for roofs.
+     *
+     * @param owlModel     The IfcOwl model containing the triples to query from.
+     * @param statementSet A list containing the new OntoBIM triples.
+     */
+    public void addRoofStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
+        // Set up query builder and its query statements
+        SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
+        // Restrict to IfcSlab type of ROOF
+        selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_SLAB)
+                .addWhere(CommonQuery.REL_TYPE_DEFINITION_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_REL_TYPE_DEFINITION)
+                .addWhere(CommonQuery.REL_TYPE_DEFINITION_VAR, CommonQuery.IFC_RELATED_OBJECT, CommonQuery.ELEMENT_VAR)
+                .addWhere(CommonQuery.REL_TYPE_DEFINITION_VAR, CommonQuery.IFC_RELATING_TYPE, CommonQuery.ELEMENT_TYPE_VAR)
+                .addWhere(CommonQuery.ELEMENT_TYPE_VAR, CommonQuery.IFC_PREDEFINED_TYPE_SLAB, CommonQuery.IFC_SLAB_ROOF_ENUM);
+        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR);
+        CommonQuery.addElementModelRepresentationQueryComponents(selectBuilder);
+        CommonQuery.addVoidRepresentationQueryComponents(selectBuilder);
+        // Add class-specific properties for querying their spatial location
+        // Note that IfcRoof is a container class linking the host zone to the individual slab geometry representation
+        selectBuilder.addVar(CommonQuery.PARENT_ZONE_VAR);
+        selectBuilder.addWhere(CommonQuery.RELAGGR_VAR, QueryHandler.RDF_TYPE, CommonQuery.RELAGG)
+                .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_PARENT_ZONE_REL, CommonQuery.ROOF_SLAB_VAR)
+                .addWhere(CommonQuery.ROOF_SLAB_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_ROOF)
+                .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_CHILD_ZONE_REL, IfcElementConstructBuilder.ELEMENT_VAR)
+                .addWhere(CommonQuery.REL_SPATIAL_STRUCTURE_VAR, QueryHandler.RDF_TYPE, CommonQuery.REL_SPATIAL_ZONE_ELEMENT)
+                .addWhere(CommonQuery.REL_SPATIAL_STRUCTURE_VAR, CommonQuery.IFC_REL_ELEMENT, CommonQuery.ROOF_SLAB_VAR)
+                .addWhere(CommonQuery.REL_SPATIAL_STRUCTURE_VAR, CommonQuery.IFC_REL_ZONE, CommonQuery.PARENT_ZONE_VAR);
+        // Query from the model
+        ResultSet results = QueryHandler.execSelectQuery(selectBuilder.buildString(), owlModel);
+        // Process query results
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            String iri = soln.get(CommonQuery.ELEMENT_VAR).toString();
+            String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
+            String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
+            String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
+            String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
+            ModelRepresentation3D geomModel;
+            // If the element object has already been created in a previous row
+            if (this.modelRepMappings.containsModelRepIri(iri)) {
+                // This is a duplicate solution which may either have more geometries as part of the element's Model Representation 3D
+                // OR it has multiple geometric voids and should generate new ones
+                // Note that geometric voids usually have one geometry and does not require further appending to the void's Model Representation 3D
+                String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
+                String voidShapeRepIRI = QueryHandler.retrieveIri(soln, CommonQuery.VOID_SHAPE_REP_VAR);
+                // Only append the geometry IRI to the element's existing Model Representation 3D if there are differences
+                if (geomIri!=null) {
+                    geomModel = this.modelRepMappings.getModelRep(iri);
+                    geomModel.appendGeometry(geomIri);
+                }
+                // If this is a distinct void shape rep, generate another void geometry statement
+                if (!this.modelRepMappings.containsModelRepIri(voidShapeRepIRI)) {
+                    QueryHandler.addVoidGeometryStatements(soln, this.modelRepMappings.getRoof(iri).getIfcRepIri(), statementSet, this.modelRepMappings);
+                }
+            } else {
+                // If it is not yet created, first generate a new Model Representation 3D object
+                geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
+                // Construct the element's instance and its statements
+                Roof roof = new Roof(iri, name, uid, placement, hostZone, geomModel.getBimIri());
+                // Generate the void geometry statements and add void model representation into the mappings
+                QueryHandler.addVoidGeometryStatements(soln, roof.getIfcRepIri(), statementSet, this.modelRepMappings);
+                roof.constructStatements(statementSet);
+                // Add the object into the mappings for its IRI
+                this.modelRepMappings.add(iri, geomModel);
+                this.modelRepMappings.add(iri, roof);
             }
         }
         // Construct all the Model Representation 3D statements

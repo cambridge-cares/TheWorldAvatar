@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.Ifc2OntoBIMAgent;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Floor;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Roof;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Wall;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -25,6 +26,7 @@ public class ElementStorage {
     private static HashMap<String, ModelRepresentation3D> geometries;
     private static HashMap<String, Wall> walls;
     private static HashMap<String, Floor> floors;
+    private static HashMap<String, Roof> roofs;
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
     private static final String NON_EXISTING_ERROR = " does not exist in mappings!";
 
@@ -35,6 +37,7 @@ public class ElementStorage {
         geometries = new HashMap<>();
         walls = new HashMap<>();
         floors = new HashMap<>();
+        roofs = new HashMap<>();
     }
 
     /**
@@ -92,13 +95,27 @@ public class ElementStorage {
     }
 
     /**
-     * Retrieve the wall's Java object associated with the IRI input.
+     * Retrieve the floor's Java object associated with the IRI input.
      *
      * @param iri The data IRI generated from IfcOwl.
      */
     public Floor getFloor(String iri) {
         if (floors.containsKey(iri)) {
             return floors.get(iri);
+        } else {
+            LOGGER.error(iri + NON_EXISTING_ERROR);
+            throw new JPSRuntimeException(iri + NON_EXISTING_ERROR);
+        }
+    }
+
+    /**
+     * Retrieve the roof's Java object associated with the IRI input.
+     *
+     * @param iri The data IRI generated from IfcOwl.
+     */
+    public Roof getRoof(String iri) {
+        if (roofs.containsKey(iri)) {
+            return roofs.get(iri);
         } else {
             LOGGER.error(iri + NON_EXISTING_ERROR);
             throw new JPSRuntimeException(iri + NON_EXISTING_ERROR);
@@ -131,6 +148,16 @@ public class ElementStorage {
      */
     public void add(String iri, Floor floor) {
         floors.put(iri, floor);
+    }
+
+    /**
+     * An overloaded method to store the element IRI and its associated 3D model representation Java object as mappings.
+     *
+     * @param iri      The element's IRI generated from IfcOwl.
+     * @param roof    The Floor object generated from the iri.
+     */
+    public void add(String iri, Roof roof) {
+        roofs.put(iri, roof);
     }
 
     /**

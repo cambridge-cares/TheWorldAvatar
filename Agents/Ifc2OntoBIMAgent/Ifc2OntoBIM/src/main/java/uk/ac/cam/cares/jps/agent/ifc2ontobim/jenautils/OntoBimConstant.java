@@ -92,6 +92,8 @@ public class OntoBimConstant {
     public static final String BIM_DOOR_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + DOOR_CLASS;
     public static final String FLOOR_CLASS = "Floor";
     public static final String BIM_FLOOR_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + FLOOR_CLASS;
+    public static final String ROOF_CLASS = "Roof";
+    public static final String BIM_ROOF_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + ROOF_CLASS;
     public static final String WALL_CLASS = "Wall";
     public static final String BIM_WALL_CLASS = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + WALL_CLASS;
     public static final String WINDOW_CLASS = "Window";
