@@ -45,7 +45,6 @@ public class SupersetService extends ContainerService {
     private static final String DEFAULT_EMAIL = "admin@superset.com";
     private static final String DEFAULT_SECRET_KEY_FILE = "/run/secrets/superset_secret_key";
     private static final String DEFAULT_CREDENTIAL_PROVIDER = "db";
-    private static final String SUPERSET_SECRET_KEY_ENV_VAR = "SUPERSET_SECRET_KEY";
 
     public SupersetService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(stackName, serviceManager, config);
@@ -55,7 +54,7 @@ public class SupersetService extends ContainerService {
         setEnvironmentVariableIfAbsent("SUPERSET_FIRSTNAME", DEFAULT_FIRSTNAME);
         setEnvironmentVariableIfAbsent("SUPERSET_LASTNAME", DEFAULT_LASTNAME);
         setEnvironmentVariableIfAbsent("SUPERSET_EMAIL", DEFAULT_EMAIL);
-        setEnvironmentVariableIfAbsent("DEFAULT_SECRET_KEY_FILE", DEFAULT_SECRET_KEY_FILE);
+        setEnvironmentVariableIfAbsent("SUPERSET_SECRET_KEY_FILE", DEFAULT_SECRET_KEY_FILE);
         setEnvironmentVariableIfAbsent("SUPERSET_CREDENTIAL_PROVIDER", DEFAULT_CREDENTIAL_PROVIDER);
 
         endpointConfig = new SupersetEndpointConfig(
@@ -64,8 +63,6 @@ public class SupersetService extends ContainerService {
                 getEnvironmentVariable("SUPERSET_FIRSTNAME"), getEnvironmentVariable("SUPERSET_LASTNAME"),
                 getEnvironmentVariable("SUPERSET_EMAIL"), getEnvironmentVariable("DEFAULT_SECRET_KEY_FILE"),
                 getEnvironmentVariable("SUPERSET_CREDENTIAL_PROVIDER"));
-
-        setEnvironmentVariableIfAbsent(SUPERSET_SECRET_KEY_ENV_VAR, endpointConfig.getSecretKey());
     }
 
     @Override

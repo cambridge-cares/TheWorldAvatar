@@ -1,8 +1,5 @@
 package com.cmclinnovations.stack.clients.superset;
 
-import java.io.BufferedReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Objects;
 
 import com.cmclinnovations.stack.clients.core.PasswordEndpointConfig;
@@ -84,25 +81,6 @@ public class SupersetEndpointConfig extends PasswordEndpointConfig {
 
     public String getSecretKeyFile() {
         return secretKeyFile;
-    }
-
-    @JsonIgnore
-    public String getSecretKey() {
-        final String secretKey;
-        if (null == secretKeyFile) {
-            secretKey = "";
-        } else {
-            try (BufferedReader infile = Files.newBufferedReader(Paths.get(secretKeyFile))) {
-                if (null == (secretKey = infile.readLine())) {
-                    throw new IllegalArgumentException("The secret key file '" + secretKeyFile
-                            + "' specified for the container '" + getName() + "' is empty.");
-                }
-            } catch (Exception ex) {
-                throw new IllegalArgumentException("The secret key file '" + secretKeyFile
-                        + "' specified for the container '" + getName() + "' could not be read.", ex);
-            }
-        }
-        return secretKey;
     }
 
     public String getUrl() {
