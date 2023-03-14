@@ -10,19 +10,18 @@ import pandas as pd
 
 # Self import
 import agent.config.config as properties
-from agent.ifc2tileset.asset_tiles import init_asset_tiles, gen_tileset_assets, appenddict_rec
+from agent.ifc2tileset.asset_tiles import append_asset_metadata_schema, gen_tileset_assets, append_assets_rec
 from agent.ifc2tileset.root_tile import make_tileset, append_tileset_schema_and_metadata
 from agent.ifc2tileset.schema import Tile, Content
 from agent.ifc2tileset.tile_helper import make_root_tile
 
 
-def test_init_asset_tiles():
+def test_append_asset_metadata_schema():
     """
     Tests init_asset_tiles()
     """
     # Initialise test parameters
-    expected_bbox = []
-    properties.bbox_child = expected_bbox
+    properties.bbox_child = []
     building_iri = "buildingIri"
 
     # Init root tile for input
@@ -31,16 +30,18 @@ def test_init_asset_tiles():
     append_tileset_schema_and_metadata(tileset, building_iri)
 
     # Execute method
-    output = init_asset_tiles(tileset)
+    append_asset_metadata_schema(tileset)
 
     # Test that root tile is generated with no glTF content
-    assert output["asset"]["version"] == "1.1"
-    assert output["geometricError"] == 1024
-    assert output["root"]["geometricError"] == 512
-    assert "content" not in output["root"]
-    assert "contents" not in output["root"]
+    assert tileset["asset"]["version"] == "1.1"
+    assert tileset["geometricError"] == 1024
+
+    assert tileset["root"]["geometricError"] == 512
+    assert "content" not in tileset["root"]
+    assert "contents" not in tileset["root"]
+
     # Test schema key is generated
-    metadata = output["schema"]["classes"]["AssetMetaData"]
+    metadata = tileset["schema"]["classes"]["AssetMetaData"]
     assert metadata["name"] == "Asset metadata"
     assert metadata["properties"]["name"]["description"] == "Name of the asset"
     assert metadata["properties"]["name"]["type"] == "STRING"
@@ -48,10 +49,6 @@ def test_init_asset_tiles():
     assert metadata["properties"]["uid"]["type"] == "STRING"
     assert metadata["properties"]["iri"]["description"] == "Data IRI of the asset"
     assert metadata["properties"]["iri"]["type"] == "STRING"
-    # Test that root -> children link exists
-    assert output["root"]["children"][0]["geometricError"] == 50
-    assert output["root"]["children"][0]["boundingVolume"]["box"] == expected_bbox
-    assert "contents" in output["root"]["children"][0]
 
 
 def gen_sample_parameters(test_range: int):
@@ -142,7 +139,7 @@ def assert_nested_node_content(nested_node_list: List[dict], test_range: int, cu
         current_asset_num = current_asset_num + 6
 
 
-def test_appenddict_rec_less_than_six_assets():
+def test_append_assets_rec_less_than_six_assets():
     """
     Tests appenddict_rec() for less than 6 assets
     """
@@ -151,13 +148,13 @@ def test_appenddict_rec_less_than_six_assets():
     sample_tileset, sample_asset = gen_sample_parameters(test_range)
 
     # Execute method
-    appenddict_rec(sample_tileset, sample_asset)
+    append_assets_rec(sample_tileset, sample_asset)
 
     # Test that there is no nested children key
     assert "children" not in sample_tileset["children"][0]
 
 
-def test_appenddict_rec_more_than_six_assets():
+def test_append_assets_rec_more_than_six_assets():
     """
     Tests appenddict_rec() for more than 6 assets
     """
@@ -165,11 +162,11 @@ def test_appenddict_rec_more_than_six_assets():
     test_range = 14
     sample_tileset, sample_asset = gen_sample_parameters(test_range)
     # Execute method
-    appenddict_rec(sample_tileset, sample_asset)
+    append_assets_rec(sample_tileset, sample_asset)
     # Generate list of nested dict
     test_dict_list = []
 
-    gen_nested_dicts_for_test(sample_tileset["children"][0], test_dict_list)
+    gen_nested_dicts_for_test(sample_tileset, test_dict_list)
 
     # Test that there is no children in deepest layer
     assert "children" not in test_dict_list[-1]

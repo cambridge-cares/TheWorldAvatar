@@ -15,7 +15,7 @@ from agent.ifc2tileset.schema import Tileset, Tile, Content
 from agent.kgutils.const import NAME_VAR, ID_VAR, IRI_VAR
 
 
-def init_asset_tiles(tileset: Tileset):
+def append_asset_metadata_schema(tileset: Tileset):
     """
     Initialise the tileset to receive asset information
 
@@ -43,26 +43,15 @@ def init_asset_tiles(tileset: Tileset):
         }
     }
 
-    tileset["root"]["children"] = [{
-        "boundingVolume": {"box": properties.bbox_child},
-        "geometricError": 50,
-        # Nomenclature for 1 geometry file = content:{}, multiple files = contents:[{}]
-        "contents": [{}]
-        # CesiumJS only supports six content by default:
-        # https://github.com/CesiumGS/cesium/issues/10468
-        # If we have more than six assets, do add more inner children contents here
-    }]
-    return tileset
 
-
-def appenddict_rec(tileset_root: Tile, asset_list: List[Content], i: int = 6):
+def append_assets_rec(tile: Tile, asset_list: List[Content], i: int = 6):
     """
     Recursively adds every i assets to a new child node of the required format.
     Function will only run if there are more than 6 assets.
 
     Arguments:
-        tileset_root - a nested dictionary starting from tileset['root']
-        assetlist - a list of nested dictionary to add duplicate keys
+        tile - a nested dictionary starting from tileset['root']
+        asset_list - a list of nested dictionary to add duplicate keys
         i - an integer denoting number of assets to add per child.
             Set to 6 as default as that is the current limit
 
@@ -72,14 +61,16 @@ def appenddict_rec(tileset_root: Tile, asset_list: List[Content], i: int = 6):
     Edit the asset2tileset function instead to stop when above the max limit of child nodes
     """
     if len(asset_list) > i:
-        tileset_root["children"][0]["children"] = [{
+        tile["children"] = [{
             "boundingVolume": {"box": properties.bbox_child},
             "geometricError": 50,
+            # Nomenclature for 1 geometry file = content:{}, multiple files = contents:[{}]
             "contents": asset_list[i:i + 6]
+            # CesiumJS only supports six content by default:
+            # https://github.com/CesiumGS/cesium/issues/10468
+            # If we have more than six assets, do add more inner children contents here
         }]
-        appenddict_rec(tileset_root["children"][0], asset_list, i + 6)
-    else:
-        return
+        append_assets_rec(tile["children"][0], asset_list, i + 6)
 
 
 def gen_tileset_assets(asset_df: pd.DataFrame, tileset: Tileset):
@@ -93,7 +84,7 @@ def gen_tileset_assets(asset_df: pd.DataFrame, tileset: Tileset):
     The tileset generated with asset metadata as a python dictionary
     """
     # Initialise tileset structure for assets
-    tileset = init_asset_tiles(tileset)
+    append_asset_metadata_schema(tileset)
 
     # A Python list is required to handle duplicate keys in a nested dictionary
     asset_list: List[Content] = asset_df.apply(
@@ -112,8 +103,5 @@ def gen_tileset_assets(asset_df: pd.DataFrame, tileset: Tileset):
         }, axis=1
     ).tolist()
 
-    # Add the first 6 assets to the first children node of the tileset
-    tileset["root"]["children"][0]["contents"] = asset_list[0:6]
-
-    # Add the remaining assets to the next nested child node of tileset
-    appenddict_rec(tileset["root"], asset_list)
+    # Add 6 assets to every nested child node of tileset
+    append_assets_rec(tileset["root"], asset_list, 0)
