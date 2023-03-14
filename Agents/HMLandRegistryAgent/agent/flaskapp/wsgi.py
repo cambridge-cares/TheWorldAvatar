@@ -6,8 +6,8 @@
 # Start Web Server Gateway Interface (WSGI) as simple web server to forward
 # requests to actual application and initialise recurring tasks
 
-from landregistry.flaskapp import create_app
-from landregistry.datainstantiation.sales_instantiation import update_all_transaction_records
+from agent.flaskapp import create_app
+from agent.datainstantiation.sales_instantiation import update_all_transaction_records
 from apscheduler.schedulers.background import BackgroundScheduler
 
 

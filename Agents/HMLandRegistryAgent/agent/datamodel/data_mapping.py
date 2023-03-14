@@ -10,18 +10,22 @@
 # For details on PPD data, see:
 # https://www.gov.uk/guidance/about-the-price-paid-data#explanations-of-column-headers-in-the-ppd
 
-from landregistry.datamodel.iris import *
+from agent.datamodel.iris import *
 
-from landregistry.kgutils.javagateway import jpsBaseLibGW
+from agent.kgutils.javagateway import jpsBaseLibGW
 
+# OM/UOM SYMBOLS
+GBP_PER_SM = '£ m-2'
+GBP = '£'
 
-OTHER_PROPERTY_TYPE = 'OTHER'
+# Mapping between PPD property types and instantiated OBE property types
+# PPD: https://www.gov.uk/guidance/about-the-price-paid-data
 PPD_PROPERTY_TYPES = {
     'SEMI-DETACHED': OBE_BUILDING,
     'TERRACED': OBE_BUILDING,
     'DETACHED': OBE_BUILDING,
     'FLAT-MAISONETTE': OBE_FLAT,
-    'OTHER': OTHER_PROPERTY_TYPE
+    'OTHER': OBE_PROPERTY
 }
 
 # Dates from HM Land Registry are reported in xsd:gYearMonth, i.e. ISO 8601 YYYY-MM
@@ -38,5 +42,4 @@ LocalDate = jpsBaseLibView.java.time.LocalDate
 TIMECLASS = LocalDate.now().getClass()
 
 # Create data class for all time series data (i.e. all data as double)
-jpsBaseLibView = jpsBaseLibGW.createModuleView()
 DATACLASS = jpsBaseLibView.java.lang.Double.TYPE

@@ -8,11 +8,10 @@
 
 import uuid
 
-import agentlogging
-
-from landregistry.datamodel.iris import *
+from agent.datamodel.iris import *
 
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
@@ -110,9 +109,8 @@ def get_instantiated_properties_with_location_info(property_iris: list = None) -
                ?tx_iri
         WHERE {{
         {values_statement}
-        ?property_iri <{RDF_TYPE}> ?property_type . 
-        ?property_type <{RDFS_SUBCLASS}> <{OBE_PROPERTY}> . 
-        ?property_iri <{OBE_LOCATEDIN}> ?district_iri ; 
+        ?property_iri <{RDF_TYPE}> ?property_type ; 
+                      <{OBE_LOCATEDIN}> ?district_iri ; 
                       <{OBE_HAS_ADDRESS}> ?address_iri . 
         ?address_iri <{OBE_HAS_POSTALCODE}> ?postcode_iri . 
         ?postcode_iri <{RDFS_LABEL}> ?postcode . 
@@ -184,7 +182,7 @@ def update_transaction_record(property_iri:None, address_iri:None, tx_iri:None,
             <{property_iri}> <{OBE_HAS_ADDRESS}> <{address_iri}> . 
             OPTIONAL {{ <{property_iri}> <{OBE_HAS_LATEST_TRANSACTION}> <{tx_iri}> . 
                         <{tx_iri}> <{LRPPI_PRICE}> ?price ;
-                                <{LRPPI_DATE}> ?date . }}
+                                   <{LRPPI_DATE}> ?date . }}
             OPTIONAL {{ <{tx_iri}> <{OWL_SAME_AS}> ?ppd_tx }}
             OPTIONAL {{ <{address_iri}> <{OBE_IS_PRESUMED_MATCH_OF}> ?ppd_address }} 
             }}
