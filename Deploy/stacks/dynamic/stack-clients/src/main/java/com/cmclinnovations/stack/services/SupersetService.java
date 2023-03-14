@@ -155,11 +155,8 @@ public class SupersetService extends ContainerService {
     }
 
     private void makeUser(SupersetEndpointConfig endpointConfig) {
-        executeCommand("superset", "fab", "create-admin", "--username", endpointConfig.getUsername(),
-                "--firstname",
-                endpointConfig.getFirstName(),
-                "--lastname", endpointConfig.getLastName(), "--email", endpointConfig.getEmail(),
-                "--password",
-                endpointConfig.getPassword());
+        executeCommand("superset", "fab", "create-admin", "--username", endpointConfig.getUsername(), "--firstname",
+                endpointConfig.getFirstName(), "--lastname", endpointConfig.getLastName(), "--email",
+                endpointConfig.getEmail(), "--password", endpointConfig.getPassword());
     }
 }
