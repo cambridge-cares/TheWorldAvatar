@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   stack-manager:
-    image: docker.cmclinnovations.com/stack-manager${IMAGE_SUFFIX}:1.10.1-663-SNAPSHOT
+    image: docker.cmclinnovations.com/stack-manager${IMAGE_SUFFIX}:1.10.2-663-SNAPSHOT
     environment:
       EXTERNAL_PORT: "${EXTERNAL_PORT-3838}"
     volumes:
