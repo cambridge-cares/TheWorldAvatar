@@ -201,11 +201,11 @@ def test_gen_tileset_assets():
     sample_df = gen_sample_df(test_range)
     building_iri = "buildingIri"
     root_tile = Tile(boundingVolume={"box": properties.bbox_root}, geometricError=512)
-    sample_tileset = make_tileset(root_tile)
-    append_tileset_schema_and_metadata(sample_tileset, building_iri)
+    tileset = make_tileset(root_tile)
+    append_tileset_schema_and_metadata(tileset, building_iri)
 
     # Execute test method
-    tileset = gen_tileset_assets(sample_df, sample_tileset)
+    gen_tileset_assets(sample_df, tileset)
 
     # Process result for programmatic testing
     test_dict_list = []

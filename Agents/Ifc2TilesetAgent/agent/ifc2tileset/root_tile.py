@@ -13,13 +13,14 @@ from py4jps import agentlogging
 # Self imports
 import agent.app as state
 import agent.config.config as properties
+from agent.ifc2tileset.schema import Tileset
 from agent.ifc2tileset.tile_helper import make_tileset, make_root_tile, compute_bbox
 
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
 
 
-def append_tileset_schema_and_metadata(tileset: dict, building_iri: str):
+def append_tileset_schema_and_metadata(tileset: Tileset, building_iri: str):
     """
     Append tileset schema.py class and metadata to tileset
 
@@ -28,7 +29,7 @@ def append_tileset_schema_and_metadata(tileset: dict, building_iri: str):
         building_iri - data IRI of the building
     """
     # Append definition of class and its properties to schema
-    tileset['schema'] = {"classes": {
+    tileset["schema"] = {"classes": {
         "TilesetMetaData": {
             "name": "Tileset metadata",
             "description": "A metadata class for the tileset",
@@ -38,12 +39,14 @@ def append_tileset_schema_and_metadata(tileset: dict, building_iri: str):
                     "type": "STRING"
                 }
             }
-        }}}
+        }
+    }}
+
     # Append specific tileset values to the core metadata class
-    tileset['metadata'] = {
-        'class': 'TilesetMetaData',
-        'properties': {
-            'buildingIri': building_iri
+    tileset["metadata"] = {
+        "class": "TilesetMetaData",
+        "properties": {
+            "buildingIri": building_iri
         }
     }
 

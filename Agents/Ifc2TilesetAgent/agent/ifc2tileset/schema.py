@@ -1,4 +1,4 @@
-from typing import TypedDict, List, Union, Literal
+from typing import TypedDict, List, Literal, Dict
 
 
 # For python>=3.11, NotRequired can be used to denote non-compulsory keys of a TypedDict
@@ -35,12 +35,37 @@ class _TileBase(TypedDict):
 
 class Tile(_TileBase, total=False):
     viewerRequestVolume: dict
-    refine: Union[Literal["ADD"], Literal["REPLACE"], Literal["string"]]
+    refine: Literal["ADD", "REPLACE", "string"]
     transform: list
     content: Content
     # https://github.com/CesiumGS/3d-tiles/blob/main/extensions/3DTILES_multiple_contents/schema/tile.3DTILES_multiple_contents.schema.json
     contents: List[Content]
     children: List["Tile"]
+
+
+# https://github.com/CesiumGS/3d-tiles/blob/main/extensions/3DTILES_metadata/schema/class.schema.json
+class Class(TypedDict):
+    name: str
+    description: str
+    properties: dict
+
+
+# https://github.com/CesiumGS/3d-tiles/blob/main/extensions/3DTILES_metadata/schema/schema.schema.json
+class Schema(TypedDict, total=False):
+    id: str
+    name: str
+    description: str
+    version: str
+    classes: Dict[str, Class]
+    enums: dict
+
+
+# https://github.com/CesiumGS/3d-tiles/blob/main/extensions/3DTILES_metadata/schema/metadataEntity.schema.json
+_MetadataEntityBase = TypedDict("_MetadataEntityBase", {"class": str})
+
+
+class MetadataEntity(_MetadataEntityBase, total=False):
+    properties: dict
 
 
 # https://github.com/CesiumGS/3d-tiles/blob/main/specification/schema/tileset.schema.json
@@ -54,3 +79,7 @@ class Tileset(_TilesetBase, total=False):
     properties: dict
     extensionUsed: list
     extensionRequired: list
+    # https://github.com/CesiumGS/3d-tiles/blob/main/extensions/3DTILES_metadata/schema/tileset.3DTILES_metadata.schema.json
+    schema: Schema
+    # https://github.com/CesiumGS/3d-tiles/blob/main/extensions/3DTILES_metadata/schema/tileset.schema.json
+    metadata: MetadataEntity

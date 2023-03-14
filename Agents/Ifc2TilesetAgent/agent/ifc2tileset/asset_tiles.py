@@ -3,13 +3,15 @@
 
 This module provides methods to generate tilesets related to assets.
 """
+from typing import List
+
 # Third party imports
 import pandas as pd
 
 # Self imports
 import agent.app as state
 import agent.config.config as properties
-from agent.ifc2tileset.schema import Tileset
+from agent.ifc2tileset.schema import Tileset, Tile, Content
 from agent.kgutils.const import NAME_VAR, ID_VAR, IRI_VAR
 
 
@@ -21,27 +23,27 @@ def init_asset_tiles(tileset: Tileset):
     The tileset generated with initialised asset metadata as a python dictionary
     """
     # Add new contents to the tileset
-    tileset['schema']['classes']['AssetMetaData'] = {
-            'name': "Asset metadata",
-            'description': "A metadata class for all individual assets",
-            # Store all asset information here even if they are not used for specific assets
-            'properties': {
-                NAME_VAR: {
-                    "description": "Name of the asset",
-                    "type": "STRING"
-                },
-                ID_VAR: {
-                    "description": "Unique identifier generated in IFC",
-                    "type": "STRING"
-                },
-                IRI_VAR: {
-                    "description": "Data IRI of the asset",
-                    "type": "STRING"
-                }
+    tileset["schema"]["classes"]["AssetMetaData"] = {
+        "name": "Asset metadata",
+        "description": "A metadata class for all individual assets",
+        # Store all asset information here even if they are not used for specific assets
+        "properties": {
+            NAME_VAR: {
+                "description": "Name of the asset",
+                "type": "STRING"
+            },
+            ID_VAR: {
+                "description": "Unique identifier generated in IFC",
+                "type": "STRING"
+            },
+            IRI_VAR: {
+                "description": "Data IRI of the asset",
+                "type": "STRING"
             }
         }
+    }
 
-    tileset['root']['children'] = [{
+    tileset["root"]["children"] = [{
         "boundingVolume": {"box": properties.bbox_child},
         "geometricError": 50,
         # Nomenclature for 1 geometry file = content:{}, multiple files = contents:[{}]
@@ -53,7 +55,7 @@ def init_asset_tiles(tileset: Tileset):
     return tileset
 
 
-def appenddict_rec(tileset_root: dict, assetlist, i=6):
+def appenddict_rec(tileset_root: Tile, asset_list: List[Content], i: int = 6):
     """
     Recursively adds every i assets to a new child node of the required format.
     Function will only run if there are more than 6 assets.
@@ -69,18 +71,18 @@ def appenddict_rec(tileset_root: dict, assetlist, i=6):
     DO NOT change this code.
     Edit the asset2tileset function instead to stop when above the max limit of child nodes
     """
-    if len(assetlist) > i:
-        tileset_root['children'][0]['children'] = [{
+    if len(asset_list) > i:
+        tileset_root["children"][0]["children"] = [{
             "boundingVolume": {"box": properties.bbox_child},
             "geometricError": 50,
-            "contents": assetlist[i:i+6]
+            "contents": asset_list[i:i + 6]
         }]
-        appenddict_rec(tileset_root['children'][0], assetlist, i+6)
+        appenddict_rec(tileset_root["children"][0], asset_list, i + 6)
     else:
         return
 
 
-def gen_tileset_assets(asset_df: pd.DataFrame, tileset: dict):
+def gen_tileset_assets(asset_df: pd.DataFrame, tileset: Tileset):
     """
     Add asset properties into the tileset.
 
@@ -94,25 +96,24 @@ def gen_tileset_assets(asset_df: pd.DataFrame, tileset: dict):
     tileset = init_asset_tiles(tileset)
 
     # A Python list is required to handle duplicate keys in a nested dictionary
-    assetlist = []
+    asset_list: List[Content] = []
     # Add geometry and uid for each asset
     for row in range(len(asset_df.index)):
-        assetlist.append({
-            'uri': state.asset_url + asset_df['file'].iloc[row]+".gltf",
+        asset_list.append({
+            "uri": state.asset_url + asset_df['file'].iloc[row] + ".gltf",
             # Add the asset name to establish a metadata skeleton
-            'metadata': {
-                'class': "AssetMetaData",
-                'properties': {
+            "metadata": {
+                "class": "AssetMetaData",
+                "properties": {
                     NAME_VAR: asset_df[NAME_VAR].iloc[row].split(":")[0],
                     ID_VAR: asset_df[ID_VAR].iloc[row],
                     IRI_VAR: asset_df[IRI_VAR].iloc[row]
-               }
+                }
             }
         })
 
     # Add the first 6 assets to the first children node of the tileset
-    tileset['root']['children'][0]['contents'] = assetlist[0:6]
+    tileset["root"]["children"][0]["contents"] = asset_list[0:6]
 
     # Add the remaining assets to the next nested child node of tileset
-    appenddict_rec(tileset['root'], assetlist)
-    return tileset
+    appenddict_rec(tileset["root"], asset_list)
