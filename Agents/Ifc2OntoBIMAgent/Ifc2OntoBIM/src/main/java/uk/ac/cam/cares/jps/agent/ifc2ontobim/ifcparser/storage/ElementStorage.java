@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
+package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage;
 
 import org.apache.jena.rdf.model.Statement;
 import org.apache.logging.log4j.LogManager;

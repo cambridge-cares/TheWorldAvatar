@@ -1,10 +1,11 @@
-package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
+package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.IfcProjectRepresentation;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.*;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.SpatialZoneStorage;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import static org.junit.jupiter.api.Assertions.*;

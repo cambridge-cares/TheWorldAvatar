@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model;
 
 import org.apache.jena.rdf.model.Statement;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.GeometricRepresentationContext;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.OntoBimConstant;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.StatementHandler;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.StringUtils;

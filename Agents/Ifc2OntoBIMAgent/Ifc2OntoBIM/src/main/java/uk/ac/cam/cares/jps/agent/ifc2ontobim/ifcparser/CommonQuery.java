@@ -242,7 +242,7 @@ public class CommonQuery {
      *
      * @param builder A select builder object to append the statements to.
      */
-    protected static void addElementHostZoneQueryComponents(SelectBuilder builder) {
+    public static void addElementHostZoneQueryComponents(SelectBuilder builder) {
         builder.addVar(PARENT_ZONE_VAR);
         builder.addWhere(RELAGGR_VAR, QueryHandler.RDF_TYPE, REL_SPATIAL_ZONE_ELEMENT)
                 .addWhere(RELAGGR_VAR, IFC_REL_ZONE, PARENT_ZONE_VAR)
