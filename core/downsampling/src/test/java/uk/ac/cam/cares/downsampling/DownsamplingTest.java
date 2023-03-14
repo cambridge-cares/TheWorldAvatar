@@ -23,13 +23,13 @@ public class DownsamplingTest {
      */
     private static TimeSeries getDataset(int dataset) {
 
-        List<List<?>> lolvalues = new ArrayList<>();
+        List<List<?>> lolValues = new ArrayList<>();
         String randomDATAIRI1 = "randomDATAIRI1";
         String randomDATAIRI2 = "randomDATAIRI2";
-        List<String> dataIRIlist = new ArrayList<>();
+        List<String> dataIRIList = new ArrayList<>();
 
-        dataIRIlist.add(randomDATAIRI1);
-        dataIRIlist.add(randomDATAIRI2);
+        dataIRIList.add(randomDATAIRI1);
+        dataIRIList.add(randomDATAIRI2);
 
         List<OffsetDateTime> col1 = null;
         List<Double> col2 = null;
@@ -76,9 +76,9 @@ public class DownsamplingTest {
             col2 = Arrays.asList(1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0);
             col3 = Arrays.asList(15.0, 14.0, 13.0, 12.0, 11.0, 10.0, 9.0, 8.0, 7.0, 6.0, 5.0, 4.0, 3.0, 2.0, 1.0);
         }
-        lolvalues.add(col2);
-        lolvalues.add(col3);
-        ts = new TimeSeries(col1, dataIRIlist, lolvalues);
+        lolValues.add(col2);
+        lolValues.add(col3);
+        ts = new TimeSeries(col1, dataIRIList, lolValues);
         return ts;
     }
 
