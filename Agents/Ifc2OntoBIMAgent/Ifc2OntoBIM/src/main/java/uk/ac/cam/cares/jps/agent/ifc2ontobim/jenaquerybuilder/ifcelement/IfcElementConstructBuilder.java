@@ -41,13 +41,10 @@ public class IfcElementConstructBuilder extends IfcConstructBuilderTemplate {
      * @return The SPARQL query string for IFC elements
      */
     public String createSparqlQuery(ConstructBuilder builder, String ifcClass, String bimClass) {
-        // Replace ifcClass with their actual classes if identifiers are used
-        bimClass = bimClass.equals("ifc:IfcSlabF") ? "ifc:IfcSlab" :
-                bimClass.equals("ifc:IfcSlabR") ? "ifc:IfcRoof" : bimClass;
         this.createTemplateSparqlQuery(builder, ifcClass, bimClass);
         // Add the main Element class
         builder.addConstruct(ELEMENT_VAR, QueryHandler.RDF_TYPE, "bot:Element");
-        this.switchFunctionDependingOnInput(builder, ifcClass, bimClass);
+        this.addGeometricRepresentationQueryComponents(builder);
         return builder.buildString();
     }
 
@@ -56,16 +53,7 @@ public class IfcElementConstructBuilder extends IfcConstructBuilderTemplate {
      */
     @Override
     protected void switchFunctionDependingOnInput(ConstructBuilder builder, String ifcClass, String bimClass) {
-        switch (bimClass) {
-            case "ifc:IfcStair":
-                IfcStairQuery.addSubElementsQueryComponents(builder);
-                break;
-        }
-
-        // Geometric representation are usually the same for most elements except for the following classes
-        if (!bimClass.equals("ifc:IfcStair")) {
-            this.addGeometricRepresentationQueryComponents(builder);
-        }
+        this.addGeometricRepresentationQueryComponents(builder);
     }
 
     /**

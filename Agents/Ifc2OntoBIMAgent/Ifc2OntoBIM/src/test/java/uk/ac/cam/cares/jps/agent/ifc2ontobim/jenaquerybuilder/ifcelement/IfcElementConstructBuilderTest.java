@@ -20,20 +20,6 @@ class IfcElementConstructBuilderTest {
     }
 
     @Test
-    void testCreateSparqlQueryForStair() {
-        String query = new IfcElementConstructBuilder().createSparqlQuery(builder, "ifc:IfcStair", "ifc:IfcStair");
-        // Check that some additional statements for stair are called correctly
-        // Not all statements are verified as the relevant test has ensured output is correct
-        List<String> expected = this.genExpectedResultsForStair();
-        expected.forEach(line -> assertTrue(query.contains(line)));
-        // This query component must not be included
-        StringBuilder excluded = new StringBuilder();
-        appendGeometricRepresentationQueryComponents(excluded);
-        assertFalse(query.contains(excluded.toString()));
-    }
-
-
-    @Test
     void testCreateSparqlQueryFail() {
         ConstructBuilder failBuilder = new ConstructBuilder();
         IllegalArgumentException thrownError = assertThrows(IllegalArgumentException.class,
@@ -79,31 +65,5 @@ class IfcElementConstructBuilderTest {
                 .append("        ?instshaperep\n")
                 .append("                  ifc:items_IfcRepresentation  ?geometry .\n")
                 .append("        ?geometry  rdf:type             ?geomtype");
-    }
-
-
-    private List<String> genExpectedResultsForStair() {
-        List<String> expected = new ArrayList<>();
-        expected.add("?relaggregates\n" +
-                "              rdf:type              ifc:IfcRelAggregates ;\n" +
-                "              ifc:relatingObject_IfcRelDecomposes  ?element ;\n" +
-                "              ifc:relatedObjects_IfcRelDecomposes  ?stairflight .");
-        expected.add("?relaggregates\n" +
-                "              ifc:relatedObjects_IfcRelDecomposes  ?landing .");
-        expected.add("?landing  rdf:type              ifc:IfcSlab .");
-        expected.add("?landing  ifc:objectPlacement_IfcProduct  ?landingplacement ;\n" +
-                "              ifc:representation_IfcProduct  ?landingdefinition .\n" +
-                "    ?landingdefinition ifc:representations_IfcProductRepresentation/list:hasContents ?landingshaperep .\n" +
-                "    ?landingshaperep\n" +
-                "              rdf:type  ifc:IfcShapeRepresentation .\n" +
-                "    ?landingshaperep ifc:representationType_IfcRepresentation/express:hasString ?landingshapereptype .\n" +
-                "    ?landingshaperep\n" +
-                "              ifc:contextOfItems_IfcRepresentation  ?landingcontext .\n" +
-                "    ?landingcontext\n" +
-                "              rdf:type              ifc:IfcGeometricRepresentationSubContext .\n" +
-                "    ?landingshaperep\n" +
-                "              ifc:items_IfcRepresentation  ?landinggeom .\n" +
-                "    ?landinggeom  rdf:type          ?landinggeomtype .");
-        return expected;
     }
 }
