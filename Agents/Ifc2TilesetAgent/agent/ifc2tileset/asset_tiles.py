@@ -96,21 +96,21 @@ def gen_tileset_assets(asset_df: pd.DataFrame, tileset: Tileset):
     tileset = init_asset_tiles(tileset)
 
     # A Python list is required to handle duplicate keys in a nested dictionary
-    asset_list: List[Content] = []
-    # Add geometry and uid for each asset
-    for row in range(len(asset_df.index)):
-        asset_list.append({
-            "uri": state.asset_url + asset_df['file'].iloc[row] + ".gltf",
+    asset_list: List[Content] = asset_df.apply(
+        # Add geometry and uid for each asset
+        lambda row: {
+            "uri": state.asset_url + row["file"] + ".gltf",
             # Add the asset name to establish a metadata skeleton
             "metadata": {
                 "class": "AssetMetaData",
                 "properties": {
-                    NAME_VAR: asset_df[NAME_VAR].iloc[row].split(":")[0],
-                    ID_VAR: asset_df[ID_VAR].iloc[row],
-                    IRI_VAR: asset_df[IRI_VAR].iloc[row]
+                    NAME_VAR: row[NAME_VAR].split(":")[0],
+                    ID_VAR: row[ID_VAR],
+                    IRI_VAR: row[IRI_VAR]
                 }
             }
-        })
+        }, axis=1
+    ).tolist()
 
     # Add the first 6 assets to the first children node of the tileset
     tileset["root"]["children"][0]["contents"] = asset_list[0:6]
