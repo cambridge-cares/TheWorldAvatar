@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   stack-client:
-    image: docker.cmclinnovations.com/stack-client${IMAGE_SUFFIX}:1.10.1-add-basic-endpoint-config-SNAPSHOT
+    image: docker.cmclinnovations.com/stack-client${IMAGE_SUFFIX}:1.10.1
     secrets:
       - blazegraph_password
       - postgis_password
