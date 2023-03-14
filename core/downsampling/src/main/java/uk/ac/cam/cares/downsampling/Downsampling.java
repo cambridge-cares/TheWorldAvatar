@@ -32,7 +32,7 @@ public class Downsampling {
      * @throws Exception
      */
     public static TimeSeries downsampleTS(TimeSeries ts, Long resolution, Type type) throws Exception {
-        //Parsing timseries into list of list values and time list;
+        //Parsing timeseries into list of list values and time list;
         List dataIRIs = ts.getDataIRIs();
         List<List<Double>> timeseriesLolValues = new ArrayList<>();
 
@@ -56,7 +56,7 @@ public class Downsampling {
      * @param originalValueLists raw nested lists of values
      * @param intervalInSeconds resolution - interval to be aggregated in seconds
      * @param type type of downsampling used to represent the aggregated time interval.
-     *             ALlowed values:
+     *             Allowed values:
      *             - MAXIMUM retrieves the maximum value of the points.
      *             - MEDIAN retrieves the median value of the points.
      *             - MINIMUM retrieves the minimum value of the points.
@@ -224,7 +224,7 @@ public class Downsampling {
                             break;
                         }
                         //Reached the last one
-                        if (j==originalTimeList.size()-1) {
+                        if (j == originalTimeList.size()-1) {
                             closestValue = originalValueList.get(j);
                             break;
                         }
