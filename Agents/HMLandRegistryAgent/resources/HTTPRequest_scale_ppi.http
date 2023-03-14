@@ -10,6 +10,6 @@ Content-Type: application/json
 
 { "query": {
       "ppi_iri": "https://www.theworldavatar.com/kg/ontobuiltenv/PropertyPriceIndex_0179cd66-c96a-4fe1-b25a-c4ce118f44eb",
-      "scaler": 1.111
+      "scaler": 0.95
     }
 }

@@ -63,6 +63,9 @@ class PostGISClient(StackClient):
               any general functionality to execute SQL queries; hence, they need to be
               defined here and executed using jaydebeapi 
               (which requires all JDBC properties incl. driver)
+        TODO: In next iteration, check whether this can be replaced by using
+              `PostGISClient::getRemoteStoreClient` methods which returns a
+              pre-configured RemoteRDBStoreClient object to make SQL requests
         """
         conn = []
         conn.append('org.postgresql.Driver')
