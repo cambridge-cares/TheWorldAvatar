@@ -11,18 +11,17 @@ import glob
 import jaydebeapi
 import json
 import re
-
 from shapely.geometry import shape, MultiPolygon
 
 from agent.datainstantiation.ea_data import retrieve_flood_area_polygon
 from agent.errorhandling.exceptions import StackException
-from agent.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, ONTOP_FILE
+from agent.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, \
+                                    ONTOP_FILE, BUILDINGS_TABLE
 from agent.utils.javagateway import stackClientsGw, jpsBaseLibGW
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, ONTOP_URL
 
-from py4jps import agentlogging
-
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
@@ -153,6 +152,36 @@ class PostGISClient:
                     # Extract Boolean results from tuples and check for any Trues
                     res = [r[0] for r in res]
                     res = any(res)
+                    return res
+        except Exception as ex:
+            logger.error(f'Unsuccessful JDBC interaction: {ex}')
+            raise StackException('Unsuccessful JDBC interaction.') from ex
+        
+
+    def get_buildings_within_floodarea(self, flood_area_iri: str, 
+                                       buildings_table: str = BUILDINGS_TABLE,
+                                       flood_area_table: str = LAYERNAME):
+        """
+        This function uses PostGIS' geospatial capabilities to retrieve the IRIs
+        of all buildings which have a footprint (i.e. polygon) within the polygon
+        of a given flood area
+
+        flood_area_iri - IRI of flood area of interest
+        buildings_table - Name of table containing building footprints
+        flood_area_table - Name of table containing flood area polygons
+        """
+        try:
+            with jaydebeapi.connect(*self.conn_props) as conn:
+                with conn.cursor() as curs:
+                    curs.execute(f'SELECT DISTINCT {buildings_table}.iri \
+                                   FROM {buildings_table}, {flood_area_table} \
+                                   WHERE ST_Within({buildings_table}.wkb_geometry, {flood_area_table}.wkb_geometry) \
+                                   AND {flood_area_table}.area_uri=\'{flood_area_iri}\'')
+                    # Fetching the SQL results from the cursor only works on first call
+                    # Recurring calls return empty list and curs.execute needs to be run again
+                    res = curs.fetchall()
+                    # Extract IRI results from list of tuples
+                    res = [r[0] for r in res]
                     return res
         except Exception as ex:
             logger.error(f'Unsuccessful JDBC interaction: {ex}')

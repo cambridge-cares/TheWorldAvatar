@@ -204,6 +204,35 @@ def get_service_auth():
 
 # NOTE the scope is set as "module", i.e., all triples (pure inputs, TBox, OntoAgent instances) will only be initialised once
 @pytest.fixture(scope="module")
+def initialise_clients(get_service_url, get_service_auth):
+    # Retrieve endpoint and auth for triple store
+    sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
+    sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
+
+    # Create SparqlClient for testing
+    sparql_client = PySparqlClientForTest(
+        sparql_endpoint, sparql_endpoint,
+        kg_user=sparql_user, kg_password=sparql_pwd
+    )
+
+    # Create DerivationClient for creating derivation instances
+    derivation_client = PyDerivationClient(
+        DERIVATION_INSTANCE_BASE_URL,
+        sparql_endpoint, sparql_endpoint,
+        sparql_user, sparql_pwd,
+    )
+
+    # Delete all triples before anything
+    sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
+
+    yield sparql_client, derivation_client
+
+    # Clear logger at the end of the test
+    clear_loggers()
+
+
+# NOTE the scope is set as "module", i.e., all triples (pure inputs, TBox, OntoAgent instances) will only be initialised once
+@pytest.fixture(scope="module")
 def initialise_clients_and_agents(get_service_url, get_service_auth):
     # Retrieve endpoint and auth for triple store
     sparql_endpoint = get_service_url(KG_SERVICE, url_route=KG_ROUTE)
