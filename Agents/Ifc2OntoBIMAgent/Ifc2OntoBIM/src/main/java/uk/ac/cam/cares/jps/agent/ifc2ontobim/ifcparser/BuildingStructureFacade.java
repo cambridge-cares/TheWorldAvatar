@@ -228,7 +228,7 @@ public class BuildingStructureFacade {
                 String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
                 String voidShapeRepIRI = QueryHandler.retrieveIri(soln, CommonQuery.VOID_SHAPE_REP_VAR);
                 // Only append the geometry IRI to the element's existing Model Representation 3D if there are differences
-                if (geomIri!=null) {
+                if (geomIri != null) {
                     geomModel = this.modelRepMappings.getModelRep(iri);
                     geomModel.appendGeometry(geomIri);
                 }
@@ -302,7 +302,7 @@ public class BuildingStructureFacade {
                 String geomIri = QueryHandler.retrieveIri(soln, CommonQuery.GEOM_VAR);
                 String voidShapeRepIRI = QueryHandler.retrieveIri(soln, CommonQuery.VOID_SHAPE_REP_VAR);
                 // Only append the geometry IRI to the element's existing Model Representation 3D if there are differences
-                if (geomIri!=null) {
+                if (geomIri != null) {
                     geomModel = this.modelRepMappings.getModelRep(iri);
                     geomModel.appendGeometry(geomIri);
                 }
@@ -327,6 +327,178 @@ public class BuildingStructureFacade {
         this.modelRepMappings.constructModelRepStatements(statementSet);
         // Clear all existing mappings
         this.modelRepMappings.clear();
+    }
+
+    /**
+     * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for stairs.
+     *
+     * @param owlModel     The IfcOwl model containing the triples to query from.
+     * @param statementSet A list containing the new OntoBIM triples.
+     */
+    public void addStairStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
+        // Set up query builder and its query statements
+        SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
+        selectBuilder.addWhere(CommonQuery.ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_STAIR);
+        CommonQuery.addBaseQueryComponents(selectBuilder, CommonQuery.ELEMENT_VAR, CommonQuery.UID_VAR, CommonQuery.NAME_VAR, CommonQuery.PLACEMENT_VAR);
+        CommonQuery.addElementHostZoneQueryComponents(selectBuilder);
+        // Split the queries and processing for each of the four assembly component
+        // This split helps to simplify query returned
+        SelectBuilder landingQuery = selectBuilder.clone();
+        CommonQuery.addStairLandingQueryComponents(landingQuery);
+        // Query from the model for landing
+        ResultSet results = QueryHandler.execSelectQuery(landingQuery.buildString(), owlModel);
+        // Process query results
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            String subComponentIri = QueryHandler.retrieveIri(soln, CommonQuery.LANDING_VAR);
+            String subComponentName = QueryHandler.retrieveLiteral(soln, CommonQuery.STAIR_LANDING_NAME_VAR);
+            String subComponentUid = QueryHandler.retrieveLiteral(soln, CommonQuery.STAIR_LANDING_UID_VAR);
+            String subComponentPlacement = QueryHandler.retrieveIri(soln, CommonQuery.STAIR_LANDING_PLACEMENT_VAR);
+            Stair stair = retrieveStairStatements(soln, statementSet);
+            ModelRepresentation3D geomModel = retrieveStairModelRepStatements(soln, subComponentIri, CommonQuery.STAIR_LANDING_SHAPE_REP_VAR,
+                    CommonQuery.STAIR_LANDING_SUB_CONTEXT_VAR, CommonQuery.STAIR_LANDING_GEOM_VAR, CommonQuery.STAIR_LANDING_REP_TYPE_VAR);
+            // If landing variable doesn't exist, create a new one
+            if (!this.modelRepMappings.containsStairSubComponentIri(subComponentIri)) {
+                StairLanding landing = new StairLanding(subComponentIri, subComponentName, subComponentUid,
+                        subComponentPlacement, stair.getBIMIri(), geomModel.getBimIri());
+                landing.constructStatements(statementSet);
+                // Add the subcomponent to the mappings to keep track 
+                this.modelRepMappings.add(subComponentIri);
+            }
+        }
+        // Generate query for railing
+        SelectBuilder railingQuery = selectBuilder.clone();
+        CommonQuery.addStairRailingQueryComponents(railingQuery);
+        // Query from the model
+        results = QueryHandler.execSelectQuery(railingQuery.buildString(), owlModel);
+        // Process query results
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            String subComponentIri = QueryHandler.retrieveIri(soln, CommonQuery.RAILING_VAR);
+            String subComponentName = QueryHandler.retrieveLiteral(soln, CommonQuery.STAIR_RAILING_NAME_VAR);
+            String subComponentUid = QueryHandler.retrieveLiteral(soln, CommonQuery.STAIR_RAILING_UID_VAR);
+            String subComponentPlacement = QueryHandler.retrieveIri(soln, CommonQuery.STAIR_RAILING_PLACEMENT_VAR);
+            Stair stair = retrieveStairStatements(soln, statementSet);
+            ModelRepresentation3D geomModel = retrieveStairModelRepStatements(soln, subComponentIri, CommonQuery.STAIR_RAILING_SHAPE_REP_VAR,
+                    CommonQuery.STAIR_RAILING_SUB_CONTEXT_VAR, CommonQuery.STAIR_RAILING_GEOM_VAR, CommonQuery.STAIR_RAILING_REP_TYPE_VAR);
+            // If landing variable doesn't exist, create a new one
+            if (!this.modelRepMappings.containsStairSubComponentIri(subComponentIri)) {
+                StairRailing railing = new StairRailing(subComponentIri, subComponentName, subComponentUid,
+                        subComponentPlacement, stair.getBIMIri(), geomModel.getBimIri());
+                railing.constructStatements(statementSet);
+                // Add the subcomponent to the mappings to keep track 
+                this.modelRepMappings.add(subComponentIri);
+            }
+        }
+        // Generate query for structural components
+        SelectBuilder structuralComponentQuery = selectBuilder.clone();
+        CommonQuery.addStairStructuralComponentQueryComponents(structuralComponentQuery);
+        // Query from the model
+        results = QueryHandler.execSelectQuery(structuralComponentQuery.buildString(), owlModel);
+        // Process query results
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            String subComponentIri = QueryHandler.retrieveIri(soln, CommonQuery.STAIR_STRUCTURAL_COMPONENT_VAR);
+            String subComponentName = QueryHandler.retrieveLiteral(soln, CommonQuery.STAIR_STRUCT_COMP_NAME_VAR);
+            String subComponentUid = QueryHandler.retrieveLiteral(soln, CommonQuery.STAIR_STRUCT_COMP_UID_VAR);
+            String subComponentPlacement = QueryHandler.retrieveIri(soln, CommonQuery.STAIR_STRUCT_COMP_PLACEMENT_VAR);
+            Stair stair = retrieveStairStatements(soln, statementSet);
+            ModelRepresentation3D geomModel = retrieveStairModelRepStatements(soln, subComponentIri, CommonQuery.STAIR_STRUCT_COMP_SHAPE_REP_VAR,
+                    CommonQuery.STAIR_STRUCT_COMP_SUB_CONTEXT_VAR, CommonQuery.STAIR_STRUCT_COMP_GEOM_VAR, CommonQuery.STAIR_STRUCT_COMP_REP_TYPE_VAR);
+            // If landing variable doesn't exist, create a new one
+            if (!this.modelRepMappings.containsStairSubComponentIri(subComponentIri)) {
+                StairStructuralComponent structuralComponent = new StairStructuralComponent(subComponentIri, subComponentName, subComponentUid,
+                        subComponentPlacement, stair.getBIMIri(), geomModel.getBimIri());
+                structuralComponent.constructStatements(statementSet);
+                // Add the subcomponent to the mappings to keep track 
+                this.modelRepMappings.add(subComponentIri);
+            }
+        }
+        // Generate query for stair flights
+        SelectBuilder flightQuery = selectBuilder.clone();
+        CommonQuery.addStairFlightQueryComponents(flightQuery);
+        // Query from the model
+        results = QueryHandler.execSelectQuery(flightQuery.buildString(), owlModel);
+        // Process query results
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            String subComponentIri = QueryHandler.retrieveIri(soln, CommonQuery.STAIRFLIGHT_VAR);
+            String subComponentName = QueryHandler.retrieveLiteral(soln, CommonQuery.STAIR_FLIGHT_NAME_VAR);
+            String subComponentUid = QueryHandler.retrieveLiteral(soln, CommonQuery.STAIR_FLIGHT_UID_VAR);
+            String subComponentPlacement = QueryHandler.retrieveIri(soln, CommonQuery.STAIR_FLIGHT_PLACEMENT_VAR);
+            String stairRiserNo = QueryHandler.retrieveLiteral(soln, CommonQuery.STAIR_RISER_NUM_VAR);
+            String stairTreadNo = QueryHandler.retrieveLiteral(soln, CommonQuery.STAIR_TREAD_NUM_VAR);
+            String stairRiserHeight = QueryHandler.retrieveLiteral(soln, CommonQuery.STAIR_RISER_HEIGHT_VAR);
+            String stairTreadLength = QueryHandler.retrieveLiteral(soln, CommonQuery.STAIR_TREAD_LENGTH_VAR);
+            Stair stair = retrieveStairStatements(soln, statementSet);
+            ModelRepresentation3D geomModel = retrieveStairModelRepStatements(soln, subComponentIri, CommonQuery.STAIR_FLIGHT_SHAPE_REP_VAR,
+                    CommonQuery.STAIR_FLIGHT_SUB_CONTEXT_VAR, CommonQuery.STAIR_FLIGHT_GEOM_VAR, CommonQuery.STAIR_FLIGHT_REP_TYPE_VAR);
+            // If landing variable doesn't exist, create a new one
+            if (!this.modelRepMappings.containsStairSubComponentIri(subComponentIri)) {
+                StairFlight stairFlight = new StairFlight(subComponentIri, subComponentName, subComponentUid,
+                        subComponentPlacement, stair.getBIMIri(), geomModel.getBimIri(), stairRiserNo, stairTreadNo, stairRiserHeight, stairTreadLength);
+                stairFlight.constructStatements(statementSet);
+                // Add the subcomponent to the mappings to keep track 
+                this.modelRepMappings.add(subComponentIri);
+            }
+        }
+        // Construct all the Model Representation 3D statements
+        this.modelRepMappings.constructModelRepStatements(statementSet);
+        // Clear all existing mappings
+        this.modelRepMappings.clear();
+    }
+
+    /**
+     * Retrieves or generate the stair assembly object from each row of the query results.
+     *
+     * @param soln         The row of Jena result set to retrieve information from.
+     * @param statementSet A list containing the new OntoBIM triples.
+     */
+    private Stair retrieveStairStatements(QuerySolution soln, LinkedHashSet<Statement> statementSet) {
+        String iri = soln.get(CommonQuery.ELEMENT_VAR).toString();
+        String name = QueryHandler.retrieveLiteral(soln, CommonQuery.NAME_VAR);
+        String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
+        String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
+        String hostZone = QueryHandler.retrieveHostZone(soln, zoneMappings);
+        // If the stair object has already been created previously
+        Stair stair;
+        if (this.modelRepMappings.containsStairAssemblyIri(iri)) {
+            stair = this.modelRepMappings.getStair(iri);
+        } else {
+            // If it is not yet created, generate a new stair object and construct its statements
+            stair = new Stair(iri, name, uid, placement, hostZone);
+            stair.constructStatements(statementSet);
+            // Add the object to the mappings
+            this.modelRepMappings.add(iri, stair);
+        }
+        return stair;
+    }
+
+    /**
+     * Retrieves or generate the model representation of the stair's subcomponents from each row of the query results.
+     *
+     * @param soln            The row of Jena result set to retrieve information from.
+     * @param subComponentIri The IRI of the subcomponent.
+     * @param shapeRepVar     The variable of the subcomponent's shape representation.
+     * @param subContextVar   The variable of the subcomponent's sub-context.
+     * @param geomVar         The variable of the subcomponent's geometry.
+     * @param repTypeVar      The variable of the subcomponent's shape representation type.
+     */
+    private ModelRepresentation3D retrieveStairModelRepStatements(QuerySolution soln, String subComponentIri, String shapeRepVar,
+                                                                  String subContextVar, String geomVar, String repTypeVar) {
+        ModelRepresentation3D geomModel;
+        if (this.modelRepMappings.containsModelRepIri(subComponentIri)) {
+            // Retrieve the new geometry IRI and append it to the existing Model Representation 3D of this element
+            String geomIri = QueryHandler.retrieveIri(soln, geomVar);
+            geomModel = this.modelRepMappings.getModelRep(subComponentIri);
+            geomModel.appendGeometry(geomIri);
+        } else {
+            // If it is not yet created, first generate a new Model Representation 3D object
+            geomModel = QueryHandler.retrieveModelRepresentation3D(soln, shapeRepVar, subContextVar, geomVar, repTypeVar);
+            // Add the object into the mappings for its IRI
+            this.modelRepMappings.add(subComponentIri, geomModel);
+        }
+        return geomModel;
     }
 
     /**

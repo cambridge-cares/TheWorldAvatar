@@ -155,9 +155,13 @@ public class OntoBimConverter {
         this.storeInTempFiles(statementSet);
         LOGGER.info("Stored statements for window elements in temporary file");
 
+        LOGGER.info("Retrieving and generating statements related to stair elements...");
+        buildingStructureHelper.addStairStatements(this.owlModel, statementSet);
+        this.storeInTempFiles(statementSet);
+        LOGGER.info("Stored statements for stair elements in temporary file");
+
         // Generate the other elements using previous design pattern
         List<String> ifcElements = new ArrayList<>();
-        ifcElements.add("ifc:IfcStair");
         ifcElements.add("ifc:IfcBuildingElementProxy");
         ifcElements.add("ifc:IfcFlowTerminal");
         ifcElements.add("ifc:IfcFurnishingElement");
