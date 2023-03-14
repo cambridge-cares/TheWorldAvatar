@@ -100,6 +100,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasPressure">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
         <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship describing the pressure exerted on a substance, object or a space.</rdfs:comment>
@@ -126,6 +127,9 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasQuantity">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#UnitOperation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
         <rdfs:domain rdf:resource="http://www.w3.org/ns/ssn/systems/Condition"/>
         <rdfs:domain rdf:resource="http://www.w3.org/ns/ssn/systems/OperatingProperty"/>
         <rdfs:domain rdf:resource="http://www.w3.org/ns/ssn/systems/SystemProperty"/>
@@ -160,8 +164,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasScreenBrightness">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/MobilePhone"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Brightness-Ratio"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a device and it's screen brightness.</rdfs:comment>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/RelativeBrightness"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a device and its screen brightness.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has screen brightness</rdfs:label>
     </owl:ObjectProperty>
@@ -212,6 +216,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasTemperature">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/hasQuantity"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
         <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship describing the degree or intensity of heat present in a substance, object or space.</rdfs:comment>
@@ -388,6 +393,34 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#UnitOperation -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#UnitOperation"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseSystem"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase -->
+
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
+    
+
+
     <!-- http://www.w3.org/ns/ssn/systems/Condition -->
 
 
@@ -501,18 +534,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An active RFID tag that requires batteries for operation.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Active RFID tag</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontodevice/Brightness-Ratio -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Brightness-Ratio">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Brightness measured as a ratio.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Brightness-Ratio</rdfs:label>
     </owl:Class>
     
 
@@ -733,14 +754,14 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontodevice/OccupiedUnoccupiedState -->
+    <!-- https://www.theworldavatar.com/kg/ontodevice/OccupiedState -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/OccupiedUnoccupiedState">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/OccupiedState">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/State"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The current state of something on whether it is occupied or not.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Occupied unoccupied state</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Occupied state</rdfs:label>
     </owl:Class>
     
 
@@ -837,6 +858,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An electronic tag that exchanges data with a RFID reader through radio waves.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">RFID tag</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/RelativeBrightness -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/RelativeBrightness">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Brightness measured as a ratio.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relative brightness</rdfs:label>
     </owl:Class>
     
 
