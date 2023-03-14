@@ -41,7 +41,6 @@ class BuildingStructureFacadeTest {
     private static final String WINDOW_NAME = "Steel windows";
     // Generic element instances
     private static final String STOREY_INST = TEST_BASE_URI + "IfcBuildingStorey_3294";
-    private static final String REL_AGG_INST = TEST_BASE_URI + "IfcRelAggregate_29214";
     private static final String REL_TYPE_DEF_INST = TEST_BASE_URI + "IfcRelDefinesByType_51062";
     private static final String COVERING_TYPE_INST = TEST_BASE_URI + "IfcCoveringType_37775";
     private static final String ELEMENT_ID = "01294juas";
@@ -528,19 +527,17 @@ class BuildingStructureFacadeTest {
     }
 
     private void addBaseTriples(String elementIRI, String elementClass, String name) {
-        Resource elementNameBlankNode = sampleModel.createResource();
-        Resource elementIDBlankNode = sampleModel.createResource();
-        Resource elementPositionNode = sampleModel.createResource(ELEMENT_POSITION_INST).addProperty(RDF.type, localPlacement);
         sampleModel.createResource(elementIRI)
                 .addProperty(RDF.type,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + elementClass))
-                .addProperty(hasName, elementNameBlankNode)
-                .addProperty(hasId, elementIDBlankNode)
-                .addProperty(objectPlacement, elementPositionNode);
+                .addProperty(hasName, sampleModel.createResource()
+                        .addProperty(hasString, name))
+                .addProperty(hasId, sampleModel.createResource()
+                        .addProperty(hasString, ELEMENT_ID))
+                .addProperty(objectPlacement, sampleModel.createResource(ELEMENT_POSITION_INST)
+                        .addProperty(RDF.type, localPlacement));
         sampleModel.createResource(STOREY_INST)
                 .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcBuildingStorey"));
-        sampleModel.add(elementNameBlankNode, hasString, ResourceFactory.createPlainLiteral(name));
-        sampleModel.add(elementIDBlankNode, hasString, ResourceFactory.createPlainLiteral(ELEMENT_ID));
     }
 
     private void addHostZoneTriples(String elementIRI, String zoneIRI) {
