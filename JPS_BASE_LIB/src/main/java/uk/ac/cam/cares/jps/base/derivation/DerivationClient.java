@@ -814,6 +814,15 @@ public class DerivationClient {
 	}
 
 	/**
+	 * This method drops all timestamps of a given list of entities.
+	 * 
+	 * @param entities
+	 */
+	public void dropTimestampsOf(List<String> entities) {
+		this.sparqlClient.dropTimestampsOf(entities);
+	}
+
+	/**
 	 * This method updates the status of the Derivation at job completion: the
 	 * status of the derivation will be marked as "Finished" and the newDerivedIRI
 	 * will be attached to the status.

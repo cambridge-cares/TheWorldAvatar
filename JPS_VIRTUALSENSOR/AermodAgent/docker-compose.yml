@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   aermod-agent:
-    image: docker.cmclinnovations.com/aermod-agent:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/aermod-agent:1.0.1
     deploy:
       mode: replicated
       replicas: 1
@@ -21,7 +21,7 @@ services:
       - FILE_SERVER_URL=http://file-server:8080/FileServer/
       - DISPERSION_STYLE_NAME=dispersion_style
       - VIS_FOLDER=/vis_data
-      - GEOSERVER_URL=http://host.docker.internal:3838/geoserver # specifying here because WMS endpoint does not work with container name
+      - GEOSERVER_URL=http://localhost:3838/geoserver # specifying here because WMS endpoint does not work with container name
     configs:
       - postgis
       - blazegraph
