@@ -1,24 +1,22 @@
 # Downsampling
 ## Description
-This downsampling library is used to post-process and downsample Timeseries data. Downsampling reduces the size of data to prevent unnecessary consumption of memory in databases. Additionally, it can be used to remove duplicated data that takes up space but produces no value. Downsampling is also useful for visualization of trends or statistical analysis to extract insights.
+This downsampling library is used to downsample Timeseries data. Downsampling reduces the size of data to prevent unnecessary consumption of memory in databases. Additionally, it can be used to remove duplicated data that takes up space but produces no value. Downsampling is also useful for visualization of trends or statistical analysis to extract insights.
 
 The document outlines the user guide on how to use the downsampling library.
 
 # User Guide
 ## How to use downsampling library
 ### Method
-To downsample timseries data, call the `aggregation` method in this library.  
+To downsample timseries data, call the `downsampleTS` method in this library.  
 ``` java
-aggregation (TimeSeries ts, Long resolution, Type type)
+downsampleTS (TimeSeries ts, Long resolution, Type type)
 ```
 ### Inputs
 `ts` is the raw timeseries data to be downsampled.
 
 `resolution` is the time interval in seconds of the timeseries data to be downsampled.
 
-`type` is the type of [downsampling method](#Downsampling-Type). The downsampling type can be specified using the Type enum. 
-
-
+`type` is the type of [downsampling method](#Downsampling-Type). The downsampling type can be specified using the Type enum which the following are allowed: `Type.MAXIMUM`, `Type.MEDIAN`, `Type.MINIMUM`, `Type.SUM`, `Type.AVERAGE`, `Type.COUNT`, `Type.INSTANTANEOUS`.
 ### Output
 Downsampling library returns downsampled timeseries data.
 
@@ -39,8 +37,7 @@ Retrieves the total number of all points within a time resolution to represent t
 ### 7) Type.INSTANTANEOUS
 Retrieves the value of the point closest to the time resolution to represent the time interval.
 
-## Notes 
-### Before using downsampling library
+## Notes
 The following should be considered before downsampling of data:
 1) Downsampled data should be an accurate representation of the inherent nature/characteristics of the original data.
    - Choose the appropriate downsampling method based on the characteristics of the original data.
