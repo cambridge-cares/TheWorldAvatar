@@ -6,8 +6,8 @@
 # The purpose of this module is to retrieve relevant properties and settings 
 # (i.e. for the Time Series Client) from Stack clients
 
-from landregistry.kgutils.javagateway import stackClientsGw
-from landregistry.utils.env_configs import DATABASE
+from agent.kgutils.javagateway import stackClientsGw
+from agent.utils.env_configs import DATABASE, NAMESPACE
 
 
 def retrieve_settings():
@@ -23,7 +23,6 @@ def retrieve_settings():
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.docker.ContainerClient")
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig")
     stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig")
-    stackClientsGw.importPackages(stackClientsView, "com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig")
 
     # Retrieve endpoint configurations from Stack clients
     containerClient = stackClientsView.ContainerClient()
@@ -33,9 +32,6 @@ def retrieve_settings():
     # PostgreSQL/PostGIS
     pg = stackClientsView.PostGISEndpointConfig("","","","","")
     pg_conf = containerClient.readEndpointConfig("postgis", pg.getClass())
-    # Ontop
-    ont = stackClientsView.OntopEndpointConfig("","","","","")
-    ont_conf = containerClient.readEndpointConfig("ontop", ont.getClass())
 
     # Extract PostgreSQL/PostGIS database URL
     DB_URL = pg_conf.getJdbcURL(DATABASE)
@@ -45,7 +41,7 @@ def retrieve_settings():
 
     # Extract SPARQL endpoints of KG (Query and Update endpoints are equivalent
     # for Blazegraph)
-    QUERY_ENDPOINT = bg_conf.getUrl("buildings")
+    QUERY_ENDPOINT = bg_conf.getUrl(NAMESPACE)
     UPDATE_ENDPOINT = QUERY_ENDPOINT
 
 

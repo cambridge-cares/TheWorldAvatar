@@ -1,6 +1,8 @@
 # Create Flask application and import (i.e. register) HTTP routes
 
 from flask import Flask
+from agent.kgutils.initialise_kg import create_blazegraph_namespace, upload_ontology
+from agent.utils.stack_configs import UPDATE_ENDPOINT
 
 
 def create_app(test_config=None):
@@ -13,11 +15,17 @@ def create_app(test_config=None):
 
     with app.app_context():
         # Import parts of application
-        import landregistry.flaskapp.home.routes as home
-        import landregistry.flaskapp.inputtasks.routes as inputtasks
+        import agent.flaskapp.home.routes as home
+        import agent.flaskapp.inputtasks.routes as inputtasks
 
         # Register Blueprints
         app.register_blueprint(home.home_bp)
         app.register_blueprint(inputtasks.inputtasks_bp)
+
+    # Create Blazegraph namespace if not exists (on app startup)
+    create_blazegraph_namespace(endpoint=UPDATE_ENDPOINT)
+
+    # Upload ontology if not exists (on app startup)
+    upload_ontology()
 
     return app

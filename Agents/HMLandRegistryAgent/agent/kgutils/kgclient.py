@@ -8,22 +8,22 @@
 
 import json
 
-import agentlogging
-from landregistry.errorhandling.exceptions import KGException
-from landregistry.kgutils.javagateway import jpsBaseLibGW
+from agent.errorhandling.exceptions import KGException
+from agent.kgutils.javagateway import jpsBaseLibGW
 
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
 class KGClient:
+
+    # create a JVM module view and use it to import the required java classes
+    jpsBaseLibView = jpsBaseLibGW.createModuleView()
+    jpsBaseLibGW.importPackages(jpsBaseLibView,"uk.ac.cam.cares.jps.base.query.*")
     
     def __init__(self, query_endpoint, update_endpoint, kg_user=None, 
-                 kg_password=None):
-
-        # create a JVM module view and use it to import the required java classes
-        self.jpsBaseLib_view = jpsBaseLibGW.createModuleView()
-        jpsBaseLibGW.importPackages(self.jpsBaseLib_view,"uk.ac.cam.cares.jps.base.query.*")
+                 kg_password=None):       
 
         # TODO replace RemoteStoreClient with AccessAgent/StoreClient once its tested
         # StoreRouter = jpsBaseLib_view.StoreRouter
@@ -33,9 +33,9 @@ class KGClient:
 
         try:
             if kg_user is not None:
-                self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint, kg_user, kg_password)
+                self.kg_client = self.jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint, kg_user, kg_password)
             else:
-                self.kg_client = self.jpsBaseLib_view.RemoteStoreClient(query_endpoint, update_endpoint)
+                self.kg_client = self.jpsBaseLibView.RemoteStoreClient(query_endpoint, update_endpoint)
         except Exception as ex:
             logger.error("Unable to initialise KG client.")
             raise KGException("Unable to initialise KG client.") from ex

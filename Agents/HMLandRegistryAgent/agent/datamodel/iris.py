@@ -1,3 +1,7 @@
+###--- TBox and ABox URL ---###
+TBOX_URL = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl'
+# alternative: 'http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl'
+
 ###--- Common Base URLs ---###
 # External ontologies
 DABGEO = 'http://www.purl.org/oema/infrastructure/'
@@ -44,6 +48,8 @@ OBE_HAS_IDENTIFIER = OBE + 'hasIdentifier'
 OBE_HAS_LATEST_TRANSACTION = OBE + 'hasLatestTransactionRecord'
 OBE_REPRESENTATIVE_FOR = OBE + 'representativeFor'
 OBE_PROPERTY_PRICE_INDEX = OBE + 'PropertyPriceIndex'
+OBE_HAS_OCGML_REPRESENTATION = OBE + 'hasOntoCityGMLRepresentation'
+OBE_HAS_GROUND_ELEVATION = OBE + 'hasGroundElevation'
 # LRPPI: https://landregistry.data.gov.uk/app/root/doc/ppd
 LRPPI_TRANSACTION_RECORD = LRPPI + 'TransactionRecord'
 LRPPI_PROPERTY_ADDRESS = LRPPI + 'propertyAddress'
@@ -96,3 +102,29 @@ ICONTACT_HAS_BUILDING = ICONTACT + 'hasBuilding'
 ONS_GEOGRAPGY = ONS1 + 'Statistical-Geography'
 ONS_NAME = ONS1 + 'officialname'
 ONS_BEST_LOCAL_AUTHORITY = ONS2 + 'localauthoritydistrict'
+
+# OWL
+OWL_VERSION = OWL + 'versionInfo'
+
+# Ontology of units of measure
+OM_AREA = OM + 'Area'
+OM_HEIGHT = OM + 'Height'
+OM_AMOUNT_MONEY = OM + 'AmountOfMoney'
+OM_HAS_VALUE = OM + 'hasValue'
+OM_MEASURE = OM + 'Measure'
+OM_NUM_VALUE = OM + 'hasNumericalValue'
+OM_HAS_UNIT = OM + 'hasUnit'
+OM_UNIT = OM + 'Unit'
+OM_SYMBOL = OM + 'symbol'
+OM_M = OM + 'metre'
+OM_M2 = OM + 'squareMetre'
+OM_GBP = OM + 'poundSterling'
+UOM_GBP_M2 =  UOM + 'pound_sterling_per_sqm'
+
+###--- OntoCityGml TBox ---###
+OCGML_BLDG_HEIGHT = OCGML + 'measuredHeigh'     # typo intended (part of OCGML ontology)
+OCGML_BLDG_HEIGHT_UNIT = OCGML + 'measuredHeightUnit'
+OCGML_FOOTPRINT = OCGML + 'lod0FootprintId'
+OCGML_GEOM_TYPE = OCGML + 'GeometryType'
+OCGML_ROOT_ID = OCGML + 'rootId'
+OCGML_SRSNAME = OCGML + 'srsname'
