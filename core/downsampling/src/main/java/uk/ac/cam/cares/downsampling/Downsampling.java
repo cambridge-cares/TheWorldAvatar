@@ -64,7 +64,7 @@ public class Downsampling {
      *             - AVERAGE retrieves the average value of the points.
      *             - COUNT retrieves the total number of all points.
      *             - INSTANTANEOUS retrieves the value of the point closest to the time resolution.
-     * @returna a list which contains a list of resampled timestamps and a resampled list of list of values.
+     * @return a list which contains a list of resampled timestamps and a resampled list of list of values.
      * @throws Exception
      */
     public static List aggregationMethod(List<OffsetDateTime> originalTimeList, List<List<Double>> originalValueLists, long intervalInSeconds, Type type) throws Exception {

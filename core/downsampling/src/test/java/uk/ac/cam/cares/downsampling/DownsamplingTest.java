@@ -9,7 +9,7 @@ import org.testng.annotations.Test;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 
 /**
- * This DownsamplingTest class tests all the methods in Downsampling class.
+ * This DownsamplingTest class tests all the downsampling types in the Downsampling class.
  */
 public class DownsamplingTest {
     Downsampling downsampling =new Downsampling();
