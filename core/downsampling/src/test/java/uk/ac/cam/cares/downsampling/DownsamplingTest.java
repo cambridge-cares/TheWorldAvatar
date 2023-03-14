@@ -163,34 +163,6 @@ public class DownsamplingTest {
     }
 
     @Test
-    public void aggregationCountTest () throws Exception {
-        ts= DownsamplingTest.getDataset(1);
-        TimeSeries downsampledTimeseries= downsampling.downsampleTS(ts,7L,Downsampling.Type.COUNT);
-
-        List List1=downsampledTimeseries.getValues(randomDATAIRI1);
-
-        assertEquals((double) 7,List1.get(0));
-        assertEquals((double) 7,List1.get(1));
-        //The 15th point out of bound
-        try{
-            assertEquals((double) 7,List1.get(2));
-        }catch (Exception e) {
-            assertEquals(IndexOutOfBoundsException.class, e.getClass());
-        }
-
-        List List2=downsampledTimeseries.getValues(randomDATAIRI2);
-        assertEquals((double) 7,List2.get(0));
-        assertEquals((double) 7,List2.get(1));
-
-        //The 15th point out of bound
-        try{
-            assertEquals((double) 7,List2.get(2));
-        }catch (Exception e) {
-            assertEquals(IndexOutOfBoundsException.class, e.getClass());
-        }
-    }
-
-    @Test
     public void instantaneousTest () throws Exception {
         ts= DownsamplingTest.getDataset(2);
         TimeSeries downsampledTimeseries= downsampling.downsampleTS(ts,5L,Downsampling.Type.INSTANTANEOUS);

@@ -20,7 +20,7 @@ downsampleTS (TimeSeries ts, Long resolution, Type type)
 
 `type` is the type of [downsampling method](#Downsampling-Type). The downsampling type can be specified using the Type 
 enum which can assume the following values: 
-`Type.MAXIMUM`, `Type.MEDIAN`, `Type.MINIMUM`, `Type.SUM`, `Type.AVERAGE`, `Type.COUNT`, `Type.INSTANTANEOUS`.
+`Type.MAXIMUM`, `Type.MEDIAN`, `Type.MINIMUM`, `Type.SUM`, `Type.AVERAGE`, `Type.INSTANTANEOUS`.
 
 ### Output
 `downsampleTS` returns the downsampled timeseries data.
@@ -37,9 +37,7 @@ Retrieves the minimum value of the points within a time resolution to represent 
 Retrieves the sum value of all points within a time resolution to represent the time interval.
 ### 5) Type.AVERAGE
 Retrieves the average value of the points within a time resolution to represent the time interval.
-### 6) Type.COUNT
-Retrieves the total number of all points within a time resolution to represent the time interval.
-### 7) Type.INSTANTANEOUS
+### 6) Type.INSTANTANEOUS
 Retrieves the value of the point closest to the time resolution to represent the time interval.
 
 ## Notes

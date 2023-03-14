@@ -19,7 +19,6 @@ public class Downsampling {
         MINIMUM,
         SUM,
         AVERAGE,
-        COUNT,
         INSTANTANEOUS
     }
 
@@ -27,7 +26,7 @@ public class Downsampling {
      * @param ts raw timeseries
      * @param resolution resolution - interval to be aggregated in seconds
      * @param type type of downsampling.
-     *             Allowed values of Type enum: Type.MAXIMUM, Type.MEDIAN, Type.MINIMUM, Type.SUM, Type.AVERAGE, Type.COUNT, Type.INSTANTANEOUS
+     *             Allowed values of Type enum: Type.MAXIMUM, Type.MEDIAN, Type.MINIMUM, Type.SUM, Type.AVERAGE, Type.INSTANTANEOUS
      * @return downsampled timeseries
      * @throws Exception
      */
@@ -60,7 +59,6 @@ public class Downsampling {
      *             - MINIMUM retrieves the minimum value of the points.
      *             - SUM retrieves the sum value of all points.
      *             - AVERAGE retrieves the average value of the points.
-     *             - COUNT retrieves the total number of all points.
      *             - INSTANTANEOUS retrieves the value of the point closest to the time resolution.
      * @return a list which contains downsampled timestamps and downsampled values.
      * @throws Exception
@@ -189,23 +187,6 @@ public class Downsampling {
                         }
                     }
                     downsampledValueList.add(sum/count);
-                }
-            }
-
-            //Count
-            else if (type.equals(Type.COUNT)){
-                while (it1.hasNext() && it2.hasNext()) {
-                    List<Double> downsampledValueList = it2.next();
-                    int count = 0;
-                    for (int i = 0; i < originalTimeList.size(); i++) {
-                        if (originalTimeList.get(i).isAfter(intervalEndTime)) {
-                            break;
-                        }
-                        if (originalTimeList.get(i).isAfter(currentTime)){
-                            count++;
-                        }
-                    }
-                    downsampledValueList.add((double) count);
                 }
             }
 
