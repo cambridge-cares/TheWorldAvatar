@@ -156,7 +156,7 @@ def update_all_transaction_records(min_conf_score=90,
     res = kg_client_obe.performQuery(query)
 
     # 2) Update transaction records in KG in postcode batches
-    batch_size = 5
+    batch_size = 100
     df = pd.DataFrame(res)
     pcs = df['postcode'].unique().tolist()
     pcs.sort()

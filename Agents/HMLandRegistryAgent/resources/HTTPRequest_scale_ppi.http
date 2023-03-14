@@ -5,11 +5,11 @@
 // scaler: Scaling factor by which to scale instantiated property price data
 //         (0.0 ... 1.0)
 
-POST http://165.232.172.16:5008/landregistry/update
+POST http://165.232.172.16:5008/landregistry/scale_ppi
 Content-Type: application/json
 
 { "query": {
-      "ppi_iri": "https://www.theworldavatar.com/kg/ontobuiltenv/PropertyPriceIndex_0057c24c-20b1-4e93-9e75-261176ad924d",
-      "scaler": 0.9
+      "ppi_iri": "https://www.theworldavatar.com/kg/ontobuiltenv/PropertyPriceIndex_0179cd66-c96a-4fe1-b25a-c4ce118f44eb",
+      "scaler": 1.111
     }
 }

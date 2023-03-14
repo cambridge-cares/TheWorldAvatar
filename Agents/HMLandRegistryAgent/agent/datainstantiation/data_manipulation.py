@@ -47,7 +47,7 @@ def scale_property_price_index(ppi_iri, scaler, kg_client=None,
         raise TSException('Error retrieving/unwrapping Property Price Index time series') from ex
 
     # 2) Scale time series data
-    scaled_values = [float(v) * scaler for v in values]
+    scaled_values = [round(float(v) * scaler, 2) for v in values]
 
     # 3) Update/overwrite time series data in RDB
     ts = TSClient.create_timeseries(dates, [ppi_iri], [scaled_values])
