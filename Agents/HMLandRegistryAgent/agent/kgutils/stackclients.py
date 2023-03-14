@@ -30,8 +30,6 @@ class StackClient:
 
     # Create ONE Stack Clients view
     stackClients_view = stackClientsGw.createModuleView()
-    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.gdal.GDALClient")
-    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions")
     stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.postgis.PostGISClient")
     stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.geoserver.GeoServerClient")
     stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings")
@@ -92,26 +90,108 @@ class PostGISClient(StackClient):
         except Exception as ex:
             logger.error(f'Unsuccessful JDBC interaction: {ex}')
             raise StackException('Unsuccessful JDBC interaction.') from ex
+        
 
+    def create_table(self, table=LAYERNAME, 
+                     column_definitions={'iri': 'VARCHAR(150)',
+                                         'name': 'VARCHAR(150)',
+                                         'endpoint': 'VARCHAR(150)',
+                                         'price': 'DOUBLE PRECISION'}):
+        """
+        This function creates the given table with the specified columns
+        in the database and
 
-class GdalClient(StackClient):
-    
-    def __init__(self):
-        # Initialise GdalClient with default upload/conversion settings
+        """
+
+        # Create column definitions string
+        col_def_str = ''
+        for col, col_type in column_definitions.items():
+            col_def_str += f'{col} {col_type},'
+        col_def_str = col_def_str[:-1]
+
+        # Create SQL update
         try:
-            self.client = self.stackClients_view.GDALClient()
-            self.orgoptions = self.stackClients_view.Ogr2OgrOptions()
+            with jaydebeapi.connect(*self.conn_props) as conn:
+                # Create a cursor object ...
+                with conn.cursor() as curs:
+                    # ... and create data base table
+                    sql_update = f'CREATE TABLE IF NOT EXISTS \"{table}\" ({col_def_str})'
+                    curs.execute(sql_update)
+                    # ... and create a unique constraint on the iri column
+                    sql_update = f'ALTER TABLE \"{table}\" ADD CONSTRAINT iri_unique UNIQUE (iri);'
+                    curs.execute(sql_update)
         except Exception as ex:
-            logger.error("Unable to initialise GdalClient.")
-            raise StackException("Unable to initialise GdalClient.") from ex
-
-
-    def uploadGeoJSON(self, geojson_string, database=DATABASE, table=LAYERNAME):
+            logger.error(f'Unsuccessful JDBC interaction: {ex}')
+            raise StackException('Unsuccessful JDBC interaction.') from ex
+        
+    
+    def upload_property_value(self, building_iri:str, table=LAYERNAME,
+                              value_estimate:str=None,
+                              kg_endpoint:str=QUERY_ENDPOINT):
         """
-        Calls StackClient function with default upload settings
+        This function uploads the latest market value of a property to PostGIS
+        (appends new row if 'building_iri' is not yet in the table, otherwise 
+         'price' field gets updated/overwritten)
+        
+        Initially, "name", "iri", and "endpoint" were required for the FeatureInfoAgent
+        to work (i.e. be able to retrieve data from PostGIS). Strictly, those are no 
+        longer needed, but kept for consistency with previous implementations
+        Further properties can be added as needed, i.e. for styling purposes
+
+        Arguments:
+            building_iri {str} -- IRI of building/property to be uploaded to PostGIS
+            value_estimate {str} -- Market value estimate of building (in GBP)
         """
-        self.client.uploadVectorStringToPostGIS(database, table, geojson_string,
-                                                self.orgoptions, True)
+        
+        if building_iri:
+            # Condition data to upload (incl. columns (initially?) required by DTVF)
+            props = {
+                'iri': building_iri,
+                'endpoint': kg_endpoint,
+                'name': None,
+                'price': None
+            }
+            try:
+                props['name'] = building_iri.split('/')[-1].replace('>','')
+            except Exception:
+                pass
+            # Property value estimate (upload required for styling purposes)
+            try:
+                props['price'] = float(value_estimate)
+            except Exception:
+                pass
+            
+            # Prepare SQL update string (remove keys with empty values first)
+            props = {k: v for k,v in props.items() if v is not None}
+            cols = f"( {', '.join(props.keys())} )"
+            vals = "VALUES ("
+            for v in props.values():
+                if isinstance(v, str):
+                    vals += f"'{v}', "
+                elif isinstance(v, float):
+                    vals += f"{v}, "
+            vals = vals[:-2]
+            vals += ")"
+
+            # Create SQL update
+            try:
+                with jaydebeapi.connect(*self.conn_props) as conn:
+                    # Create a cursor object ...
+                    with conn.cursor() as curs:
+                        # ... and execute the SQL query
+                        # When DO UPDATE is specified, a special virtual table called EXCLUDED
+                        # is available for use within the UPDATE clause. The table contains 
+                        # the values suggested in the original INSERT command (i.e. the ones 
+                        # conflicting with the existing table values)
+                        sql_update = f"INSERT INTO \"{table}\" {cols} {vals} \
+                                       ON CONFLICT (iri) DO UPDATE SET \
+                                        price = EXCLUDED.price"
+                        curs.execute(sql_update)
+                        if curs.rowcount != 1:
+                            raise StackException(f'Expected to update 1 row; however {curs.rowcount} rows affected.')
+            except Exception as ex:
+                logger.error(f'Unsuccessful JDBC interaction: {ex}')
+                raise StackException('Unsuccessful JDBC interaction.') from ex
 
 
 class GeoserverClient(StackClient):
@@ -141,40 +221,3 @@ class GeoserverClient(StackClient):
         """
         self.client.createPostGISLayer(None, geoserver_workspace, postgis_database,
                                        geoserver_layer, self.vectorsettings)
-
-
-def create_geojson_for_postgis(building_iri : str, value_estimate : float = None,
-                               kg_endpoint: str = QUERY_ENDPOINT) -> str:
-    """
-    Create (Geo)JSON string for upload to PostGIS database
-
-    Initially, the GeoJSON needed to contain at least "name", "iri", and "endpoint"
-    for FeatureInfoAgent to work (i.e. be able to retrieve data from PostGIS)
-    Strictly, those are no longer needed, but kept for consistency with previous implementations
-    Further properties can be added as needed, i.e. for styling purposes
-
-    Arguments:
-        building_iri {str} -- IRI of building/property to be uploaded to PostGIS
-        value_estimate {float} -- Market value estimate of building (in GBP)
-    """
-
-    if building_iri:
-        # Define properties
-        props = {
-            # Initially required by DTVF (potentially outdated, but kept for reference)
-            'iri': building_iri,
-            'name': building_iri.split('/')[-1].replace('>',''),
-            'endpoint': kg_endpoint
-        }
-        # Property value estimate (upload required for styling purposes)
-        try:
-            props['price']: float(value_estimate)
-        except Exception:
-            props['price']: None
-
-        geojson = props.dumps(props)
-    else:
-        geojson = None
-
-    # Return (Geo)JSON string    
-    return geojson

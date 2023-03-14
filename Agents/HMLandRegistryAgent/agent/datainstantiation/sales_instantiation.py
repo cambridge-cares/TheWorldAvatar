@@ -21,8 +21,7 @@ from agent.kgutils.tsclient import TSClient
 from agent.kgutils.querytemplates import *
 from agent.utils.api_endpoints import HM_SPARQL_ENDPOINT
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
-from agent.kgutils.stackclients import PostGISClient, GdalClient, GeoserverClient, \
-                                       create_geojson_for_postgis
+from agent.kgutils.stackclients import PostGISClient, GeoserverClient
 
 # Initialise logger
 from py4jps import agentlogging
@@ -61,7 +60,6 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
 
     # Initialise relevant Stack Clients and parameters
     postgis_client = PostGISClient()
-    gdal_client = GdalClient()
     geoserver_client = GeoserverClient()
 
     # 1) Retrieve location information for properties from list
@@ -105,16 +103,15 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
                 kg_client_obe.performUpdate(update_query) 
             
             # 4.2) ... in PostGIS (to ensure proper styling)
-            #TODO: check
-            # Create Geoserver layer when first data is uploaded to PostGIS
+            # Check if table exists, if not create it
             if not postgis_client.check_table_exists():
-                geoserver_client.create_workspace()
-                geoserver_client.create_postgis_layer()
-            # Upload latest property market value estimate to PostGIS
-            # (overwrites previous value if exists)
-            geojson_str = create_geojson_for_postgis(building_iri=tx.get('property_iri'),
-                                                     value_estimate=tx.get('price'))
-            gdal_client.uploadGeoJSON(geojson_str)
+                postgis_client.create_table()
+                # Create GeoServer workspace and virtual table         
+
+            # Upload latest market value estimate to PostGIS
+            # (overwrites previous value if available, otherwise creates new row)
+            postgis_client.upload_property_value(building_iri=tx.get('property_iri'),
+                                                 value_estimate=tx.get('price'))
 
     
     return instantiated_tx, updated_tx

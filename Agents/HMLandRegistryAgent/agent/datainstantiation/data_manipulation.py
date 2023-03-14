@@ -57,5 +57,3 @@ def scale_property_price_index(ppi_iri, scaler, kg_client=None,
     except Exception as ex:
         logger.error('Error adding time series data: {}'.format(ex))
         raise TSException('Error adding time series data') from ex
-    
-    return None
