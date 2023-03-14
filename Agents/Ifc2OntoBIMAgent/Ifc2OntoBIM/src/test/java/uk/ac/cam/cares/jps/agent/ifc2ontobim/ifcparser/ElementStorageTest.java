@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Floor;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Roof;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Stair;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Wall;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -68,6 +69,12 @@ class ElementStorageTest {
     }
 
     @Test
+    void testGetStairFail() {
+        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> testMappings.getStair(NON_EXISTENT_IRI));
+        assertEquals(NON_EXISTING_ERROR, thrownError.getMessage());
+    }
+
+    @Test
     void testAddAndGetModelRep() {
         // Create a new sample representation
         ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SHAPE_REP_IRI, TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
@@ -108,6 +115,26 @@ class ElementStorageTest {
     }
 
     @Test
+    void testAddAndGetStair() {
+        // Create a new sample representation
+        Stair sampleStair = new Stair(TEST_ELEMENT_IRI, null, null, null, null);
+        // Execute method
+        testMappings.add(TEST_ELEMENT_IRI, sampleStair);
+        // Assert if they are equals
+        assertEquals(sampleStair, testMappings.getStair(TEST_ELEMENT_IRI));
+    }
+
+    @Test
+    void testAddStairSubComponentAndContainsStairSubComponentIri() {
+        // Verify that there is no IRI yet
+        assertFalse(testMappings.containsStairSubComponentIri(TEST_ELEMENT_IRI));
+        // Execute add method
+        testMappings.add(TEST_ELEMENT_IRI);
+        // Verify the IRI has been added
+        assertTrue(testMappings.containsStairSubComponentIri(TEST_ELEMENT_IRI));
+    }
+
+    @Test
     void testClear() {
         // Create a new sample representation
         ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SHAPE_REP_IRI, TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
@@ -131,6 +158,20 @@ class ElementStorageTest {
         // Assert that non-existing IRIs return false and existing IRIs return true
         assertTrue(testMappings.containsModelRepIri(TEST_ELEMENT_IRI));
         assertFalse(testMappings.containsModelRepIri(NON_EXISTENT_IRI));
+    }
+
+    @Test
+    void testContainsStairAssemblyIri() {
+        // Assert that non-existing IRIs return false
+        assertFalse(testMappings.containsStairAssemblyIri(TEST_ELEMENT_IRI));
+        assertFalse(testMappings.containsStairAssemblyIri(NON_EXISTENT_IRI));
+        // Create a new sample representation
+        Stair sampleStair = new Stair(TEST_ELEMENT_IRI, null, null, null, null);
+        // Execute method
+        testMappings.add(TEST_ELEMENT_IRI, sampleStair);
+        // Assert that non-existing IRIs return false and existing IRIs return true
+        assertTrue(testMappings.containsStairAssemblyIri(TEST_ELEMENT_IRI));
+        assertFalse(testMappings.containsStairAssemblyIri(NON_EXISTENT_IRI));
     }
 
     @Test

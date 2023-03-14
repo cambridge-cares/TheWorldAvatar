@@ -6,12 +6,12 @@ import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.Ifc2OntoBIMAgent;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Floor;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Roof;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Stair;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Wall;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.*;
 
 /**
  * A class storing all the mappings for each element instance's IfcOwl IRI
@@ -23,10 +23,12 @@ import java.util.LinkedHashSet;
 public class ElementStorage {
     // Single instance of this class
     private static ElementStorage single_instance = null;
-    private static HashMap<String, ModelRepresentation3D> geometries;
-    private static HashMap<String, Wall> walls;
-    private static HashMap<String, Floor> floors;
-    private static HashMap<String, Roof> roofs;
+    private static Map<String, ModelRepresentation3D> geometries;
+    private static Map<String, Wall> walls;
+    private static Map<String, Floor> floors;
+    private static Map<String, Roof> roofs;
+    private static Map<String, Stair> stairs;
+    private static Set<String> stairComponents;
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
     private static final String NON_EXISTING_ERROR = " does not exist in mappings!";
 
@@ -38,6 +40,8 @@ public class ElementStorage {
         walls = new HashMap<>();
         floors = new HashMap<>();
         roofs = new HashMap<>();
+        stairs = new HashMap<>();
+        stairComponents= new HashSet<>();
     }
 
     /**
@@ -123,6 +127,20 @@ public class ElementStorage {
     }
 
     /**
+     * Retrieve the stair's Java object associated with the IRI input.
+     *
+     * @param iri The data IRI generated from IfcOwl.
+     */
+    public Stair getStair(String iri) {
+        if (stairs.containsKey(iri)) {
+            return stairs.get(iri);
+        } else {
+            LOGGER.error(iri + NON_EXISTING_ERROR);
+            throw new JPSRuntimeException(iri + NON_EXISTING_ERROR);
+        }
+    }
+
+    /**
      * A method to store the element IRI and its associated 3D model representation Java object as mappings.
      *
      * @param iri      The element's IRI generated from IfcOwl.
@@ -153,12 +171,29 @@ public class ElementStorage {
     /**
      * An overloaded method to store the element IRI and its associated 3D model representation Java object as mappings.
      *
-     * @param iri      The element's IRI generated from IfcOwl.
-     * @param roof    The Floor object generated from the iri.
+     * @param iri     The element's IRI generated from IfcOwl.
+     * @param roof    The Roof object generated from the iri.
      */
     public void add(String iri, Roof roof) {
         roofs.put(iri, roof);
     }
+
+    /**
+     * An overloaded method to store the element IRI and its associated 3D model representation Java object as mappings.
+     *
+     * @param iri      The element's IRI generated from IfcOwl.
+     * @param stair    The Stair object generated from the iri.
+     */
+    public void add(String iri, Stair stair) {
+        stairs.put(iri, stair);
+    }
+
+    /**
+     * An overloaded method to store the IRI for any stair subcomponents.
+     *
+     * @param stairComponentIri  The element's IRI generated from IfcOwl.
+     */
+    public void add(String stairComponentIri) { stairComponents.add(stairComponentIri); }
 
     /**
      * Check if the mappings contain this IRI for the model representation 3D.
@@ -167,6 +202,24 @@ public class ElementStorage {
      */
     public boolean containsModelRepIri(String iri) {
         return geometries.containsKey(iri);
+    }
+
+    /**
+     * Check if there is mappings for this stair assembly.
+     *
+     * @param iri The element's IRI generated from IfcOwl.
+     */
+    public boolean containsStairAssemblyIri(String iri) {
+        return stairs.containsKey(iri);
+    }
+
+    /**
+     * Check if the stair subcomponents has already been created.
+     *
+     * @param iri The element's IRI generated from IfcOwl.
+     */
+    public boolean containsStairSubComponentIri(String iri) {
+        return stairComponents.contains(iri);
     }
 
     /**

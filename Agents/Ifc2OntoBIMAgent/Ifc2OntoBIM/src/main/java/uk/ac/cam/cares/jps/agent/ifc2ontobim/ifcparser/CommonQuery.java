@@ -52,8 +52,54 @@ public class CommonQuery {
     public static final String REL_FILLS_ELEMENT_VAR = "?relfillselement";
     public static final String REL_VOID_ELEMENT_VAR = "?relvoidelement";
     public static final String REL_SPATIAL_STRUCTURE_VAR = "?relspatialstructure";
+    public static final String REL_AGG_STAIR__VAR = "?relaggstair";
     public static final String ROOF_SLAB_VAR = "?roofslab";
     public static final String SLAB_ENUM_VAR = "?slabenum";
+    public static final String STAIRFLIGHT_VAR = "?stairflight";
+    public static final String LANDING_VAR = "?landing";
+    public static final String RAILING_VAR = "?railing";
+    public static final String STAIR_STRUCTURAL_COMPONENT_VAR = "?stairstructurecomponent";
+    public static final String STAIR_RISER_NUM_VAR = "?riserno";
+    public static final String STAIR_TREAD_NUM_VAR = "?treadno";
+    public static final String STAIR_RISER_HEIGHT_VAR = "?riserheight";
+    public static final String STAIR_TREAD_LENGTH_VAR = "?treadlength";
+    // Stair shape representation
+    public static final String STAIR_FLIGHT_UID_VAR = "?stairflightuid";
+    public static final String STAIR_FLIGHT_NAME_VAR = "?stairflightname";
+    public static final String STAIR_FLIGHT_PLACEMENT_VAR = "?stairflightplacement";
+    public static final String STAIR_FLIGHT_PRODUCT_DEFINITION_VAR = "?stairflightproductDefinition";
+    public static final String STAIR_FLIGHT_SHAPE_REP_VAR = "?stairflightshaperep";
+    public static final String STAIR_FLIGHT_REP_TYPE_VAR = "?stairflightshapereptype";
+    public static final String STAIR_FLIGHT_SUB_CONTEXT_VAR = "?stairflightsubcontext";
+    public static final String STAIR_FLIGHT_GEOM_VAR = "?stairflightgeometry";
+    public static final String STAIR_FLIGHT_GEOM_TYPE_VAR = "?stairflightgeomtype";
+    public static final String STAIR_LANDING_UID_VAR = "?stairlandinguid";
+    public static final String STAIR_LANDING_NAME_VAR = "?stairlandingname";
+    public static final String STAIR_LANDING_PLACEMENT_VAR = "?stairlandingplacement";
+    public static final String STAIR_LANDING_PRODUCT_DEFINITION_VAR = "?stairlandingproductDefinition";
+    public static final String STAIR_LANDING_SHAPE_REP_VAR = "?stairlandingshaperep";
+    public static final String STAIR_LANDING_REP_TYPE_VAR = "?stairlandingshapereptype";
+    public static final String STAIR_LANDING_SUB_CONTEXT_VAR = "?stairlandingsubcontext";
+    public static final String STAIR_LANDING_GEOM_VAR = "?stairlandinggeometry";
+    public static final String STAIR_LANDING_GEOM_TYPE_VAR = "?stairlandinggeomtype";
+    public static final String STAIR_RAILING_UID_VAR = "?stairrailinguid";
+    public static final String STAIR_RAILING_NAME_VAR = "?stairrailingname";
+    public static final String STAIR_RAILING_PLACEMENT_VAR = "?stairrailingplacement";
+    public static final String STAIR_RAILING_PRODUCT_DEFINITION_VAR = "?stairrailingproductDefinition";
+    public static final String STAIR_RAILING_SHAPE_REP_VAR = "?stairrailingshaperep";
+    public static final String STAIR_RAILING_REP_TYPE_VAR = "?stairrailingshapereptype";
+    public static final String STAIR_RAILING_SUB_CONTEXT_VAR = "?stairrailingsubcontext";
+    public static final String STAIR_RAILING_GEOM_VAR = "?stairrailinggeometry";
+    public static final String STAIR_RAILING_GEOM_TYPE_VAR = "?stairrailinggeomtype";
+    public static final String STAIR_STRUCT_COMP_UID_VAR = "?stairmemberuid";
+    public static final String STAIR_STRUCT_COMP_NAME_VAR = "?stairmembername";
+    public static final String STAIR_STRUCT_COMP_PLACEMENT_VAR = "?stairmemberplacement";
+    public static final String STAIR_STRUCT_COMP_PRODUCT_DEFINITION_VAR = "?stairmemberproductDefinition";
+    public static final String STAIR_STRUCT_COMP_SHAPE_REP_VAR = "?stairmembershaperep";
+    public static final String STAIR_STRUCT_COMP_REP_TYPE_VAR = "?stairmembershapereptype";
+    public static final String STAIR_STRUCT_COMP_SUB_CONTEXT_VAR = "?stairmembersubcontext";
+    public static final String STAIR_STRUCT_COMP_GEOM_VAR = "?stairmembergeometry";
+    public static final String STAIR_STRUCT_COMP_GEOM_TYPE_VAR = "?stairmembergeomtype";
     // Geometry variables
     public static final String PRODUCT_DEFINITION_VAR = "?productDefinitionShape";
     public static final String SHAPE_REP_VAR = "?shaperep";
@@ -110,6 +156,10 @@ public class CommonQuery {
     public static final String IFC_REL_FILLS_OPENING = NamespaceMapper.IFC_PREFIX + ":relatingOpeningElement_IfcRelFillsElement";
     public static final String IFC_REL_VOIDS_OPENING = NamespaceMapper.IFC_PREFIX + ":relatedOpeningElement_IfcRelVoidsElement";
     public static final String IFC_REL_VOIDS_ASSEMBLY = NamespaceMapper.IFC_PREFIX + ":relatingBuildingElement_IfcRelVoidsElement";
+    public static final String IFC_STAIR_RISER_NUM = NamespaceMapper.IFC_PREFIX + ":numberOfRiser_IfcStairFlight";
+    public static final String IFC_STAIR_TREAD_NUM = NamespaceMapper.IFC_PREFIX + ":numberOfTreads_IfcStairFlight";
+    public static final String IFC_STAIR_RISER_HEIGHT = NamespaceMapper.IFC_PREFIX + ":riserHeight_IfcStairFlight";
+    public static final String IFC_STAIR_TREAD_LENGTH = NamespaceMapper.IFC_PREFIX + ":treadLength_IfcStairFlight";
     // IfcOwl geometry properties
     public static final String IFC_OBJ_TYPE = NamespaceMapper.IFC_PREFIX + ":objectType_IfcObject";
     public static final String IFC_PRODUCT_REPRESENTATION = NamespaceMapper.IFC_PREFIX + ":representation_IfcProduct";
@@ -152,6 +202,10 @@ public class CommonQuery {
     public static final String IFC_WALL_STANDARD_CASE = NamespaceMapper.IFC_PREFIX + ":IfcWallStandardCase";
     public static final String IFC_WINDOW = NamespaceMapper.IFC_PREFIX + ":IfcWindow";
     public static final String IFC_OPENING_ELEMENT = NamespaceMapper.IFC_PREFIX + ":IfcOpeningElement";
+    public static final String IFC_STAIR_FLIGHT = NamespaceMapper.IFC_PREFIX + ":IfcStairFlight";
+    public static final String IFC_STAIR_RAILING = NamespaceMapper.IFC_PREFIX + ":IfcRailing";
+    public static final String IFC_STAIR_MEMBER = NamespaceMapper.IFC_PREFIX + ":IfcMember";
+    public static final String IFC_STAIR = NamespaceMapper.IFC_PREFIX + ":IfcStair";
     // IfcOwl element supplementary Classes
     public static final String IFC_REL_TYPE_DEFINITION = NamespaceMapper.IFC_PREFIX + ":IfcRelDefinesByType";
     public static final String IFC_REL_FILLS_ELEMENT = NamespaceMapper.IFC_PREFIX + ":IfcRelFillsElement";
@@ -316,5 +370,95 @@ public class CommonQuery {
                 .addWhere(subContextVar, QueryHandler.RDF_TYPE, IFCGEOM_REP_SUBCONTEXT)
                 .addWhere(shapeRepVar, IFC_REP_ITEMS, geomVar)
                 .addWhere(geomVar, QueryHandler.RDF_TYPE, geomType);
+    }
+
+    /**
+     * Add the statements for querying the stair landing and its assembly stair into the builder.
+     *
+     * @param builder A select builder object to append the statements to.
+     */
+    public static void addStairLandingQueryComponents(SelectBuilder builder) {
+        builder.addVar(LANDING_VAR)
+                .addVar(STAIR_LANDING_SHAPE_REP_VAR)
+                .addVar(STAIR_LANDING_SUB_CONTEXT_VAR)
+                .addVar(STAIR_LANDING_GEOM_VAR)
+                .addVar(STAIR_LANDING_REP_TYPE_VAR);
+        addBaseQueryComponents(builder, LANDING_VAR, STAIR_LANDING_UID_VAR, STAIR_LANDING_NAME_VAR, STAIR_LANDING_PLACEMENT_VAR);
+        builder.addWhere(REL_AGG_STAIR__VAR, QueryHandler.RDF_TYPE, RELAGG)
+                .addWhere(REL_AGG_STAIR__VAR, IFC_PARENT_ZONE_REL, ELEMENT_VAR)
+                // Although landing isn't properly restricted to slab enum types,
+                // the additional landing query statements will restrict which slab is returned
+                .addWhere(REL_AGG_STAIR__VAR, IFC_CHILD_ZONE_REL, LANDING_VAR)
+                .addWhere(LANDING_VAR, QueryHandler.RDF_TYPE, IFC_SLAB);
+        addModelRepQueryComponents(builder, LANDING_VAR, STAIR_LANDING_PRODUCT_DEFINITION_VAR, STAIR_LANDING_SHAPE_REP_VAR,
+                STAIR_LANDING_REP_TYPE_VAR, STAIR_LANDING_SUB_CONTEXT_VAR, STAIR_LANDING_GEOM_VAR, STAIR_LANDING_GEOM_TYPE_VAR);
+    }
+
+    /**
+     * Add the statements for querying the stair railing and its assembly stair into the builder.
+     *
+     * @param builder A select builder object to append the statements to.
+     */
+    public static void addStairRailingQueryComponents(SelectBuilder builder) {
+        builder.addVar(RAILING_VAR)
+                .addVar(STAIR_RAILING_SHAPE_REP_VAR)
+                .addVar(STAIR_RAILING_SUB_CONTEXT_VAR)
+                .addVar(STAIR_RAILING_GEOM_VAR)
+                .addVar(STAIR_RAILING_REP_TYPE_VAR);
+        addBaseQueryComponents(builder, RAILING_VAR, STAIR_RAILING_UID_VAR, STAIR_RAILING_NAME_VAR, STAIR_RAILING_PLACEMENT_VAR);
+        builder.addWhere(REL_AGG_STAIR__VAR, QueryHandler.RDF_TYPE, RELAGG)
+                .addWhere(REL_AGG_STAIR__VAR, IFC_PARENT_ZONE_REL, ELEMENT_VAR)
+                .addWhere(REL_AGG_STAIR__VAR, IFC_CHILD_ZONE_REL, RAILING_VAR)
+                .addWhere(RAILING_VAR, QueryHandler.RDF_TYPE, IFC_STAIR_RAILING);
+        addModelRepQueryComponents(builder, RAILING_VAR, STAIR_RAILING_PRODUCT_DEFINITION_VAR, STAIR_RAILING_SHAPE_REP_VAR,
+                STAIR_RAILING_REP_TYPE_VAR, STAIR_RAILING_SUB_CONTEXT_VAR, STAIR_RAILING_GEOM_VAR, STAIR_RAILING_GEOM_TYPE_VAR);
+    }
+
+    /**
+     * Add the statements for querying the stair structural component and its assembly stair into the builder.
+     *
+     * @param builder A select builder object to append the statements to.
+     */
+    public static void addStairStructuralComponentQueryComponents(SelectBuilder builder) {
+        builder.addVar(STAIR_STRUCTURAL_COMPONENT_VAR)
+                .addVar(STAIR_STRUCT_COMP_SHAPE_REP_VAR)
+                .addVar(STAIR_STRUCT_COMP_SUB_CONTEXT_VAR)
+                .addVar(STAIR_STRUCT_COMP_GEOM_VAR)
+                .addVar(STAIR_STRUCT_COMP_REP_TYPE_VAR);
+        addBaseQueryComponents(builder, STAIR_STRUCTURAL_COMPONENT_VAR, STAIR_STRUCT_COMP_UID_VAR, STAIR_STRUCT_COMP_NAME_VAR, STAIR_STRUCT_COMP_PLACEMENT_VAR);
+        builder.addWhere(REL_AGG_STAIR__VAR, QueryHandler.RDF_TYPE, RELAGG)
+                .addWhere(REL_AGG_STAIR__VAR, IFC_PARENT_ZONE_REL, ELEMENT_VAR)
+                .addWhere(REL_AGG_STAIR__VAR, IFC_CHILD_ZONE_REL, STAIR_STRUCTURAL_COMPONENT_VAR)
+                .addWhere(STAIR_STRUCTURAL_COMPONENT_VAR, QueryHandler.RDF_TYPE, IFC_STAIR_MEMBER);
+        addModelRepQueryComponents(builder, STAIR_STRUCTURAL_COMPONENT_VAR, STAIR_STRUCT_COMP_PRODUCT_DEFINITION_VAR, STAIR_STRUCT_COMP_SHAPE_REP_VAR,
+                STAIR_STRUCT_COMP_REP_TYPE_VAR, STAIR_STRUCT_COMP_SUB_CONTEXT_VAR, STAIR_STRUCT_COMP_GEOM_VAR, STAIR_STRUCT_COMP_GEOM_TYPE_VAR);
+    }
+
+    /**
+     * Add the statements for querying the stair flight and its assembly stair into the builder.
+     *
+     * @param builder A select builder object to append the statements to.
+     */
+    public static void addStairFlightQueryComponents(SelectBuilder builder) {
+        builder.addVar(STAIRFLIGHT_VAR)
+                .addVar(STAIR_RISER_NUM_VAR)
+                .addVar(STAIR_TREAD_NUM_VAR)
+                .addVar(STAIR_RISER_HEIGHT_VAR)
+                .addVar(STAIR_TREAD_LENGTH_VAR)
+                .addVar(STAIR_FLIGHT_SHAPE_REP_VAR)
+                .addVar(STAIR_FLIGHT_SUB_CONTEXT_VAR)
+                .addVar(STAIR_FLIGHT_GEOM_VAR)
+                .addVar(STAIR_FLIGHT_REP_TYPE_VAR);
+        addBaseQueryComponents(builder, STAIRFLIGHT_VAR, STAIR_FLIGHT_UID_VAR, STAIR_FLIGHT_NAME_VAR, STAIR_FLIGHT_PLACEMENT_VAR);
+        builder.addWhere(REL_AGG_STAIR__VAR, QueryHandler.RDF_TYPE, RELAGG)
+                .addWhere(REL_AGG_STAIR__VAR, IFC_PARENT_ZONE_REL, ELEMENT_VAR)
+                .addWhere(REL_AGG_STAIR__VAR, IFC_CHILD_ZONE_REL, STAIRFLIGHT_VAR)
+                .addWhere(STAIRFLIGHT_VAR, QueryHandler.RDF_TYPE, IFC_STAIR_FLIGHT)
+                .addWhere(STAIRFLIGHT_VAR, IFC_STAIR_RISER_NUM + EXPRESS_HASINTEGER, STAIR_RISER_NUM_VAR)
+                .addWhere(STAIRFLIGHT_VAR, IFC_STAIR_TREAD_NUM + EXPRESS_HASINTEGER, STAIR_TREAD_NUM_VAR)
+                .addWhere(STAIRFLIGHT_VAR, IFC_STAIR_RISER_HEIGHT + EXPRESS_HASDOUBLE, STAIR_RISER_HEIGHT_VAR)
+                .addWhere(STAIRFLIGHT_VAR, IFC_STAIR_TREAD_LENGTH + EXPRESS_HASDOUBLE, STAIR_TREAD_LENGTH_VAR);
+        addModelRepQueryComponents(builder, STAIRFLIGHT_VAR, STAIR_FLIGHT_PRODUCT_DEFINITION_VAR, STAIR_FLIGHT_SHAPE_REP_VAR,
+                STAIR_FLIGHT_REP_TYPE_VAR, STAIR_FLIGHT_SUB_CONTEXT_VAR, STAIR_FLIGHT_GEOM_VAR, STAIR_FLIGHT_GEOM_TYPE_VAR);
     }
 }
