@@ -15,7 +15,6 @@ services:
     ports:
       - "5008:5000"
     volumes:
-      - ./data:/app/data
       - logs:/root/.jps
     configs:
       - blazegraph
