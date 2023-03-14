@@ -1,4 +1,5 @@
 {
+    "type": "superset",
     "ServiceSpec": {
         "Name": "superset",
         "TaskTemplate": {
