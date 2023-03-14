@@ -12,7 +12,6 @@ import java.util.List;
  * Downsampling class uses the downsampleTS method to downsample the timeseries data and retrieve the relevant dataIRI(s).
  * The downsampleTS method invokes the aggregation method to handle the downsampling based on the user-specified downsampling type and resolution.
  */
-
 public class Downsampling {
     public enum Type{
         MAXIMUM,
@@ -23,6 +22,7 @@ public class Downsampling {
         COUNT,
         INSTANTANEOUS
     }
+
     /**
      * @param ts raw timeseries
      * @param resolution resolution - interval to be aggregated in seconds
@@ -48,8 +48,6 @@ public class Downsampling {
 
         return downsampledTS;
     }
-
-
 
     /**
      * @param originalTimeList raw timestamps list
@@ -104,9 +102,10 @@ public class Downsampling {
                     downsampledValueList.add(maxValue);
                 }
             }
+
             //Median
             else if (type.equals(Type.MEDIAN)){
-                    while (it1.hasNext() && it2.hasNext()) {
+                while (it1.hasNext() && it2.hasNext()) {
                     List<Double> originalValueList = it1.next();
                     List<Double> downsampledValueList = it2.next();
                     List<Double> valuesInInterval = new ArrayList<>();
@@ -133,12 +132,11 @@ public class Downsampling {
                         downsampledValueList.add(null);
                     }
                 }
-
             }
 
             //Min
             else if (type.equals(Type.MINIMUM) ){
-                    while (it1.hasNext() && it2.hasNext()) {
+                while (it1.hasNext() && it2.hasNext()) {
                     List<Double> originalValueList = it1.next();
                     List<Double> downsampledValueList = it2.next();
                     double minValue = Double.POSITIVE_INFINITY;  // initialize minValue to positive infinity
@@ -152,9 +150,8 @@ public class Downsampling {
                     }
                     if (minValue == Double.POSITIVE_INFINITY) {throw new Exception("Something went wrong here");}
                     downsampledValueList.add(minValue);  // add minValue to the downsampledValueList
-
-                    }
                 }
+            }
 
             //Sum
             else if (type.equals(Type.SUM)){
@@ -194,10 +191,10 @@ public class Downsampling {
                     downsampledValueList.add(sum/count);
                 }
             }
+
             //Count
             else if (type.equals(Type.COUNT)){
                 while (it1.hasNext() && it2.hasNext()) {
-                    List<Double> originalValueList = it1.next();
                     List<Double> downsampledValueList = it2.next();
                     int count = 0;
                     for (int i = 0; i < originalTimeList.size(); i++) {
@@ -214,7 +211,6 @@ public class Downsampling {
 
             //Instantaneous
             else if (type.equals(Type.INSTANTANEOUS)) {
-
                 while (it1.hasNext() && it2.hasNext()) {
                     List<Double> originalValueList = it1.next();
                     List<Double> downsampledValueList = it2.next();
