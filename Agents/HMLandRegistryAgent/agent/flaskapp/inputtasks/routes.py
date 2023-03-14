@@ -50,8 +50,14 @@ def api_update_transaction_records():
     try:
         # Update sales transaction record for (list of) property IRIs
         res = update_transaction_records(property_iris=iris, min_conf_score=min_match)
-        return jsonify({'Instantiated property transactions': res[0],
-                        'Updated property transactions': res[1]}), 200
+        return_dict ={'Instantiated property transactions': res[0],
+                      'Updated property transactions': res[1]}
+        # Print results
+        for key, value in return_dict.items():
+            print(key, ' : ', value)
+        # Return HTTP response
+        return jsonify(return_dict), 200   
+    
     except Exception as ex:
         logger.error('Unable to update property sales transactions: {}'.format(ex))
         return jsonify({'msg': 'Updating property sales transactions failed: ' + str(ex)}), 500
@@ -85,10 +91,16 @@ def api_update_all_transaction_records():
     try:
         # Update sales transaction record for all instantiated property IRIs
         res = update_all_transaction_records(min_conf_score=min_match)
-        return jsonify({'Instantiated property transactions': res[0],
+        return_dict ={'Instantiated property transactions': res[0],
                         'Updated property transactions': res[1],
                         'Instantiated property price indices': res[2],
-                        'Updated property price indices': res[3]}), 200
+                        'Updated property price indices': res[3]}
+        # Print results
+        for key, value in return_dict.items():
+            print(key, ' : ', value)
+        # Return HTTP response
+        return jsonify(return_dict), 200
+    
     except Exception as ex:
         logger.error('Unable to update property sales transactions: {}'.format(ex))
         return jsonify({'msg': 'Updating property sales transactions failed: ' + str(ex)}), 500

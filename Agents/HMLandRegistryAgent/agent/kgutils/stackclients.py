@@ -259,6 +259,7 @@ class GeoserverClient(StackClient):
         """
         query = f"""SELECT {bldgs_table}.iri, 
                            {bldgs_table}.wkb_geometry, 
+                           {bldgs_table}.\"building height\",
                            {sales_table}.price
                     FROM 
                         {bldgs_table}, 

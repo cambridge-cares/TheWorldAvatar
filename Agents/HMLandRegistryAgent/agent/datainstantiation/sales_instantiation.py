@@ -11,7 +11,7 @@ import json
 import uuid
 import numpy as np
 import pandas as pd
-from fuzzywuzzy import fuzz, process
+from fuzzywuzzy import fuzz, process, utils
 
 from agent.datamodel.iris import *
 from agent.datamodel.data_mapping import TIME_FORMAT, DATACLASS, PPD_PROPERTY_TYPES
@@ -105,13 +105,16 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
             # 4.2) ... in PostGIS (to ensure proper styling)
             # Check if table exists, if not create it
             if not postgis_client.check_table_exists():
+                logger.info('Creating PostGIS table ...')
                 postgis_client.create_table()
                 # Create GeoServer workspace and virtual table layer
+                logger.info('Creating GeoServer layer ...')
                 geoserver_client.create_workspace()
                 geoserver_client.create_postgis_layer()
 
             # Upload latest market value estimate to PostGIS
             # (overwrites previous value if available, otherwise creates new row)
+            logger.info('Uploading property values to PostGIS ...')
             postgis_client.upload_property_value(building_iri=tx.get('property_iri'),
                                                  value_estimate=tx.get('price'))
     
@@ -147,19 +150,25 @@ def update_all_transaction_records(min_conf_score=90,
     ts_client = TSClient(kg_client=kg_client_obe)
 
     # 1) Retrieve all instantiated properties with associated postcodes
-    logger.info('Retrieving instantiated properties with attached postcodes ...')
+    print('Retrieving instantiated properties with attached postcodes ...')
+    #logger.info('Retrieving instantiated properties with attached postcodes ...')
     query = get_all_properties_with_postcode()
     res = kg_client_obe.performQuery(query)
 
     # 2) Update transaction records in KG in postcode batches
-    batch_size = 100
+    batch_size = 5
     df = pd.DataFrame(res)
     pcs = df['postcode'].unique().tolist()
     pcs.sort()
     postcodes = [pcs[i:i + batch_size] for i in range(0, len(pcs), batch_size)]
 
-    logger.info('Updating transaction records (for batch of postcodes) ...')
+    print('Updating transaction records (in postcode batches) ...')
+    #logger.info('Updating transaction records (for batch of postcodes) ...')
+    i = 0
     for pc in postcodes:
+        i += 1
+        print(f'Updating batch {i:>4}/{len(postcodes):>4}')
+
         prop_iris = df[df['postcode'].isin(pc)]['property_iri'].tolist()
 
         # Update transaction records for list of property IRIs
@@ -171,7 +180,8 @@ def update_all_transaction_records(min_conf_score=90,
 
     # 3) Retrieve instantiated Admin Districts + potentially already instantiated
     #    Property Price Indices in OntoBuiltEnv
-    logger.info('Updating UK House Price Index ...')
+    print('Updating UK House Price Index ...')
+    #logger.info('Updating UK House Price Index ...')
     districts = get_admin_district_index_dict(kg_client_obe)
     for d in districts: 
         if not d['ukhpi']:
@@ -379,13 +389,19 @@ def get_best_matching_transactions(obe_data, ppd_data, min_match_score=None) -> 
             # NOTE: Compared Levenshtein algorithm with Damerau-Levenshtein algo, 
             #       and the latter one performed better using the 'token_set_ratio'
             #       scoring method --> used here
-            matches = process.extract(addr, ppd_addr, scorer=fuzz.token_set_ratio)
-            matches = [m for m in matches if m[1] >= min_match_score]
-            if matches:
-                matches.sort(key=lambda x: x[1], reverse=True)
-                best = matches[0]
+
+            if utils.full_process(addr):
+                # 'Full_process' string processor validates string before actual 
+                # matching, i.e. checks for availability of alphanumeric characters
+                matches = process.extract(addr, ppd_addr, scorer=fuzz.token_set_ratio)
+                matches = [m for m in matches if m[1] >= min_match_score]
+                if matches:
+                    matches.sort(key=lambda x: x[1], reverse=True)
+                    best = matches[0]
         else:
-            best = process.extractOne(addr, ppd_addr, scorer=fuzz.token_set_ratio)
+            if utils.full_process(addr):
+                # Only execute for strings with alphanumeric characters to avoid warning
+                best = process.extractOne(addr, ppd_addr, scorer=fuzz.token_set_ratio)
         if best:
             tx_data = ppd_data[ppd_data['ppd_address'] == best[0]]
             to_inst['new_tx_iri'] = tx_data['tx_iri'].values[0]
