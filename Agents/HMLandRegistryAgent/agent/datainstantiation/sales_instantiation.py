@@ -106,13 +106,14 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
             # Check if table exists, if not create it
             if not postgis_client.check_table_exists():
                 postgis_client.create_table()
-                # Create GeoServer workspace and virtual table         
+                # Create GeoServer workspace and virtual table layer
+                geoserver_client.create_workspace()
+                geoserver_client.create_postgis_layer()
 
             # Upload latest market value estimate to PostGIS
             # (overwrites previous value if available, otherwise creates new row)
             postgis_client.upload_property_value(building_iri=tx.get('property_iri'),
                                                  value_estimate=tx.get('price'))
-
     
     return instantiated_tx, updated_tx
 

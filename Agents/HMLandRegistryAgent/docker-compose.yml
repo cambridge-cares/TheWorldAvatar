@@ -9,9 +9,11 @@ services:
       - DATABASE=postgres
       # Target Blazegraph namespace
       - NAMESPACE=kingslynn
-      # Layer name in geoserver, also table name in PostGIS
+      # Target layer name in Geoserver, also table name in PostGIS
       - LAYERNAME=building_sales
       - GEOSERVER_WORKSPACE=buildings
+      # PostGIS table containing all building footprints
+      - BUILDINGS_TABLE=buildings
     ports:
       - "5008:5000"
     volumes:

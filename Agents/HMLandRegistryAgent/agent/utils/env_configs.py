@@ -20,7 +20,7 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DATABASE, NAMESPACE, LAYERNAME, GEOSERVER_WORKSPACE
+    global DATABASE, NAMESPACE, LAYERNAME, GEOSERVER_WORKSPACE, BUILDINGS_TABLE
 
     # Retrieve PostgreSQL/PostGIS database name
     DATABASE = os.getenv('DATABASE')
@@ -43,7 +43,7 @@ def retrieve_settings():
         logger.error('No "NAMESPACE" value has been provided in environment variables.')
         raise ValueError('No "NAMESPACE" value has been provided in environment variables.')
 
-    # Retrieve PostgreSQL/PostGIS table name for geospatial information
+    # Retrieve target PostgreSQL/PostGIS table name for building sales information
     # PostGIS table and Geoserver layer will have same name
     LAYERNAME = os.getenv('LAYERNAME')
     if LAYERNAME is None:
@@ -61,6 +61,16 @@ def retrieve_settings():
     if GEOSERVER_WORKSPACE == '':
         logger.error('No "GEOSERVER_WORKSPACE" value has been provided in environment variables.')
         raise ValueError('No "GEOSERVER_WORKSPACE" value has been provided in environment variables.')
+    
+    # Retrieve PostGIS table name holding the (previously instantiated) geospatial 
+    # building information (i.e. building footprint polygons) 
+    BUILDINGS_TABLE = os.getenv('BUILDINGS_TABLE')
+    if BUILDINGS_TABLE is None:
+        logger.error('"BUILDINGS_TABLE" is missing in environment variables.')
+        raise ValueError('"BUILDINGS_TABLE" is missing in environment variables.')
+    if BUILDINGS_TABLE == '':
+        logger.error('No "BUILDINGS_TABLE" value has been provided in environment variables.')
+        raise ValueError('No "BUILDINGS_TABLE" value has been provided in environment variables.')
 
 
 # Run when module is imported

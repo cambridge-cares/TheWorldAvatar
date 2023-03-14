@@ -12,7 +12,8 @@ import json
 
 from agent.errorhandling.exceptions import StackException
 from agent.kgutils.javagateway import stackClientsGw, jpsBaseLibGW
-from agent.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE
+from agent.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, \
+                                    BUILDINGS_TABLE
 from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT
 
 # Initialise logger
@@ -33,6 +34,9 @@ class StackClient:
     stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.postgis.PostGISClient")
     stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.geoserver.GeoServerClient")
     stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings")
+    stackClientsGw.importPackages(stackClients_view, "com.cmclinnovations.stack.clients.geoserver.UpdatedGSVirtualTableEncoder")
+    # Include required third-party packages
+    stackClientsGw.importPackages(stackClients_view, "it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.VTGeometryEncoder")
 
 
 class PostGISClient(StackClient):
@@ -118,7 +122,8 @@ class PostGISClient(StackClient):
                     sql_update = f'CREATE TABLE IF NOT EXISTS \"{table}\" ({col_def_str})'
                     curs.execute(sql_update)
                     # ... and create a unique constraint on the iri column
-                    sql_update = f'ALTER TABLE \"{table}\" ADD CONSTRAINT iri_unique UNIQUE (iri);'
+                    # NOTE: Create "unique" constraint name to avoid potential issues with other constraints
+                    sql_update = f'ALTER TABLE \"{table}\" ADD CONSTRAINT {table}_iri_unique UNIQUE (iri)'
                     curs.execute(sql_update)
         except Exception as ex:
             logger.error(f'Unsuccessful JDBC interaction: {ex}')
@@ -196,15 +201,74 @@ class PostGISClient(StackClient):
 
 class GeoserverClient(StackClient):
 
-    def __init__(self):
+    def __init__(self, sql_view=None, table_name=LAYERNAME, escape_sql=False,
+                 geom_name='wkb_geometry', geom_type='MultiPolygon', geom_srid='4326'):
+        """
+        Initialise Geoserver client with default settings (i.e. settings required to
+        created virtual table with building footprints and market value estimates)
+        For details, please see:
+        https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-data-uploader/README.md#geoserver-options
+        Example for virtual table, please see:
+        https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/examples/datasets/inputs/config/cropmap.json
 
+        Arguments:
+            sql_view {str} -- SQL query used to construct virtual table
+            table_name {str} -- Name of virtual table to create
+            escape_sql {bool} -- Whether to escape SQL query
+            geom_name {str} -- Name of column with the geometry
+            geom_type {str} -- Geometry type of geometry column
+            geom_srid {str} -- SRID EPSG code
+        """
+        
+        if not sql_view:
+            # Create default SQL query to create virtual table
+            sql_view = self.sql_query_to_create_virtual_table()
+        
         # Initialise Geoserver with default settings
         try:
             self.client = self.stackClients_view.GeoServerClient()
             self.vectorsettings = self.stackClients_view.GeoServerVectorSettings()
+            
+            # Create geometry object (to ensure proper representation of geometry in GeoServer)
+            # https://github.com/geosolutions-it/geoserver-manager/blob/master/src/main/java/it/geosolutions/geoserver/rest/encoder/metadata/virtualtable/VTGeometryEncoder.java
+            geometry = self.stackClients_view.VTGeometryEncoder(geom_name, geom_type, geom_srid)
+            
+            # Create virtual table and set properties
+            # https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-clients/src/main/java/com/cmclinnovations/stack/clients/geoserver/UpdatedGSVirtualTableEncoder.java
+            self.virtualtableencoder = self.stackClients_view.UpdatedGSVirtualTableEncoder()
+            self.virtualtableencoder.setName(table_name)
+            self.virtualtableencoder.setSql(sql_view)
+            self.virtualtableencoder.setEscapeSql(escape_sql)
+            self.virtualtableencoder.setGeometry(geometry)
+            
+            # Add virtual table settings to vector settings
+            # https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-clients/src/main/java/com/cmclinnovations/stack/clients/geoserver/GeoServerVectorSettings.java
+            self.vectorsettings.setVirtualTable(self.virtualtableencoder)
+
         except Exception as ex:
             logger.error("Unable to initialise GeoServerClient.")
-            raise StackException("Unable to initialise GeoServerClient.") from ex   
+            raise StackException("Unable to initialise GeoServerClient.") from ex
+
+
+    def sql_query_to_create_virtual_table(self, sales_table=LAYERNAME, 
+                                          bldgs_table=BUILDINGS_TABLE):
+        """
+        Return SQL query/view to create virtual table for GeoServer
+        NOTE: This requires the EPC Instantiation Agent to be run first (which is 
+              the natural sequence anyway) AND relies on hardcoded column names
+        """
+        query = f"""SELECT {bldgs_table}.iri, 
+                           {bldgs_table}.wkb_geometry, 
+                           {sales_table}.price
+                    FROM 
+                        {bldgs_table}, 
+                        {sales_table}
+                    WHERE
+                        {bldgs_table}.iri = {sales_table}.iri
+                    """
+        # Remove unnecessary whitespaces
+        query = ' '.join(query.split())
+        return query
 
 
     def create_workspace(self, workspace=GEOSERVER_WORKSPACE):
@@ -215,7 +279,7 @@ class GeoserverClient(StackClient):
                                    geoserver_layer=LAYERNAME,
                                    postgis_database=DATABASE):
         """
-        Calls StackClient function with default settings
+        Calls StackClient function with default settings to create VIRTUAL TABLE
         Please note: Postgis database table assumed to have same name as
                      Geoserver layer
         """
