@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.cmclinnovations.stack.clients.core.BasicEndpointConfig;
+import com.cmclinnovations.stack.clients.core.StackClient;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 
 public class BasicAgentService extends ContainerService {
@@ -18,7 +19,7 @@ public class BasicAgentService extends ContainerService {
         endpointConfigMap = new HashMap<>();
 
         this.getConfig().getEndpoints().entrySet().forEach(entry -> {
-            String endpointConfigName = config.getName().substring(stackName.length() + 1) + "-" + entry.getKey();
+            String endpointConfigName = StackClient.removeStackName(config.getName()) + "-" + entry.getKey();
             String url = entry.getValue().getUrl().toString().replace("localhost", this.getName());
             BasicEndpointConfig endpointConfig = new BasicEndpointConfig(endpointConfigName, url);
             endpointConfigMap.put(entry.getKey(), endpointConfig);
