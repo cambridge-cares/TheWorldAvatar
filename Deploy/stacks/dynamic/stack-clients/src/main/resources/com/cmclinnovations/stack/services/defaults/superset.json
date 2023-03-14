@@ -11,6 +11,9 @@
                 "Secrets": [
                     {
                         "SecretName": "superset_password"
+                    },
+                    {
+                        "SecretName": "superset_secret_key"
                     }
                 ]
             }
