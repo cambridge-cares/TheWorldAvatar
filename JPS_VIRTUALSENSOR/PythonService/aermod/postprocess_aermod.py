@@ -64,9 +64,13 @@ def get_aermod_geojson(aermod_output, srid):
 
     crf = ax.contourf(x_matrix, y_matrix, np.log10(conc_matrix), levels=contour_level,cmap=plt.cm.jet)
     # cbar = fig.colorbar(crf,ax)
-    fig2,ax2 = plt.subplots()
-    ax2.colorbar(crf,ax2)
-    ax2.remove()
-    plt.savefig("/var/www/html/colourbar.png")
+    try :
+       fig2,ax2 = plt.subplots()
+       ax2.colorbar(crf,ax2)
+       ax2.remove()
+       plt.savefig("/var/www/html/colourbar.png")
+    except Exception as e :
+       print(e)
+    
     geojsonstring = geojsoncontour.contourf_to_geojson(contourf = crf, fill_opacity = 0.5)
     return jsonify(json.loads(geojsonstring)), 200
