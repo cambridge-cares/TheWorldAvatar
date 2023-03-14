@@ -62,9 +62,11 @@ def get_aermod_geojson(aermod_output, srid):
     contour_level = 30
     fig, ax = plt.subplots()
 
-    crf = ax.contourf(x_matrix, y_matrix, conc_matrix, levels=contour_level,cmap=plt.cm.jet,vmax=2.0e8)
-    ax.set_xlabel("Longitude")
-    ax.set_ylabel("Latitude")    
-    fig.colorbar(crf,ax)
+    crf = ax.contourf(x_matrix, y_matrix, np.log10(conc_matrix), levels=contour_level,cmap=plt.cm.jet)
+    # cbar = fig.colorbar(crf,ax)
+    fig2,ax2 = plt.subplots()
+    ax2.colorbar(crf,ax2)
+    ax2.remove()
+    plt.savefig("/var/www/html/colourbar.png")
     geojsonstring = geojsoncontour.contourf_to_geojson(contourf = crf, fill_opacity = 0.5)
     return jsonify(json.loads(geojsonstring)), 200
