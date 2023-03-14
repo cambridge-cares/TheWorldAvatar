@@ -9,8 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * Downsampling class uses downsampleTS method to retrieve the timeseries data and relevant dataIRI.
- * The downsampleTS method calls the aggregation method to handle the downsampling based on the user-specified downsampling resolution and downsampling type.
+ * Downsampling class uses the downsampleTS method to downsample the timeseries data and retrieve the relevant dataIRI(s).
+ * The downsampleTS method invokes the aggregation method to handle the downsampling based on the user-specified downsampling type and resolution.
  */
 
 public class Downsampling {
@@ -34,15 +34,15 @@ public class Downsampling {
     public static TimeSeries downsampleTS(TimeSeries ts, Long resolution, Type type) throws Exception {
         //Parsing timseries into list of list values and time list;
         List dataIRIs = ts.getDataIRIs();
-        List<List<Double>> timeserieslolValues = new ArrayList<>();
+        List<List<Double>> timeseriesLolValues = new ArrayList<>();
 
         for (Object dataIRI : dataIRIs) {
-            timeserieslolValues.add(ts.getValues(dataIRI.toString()));
+            timeseriesLolValues.add(ts.getValues(dataIRI.toString()));
         }
         List<OffsetDateTime> originalTimeList = ts.getTimes();
 
         List downsampledList;
-        downsampledList = aggregation(originalTimeList, timeserieslolValues, resolution, type);
+        downsampledList = aggregation(originalTimeList, timeseriesLolValues, resolution, type);
 
         TimeSeries downsampledTS = new TimeSeries((List) downsampledList.get(0), (List<String>) dataIRIs, (List<List<?>>) downsampledList.get(1));
 
@@ -70,7 +70,7 @@ public class Downsampling {
     public static List aggregation(List<OffsetDateTime> originalTimeList, List<List<Double>> originalValueLists, long intervalInSeconds, Type type) throws Exception {
         List<List<Double>> downsampledValueLists = new ArrayList<>();
 
-        //Initiliaze size of downsampledValueLists for iterator purpose
+        //Initialize size of downsampledValueLists for iterator
         for (int i = 0; i < originalValueLists.size(); i++) {
             downsampledValueLists.add(new ArrayList<>());
         }
