@@ -19,7 +19,7 @@ public class DownsamplingTest {
 
     /**
      * Declare sample dataset and parse into timeseries.
-     * @return Sample timeseries
+     * @return sample timeseries
      */
     private static TimeSeries getDataset(int dataset) {
 
@@ -85,7 +85,7 @@ public class DownsamplingTest {
     @Test
     public void aggregationMethodMaxTest () throws Exception {
         ts= DownsamplingTest.getDataset(1);
-        TimeSeries resampledTS= downsampling.aggregation(ts,5L,1);
+        TimeSeries resampledTS= downsampling.aggregation(ts,5L, Downsampling.Type.MAXIMUM);
         List List1=resampledTS.getValues(randomDATAIRI1);
         List List2=resampledTS.getValues(randomDATAIRI2);
         assertEquals((double) 5,List1.get(0));
@@ -99,7 +99,7 @@ public class DownsamplingTest {
     @Test
     public void aggregationMethodMedianTest () throws Exception {
         ts= DownsamplingTest.getDataset(1);
-        TimeSeries resampledTS= downsampling.aggregation(ts,5L,2);
+        TimeSeries resampledTS= downsampling.aggregation(ts,5L,Downsampling.Type.MEDIAN);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
         List List2=resampledTS.getValues(randomDATAIRI2);
@@ -115,7 +115,7 @@ public class DownsamplingTest {
     @Test
     public void aggregationMethodMinTest () throws Exception {
         ts= DownsamplingTest.getDataset(1);
-        TimeSeries resampledTS= downsampling.aggregation(ts,5L,3);
+        TimeSeries resampledTS= downsampling.aggregation(ts,5L,Downsampling.Type.MINIMUM);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
         List List2=resampledTS.getValues(randomDATAIRI2);
@@ -131,7 +131,7 @@ public class DownsamplingTest {
     @Test
     public void aggregationMethodSumTest () throws Exception {
         ts= DownsamplingTest.getDataset(1);
-        TimeSeries resampledTS= downsampling.aggregation(ts,5L,4);
+        TimeSeries resampledTS= downsampling.aggregation(ts,5L,Downsampling.Type.SUM);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
         List List2=resampledTS.getValues(randomDATAIRI2);
@@ -148,7 +148,7 @@ public class DownsamplingTest {
     @Test
     public void aggregationMethodAverageTest () throws Exception {
         ts= DownsamplingTest.getDataset(1);
-        TimeSeries resampledTS= downsampling.aggregation(ts,5L,5);
+        TimeSeries resampledTS= downsampling.aggregation(ts,5L,Downsampling.Type.AVERAGE);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
         List List2=resampledTS.getValues(randomDATAIRI2);
@@ -165,7 +165,7 @@ public class DownsamplingTest {
     @Test
     public void aggregationCountTest () throws Exception {
         ts= DownsamplingTest.getDataset(1);
-        TimeSeries resampledTS= downsampling.aggregation(ts,7L,6);
+        TimeSeries resampledTS= downsampling.aggregation(ts,7L,Downsampling.Type.COUNT);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
 
@@ -193,7 +193,7 @@ public class DownsamplingTest {
     @Test
     public void instantaneousTest () throws Exception {
         ts= DownsamplingTest.getDataset(2);
-        TimeSeries resampledTS= downsampling.aggregation(ts,5L,7);
+        TimeSeries resampledTS= downsampling.aggregation(ts,5L,Downsampling.Type.INSTANTANEOUS);
 
         List List1=resampledTS.getValues(randomDATAIRI1);
 
@@ -201,7 +201,7 @@ public class DownsamplingTest {
         assertEquals((double) 11,List1.get(1));
         assertEquals((double) 15,List1.get(2));
 
-        TimeSeries resampledTS2= downsampling.aggregation(ts,3L,7);
+        TimeSeries resampledTS2= downsampling.aggregation(ts,3L,Downsampling.Type.INSTANTANEOUS);
 
         List List1a=resampledTS2.getValues(randomDATAIRI1);
         assertEquals((double) 4,List1a.get(0));

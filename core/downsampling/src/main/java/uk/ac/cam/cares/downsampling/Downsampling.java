@@ -16,13 +16,14 @@ import java.util.List;
 
 public class Downsampling {
     /**
-     * @param ts Raw timeseries
-     * @param resolution Resolution - interval to be aggregated in seconds
-     * @param type Downsampling type
-     * @return Resampled timeseries
+     * @param ts raw timeseries
+     * @param resolution resolution - interval to be aggregated in seconds
+     * @param type type of downsampling.
+     *             Allowed values of Type enum: Type.MAXIMUM, Type.MEDIAN, Type.MINIMUM, Type.SUM, Type.AVERAGE, Type.COUNT, Type.INSTANTANEOUS
+     * @return downsampled timeseries
      * @throws Exception
      */
-    public static TimeSeries aggregation(TimeSeries ts, Long resolution, int type) throws Exception {
+    public static TimeSeries aggregation(TimeSeries ts, Long resolution, Type type) throws Exception {
         //Parsing timseries into list of list values and time list;
         List TSDataIRIS = ts.getDataIRIs();
         List<List<Double>> TSlolValues = new ArrayList<>();
@@ -33,22 +34,40 @@ public class Downsampling {
         List<OffsetDateTime> originalTimeList = ts.getTimes();
 
         List ResampledList;
-        ResampledList = aggregationMethod(originalTimeList, TSlolValues, resolution,type);
+        ResampledList = aggregationMethod(originalTimeList, TSlolValues, resolution, type);
 
         TimeSeries resampledTS = new TimeSeries((List) ResampledList.get(0), (List<String>) TSDataIRIS, (List<List<?>>) ResampledList.get(1));
 
         return resampledTS;
     }
 
+    public enum Type{
+        MAXIMUM,
+        MEDIAN,
+        MINIMUM,
+        SUM,
+        AVERAGE,
+        COUNT,
+        INSTANTANEOUS
+    }
+
     /**
-     * @param originalTimeList Raw timestamp list
-     * @param originalValueLists Raw list of list of values
-     * @param intervalInSeconds Resolution - interval to be aggregated in seconds
-     * @param type Downsampling type
-     * @return A list which contains a list of resampled timestamps and a resampled list of list of values.
+     * @param originalTimeList raw timestamp list
+     * @param originalValueLists raw list of list of values
+     * @param intervalInSeconds resolution - interval to be aggregated in seconds
+     * @param type type of downsampling.
+     *             To represent a time interval:
+     *             - MAXIMUM retrieves the maximum value of the points.
+     *             - MEDIAN retrieves the median value of the points.
+     *             - MINIMUM retrieves the minimum value of the points.
+     *             - SUM retrieves the sum value of all points.
+     *             - AVERAGE retrieves the average value of the points.
+     *             - COUNT retrieves the total number of all points.
+     *             - INSTANTANEOUS retrieves the value of the point closest to the time resolution.
+     * @returna a list which contains a list of resampled timestamps and a resampled list of list of values.
      * @throws Exception
      */
-    public static List aggregationMethod(List<OffsetDateTime> originalTimeList, List<List<Double>> originalValueLists, long intervalInSeconds, int type) throws Exception {
+    public static List aggregationMethod(List<OffsetDateTime> originalTimeList, List<List<Double>> originalValueLists, long intervalInSeconds, Type type) throws Exception {
         List<List<Double>> resampledValueLists = new ArrayList<>();
 
         //Initiliaze size of resampledValueLists for iterator purpose
@@ -69,7 +88,7 @@ public class Downsampling {
             Iterator<List<Double>> it2 = resampledValueLists.iterator();
 
             //Max
-            if(type == 1){
+            if(type.equals(Type.MAXIMUM)){
                 while (it1.hasNext() && it2.hasNext()) {
                     List<Double> originalValueList = it1.next();
                     List<Double> resampledValueList = it2.next();
@@ -86,7 +105,7 @@ public class Downsampling {
                 }
             }
             //Median
-            else if (type == 2){
+            else if (type.equals(Type.MEDIAN)){
                     while (it1.hasNext() && it2.hasNext()) {
                     List<Double> originalValueList = it1.next();
                     List<Double> resampledValueList = it2.next();
@@ -118,7 +137,7 @@ public class Downsampling {
             }
 
             //Min
-            else if (type==3 ){
+            else if (type.equals(Type.MINIMUM) ){
                     while (it1.hasNext() && it2.hasNext()) {
                     List<Double> originalValueList = it1.next();
                     List<Double> resampledValueList = it2.next();
@@ -138,7 +157,7 @@ public class Downsampling {
                 }
 
             //Sum
-            else if (type==4){
+            else if (type.equals(Type.SUM)){
                 while (it1.hasNext() && it2.hasNext()) {
                     List<Double> originalValueList = it1.next();
                     List<Double> resampledValueList = it2.next();
@@ -157,7 +176,7 @@ public class Downsampling {
             }
 
             //Average
-            else if (type==5){
+            else if (type.equals(Type.AVERAGE)){
                 while (it1.hasNext() && it2.hasNext()) {
                     List<Double> originalValueList = it1.next();
                     List<Double> resampledValueList = it2.next();
@@ -176,7 +195,7 @@ public class Downsampling {
                 }
             }
             //Count
-            else if (type==6){
+            else if (type.equals(Type.COUNT)){
                 while (it1.hasNext() && it2.hasNext()) {
                     List<Double> originalValueList = it1.next();
                     List<Double> resampledValueList = it2.next();
@@ -194,7 +213,7 @@ public class Downsampling {
             }
 
             //Instantaneous
-            else if (type == 7) {
+            else if (type.equals(Type.INSTANTANEOUS)) {
 
                 while (it1.hasNext() && it2.hasNext()) {
                     List<Double> originalValueList = it1.next();
