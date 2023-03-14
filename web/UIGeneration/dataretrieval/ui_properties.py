@@ -122,8 +122,10 @@ def perform_query(endpoint: str, query: str):
     sparql_wrapper.setReturnFormat(JSON)
     return sparql_wrapper.query().convert()
 
-def format_property_values(results: str):
+def format_property_values(results: str, previous_property_values: str = None):
     property_values = dict()
+    if previous_property_values is not None:
+         property_values = previous_property_values
     previous_range = ""
     previous_range_label = ""
     for result in results["results"]["bindings"]:
@@ -145,6 +147,19 @@ def format_property_values(results: str):
                 previous_range_label = range_label
     return property_values
 
+def format_instances(class_label:str, results: str, previous_property_values: str = None):
+    instances = dict()
+    for result in results["results"]["bindings"]:
+                label = result['label']['value']
+                if class_label.lower() in instances.keys():
+                    if instances[class_label.lower()] == "":
+                        instances[class_label.lower()] = label
+                    else:
+                        instances[class_label.lower()] = instances[class_label.lower()] + ", " + label
+                else:
+                      instances[class_label.lower()] = label
+    return instances
+
 def format_enumerated_list(enumerated_list):
     string_array = enumerated_list.split(", ")
     sorted_list = sorted(string_array)
@@ -152,12 +167,16 @@ def format_enumerated_list(enumerated_list):
     return sorted_string
 
 def is_property_result_empty(results):
-    for result in results["results"]["bindings"]:
-        property = result['property']['value']
-        if property == "":
-             return True
-        else:
-            return False
+    if results["results"]["bindings"] == None or results["results"]["bindings"] == "" or len(results["results"]["bindings"]) == 0:
+        return True
+    else:
+         return False
+    # for result in results["results"]["bindings"]:
+    #     property = result['property']['value']
+    #     if property == "":
+    #          return True
+    #     else:
+    #         return False
 
 def is_unit_result_empty(results):
     for result in results["results"]["bindings"]:
@@ -173,10 +192,18 @@ def traverse_through_object_property(results, property_value_processed, property
                 # print(result['property']['value'], result['label']['value'], result['position']['value'], result['type']['value'], result['range']['value'], result['rangeLabel']['value'])
                 property = result['property']['value']
                 label = result['label']['value']
-                position = result['position']['value']
-                type = result['type']['value']
-                range = result['range']['value']
-                range_label = result['rangeLabel']['value']
+                position = ""
+                if 'position' in result:
+                    position = result['position']['value']
+                type = ""
+                if 'type' in result:
+                    type = result['type']['value']
+                range = ""
+                if 'range' in result:
+                    range = result['range']['value']
+                range_label = ""
+                if 'range_label' in result:
+                    range_label = result['rangeLabel']['value']
                 if label.lower() == "properties":
                      continue
                 if label.lower() not in property_value_processed:
@@ -189,6 +216,7 @@ def traverse_through_object_property(results, property_value_processed, property
                     if "<"+range+">" not in parsed_classes:
                         print ("COMO_ENDPOINT:", COMO_ENDPOINT)
                         results = get_ontological_properties(COMO_ENDPOINT, "<"+range+">")
+                        print(len(results))
                         if is_property_result_empty(results):
                             results = get_ontological_subclasses(COMO_ENDPOINT, "<"+range+">")
                             if is_property_result_empty(results):
@@ -197,9 +225,20 @@ def traverse_through_object_property(results, property_value_processed, property
                                    results = get_ontologically_encoded_unit(COMO_ENDPOINT, "<"+range+">") 
                                    if is_unit_result_empty(results):
                                         continue
-                            property_values_formated = format_property_values(results)
+                                else:
+                                    property_values_formated = format_instances(label, results, property_values_formated)
+                                    parsed_classes.append("<"+range+">")
+                                    json_string.append((label.lower().replace(" ", "_"), get_json_object_with_enum(label, "TODO", "string" if range_label=="string" else "string", format_enumerated_list(property_values_formated[label.lower()]))))
+                                    continue
+                            else:
+                                property_values_formated = format_property_values(results, property_values_formated)
+                                parsed_classes.append("<"+range+">")
+                                traverse_through_object_property(results, property_value_processed, property_values_formated, json_string, parsed_classes)
+                        else:
+                            property_values_formated = format_property_values(results, property_values_formated)
                             parsed_classes.append("<"+range+">")
                             traverse_through_object_property(results, property_value_processed, property_values_formated, json_string, parsed_classes)
+
     return json_string
 
 def generate_json_string():

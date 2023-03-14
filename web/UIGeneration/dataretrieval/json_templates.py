@@ -18,15 +18,6 @@ def get_json_object(title, description, type):
 
     return data
 
-
-    # return '''
-    #         "%s": {
-    #         "title": "%s",
-    #         "description": "%s",
-    #         "type": "%s"
-    #     }
-    # ''' %(name, title, description, type)
-
 def get_json_object_with_enum(title, description, type, enum):
    
     data = {       
@@ -40,15 +31,13 @@ def get_json_object_with_enum(title, description, type, enum):
 
     return data
 
+def get_json_object_with_properties(title, description, type, properties):
+   
+    data = {       
+        "title": title,
+        "description": description,
+        "type": type,
+        "properties": {properties}
+    }
 
-
-    # return '''
-    #         "%s": {
-    #         "title": "%s",
-    #         "description": "%s",
-    #         "type": "%s",
-    #         "enum": [
-    #             %s
-    #         ]
-    #     }
-    # ''' %(name, title, description, type, enum)
+    return data
