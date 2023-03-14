@@ -1,6 +1,8 @@
 # Downsampling
 ## Description
-This downsampling library is used to downsample Timeseries data. Downsampling reduces the size of data to prevent unnecessary consumption of memory in databases. Additionally, it can be used to remove duplicated data that takes up space but produces no value. Downsampling is also useful for visualization of trends or statistical analysis to extract insights.
+This downsampling library is used to downsample Timeseries data. Downsampling reduces the size of data to prevent unnecessary consumption of memory in databases. 
+Additionally, it can be used to remove duplicated data that takes up space but produces no value. 
+Downsampling is also useful for visualization of trends or statistical analysis to extract insights.
 
 The document outlines the user guide on how to use the downsampling library.
 
@@ -16,12 +18,15 @@ downsampleTS (TimeSeries ts, Long resolution, Type type)
 
 `resolution` is the time interval in seconds of the timeseries data to be downsampled.
 
-`type` is the type of [downsampling method](#Downsampling-Type). The downsampling type can be specified using the Type enum which the following are allowed: `Type.MAXIMUM`, `Type.MEDIAN`, `Type.MINIMUM`, `Type.SUM`, `Type.AVERAGE`, `Type.COUNT`, `Type.INSTANTANEOUS`.
+`type` is the type of [downsampling method](#Downsampling-Type). The downsampling type can be specified using the Type 
+enum which can assume the following values: 
+`Type.MAXIMUM`, `Type.MEDIAN`, `Type.MINIMUM`, `Type.SUM`, `Type.AVERAGE`, `Type.COUNT`, `Type.INSTANTANEOUS`.
+
 ### Output
-Downsampling library returns downsampled timeseries data.
+`downsampleTS` returns the downsampled timeseries data.
 
 ## Downsampling Type
-The enum can assume one of the following values:
+The Type enum can assume one of the following values:
 ### 1) Type.MAXIMUM
 Retrieves the maximum value of the points within a time resolution to represent the time interval. 
 ### 2) Type.MEDIAN
