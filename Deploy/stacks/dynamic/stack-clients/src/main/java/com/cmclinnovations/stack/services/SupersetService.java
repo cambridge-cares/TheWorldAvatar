@@ -31,8 +31,8 @@ public class SupersetService extends ContainerService {
             "/static", "/chart/", "/dashboard/", "/dataset/", "/savedqueryview/", "/tablemodelview/",
             "/dashboardasync/", "/csstemplatemodelview/", "/csstemplateasyncmodelview/", "api/v1/", "/login", "/logout",
             "/superset/", "/csstemplatemodelview/", "/annotationlayer/", "/logmodelview/",
-            "/rowlevelsecurityfiltersmodelview/", "/roles/", "/users/", "/profile/", "/databaseview/",
-            "/tabstateview/", "/explore/", "/datasource/");
+            "/rowlevelsecurityfiltersmodelview/", "/roles/", "/users/", "/profile/", "/databaseview/", "/tabstateview/",
+            "/explore/", "/datasource/");
     protected static final List<String> SUB_FILTER_TYPES_LIST = Arrays.asList(
             "text/css", "text/javascript", "application/javascript", "application/json");
     public static final String LOCATION = "location";
@@ -79,27 +79,23 @@ public class SupersetService extends ContainerService {
         proxyRedirectParam.addValue("~^(http://|https://|)([^/]*/)(?!"
                 + FileUtils.fixSlashs(externalPath.getPath(), false, true) + ")(.*)");
         proxyRedirectParam
-                .addValue("$scheme://$http_host/"
-                        + FileUtils.fixSlashs(externalPath.getPath(), false, true) + "$3");
+                .addValue("$scheme://$http_host/" + FileUtils.fixSlashs(externalPath.getPath(), false, true) + "$3");
         locationBlock.addEntry(proxyRedirectParam);
 
-        locationBlock.addEntry(
-                new NgxComment("# List of MIME types to filter (text/http included by default)"));
+        locationBlock.addEntry(new NgxComment("# List of MIME types to filter (text/http included by default)"));
         NgxParam subFilterTypesParam = new NgxParam();
         subFilterTypesParam.addValue("sub_filter_types");
         SUB_FILTER_TYPES_LIST.stream().forEach(subFilterTypesParam::addValue);
         locationBlock.addEntry(subFilterTypesParam);
 
         locationBlock
-                .addEntry(new NgxComment(
-                        "# Sub_filter_once on by default and needed multiple times in same file"));
+                .addEntry(new NgxComment("# Sub_filter_once on by default and needed multiple times in same file"));
         NgxParam subFilterOnceParam = new NgxParam();
         subFilterOnceParam.addValue("sub_filter_once");
         subFilterOnceParam.addValue("off");
         locationBlock.addEntry(subFilterOnceParam);
 
-        locationBlock.addEntry(
-                new NgxComment("# Prevents zipping of response as that would prevent subfiltering"));
+        locationBlock.addEntry(new NgxComment("# Prevents zipping of response as that would prevent subfiltering"));
         NgxParam proxySetHeaderParam = new NgxParam();
         proxySetHeaderParam.addValue("proxy_set_header");
         proxySetHeaderParam.addValue("Accept-Encoding");
@@ -112,10 +108,8 @@ public class SupersetService extends ContainerService {
             subFilterParam.addValue("sub_filter");
             subFilterParam.addValue("\"" + subPath + "\"");
             Boolean hasLeadingSlash = subPath.charAt(0) == '/';
-            subFilterParam
-                    .addValue("\"" + FileUtils.fixSlashs(externalPath.getPath(), hasLeadingSlash,
-                            !hasLeadingSlash)
-                            + subPath + "\"");
+            subFilterParam.addValue("\""
+                    + FileUtils.fixSlashs(externalPath.getPath(), hasLeadingSlash, !hasLeadingSlash) + subPath + "\"");
             // TODO: need to add in extra path here if on front of other nginx
             locationBlock.addEntry(subFilterParam);
         });
@@ -129,15 +123,12 @@ public class SupersetService extends ContainerService {
     private void writeSupersetFlaskConfig() {
         ContainerSpec containerSpec = getContainerSpec();
 
-        try (InputStream supersetConfig = SupersetService.class
-                .getResourceAsStream("superset/superset_config.py");
+        try (InputStream supersetConfig = SupersetService.class.getResourceAsStream("superset/superset_config.py");
                 InputStreamReader inputStreamReader = new InputStreamReader(supersetConfig);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
             String fileText = bufferedReader.lines().collect(Collectors.joining(System.lineSeparator()));
-            containerSpec
-                    .withCommand(List.of("/bin/sh", "-c",
-                            "echo \"" + fileText + "\" > pythonpath/superset_config.py"
-                                    + " && /usr/bin/run-server.sh"));
+            containerSpec.withCommand(List.of("/bin/sh", "-c",
+                    "echo \"" + fileText + "\" > pythonpath/superset_config.py" + " && /usr/bin/run-server.sh"));
         } catch (IOException ex) {
             throw new RuntimeException("Failed to load \"superset_config.py\" file.", ex);
         }
