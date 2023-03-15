@@ -20,12 +20,13 @@ public class SupersetEndpointConfig extends PasswordEndpointConfig {
     private final String firstName;
     private final String lastName;
     private final String email;
+    private final String secretKeyFile;
     private final String credentialProvider;
 
     private final String url;
 
     public SupersetEndpointConfig(String name, String hostName, String port, String username, String passwordFile,
-            String firstName, String lastName, String email, String credentialProvider,
+            String firstName, String lastName, String email, String secretKeyFile, String credentialProvider,
             String url) {
         super(name, passwordFile);
         this.hostName = hostName;
@@ -34,20 +35,20 @@ public class SupersetEndpointConfig extends PasswordEndpointConfig {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.secretKeyFile = secretKeyFile;
         this.credentialProvider = credentialProvider;
         this.url = url;
     }
 
     public SupersetEndpointConfig(String name, String hostName, String port, String username, String passwordFile,
-            String firstName, String lastName, String email, String credentialProvider) {
-        this(name, hostName, port, username, passwordFile,
-                firstName, lastName, email, credentialProvider, null);
+            String firstName, String lastName, String email, String secretKeyFile, String credentialProvider) {
+        this(name, hostName, port, username, passwordFile, firstName, lastName, email, secretKeyFile,
+                credentialProvider, null);
     }
 
     public SupersetEndpointConfig(String name, String hostName, String port, String username, String passwordFile,
-            String firstName, String lastName, String email) {
-        this(name, hostName, port, username, passwordFile,
-                firstName, lastName, email, null, null);
+            String firstName, String lastName, String email, String secretKeyFile) {
+        this(name, hostName, port, username, passwordFile, firstName, lastName, email, secretKeyFile, null, null);
     }
 
     protected SupersetEndpointConfig() {
@@ -76,6 +77,10 @@ public class SupersetEndpointConfig extends PasswordEndpointConfig {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getSecretKeyFile() {
+        return secretKeyFile;
     }
 
     public String getUrl() {
