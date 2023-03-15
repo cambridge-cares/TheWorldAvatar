@@ -70,6 +70,13 @@
       <version>${jps.base.version}</version>
     </dependency>
 
+    <!-- used to create sparql query strings -->
+    <dependency>
+      <groupId>org.eclipse.rdf4j</groupId>
+      <artifactId>rdf4j-sparqlbuilder</artifactId>
+      <version>3.4.3</version>
+    </dependency>
+
     <!-- Testing -->
     <dependency>
       <groupId>junit</groupId>
