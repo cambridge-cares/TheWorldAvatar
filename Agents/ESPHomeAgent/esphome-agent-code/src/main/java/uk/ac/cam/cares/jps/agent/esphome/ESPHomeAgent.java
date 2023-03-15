@@ -18,12 +18,6 @@ import java.util.*;
 import javax.servlet.annotation.WebServlet;
 import javax.ws.rs.BadRequestException;
 
-import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -74,6 +68,12 @@ public class ESPHomeAgent extends JPSAgent{
     //JSONObjects
     JSONObject message;
     JSONObject result;
+
+	//ESPHomeAPI
+	ESPHomeAPI esphomeApi;
+
+	//QueryBuilder
+	QueryBuilder queryBuilder;
     
     /**
      * Error messages
@@ -86,7 +86,7 @@ public class ESPHomeAgent extends JPSAgent{
     private static final String GETTIMESERIESIRI_ERROR_MSG = "Unable to query for timeseries IRI from this data IRI!";
     private static final String ARGUMENT_MISMATCH_MSG = "Need three properties files in the following order:1) time series client for timeseries data 2) time series client for esphome status 3)esphome API properties";
     private static final String ESPHOMEAPI_ERROR_MSG = "Could not construct ESPHomeAPI needed to send POST requests to the ESPHome web server.";
-    
+    private static final String QUERYBUILDER_ERROR_MSG = "Could not construct query builder needed to construct and send queries to the knowledge graph.";
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
     	JSONObject jsonMessage = new JSONObject();
@@ -207,7 +207,6 @@ public class ESPHomeAgent extends JPSAgent{
     	latestTimeSeriesValue = dataValuesAsDouble.get(dataValuesAsDouble.size() - 1);
     	LOGGER.info("The latest timeseries value is " + latestTimeSeriesValue);
     	
-    	ESPHomeAPI esphomeApi;
     	String status;
     	
     	try {
@@ -258,6 +257,22 @@ public class ESPHomeAgent extends JPSAgent{
     	dataValuesAsString = timeseries.getValuesAsString(dataIRI);
     	status = dataValuesAsString.get(0);
     	LOGGER.info("The current status of the component is " + status);
+
+		//query for threshold from KG based on ontodevice
+		double esphomeThreshold;
+
+		try {
+		queryBuilder = new QueryBuilder(args[1]);
+		} catch (Exception e) {
+			throw new JPSRuntimeException(QUERYBUILDER_ERROR_MSG, e);
+		}
+
+		String queryResult = queryBuilder.queryForDeviceWithStateIRI(dataIRI);
+		queryResult = queryBuilder.queryForSetpointWithHasSetpoint(queryResult);
+		queryResult = queryBuilder.queryForQuantityWithHasQuantity(queryResult);
+		queryResult = queryBuilder.queryForMeasureWithHasValue(queryResult);
+		esphomeThreshold = queryBuilder.queryForNumericalValueWithHasNumericalValue(queryResult);
+
     	//set ESPHome API with properties from ESPHome API properties file
 		try {
 			esphomeApi = new ESPHomeAPI(args[2]);
@@ -266,7 +281,7 @@ public class ESPHomeAgent extends JPSAgent{
 		}
 		//determine whether to turn the component on or off
     	try {
-		result = esphomeApi.esphomeSwitchControl(latestTimeSeriesValue, status);
+		result = esphomeApi.esphomeSwitchControl(latestTimeSeriesValue, status, esphomeThreshold);
 		LOGGER.info("A request has been successfully sent to the ESPHome web server.");
 		result.accumulate("message","A request has been successfully sent to the ESPHome web server.");
 		} catch (JPSRuntimeException e) {
