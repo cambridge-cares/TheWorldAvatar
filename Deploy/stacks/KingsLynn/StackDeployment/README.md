@@ -11,13 +11,13 @@ Spinning up the (core) Docker Stack requires access to the [CMCL Docker Registry
 
 To log in to the Container registries, please run the following commands to establish the connections and provide your password/access token when prompted. For more details please refer to the linked resources.
 ```bash
-  # CMCL Container registry
-  $ docker login docker.cmclinnovations.com -u <username>
-  $ <password>
+# CMCL Container registry
+$ docker login docker.cmclinnovations.com -u <username>
+$ <password>
 
-  # Github Container registry
-  $ docker login ghcr.io -u <github_username>
-  $ <github_personal_access_token>
+# Github Container registry
+$ docker login ghcr.io -u <github_username>
+$ <github_personal_access_token>
 ```
 
 &nbsp;
@@ -26,8 +26,7 @@ To log in to the Container registries, please run the following commands to esta
 This section explains how to spin up the core stack and upload initial data sets, i.e. high-resolution population raster data and pre-instantiated OntoCityGml building triples.
 If using VSCode, all required VSCode extensions shall be installed (on the remote machine if applicable) for all convenience scripts to work properly, i.e. *augustocdias.tasks-shell-input*.
 
-> The functionality has been tested using the Stack Manager `docker.cmclinnovations.com/stack-manager:1.7.2` based on commit `2825c4c69c6543d88c687917c50bf965d3221da6` on branch `main` of the World Avatar repository.
-
+> The functionality has been tested using the Stack Manager `docker.cmclinnovations.com/stack-manager:1.10.1` based on commit `bb5829369d706531f26010c5016a563ba4844ac3` on branch `main` of the World Avatar repository.
 
 &nbsp;
 ## Spinning up the core Stack
@@ -47,7 +46,7 @@ bash ./stack.sh remove KINGS-LYNN -v
 
 After spinning up the stack, the GUI endpoints to the running containers can be accessed via Browser (i.e. adminer, blazegraph, ontop, geoserver). The endpoints and required log-in settings can be found in the [Stack manager] readme.
 
-After stack startup, please ensure that Geoserver supports serving `MapBox Vector Tiles` as required by the Digital Twin Visualisation Framework. In case this option does not yet appear in the Geoserver GUI, please restart the Geoserver service (i.e. right click on container in VSCode Docker extension and stop container followed by another `bash ./stack.sh start KINGS-LYNN` from within the `stack-manager` repository). (It seems that the plug-in download URL required to enable `MapBox Vector Tiles` works but might have intermittent issues.)
+After stack startup, please ensure that Geoserver supports serving `MapBox Vector Tiles` (as required by the Digital Twin Visualisation Framework). In case this option does not yet appear in the Geoserver GUI, please restart the Geoserver service (i.e. right click on container in VSCode Docker extension and stop container followed by another `bash ./stack.sh start KINGS-LYNN` from within the `stack-manager` repository). (It seems that the plug-in download URL required to enable `MapBox Vector Tiles` works but might have intermittent issues.)
 
 &nbsp;
 ## Spinning up the core Stack remotely via SSH
@@ -64,6 +63,8 @@ $ git pull
 ```
 Once the repository clone is obtained, please follow the instructions above to spin up the stack on the remote machine. In order to access the exposed endpoints, e.g. `http://<host IP>:3838/blazegraph/ui`, please note that the respective ports might potentially be opened on the remote machine first.
 
+Some issues have been encountered in interacting with the GeoServer GUI when running remotely (e.g. inability to remove layers, edit CRS information, etc.). In such cases, please try [forwarding the port] used by the stack to your local machine after having established the SSH tunnel (e.g. via VSCode for remote development). This ensures that Geoserver becomes available at `http://localhost:3838/geoserver/` as compared to e.g. `http://165.232.172.16:3838/geoserver/`, which seems to solve most of the issues encountered.
+
 To prevent and identify potential permission issues on Linux machines (i.e. for executable permission), the following commands can be used to verify and manage permissions:
 
 ```bash
@@ -76,6 +77,9 @@ chmod -R +rwx <REPO NAME>
 &nbsp;
 ## Uploading initial data
 
+```diff
+- verify/update
+```
 > The functionality has been tested using the Stack Data Uploader `docker.cmclinnovations.com/stack-data-uploader:1.7.2` based on commit `2825c4c69c6543d88c687917c50bf965d3221da6` on branch `main` of the World Avatar repository.
 
 A few datasets and files which shall initially be uploaded to the stack are provided in the `inputs` folder of this repository. Uploading pre-instantiated OntoCityGml quads is optional but highly recommended to skip steps 1 - 4.2 (depending on the exact quads file provided) of the building instantiation workflow below.
@@ -95,29 +99,23 @@ The following steps explain how to upload the data to the stack using the [Stack
     bash ./stack.sh start KINGS-LYNN
     ```
 
-
 &nbsp;
 # Data instantiation workflow
 
 The following provides an overview of all steps and agents required to instantiate the data into the KG. Copies of the (potentially) required `docker-compose.yml` files are provided in the [Agent docker-compose file folder] for convenience and reproducibility.
 
-## 1) Geospatial data consolidation (QGIS, *manual*)
+&nbsp;
+## 1) Building instantiation (OntoCityGml)
+
+## 1.1) Geospatial data consolidation (QGIS, *manual*)
 
 QGIS is used to consolidate various geospatial data sets from Digimap (both Ordnance Survey (OS) Open data as well as Premium OS data are used, i.e. Building Height Attribute and Digital Terrain Model 5m ) into a single shapefile containing all relevant building information. The exact workflow is described in the `QGIS workflow.pptx` in the `../../Data/01 QGIS` repository, which also contains the QGIS project file. The output shapefile forms the input for the FME workflow below and can be found under `../../Data/02 FME/KingsLynn_cleaned ALL buildings_adjusted building heights_incl UPRNs_final.shp`.
 
-## 2) Creation of .gml input file for KG import (FME, *manual*)
+## 1.2) Creation of .gml input file for KG import (FME, *manual*)
 
 FME is used to convert the shapefile from the previous step into a `.gml` file that can be instantiated into the KG using the Import Agent/Importer Tool. The exact FME workflow is provided by `shapefile2citygml Kings Lynn BHA data_final.fmw` in the `../../Data/02 FME` repository, which also contains both its input and output file. The output `.gml` file contains (all) buildings in King's Lynn in LOD1 including their height (i.e. both building ground elevation as well as actual building height (is both premium data)) and UPRN information.
 
-## 3) Importing building data into KG (CitiesKG Importer, *partially manual*)
-
-> The following steps refer to commit `7c378e97d268b02e0d70661257894d5bff8e3655` on `https://github.com/cambridge-cares/CitiesKG/tree/develop`
-
-The [CityImportAgent] can be used to import the `.gml` file from the previous step into the KG. However, the version at time of writing faces issues with larger `.gml` files and a manual workaround is required as detailed below. Please note that Java 8 and IntelliJ are required to build and run the CityImportAgent. Furthermore, the [AccessAgent] needs to be running locally (as Docker container) in order to access the target KG namespace. The folder `../../Data/03 OntoCityGml Instantiation/Standalone_CitiesKG_Blazegraph/` contains a `Start_Blazegraph_with_default_settings.bat` file to bring up a Blazegraph instance with required settings for importing OntoCityGml buildings, which will start at `http://127.0.0.1:9999/blazegraph/`.
-
-It is **not** recommended to re-do step 3 and instead use the pre-instantiated OntoCityGml quads provided in the `../../Data/99 KG snapshots/1_instantiated_ontocitygml/` repository.
-
-### 0) Access Agent
+## 1.3) Access Agent
 
 All CitiesKG Agents require the [AccessAgent] to be running (locally) as Docker container in order to access the target KG namespaces. Details on how to deploy the AccessAgent and upload required routing information are detailed in the [AccessAgent] README and summarised below:
 
@@ -128,20 +126,25 @@ All CitiesKG Agents require the [AccessAgent] to be running (locally) as Docker 
 
 **Please note** that the `uri.route` within the [CKG config.properties] file needs to match the label used in the [routing.json] file, i.e. `uri.route=http://localhost:48888/ocgml_buildings`. After providing the correct `uri.route`, the City Agents `.war` file can be built and deployed as described in the [CityImportAgent] README.
 
+## 1.4) Importing building data into KG (CitiesKG Importer, *partially manual*)
 
-### 1) City Import Agent
+> The following steps refer to commit `7c378e97d268b02e0d70661257894d5bff8e3655` on `https://github.com/cambridge-cares/CitiesKG/tree/develop`
+
+The [CityImportAgent] can be used to import the `.gml` file from the previous step into the KG. However, the version at time of writing faces issues with larger `.gml` files and a manual workaround is required as detailed below. Please note that Java 8 and IntelliJ are required to build and run the CityImportAgent. Furthermore, the [AccessAgent] needs to be running locally (as Docker container) in order to access the target KG namespace. The folder `../../Data/03 OntoCityGml Instantiation/Standalone_CitiesKG_Blazegraph/` contains a `Start_Blazegraph_with_default_settings.bat` file to bring up a Blazegraph instance with required settings for importing OntoCityGml buildings, which will start at `http://127.0.0.1:9999/blazegraph/`.
+
+It is **not** recommended to re-do step 1.4) and instead use the pre-instantiated OntoCityGml quads provided in the `../../Data/99 KG snapshots/1_instantiated_ontocitygml/` repository.
+
+## 1.4.1) City Import Agent
 
 Build and deploy the City Import Agent as described in the [CityImportAgent] README. Required IntelliJ run configurations are provided in the `../../Data/03 OntoCityGml Instantiation/IntelliJ RunConfigurations/` repository, which also provides a short step-by-step guide `Building Instantiation_short.pptx`.
 
 The used version at commit `7c378e97d268b02e0d70661257894d5bff8e3655` seems unable to handle large `.gml` files. Hence, the CityImportAgent is primarily used to split the large `.gml` file into multiple smaller `.gml` files to be manually uploaded by the Import GUI as described in the next step.
 
-### 2) Import GUI
+## 1.4.2) Import GUI
 
 After the `.gml` file is split into smaller files, they can be manually uploaded in chunks of 100-200 files via the Importer GUI. The `Building Instantiation_short.pptx` guide contains a step-by-step description on how to achieve this with required IntelliJ run configurations also provided in the `../../Data/03 OntoCityGml Instantiation/IntelliJ RunConfigurations/` repository.
 
-## <u>4) Building data enrichment</u>
-
-## 4.1) Thematic Surface Discovery Agent (CitiesKG)
+## 1.5) Thematic Surface Discovery Agent (CitiesKG)
 
 > The following steps refer to commit `7c378e97d268b02e0d70661257894d5bff8e3655` on `https://github.com/cambridge-cares/CitiesKG/tree/develop` (however, they should also work for later commits, e.g. `609022747856c619984fa972e6a773259625a9ec` as used for UPRN agent and provided `.war` file)
 
@@ -158,7 +161,7 @@ Content-Type: application/json
 
 - A KG export after successfully amended by the TSD Agent is provided in `../../Data/99 KG snapshots/2_ontocitygml_tsd`
 
-## 4.2) UPRN Agent (potentially in chunks)
+## 1.6) UPRN Agent (potentially in chunks)
 
 > The following steps refer to commit `609022747856c619984fa972e6a773259625a9ec` on `https://github.com/cambridge-cares/CitiesKG/tree/develop` (the `.war` file built of this commit is provided in the `../../Data/03 OntoCityGml Instantiation/City agents war file/` repository (for reference); however, deploying via IntelliJ is recommended).
 
@@ -172,13 +175,38 @@ Content-Type: application/json
   // Optional key-value pair to specify a single building to be processed
   "cityObjectIRI": "http://127.0.0.1:9999/blazegraph/namespace/kings-lynn/sparql/building/UUID_0004923f-7eed-419e-aa0c-19a9974be52e/" }
 ```
-As the agent tends to fail when processing an entire namespace on particular machines (heap space issues or "arbitrary "JSON exceptions have been observed), a workaround is necessary. The Kings Lynn [Utilities] repository contains a script to run the [UPRN Agent in batches] of single buildings with a to be specified waiting time between individual requests (to allow for uninterrupted SPARQL updates). More details can be found in the README there.
+As the agent tends to fail when processing an entire namespace on particular machines (heap space issues or "arbitrary "JSON exceptions have been observed), a workaround might be necessary. The Kings Lynn [Utilities] repository contains a script to run the [UPRN Agent in batches] of single buildings with a to be specified waiting time between individual requests (to allow for uninterrupted SPARQL updates). More details can be found in the README there.
 
 - A KG export after successfully amended by the UPRN Agent is provided in `../../Data/99 KG snapshots/3_ontocitygml_tsd_uprn`
 
+&nbsp;
+## 2) Building data enrichment (OntoBuiltEnv)
 
-## 4.3) Energy Performance Certificate (EPC) Agent
+The following section provides a step-by-step guide on how to deploy a series of further agents to enrich the sole geospatial building information of OntoCityGML. Each agents is deployed as Docker container to the spun up stack, with a few environment variables to be defined in each `docker-compose.yml` file. An overview of the to-be used Blazegraph namespaces and PostGIS table names is provided in the table below. Furthermore, the [Agent docker-compose file folder] contains all actually used `docker-compose.yml` files.
 
+Some of the agents have (data) interdependencies and, hence, require matching namespaces and/or PostGIS table names, i.e.
+- All EPC, Land Registry and Flood Warning data needs to go into the same namespace for the Derivation Agents to pick up respective updates
+- Flood Warning Instantiation data needs access to previously instantiated buildings in PostGIS to mark-up affected buildings
+- Property Sales Instantiation and Property Value Estimation agents need access to previously instantiated buildings in PostGIS to create virtual Geoserver tables with property values
+
+&nbsp;
+| Agent | Blazegraph namespace | PostGIS table(s) | Geoserver layer | Geoserver workspace |
+|---|---|---|---|---|
+| EPC Instantiation Agent | kingslynn | buildings | buildings | kingslynn |
+| Property Sales Instantiation | kingslynn | transactions<br>(buildings) | transactions | kingslynn |
+| Flood Warnings Instantiation Agent | kingslynn | floodwarnings<br>(buildings) | floodwarnings | kingslynn |
+| Average Square Metre Price Agent | kingslynn |  |  |  |
+| Property Value Estimation Agent | kingslynn | market_values<br>(buildings) | market_values | kingslynn |
+| Flood Assessment Agent | kingslynn | floodwarnings<br>population |  |  |
+| MetOffice Agent | metoffice | metoffice | metoffice | stations |
+| Riverlevel Agent | river_stations | river_stations | river_stations | stations |
+| Airquality Agent | airquality | airquality | airquality | stations |
+
+&nbsp;
+## 2.1) Energy Performance Certificate (EPC) Agent
+```diff
+-update
+```
 > The following steps refer to commit `???` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main` using the published Docker image `ghcr.io/cambridge-cares/epc_agent:1.0.0`
 
 (Build and) deploy the EPC Agent as described in the [EPC Agent README], i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack. Follow the described instantiation workflow by sending the respective HTTP requests to the agent. The subsequent recurring updating of instantiated data occurs automatically.
@@ -209,8 +237,7 @@ As the agent tends to fail when processing an entire namespace on particular mac
 
 - A KG export of successfully instantiated EPC data (steps 1 & 2) is provided in `../../Data/99 KG snapshots/4_epc_data_before_matching`
 
-
-## 4.4) Building Matching Agent
+## 2.2) Building Matching Agent
 
 > The following description refers to commit `8cb656055ea74410ef3c4c0764a6c0a80efc38ff` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
 
@@ -227,18 +254,27 @@ Content-Type: application/json
 }
 ```
 
-After the Building instances are matched, step 3) from the EPC Agent can be performed.
+After the Building instances are matched, step 4) from the EPC Agent can be performed.
 
-- A KG export of successfully instantiated and linked EPC data is provided in `../../Data/99 KG snapshots/5_epc_data_after_matching` (i.e. this also includes step 3 from the EPC agent)
+- A KG export of successfully instantiated and linked EPC data is provided in `../../Data/99 KG snapshots/5_epc_data_after_matching` (i.e. this also includes step 4 from the EPC agent)
 
+## 2.3) Property Sales Instantiation Agent
 
-## 4.5) Property Sales Instantiation Agent
+&nbsp;
+## 3) Flood assessment (derivation agents)
 
+## 3.1) Average Square Metre Price Agent
 
+## 3.2) Property Value Estimation Agent
 
-## <u>5) Additional data incorporation </u>
+## 3.3) Flood Assessment Agent
 
-## MetOffice Agent
+## 3.4) Flood Warning Instantiation Agent
+
+&nbsp;
+## 4) Additional data incorporation
+
+## 4.1) MetOffice Agent
 
 > The following description refers to commit `6b3ff32af6df2c356e1a49f0c727ebf6db53a15a` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main` using the published Docker image `ghcr.io/cambridge-cares/metoffice_agent:1.0.0`
 
@@ -247,11 +283,7 @@ The [MetOffice Agent] continuously (i.e. once per day) queries data from the Met
 bash ./stack.sh start KINGS-LYNN
 ```
 
-
-
-## AirQuality Agent
-
-## River Levels Agent
+## 4.2) River Levels Agent
 
 > The following description refers to commit `d877c31d7a6a2cc642e861e041a3df170def24d4` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
 
@@ -265,45 +297,48 @@ The [RiverLevelsAgent] (also referred to as *Flood Agent*) instantiates river le
     ```
 * **Please note**: The Blazegraph namespace specified in the docker-compose file (i.e. `river_stations`) needs to be created beforehand in order for the agent to start up successfully.
 
+## 4.3) AirQuality Agent
 
 &nbsp;
 # Tracking instantiated building information
 
-The `resources` folder contains an `instantiated_buildings.sparql` file which contains several SPARQL queries to track the instantiation process. It primarily helps to identify how many buildings are instantiated at all, how many buildings possess EPC information, and how many buildings have previous sales transaction information.
+The [resources] folder contains an `instantiated_buildings.sparql` file which contains several SPARQL queries to track the instantiation process. It primarily helps to identify how many buildings are instantiated at all, how many buildings possess EPC information, and how many buildings have previous sales transaction information.
 
 
 <!-- Links -->
-[Container registry on Github]: https://github.com/orgs/cambridge-cares/packages
-[CMCL Docker Registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
+[CMCL Docker Registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
+[Container registry on Github]: https://github.com/orgs/cambridge-cares/packages
+[Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [Environment Agency]: https://environment.data.gov.uk/flood-monitoring/doc/reference
+[forwarding the port]: https://code.visualstudio.com/docs/remote/ssh#_forwarding-a-port-creating-ssh-tunnel
+[OS Features API]: https://api.os.uk/features/
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
-[Create SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/create-with-openssh/
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
-[OS Features API]: https://api.os.uk/features/
 
 <!-- Stack references -->
-[Stack manager]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
 [common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
 [Stack data uploader]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-data-uploader
+[Stack manager]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/README.md
 
 <!-- Agents -->
+[AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#readme
+[Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BuildingMatchingAgent/README.md
+[CityImportAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
+[EPC Agent README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/EnergyPerformanceCertificateAgent/README.md
 [MetOffice Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/MetOfficeAgent
 [MetOffice docker-compose file]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/MetOfficeAgent/docker-compose.yml
-[UPRN Agent]: https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent
-[CityImportAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
-[TSDAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
-[AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#readme
-[EPC Agent README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/EnergyPerformanceCertificateAgent/README.md
-[Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BuildingMatchingAgent/README.md
 [RiverLevelsAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAgent
+[TSDAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
+[UPRN Agent]: https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent
 
 <!-- Repositories -->
-[Utilities]: ../Utilities
-[UPRN Agent in batches]: ../Utilities/uprn_agent/run_uprn_agent_in_chunks.py
-[river_level_agent input folder]: /StackDeployment/inputs/river_level_agent
 [Agent docker-compose file folder]: /StackDeployment/inputs/docker_compose_files
+[resources]: /StackDeployment/resources
+[river_level_agent input folder]: /StackDeployment/inputs/river_level_agent
+[UPRN Agent in batches]: ../Utilities/uprn_agent/run_uprn_agent_in_chunks.py
+[Utilities]: ../Utilities
 
 <!-- Files -->
 [routing.json]: /StackDeployment/inputs/access_agent/routing.json

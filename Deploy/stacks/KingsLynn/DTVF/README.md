@@ -5,7 +5,7 @@ The instantiated data is visualised using the Digital Twin Visualisation Framewo
 &nbsp;
 ## Creating the Visualisation
 
-Detailed instructions on how to create (and customise) the visualisation can be found in the [example Mapbox visualisation] and [DTVF] READMEs. To deploy the visualisation including all data as specified in the `data.json` file as Docker container, please run the following commands from the [DTVF subdirectory] (i.e. the location where this README is located):
+Detailed instructions on how to create (and customise) the visualisation can be found in the [example Mapbox visualisation] and [DTVF] READMEs. To deploy the visualisation including all data as specified in the [data.json] file as Docker container, please run the following commands from the [DTVF subdirectory] (i.e. the location where this README is located):
 
 ```bash
 # To build the Image:
@@ -19,9 +19,9 @@ bash ./redeploy.sh
 
 **Please note**: 
 
-1) A valid Mapbox API username and token must be provided in your `index.html` file. After successfully deploying the visualisation, it should be available at `http://localhost:5555`.
+1) A valid Mapbox API username and token must be provided in your [index.html] file. After successfully deploying the visualisation, it should be available at `http://localhost:5555`.
 
-2) Ensure that the required legend figures are provided to the `data` folder. Otherwise, please run the scripts in the `Utilities\dtvf_legends` repository first.
+2) Ensure that the required legend figures are provided to the [icons] sub-folder of the `data` repository. Otherwise, please run the Python scripts in the `Utilities\dtvf_legends` repository first.
 
 
 &nbsp;
@@ -31,9 +31,9 @@ bash ./redeploy.sh
 
 The Feature Info Agent is used to retrieve meta data for visualisation(s). Details on how to spin up and deploy the agent to a spun up Stack is provided in the [FeatureInfoAgent] README. However, the following steps shall be sufficient to get the agent up and running for the `KINGS-LYNN` visualisation:
 
-1) Copy the `feature_info_agent.json` file from the [FeatureInfoAgent subdirectory] into the `inputs/config` folder of the stack manager (i.e. `Deploy/stacks/dynamic/stack-manager/inputs/config`) - potentially adjust the absolute path of the source path of the bind mount
+1) Copy the `feature_info_agent.json` file from the [FeatureInfoAgent subdirectory] into the `inputs/config/services` folder of the stack manager (i.e. `Deploy/stacks/dynamic/stack-manager/inputs/config/services`) - potentially adjust the absolute path of the source path of the bind mount
 2) Copy the required `fia-config.json` and `.sparql` files from the [FeatureInfoAgent queries] sub-folder of this repository into the `queries` folder of the Feature Info Agent (i.e. `Agents/FeatureInfoAgent/queries`)
-3) Start the stack manager as usual (i.e. `bash ./stack.sh start <STACK_NAME>` from the stack-manager repo). This should start the FIA container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
+3) Start the stack manager as usual (i.e. `bash ./stack.sh start <STACK_NAME>` from the stack-manager repo). This should start the FIA container. **Please use a bash terminal to avoid potential issues with inconsistent path separators.**
 
 Deploying the agent creates a bind mount between the `queries` directory on the host machine, and the `/app/queries` directory within the container. As the sparql files in the query folder are loaded upon request, added files become 'hot-reloaded' and should automatically be available to the agent without having to restart the container. Changing the `fia-config.json`, however, requires a container restart.
 
@@ -48,17 +48,18 @@ To ensure communication between the DTVF and the Feature Info Agent, the followi
 
 ```diff
 - Pending To Dos 
-    - Refine clustering with vector tiles (i.e. summarise measurement stations at low zoom levels)
-    - Add attributions in settings.json
+    - remove test building layers from data.json (+convert them into equivalent for actual building layer)
 ```
 
 <!-- Links -->
 [DTVF]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations
 [example Mapbox visualisation]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework/example-mapbox-vis
 [FeatureInfoAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent
-[TWA Github packages]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Packages
 
 <!-- repositories -->
+[FeatureInfoAgent subdirectory]: /DTVF/FeatureInfoAgent
 [FeatureInfoAgent queries]: FeatureInfoAgent/queries
 [DTVF subdirectory]: /DTVF
-[FeatureInfoAgent subdirectory]: /DTVF/FeatureInfoAgent
+[icons]: /DTVF/data/icons
+[index.html]: index.html
+[data.json]: /DTVF/data.json

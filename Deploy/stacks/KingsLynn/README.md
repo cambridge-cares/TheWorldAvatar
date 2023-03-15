@@ -28,4 +28,4 @@ The [DTVF] repository contains required code and resources to deploy the Digital
 [StackDeployment]: StackDeployment
 [Utilities]: Utilities
 [DTVF]: DTVF
-[Feature Info Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/dev-feature-info-agent/Agents/FeatureInfoAgent
+[Feature Info Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent
