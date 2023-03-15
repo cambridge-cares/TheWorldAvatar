@@ -31,7 +31,7 @@ bash ./redeploy.sh
 
 The Feature Info Agent is used to retrieve meta data for visualisation(s). Details on how to spin up and deploy the agent to a spun up Stack is provided in the [FeatureInfoAgent] README. However, the following steps shall be sufficient to get the agent up and running for the `KINGS-LYNN` visualisation:
 
-1) Copy the `feature_info_agent.json` file from the [FeatureInfoAgent subdirectory] into the `inputs/config` folder of the stack manager (i.e. `Deploy/stacks/dynamic/stack-manager/inputs/config`) - potentially adjust the absolute path of the source path of the bind mount
+1) Copy the `feature_info_agent.json` file from the [FeatureInfoAgent subdirectory] into the `inputs/config/services` folder of the stack manager (i.e. `Deploy/stacks/dynamic/stack-manager/inputs/config/services`) - potentially adjust the absolute path of the source path of the bind mount
 2) Copy the required `fia-config.json` and `.sparql` files from the [FeatureInfoAgent queries] sub-folder of this repository into the `queries` folder of the Feature Info Agent (i.e. `Agents/FeatureInfoAgent/queries`)
 3) Start the stack manager as usual (i.e. `bash ./stack.sh start <STACK_NAME>` from the stack-manager repo). This should start the FIA container. Please use a bash terminal to avoid potential issues with inconsistent path separators.
 
