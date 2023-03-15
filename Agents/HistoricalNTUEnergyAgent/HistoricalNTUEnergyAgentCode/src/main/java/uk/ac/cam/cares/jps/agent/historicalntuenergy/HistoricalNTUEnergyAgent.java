@@ -82,7 +82,7 @@ public class HistoricalNTUEnergyAgent {
                 throw new InvalidPropertiesFormatException("The properties file does not contain the key ntuenergy.mappingfolder " +
                         "with a path to the folder containing the required JSON key to IRI mappings.");
             }
-            // Read the JSON key to IRI mappings from
+            // Read the JSON key to IRI mappings from the mapping folder
             readMappings(mappingFolder);
         }
     }
@@ -187,7 +187,7 @@ public class HistoricalNTUEnergyAgent {
     public void updateData(JSONArray energyReadings) {
         // Check for null parameters
         Objects.requireNonNull(energyReadings, "Energy readings cannot be null");
-        System.out.println(energyReadings);
+        //System.out.println(energyReadings);
 
         // Convert readings to hash maps
         Map<String, List<?>> energyReadingsMap = jsonArrayToMap(energyReadings);
@@ -290,10 +290,10 @@ public class HistoricalNTUEnergyAgent {
             throws  NoSuchElementException {
         // Extract the timestamps by mapping the private conversion method on the list items
         // that are supposed to be string (toString() is necessary as the map contains lists of different types)
-        LOGGER.info("---------");
-        LOGGER.info(energyReadings.toString());
-        LOGGER.info("----timestamp key-----");
-        LOGGER.info(energyReadings.get(HistoricalNTUEnergyAgent.timestampKey));
+        //LOGGER.info("---------");
+        //LOGGER.info(energyReadings.toString());
+        //LOGGER.info("----timestamp key-----");
+        //LOGGER.info(energyReadings.get(HistoricalNTUEnergyAgent.timestampKey));
         List<OffsetDateTime> energyTimestamps = energyReadings.get(HistoricalNTUEnergyAgent.timestampKey).stream()
                 .map(timestamp -> (convertStringToOffsetDateTime(timestamp.toString()))).collect(Collectors.toList());
         // Construct a time series object for each mapping
@@ -337,7 +337,7 @@ public class HistoricalNTUEnergyAgent {
     private OffsetDateTime convertStringToOffsetDateTime(String timestamp) {
     	
         // Convert first to a local time
-        LOGGER.info(timestamp);
+        //LOGGER.info(timestamp);
         LocalDateTime localTime = LocalDateTime.parse(timestamp);
         
         // Then add the zone id

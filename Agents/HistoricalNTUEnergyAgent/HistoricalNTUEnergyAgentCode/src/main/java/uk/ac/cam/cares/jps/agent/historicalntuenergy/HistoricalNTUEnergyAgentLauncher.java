@@ -61,8 +61,13 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
             String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
             String xlsxConnectorProperties = System.getenv(requestParams.getString(KEY_XLSXCONNECTORPROPERTIES));
             String[] args = new String[] {agentProperties,clientProperties, xlsxConnectorProperties};
-            jsonMessage = initializeAgent(args);
-            jsonMessage.accumulate("Result", "Timeseries Data has been updated.");
+          try {
+              jsonMessage = initializeAgent(args);
+          } catch (IOException e) {
+              throw new RuntimeException(e);
+          }
+
+          jsonMessage.accumulate("Result", "Timeseries Data has been updated.");
             requestParams = jsonMessage;
             }
       else {
@@ -94,7 +99,7 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
         return (value != null && !value.isEmpty());
     }
 
-    public static JSONObject initializeAgent(String[] args) {
+    public static JSONObject initializeAgent(String[] args) throws JPSRuntimeException, IOException {
     	JSONObject jsonMessage = new JSONObject();
         // Ensure that there are three properties files
         if (args.length != 3) {
@@ -167,15 +172,14 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
             LOGGER.info("No new readings are available.");
             jsonMessage.put("Result", "No new readings are available.");
         }
-        // One reading is empty and the other is not. This is likely due to asynchronous access to the readings, which
-        // sets the pointers for each reading separately (should not happen when only using the agent unless there is an API error).
-        // The pointer should be reset and probably manual clean up in the database is required.
-        // Note: This is normally not a problem, but since the AQMesh Agent requires that all JSON keys are present in the combined
-        // readings, having one reading empty will result in an error when calling the updateData method.
         else {
             LOGGER.error(ONE_READING_EMPTY_ERROR_MSG);
             throw new JPSRuntimeException(ONE_READING_EMPTY_ERROR_MSG);
         }
+        HistoricalQueryBuilder queryBuilder;
+        queryBuilder = new HistoricalQueryBuilder(args[0],args[1]);
+        LOGGER.info("QueryBuilder constructed");
+        queryBuilder.instantiateTriples();
         return jsonMessage;
     }
 

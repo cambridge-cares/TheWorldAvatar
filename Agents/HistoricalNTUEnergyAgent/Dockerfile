@@ -54,7 +54,7 @@ COPY ./config/NTU_Energy_Consumption.xlsx /root/NTU_Energy_Consumption.xlsx
 # Set the required environment variable
 ENV ENERGY_READINGS="/root/NTU_Energy_Consumption.xlsx"
 
-COPY --from=builder /root/HistoricalNTUEnergyAgentCode/output/historical-ntuenergy-agent##1.3.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/HistoricalNTUEnergyAgentCode/output/historical-ntuenergy-agent##1.0.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

@@ -99,20 +99,20 @@ public class HistoricalNTUEnergyAgentXLSXConnector {
 						Cell cell=row.getCell(j); //getting the cell representing the given column
 						Row keyRow = sheet.getRow(0);
 						Cell keyCell = keyRow.getCell(j);
-						LOGGER.info("----");
-						LOGGER.info(keyCell.getStringCellValue());
+						//LOGGER.info("----");
+						//LOGGER.info(keyCell.getStringCellValue());
 						if (keyCell.getStringCellValue().equals("TIME")){
-							LOGGER.info("HAS TIME");
+							//LOGGER.info("HAS TIME");
 							//String value=cell.getLocalDateTimeCellValue().toString();
 							String value=cell.getStringCellValue();
 							readingsPerHour.put(keyCell.getStringCellValue(), value);
-							LOGGER.info(value);
+							//LOGGER.info(value);
 						}
 						else{
 							try {
 								Double value = cell.getNumericCellValue();
 								readingsPerHour.put(keyCell.getStringCellValue(), value);
-								LOGGER.info(value.toString());
+								//LOGGER.info(value.toString());
 							} catch (IllegalStateException | NullPointerException e) {
 								Double value=null;
 								readingsPerHour.put(keyCell.getStringCellValue(), value);
@@ -120,12 +120,12 @@ public class HistoricalNTUEnergyAgentXLSXConnector {
 						}
 						//LOGGER.info(value.toString());
 					}
-					System.out.println(readingsPerHour.toString());
+					//System.out.println(readingsPerHour.toString());
 					readings.put(readingsPerHour);
 				}
 			}
 			pkg.close();
-			System.out.println(readings.toString());
+			//System.out.println(readings.toString());
 		}
 		catch(Exception e)
 		{
