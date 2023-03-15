@@ -31,8 +31,8 @@ public class SupersetService extends ContainerService {
             "/static", "/chart/", "/dashboard/", "/dataset/", "/savedqueryview/", "/tablemodelview/",
             "/dashboardasync/", "/csstemplatemodelview/", "/csstemplateasyncmodelview/", "api/v1/", "/login", "/logout",
             "/superset/", "/csstemplatemodelview/", "/annotationlayer/", "/logmodelview/",
-            "/rowlevelsecurityfiltersmodelview/", "/roles/", "/users/", "/profile/", "/databaseview/",
-            "/tabstateview/", "/explore/", "/datasource/");
+            "/rowlevelsecurityfiltersmodelview/", "/roles/", "/users/", "/profile/", "/databaseview/", "/tabstateview/",
+            "/explore/", "/datasource/");
     protected static final List<String> SUB_FILTER_TYPES_LIST = Arrays.asList(
             "text/css", "text/javascript", "application/javascript", "application/json");
     public static final String LOCATION = "location";
@@ -43,6 +43,7 @@ public class SupersetService extends ContainerService {
     private static final String DEFAULT_FIRSTNAME = "Superset";
     private static final String DEFAULT_LASTNAME = "Admin";
     private static final String DEFAULT_EMAIL = "admin@superset.com";
+    private static final String DEFAULT_SECRET_KEY_FILE = "/run/secrets/superset_secret_key";
     private static final String DEFAULT_CREDENTIAL_PROVIDER = "db";
 
     public SupersetService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
@@ -53,13 +54,15 @@ public class SupersetService extends ContainerService {
         setEnvironmentVariableIfAbsent("SUPERSET_FIRSTNAME", DEFAULT_FIRSTNAME);
         setEnvironmentVariableIfAbsent("SUPERSET_LASTNAME", DEFAULT_LASTNAME);
         setEnvironmentVariableIfAbsent("SUPERSET_EMAIL", DEFAULT_EMAIL);
+        setEnvironmentVariableIfAbsent("SUPERSET_SECRET_KEY_FILE", DEFAULT_SECRET_KEY_FILE);
         setEnvironmentVariableIfAbsent("SUPERSET_CREDENTIAL_PROVIDER", DEFAULT_CREDENTIAL_PROVIDER);
 
         endpointConfig = new SupersetEndpointConfig(
                 EndpointNames.SUPERSET, getHostName(), DEFAULT_PORT,
                 getEnvironmentVariable("SUPERSET_USERNAME"), getEnvironmentVariable("SUPERSET_PASSWORD_FILE"),
                 getEnvironmentVariable("SUPERSET_FIRSTNAME"), getEnvironmentVariable("SUPERSET_LASTNAME"),
-                getEnvironmentVariable("SUPERSET_EMAIL"), getEnvironmentVariable("SUPERSET_CREDENTIAL_PROVIDER"));
+                getEnvironmentVariable("SUPERSET_EMAIL"), getEnvironmentVariable("DEFAULT_SECRET_KEY_FILE"),
+                getEnvironmentVariable("SUPERSET_CREDENTIAL_PROVIDER"));
     }
 
     @Override
@@ -105,9 +108,8 @@ public class SupersetService extends ContainerService {
             subFilterParam.addValue("sub_filter");
             subFilterParam.addValue("\"" + subPath + "\"");
             Boolean hasLeadingSlash = subPath.charAt(0) == '/';
-            subFilterParam
-                    .addValue("\"" + FileUtils.fixSlashs(externalPath.getPath(), hasLeadingSlash, !hasLeadingSlash)
-                            + subPath + "\"");
+            subFilterParam.addValue("\""
+                    + FileUtils.fixSlashs(externalPath.getPath(), hasLeadingSlash, !hasLeadingSlash) + subPath + "\"");
             // TODO: need to add in extra path here if on front of other nginx
             locationBlock.addEntry(subFilterParam);
         });
@@ -125,10 +127,8 @@ public class SupersetService extends ContainerService {
                 InputStreamReader inputStreamReader = new InputStreamReader(supersetConfig);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
             String fileText = bufferedReader.lines().collect(Collectors.joining(System.lineSeparator()));
-            containerSpec
-                    .withCommand(List.of("/bin/sh", "-c",
-                            "echo \"" + fileText + "\" > pythonpath/superset_config.py"
-                                    + " && /usr/bin/run-server.sh"));
+            containerSpec.withCommand(List.of("/bin/sh", "-c",
+                    "echo \"" + fileText + "\" > pythonpath/superset_config.py" + " && /usr/bin/run-server.sh"));
         } catch (IOException ex) {
             throw new RuntimeException("Failed to load \"superset_config.py\" file.", ex);
         }
@@ -142,13 +142,12 @@ public class SupersetService extends ContainerService {
         makeUser(endpointConfig);
 
         executeCommand("sh", "-c",
-                "pip install sqlalchemy==1.4.46 && pip install psycopg2 && superset db upgrade && superset init");
+                "pip install sqlalchemy==1.3.24 && pip install psycopg2 && superset db upgrade && superset init");
     }
 
     private void makeUser(SupersetEndpointConfig endpointConfig) {
         executeCommand("superset", "fab", "create-admin", "--username", endpointConfig.getUsername(), "--firstname",
-                endpointConfig.getFirstName(),
-                "--lastname", endpointConfig.getLastName(), "--email", endpointConfig.getEmail(), "--password",
-                endpointConfig.getPassword());
+                endpointConfig.getFirstName(), "--lastname", endpointConfig.getLastName(), "--email",
+                endpointConfig.getEmail(), "--password", endpointConfig.getPassword());
     }
 }
