@@ -1081,6 +1081,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontoems/SnowFall -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/SnowFall">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
+        <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Precipitation"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The depth of snow that accumulated over a measurement time quantity.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Snowfall</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoems/Steady -->
 
 
