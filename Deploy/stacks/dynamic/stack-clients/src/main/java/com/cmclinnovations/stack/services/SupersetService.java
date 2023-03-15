@@ -151,7 +151,7 @@ public class SupersetService extends ContainerService {
         makeUser(endpointConfig);
 
         executeCommand("sh", "-c",
-                "pip install sqlalchemy==1.4.46 && pip install psycopg2 && superset db upgrade && superset init");
+                "pip install sqlalchemy==1.3.24 && pip install psycopg2 && superset db upgrade && superset init");
     }
 
     private void makeUser(SupersetEndpointConfig endpointConfig) {
