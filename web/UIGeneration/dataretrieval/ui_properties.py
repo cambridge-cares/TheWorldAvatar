@@ -6,6 +6,15 @@
 # The purpose of this module is to provide functions to retrieve object and
 # datatype properties directly and indirectly associated with a class from
 # the KG by traversing through the range relationship of the object properties
+# Retrieves all datatype properties and object properties directly
+# connected to the ontological class. It is done by following
+# the algorithm provided below:
+# 1. Retrieve all directly connected datatype properties and object
+#    properties of the ontological class. If no property is available, 
+#    it returns an empty value.
+# 2. Traverse through the object properties and retrieve all datatype
+#    properties and object properties of the classes connected through
+#    the range relationship.
 
 from SPARQLWrapper import SPARQLWrapper, JSON, POST, BASIC
 import requests, json as js
@@ -51,7 +60,6 @@ def get_ontological_subclasses(endpoint: str, ontological_class: str):
       connected to the ontological class.
     """
     
-    print(get_subclass_query(ontological_class))
     results = perform_query(endpoint, get_subclass_query(ontological_class))
     return results
 
@@ -68,7 +76,6 @@ def get_ontological_instances(endpoint: str, ontological_class: str):
     ontological class.
     """
     
-    print(get_instance_query(ontological_class))
     results = perform_query(endpoint, get_instance_query(ontological_class))
     return results
 
@@ -86,7 +93,6 @@ def get_ontologically_encoded_unit(endpoint: str, ontological_class: str):
     ontological class.
     """
     
-    print(get_unit_query(ontological_class))
     results = perform_query(endpoint, get_unit_query(ontological_class))
     return results
 
@@ -123,28 +129,30 @@ def perform_query(endpoint: str, query: str):
     return sparql_wrapper.query().convert()
 
 def format_property_values(results: str, previous_property_values: str = None):
+    """
+    When multiple concepts are available in the range of an object property or
+    multiple values are available in the range of a data property, this
+    function combines them in a comma-separated string to make it suitable for
+    representing it as an enumerated list.
+    """
     property_values = dict()
     if previous_property_values is not None:
          property_values = previous_property_values
-    previous_range = ""
     previous_range_label = ""
     for result in results["results"]["bindings"]:
-                # print(result['property']['value'], result['label']['value'], result['position']['value'], result['type']['value'], result['range']['value'], result['rangeLabel']['value'])
-                label = result['label']['value']
-                range = result['range']['value']
-                range_label = result['rangeLabel']['value']
-                if label.lower().replace(" ", "_") in property_values.keys():
-                    if previous_range_label == 'int':
-                        del property_values[label.lower().replace(" ", "_")]
-                        property_values[label.lower().replace(" ", "_")] = ""
-                    if property_values[label.lower().replace(" ", "_")] == "":
-                        property_values[label.lower().replace(" ", "_")] = range_label
-                    else:
-                        property_values[label.lower().replace(" ", "_")] = property_values[label.lower().replace(" ", "_")] + ", " + range_label
-                else:
-                      property_values[label.lower().replace(" ", "_")] = range_label
-                previous_range = range
-                previous_range_label = range_label
+        label = result['label']['value']
+        range_label = result['rangeLabel']['value']
+        if label.lower().replace(" ", "_") in property_values.keys():
+            if previous_range_label == 'int':
+                del property_values[label.lower().replace(" ", "_")]
+                property_values[label.lower().replace(" ", "_")] = ""
+            if property_values[label.lower().replace(" ", "_")] == "":
+                property_values[label.lower().replace(" ", "_")] = range_label
+            else:
+                property_values[label.lower().replace(" ", "_")] = property_values[label.lower().replace(" ", "_")] + ", " + range_label
+        else:
+            property_values[label.lower().replace(" ", "_")] = range_label
+        previous_range_label = range_label
     return property_values
 
 def format_instances(class_label:str, results: str, previous_property_values: str = None):
@@ -171,12 +179,6 @@ def is_property_result_empty(results):
         return True
     else:
          return False
-    # for result in results["results"]["bindings"]:
-    #     property = result['property']['value']
-    #     if property == "":
-    #          return True
-    #     else:
-    #         return False
 
 def is_unit_result_empty(results):
     for result in results["results"]["bindings"]:
@@ -198,12 +200,7 @@ def traverse_through_object_property(results, property_value_processed, property
         return
 
     for result in results["results"]["bindings"]:
-                # print(result['property']['value'], result['label']['value'], result['position']['value'], result['type']['value'], result['range']['value'], result['rangeLabel']['value'])
-                property = result['property']['value']
                 label = result['label']['value']
-                position = ""
-                if 'position' in result:
-                    position = result['position']['value']
                 type = ""
                 if 'type' in result:
                     type = result['type']['value']
@@ -219,7 +216,6 @@ def traverse_through_object_property(results, property_value_processed, property
                     if "," in property_values_formated[label.lower().replace(" ", "_")]:
                         json_string.append((label.lower().replace(" ", "_"), get_json_object_with_enum(label, "TODO", "string" if range_label=="string" else "string", format_enumerated_list(property_values_formated[label.lower().replace(" ", "_")]))))
                     elif class_of_properties != None:
-                        print("just parsed label: ", dict(json_string)[class_of_properties.lower()]['properties'])
                         dict(json_string)[class_of_properties.lower()]['properties'][label.lower().replace(" ", "_")] = get_json_object(label, "TODO", "string" if range_label=="string" else "string")
                     elif type == OWL_OBJECT_PROPERTY:
                         json_string.append((label.lower().replace(" ", "_"), get_json_object_with_properties(label, "TODO", "object" if property_values_formated[label.lower().replace(" ", "_")]=="object" else "object"))) 
@@ -228,9 +224,7 @@ def traverse_through_object_property(results, property_value_processed, property
                 property_value_processed.append(label.lower().replace(" ", "_"))
                 if type == OWL_OBJECT_PROPERTY:
                     if "<"+range+">" not in parsed_classes:
-                        print ("COMO_ENDPOINT:", COMO_ENDPOINT)
                         results = get_ontological_properties(COMO_ENDPOINT, "<"+range+">")
-                        print(len(results))
                         if is_property_result_empty(results):
                             results = get_ontological_subclasses(COMO_ENDPOINT, "<"+range+">")
                             if is_property_result_empty(results):
@@ -243,7 +237,6 @@ def traverse_through_object_property(results, property_value_processed, property
                                     property_values_formated = format_instances(label, results, property_values_formated)
                                     parsed_classes.append("<"+range+">")
                                     traverse_through_object_property(results, property_value_processed, format_enumerated_list(property_values_formated[label.lower().replace(" ", "_")]), json_string, parsed_classes, None, label)
-                                    # json_string.append((label.lower().replace(" ", "_"), get_json_object_with_enum(label, "TODO", "string" if range_label=="string" else "string", format_enumerated_list(property_values_formated[label.lower()]))))
                             else:
                                 property_values_formated = format_property_values(results, property_values_formated)
                                 parsed_classes.append("<"+range+">")
@@ -274,32 +267,15 @@ def generate_json_string():
     label = "Type"
     range_label = "string"
     enumerated_list_provided = "Product" + ", " + "Component"
-    #
 
     json_string.append((label.lower().replace(" ", "_"), get_json_object_with_enum(label, "TODO", range_label, format_enumerated_list(enumerated_list_provided))))
-    # 
+
     parsed_classes = root_classes
     json_string = traverse_through_object_property(results, property_value_processed, property_values_formated, json_string, parsed_classes)
-    print(json_string)
     json_string = combined_json_dict = dict(json_string)
-    print(json_string)
-    return js.dumps(combined_json_dict)
+    return js.dumps(combined_json_dict).replace("[\"\\", "[").replace("\\\"","\"").replace("\"]","]")
 
 
 if __name__== '__main__':
 
-    print(generate_json_string().replace("[\"\\", "[").replace("\\\"","\"").replace("\"]","]"))
-    # original_string = "1, 3, 2"
-    # print(format_enumerated_list(original_string))
-
-    # print(js.dumps(json_string))
-    # Retrieves all datatype properties and object properties directly
-    # connected to the ontological class. It is done by following
-    # the algorithm provided below:
-    # 1. Retrieve all directly connected datatype properties and object
-    #    properties of the ontological class. If no property is available, 
-    #    it returns an empty value.
-    # 2. Traverse through the object properties and retrieve all datatype
-    #    properties and object properties of the classes connected through
-    #    the range relationship.
-    # 3. 
+    print(generate_json_string())
