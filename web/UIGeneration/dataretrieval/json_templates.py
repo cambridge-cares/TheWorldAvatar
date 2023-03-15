@@ -31,13 +31,13 @@ def get_json_object_with_enum(title, description, type, enum):
 
     return data
 
-def get_json_object_with_properties(title, description, type, properties):
+def get_json_object_with_properties(title, description, type):
    
     data = {       
         "title": title,
         "description": description,
         "type": type,
-        "properties": {properties}
+        "properties": {}
     }
 
     return data

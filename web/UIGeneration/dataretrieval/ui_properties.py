@@ -11,7 +11,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON, POST, BASIC
 import requests, json as js
 import os
 from query_templates import get_property_query, get_subclass_query, get_instance_query, get_unit_query
-from json_templates import get_json_object, get_json_object_with_enum
+from json_templates import get_json_object, get_json_object_with_enum, get_json_object_with_properties
 
 OWL_DATATYPE_PROPERTY = "http://www.w3.org/2002/07/owl#DatatypeProperty"
 OWL_OBJECT_PROPERTY = "http://www.w3.org/2002/07/owl#ObjectProperty"
@@ -133,16 +133,16 @@ def format_property_values(results: str, previous_property_values: str = None):
                 label = result['label']['value']
                 range = result['range']['value']
                 range_label = result['rangeLabel']['value']
-                if label.lower() in property_values.keys():
+                if label.lower().replace(" ", "_") in property_values.keys():
                     if previous_range_label == 'int':
-                        del property_values[label.lower()]
-                        property_values[label.lower()] = ""
-                    if property_values[label.lower()] == "":
-                        property_values[label.lower()] = range_label
+                        del property_values[label.lower().replace(" ", "_")]
+                        property_values[label.lower().replace(" ", "_")] = ""
+                    if property_values[label.lower().replace(" ", "_")] == "":
+                        property_values[label.lower().replace(" ", "_")] = range_label
                     else:
-                        property_values[label.lower()] = property_values[label.lower()] + ", " + range_label
+                        property_values[label.lower().replace(" ", "_")] = property_values[label.lower().replace(" ", "_")] + ", " + range_label
                 else:
-                      property_values[label.lower()] = range_label
+                      property_values[label.lower().replace(" ", "_")] = range_label
                 previous_range = range
                 previous_range_label = range_label
     return property_values
@@ -151,13 +151,13 @@ def format_instances(class_label:str, results: str, previous_property_values: st
     instances = dict()
     for result in results["results"]["bindings"]:
                 label = result['label']['value']
-                if class_label.lower() in instances.keys():
-                    if instances[class_label.lower()] == "":
-                        instances[class_label.lower()] = label
+                if class_label.lower().replace(" ", "_") in instances.keys():
+                    if instances[class_label.lower().replace(" ", "_")] == "":
+                        instances[class_label.lower().replace(" ", "_")] = label
                     else:
-                        instances[class_label.lower()] = instances[class_label.lower()] + ", " + label
+                        instances[class_label.lower().replace(" ", "_")] = instances[class_label.lower().replace(" ", "_")] + ", " + label
                 else:
-                      instances[class_label.lower()] = label
+                      instances[class_label.lower().replace(" ", "_")] = label
     return instances
 
 def format_enumerated_list(enumerated_list):
@@ -187,7 +187,16 @@ def is_unit_result_empty(results):
             return False
 
 
-def traverse_through_object_property(results, property_value_processed, property_values_formated, json_string, parsed_classes):
+def traverse_through_object_property(results, property_value_processed, property_values_formated, json_string, parsed_classes, class_of_properties: str = None, class_of_instances: str = None):
+    if class_of_instances != None:
+        popped_item = parsed_classes.pop()
+        popped_parent_item = parsed_classes.pop()
+        processed_parent_item = popped_parent_item.split("#")[1].split(">")[0] if "#" in popped_parent_item else popped_parent_item.split("/")[1].split(">")[0]
+        dict(json_string)[processed_parent_item.lower().replace(" ", "_")]['properties'][class_of_instances.lower().replace(" ", "_")]['enum'] = [property_values_formated]
+        parsed_classes.append(popped_parent_item)
+        parsed_classes.append(popped_item)
+        return
+
     for result in results["results"]["bindings"]:
                 # print(result['property']['value'], result['label']['value'], result['position']['value'], result['type']['value'], result['range']['value'], result['rangeLabel']['value'])
                 property = result['property']['value']
@@ -207,11 +216,16 @@ def traverse_through_object_property(results, property_value_processed, property
                 if label.lower() == "properties":
                      continue
                 if label.lower() not in property_value_processed:
-                    if "," in property_values_formated[label.lower()]:
-                        json_string.append((label.lower().replace(" ", "_"), get_json_object_with_enum(label, "TODO", "string" if range_label=="string" else "string", format_enumerated_list(property_values_formated[label.lower()]))))
+                    if "," in property_values_formated[label.lower().replace(" ", "_")]:
+                        json_string.append((label.lower().replace(" ", "_"), get_json_object_with_enum(label, "TODO", "string" if range_label=="string" else "string", format_enumerated_list(property_values_formated[label.lower().replace(" ", "_")]))))
+                    elif class_of_properties != None:
+                        print("just parsed label: ", dict(json_string)[class_of_properties.lower()]['properties'])
+                        dict(json_string)[class_of_properties.lower()]['properties'][label.lower().replace(" ", "_")] = get_json_object(label, "TODO", "string" if range_label=="string" else "string")
+                    elif type == OWL_OBJECT_PROPERTY:
+                        json_string.append((label.lower().replace(" ", "_"), get_json_object_with_properties(label, "TODO", "object" if property_values_formated[label.lower().replace(" ", "_")]=="object" else "object"))) 
                     else:
-                        json_string.append((label.lower().replace(" ", "_"), get_json_object(label, "TODO", "string" if property_values_formated[label.lower()]=="string" else "string")))
-                property_value_processed.append(label.lower())
+                        json_string.append((label.lower().replace(" ", "_"), get_json_object(label, "TODO", "string" if property_values_formated[label.lower().replace(" ", "_")]=="string" else "string")))
+                property_value_processed.append(label.lower().replace(" ", "_"))
                 if type == OWL_OBJECT_PROPERTY:
                     if "<"+range+">" not in parsed_classes:
                         print ("COMO_ENDPOINT:", COMO_ENDPOINT)
@@ -228,8 +242,8 @@ def traverse_through_object_property(results, property_value_processed, property
                                 else:
                                     property_values_formated = format_instances(label, results, property_values_formated)
                                     parsed_classes.append("<"+range+">")
-                                    json_string.append((label.lower().replace(" ", "_"), get_json_object_with_enum(label, "TODO", "string" if range_label=="string" else "string", format_enumerated_list(property_values_formated[label.lower()]))))
-                                    continue
+                                    traverse_through_object_property(results, property_value_processed, format_enumerated_list(property_values_formated[label.lower().replace(" ", "_")]), json_string, parsed_classes, None, label)
+                                    # json_string.append((label.lower().replace(" ", "_"), get_json_object_with_enum(label, "TODO", "string" if range_label=="string" else "string", format_enumerated_list(property_values_formated[label.lower()]))))
                             else:
                                 property_values_formated = format_property_values(results, property_values_formated)
                                 parsed_classes.append("<"+range+">")
@@ -237,8 +251,7 @@ def traverse_through_object_property(results, property_value_processed, property
                         else:
                             property_values_formated = format_property_values(results, property_values_formated)
                             parsed_classes.append("<"+range+">")
-                            traverse_through_object_property(results, property_value_processed, property_values_formated, json_string, parsed_classes)
-
+                            traverse_through_object_property(results, property_value_processed, property_values_formated, json_string, parsed_classes, label)
     return json_string
 
 def generate_json_string():
