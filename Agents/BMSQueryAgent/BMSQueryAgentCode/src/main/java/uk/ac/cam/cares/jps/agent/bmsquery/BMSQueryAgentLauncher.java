@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.time.OffsetDateTime;
 
 
-@WebServlet(urlPatterns = {"/retrieve"})
+@WebServlet(urlPatterns = {"/retrieve/ts", "/status", "/retrieve/equipment"})
 public class BMSQueryAgentLauncher extends JPSAgent {
 
 
@@ -30,6 +30,7 @@ public class BMSQueryAgentLauncher extends JPSAgent {
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+
         return processRequestParameters(requestParams);
     }
 
@@ -52,10 +53,14 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         String clientProperties = requestParams.getString(KEY_CLIENT_PROPERTIES);
         String clientPropertiesFile = System.getenv(clientProperties);
 
-        JSONObject result = initializeAgent(dataIRI, clientPropertiesFile);
-        result.accumulate("Message", "POST request has been sent successfully.");
+        JSONObject jsonMessage = new JSONObject();
+        BMSQueryAgent agent = initializeAgent(clientPropertiesFile, jsonMessage);
 
-        return result;
+        JSONObject queryResult = agent.queryTimeSeriesWithinBound(dataIRI);
+        jsonMessage.accumulate("Result", queryResult);
+        jsonMessage.accumulate("Message", "POST request has been sent successfully.");
+
+        return jsonMessage;
     }
 
     @Override
@@ -85,7 +90,7 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         return true;
     }
 
-    public JSONObject initializeAgent(String dataIRI, String clientPropertyFile) {
+    public BMSQueryAgent initializeAgent(String clientPropertyFile, JSONObject jsonMessage) {
         BMSQueryAgent agent;
 
         try {
@@ -95,7 +100,6 @@ public class BMSQueryAgentLauncher extends JPSAgent {
             throw new JPSRuntimeException(AGENT_Construction_ERROR_MSG, e);
         }
         LOGGER.info("Input agent object initialized.");
-        JSONObject jsonMessage = new JSONObject();
         jsonMessage.accumulate("Message", "Input agent object initialized.");
 
         TimeSeriesClient<OffsetDateTime> tsClient;
@@ -109,9 +113,6 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         LOGGER.info("Time series client object initialized.");
         jsonMessage.accumulate("Message", "Time series client object initialized.");
 
-        JSONObject queryResult = agent.queryTimeSeriesWithinBound(dataIRI);
-        jsonMessage.accumulate("Result", queryResult);
-
-        return jsonMessage;
+        return agent;
     }
 }

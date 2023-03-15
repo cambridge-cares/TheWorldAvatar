@@ -22,7 +22,7 @@ public class BMSQueryAgent {
 
     public JSONObject queryTimeSeriesWithinBound(String dataIRI) {
         List<String> dataIRIs = Collections.singletonList(dataIRI);
-        OffsetDateTime currentTime = OffsetDateTime.now();
+        OffsetDateTime currentTime = OffsetDateTime.parse("2023-03-08T14:20:39+08");
         OffsetDateTime oneHourAgo = currentTime.minusHours(1);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
