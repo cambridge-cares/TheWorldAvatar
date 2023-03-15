@@ -1,5 +1,5 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
-OntoEMS,TBox,http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
+OntoEMS,TBox,http://www.theworldavatar.com/kg/ontoems/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
 OntoEMS,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoEMS,TBox,"The Environmental Measurement Station ontology (OntoEMS) is an ontology developed for representing environmental measurement stations, reported quantities, and time series of associated readings.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoEMS,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,

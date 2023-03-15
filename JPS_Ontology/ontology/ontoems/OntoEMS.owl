@@ -1,14 +1,14 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#"
-     xml:base="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl"
+<rdf:RDF xmlns="http://www.theworldavatar.com/kg/ontoems/"
+     xml:base="http://www.theworldavatar.com/kg/ontoems/"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     xmlns:OntoEMS="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:ontoems="http://www.theworldavatar.com/kg/ontoems/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
-    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontoems/">
         <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">15 March 2023</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Environmental Measurement Station ontology (OntoEMS) is an ontology developed for representing environmental measurement stations, reported quantities, and time series of associated readings.</rdfs:comment>
@@ -33,7 +33,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://environment.data.gov.uk/flood-monitoring/def/core/StageScale">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WaterLevelReportingStation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoems/WaterLevelReportingStation"/>
         <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relationship between a river level reporting station and the associated stage scale</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -47,7 +47,7 @@
 
     <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Forecast"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoems/Forecast"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a forecast and the respective unit of measure.</rdfs:comment>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a measure and the respective unit of measure.</rdfs:comment>
@@ -70,12 +70,12 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasCurrentRange -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/hasCurrentRange -->
 
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasCurrentRange">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoems/hasCurrentRange">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Range"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoems/Range"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relationship between a water level measure and its current range</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has current range</rdfs:label>
@@ -83,12 +83,12 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasCurrentTrend -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/hasCurrentTrend -->
 
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasCurrentTrend">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoems/hasCurrentTrend">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Trend"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoems/Trend"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relationship between a water level measure and its current trend</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has current trend</rdfs:label>
@@ -96,12 +96,12 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasDownstreamStation -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/hasDownstreamStation -->
 
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasDownstreamStation">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WaterLevelReportingStation"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WaterLevelReportingStation"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoems/hasDownstreamStation">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoems/WaterLevelReportingStation"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoems/WaterLevelReportingStation"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relationship between a water level reporting station and its next equivalent downstream</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has downstream station</rdfs:label>
@@ -109,12 +109,12 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasForecastedValue -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/hasForecastedValue -->
 
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasForecastedValue">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoems/hasForecastedValue">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Forecast"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoems/Forecast"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a quantity and its forecast.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has forecasted value</rdfs:label>
@@ -122,20 +122,20 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#includedIn -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/includedIn -->
 
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#includedIn">
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoems/includedIn">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#DiffuseHorizontalIrradiance"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#DirectHorizontalIrradiance"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#DirectNormalIrradiance"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoems/DiffuseHorizontalIrradiance"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoems/DirectHorizontalIrradiance"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoems/DirectNormalIrradiance"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#GlobalHorizontalIrradiance"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/kg/ontoems/GlobalHorizontalIrradiance"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between an individual measure and a sum of measures.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">included in</rdfs:label>
@@ -143,11 +143,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#measureOf -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/measureOf -->
 
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#measureOf">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirPollutantConcentration"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoems/measureOf">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration"/>
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -163,11 +163,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#reports -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/reports -->
 
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#reports">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ReportingStation"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/kg/ontoems/reports">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoems/ReportingStation"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a reporting entity and the quantity it reports.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -184,7 +184,7 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Forecast"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoems/Forecast"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -212,7 +212,7 @@
 
 
     <owl:DatatypeProperty rdf:about="http://environment.data.gov.uk/flood-monitoring/def/core/catchmentName">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WaterLevelReportingStation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoems/WaterLevelReportingStation"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relationship between a river level reporting station and the associated catchment name</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -251,7 +251,7 @@
 
 
     <owl:DatatypeProperty rdf:about="http://environment.data.gov.uk/flood-monitoring/def/core/riverName">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WaterLevelReportingStation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoems/WaterLevelReportingStation"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relationship between a river level reporting station and the associated river name</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -311,11 +311,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#createdOn -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/createdOn -->
 
 
-    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#createdOn">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Forecast"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontoems/createdOn">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoems/Forecast"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTime"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a forecast and its creation time.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -324,11 +324,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#dataSource -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/dataSource -->
 
 
-    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#dataSource">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ReportingStation"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontoems/dataSource">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoems/ReportingStation"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Description of data source of reporting station (e.g. API URL)</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -337,11 +337,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasIdentifier -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/hasIdentifier -->
 
 
-    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasIdentifier">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ReportingStation"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontoems/hasIdentifier">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoems/ReportingStation"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Description of unique identifier of reporting station</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -350,11 +350,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasObservationElevation -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/hasObservationElevation -->
 
 
-    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasObservationElevation">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ReportingStation"/>
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontoems/hasObservationElevation">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontoems/ReportingStation"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Description of observation elevation (i.e. in metres)</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -394,8 +394,8 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirPollutantConcentration"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ReportingStation"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration"/>
+                    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontoems/ReportingStation"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -430,7 +430,7 @@
 
 
     <owl:Class rdf:about="http://purl.org/iot/vocab/m3-lite#AirTemperature">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirTemperature"/>
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/kg/ontoems/AirTemperature"/>
     </owl:Class>
     
 
@@ -439,7 +439,7 @@
 
 
     <owl:Class rdf:about="http://purl.org/iot/vocab/m3-lite#AtmosphericPressure">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AtmosphericPressure"/>
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/kg/ontoems/AtmosphericPressure"/>
     </owl:Class>
     
 
@@ -448,7 +448,7 @@
 
 
     <owl:Class rdf:about="http://purl.org/iot/vocab/m3-lite#DewPoint">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#DewPoint"/>
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/kg/ontoems/DewPoint"/>
     </owl:Class>
     
 
@@ -464,7 +464,7 @@
 
 
     <owl:Class rdf:about="http://purl.org/iot/vocab/m3-lite#RelativeHumidity">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#RelativeHumidity"/>
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/kg/ontoems/RelativeHumidity"/>
     </owl:Class>
     
 
@@ -487,7 +487,7 @@
 
 
     <owl:Class rdf:about="http://purl.org/iot/vocab/m3-lite#WindDirection">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WindDirection"/>
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/kg/ontoems/WindDirection"/>
     </owl:Class>
     
 
@@ -496,7 +496,7 @@
 
 
     <owl:Class rdf:about="http://purl.org/iot/vocab/m3-lite#WindSpeed">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WindSpeed"/>
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/kg/ontoems/WindSpeed"/>
     </owl:Class>
     
 
@@ -542,16 +542,16 @@
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasCurrentRange"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontoems/hasCurrentRange"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Range"/>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/kg/ontoems/Range"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasCurrentTrend"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontoems/hasCurrentTrend"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Trend"/>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/kg/ontoems/Trend"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -590,7 +590,7 @@
 
 
     <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/RelativeHumidity">
-        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#RelativeHumidity"/>
+        <owl:equivalentClass rdf:resource="http://www.theworldavatar.com/kg/ontoems/RelativeHumidity"/>
     </owl:Class>
     
 
@@ -641,10 +641,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirPollutantConcentration -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirPollutantConcentration">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/Concentration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of a specific air pollutant as amount of material per unit volume of air (e.g. mass concentration).</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -653,10 +653,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirTemperature -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/AirTemperature -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirTemperature">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/AirTemperature">
         <owl:equivalentClass rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Temperature"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature of the outside air that would be indicated by a thermometer exposed to the air at a location sheltered from direct solar radiation.</rdfs:comment>
@@ -666,10 +666,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AtmosphericPressure -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/AtmosphericPressure -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AtmosphericPressure">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/AtmosphericPressure">
         <owl:equivalentClass rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AtmosphericPressure"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The pressure exerted by the atmospheric column of air above the point in question (adjusted to mean sea level).</rdfs:comment>
@@ -679,11 +679,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#CarbonDioxideConcentration -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/CarbonDioxideConcentration -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#CarbonDioxideConcentration">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirPollutantConcentration"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/CarbonDioxideConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of carbon dioxide in the ambient air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon dioxide concentration</rdfs:label>
@@ -691,11 +691,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#CarbonMonoxideConcentration -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/CarbonMonoxideConcentration -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#CarbonMonoxideConcentration">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirPollutantConcentration"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/CarbonMonoxideConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of carbon monoxide in the ambient air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon monoxide concentration</rdfs:label>
@@ -703,10 +703,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#DewPoint -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/DewPoint -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#DewPoint">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/DewPoint">
         <owl:equivalentClass rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#DewPointTemperature"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature at which the air can no longer hold all of its water vapor, and water vapor starts to condense into liquid water.</rdfs:comment>
@@ -716,10 +716,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#DiffuseHorizontalIrradiance -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/DiffuseHorizontalIrradiance -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#DiffuseHorizontalIrradiance">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/DiffuseHorizontalIrradiance">
         <rdfs:subClassOf rdf:resource="http://purl.org/iot/vocab/m3-lite#SolarRadiation"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Irradiance"/>
         <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#SolarIrradiance"/>
@@ -730,10 +730,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#DirectHorizontalIrradiance -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/DirectHorizontalIrradiance -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#DirectHorizontalIrradiance">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/DirectHorizontalIrradiance">
         <rdfs:subClassOf rdf:resource="http://purl.org/iot/vocab/m3-lite#SolarRadiation"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Irradiance"/>
         <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#SolarIrradiance"/>
@@ -744,10 +744,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#DirectNormalIrradiance -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/DirectNormalIrradiance -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#DirectNormalIrradiance">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/DirectNormalIrradiance">
         <rdfs:subClassOf rdf:resource="http://purl.org/iot/vocab/m3-lite#SolarRadiation"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Irradiance"/>
         <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#SolarIrradiance"/>
@@ -758,11 +758,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Falling -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/Falling -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Falling">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Trend"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/Falling">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/Trend"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Current water level has been falling over last 12 hours</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Falling trend</rdfs:label>
@@ -770,10 +770,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#FeelsLikeTemperature -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/FeelsLikeTemperature -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#FeelsLikeTemperature">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/FeelsLikeTemperature">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature of the outside air as expected to be perceived by a human being, considering the actual air temperature, relative humidity and the strength of the wind at 5 feet as well as an understanding of how heat is lost from the human body during cold and windy days.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -782,10 +782,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Forecast -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/Forecast -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Forecast">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/Forecast">
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
@@ -807,10 +807,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#GlobalHorizontalIrradiance -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/GlobalHorizontalIrradiance -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#GlobalHorizontalIrradiance">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/GlobalHorizontalIrradiance">
         <rdfs:subClassOf rdf:resource="http://purl.org/iot/vocab/m3-lite#SolarRadiation"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Irradiance"/>
         <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#SolarIrradiance"/>
@@ -821,11 +821,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#HighRange -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/HighRange -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#HighRange">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Range"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/HighRange">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/Range"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Current water level is above normal range</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">High range</rdfs:label>
@@ -833,11 +833,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#LowRange -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/LowRange -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#LowRange">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Range"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/LowRange">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/Range"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Current water level is below normal range</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Low range</rdfs:label>
@@ -845,11 +845,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NitrogenDioxideConcentration -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/NitrogenDioxideConcentration -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NitrogenDioxideConcentration">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NitrogenOxidesConcentration"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/NitrogenDioxideConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/NitrogenOxidesConcentration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of nitrogen dioxide in the ambient air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nitrogen dioxide concentration</rdfs:label>
@@ -857,11 +857,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NitrogenMonoxideConcentration -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/NitrogenMonoxideConcentration -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NitrogenMonoxideConcentration">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NitrogenOxidesConcentration"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/NitrogenMonoxideConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/NitrogenOxidesConcentration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of nitrogen monoxide in the ambient air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nitrogen monoxide concentration</rdfs:label>
@@ -869,11 +869,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NitrogenOxidesConcentration -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/NitrogenOxidesConcentration -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NitrogenOxidesConcentration">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirPollutantConcentration"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/NitrogenOxidesConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of nitrogen oxides in the ambient air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nitrogen oxides concentration</rdfs:label>
@@ -881,11 +881,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NormalRange -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/NormalRange -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#NormalRange">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Range"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/NormalRange">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/Range"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Current water level is within normal range</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Normal range</rdfs:label>
@@ -893,11 +893,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#OzoneConcentration -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/OzoneConcentration -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#OzoneConcentration">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirPollutantConcentration"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/OzoneConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of ozone in the ambient air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ozone concentration</rdfs:label>
@@ -905,11 +905,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#PM10Concentration -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/PM10Concentration -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#PM10Concentration">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ParticulateMatterConcentration"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/PM10Concentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/ParticulateMatterConcentration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of particulate matter &lt; 10 µm in the ambient air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PM10 concentration</rdfs:label>
@@ -917,11 +917,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#PM2.5Concentration -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/PM2.5Concentration -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#PM2.5Concentration">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ParticulateMatterConcentration"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/PM2.5Concentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/ParticulateMatterConcentration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of particulate matter &lt; 2.5 µm in the ambient air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">PM2.5 concentration</rdfs:label>
@@ -929,11 +929,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ParticulateMatterConcentration -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/ParticulateMatterConcentration -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ParticulateMatterConcentration">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirPollutantConcentration"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/ParticulateMatterConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of particulate matter in the ambient air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Particulate matter concentration</rdfs:label>
@@ -941,10 +941,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#PrecipitationProbability -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/PrecipitationProbability -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#PrecipitationProbability">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/PrecipitationProbability">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Number"/>
         <rdfs:subClassOf rdf:resource="https://semanticscience.org/resource/SIO_000638"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The likelihood of occurrence of precipitation.</rdfs:comment>
@@ -954,10 +954,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Rainfall -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/Rainfall -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Rainfall">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/Rainfall">
         <rdfs:subClassOf rdf:resource="http://purl.org/iot/vocab/m3-lite#Rainfall"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
         <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Precipitation"/>
@@ -968,10 +968,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Range -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/Range -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Range">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/Range">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The range of the current water level reading</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Range</rdfs:label>
@@ -979,10 +979,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#RelativeHumidity -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/RelativeHumidity -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#RelativeHumidity">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/RelativeHumidity">
         <owl:equivalentClass rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Humidity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relative humidity of the outside air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -991,14 +991,14 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ReportingStation -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/ReportingStation -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ReportingStation">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/ReportingStation">
         <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Feature"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#reports"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontoems/reports"/>
                 <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
             </owl:Restriction>
         </rdfs:subClassOf>
@@ -1009,11 +1009,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Rising -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/Rising -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Rising">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Trend"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/Rising">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/Trend"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Current water level has been rising over last 12 hours</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rising trend</rdfs:label>
@@ -1021,11 +1021,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Steady -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/Steady -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Steady">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Trend"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/Steady">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/Trend"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Current water level has been (approximately) constant over last 12 hours</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Steady (no trend)</rdfs:label>
@@ -1033,11 +1033,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#SulfurDioxideConcentration -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/SulfurDioxideConcentration -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#SulfurDioxideConcentration">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#AirPollutantConcentration"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/SulfurDioxideConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/AirPollutantConcentration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of sulfur dioxide in the ambient air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sulfur dioxide concentration</rdfs:label>
@@ -1045,10 +1045,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Trend -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/Trend -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Trend">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/Trend">
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The trend of the current water level reading</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Trend</rdfs:label>
@@ -1056,10 +1056,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#UVIndex -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/UVIndex -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#UVIndex">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/UVIndex">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Number"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The strength of the sun&apos;s ultraviolet (UV) radiation expressed as index as developed by the World Health Organization.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -1068,11 +1068,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#UnavailableRange -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/UnavailableRange -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#UnavailableRange">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Range"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/UnavailableRange">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/Range"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Current water level range cannot be determined</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unavailable range</rdfs:label>
@@ -1080,11 +1080,11 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#UnavailableTrend -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/UnavailableTrend -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#UnavailableTrend">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Trend"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/UnavailableTrend">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/Trend"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Current water level trend cannot be determined</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Unavailable trend</rdfs:label>
@@ -1092,10 +1092,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Visibility -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/Visibility -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#Visibility">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/Visibility">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Distance"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Prevailing horizontal distance at which an object can be clearly discerned by a certified weather observer, under current weather conditions.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -1104,10 +1104,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WaterFlow -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/WaterFlow -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WaterFlow">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/WaterFlow">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The volume of water which passes a river cross section per unit time.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -1116,10 +1116,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WaterLevel -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/WaterLevel -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WaterLevel">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/WaterLevel">
         <rdfs:subClassOf rdf:resource="http://purl.org/iot/vocab/m3-lite#WaterLevel"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Height"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The height reached by the water in a reservoir, river, the tide at sea, or similar.</rdfs:comment>
@@ -1129,16 +1129,16 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WaterLevelReportingStation -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/WaterLevelReportingStation -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WaterLevelReportingStation">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#ReportingStation"/>
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/WaterLevelReportingStation">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontoems/ReportingStation"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#hasDownstreamStation"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/kg/ontoems/hasDownstreamStation"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WaterLevelReportingStation"/>
+                <owl:onClass rdf:resource="http://www.theworldavatar.com/kg/ontoems/WaterLevelReportingStation"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A reporting station that reports the level of water (potentially besides any other environmental observations).</rdfs:comment>
@@ -1148,10 +1148,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WindDirection -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/WindDirection -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WindDirection">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/WindDirection">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Angle"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Direction from where the wind is blowing measured relative to true north (not magnetic north).</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -1160,10 +1160,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WindGust -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/WindGust -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WindGust">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/WindGust">
         <rdfs:subClassOf rdf:resource="http://purl.org/iot/vocab/m3-lite#WindSpeed"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Speed"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Maximum velocity of short-lived peaks in wind speed.</rdfs:comment>
@@ -1173,10 +1173,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WindSpeed -->
+    <!-- http://www.theworldavatar.com/kg/ontoems/WindSpeed -->
 
 
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoems/OntoEMS.owl#WindSpeed">
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontoems/WindSpeed">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Speed"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Velocity of outside air movement.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
