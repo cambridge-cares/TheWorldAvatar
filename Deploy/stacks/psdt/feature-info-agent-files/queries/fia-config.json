@@ -11,21 +11,21 @@
             'class' : 'https://www.theworldavatar.com/kg/ps/WaterMeter',
             'metaFile' : 'Sensor.sparql',
             'timeFile' : 'Sensor_timeseries.sparql',
-            'databaseName': 'timeseries_house45',
+            'databaseName': 'timeseries_utilities45',
             'timeLimit' : 175200
         },
         {
             'class' : 'https://www.theworldavatar.com/kg/ps/OilMeter',
             'metaFile' : 'Sensor.sparql',
             'timeFile' : 'Sensor_timeseries.sparql',
-            'databaseName': 'timeseries_house45',
+            'databaseName': 'timeseries_utilities45',
             'timeLimit' : 175200
         },
         {
             'class' : 'https://www.theworldavatar.com/kg/ps/ElectricityMeter',
             'metaFile' : 'Sensor.sparql',
             'timeFile' : 'Sensor_timeseries.sparql',
-            'databaseName': 'timeseries_house45',
+            'databaseName': 'timeseries_utilities45',
             'timeLimit' : 175200
         },
         {
