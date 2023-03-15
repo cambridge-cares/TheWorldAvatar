@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 import org.apache.jena.arq.querybuilder.Converters;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement.IfcElementConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -323,7 +322,7 @@ public class CommonQuery {
         // Base Void attributes
         optionalBuilder.addWhere(REL_VOID_ELEMENT_VAR, QueryHandler.RDF_TYPE, IFC_REL_VOIDS_ELEMENT)
                 .addWhere(REL_VOID_ELEMENT_VAR, IFC_REL_VOIDS_OPENING, OPENING_ELEMENT_VAR)
-                .addWhere(REL_VOID_ELEMENT_VAR, IFC_REL_VOIDS_ASSEMBLY, IfcElementConstructBuilder.ELEMENT_VAR)
+                .addWhere(REL_VOID_ELEMENT_VAR, IFC_REL_VOIDS_ASSEMBLY, ELEMENT_VAR)
                 .addWhere(OPENING_ELEMENT_VAR, QueryHandler.RDF_TYPE, IFC_OPENING_ELEMENT)
                 .addWhere(OPENING_ELEMENT_VAR, IFC_OBJ_TYPE + EXPRESS_HASSTRING, VOID_TYPE_VAR)
                 .addWhere(OPENING_ELEMENT_VAR, IFC_OBJ_PLACEMENT, VOID_PLACEMENT_VAR)

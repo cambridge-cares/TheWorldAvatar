@@ -17,7 +17,6 @@ class JenaStatementParserTest {
     private static Map<String, String> nsMap;
     private static final String baseURI = "http://example.com/";
     private static final String listURI = "https://w3id.org/list#";
-
     private static final String janeURI = "JaneDoe";
     private static final String janeFullName = "Jane Doe";
     private static final String personClass = "person";
@@ -69,7 +68,6 @@ class JenaStatementParserTest {
                 () -> assertTrue(testSet.isEmpty()),
                 // Ensure IFC instance name are replaced
                 () -> assertTrue(result.contains("eg:IfcSite_123 rdf:type eg:IfcSite")),
-                () -> assertTrue(result.contains("eg:IfcModelRepresentation_123 rdf:type eg:IfcModelRepresentation")),
                 () -> assertTrue(result.contains("eg:LineVertex_3523 rdf:type eg:LineVertex")),
                 // Ensure List predicates are renamed
                 () -> assertTrue(result.contains("eg:LineVertex_3523 bim:hasNextVertex eg:LineVertex_5555")),

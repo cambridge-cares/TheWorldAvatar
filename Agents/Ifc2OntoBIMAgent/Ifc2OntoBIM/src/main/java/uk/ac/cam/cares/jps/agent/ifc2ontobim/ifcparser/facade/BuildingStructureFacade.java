@@ -10,7 +10,6 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.CommonQuery;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ElementStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.SpatialZoneStorage;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement.IfcElementConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
 
 import java.util.LinkedHashSet;
@@ -149,7 +148,7 @@ public class BuildingStructureFacade {
         // Add query for assembly element
         selectBuilder.addVar(CommonQuery.ASSEMBLY_VAR)
                 .addWhere(CommonQuery.REL_FILLS_ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_REL_FILLS_ELEMENT)
-                .addWhere(CommonQuery.REL_FILLS_ELEMENT_VAR, CommonQuery.IFC_REL_FILLS_SUB_ELEMENT, IfcElementConstructBuilder.ELEMENT_VAR)
+                .addWhere(CommonQuery.REL_FILLS_ELEMENT_VAR, CommonQuery.IFC_REL_FILLS_SUB_ELEMENT, CommonQuery.ELEMENT_VAR)
                 .addWhere(CommonQuery.REL_FILLS_ELEMENT_VAR, CommonQuery.IFC_REL_FILLS_OPENING, CommonQuery.OPENING_ELEMENT_VAR)
                 .addWhere(CommonQuery.OPENING_ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_OPENING_ELEMENT)
                 .addWhere(CommonQuery.REL_VOID_ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_REL_VOIDS_ELEMENT)
@@ -282,7 +281,7 @@ public class BuildingStructureFacade {
         selectBuilder.addWhere(CommonQuery.RELAGGR_VAR, QueryHandler.RDF_TYPE, CommonQuery.RELAGG)
                 .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_PARENT_ZONE_REL, CommonQuery.ROOF_SLAB_VAR)
                 .addWhere(CommonQuery.ROOF_SLAB_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_ROOF)
-                .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_CHILD_ZONE_REL, IfcElementConstructBuilder.ELEMENT_VAR)
+                .addWhere(CommonQuery.RELAGGR_VAR, CommonQuery.IFC_CHILD_ZONE_REL, CommonQuery.ELEMENT_VAR)
                 .addWhere(CommonQuery.REL_SPATIAL_STRUCTURE_VAR, QueryHandler.RDF_TYPE, CommonQuery.REL_SPATIAL_ZONE_ELEMENT)
                 .addWhere(CommonQuery.REL_SPATIAL_STRUCTURE_VAR, CommonQuery.IFC_REL_ELEMENT, CommonQuery.ROOF_SLAB_VAR)
                 .addWhere(CommonQuery.REL_SPATIAL_STRUCTURE_VAR, CommonQuery.IFC_REL_ZONE, CommonQuery.PARENT_ZONE_VAR);
@@ -608,7 +607,7 @@ public class BuildingStructureFacade {
         // Add query for assembly element
         selectBuilder.addVar(CommonQuery.ASSEMBLY_VAR)
                 .addWhere(CommonQuery.REL_FILLS_ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_REL_FILLS_ELEMENT)
-                .addWhere(CommonQuery.REL_FILLS_ELEMENT_VAR, CommonQuery.IFC_REL_FILLS_SUB_ELEMENT, IfcElementConstructBuilder.ELEMENT_VAR)
+                .addWhere(CommonQuery.REL_FILLS_ELEMENT_VAR, CommonQuery.IFC_REL_FILLS_SUB_ELEMENT, CommonQuery.ELEMENT_VAR)
                 .addWhere(CommonQuery.REL_FILLS_ELEMENT_VAR, CommonQuery.IFC_REL_FILLS_OPENING, CommonQuery.OPENING_ELEMENT_VAR)
                 .addWhere(CommonQuery.OPENING_ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_OPENING_ELEMENT)
                 .addWhere(CommonQuery.REL_VOID_ELEMENT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_REL_VOIDS_ELEMENT)

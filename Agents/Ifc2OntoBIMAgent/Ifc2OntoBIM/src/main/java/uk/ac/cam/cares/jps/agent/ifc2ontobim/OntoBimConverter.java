@@ -9,7 +9,6 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.BuildingStructureF
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.ElementFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.SpatialZoneFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.SpatialZoneStorage;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement.IfcElementConstructBuilder;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcgeometry.GeomConstructBuilderMediator;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.IgnoreClassHelper;
@@ -89,7 +88,7 @@ public class OntoBimConverter {
         LinkedHashSet<Statement> statementSet = new LinkedHashSet<>();
         ignoreGeom = IgnoreClassHelper.genIgnoreSet();
         genSpatialZoneStatements(statementSet);
-        genElementsStatements(builder, statementSet);
+        genElementsStatements(statementSet);
         genCommonGeometryContentStatements(builder, statementSet);
 
         writer.writeTTLWithIntermediateFiles(this.tempFilePaths, ttlFilePath, classMapping);
@@ -115,10 +114,9 @@ public class OntoBimConverter {
      * The results returned are constructed as statements in the OntoBIM schema and stored as a set.
      * Note that the statements will be written to a temporary file to prevent heap overflow.
      *
-     * @param builder      The construct builder to add new query statements.
      * @param statementSet Stores the relevant queried statements into this set.
      */
-    private void genElementsStatements(ConstructBuilder builder, LinkedHashSet<Statement> statementSet) {
+    private void genElementsStatements(LinkedHashSet<Statement> statementSet) {
         // Create a new helper object
         BuildingStructureFacade buildingStructureHelper = new BuildingStructureFacade();
         LOGGER.info("Retrieving and generating statements related to ceiling elements...");
