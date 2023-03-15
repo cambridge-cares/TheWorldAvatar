@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Wall;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcStoreyRepresentation;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.BuildingStructureFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ElementStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.SpatialZoneStorage;
 
@@ -151,8 +150,9 @@ class BuildingStructureFacadeTest {
     }
 
     @AfterAll
-    static void resetZoneMappingsForOtherTests() {
+    static void resetMappingsForOtherTests() {
         SpatialZoneStorage.resetSingleton();
+        ElementStorage.resetSingleton();
     }
 
     @Test
@@ -749,7 +749,6 @@ class BuildingStructureFacadeTest {
                                                         sampleModel.createResource(subContextInst).addProperty(RDF.type, geomRepSubContext))
                                                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "items_IfcRepresentation"),
                                                         sampleModel.createResource(geomInst).addProperty(RDF.type, facetedBrep)))));
-
     }
 
     private void addSecondGeometryTriples() {

@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils;
 
 import org.apache.jena.arq.querybuilder.AbstractQueryBuilder;
 import org.apache.jena.rdf.model.Model;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.BimElementMapper;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -73,7 +74,7 @@ public class NamespaceMapper {
         nsMapping.put(BOT_PREFIX, BOT_NAMESPACE);
         nsMapping.put(SKOS_PREFIX, SKOS_NAMESPACE);
         nsMapping.put(BUILDING_STRUCTURE_PREFIX, BUILDING_STRUCTURE_NAMESPACE);
-
+        BimElementMapper.addPrefixMapping(nsMapping);
         // Duplicate IfcOwl namespaces for sub-queries - require bim as well
         nsMapping.put(IFC_PREFIX, IFC_NAMESPACE);
         nsMapping.put(LIST_PREFIX, LIST_NAMESPACE);

@@ -71,6 +71,12 @@ class NamespaceMapperTest {
         results.add("express:");
         results.add("list:");
         results.add("om:");
+        results.add("ontobuildingstructure:");
+        results.add("ontobms:");
+        results.add("ontodevice:");
+        results.add("ontoems:");
+        results.add("ontolab:");
+        results.add("saref:");
         results.add("<http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
         results.add("<https://w3id.org/bot#>");
         results.add("<http://www.theworldavatar.com/kg/ontobim/>");
@@ -79,6 +85,12 @@ class NamespaceMapperTest {
         results.add("<https://w3id.org/express#>");
         results.add("<https://w3id.org/list#>");
         results.add("<http://www.ontology-of-units-of-measure.org/resource/om-2/>");
+        results.add("<http://www.theworldavatar.com/kg/ontobuildingstructure/>");
+        results.add("<https://www.theworldavatar.com/kg/ontobms/>");
+        results.add("<https://www.theworldavatar.com/kg/ontodevice/>");
+        results.add("<https://www.theworldavatar.com/kg/ontoems/>");
+        results.add("<https://www.theworldavatar.com/kg/ontolab/>");
+        results.add("<https://saref.etsi.org/core/>");
         return results;
     }
 }

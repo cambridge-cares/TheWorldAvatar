@@ -206,6 +206,9 @@ public class CommonQuery {
     public static final String IFC_STAIR_RAILING = NamespaceMapper.IFC_PREFIX + ":IfcRailing";
     public static final String IFC_STAIR_MEMBER = NamespaceMapper.IFC_PREFIX + ":IfcMember";
     public static final String IFC_STAIR = NamespaceMapper.IFC_PREFIX + ":IfcStair";
+    public static final String IFC_BUILDING_ELEMENT_PROXY = NamespaceMapper.IFC_PREFIX + ":IfcBuildingElementProxy";
+    public static final String IFC_FLOW_TERMINAL = NamespaceMapper.IFC_PREFIX + ":IfcFlowTerminal";
+    public static final String IFC_FURNISHING_ELEMENT = NamespaceMapper.IFC_PREFIX + ":IfcFurnishingElement";
     // IfcOwl element supplementary Classes
     public static final String IFC_REL_TYPE_DEFINITION = NamespaceMapper.IFC_PREFIX + ":IfcRelDefinesByType";
     public static final String IFC_REL_FILLS_ELEMENT = NamespaceMapper.IFC_PREFIX + ":IfcRelFillsElement";

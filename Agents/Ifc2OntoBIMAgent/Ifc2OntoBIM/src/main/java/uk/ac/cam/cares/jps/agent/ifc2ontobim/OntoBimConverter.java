@@ -6,6 +6,7 @@ import org.apache.jena.riot.RDFParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.BuildingStructureFacade;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.ElementFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.SpatialZoneFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.SpatialZoneStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcelement.IfcElementConstructBuilder;
@@ -160,24 +161,10 @@ public class OntoBimConverter {
         this.storeInTempFiles(statementSet);
         LOGGER.info("Stored statements for stair elements in temporary file");
 
-        // Generate the other elements using previous design pattern
-        List<String> ifcElements = new ArrayList<>();
-        ifcElements.add("ifc:IfcBuildingElementProxy");
-        ifcElements.add("ifc:IfcFlowTerminal");
-        ifcElements.add("ifc:IfcFurnishingElement");
-
-        for (String ifcElement : ifcElements) {
-            // Clone the builder to ensure that query statements are not transferred across different elements
-            ConstructBuilder tempBuilder = builder.clone();
-            LOGGER.info("Preparing query for the element: " + ifcElement);
-            String query = new IfcElementConstructBuilder().createSparqlQuery(tempBuilder, ifcElement, ifcElement);
-            QueryHandler.queryConstructStatementsAsSet(query, this.owlModel, statementSet);
-            if (!statementSet.isEmpty()) {
-                LOGGER.info("Retrieved statements related to elements of " + ifcElement);
-                this.storeInTempFiles(statementSet);
-                LOGGER.info("Stored statements for " + ifcElement + " in temporary file");
-            }
-        }
+        LOGGER.info("Retrieving and generating statements related to all remaining elements...");
+        ElementFacade.addElementStatements(this.owlModel, statementSet);
+        this.storeInTempFiles(statementSet);
+        LOGGER.info("Stored statements for all remaining elements in temporary file");
     }
 
     /**
