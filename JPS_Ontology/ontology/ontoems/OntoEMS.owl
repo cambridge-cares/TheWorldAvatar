@@ -4,6 +4,7 @@
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:om="http://www.ontology-of-units-of-measure.org/resource/om-2/"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:ontoems="https://www.theworldavatar.com/kg/ontoems/"
@@ -507,7 +508,7 @@
     <owl:Class rdf:about="http://purl.org/iot/vocab/m3-lite#WindSpeed">
         <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontoems/WindSpeed"/>
     </owl:Class>
-    
+
 
 
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Angle -->
@@ -730,6 +731,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/AirTemperature">
+        <owl:equivalentClass rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Temperature"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature of the outside air that would be indicated by a thermometer exposed to the air at a location sheltered from direct solar radiation.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -742,12 +744,13 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/AtmosphericPressure">
+        <owl:equivalentClass rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#AtmosphericPressure"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Pressure"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The pressure exerted by the atmospheric column of air above the point in question (adjusted to mean sea level).</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Atmospheric pressure</rdfs:label>
     </owl:Class>
-    
+
 
 
     <!-- https://www.theworldavatar.com/kg/ontoems/CarbonDioxideConcentration -->
@@ -759,7 +762,7 @@
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon dioxide concentration</rdfs:label>
     </owl:Class>
-    
+
 
 
     <!-- https://www.theworldavatar.com/kg/ontoems/CarbonMonoxideConcentration -->
@@ -790,6 +793,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/DewPoint">
+        <owl:equivalentClass rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#DewPointTemperature"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Temperature at which the air can no longer hold all of its water vapor, and water vapor starts to condense into liquid water.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
@@ -960,7 +964,7 @@
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Nitrogen oxides concentration</rdfs:label>
     </owl:Class>
-    
+
 
 
     <!-- https://www.theworldavatar.com/kg/ontoems/NormalRange -->
@@ -1065,6 +1069,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/RelativeHumidity">
+        <owl:equivalentClass rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#Humidity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relative humidity of the outside air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relative humidity</rdfs:label>
@@ -1283,7 +1288,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries"/>
-    
+
 
 
     <!-- https://www.theworldavatar.com/kg/ontouom/Concentration -->
