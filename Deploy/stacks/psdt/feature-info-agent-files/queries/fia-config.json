@@ -40,6 +40,12 @@
             'timeFile' : 'Sensor_timeseries.sparql',
             'databaseName': 'timeseries_hugoball',
             'timeLimit' : 175200
+        },
+        {
+            'class' : 'https://www.theworldavatar.com/kg/ontoems/ReportingStation',
+            'timeFile' : 'Sensor_timeseries.sparql',
+            'databaseName': 'timeseries_zimen',
+            'timeLimit' : 175200
         }
     ]
 }
