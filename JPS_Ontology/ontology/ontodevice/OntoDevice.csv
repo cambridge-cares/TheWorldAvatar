@@ -34,6 +34,7 @@ ControlSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,"A device that is
 FlowSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that is used to measure the flow rate of fluids.,https://www.theworldavatar.com/kg/ontodevice/,Flow sensor
 FeedbackSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that is used to provide the control system with measurements of physical quantities necessary to close control loops.,https://www.theworldavatar.com/kg/ontodevice/,Feedback sensor
 ProximitySensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that takes a continuous distance reading and returns a corresponding analog voltage.,https://www.theworldavatar.com/kg/ontodevice/,Proximity sensor
+SashOpeningSensor,Class,https://saref.etsi.org/core/Sensor,IS-A,,,,A device that measures the sash opening of an object such as a fumehood.,https://www.theworldavatar.com/kg/ontodevice/,Sash opening sensor
 Fridge,Class,https://saref.etsi.org/core/Appliance,IS-A,,,,A device that is usually used for the preservation of items like food via temperature regulation.,https://www.theworldavatar.com/kg/ontodevice/,Fridge
 Setpoint,Class,,,,,,"The desired or target value for an essential variable, or process value (PV) of a control system.",https://www.theworldavatar.com/kg/ontodevice/,Setpoint
 InOutState,Class,https://saref.etsi.org/core/State,IS-A,,,,The current state of something on whether it is inside or outside of a space or object.,https://www.theworldavatar.com/kg/ontodevice/,In out state
