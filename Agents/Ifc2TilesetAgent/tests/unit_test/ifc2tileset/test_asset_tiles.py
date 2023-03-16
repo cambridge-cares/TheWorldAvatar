@@ -110,7 +110,7 @@ def assert_nested_node_content(nested_node_list: List[dict], test_range: int, cu
                 assert metadata["properties"]["iri"] == "iri" + str(asset_no)
 
             else:
-                assert nested_dict["contents"][i]["asset" + str(asset_no)] == "id" + str(asset_no)
+                assert nested_dict["contents"][i]["uri"] == "./gltf/asset" + str(asset_no) + ".gltf"
         # 6 assets should be cleared for each nested dict
         current_asset_num = current_asset_num + 6
 
@@ -154,7 +154,7 @@ def test_append_assets_more_than_six_assets():
     assert "children" not in test_dict_list[-1]
 
     # Test the nested children nodes are attached with assets
-    assert_nested_node_content(test_dict_list, test_range)
+    assert_nested_node_content(test_dict_list, test_range, 0)
 
 
 def test_gen_tileset_assets():
