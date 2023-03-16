@@ -49,3 +49,19 @@ def gen_sample_asset_df(test_range: int):
         } for i in range(test_range)
     ]
     return pd.DataFrame(rows)
+
+
+def gen_sample_asset_contents(test_range: int):
+    return [
+        {
+            "uri": f"./gltf/asset{i}.gltf",
+            "metadata": {
+                "class": "AssetMetaData",
+                "properties": {
+                    "name": "element" + str(i),
+                    "uid": "uid" + str(i),
+                    "iri": "iri" + str(i)
+                }
+            }
+        } for i in range(test_range)
+    ]

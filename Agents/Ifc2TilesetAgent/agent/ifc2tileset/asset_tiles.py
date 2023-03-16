@@ -3,6 +3,8 @@
 
 This module provides methods to generate tilesets related to assets.
 """
+
+# Standard library imports
 from typing import List
 
 # Third party imports
@@ -10,8 +12,8 @@ import pandas as pd
 
 # Self imports
 import agent.app as state
-import agent.config.config as properties
 from agent.ifc2tileset.schema import Tileset, Tile, Content
+from agent.ifc2tileset.tile_helper import compute_bbox
 from agent.kgutils.const import NAME_VAR, ID_VAR, IRI_VAR
 
 
@@ -67,7 +69,7 @@ def append_assets_to_tile_node(tile: Tile, asset_df: pd.DataFrame):
                 }
             }, axis=1
         ).tolist()
-    bbox = properties.bbox_child
+    bbox = compute_bbox([f"./data/glb/{file}.glb" for file in asset_df["file"]])
 
     tile["children"] = [{
         "boundingVolume": {"box": bbox},
