@@ -6,7 +6,6 @@ A test suite for the agent.ifc2tileset.tile_helper submodule.
 
 # Standard library imports
 import os
-import json
 
 # Third party import
 import numpy as np
@@ -16,6 +15,7 @@ import pytest
 from agent.ifc2tileset.tile_helper import gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter, compute_bbox, \
     make_tileset
 from . import testconsts as C
+from .testutils import read_json
 
 
 def test_make_tileset():
@@ -75,23 +75,6 @@ def test_compute_bbox_multi_mesh(tmp_path):
     assert np.allclose(C.combined_bbox, actual)
 
 
-def retrieve_tileset_contents(json_filepath: str):
-    """
-    A test function to read the contents of a tileset.json
-
-    Argument:
-    json_filepath - File path to the tileset.json
-    Returns:
-    The tileset's contents as a Python dictionary
-    """
-    # Read the results
-    json_output = open(json_filepath, "r", encoding="utf-8")
-    contents = json_output.read()  # Store as string
-    tileset_content = json.loads(contents)  # Convert to dictionary
-    json_output.close()
-    return tileset_content
-
-
 def test_jsonwriter():
     """
     Tests jsonwriter()
@@ -107,8 +90,9 @@ def test_jsonwriter():
 
         # Test that the tileset.json has been created
         assert os.path.exists(test_json)
+
         # Test that the tileset contents are equivalent to the dictionary
-        assert retrieve_tileset_contents(test_json) == sample_tileset
+        assert read_json(test_json) == sample_tileset
     finally:
         os.remove(test_json)  # Remove tileset
 
@@ -129,7 +113,7 @@ def test_gen_solarpanel_tileset():
     """
     # Create a solarpanel.gltf for testing
     solarpanel_gltf = os.path.join("data", "gltf", "solarpanel.gltf")
-    open(solarpanel_gltf, "x", encoding="utf-8")
+    open(solarpanel_gltf, "x", encoding="utf-8").close()
 
     # Create sample glb file
     solarpanel_glb = os.path.join("data", "glb", "solarpanel.glb")
@@ -147,10 +131,11 @@ def test_gen_solarpanel_tileset():
         assert os.path.exists(json_filepath)
 
         # Read the tileset
-        tileset_content = retrieve_tileset_contents(json_filepath)
+        tileset_content = read_json(json_filepath)
+
         # Test that the tileset contents are equivalent to the dictionary
-        assert tileset_content["root"]["content"] == {
-            "uri": "./gltf/solarpanel.gltf"}
+        assert tileset_content["root"]["content"] == {"uri": "./gltf/solarpanel.gltf"}
+
         # Test that the bbox is correctly computed
         assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_box_bbox)
     finally:
@@ -175,7 +160,7 @@ def test_gen_sewagenetwork_tileset():
     """
     # Create a sewagenetwork.gltf for testing
     sewage_gltf = os.path.join("data", "gltf", "sewagenetwork.gltf")
-    open(sewage_gltf, "x", encoding="utf-8")
+    open(sewage_gltf, "x", encoding="utf-8").close()
 
     # Create sample glb file
     sewage_glb = os.path.join("data", "glb", "sewagenetwork.glb")
@@ -192,10 +177,11 @@ def test_gen_sewagenetwork_tileset():
         assert os.path.exists(json_filepath)
 
         # Read the tileset
-        tileset_content = retrieve_tileset_contents(json_filepath)
+        tileset_content = read_json(json_filepath)
+
         # Test that the tileset contents are equivalent to the dictionary
-        assert tileset_content["root"]["content"] == {
-            "uri": "./gltf/sewagenetwork.gltf"}
+        assert tileset_content["root"]["content"] == {"uri": "./gltf/sewagenetwork.gltf"}
+
         # Test that the bbox is correctly computed
         assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_cone_bbox)
     finally:

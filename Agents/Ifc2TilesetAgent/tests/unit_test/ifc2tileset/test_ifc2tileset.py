@@ -13,9 +13,8 @@ import pandas as pd
 
 # Self import
 from agent.ifc2tileset import gen_tilesets
-from tests.unit_test.ifc2tileset.test_tile_helper import retrieve_tileset_contents
-from tests.unit_test.ifc2tileset.test_asset_tiles import gen_sample_df
 from . import testconsts as C
+from .testutils import read_json, gen_sample_asset_df
 
 
 def test_gen_tilesets_solarpanel():
@@ -46,7 +45,7 @@ def test_gen_tilesets_solarpanel():
         assert not os.path.exists(sewage_json_filepath)
 
         # Read the tileset
-        tileset_content = retrieve_tileset_contents(solar_json_filepath)
+        tileset_content = read_json(solar_json_filepath)
         # Test that the tileset contents are equivalent to the dictionary
         assert tileset_content["root"]["content"] == {
             "uri": "./gltf/solarpanel.gltf"}
@@ -87,7 +86,7 @@ def test_gen_tilesets_sewage():
         assert not os.path.exists(solar_json_filepath)
 
         # Read the tileset
-        tileset_content = retrieve_tileset_contents(sewage_json_filepath)
+        tileset_content = read_json(sewage_json_filepath)
         # Test that the tileset contents are equivalent to the dictionary
         assert tileset_content["root"]["content"] == {
             "uri": "./gltf/sewagenetwork.gltf"}
@@ -152,7 +151,7 @@ def test_gen_tilesets_building():
         assert not os.path.exists(solar_json_filepath)
 
         # Read the tileset
-        tileset_content = retrieve_tileset_contents(bim_json_filepath)
+        tileset_content = read_json(bim_json_filepath)
         # Test that the tileset contents are equivalent to the dictionary
         assert tileset_content["root"]["content"] == {
             "uri": "./gltf/building.gltf"
@@ -171,7 +170,7 @@ def test_gen_tilesets_asset():
     Tests gen_tilesets() for generating the bim tileset with only asset data
     """
     # Initialise test case
-    sampledf = gen_sample_df(3)
+    sampledf = gen_sample_asset_df(3)
 
     # JSON output path
     bim_json_filepath = os.path.join("data", "tileset_bim.json")
@@ -184,7 +183,7 @@ def test_gen_tilesets_asset():
         assert os.path.exists(bim_json_filepath)
 
         # Read the tileset
-        tileset_content = retrieve_tileset_contents(bim_json_filepath)
+        tileset_content = read_json(bim_json_filepath)
         # Test that the tileset contents are equivalent to the dictionary
         assert "children" in tileset_content["root"]
         assert "content" not in tileset_content["root"]

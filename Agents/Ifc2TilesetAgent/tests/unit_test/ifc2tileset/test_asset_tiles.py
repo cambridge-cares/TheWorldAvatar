@@ -5,15 +5,13 @@ A test suite for the agent.ifc2tileset.asset_tiles submodule.
 """
 from typing import List
 
-# Third party imports
-import pandas as pd
-
 # Self import
 import agent.config.config as properties
 from agent.ifc2tileset.asset_tiles import append_asset_metadata_schema, gen_tileset_assets, append_assets_rec
 from agent.ifc2tileset.root_tile import make_tileset, append_tileset_schema_and_metadata
 from agent.ifc2tileset.schema import Tile, Content
 from agent.ifc2tileset.tile_helper import make_root_tile
+from tests.unit_test.ifc2tileset.testutils import gen_sample_asset_df
 
 
 def test_append_asset_metadata_schema():
@@ -124,11 +122,9 @@ def assert_nested_node_content(nested_node_list: List[dict], test_range: int, cu
             i = -1 if i > 4 else i + 1
             if test_case == 0:
                 metadata = nested_dict["contents"][i]["metadata"]
-                assert nested_dict["contents"][i]["uri"] == "./gltf/asset" + \
-                       str(asset_no) + ".gltf"
+                assert nested_dict["contents"][i]["uri"] == "./gltf/asset" + str(asset_no) + ".gltf"
                 assert metadata["class"] == "AssetMetaData"
-                assert metadata["properties"]["name"] == "element" + \
-                       str(asset_no)
+                assert metadata["properties"]["name"] == "element" + str(asset_no)
                 assert metadata["properties"]["uid"] == "uid" + str(asset_no)
                 assert metadata["properties"]["iri"] == "iri" + str(asset_no)
 
@@ -174,25 +170,7 @@ def test_append_assets_rec_more_than_six_assets():
     assert_nested_node_content(test_dict_list, test_range)
 
 
-def gen_sample_df(test_range: int):
-    """
-    A test function to generate sample datafarame for the
-    test of gen_tileset_assets()
 
-    Argument:
-    test_range - number of assets to generated for testing
-    Returns:
-    The sample dataframe
-    """
-    rows = [
-        {
-            "uid": "uid" + str(i),
-            "name": "element" + str(i),
-            "iri": "iri" + str(i),
-            "file": "asset" + str(i)
-        } for i in range(test_range)
-    ]
-    return pd.DataFrame(rows)
 
 
 def test_gen_tileset_assets():
@@ -201,8 +179,9 @@ def test_gen_tileset_assets():
     """
     # Generate sample parameters
     test_range = 8
-    sample_df = gen_sample_df(test_range)
+    sample_df = gen_sample_asset_df(test_range)
     building_iri = "buildingIri"
+
     root_tile = make_root_tile(properties.bbox_root)
     tileset = make_tileset(root_tile)
     append_tileset_schema_and_metadata(tileset, building_iri)

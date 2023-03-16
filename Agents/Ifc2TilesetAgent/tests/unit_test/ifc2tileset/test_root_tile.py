@@ -25,20 +25,20 @@ def test_append_tileset_schema():
     building_iri = "http://www.theworldavatar.com/ifc/building/Building_5a9f7641-2d12-11b2-8040-cdbcaabc8e65"
     result = {}
     expected_tileset = {
-        'schema': {'classes': {
-            'TilesetMetaData': {
-                'name': "Tileset metadata",
-                'description': "A metadata class for the tileset",
-                'properties': {
-                    'buildingIri': {
+        "schema": {"classes": {
+            "TilesetMetaData": {
+                "name": "Tileset metadata",
+                "description": "A metadata class for the tileset",
+                "properties": {
+                    "buildingIri": {
                         "description": "Data IRI of the building",
                         "type": "STRING"
                     }
                 }
             }}},
-        'metadata': {
-            'class': 'TilesetMetaData',
-            'properties': {
+        "metadata": {
+            "class": "TilesetMetaData",
+            "properties": {
                 "buildingIri": building_iri
             }
         }
@@ -84,7 +84,7 @@ def test_gen_root_content_only_building():
 
     # Create a building.gltf for testing
     building = os.path.join("data", "gltf", "building.gltf")
-    open(building, "x", encoding="utf-8")
+    open(building, "x", encoding="utf-8").close()
 
     # Create sample glb file
     building_glb = os.path.join("data", "glb", "building.glb")
@@ -110,13 +110,15 @@ def test_gen_root_content_with_building_and_furniture():
     building_iri = "test_iri"
     expected = make_bim_tileset(C.combined_bbox, building_iri)
     expected["root"]["contents"] = [
-        {"uri": "./gltf/furniture.gltf"}, {"uri": "./gltf/building.gltf"}]
+        {"uri": "./gltf/furniture.gltf"},
+        {"uri": "./gltf/building.gltf"}
+    ]
 
     # Create both glTF files for testing
     building = os.path.join("data", "gltf", "building.gltf")
     furniture = os.path.join("data", "gltf", "furniture.gltf")
-    open(building, "x", encoding="utf-8")
-    open(furniture, "x", encoding="utf-8")
+    open(building, "x", encoding="utf-8").close()
+    open(furniture, "x", encoding="utf-8").close()
 
     # Create GLB files for testing
     building_glb = os.path.join("data", "glb", "building.glb")
