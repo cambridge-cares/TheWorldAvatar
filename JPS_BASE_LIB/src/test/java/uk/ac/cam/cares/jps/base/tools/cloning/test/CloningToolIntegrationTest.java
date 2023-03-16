@@ -20,7 +20,7 @@ import uk.ac.cam.cares.jps.base.tools.cloning.CloningTool;
 @Testcontainers
 class CloningToolIntegrationTest {
  
-	static final int N_TEST_TRIPLES = 1000;
+	static final int N_TEST_TRIPLES = 2000;
 	
 	static final String BLAZEGRAPH_IMAGE = "docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"; 
 	static final int BLAZEGRAPH_INTERNAL_PORT = 9999;
@@ -79,7 +79,7 @@ class CloningToolIntegrationTest {
 	@Test
 	void testClone() {
 		
-		CloningTool cloningTool = new CloningTool(400,40);
+		CloningTool cloningTool = new CloningTool(800,80);
 		cloningTool.clone(sourceStoreClient, targetStoreClient);
 		
 		assertEquals(N_TEST_TRIPLES,targetStoreClient.getTotalNumberOfTriples());
@@ -103,7 +103,7 @@ class CloningToolIntegrationTest {
 				.addWhere("_:b2", "<pblank2>", "<oblank2>")
 				.addWhere("<sblank3>", "<pblank3>", "_:b3");
 				
-		CloningTool cloningTool = new CloningTool(400,40);
+		CloningTool cloningTool = new CloningTool(800,80);
 		cloningTool.clone(sourceStoreClient, targetStoreClient);
 		
 		assertEquals(N_TEST_TRIPLES+nBlankTriples,targetStoreClient.getTotalNumberOfTriples());
