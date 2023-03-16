@@ -46,11 +46,11 @@ def test_gen_tilesets_solarpanel():
         assert not os.path.exists(sewage_json_filepath)
 
         # Read the tileset
-        tileset_content = read_json(solar_json_filepath)
+        solar_tileset = read_json(solar_json_filepath)
         # Test that the tileset contents are equivalent to the dictionary
-        assert tileset_content["root"]["content"] == {"uri": "./gltf/solarpanel.gltf"}
+        assert solar_tileset["root"]["content"] == {"uri": "./gltf/solarpanel.gltf"}
         # Test that the bbox is correctly computed
-        assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_box_bbox)
+        assert np.allclose(solar_tileset["root"]["boundingVolume"]["box"], C.sample_box_bbox)
     finally:
         # Remove files
         os.remove(solarpanel_gltf)
@@ -86,11 +86,11 @@ def test_gen_tilesets_sewage():
         assert not os.path.exists(solar_json_filepath)
 
         # Read the tileset
-        tileset_content = read_json(sewage_json_filepath)
+        sewage_tileset = read_json(sewage_json_filepath)
         # Test that the tileset contents are equivalent to the dictionary
-        assert tileset_content["root"]["content"] == {"uri": "./gltf/sewagenetwork.gltf"}
+        assert sewage_tileset["root"]["content"] == {"uri": "./gltf/sewagenetwork.gltf"}
         # Test that the bbox is correctly computed
-        assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_cone_bbox)
+        assert np.allclose(sewage_tileset["root"]["boundingVolume"]["box"], C.sample_cone_bbox)
     finally:
         # Remove files
         os.remove(sewage_gltf)
@@ -162,6 +162,7 @@ def test_gen_tilesets_building():
         os.remove(bim_json_filepath)
 
 
+# TODO: add more scenarios (assets > 6) and assertions (bbox)
 def test_gen_tilesets_asset():
     """
     Tests gen_tilesets() for generating the bim tileset with only asset data

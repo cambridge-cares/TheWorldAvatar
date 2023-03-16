@@ -8,11 +8,16 @@ A test suite for the agent.ifc2tileset.root_tile submodule.
 import os
 from typing import List
 
+# Third-party import
+import pandas as pd
+import trimesh
+
 # Self import
 import agent.config.config as properties
 from agent.ifc2tileset.root_tile import append_tileset_schema_and_metadata, gen_root_content
 from agent.ifc2tileset.tile_helper import make_tileset, make_root_tile
 from . import testconsts as C
+from .testutils import gen_sample_asset_df, gen_sample_asset_contents
 
 ENDPOINT = "http://www.example.org/sparql"
 
@@ -56,17 +61,44 @@ def make_bim_tileset(bbox: List[str], building_iri: str):
     return tile
 
 
-def test_gen_root_content_no_building_no_furniture():
+def test_gen_root_content_no_building_no_furniture_with_assets():
     """
     Tests gen_root_content() when there is no building and furniture.gltf detected
     """
     # arrange
-    # expected tileset is minimal
+    building_iri = "test_iri"
+
+    test_range = 6
+    asset_df = gen_sample_asset_df(test_range)
+
+    glb_files = [os.path.join("data", "glb", f"asset{i}.glb") for i in range(test_range)]
+    for i, file in enumerate(glb_files):
+        m = trimesh.creation.box(bounds=[[-10, -10, i], [10, 10, i + 1]])
+        m.export(file)
+
+    expected = make_bim_tileset([0, 0, 3,  10, 0, 0, 0, 10, 0, 0, 0, 3], building_iri)
+
+    try:
+        # act
+        actual = gen_root_content("test_iri", asset_df)
+
+        # assert
+        assert actual == expected
+    finally:
+        for file in glb_files:
+            os.remove(file)
+
+
+def test_gen_root_content_no_building_no_furniture_no_assets():
+    """
+    Tests gen_root_content() when there is no building and furniture.gltf detected
+    """
+    # arrange
     building_iri = "test_iri"
     expected = make_bim_tileset(properties.bbox_root, building_iri)
 
     # act
-    actual = gen_root_content("test_iri")
+    actual = gen_root_content("test_iri", pd.DataFrame())
 
     # assert
     assert actual == expected
@@ -93,7 +125,7 @@ def test_gen_root_content_only_building():
 
     try:
         # act
-        actual = gen_root_content("test_iri")
+        actual = gen_root_content("test_iri", pd.DataFrame())
     finally:
         os.remove(building)
 
@@ -130,7 +162,7 @@ def test_gen_root_content_with_building_and_furniture():
 
     try:
         # act
-        actual = gen_root_content("test_iri")
+        actual = gen_root_content("test_iri", pd.DataFrame())
 
         # Ensure that tileset contains this dictionary
         assert actual == expected

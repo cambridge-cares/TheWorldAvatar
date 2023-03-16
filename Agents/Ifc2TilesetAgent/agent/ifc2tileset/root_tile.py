@@ -8,6 +8,7 @@ This module provides the root tile and its bounding boxes for all tilesets.
 from pathlib import Path
 
 # Third party imports
+import pandas as pd
 from py4jps import agentlogging
 
 # Self imports
@@ -51,14 +52,14 @@ def append_tileset_schema_and_metadata(tileset: Tileset, building_iri: str):
     }
 
 
-def gen_root_content(building_iri: str):
+def gen_root_content(building_iri: str, asset_data: pd.DataFrame):
     """
     Add the root content of building and background furniture to tileset
     If there are no assets, the tileset generated in this function is sufficient for visualisation
 
     Arguments:
-        query_endpoint - SPARQL QUERY endpoint
-        update_endpoint - SPARQL UPDATE endpoint
+        building_iri - data IRI of the building
+        asset_data - dataframe containing mappings for asset metadata
     Returns:
         The tileset generated as a python dictionary
     """
@@ -85,7 +86,11 @@ def gen_root_content(building_iri: str):
             # Tileset Nomenclature for 1 geometry file = content:{}
             root_tile = make_root_tile(bbox=bbox, content=building_content)
     else:
-        root_tile = make_root_tile(bbox=properties.bbox_root)
+        # In the scenario where there is no building and no furniture, the root bbox should enclose all assets
+        bbox = compute_bbox([f"./data/glb/{file}.glb" for file in asset_data["file"]]) \
+            if not asset_data.empty \
+            else properties.bbox_root
+        root_tile = make_root_tile(bbox=bbox)
 
     tileset = make_tileset(root_tile)
     append_tileset_schema_and_metadata(tileset, building_iri)

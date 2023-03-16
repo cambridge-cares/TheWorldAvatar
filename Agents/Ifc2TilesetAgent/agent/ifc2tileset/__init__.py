@@ -30,7 +30,7 @@ def gen_tilesets(asset_data: pd.DataFrame, building_iri: str):
     gen_sewagenetwork_tileset()
 
     # Generate tileset with root contents
-    bim_tileset = gen_root_content(building_iri)
+    bim_tileset = gen_root_content(building_iri, asset_data)
 
     # If there are assets, append tileset with asset information
     if not asset_data.empty:

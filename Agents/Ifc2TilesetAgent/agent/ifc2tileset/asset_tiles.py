@@ -54,28 +54,29 @@ def append_assets_to_tile_node(tile: Tile, asset_df: pd.DataFrame):
         asset_df - dataframe containing mappings for asset metadata
         tile - parent node to have assets added as a child node
     """
-    assets: List[Content] = asset_df.apply(
-            # Add geometry and uid for each asset
-            lambda row: {
-                "uri": state.asset_url + row["file"] + ".gltf",
-                # Add the asset name to establish a metadata skeleton
-                "metadata": {
-                    "class": "AssetMetaData",
-                    "properties": {
-                        NAME_VAR: row[NAME_VAR].split(":")[0],
-                        ID_VAR: row[ID_VAR],
-                        IRI_VAR: row[IRI_VAR]
-                    }
+    def asset_data_to_tileset_content(row: pd.Series):
+        # Add geometry and uid for each asset
+        return {
+            "uri": state.asset_url + row["file"] + ".gltf",
+            # Add the asset name to establish a metadata skeleton
+            "metadata": {
+                "class": "AssetMetaData",
+                "properties": {
+                    NAME_VAR: row[NAME_VAR].split(":")[0],
+                    ID_VAR: row[ID_VAR],
+                    IRI_VAR: row[IRI_VAR]
                 }
-            }, axis=1
-        ).tolist()
+            }
+        }
+
+    contents: List[Content] = asset_df.apply(asset_data_to_tileset_content, axis=1).tolist()
     bbox = compute_bbox([f"./data/glb/{file}.glb" for file in asset_df["file"]])
 
     tile["children"] = [{
         "boundingVolume": {"box": bbox},
         "geometricError": 50,
         # Nomenclature for 1 geometry file = content:{}, multiple files = contents:[{}]
-        "contents": assets
+        "contents": contents
         # CesiumJS only supports six content by default:
         # https://github.com/CesiumGS/cesium/issues/10468
         # If we have more than six assets, do add more inner children contents here
@@ -99,7 +100,7 @@ def append_assets(tileset: Tileset, asset_df: pd.DataFrame):
 
         # CAVEAT: Functionality for visualising tilesets with >10 child nodes in Cesium has yet to be tested.
         # If the code fails to work for more child nodes, perform early stopping when above the max limit of child nodes
-        # if i >= 10:
+        # if i >= 10 * assets_num_per_node:
         #     break
 
 
