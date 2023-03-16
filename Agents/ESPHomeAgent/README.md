@@ -18,8 +18,6 @@ To use the API, a ESPHome server must be already set up and running. One way to 
 More information can be found [here] (https://esphome.io/components/web_server.html).
 A step by step example can be found [here] (https://siytek.com/esp8266-web-server-led/).
 
-Another prerequisite is to have a KG that has the relevant timeseries IRIs instantiated in it and a postgreSQL database with timeseries data.
-
 ### switch status
 To check the state of the GPIO pin which behaves like a switch, a GET request needs to be sent to the following endpoint:
 ```
@@ -56,23 +54,23 @@ or need to be accessible from the host machine via a fixed URL. This can be eith
 ```
 <https://www.theworldavatar.com/kg/ontodevice/CoolingFan-01> rdf:type <https://saref.etsi.org/core/HVAC> ;
         <https://saref.etsi.org/core/hasState>	<http://www.theworldavatar.com/kb/ontotimeseries/esphome_generic_output_2422cab1-fa7a-4093-a86b-0c3d13732d49> ;
-        <https://www.theworldavatar.com/kg/ontodevice/hasSetpoint>	<https://www.theworldavatar.com/kg/ontodevice/Setpoint-01> .
+        <https://www.theworldavatar.com/kg/ontodevice/hasSetpoint> <https://www.theworldavatar.com/kg/ontodevice/Setpoint-01> .
 
 <http://www.theworldavatar.com/kb/ontotimeseries/esphome_generic_output_2422cab1-fa7a-4093-a86b-0c3d13732d49> rdf:type <https://saref.etsi.org/core/OnOffState> ;
-        <https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries>	<http://www.theworldavatar.com/kb/ontotimeseries/Timeseries_003ec3be-a767-4943-835d-8587efb93504> .
+        <https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries> <http://www.theworldavatar.com/kb/ontotimeseries/Timeseries_003ec3be-a767-4943-835d-8587efb93504> .
 
 <http://www.theworldavatar.com/kb/ontotimeseries/Timeseries_003ec3be-a767-4943-835d-8587efb93504> rdf:type <https://www.theworldavatar.com/kg/ontotimeseries/InstantaneousTimeSeries> ;
         <https://www.theworldavatar.com/kg/ontotimeseries/hasRDB> "jdbc:postgresql://localhost:5432/esphome" ;	
         <https://www.theworldavatar.com/kg/ontotimeseries/hasTimeUnit> "OffsetDateTime" .
 
 <https://www.theworldavatar.com/kg/ontodevice/Setpoint-01> rdf:type <https://www.theworldavatar.com/kg/ontodevice/Setpoint> ;
-        <https://www.theworldavatar.com/kg/ontodevice/hasQuantity> <https://www.theworldavatar.com/kg/ontodevice/Setpoint-01-Temperature>	.
+        <https://www.theworldavatar.com/kg/ontodevice/hasQuantity> <https://www.theworldavatar.com/kg/ontodevice/Setpoint-01-Temperature> .
 
 <https://www.theworldavatar.com/kg/ontodevice/Setpoint-01-Temperature> rdf:type <http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature>	;
         <http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue> <https://www.theworldavatar.com/kg/ontodevice/V_Setpoint-01-Temperature> .
 
-<https://www.theworldavatar.com/kg/ontodevice/V_Setpoint-01-Temperature> rdf:type <http://www.ontology-of-units-of-measure.org/resource/om-2/Measure>	;
-        <http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit> <http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius>	;
+<https://www.theworldavatar.com/kg/ontodevice/V_Setpoint-01-Temperature> rdf:type <http://www.ontology-of-units-of-measure.org/resource/om-2/Measure> ;
+        <http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit> <http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius> ;
         <http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue> "26.0"^^xsd:double .
 ```
 
