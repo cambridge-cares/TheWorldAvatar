@@ -71,3 +71,4 @@ isAttachedTo,Object Property,,,Device,https://w3id.org/bot#Element,,A relationsh
 isConnectedTo,Object Property,,,Device,Device,,A relationship that describes a device being connected to another device where the operation of one device will affect the other.,https://www.theworldavatar.com/kg/ontodevice/,is connected to
 sendsSignalTo,Object Property,,,Device,Device,,A relationship that describes a device sending a signal to another device.,https://www.theworldavatar.com/kg/ontodevice/,sends signal to
 hasGeoLocation,Object Property,,,Device,http://www.opengis.net/ont/sf#Point,,A relationship that describes a device's location.,https://www.theworldavatar.com/kg/ontodevice/,has geo location
+sensesFluid,Object Property,,,Device,http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Substance,,A relationship that describes the type of fluid that a device is sensing or observing.,https://www.theworldavatar.com/kg/ontodevice/,senses fluid
