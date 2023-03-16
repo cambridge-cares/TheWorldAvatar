@@ -1,45 +1,37 @@
 package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent;
 
+import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.apache.jena.graph.Node;
+import org.apache.jena.graph.NodeFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.jooq.DSLContext;
-import org.jooq.SQLDialect;
-import org.jooq.impl.DSL;
 import org.json.JSONArray;
-import org.json.JSONObject;
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-
 import org.postgis.Point;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
-
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.InstantiationClient.instantiationMethod;
-
-import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 
 
 @WebServlet(urlPatterns = "/update")
@@ -91,7 +83,9 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
     private static int maxSize = accel_lolValues.size()+magnetometer_lolValues.size()+gravity_lolValues.size()+location_lolValues.size()+dBFS_lolValues.size()+lightValue_lolValues.size()+brightness_lolValues.size();
     private static String DEVICEID;
     private static final long serialVersionUID = 1L;
+    private static final String BASEURI = "https://www.theworldavatar.com/kg/sensorloggerapp/";
 
+    private static String smartphoneString;
     private Timer timer;
     private boolean isTimerStarted = false;
     private boolean hasData = false;
@@ -103,11 +97,10 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             timer = new Timer();
             timer.schedule(new instantiationTask(), 2000,5000); // 5000 milliseconds = 5 seconds
 
+            //Create POSTGIS Database in the stack
             PostGISClient postGISClient = PostGISClient.getInstance();
             postGISClient.createDatabase(EnvConfig.DATABASE);
         }
-
-
     }
 
 
@@ -133,16 +126,15 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        //Readconfig
         readConfig();
-        // Parse the HTTP POST request
-        // Do whatever processing you need to do with the request data
 
         // Send a response back to the client with a 200 status code
         response.setStatus(HttpServletResponse.SC_OK);
         PrintWriter out = response.getWriter();
         out.println("HTTP POST request processed.");
 
-
+        //Parse incoming data and add them to respective list
         StringBuilder data = new StringBuilder();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream(), StandardCharsets.UTF_8))) {
             String line;
@@ -231,8 +223,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
         // Log the request data
         System.out.println("Received POST request with data");
         hasData=true;
-
-
+        
         // Build the response string
         String responseString = "Received POST request with data:\n" + data;
 
@@ -269,9 +260,30 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
     private static RemoteRDBStoreClient tsRDBStoreClient;
     private static RemoteRDBStoreClient rdbStoreClient;
     private static RemoteStoreClient storeClient;
+    private static QueryClientSPARQL queryClientSPARQL;
 
     private static final Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppAgent.class);
-    private static final String BASEURI = "https://www.theworldavatar.com/kg/sensorloggerapp/";
+
+    private static String accel_xIRI;
+    private static String accel_yIRI;
+    private static String accel_zIRI;
+    private static String gravity_xIRI;
+    private static String gravity_yIRI;
+    private static String gravity_zIRI;
+    private static String magnetometer_xIRI;
+    private static String magnetometer_yIRI;
+    private static String magnetometer_zIRI;
+    private static String bearingIRI;
+    private static String speedIRI;
+    private static String altitudeIRI;
+    private static String pointIRI;
+    private static String dbfsIRI;
+    private static String relativeBrightnessIRI;
+    private static String light_valueIRI;
+    private static ArrayList<OffsetDateTime> timesList;
+    private static List<List<?>> lolvalues;
+    private static final String timeUnit = OffsetDateTime.class.getSimpleName();
+    private HashMap iriHashmap = new HashMap();
 
     private static void readConfig() {
         ResourceBundle config = ResourceBundle.getBundle("config");
@@ -280,190 +292,45 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
         timerDelay= Integer.valueOf(config.getString("timerDelay"));
         timerFrequency= Integer.valueOf(config.getString("timerFrequency"));
 
-
-
         EndpointConfig endpointConfig = new EndpointConfig();
         rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
         storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
+        queryClientSPARQL = new QueryClientSPARQL(storeClient);
     }
 
 
-
-
-
-
-    //Declaring
-    public static final String accelerometer = "accelerometer";
-    public static final String gravity = "gravity";
-    public static final String light = "light";
-    public static final String location = "location";
-    public static final String magnetometer = "magnetometer";
-    public static final String microphone = "microphone";
-    public static final String screen = "screen";
-    //Declare table header as string.
-    public static final String timestamp = "timestamp";
-    public static final String accel_x = "accel_x";
-    public static final String accel_y = "accel_y";
-    public static final String accel_z = "accel_z";
-    public static final String gravity_x = "gravity_x";
-    public static final String gravity_y = "gravity_y";
-    public static final String gravity_z = "gravity_z";
-    public static final String light_value = "light_value";
-    public static final String bearing = "bearing";
-    public static final String speed = "speed";
-    public static final String altitude = "altitude";
-    public static final String geom_location = "geom_location";
-    public static final String magnetometer_x = "magnetometer_x";
-    public static final String magnetometer_y = "magnetometer_y";
-    public static final String magnetometer_z = "magnetometer_z";
-    public static final String dbfs = "dbfs";
-    public static final String brightness = "brightness";
-
-    //Declare tableHeader as list of strings
-    public static List<String> accelerometerHeader = Arrays.asList(timestamp, accel_x, accel_y, accel_z);
-    public static List<String> gravityHeader = Arrays.asList(timestamp, gravity_x, gravity_y, gravity_z);
-    public static List<String> lightHeader = Arrays.asList(timestamp, light_value);
-    public static List<String> locationHeader = Arrays.asList(timestamp, bearing, speed, altitude, geom_location);
-    public static List<String> magnetometerHeader = Arrays.asList(timestamp, magnetometer_x, magnetometer_y, magnetometer_z);
-    public static List<String> microphoneHeader = Arrays.asList(timestamp, dbfs);
-    public static List<String> screenHeader = Arrays.asList(timestamp, brightness);
-
-    public static List<List<String>> tableHeaderList= Arrays.asList(accelerometerHeader,gravityHeader,lightHeader,locationHeader,magnetometerHeader,microphoneHeader, screenHeader);
-    public static List<String> tableList = Arrays.asList(accelerometer, gravity,light, location,magnetometer,microphone,screen);
-    private static HashMap hashMap = new HashMap();
     private static boolean staticInstantiated = false;
-    public void tsInstantiation() throws Exception {
+    public void tsInstantiation(){
+        smartphoneString=BASEURI+"Smartphone_"+DEVICEID;
+        Node smartphoneIRI= NodeFactory.createURI(smartphoneString);
+        List tsList = new ArrayList();
+        //Accelerometer
+        if(queryClientSPARQL.getAccel_xIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getAccel_yIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getAccel_zIRIArray(smartphoneIRI).isEmpty())
+        {
+            List<String> dataIRIList = new ArrayList<>();
+            accel_xIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_accel_x_"+ UUID.randomUUID();
+            accel_yIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_accel_y_"+ UUID.randomUUID();
+            accel_zIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_accel_z_"+ UUID.randomUUID();
 
-        //Loop through each table
-        for (int i = 0; i < tableList.size(); i++) {
+            dataIRIList.add(accel_xIRI);
+            dataIRIList.add(accel_yIRI);
+            dataIRIList.add(accel_zIRI);
+            iriHashmap.put("accel_x", accel_xIRI);
+            iriHashmap.put("accel_y", accel_yIRI);
+            iriHashmap.put("accel_z", accel_zIRI);
 
-
-            if (!timeseriesExists(i)){
-                initTimeseriesIfNotExist(i, hashMap);
-            }
-            else {
-                String IRIQuery;
-
-                IRIQuery = getQueryDataIRIFromDBTable(i);
-                JSONArray dataIRIArray = rdbStoreClient.executeQuery(IRIQuery);
-
-
-                //Get the newest timeseries
-                TimeSeries getTimeSeries = parseDataToLists(i, parseJSONArrayToList(dataIRIArray));
-
-                if (!getTimeSeries.getTimes().isEmpty()) {
-                    //Skip location table
-                    if (i != 3) {
-                        getTimeSeries = downsampling.aggregation((getTimeSeries), downsamplingRate, downsamplingType);
-                    }
-                    updateData(getTimeSeries);
-                    System.out.println("Timeseries has been updated");
-
-                }
-            }
-        }
-        if( hashMap.size()==maxSize && !staticInstantiated){
-            hashMap.put("DEVICEID","https://www.theworldavatar.com/kg/ontodevice/smartphone_"+DEVICEID);
-            instantiationMethod(hashMap);
-            LOGGER.info(String.format("Units is now instantiated"));
-            staticInstantiated = true;
-        }
-        else if (hashMap.size()==maxSize && staticInstantiated)
-        {LOGGER.info(String.format("Units has been instantiated, InstantiationClient did not run"));}
-        else if (hashMap.size()!=maxSize)
-        { LOGGER.debug(String.format("Not all measuresIRIs are collected, InstantiationClient did not run"));}
-        else
-        {LOGGER.debug(String.format("Static relations was not instantiated"));}
-    }
-
-    static DSLContext getContext(Connection conn) {
-        return DSL.using(conn, SQLDialect.POSTGRES);
-    }
-
-    private static boolean dbTableExists(Connection conn) {
-        String condition = String.format("table_name = '%s'", "dbTable");
-        return getContext(conn).select(DSL.count()).from("information_schema.tables").where(condition).fetchOne(0, int.class) == 1;
-    }
-
-    private static boolean timeseriesExists(int i) throws SQLException {
-        if (!dbTableExists(rdbStoreClient.getConnection())){
-            return false;
-        }
-        String IRIQuery;
-        IRIQuery = getQueryDataIRIFromDBTable(i);
-        JSONArray dataIRIArray = rdbStoreClient.executeQuery(IRIQuery);
-        if (dataIRIArray.length() == 0){
-            return false;
-        } else {
-            return true;
-        }
-
-    }
-
-    /** Initialize timeseries if it does not exist,
-     * @param i table number
-     */
-    private static void initTimeseriesIfNotExist(int i, HashMap hashMap) throws Exception {
-        //Create Timeseries
-        List<String> dataIRIList = createTimeSeries(i, hashMap);
-
-        //GetTimeSeries
-        TimeSeries getTimeSeries = parseDataToLists(i, dataIRIList);
-        getTimeSeries= downsampling.aggregation((getTimeSeries), downsamplingRate, downsamplingType);
-
-        //Add timeseries data with tsList
-        try (Connection conn = rdbStoreClient.getConnection()) {
-
-            tsClient.addTimeSeriesData(getTimeSeries, conn);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new JPSRuntimeException(e);
-        }
-    }
+            List<Class> dataClass = Collections.nCopies(dataIRIList.size(),Double.class);
+            initTimeSeries(dataIRIList,dataClass,timeUnit);
+        }else {
+            List<String> dataIRIList = new ArrayList<>();
+            accel_xIRI=queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getAccel_xIRIArray(smartphoneIRI));
+            accel_yIRI=queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getAccel_yIRIArray(smartphoneIRI));
+            accel_zIRI=queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getAccel_zIRIArray(smartphoneIRI));
+            dataIRIList.add(accel_xIRI);
+            dataIRIList.add(accel_yIRI);
+            dataIRIList.add(accel_zIRI);
 
 
-
-
-    /** Initialize timeseries if it does not exist,
-     * @param i table number
-     */
-    private static void mainCODE(int i, HashMap hashMap) throws Exception {
-
-        //If TS not initilized
-        //Declare dataIRI
-
-        //Init timeseries
-
-        //SPARQL Query for each then bulk add timeseries data
-
-
-
-        //Create Timeseries
-        List<String> dataIRIList = createTimeSeries(i, hashMap);
-
-        //GetTimeSeries
-        TimeSeries getTimeSeries = parseDataToLists(i, dataIRIList);
-        getTimeSeries= downsampling.aggregation((getTimeSeries), downsamplingRate, downsamplingType);
-
-        //Add timeseries data with tsList
-        try (Connection conn = rdbStoreClient.getConnection()) {
-
-            tsClient.addTimeSeriesData(getTimeSeries, conn);
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new JPSRuntimeException(e);
-        }
-    }
-
-    /** Pass in tableNumber, use lolvalues, clear it afterwards by initializing it to empty list, add in new lists, Create timeseries <T> class.
-     * @param tableNumber
-     * @param dataIRIList
-     * @return Timeseries
-     */
-    private static TimeSeries parseDataToLists(int tableNumber, List<String> dataIRIList) {
-        ArrayList<OffsetDateTime> timesList = null;
-        List<List<?>> lolvalues = null;
-        if (tableNumber==0){
             accel_lolValues= Arrays.asList(accelList_x,accelList_y,accelList_z);
             timesList= accel_tsList;
             lolvalues=accel_lolValues;
@@ -474,12 +341,41 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             accelList_y=  new ArrayList<>();
             accelList_z=  new ArrayList<>();
             accel_lolValues= new ArrayList<>();
+
+            TimeSeries accelTS = new TimeSeries(timesList, dataIRIList, lolvalues);
+            tsList.add(accelTS);
         }
-        else if (tableNumber==1){
+
+        //GravitySensor
+        if(queryClientSPARQL.getGravity_xIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getGravity_yIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getGravity_zIRIArray(smartphoneIRI).isEmpty())
+        {
+            List<String> dataIRIList = new ArrayList<>();
+            gravity_xIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_gravity_x_"+ UUID.randomUUID();
+            gravity_yIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_gravity_y_"+ UUID.randomUUID();
+            gravity_zIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_gravity_z_"+ UUID.randomUUID();
+
+            dataIRIList.add(gravity_xIRI);
+            dataIRIList.add(gravity_yIRI);
+            dataIRIList.add(gravity_zIRI);
+            iriHashmap.put("gravity_x", gravity_xIRI);
+            iriHashmap.put("gravity_y", gravity_yIRI);
+            iriHashmap.put("gravity_z", gravity_zIRI);
+
+
+            List<Class> dataClass = Collections.nCopies(dataIRIList.size(),Double.class);
+            initTimeSeries(dataIRIList,dataClass,timeUnit);
+        }else {
+            List<String> dataIRIList = new ArrayList<>();
+            gravity_xIRI=queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getGravity_xIRIArray(smartphoneIRI));
+            gravity_yIRI=queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getGravity_yIRIArray(smartphoneIRI));
+            gravity_zIRI=queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getGravity_zIRIArray(smartphoneIRI));
+            dataIRIList.add(gravity_xIRI);
+            dataIRIList.add(gravity_yIRI);
+            dataIRIList.add(gravity_zIRI);
+
             gravity_lolValues= Arrays.asList(gravityList_x,gravityList_y,gravityList_z);
             timesList= gravity_tsList;
             lolvalues= gravity_lolValues;
-
 
             //Reset List
             gravity_tsList =  new ArrayList<>();
@@ -487,151 +383,224 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             gravityList_y=  new ArrayList<>();
             gravityList_z=  new ArrayList<>();
             gravity_lolValues= new ArrayList<>();
+
+            TimeSeries gravityTS = new TimeSeries(timesList, dataIRIList, lolvalues);
+            tsList.add(gravityTS);
         }
-        else if (tableNumber==2){
-            lightValue_lolValues= Arrays.asList(lightValueList);
-            timesList= lightValue_tsList;
-            lolvalues= lightValue_lolValues;
 
+        //Magnetometer
+        if(queryClientSPARQL.getMagnetometer_xIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getMagnetometer_yIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getMagnetometer_zIRIArray(smartphoneIRI).isEmpty())
+        {
+            List<String> dataIRIList = new ArrayList<>();
+            magnetometer_xIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_magnetometer_x_"+ UUID.randomUUID();
+            magnetometer_yIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_magnetometer_y_"+ UUID.randomUUID();
+            magnetometer_zIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_magnetometer_z_"+ UUID.randomUUID();
 
-            lightValue_tsList=new ArrayList<>();
-            lightValueList =new ArrayList<>();
-            lightValue_lolValues=new ArrayList<>();
+            dataIRIList.add(magnetometer_xIRI);
+            dataIRIList.add(magnetometer_yIRI);
+            dataIRIList.add(magnetometer_zIRI);
+            iriHashmap.put("magnetometer_x", magnetometer_xIRI);
+            iriHashmap.put("magnetometer_y", magnetometer_yIRI);
+            iriHashmap.put("magnetometer_z", magnetometer_zIRI);
 
-        }
-        else if (tableNumber==3){
-            location_lolValues= Arrays.asList(bearingList,speedList,altitudeList,geomLocationList);
-            timesList= location_tsList;
-            lolvalues= location_lolValues;
+            List<Class> dataClass = Collections.nCopies(dataIRIList.size(),Double.class);
+            initTimeSeries(dataIRIList,dataClass,timeUnit);
+        }else {
+            List<String> dataIRIList = new ArrayList<>();
+            magnetometer_xIRI=queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getMagnetometer_xIRIArray(smartphoneIRI));
+            magnetometer_yIRI=queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getMagnetometer_yIRIArray(smartphoneIRI));
+            magnetometer_zIRI=queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getMagnetometer_zIRIArray(smartphoneIRI));
+            dataIRIList.add(magnetometer_xIRI);
+            dataIRIList.add(magnetometer_yIRI);
+            dataIRIList.add(magnetometer_zIRI);
 
-            location_tsList=new ArrayList<>();
-            bearingList=new ArrayList<>();
-            speedList=new ArrayList<>();
-            altitudeList=new ArrayList<>();
-            geomLocationList=new ArrayList<>();
-            location_lolValues=new ArrayList<>();
-
-        }
-        else if (tableNumber==4){
             magnetometer_lolValues= Arrays.asList(magnetometerList_x,magnetometerList_y,magnetometerList_z);
             timesList= magnetometer_tsList;
             lolvalues= magnetometer_lolValues;
 
-            magnetometer_tsList=new ArrayList<>();
-            magnetometerList_x=new ArrayList<>();
-            magnetometerList_y=new ArrayList<>();
-            magnetometerList_z=new ArrayList<>();
-            magnetometer_lolValues=new ArrayList<>();
+            //Reset List
+            magnetometer_tsList =  new ArrayList<>();
+            magnetometerList_x =  new ArrayList<>();
+            magnetometerList_y=  new ArrayList<>();
+            magnetometerList_z=  new ArrayList<>();
+            magnetometer_lolValues= new ArrayList<>();
 
+            TimeSeries magnetometerTS = new TimeSeries(timesList, dataIRIList, lolvalues);
+            tsList.add(magnetometerTS);
         }
-        else if (tableNumber==5){
+
+        //GPSDevice
+        if(queryClientSPARQL.getBearingIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getSpeedIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getAltitudeIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getPointIRIArray(smartphoneIRI).isEmpty())
+        {
+            List<String> dataIRIList = new ArrayList<>();
+            bearingIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_bearing_"+ UUID.randomUUID();
+            speedIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_speed_"+ UUID.randomUUID();
+            altitudeIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_altitude_"+ UUID.randomUUID();
+            pointIRI="https://www.theworldavatar.com/kg/sensorloggerapp/point_"+ UUID.randomUUID();
+            dataIRIList.add(bearingIRI);
+            dataIRIList.add(speedIRI);
+            dataIRIList.add(altitudeIRI);
+            dataIRIList.add(pointIRI);
+            iriHashmap.put("bearing", bearingIRI);
+            iriHashmap.put("speed", speedIRI);
+            iriHashmap.put("altitude", altitudeIRI);
+            iriHashmap.put("point",pointIRI);
+
+            List<Class> dataClass = Collections.nCopies(dataIRIList.size()-1,Double.class);
+            List <Class> dataClassWithPoint= new ArrayList<>(dataClass);
+            dataClassWithPoint.add(Point.class);
+            initTimeSeries(dataIRIList,dataClassWithPoint,timeUnit);
+
+        }else {
+            List<String> dataIRIList = new ArrayList<>();
+            bearingIRI =queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getBearingIRIArray(smartphoneIRI));
+            speedIRI =queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getSpeedIRIArray(smartphoneIRI));
+            altitudeIRI =queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getAltitudeIRIArray(smartphoneIRI));
+            pointIRI=queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getPointIRIArray(smartphoneIRI));
+            dataIRIList.add(bearingIRI);
+            dataIRIList.add(speedIRI);
+            dataIRIList.add(altitudeIRI);
+            dataIRIList.add(pointIRI);
+
+            location_lolValues= Arrays.asList(bearingList,speedList,altitudeList,geomLocationList);
+            timesList= location_tsList;
+            lolvalues= location_lolValues;
+
+            //Reset List
+            location_tsList =  new ArrayList<>();
+            bearingList =  new ArrayList<>();
+            speedList=  new ArrayList<>();
+            altitudeList=  new ArrayList<>();
+            geomLocationList=  new ArrayList<>();
+            location_lolValues= new ArrayList<>();
+
+            TimeSeries locationTS = new TimeSeries(timesList, dataIRIList, lolvalues);
+            tsList.add(locationTS);
+        }
+
+        //Microphone
+        if(queryClientSPARQL.getSoundPressureLevelIRIArray(smartphoneIRI).isEmpty())
+        {
+            List<String> dataIRIList = new ArrayList<>();
+            dbfsIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_dbfs_"+ UUID.randomUUID();
+            dataIRIList.add(dbfsIRI);
+            iriHashmap.put("dbfs", dbfsIRI);
+
+            List<Class> dataClass = Collections.nCopies(dataIRIList.size(),Double.class);
+            initTimeSeries(dataIRIList,dataClass,timeUnit);
+        }else {
+            List<String> dataIRIList = new ArrayList<>();
+            dbfsIRI =queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getSoundPressureLevelIRIArray(smartphoneIRI));
+            dataIRIList.add(dbfsIRI);
+
             dBFS_lolValues= Arrays.asList(dBFSList);
             timesList= dBFS_tsList;
             lolvalues= dBFS_lolValues;
 
+            //Reset List
             dBFS_tsList = new ArrayList<>();
             dBFSList = new ArrayList<>();
             dBFS_lolValues = new ArrayList<>();
+
+            TimeSeries locationTS = new TimeSeries(timesList, dataIRIList, lolvalues);
+            tsList.add(locationTS);
         }
-        else if (tableNumber==6){
+
+        //RelativeBrightness
+        if(queryClientSPARQL.getRelativeBrightnessIRIArray(smartphoneIRI).isEmpty())
+        {
+            List<String> dataIRIList = new ArrayList<>();
+            relativeBrightnessIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/relativeBrightness_"+ UUID.randomUUID();
+            dataIRIList.add(relativeBrightnessIRI);
+            iriHashmap.put("relativeBrightness", relativeBrightnessIRI);
+
+            List<Class> dataClass = Collections.nCopies(dataIRIList.size(),Double.class);
+            initTimeSeries(dataIRIList,dataClass,timeUnit);
+        }else {
+            List<String> dataIRIList = new ArrayList<>();
+            relativeBrightnessIRI =queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getRelativeBrightnessIRIArray(smartphoneIRI));
+            dataIRIList.add(relativeBrightnessIRI);
+
             brightness_lolValues= Arrays.asList(brightnessList);
             timesList= brightness_tsList;
             lolvalues= brightness_lolValues;
 
-
+            //Reset List
             brightness_tsList=new ArrayList<>();
             brightnessList = new ArrayList<>();
             brightness_lolValues= new ArrayList<>();
 
+            TimeSeries relativeBrightnessTS = new TimeSeries(timesList, dataIRIList, lolvalues);
+            tsList.add(relativeBrightnessTS);
         }
-        else {LOGGER.debug(String.format("Table number not specified correctly"));}
 
-        //Pass time list, dataIRI List - just one, lolvalues, add timeseries to output
-        return new TimeSeries(timesList, dataIRIList, lolvalues);
+        //Camera
+        if(queryClientSPARQL.getIlluminanceIRIArray(smartphoneIRI).isEmpty())
+        {
+            List<String> dataIRIList = new ArrayList<>();
+            light_valueIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/light_value_"+ UUID.randomUUID();
+            dataIRIList.add(light_valueIRI);
+            iriHashmap.put("light_value", light_valueIRI);
 
+            List<Class> dataClass = Collections.nCopies(dataIRIList.size(),Double.class);
+            initTimeSeries(dataIRIList,dataClass,timeUnit);
+        }else{
+            List<String> dataIRIList = new ArrayList<>();
+            light_valueIRI =queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getIlluminanceIRIArray(smartphoneIRI));
+            dataIRIList.add(light_valueIRI);
+
+            lightValue_lolValues= Arrays.asList(lightValueList);
+            timesList= lightValue_tsList;
+            lolvalues= lightValue_lolValues;
+
+            //Reset list
+            lightValue_tsList=new ArrayList<>();
+            lightValueList =new ArrayList<>();
+            lightValue_lolValues=new ArrayList<>();
+
+            TimeSeries lightValueTS = new TimeSeries(timesList, dataIRIList, lolvalues);
+            tsList.add(lightValueTS);
+        }
+
+        
+
+        if (iriHashmap.size()==maxSize && !staticInstantiated){
+            iriHashmap.put("deviceID", smartphoneString);
+            instantiationMethod(iriHashmap);
+            LOGGER.info(String.format("Units is now instantiated"));
+            staticInstantiated = true;
+        }else if (iriHashmap.size()==maxSize && staticInstantiated)
+        {LOGGER.info(String.format("Units has been instantiated, InstantiationClient did not run"));}
+        else if (iriHashmap.size()!=maxSize)
+        { LOGGER.debug(String.format("Not all measuresIRIs are collected, InstantiationClient did not run"));}
+        else
+        {LOGGER.debug(String.format("Static relations was not instantiated"));}
+
+        //
+        if (tsList.size() != 7){
+            System.out.println("It did not get all 7 timeseries");
+            bulkAddTimeSeriesData(tsList);
+        }else {
+            System.out.println("All 7 timeseries has been collected");
+            bulkAddTimeSeriesData(tsList);
+        }
     }
 
-    /** Pass in tableNumber, create dataIRI and assign random UUID.
-     * @param tableNumber
-     * @return dataIRIList
-     */
-    private static List<String> createTimeSeries(int tableNumber, HashMap hashMap) {
-        List tableHeader= tableHeaderList.get(tableNumber);
-        List<String> dataIRIList = new ArrayList<>();;
-
-        //Create dataIRI for each variable
-        for (int sensorVariable = 1; sensorVariable < tableHeader.size() ;sensorVariable++){
-            String dataIRIName =BASEURI+DEVICEID+"_"+tableHeader.get(sensorVariable)+ "_"+ UUID.randomUUID();
-
-            String key = "measure_"+tableHeader.get(sensorVariable);
-            hashMap.put(key,dataIRIName);
-            dataIRIList.add(dataIRIName);
-        }
-
-        String timeUnit = OffsetDateTime.class.getSimpleName();
-        List<Class> dataClass;
-
-        //Add geom class when initializing location
-        if (tableHeader==locationHeader) {
-            List <Class> dataClassInit = (Collections.nCopies(tableHeader.size()-2,Double.class));
-            dataClass = new ArrayList<>(dataClassInit);
-            dataClass.add(Point.class);
-        }else //Dont need to initialize
-        {
-            dataClass = (Collections.nCopies(tableHeader.size()-1,Double.class));
-        }
-
+    private void bulkAddTimeSeriesData(List<TimeSeries> tsList){
         try (Connection conn = rdbStoreClient.getConnection()) {
-
-
             TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
-            tsClient.initTimeSeries(dataIRIList, dataClass, timeUnit, conn);
+            tsClient.bulkaddTimeSeriesData(tsList, conn);
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
         }
-        return dataIRIList;
-    }
-    /** Generate query to retrieve dataIRI from DBTable
-     * @param i
-     * @return
-     */
-    private static String getQueryDataIRIFromDBTable(int i){
-        String query;
-
-        query = "SELECT \"dataIRI\" FROM public.\"dbTable\" WHERE \"dataIRI\" LIKE ";
-        for (int b = 1; b < tableHeaderList.get(i).size(); b++){
-            if (b==1){ query =query+"'%"+tableHeaderList.get(i).get(b)+"%'";}
-            else {query = query + " OR \"dataIRI\" LIKE "+"'%"+tableHeaderList.get(i).get(b)+"%'";}
-        }
-        return query;
     }
 
-    /** Parse JSONArray into a List, in this case dataIRIList
-     * @param jArray
-     * @return
-     */
-    private static ArrayList<String> parseJSONArrayToList (JSONArray jArray){
-        ArrayList<String> listdata = new ArrayList<String>();
-        if (jArray != null) {
-            for (int i=0;i<jArray.length();i++){
-                JSONObject row = jArray.getJSONObject(i);
-                listdata.add(row.get("dataIRI").toString());
-            }
-        }
-        return listdata;
-    }
+    private void initTimeSeries(List<String> dataIRIList, List dataClass, String timeUnit){
 
-    /** Pass in timeseries to update data
-     * @param ts
-     * @throws IllegalArgumentException
-     */
-    public static void updateData(TimeSeries<OffsetDateTime> ts) throws IllegalArgumentException {
-        // Update each time series
-        OffsetDateTime endDataTime;
         try (Connection conn = rdbStoreClient.getConnection()) {
             TimeSeriesClient tsClient = new TimeSeriesClient(storeClient, OffsetDateTime.class);
-            tsClient.addTimeSeriesData(ts, conn);
+            tsClient.initTimeSeries(dataIRIList, dataClass, timeUnit, conn);
         } catch (Exception e) {
             e.printStackTrace();
             throw new JPSRuntimeException(e);
