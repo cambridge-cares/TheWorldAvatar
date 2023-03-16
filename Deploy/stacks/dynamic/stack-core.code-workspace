@@ -13,15 +13,47 @@
 			"path": "common-scripts"
 		},
 		{
-			"path": "example_datasets"
+			"path": "examples"
 		},
 		{
 			"path": "../../../Agents/utils/parent-pom"
+		},
+		{
+			"path": "../../../JPS_BASE_LIB"
 		}
 	],
 	"settings": {
 		"java.configuration.updateBuildConfiguration": "automatic",
-		"java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m"
+		"java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx8G -Xms100m",
+		"cSpell.words": [
+			"Adminer",
+			"Blazegraph",
+			"CMCL",
+			"cmclinnovations",
+			"crome",
+			"cropmap",
+			"datasubset",
+			"EPSG",
+			"freelist",
+			"gdal",
+			"gdbindexes",
+			"gdbtable",
+			"gdbtablx",
+			"Geodatabase",
+			"geotiff",
+			"GEOTIFFS",
+			"LINESTRING",
+			"MULTILINESTRING",
+			"Multimap",
+			"OBDA",
+			"pgsql",
+			"POSTGIS",
+			"Shapefile",
+			"Shapefiles",
+			"SPARQL",
+			"SRID"
+		],
+		"java.compile.nullAnalysis.mode": "automatic"
 	},
 	"extensions": {
 		"recommendations": [

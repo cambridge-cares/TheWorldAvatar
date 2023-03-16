@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.interfaces;
 
 import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.tools.cloning.CloningTool;
 
@@ -70,6 +71,12 @@ public interface TripleStoreClientInterface extends StoreClientInterface{
      * @param updateEndpoint
      */
     String setUpdateEndpoint(String updateEndpoint);
+
+    /**
+     * Executes the update operation supplied by the calling method.
+     * @param update as UpdateRequest
+     */
+    int executeUpdate(UpdateRequest update);
 
     /**
      * Counts the total number of triples in the repository.

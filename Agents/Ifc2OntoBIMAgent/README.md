@@ -8,10 +8,14 @@ This agent converts IFC files into TTL files defined by the OntoBIM ontology, an
 This agent is designed to work with IFC2x3 TC1 schema. IFC4 schema are not yet included. The scope coverage is also 
 non-exhaustive at this point, including only the relevant concepts.
 
-Some excluded concepts include:
+Some excluded concepts are:
  - Property Sets
  - Niche Geometries
  - Material Information
+
+Notes:
+- In the IFC schema, only certain elements (IfcFurnishingElement, IfcBuildingElementProxy) are linked to their Spaces. 
+Other elements are always linked to their Storey, even if there is a Space defined.
 
 #### 1.2 Technical Requirements
 - Java 11
@@ -73,10 +77,10 @@ Run the agent by sending a POST request with the required JSON Object to `http:/
 ```
 POST http://localhost:3025/ifc2ontobim-agent/retrieve
 Content-Type: application/json
-{"uri":"http://www.theworldavatar.com/ifc/building/","endpoint","http://docker.internal.host:9999/blazegraph/namespace/ifc/sparql"}
+{"uri":"http://www.theworldavatar.com/ifc/building/","endpoint","http://IPv4ADDRESS:PORTNO/blazegraph/namespace/ifc/sparql"}
 
 // Written in curl syntax (as one line)
-curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/','endpoint':'http://docker.internal.host:9999/blazegraph/namespace/ifc/sparql'}" localhost:3025/ifc2ontobim-agent/retrieve 
+curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/','endpoint':'http://IPv4ADDRESS:PORTNO/blazegraph/namespace/ifc/sparql'}" localhost:3025/ifc2ontobim-agent/retrieve 
 ```
 
 If the agent ran successfully, a JSON Object would be returned as follows:
@@ -87,7 +91,7 @@ If the agent ran successfully, a JSON Object would be returned as follows:
 {"Result":["File.ttl has been successfully converted!","File.ttl has been uploaded to endpoint","All ttl files have been generated in OntoBIM. Please check the directory."]}
 ```
 
-#### 2.3 Post-Build
+#### 2.4 Post-Build
 The generated TTL files can be retrieved at the `<root>/data/` directory.
 
 If an endpoint has been provided and only ONE IFC input is provided, the triples would be uploaded to the endpoint as well.

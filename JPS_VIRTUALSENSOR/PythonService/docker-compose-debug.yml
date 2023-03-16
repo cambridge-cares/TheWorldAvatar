@@ -1,0 +1,9 @@
+version: '3.8'
+services:
+  python-service:
+    image: docker.cmclinnovations.com/python-service-debug:1.0.0-SNAPSHOT
+    build:
+      context: .
+      target: debug
+    ports:
+      - "${DEBUG_PORT}:5678"

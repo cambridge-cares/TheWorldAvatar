@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+  example:
+    image: pv_lib_agent:1.1.0
+    build: .
+    container_name: pv_lib_agent
+    ports:
+      - 1020:5000

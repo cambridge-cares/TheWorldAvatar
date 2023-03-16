@@ -1,6 +1,9 @@
 # Install the Average Square Metre Price Agent in Docker container
 #==================================================================================================
 
+# Reference published Docker image for Stack-Client resources to use
+FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
@@ -17,19 +20,20 @@ ENV PYTHONUNBUFFERED=1
 # Install required software: git and openjdk-11
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
-# Copy stack-clients resource to be wrapped by py4jps
-COPY ./tmp_stack ./tmp_stack
+# Copy Stack-Client resource from published Docker image
+RUN mkdir -p ./tmp_stack
+COPY --from=stackclients /app ./tmp_stack
 
 # Set the default working directory & copy files to install Python
 WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
+COPY ./requirements.txt .
 
 # Install Python package and the required libraries
 RUN python -m pip install --upgrade pip
+RUN python -m pip install -r requirements.txt
 RUN python -m pip install -e .
-# Installation of agentlogging (potentially to be excluded to avoid performance issues)
-RUN pip install "git+https://github.com/cambridge-cares/TheWorldAvatar@main#subdirectory=Agents/utils/python-utils"
 
 # Add StackClients py4jps resources
 RUN stack_clients_jar=$(find ../tmp_stack/stack-clients*.jar) && stack_clients_jar=${stack_clients_jar##*/} && \
@@ -59,7 +63,7 @@ CMD python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run -h 0.
 #------------------------------------------------------
 FROM base as prod
 # Install additional dependencies
-RUN pip install gunicorn
+RUN pip install gunicorn==20.0.4
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
@@ -74,7 +78,7 @@ ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "avgsqmpriceagent:create_app()
 #------------------------------------------------------
 FROM base as test
 # Install additional dependencies
-RUN pip install gunicorn
+RUN pip install gunicorn==20.0.4
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
@@ -84,10 +88,16 @@ COPY ./avgsqmpriceagent ./avgsqmpriceagent
 COPY ./tests/mockutils/env_configs_mock.py ./avgsqmpriceagent/utils/env_configs.py
 COPY ./tests/mockutils/stack_configs_mock.py ./avgsqmpriceagent/utils/stack_configs.py
 # Adjust relative import statement
-RUN sed -i "s|env_configs_mock|env_configs |g" ./avgsqmpriceagent/utils/stack_configs.py
+RUN sed -i "s|env_configs_mock|env_configs|g" ./avgsqmpriceagent/utils/stack_configs.py
+# Ensure inter-container ccommunication (on the same host)
+RUN sed -i "s|localhost|host.docker.internal|g" ./avgsqmpriceagent/utils/stack_configs.py
+
+# Mocking call to ONS API within Dockerised agent quite tricky as usual mocking functions not available 
+# outside testing environment and would require overwriting module imports when building the Docker image
+# Hence, call to ONS API is replaced with hardcoded empty list return in "avgprice_estimation.py"
+RUN sed -i "s|self.get_transactions_from_nearest_postcodes(postcode_iri, self.threshold)|[] |g" ./avgsqmpriceagent/agent/avgprice_estimation.py
 
 # Set the entrypoint
 # --preload flag is added to provide more information in the container to help with debugging
 ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:5000", "avgsqmpriceagent:create_app()", "--preload"]
 
-#==================================================================================================

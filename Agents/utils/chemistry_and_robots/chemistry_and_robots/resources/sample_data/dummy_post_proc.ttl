@@ -15,7 +15,6 @@
 @prefix ontohplc:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#> .
 @prefix ontobpr:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#> .
 @prefix ontolab:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#> .
-@prefix ontouom:        <http://theworldavatar.com/resource/ontouom/> .
 @prefix :                <http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/> .
 @prefix dummylab:       <http://example.com/blazegraph/namespace/testlab/dummy_lab/> .
 
@@ -118,6 +117,7 @@
 :ChemicalSolution_1_1
     a ontolab:ChemicalSolution;
     ontovapourtec:fills :Vial_1_1;
+    # ontolab:containsUnidentifiedComponent is not specified for this chemical as it is not post processed yet
 .
 
 #############################
@@ -184,4 +184,5 @@
 :ChemicalSolution_2_1
     a ontolab:ChemicalSolution;
     ontovapourtec:fills :Vial_2_1;
+    # ontolab:containsUnidentifiedComponent is not specified for this chemical as it is not post processed yet
 .
