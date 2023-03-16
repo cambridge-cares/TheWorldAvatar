@@ -56,7 +56,7 @@ PathLike = Union[str, bytes, os.PathLike]
 
 def compute_bbox(gltf: Union[PathLike, List[PathLike]]):
     """
-    Computes bbox for a given glTF/GLB file
+    Computes bbox for a given glTF/GLB file(s)
     """
     if not isinstance(gltf, list):
         gltf = [gltf]

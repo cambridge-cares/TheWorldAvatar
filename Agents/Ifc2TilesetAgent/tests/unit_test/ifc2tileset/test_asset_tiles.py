@@ -7,11 +7,11 @@ from typing import List
 
 # Self import
 import agent.config.config as properties
-from agent.ifc2tileset.asset_tiles import append_asset_metadata_schema, gen_tileset_assets, append_assets_rec
+from agent.ifc2tileset.asset_tiles import append_asset_metadata_schema, gen_tileset_assets, append_assets
 from agent.ifc2tileset.root_tile import make_tileset, append_tileset_schema_and_metadata
 from agent.ifc2tileset.schema import Tile, Content
 from agent.ifc2tileset.tile_helper import make_root_tile
-from tests.unit_test.ifc2tileset.testutils import gen_sample_asset_df
+from tests.unit_test.ifc2tileset.testutils import gen_sample_asset_df, gen_sample_tileset
 
 
 def test_append_asset_metadata_schema():
@@ -47,25 +47,6 @@ def test_append_asset_metadata_schema():
     assert metadata["properties"]["uid"]["type"] == "STRING"
     assert metadata["properties"]["iri"]["description"] == "Data IRI of the asset"
     assert metadata["properties"]["iri"]["type"] == "STRING"
-
-
-def gen_sample_parameters(test_range: int):
-    """
-    A test function to generate sample parameters for the tests of appenddict_rec()
-
-    Argument:
-    test_range - number of assets to generated for testing
-    Returns:
-    The sample tileset and asset list
-    """
-    if test_range > 0:
-        # Generate sample parameters
-        sample_tileset = {"children": [{"key": "value"}]}
-        # Generate list of assets
-        sample_asset = [{"asset" + str(i): "id" + str(i)} for i in range(test_range)]
-        return sample_tileset, sample_asset
-    else:
-        raise ValueError("test_range param must be more than 1")
 
 
 def gen_nested_dicts_for_test(sample_tileset: Tile, test_dict_list: List[Content]):
@@ -129,48 +110,51 @@ def assert_nested_node_content(nested_node_list: List[dict], test_range: int, cu
                 assert metadata["properties"]["iri"] == "iri" + str(asset_no)
 
             else:
-                assert nested_dict["contents"][i]["asset" +
-                                                  str(asset_no)] == "id" + str(asset_no)
+                assert nested_dict["contents"][i]["asset" + str(asset_no)] == "id" + str(asset_no)
         # 6 assets should be cleared for each nested dict
         current_asset_num = current_asset_num + 6
 
 
-def test_append_assets_rec_less_than_six_assets():
+def test_append_assets_less_than_six_assets():
     """
-    Tests appenddict_rec() for less than 6 assets
+    Tests append_assets() for less than 6 assets
     """
     # Generate sample parameters
     test_range = 4
-    sample_tileset, sample_asset = gen_sample_parameters(test_range)
+
+    sample_asset_df = gen_sample_asset_df(test_range)
+    sample_tileset = gen_sample_tileset()
 
     # Execute method
-    append_assets_rec(sample_tileset, sample_asset)
+    append_assets(sample_tileset, sample_asset_df)
 
     # Test that there is no nested children key
-    assert "children" not in sample_tileset["children"][0]
+    assert "children" in sample_tileset["root"]
+    assert "children" not in sample_tileset["root"]["children"][0]
 
 
-def test_append_assets_rec_more_than_six_assets():
+def test_append_assets_more_than_six_assets():
     """
-    Tests appenddict_rec() for more than 6 assets
+    Tests append_assets() for more than 6 assets
     """
     # Generate sample parameters
     test_range = 14
-    sample_tileset, sample_asset = gen_sample_parameters(test_range)
+
+    sample_asset_df = gen_sample_asset_df(test_range)
+    sample_tileset = gen_sample_tileset()
+
     # Execute method
-    append_assets_rec(sample_tileset, sample_asset)
+    append_assets(sample_tileset, sample_asset_df)
+
     # Generate list of nested dict
     test_dict_list = []
-
-    gen_nested_dicts_for_test(sample_tileset, test_dict_list)
+    gen_nested_dicts_for_test(sample_tileset["root"], test_dict_list)
 
     # Test that there is no children in deepest layer
     assert "children" not in test_dict_list[-1]
+
     # Test the nested children nodes are attached with assets
     assert_nested_node_content(test_dict_list, test_range)
-
-
-
 
 
 def test_gen_tileset_assets():
@@ -180,14 +164,10 @@ def test_gen_tileset_assets():
     # Generate sample parameters
     test_range = 8
     sample_df = gen_sample_asset_df(test_range)
-    building_iri = "buildingIri"
-
-    root_tile = make_root_tile(properties.bbox_root)
-    tileset = make_tileset(root_tile)
-    append_tileset_schema_and_metadata(tileset, building_iri)
+    tileset = gen_sample_tileset()
 
     # Execute test method
-    gen_tileset_assets(sample_df, tileset)
+    gen_tileset_assets(tileset, sample_df)
 
     # Process result for programmatic testing
     test_dict_list = []

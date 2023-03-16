@@ -1,6 +1,11 @@
 import json
+from typing import List
 
 import pandas as pd
+
+import agent.config.config as properties
+from agent.ifc2tileset.root_tile import append_tileset_schema_and_metadata
+from agent.ifc2tileset.tile_helper import make_root_tile, make_tileset
 
 
 def read_json(json_filepath: str):
@@ -16,6 +21,13 @@ def read_json(json_filepath: str):
     with open(json_filepath, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data
+
+
+def gen_sample_tileset(bbox: List[float] = properties.bbox_root, building_iri: str = "buildingIri"):
+    root_tile = make_root_tile(bbox)
+    tileset = make_tileset(root_tile)
+    append_tileset_schema_and_metadata(tileset, building_iri)
+    return tileset
 
 
 def gen_sample_asset_df(test_range: int):

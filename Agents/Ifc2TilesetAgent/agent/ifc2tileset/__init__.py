@@ -35,7 +35,7 @@ def gen_tilesets(asset_data: pd.DataFrame, building_iri: str):
     # If there are assets, append tileset with asset information
     if not asset_data.empty:
         logger.info("Individual glTF assets detected. Attaching tileset with asset metadata...")
-        gen_tileset_assets(asset_data, bim_tileset)
+        gen_tileset_assets(bim_tileset, asset_data)
 
     # If there are any root content (building or furniture) or asset info
     if "contents" in bim_tileset["root"] or \
