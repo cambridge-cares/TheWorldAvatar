@@ -105,3 +105,5 @@ hasCurrentRange,Object Property,,,http://www.ontology-of-units-of-measure.org/re
 hasCurrentRange,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,Range,exactly 1,,https://www.theworldavatar.com/kg/ontoems/,has current range
 hasCurrentTrend,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,Trend,,Relationship between a water level measure and its current trend,https://www.theworldavatar.com/kg/ontoems/,has current trend
 hasCurrentTrend,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,Trend,exactly 1,,https://www.theworldavatar.com/kg/ontoems/,has current trend
+CloudCover,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Number,IS-A,,,,Fraction of sky obscured by clouds.,https://www.theworldavatar.com/kg/ontoems/,Cloud cover
+CloudCover,Class,http://purl.org/iot/vocab/m3-lite#CloudCover,EQUIVALENT-TO,,,,Fraction of sky obscured by clouds.,https://www.theworldavatar.com/kg/ontoems/,Cloud cover

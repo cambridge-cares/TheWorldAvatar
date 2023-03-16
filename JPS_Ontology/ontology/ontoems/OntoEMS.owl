@@ -9,7 +9,7 @@
      xmlns:ontoems="https://www.theworldavatar.com/kg/ontoems/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoems/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">15 March 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">16 March 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Environmental Measurement Station ontology (OntoEMS) is an ontology developed for representing environmental measurement stations, reported quantities, and time series of associated readings.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -444,6 +444,15 @@
     
 
 
+    <!-- http://purl.org/iot/vocab/m3-lite#CloudCover -->
+
+
+    <owl:Class rdf:about="http://purl.org/iot/vocab/m3-lite#CloudCover">
+        <owl:equivalentClass rdf:resource="https://www.theworldavatar.com/kg/ontoems/CloudCover"/>
+    </owl:Class>
+    
+
+
     <!-- http://purl.org/iot/vocab/m3-lite#DewPoint -->
 
 
@@ -761,6 +770,18 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The concentration of carbon monoxide in the ambient air.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Carbon monoxide concentration</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoems/CloudCover -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/CloudCover">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Number"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fraction of sky obscured by clouds.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cloud cover</rdfs:label>
     </owl:Class>
     
 
