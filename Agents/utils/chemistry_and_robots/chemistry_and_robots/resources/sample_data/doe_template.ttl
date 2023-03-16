@@ -73,7 +73,7 @@ OntoDoE:TSEMO
 :ContinuousVariable_2
     rdf:type OntoDoE:ContinuousVariable;
     OntoDoE:refersTo :StoiRatio;
-    OntoDoE:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d"^^xsd:string;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202"^^xsd:string;
     OntoDoE:upperLimit "0.2"^^xsd:double;
     OntoDoE:lowerLimit "0.02"^^xsd:double;
 .

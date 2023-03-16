@@ -165,7 +165,7 @@ exp6:StoiRatio_2_Measure_1
 
 exp6:StoiRatio_3
     rdf:type OntoRxn:StoichiometryRatio;
-    OntoDoE:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d"^^xsd:string;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202"^^xsd:string;
     om:hasPhenomenon exp6:RxnExp_1;
     OntoRxn:indicatesMultiplicityOf exp6:InputChemical_3;
     om:hasValue exp6:StoiRatio_3_Measure_1;
@@ -209,13 +209,13 @@ SinglePhase:Composition_OutputChemical_exp6
 
 SinglePhase:PhaseComponent_3_exp6
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf ChemRxn:Species_placeholder_pubchemcid_637759;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_3_exp6_Property_1;
 .
 
 SinglePhase:PhaseComponent_4_exp6
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf ChemRxn:Species_placeholder_pubchemcid_640180;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>;
     OntoCAPEUpp:hasProperty SinglePhase:PhaseComponent_4_exp6_Property_1;
 .
 

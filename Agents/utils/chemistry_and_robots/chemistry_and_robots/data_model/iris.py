@@ -139,7 +139,8 @@ ONTOSPECIES_HASMOLECULARWEIGHT = ONTOSPECIES + 'hasMolecularWeight'
 ONTOSPECIES_UNITS = ONTOSPECIES + 'units'
 ONTOSPECIES_VALUE = ONTOSPECIES + 'value'
 ONTOSPECIES_SPECIES = ONTOSPECIES + 'Species'
-
+ONTOSPECIES_GRAMPERMOLUNIT = 'http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b'
+ONTOSPECIES_KILOGRAMPERMOLUNIT = 'http://www.theworldavatar.com/kg/ontospecies/Unit_671a1cb7-9962-4f9d-a0f7-ba5857383106'
 
 ###--- IRIs for OntoDoE ---###
 ONTODOE_DESIGNOFEXPERIMENT = ONTODOE + 'DesignOfExperiment'

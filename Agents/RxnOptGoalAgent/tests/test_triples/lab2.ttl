@@ -132,7 +132,7 @@
 # product benzalacetone
 :ResponseFactor_2
     a OntoHPLC:ResponseFactor;
-    OntoHPLC:refersToSpecies placeholder:Species_placeholder_pubchemcid_637759;
+    OntoHPLC:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
     om:hasValue :ResponseFactor_2_value;
 .
 
@@ -145,7 +145,7 @@
 # product benzalacetone
 :RetentionTime_2
     a OntoHPLC:RetentionTime;
-    OntoHPLC:refersToSpecies placeholder:Species_placeholder_pubchemcid_637759;
+    OntoHPLC:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
     om:hasValue :RetentionTime_2_value;
 .
 
@@ -184,7 +184,7 @@
 # impurity dibenzylideneacetone
 :RetentionTime_5
     a OntoHPLC:RetentionTime;
-    OntoHPLC:refersToSpecies placeholder:Species_placeholder_pubchemcid_640180;
+    OntoHPLC:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>;
     om:hasValue :RetentionTime_5_value;
 .
 
@@ -1008,7 +1008,7 @@
 
 :PhaseComponent_5
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202>;
     OntoCAPEUpp:hasProperty :PhaseComponent_5_Property_1;
 .
 

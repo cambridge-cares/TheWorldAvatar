@@ -1740,9 +1740,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         elif len(response) < 1:
             raise Exception("No record of MolecularWeight was identified for OntoSpecies:Species <%s>" % (species_iri))
         else:
-            if response[0]['unit'] == 'g/mol':
+            if response[0]['unit'] == ONTOSPECIES_GRAMPERMOLUNIT:
                 return float(response[0]['value']) / 1000
-            elif response[0]['unit'] == 'kg/mol':
+            elif response[0]['unit'] == ONTOSPECIES_KILOGRAMPERMOLUNIT:
                 return float(response[0]['value'])
             else:
                 raise NotImplementedError("Record of MolecularWeight in unit of <%s> is NOT yet supported for OntoSpecies:Species <%s>" % (

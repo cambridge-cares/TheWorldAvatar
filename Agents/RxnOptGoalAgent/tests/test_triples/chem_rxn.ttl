@@ -66,16 +66,16 @@ OntoRxn:ReactionVariation rdfs:subClassOf OntoRxn:ReactionExperiment .
 # NOTE where the instance IRI of a real OntoSpecies:Species will be obtained/identified based on specific identifiers
 # NOTE i.e. OntoSpecies:inChI, OntoSpecies:pubChemCID, etc.
 <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>
-    OntoSpecies:pubChemCID "240"^^xsd:string;
+    # OntoSpecies:pubChemCID "240"^^xsd:string;
     rdfs:label "C7H6O"^^xsd:string;
     skos:altLabel "benzaldehyde"^^xsd:string;
-    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
 .
 
-<http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>
     a OntoSpecies:MolecularWeight;
-    OntoSpecies:units "g/mol"^^xsd:string;
-    OntoSpecies:value "106.124"^^xsd:decimal;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
+    OntoSpecies:value "106.12"^^xsd:decimal;
 .
 
 :Species_2
@@ -84,68 +84,69 @@ OntoRxn:ReactionVariation rdfs:subClassOf OntoRxn:ReactionExperiment .
 .
 
 <http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>
-    OntoSpecies:pubChemCID "180"^^xsd:string;
+    # OntoSpecies:pubChemCID "180"^^xsd:string;
     rdfs:label "C3H6O"^^xsd:string;
     skos:altLabel "acetone"^^xsd:string;
-    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
 .
 
-<http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_353d4667-e25d-476a-bd74-5c34723c8ea3>
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_353d4667-e25d-476a-bd74-5c34723c8ea3>
     a OntoSpecies:MolecularWeight;
-    OntoSpecies:units "g/mol"^^xsd:string;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
     OntoSpecies:value "58.08"^^xsd:decimal;
 .
 
 :Species_3
     rdf:type OntoRxn:TargetProduct;
-    OntoSpecies:hasUniqueSpecies placeholder:Species_placeholder_pubchemcid_637759;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
 .
 
-placeholder:Species_placeholder_pubchemcid_637759
-    OntoSpecies:pubChemCID "637759"^^xsd:string;
+<http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>
+    # OntoSpecies:pubChemCID "637759"^^xsd:string;
     rdfs:label "C10H10O"^^xsd:string;
     skos:altLabel "benzalacetone"^^xsd:string;
-    OntoSpecies:hasMolecularWeight placeholder:Species_placeholder_pubchemcid_637759_MW;
+    OntoSpecies:hasMolecularWeight 	<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_f999de28-55dc-477e-8afc-e8802064e0d2>
 .
 
-placeholder:Species_placeholder_pubchemcid_637759_MW
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_f999de28-55dc-477e-8afc-e8802064e0d2>
     a OntoSpecies:MolecularWeight;
-    OntoSpecies:units "g/mol"^^xsd:string;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
     OntoSpecies:value "146.19"^^xsd:decimal;
 .
 
 :Species_4
     rdf:type OntoRxn:Impurity;
-    OntoSpecies:hasUniqueSpecies placeholder:Species_placeholder_pubchemcid_640180;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>;
 .
 
-placeholder:Species_placeholder_pubchemcid_640180
-    OntoSpecies:pubChemCID "640180"^^xsd:string;
+<http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>
+    # OntoSpecies:pubChemCID "640180"^^xsd:string;
     rdfs:label "C17H14O"^^xsd:string;
     skos:altLabel "dibenzylideneacetone"^^xsd:string;
-    OntoSpecies:hasMolecularWeight placeholder:Species_placeholder_pubchemcid_640180_MW;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_8765d201-0da9-4112-b653-3455002f535b>;
 .
 
-placeholder:Species_placeholder_pubchemcid_640180_MW
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_8765d201-0da9-4112-b653-3455002f535b>
     a OntoSpecies:MolecularWeight;
-    OntoSpecies:units "g/mol"^^xsd:string;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
     OntoSpecies:value "234.29"^^xsd:decimal;
 .
 
 :Species_5
     rdf:type OntoRxn:Catalyst;
-    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>.
-
-<http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>
-    OntoSpecies:pubChemCID "14798"^^xsd:string;
-    rdfs:label "HNaO"^^xsd:string;
-    skos:altLabel "NaOH"^^xsd:string;
-    OntoSpecies:hasMolecularWeight <https://www.example.com/triplestore/ontorxn/ChemRxn_1/MolecularWeight_Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>;
+    OntoSpecies:hasUniqueSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202>;
 .
 
-<https://www.example.com/triplestore/ontorxn/ChemRxn_1/MolecularWeight_Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>
+<http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202>
+    # OntoSpecies:pubChemCID "14798"^^xsd:string;
+    rdfs:label "HNaO"^^xsd:string;
+    skos:altLabel "NaOH"^^xsd:string;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_eab77458-560d-4ce9-9b5e-96650fc3e202>;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_eab77458-560d-4ce9-9b5e-96650fc3e202>
     a OntoSpecies:MolecularWeight;
-    OntoSpecies:units "g/mol"^^xsd:string;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
     OntoSpecies:value "39.997"^^xsd:decimal;
 .
 
@@ -155,16 +156,16 @@ placeholder:Species_placeholder_pubchemcid_640180_MW
 .
 
 <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>
-    OntoSpecies:pubChemCID "6342"^^xsd:string;
+    # OntoSpecies:pubChemCID "6342"^^xsd:string;
     rdfs:label "CH3CN"^^xsd:string;
     skos:altLabel "acetonitrile"^^xsd:string;
-    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
 .
 
-<http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>
     a OntoSpecies:MolecularWeight;
-    OntoSpecies:units "g/mol"^^xsd:string;
-    OntoSpecies:value "41.053"^^xsd:decimal;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
+    OntoSpecies:value "41.05"^^xsd:decimal;
 .
 
 :Species_7
@@ -173,42 +174,47 @@ placeholder:Species_placeholder_pubchemcid_640180_MW
 .
 
 <http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>
-    OntoSpecies:pubChemCID "702"^^xsd:string;
+    # OntoSpecies:pubChemCID "702"^^xsd:string;
     rdfs:label "C2H6O"^^xsd:string;
     skos:altLabel "ethanol"^^xsd:string;
-    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
 .
 
-<http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_63fefc5a-d49d-4841-a946-2cdb5f356983>
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_63fefc5a-d49d-4841-a946-2cdb5f356983>
     a OntoSpecies:MolecularWeight;
-    OntoSpecies:units "g/mol"^^xsd:string;
-    OntoSpecies:value "46.069"^^xsd:decimal;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
+    OntoSpecies:value "46.07"^^xsd:decimal;
 .
 
 <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>
-    OntoSpecies:pubChemCID "931"^^xsd:string;
+    # OntoSpecies:pubChemCID "931"^^xsd:string;
     rdfs:label "C10H8"^^xsd:string;
     skos:altLabel "naphthalene"^^xsd:string;
-    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>;
 .
 
-<http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340>
     a OntoSpecies:MolecularWeight;
-    OntoSpecies:units "g/mol"^^xsd:string;
-    OntoSpecies:value "128.174"^^xsd:decimal;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
+    OntoSpecies:value "128.17"^^xsd:decimal;
 .
 
 <http://www.theworldavatar.com/kb/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>
-    OntoSpecies:pubChemCID "7095"^^xsd:string;
+    # OntoSpecies:pubChemCID "7095"^^xsd:string;
     rdfs:label "C12H10"^^xsd:string;
     skos:altLabel "biphenyl"^^xsd:string;
-    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
+    OntoSpecies:hasMolecularWeight <http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
 .
 
-<http://www.theworldavatar.com/kb/ontospecies/MolecularWeight_Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>
+<http://www.theworldavatar.com/kg/ontospecies/MolecularWeight_1_Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>
     a OntoSpecies:MolecularWeight;
-    OntoSpecies:units "g/mol"^^xsd:string;
+    OntoSpecies:units <http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>;
     OntoSpecies:value "154.212"^^xsd:decimal;
+.
+
+<http://www.theworldavatar.com/kg/ontospecies/Unit_a501ff0e-7cbc-4e3c-ba2e-211da22cac2b>
+    a om:Unit;
+    rdfs:label "g / mol"^^xsd:string;
 .
 
 ##############################################################################
@@ -230,19 +236,19 @@ placeholder:D_S_180_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumeri
 
 # NO experimental data available at https://pubchem.ncbi.nlm.nih.gov/compound/637759
 # Data (mean value) from "Predicted - ACD/Labs" at http://www.chemspider.com/Chemical-Structure.21106584.html
-placeholder:Species_placeholder_pubchemcid_637759 placeholder:hasDensity placeholder:Density_Species_637759.
+<http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2> placeholder:hasDensity placeholder:Density_Species_637759.
 placeholder:Density_Species_637759 a om:Density; om:hasValue placeholder:D_S_637759_V;.
 placeholder:D_S_637759_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "1.0"^^xsd:double;.
 
 # NO experimental data available at https://pubchem.ncbi.nlm.nih.gov/compound/640180
 # Data (mean value) from "Predicted - ACD/Labs" at http://www.chemspider.com/Chemical-Structure.86113.html
-placeholder:Species_placeholder_pubchemcid_640180 placeholder:hasDensity placeholder:Density_Species_640180.
+<http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b> placeholder:hasDensity placeholder:Density_Species_640180.
 placeholder:Density_Species_640180 a om:Density; om:hasValue placeholder:D_S_640180_V;.
 placeholder:D_S_640180_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "1.1"^^xsd:double;.
 
 # Value taken as the solid density of NaOH at 68 F (20 C) in https://pubchem.ncbi.nlm.nih.gov/compound/14798#section=Density&fullscreen=true
 # 2.13 kg/L
-<http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d> placeholder:hasDensity placeholder:Density_Species_14798.
+<http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202> placeholder:hasDensity placeholder:Density_Species_14798.
 placeholder:Density_Species_14798 a om:Density; om:hasValue placeholder:D_S_14798_V;.
 placeholder:D_S_14798_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumericalValue "2.13"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
 
@@ -282,16 +288,16 @@ placeholder:MaterialCost_Species_180 a om:SpecificAmountOfMoney; om:hasValue pla
 placeholder:M_C_S_180_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "6.38176"^^xsd:double;. # calculated from https://doi.org/10.1002/cmtd.202000044
 
 # dummy data
-placeholder:Species_placeholder_pubchemcid_637759 placeholder:hasMaterialCost placeholder:MaterialCost_Species_637759.
+<http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2> placeholder:hasMaterialCost placeholder:MaterialCost_Species_637759.
 placeholder:MaterialCost_Species_637759 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_637759_V;.
 placeholder:M_C_S_637759_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "500"^^xsd:double;.
 
 # dummy data
-placeholder:Species_placeholder_pubchemcid_640180 placeholder:hasMaterialCost placeholder:MaterialCost_Species_640180.
+<http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b> placeholder:hasMaterialCost placeholder:MaterialCost_Species_640180.
 placeholder:MaterialCost_Species_640180 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_640180_V;.
 placeholder:M_C_S_640180_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "10"^^xsd:double;.
 
-<http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d> placeholder:hasMaterialCost placeholder:MaterialCost_Species_14798.
+<http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202> placeholder:hasMaterialCost placeholder:MaterialCost_Species_14798.
 placeholder:MaterialCost_Species_14798 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_14798_V;.
 placeholder:M_C_S_14798_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "58.575"^^xsd:double;. # calculated from https://doi.org/10.1002/cmtd.202000044
 
@@ -327,15 +333,15 @@ placeholder:E_S_S_240_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "2
 placeholder:EcoScore_Species_180 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_180_V;.
 placeholder:E_S_S_180_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "70"^^xsd:double;.
 
-placeholder:Species_placeholder_pubchemcid_637759 placeholder:hasEcoScore placeholder:EcoScore_Species_637759.
+<http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2> placeholder:hasEcoScore placeholder:EcoScore_Species_637759.
 placeholder:EcoScore_Species_637759 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_637759_V;.
 placeholder:E_S_S_637759_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "50"^^xsd:double;.
 
-placeholder:Species_placeholder_pubchemcid_640180 placeholder:hasEcoScore placeholder:EcoScore_Species_640180.
+<http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b> placeholder:hasEcoScore placeholder:EcoScore_Species_640180.
 placeholder:EcoScore_Species_640180 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_640180_V;.
 placeholder:E_S_S_640180_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "10"^^xsd:double;.
 
-<http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d> placeholder:hasEcoScore placeholder:EcoScore_Species_14798.
+<http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202> placeholder:hasEcoScore placeholder:EcoScore_Species_14798.
 placeholder:EcoScore_Species_14798 a om:QuantityOfDimensionOne; om:hasValue placeholder:E_S_S_14798_V;.
 placeholder:E_S_S_14798_V a om:Measure; om:hasUnit om:one; om:hasNumericalValue "20"^^xsd:double;.
 

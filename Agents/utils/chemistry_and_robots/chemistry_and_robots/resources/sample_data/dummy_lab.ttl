@@ -147,7 +147,7 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 
 :PhaseComponent_Product_oc
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf ChemRxn:Species_placeholder_pubchemcid_637759;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
     OntoCAPEUpp:hasProperty :PhaseComponent_Product_oc_Property_1;
 .
 
@@ -491,7 +491,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :ResponseFactor_2 # product benzalacetone
     a ontohplc:ResponseFactor;
-    ontohplc:refersToSpecies ChemRxn:Species_placeholder_pubchemcid_637759;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
     om:hasValue :ResponseFactor_2_value;
 .
 
@@ -503,7 +503,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :RetentionTime_2
     a ontohplc:RetentionTime;
-    ontohplc:refersToSpecies ChemRxn:Species_placeholder_pubchemcid_637759;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
     om:hasValue :RetentionTime_2_value;
 .
 
@@ -541,7 +541,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 # NOTE the response factor is commented out to minic the situation if we don't have this information
 # :ResponseFactor_5
 #     a ontohplc:ResponseFactor;
-#     ontohplc:refersToSpecies ChemRxn:Species_placeholder_pubchemcid_640180;
+#     ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>;
 #     om:hasValue :ResponseFactor_5_value;
 # .
 
@@ -553,7 +553,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :RetentionTime_5
     a ontohplc:RetentionTime;
-    ontohplc:refersToSpecies ChemRxn:Species_placeholder_pubchemcid_640180;
+    ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>;
     om:hasValue :RetentionTime_5_value;
 .
 
@@ -592,7 +592,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 # :ResponseFactor_6 # catalyst NaOH
 #     a ontohplc:ResponseFactor;
-#     ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>;
+#     ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202>;
 #     om:hasValue :ResponseFactor_6_value;
 # .
 
@@ -604,7 +604,7 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 # :RetentionTime_6
 #     a ontohplc:RetentionTime;
-#     ontohplc:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>;
+#     ontohplc:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202>;
 #     om:hasValue :RetentionTime_6_value;
 # .
 
@@ -1771,19 +1771,19 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :PhaseComponent_3
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf ChemRxn:Species_placeholder_pubchemcid_637759;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2>;
     OntoCAPEUpp:hasProperty :PhaseComponent_3_Property_1;
 .
 
 :PhaseComponent_4
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf ChemRxn:Species_placeholder_pubchemcid_640180;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b>;
     OntoCAPEUpp:hasProperty :PhaseComponent_4_Property_1;
 .
 
 :PhaseComponent_5
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202>;
     OntoCAPEUpp:hasProperty :PhaseComponent_5_Property_1;
 .
 

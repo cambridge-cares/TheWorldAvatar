@@ -196,7 +196,7 @@ INPUTCHEMICAL_3 = InputChemical(
                         numericalValue=0.1
                     )
                 ),
-                representsOccurenceOf='http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d'
+                representsOccurenceOf='http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202'
             ),
             OntoCAPE_PhaseComponent(
                 instance_iri='https://www.example.com/triplestore/ontorxn/SinglePhase/PhaseComponent_7',
@@ -407,17 +407,17 @@ def test_equal_single_phase(input_chemical, autosamplersite, desired_result):
         (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',True),
         (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',True),
         (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',False),
-        (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d',False),
+        (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202',False),
         (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983',False),
         (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',False),
         (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',True),
         (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',True),
-        (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d',False),
+        (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202',False),
         (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983',False),
         (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',False),
         (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',False),
         (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',False),
-        (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d',True),
+        (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202',True),
         (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983',True),
     ],
 )

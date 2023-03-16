@@ -66,7 +66,7 @@
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_c242fa46-e60c-481c-8dc2-741f69386f25> a ns2:StoichiometryRatio ;
     ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> ;
     ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_a7974834-3f69-4004-9831-15bf4c559b5e> ;
-    ns3:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d" ;
+    ns3:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202" ;
     ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3> .
 
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> a ns2:ReactionVariation ;
@@ -140,7 +140,7 @@
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_4f55a3ff-3a06-4749-8775-52d7673497c7> a ns2:StoichiometryRatio ;
     ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> ;
     ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_90891b5e-2a35-4847-a39d-fbec6064c2d5> ;
-    ns3:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d" ;
+    ns3:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202" ;
     ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3> .
 
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_58691e29-9d69-41ad-ab5f-8fd9b35f5e0c> a ns2:StoichiometryRatio ;
@@ -226,7 +226,7 @@
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_3712c062-8b67-4a82-82d9-166ff34909ba> a ns2:StoichiometryRatio ;
     ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> ;
     ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_c89f50e2-1909-4e9c-a456-83c894af387f> ;
-    ns3:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_cb3b0560-0df7-4deb-891e-bbb11e7c2b3d" ;
+    ns3:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202" ;
     ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_3> .
 
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_9968472e-74b9-4925-b5cc-63220f4be1a9> a ns2:StoichiometryRatio ;
