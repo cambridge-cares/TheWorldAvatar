@@ -88,8 +88,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
     private static List<Double> brightnessList = new ArrayList<>();
     private static List<List<?>> brightness_lolValues= Arrays.asList(brightnessList);
 
-    //Add maxSize is all the measureIRI and 1 deviceIRI
-    private static int maxSize = accel_lolValues.size()+magnetometer_lolValues.size()+gravity_lolValues.size()+location_lolValues.size()+dBFS_lolValues.size()+lightValue_lolValues.size()+brightness_lolValues.size()+1;
+    private static int maxSize = accel_lolValues.size()+magnetometer_lolValues.size()+gravity_lolValues.size()+location_lolValues.size()+dBFS_lolValues.size()+lightValue_lolValues.size()+brightness_lolValues.size();
     private static String DEVICEID;
     private static final long serialVersionUID = 1L;
 
@@ -107,6 +106,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             PostGISClient postGISClient = PostGISClient.getInstance();
             postGISClient.createDatabase(EnvConfig.DATABASE);
         }
+
 
     }
 
@@ -271,7 +271,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
     private static RemoteStoreClient storeClient;
 
     private static final Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppAgent.class);
-    private static final String BASEURI = "https://www.theworldavatar.com/kg/measure_";
+    private static final String BASEURI = "https://www.theworldavatar.com/kg/sensorloggerapp/";
 
     private static void readConfig() {
         ResourceBundle config = ResourceBundle.getBundle("config");
@@ -363,6 +363,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             }
         }
         if( hashMap.size()==maxSize && !staticInstantiated){
+            hashMap.put("DEVICEID","https://www.theworldavatar.com/kg/ontodevice/smartphone_"+DEVICEID);
             instantiationMethod(hashMap);
             LOGGER.info(String.format("Units is now instantiated"));
             staticInstantiated = true;
@@ -403,6 +404,40 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
      * @param i table number
      */
     private static void initTimeseriesIfNotExist(int i, HashMap hashMap) throws Exception {
+        //Create Timeseries
+        List<String> dataIRIList = createTimeSeries(i, hashMap);
+
+        //GetTimeSeries
+        TimeSeries getTimeSeries = parseDataToLists(i, dataIRIList);
+        getTimeSeries= downsampling.aggregation((getTimeSeries), downsamplingRate, downsamplingType);
+
+        //Add timeseries data with tsList
+        try (Connection conn = rdbStoreClient.getConnection()) {
+
+            tsClient.addTimeSeriesData(getTimeSeries, conn);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
+        }
+    }
+
+
+
+
+    /** Initialize timeseries if it does not exist,
+     * @param i table number
+     */
+    private static void mainCODE(int i, HashMap hashMap) throws Exception {
+
+        //If TS not initilized
+        //Declare dataIRI
+
+        //Init timeseries
+
+        //SPARQL Query for each then bulk add timeseries data
+
+
+
         //Create Timeseries
         List<String> dataIRIList = createTimeSeries(i, hashMap);
 

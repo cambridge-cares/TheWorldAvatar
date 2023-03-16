@@ -39,7 +39,7 @@ public class InstantiationClient {
         Camera camera = context.createNewModel(Camera.class, "https://www.theworldavatar.com/kg/sensorloggerapp/camera_"+UUID.randomUUID());
         Magnetometer magnetometer = context.createNewModel(Magnetometer.class, "https://www.theworldavatar.com/kg/sensorloggerapp/magnetometer_"+UUID.randomUUID());
         GravitySensor gravitySensor = context.createNewModel(GravitySensor.class, "https://www.theworldavatar.com/kg/sensorloggerapp/gravitySensor_"+UUID.randomUUID());
-        GPSSensor gpsSensor = context.createNewModel(GPSSensor.class, "https://www.theworldavatar.com/kg/sensorloggerapp/gpsDevice_"+UUID.randomUUID());
+        GPSDevice gpsDevice = context.createNewModel(GPSDevice.class, "https://www.theworldavatar.com/kg/sensorloggerapp/gpsDevice_"+UUID.randomUUID());
         Microphone microphone = context.createNewModel(Microphone.class, "https://www.theworldavatar.com/kg/sensorloggerapp/microphone_"+UUID.randomUUID());
 
         
@@ -54,39 +54,42 @@ public class InstantiationClient {
         Magnetometer_y magnetometer_y = context.createNewModel(Magnetometer_y.class, "https://www.theworldavatar.com/kg/sensorloggerapp/magnetometer_y_"+UUID.randomUUID());
         Magnetometer_z magnetometer_z = context.createNewModel(Magnetometer_z.class, "https://www.theworldavatar.com/kg/sensorloggerapp/magnetometer_z_"+UUID.randomUUID());
         Acceleration acceleration = context.createNewModel(Acceleration.class, "https://www.theworldavatar.com/kg/sensorloggerapp/acceleration_"+UUID.randomUUID());
-        MagneticFluxDensity magneticFluxDensity = context.createNewModel(MagneticFluxDensity.class, "https://www.theworldavatar.com/kg/sensorloggerapp/MagneticFluxDensity_"+UUID.randomUUID());
-        Speed speed = context.createNewModel(Speed.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Speed_"+UUID.randomUUID());
+        MagneticFluxDensity magneticFluxDensity = context.createNewModel(MagneticFluxDensity.class, "https://www.theworldavatar.com/kg/sensorloggerapp/magneticFluxDensity_"+UUID.randomUUID());
+        Speed speed = context.createNewModel(Speed.class, "https://www.theworldavatar.com/kg/sensorloggerapp/speed_"+UUID.randomUUID());
         Bearing bearing = context.createNewModel(Bearing.class, "https://www.theworldavatar.com/kg/sensorloggerapp/bearing_"+UUID.randomUUID());
         Altitude altitude = context.createNewModel(Altitude.class, "https://www.theworldavatar.com/kg/sensorloggerapp/altitude_"+UUID.randomUUID());
-
-        SoundPressureLevel soundPressureLevel = context.createNewModel(SoundPressureLevel.class, "https://www.theworldavatar.com/kg/sensorloggerapp/SoundPressureLevel_"+UUID.randomUUID());
-        Illuminance illuminance = context.createNewModel(Illuminance.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Illuminance_"+UUID.randomUUID());
-
+        RelativeBrightness relativeBrightness = context.createNewModel(RelativeBrightness.class, "https://www.theworldavatar.com/kg/sensorloggerapp/relativeBrightness_"+UUID.randomUUID());
+        
+        SoundPressureLevel soundPressureLevel = context.createNewModel(SoundPressureLevel.class, "https://www.theworldavatar.com/kg/sensorloggerapp/soundPressureLevel_"+UUID.randomUUID());
+        Illuminance illuminance = context.createNewModel(Illuminance.class, "https://www.theworldavatar.com/kg/sensorloggerapp/illuminance_"+UUID.randomUUID());
+        Ratio ratio = context.createNewModel(Ratio.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Ratio_"+UUID.randomUUID());
+        
         /**
          * Input hashmap of instantiated measureIRIList for the measureclass
          */
 
-        Measure measure_accel_x = context.createNewModel(Measure.class, IRI.get("measure_accel_x").toString());
-        Measure measure_accel_y = context.createNewModel(Measure.class, IRI.get("measure_accel_y").toString());
-        Measure measure_accel_z = context.createNewModel(Measure.class, IRI.get("measure_accel_z").toString());
+        Measure measure_accel_x = context.createNewModel(Measure.class, IRI.get("accel_x").toString());
+        Measure measure_accel_y = context.createNewModel(Measure.class, IRI.get("accel_y").toString());
+        Measure measure_accel_z = context.createNewModel(Measure.class, IRI.get("accel_z").toString());
 
-        Measure measure_gravity_x = context.createNewModel(Measure.class, IRI.get("measure_gravity_x").toString());
-        Measure measure_gravity_y = context.createNewModel(Measure.class, IRI.get("measure_gravity_y").toString());
-        Measure measure_gravity_z = context.createNewModel(Measure.class, IRI.get("measure_gravity_z").toString());
+        Measure measure_gravity_x = context.createNewModel(Measure.class, IRI.get("gravity_x").toString());
+        Measure measure_gravity_y = context.createNewModel(Measure.class, IRI.get("gravity_y").toString());
+        Measure measure_gravity_z = context.createNewModel(Measure.class, IRI.get("gravity_z").toString());
 
-        Measure measure_magnetometer_x = context.createNewModel(Measure.class, IRI.get("measure_magnetometer_x").toString());
-        Measure measure_magnetometer_y = context.createNewModel(Measure.class, IRI.get("measure_magnetometer_y").toString());
-        Measure measure_magnetometer_z = context.createNewModel(Measure.class, IRI.get("measure_magnetometer_z").toString());
+        Measure measure_magnetometer_x = context.createNewModel(Measure.class, IRI.get("magnetometer_x").toString());
+        Measure measure_magnetometer_y = context.createNewModel(Measure.class, IRI.get("magnetometer_y").toString());
+        Measure measure_magnetometer_z = context.createNewModel(Measure.class, IRI.get("magnetometer_z").toString());
 
-        Measure measure_speed = context.createNewModel(Measure.class, IRI.get("measure_speed").toString());
+        Measure measure_speed = context.createNewModel(Measure.class, IRI.get("speed").toString());
 
-        Point point = context.createNewModel(Point.class, "http://www.opengis.net/ont/sf#point_"+IRI.get("measure_geom_location").toString());
+        Point point = context.createNewModel(Point.class, IRI.get("point").toString());
 
-        Measure measure_bearing = context.createNewModel(Measure.class, IRI.get("measure_bearing").toString());
-        Measure measure_altitude = context.createNewModel(Measure.class, IRI.get("measure_altitude").toString());
+        Measure measure_bearing = context.createNewModel(Measure.class, IRI.get("bearing").toString());
+        Measure measure_altitude = context.createNewModel(Measure.class, IRI.get("altitude").toString());
 
-        Measure measure_dbfs = context.createNewModel(Measure.class, IRI.get("measure_dbfs").toString());
-        Measure measure_light_value = context.createNewModel(Measure.class, IRI.get("measure_light_value").toString());
+        Measure measure_dbfs = context.createNewModel(Measure.class, IRI.get("dbfs").toString());
+        Measure measure_light_value = context.createNewModel(Measure.class, IRI.get("light_value").toString());
+        Measure measure_ratioRB = context.createNewModel(Measure.class, IRI.get("relativeBrightness").toString());
 
         /**
          * Creating context for rdfType
@@ -101,27 +104,30 @@ public class InstantiationClient {
         CameraRDF cameraRDF = context.createNewModel(CameraRDF.class, "https://www.theworldavatar.com/kg/ontodevice/Camera");
         MagnetometerRDF magnetometerRDF = context.createNewModel(MagnetometerRDF.class, "https://www.theworldavatar.com/kg/ontodevice/Magnetometer");
         GravitySensorRDF gravitySensorRDF = context.createNewModel(GravitySensorRDF.class, "https://www.theworldavatar.com/kg/ontodevice/GravitySensor");
-        GPSSensorRDF gpsSensorRDF = context.createNewModel(GPSSensorRDF.class, "https://www.theworldavatar.com/kg/ontodevice/GPSDevice");
+        GPSDeviceRDF gpsDeviceRDF = context.createNewModel(GPSDeviceRDF.class, "https://www.theworldavatar.com/kg/ontodevice/GPSDevice");
         MicrophoneRDF microphoneRDF = context.createNewModel(MicrophoneRDF.class, "https://www.theworldavatar.com/kg/ontodevice/Microphone");
+        RelativeBrightnessRDF relativeBrightnessRDF = context.createNewModel(RelativeBrightnessRDF.class, "https://www.theworldavatar.com/kg/ontodevice/RelativeBrightness");
 
         //Measured classes instances
-        Accel_xRDF accel_xRDF = context.createNewModel(Accel_xRDF.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/Accel_x");
-        Accel_yRDF accel_yRDF = context.createNewModel(Accel_yRDF.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/Accel_y");
-        Accel_zRDF accel_zRDF = context.createNewModel(Accel_zRDF.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/Accel_z");
-        Gravity_xRDF gravity_xRDF = context.createNewModel(Gravity_xRDF.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/Gravity_x");
-        Gravity_yRDF gravity_yRDF = context.createNewModel(Gravity_yRDF.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/Gravity_y");
-        Gravity_zRDF gravity_zRDF = context.createNewModel(Gravity_zRDF.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/Gravity_z");
-        Magnetometer_xRDF magnetometer_xRDF = context.createNewModel(Magnetometer_xRDF.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/Magnetometer_x");
-        Magnetometer_yRDF magnetometer_yRDF = context.createNewModel(Magnetometer_yRDF.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/Magnetometer_y");
-        Magnetometer_zRDF magnetometer_zRDF = context.createNewModel(Magnetometer_zRDF.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/Magnetometer_z");
+        Accel_xRDF accel_xRDF = context.createNewModel(Accel_xRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Accel_x");
+        Accel_yRDF accel_yRDF = context.createNewModel(Accel_yRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Accel_y");
+        Accel_zRDF accel_zRDF = context.createNewModel(Accel_zRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Accel_z");
+        Gravity_xRDF gravity_xRDF = context.createNewModel(Gravity_xRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Gravity_x");
+        Gravity_yRDF gravity_yRDF = context.createNewModel(Gravity_yRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Gravity_y");
+        Gravity_zRDF gravity_zRDF = context.createNewModel(Gravity_zRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Gravity_z");
+        Magnetometer_xRDF magnetometer_xRDF = context.createNewModel(Magnetometer_xRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Magnetometer_x");
+        Magnetometer_yRDF magnetometer_yRDF = context.createNewModel(Magnetometer_yRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Magnetometer_y");
+        Magnetometer_zRDF magnetometer_zRDF = context.createNewModel(Magnetometer_zRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Magnetometer_z");
         AccelerationRDF accelerationRDF = context.createNewModel(AccelerationRDF.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration");
         MagneticFluxDensityRDF magneticFluxDensityRDF = context.createNewModel(MagneticFluxDensityRDF.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity");
         SpeedRDF speedRDF = context.createNewModel(SpeedRDF.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Speed");
-        BearingRDF bearingRDF = context.createNewModel(BearingRDF.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/Bearing");
-        AltitudeRDF altitudeRDF = context.createNewModel(AltitudeRDF.class, "https://www.theworldavatar.com/kg/ontoGeo/Altitude");
+        BearingRDF bearingRDF = context.createNewModel(BearingRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Bearing");
+        AltitudeRDF altitudeRDF = context.createNewModel(AltitudeRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Altitude");
         PointRDF pointRDF = context.createNewModel(PointRDF.class, "http://www.opengis.net/ont/sf#Point");
         SoundPressureLevelRDF soundPressureLevelRDF = context.createNewModel(SoundPressureLevelRDF.class, "https://www.theworldavatar.com/kg/ontouom/SoundPressureLevel");
         IlluminanceRDF illuminanceRDF = context.createNewModel(IlluminanceRDF.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Illuminance");
+        RatioRDF ratioRDF = context.createNewModel(RatioRDF.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio");
+        MeasureRDF measureRDF = context.createNewModel(MeasureRDF.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure");
 
 
         /**
@@ -141,6 +147,7 @@ public class InstantiationClient {
          */
         person.smartphone=smartphone;
         personRDF.person=person;
+        
 
         /**
          * Smartphone class
@@ -157,14 +164,17 @@ public class InstantiationClient {
         smartphone.devices.add(magnetometer);
         magnetometerRDF.magnetometer=magnetometer;
 
-        smartphone.devices.add(gpsSensor);
-        gpsSensorRDF.gpsSensor=gpsSensor;
+        smartphone.devices.add(gpsDevice);
+        gpsDeviceRDF.gpsDevice=gpsDevice;
 
         smartphone.devices.add(microphone);
         microphoneRDF.microphone=microphone;
 
         smartphone.devices.add(gravitySensor);
         gravitySensorRDF.gravitySensor=gravitySensor;
+
+        smartphone.relativeBrightness=relativeBrightness;
+        relativeBrightnessRDF.relativeBrightness=relativeBrightness;
 
         /**
          * Accelerometer class
@@ -211,16 +221,16 @@ public class InstantiationClient {
         magneticFluxDensityRDF.magneticFluxDensity=magneticFluxDensity;
 
         /**
-         * GPSSensor
+         * GPSDevice
          */
-        gpsSensor.gpsSensorVariables.add(speed);
+        gpsDevice.gpsDeviceVariables.add(speed);
         speedRDF.speed=speed;
-        gpsSensor.point.add(point);
+        gpsDevice.point.add(point);
         pointRDF.point=point;
 
-        gpsSensor.gpsSensorVariables.add(altitude);
+        gpsDevice.gpsDeviceVariables.add(altitude);
         altitudeRDF.altitude=altitude;
-        gpsSensor.gpsSensorVariables.add(bearing);
+        gpsDevice.gpsDeviceVariables.add(bearing);
         bearingRDF.bearing=bearing;
 
         /**
@@ -239,6 +249,13 @@ public class InstantiationClient {
         soundPressureLevelRDF.soundPressureLevel=soundPressureLevel;
 
         /**
+         * RelativeBrightness class
+         */
+        relativeBrightness.ratio=ratio;
+        ratioRDF.ratio=ratio;
+
+
+        /**
          * Measure class
          */
         measure_accel_x.measures.add(accel_x);
@@ -250,14 +267,30 @@ public class InstantiationClient {
         measure_magnetometer_x.measures.add(magnetometer_x);
         measure_magnetometer_y.measures.add(magnetometer_y);
         measure_magnetometer_z.measures.add(magnetometer_z);
-
         measure_speed.measures.add(speed);
         measure_bearing.measures.add(bearing);
         measure_altitude.measures.add(altitude);
-
         measure_dbfs.measures.add(soundPressureLevel);
-
+        measure_ratioRB.measures.add(ratio);
         measure_light_value.measures.add(illuminance);
+
+
+        //Link to measureRDF
+        measureRDF.measuresRDF.add(measure_accel_x);
+        measureRDF.measuresRDF.add(measure_accel_y);
+        measureRDF.measuresRDF.add(measure_accel_z);
+        measureRDF.measuresRDF.add(measure_gravity_x);
+        measureRDF.measuresRDF.add(measure_gravity_y);
+        measureRDF.measuresRDF.add(measure_gravity_z);
+        measureRDF.measuresRDF.add(measure_magnetometer_x);
+        measureRDF.measuresRDF.add(measure_magnetometer_y);
+        measureRDF.measuresRDF.add(measure_magnetometer_z);
+        measureRDF.measuresRDF.add(measure_speed);
+        measureRDF.measuresRDF.add(measure_bearing);
+        measureRDF.measuresRDF.add(measure_altitude);
+        measureRDF.measuresRDF.add(measure_dbfs);
+        measureRDF.measuresRDF.add(measure_ratioRB);
+        measureRDF.measuresRDF.add(measure_ratioRB);
 
         /**
          * Units class
@@ -299,7 +332,7 @@ public class InstantiationClient {
      * Person branch
      */
     public static class Person extends SensorLoggerModel {
-        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/hasA")
+        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/sensorloggerapp/hasA")
         protected InstantiationClient.Smartphone smartphone;
     }
     public static class PersonRDF extends SensorLoggerModel {
@@ -312,10 +345,13 @@ public class InstantiationClient {
      * Smartphone branch
      */
     public static class Smartphone extends OntoDeviceModel{
-        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/hasA", backward = true)
+        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/sensorloggerapp/hasA", backward = true)
         protected InstantiationClient.Person person;
         @Getter @Setter @FieldAnnotation(value = "https://saref.etsi.org/core/consistsOf", innerType = OntoDeviceModel.class)
         protected ArrayList<OntoDeviceModel> devices;
+
+        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/hasScreenBrightness")
+        protected InstantiationClient.RelativeBrightness relativeBrightness;
     }
     public static class SmartphoneRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
@@ -447,21 +483,21 @@ public class InstantiationClient {
 
 
     /**
-     * GPSSensor branch
+     * GPSDevice branch
      */
 
 
-    public static class GPSSensor extends OntoDeviceModel {
+    public static class GPSDevice extends OntoDeviceModel {
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", innerType = SensorLoggerModel.class)
-        protected ArrayList<SensorLoggerModel> gpsSensorVariables;
+        protected ArrayList<SensorLoggerModel> gpsDeviceVariables;
 
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/hasGeoLocation", innerType = SensorLoggerModel.class)
         protected ArrayList<SensorLoggerModel> point;
 
     }
-    public static class GPSSensorRDF extends OntoDeviceModel{
+    public static class GPSDeviceRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.GPSSensor gpsSensor;
+        protected InstantiationClient.GPSDevice gpsDevice;
     }
 
     /**
@@ -477,6 +513,21 @@ public class InstantiationClient {
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
         protected InstantiationClient.Microphone microphone;
     }
+
+    /**
+     * RelativeBrightness branch
+     */
+
+    public static class RelativeBrightness extends OntoDeviceModel {
+        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type")
+        protected Ratio ratio;
+    }
+
+    public static class RelativeBrightnessRDF extends OntoDeviceModel{
+        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
+        protected InstantiationClient.RelativeBrightness relativeBrightness;
+    }
+
 
 
 
@@ -543,6 +594,11 @@ public class InstantiationClient {
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",backward = true)
         protected Illuminance illuminance;
     }
+    public static class Ratio extends SensorLoggerModel{}
+    public static class RatioRDF extends OntoDeviceModel{
+        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
+        protected InstantiationClient.Ratio ratio;
+    }
 
     /**
      * Measure
@@ -551,6 +607,13 @@ public class InstantiationClient {
         @Getter @Setter @FieldAnnotation(value = "http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue",backward = true, innerType = SensorLoggerModel.class)
         protected ArrayList<SensorLoggerModel> measures;
     }
+
+    public static class MeasureRDF extends SensorLoggerModel{
+        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",backward = true, innerType = SensorLoggerModel.class)
+        protected ArrayList<SensorLoggerModel> measuresRDF;
+    }
+
+
 
     /**
      *Unit
