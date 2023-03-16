@@ -304,15 +304,17 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontodevice/sensesFluid -->
+    <!-- https://www.theworldavatar.com/kg/ontodevice/sensesSubstance -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/sensesFluid">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/sensesSubstance">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/TemperatureSensor"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/FlowSensor"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/PressureSensor"/>
         <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#Substance"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the type of fluid that a device is sensing or observing.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes the type of substance that a device is sensing or observing.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">senses fluid</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">senses substance</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -517,6 +519,13 @@
 
 
     <owl:Class rdf:about="https://saref.etsi.org/core/State"/>
+    
+
+
+    <!-- https://saref.etsi.org/core/TemperatureSensor -->
+
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/TemperatureSensor"/>
     
 
 
