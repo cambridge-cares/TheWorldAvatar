@@ -24,12 +24,27 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 
+/**
+ * This class implements a cloning method which splits a large cloning operation into multiple smaller ones
+ * by tagging groups of triples in the source store.   
+ * <p>
+ * This method should be used with caution since it modifies triples in the source store during the cloning process.
+ * <p>
+ * Two methods: {@link SourceTaggingCloningTool#checkNoTags checkNoTags} and {@link SourceTaggingCloningTool#checkCount checkCount} 
+ * are provided and can be called to check that no tags remain after cloning and that the total count remains unchanged.
+ * <p>
+ * NOTE: If the sourceKB is a remote quad store then "isQuads" should be set to true in the constructor. 
+ * 
+ * 
+ * @author csl37
+ *
+ */
 public class SourceTaggingCloningTool {
 
 	String strTag = "_Tag";	//Tag ending
 	
 	int countTotal;		//Total number of triple to clone
-	boolean quads;		//Is the source KBClient a quads store?
+	boolean quads;		//Is the source KBClient a quad store?
 	int stepSize;
 	
 	/////////////////////////
