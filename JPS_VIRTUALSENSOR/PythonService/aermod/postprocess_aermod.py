@@ -1,9 +1,11 @@
 from matplotlib.mlab import csd
 import pandas as pd
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
+from matplotlib.colors import LinearSegmentedColormap
 import geojsoncontour
 from io import StringIO
 from flask import Blueprint, request, jsonify
@@ -61,14 +63,26 @@ def get_aermod_geojson(aermod_output, srid):
 
     contour_level = 30
     fig, ax = plt.subplots()
+    concLog = np.log10(conc_matrix)
+    colors = ["#3887BE", "#DB1F1F"]
+    values = [np.floor(np.amin(concLog)).astype(int),np.ceil(np.amax(concLog)).astype(int)]
+    ticks = range(values[0], values[1]+1, 100000)
+    labels = [f'£ {t:,}' for t in ticks]
+    labels = [labels[i] if i%2==1 else None for i in range(len(labels))]
 
-    crf = ax.contourf(x_matrix, y_matrix, np.log10(conc_matrix), levels=contour_level,cmap=plt.cm.jet)
+    crf = ax.contourf(x_matrix, y_matrix, concLog, levels=contour_level,cmap=plt.cm.jet)
     # cbar = fig.colorbar(crf,ax)
     try :
-       fig2,ax2 = plt.subplots()
-       ax2.colorbar(crf,ax2)
-       ax2.remove()
-       plt.savefig("/var/www/html/colourbar.png")
+       fig = plt.figure( figsize=(1,4) )
+       ax2 = fig.add_axes([0.05, 0.05, 0.25, 0.9])
+       norm = mpl.colors.Normalize(vmin=min(values), vmax=max(values))  
+       normed_vals = norm(values)
+       cmap = LinearSegmentedColormap.from_list("mypalette", list(zip(normed_vals, colors)), N=1000)  
+       cb = mpl.colorbar.ColorbarBase(ax2, cmap=cmap, norm=norm, orientation='vertical')
+       # Add tick locations and desired ticklabels
+       cb.set_ticks(ticks)
+       cb.ax.set_yticklabels(labels)
+       plt.savefig("/var/www/html/colourbar.png", dpi=300, bbox_inches='tight')
     except Exception as e :
        print(e)
     

@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   python-service:
-    image: ghcr.io/nagarajankarthik/python-service:1.0.2
+    image: ghcr.io/cambridge-cares/python-service:1.1.1-SNAPSHOT
     deploy:
       mode: replicated
       replicas: 1

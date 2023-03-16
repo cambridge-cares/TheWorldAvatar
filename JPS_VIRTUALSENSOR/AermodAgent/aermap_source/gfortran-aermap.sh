@@ -28,6 +28,5 @@ gfortran -c ${COMPILE_FLAGS} sub_utmgeo.f
 
 gfortran -o aermap ${LINK_FLAGS} mod_main1.o mod_tifftags.o aermap.o sub_calchc.o sub_chkadj.o sub_chkext.o sub_cnrcnv.o sub_demchk.o sub_demrec.o sub_demsrc.o sub_domcnv.o sub_initer_dem.o sub_initer_ned.o sub_nadcon.o sub_nedchk.o sub_read_tifftags.o sub_reccnv.o sub_recelv.o sub_srccnv.o sub_srcelv.o sub_utmgeo.o
 
-chmod 777 aermap
 rm *.o
 rm *.mod

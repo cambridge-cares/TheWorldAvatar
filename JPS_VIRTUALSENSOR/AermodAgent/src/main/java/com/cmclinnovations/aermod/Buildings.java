@@ -120,6 +120,16 @@ public class Buildings {
         }  
         UTMCoordSys = "EPSG:" + srid;
 
+        StackProperties.clear();
+        StackEmissions.clear();
+        StackDiameter.clear();
+        BuildingVertices.clear();
+        BuildingProperties.clear();
+        BPIPPRMBuildingInput.clear();
+        BPIPPRMStackInput.clear();
+
+
+
 
     }
 
@@ -716,7 +726,14 @@ public class Buildings {
 
     }
 
-    private static int writeToFile(Path path, String content) {
+    private static int writeToFile(Path path, String content ) {
+
+        try {
+            boolean res = Files.deleteIfExists(path);
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+        }
+
         try (BufferedWriter writer = Files.newBufferedWriter(path)) {
             LOGGER.info("Writing file: {}", path);
             writer.write(content);
@@ -728,6 +745,7 @@ public class Buildings {
             return 1;
         }
     }
+
 
     public static int runBPIPPRM() {
         try {
