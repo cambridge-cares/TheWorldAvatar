@@ -32,7 +32,7 @@ public class InstantiationClient {
         Person person = context.createNewModel(Person.class, "https://www.theworldavatar.com/kg/sensorloggerapp/person_"+UUID.randomUUID());
 
         //Smartphone
-        Smartphone smartphone = context.createNewModel(Smartphone.class, IRI.get("DEVICEID").toString());
+        Smartphone smartphone = context.createNewModel(Smartphone.class, IRI.get("deviceID").toString());
 
         //Ontodevice:Sensors
         Accelerometer accelerometer= context.createNewModel(Accelerometer.class, "https://www.theworldavatar.com/kg/sensorloggerapp/accelerometer_"+UUID.randomUUID());
