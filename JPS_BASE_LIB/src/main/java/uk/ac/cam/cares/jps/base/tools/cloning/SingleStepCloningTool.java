@@ -10,7 +10,7 @@ import org.apache.jena.update.UpdateRequest;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 
 /**
- * Tool for cloning triples (not quads) in a single step 
+ * Tool for cloning triples (NOT QUADS) in a single step 
  * using a SPARQL construct query and SPARQL update. 
  * <p>
  * NOTE: <br> 

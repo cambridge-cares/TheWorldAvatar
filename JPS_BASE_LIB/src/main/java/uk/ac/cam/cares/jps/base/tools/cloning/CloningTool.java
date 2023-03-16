@@ -13,7 +13,7 @@ import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 
 /**
  * This class implements a cloning tool for Triple Stores. 
- * ** Do not use with quads. **  
+ * ** DO NOT WITH QUADS **  
  * On large stores cloning is performed step-wise with an overlap between each step.
  * <p>
  * <b>How it works:</b>
