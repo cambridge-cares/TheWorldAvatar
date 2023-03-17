@@ -10,7 +10,7 @@
      xmlns:ontoems="https://www.theworldavatar.com/kg/ontoems/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoems/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">16 March 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">17 March 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Environmental Measurement Station ontology (OntoEMS) is an ontology developed for representing environmental measurement stations, reported quantities, and time series of associated readings.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -131,7 +131,6 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoems/DiffuseHorizontalIrradiance"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoems/DirectHorizontalIrradiance"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoems/DirectNormalIrradiance"/>
                 </owl:unionOf>
             </owl:Class>
@@ -809,23 +808,9 @@
         <rdfs:subClassOf rdf:resource="http://purl.org/iot/vocab/m3-lite#SolarRadiation"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Irradiance"/>
         <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#SolarIrradiance"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The horizontal component of diffuse solar irradiance (irradiance that is scattered by the atmosphere).</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Diffuse horizontal irradiance (DHI) is the horizontal component of diffuse solar irradiance (irradiance that is scattered by the atmosphere). GHI = DHI + DNI * cos(z), where z = solar zenith angle.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Diffuse horizontal irradiance</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoems/DirectHorizontalIrradiance -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/DirectHorizontalIrradiance">
-        <rdfs:subClassOf rdf:resource="http://purl.org/iot/vocab/m3-lite#SolarRadiation"/>
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Irradiance"/>
-        <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#SolarIrradiance"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The horizontal component of direct normal solar irradiance (irradiance arriving in a direct line from the sun as measured on a surface held perpendicular to the sun).</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Direct horizontal irradiance</rdfs:label>
     </owl:Class>
     
 
@@ -837,7 +822,7 @@
         <rdfs:subClassOf rdf:resource="http://purl.org/iot/vocab/m3-lite#SolarRadiation"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Irradiance"/>
         <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#SolarIrradiance"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The irradiance arriving in a direct line from the sun as measured on a surface held perpendicular to the sun</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Direct normal irradiance (DNI) is the irradiance arriving in a direct line from the sun as measured on a surface held perpendicular to the sun. GHI = DHI + DNI * cos(z), where z = solar zenith angle.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Direct normal irradiance</rdfs:label>
     </owl:Class>
@@ -900,7 +885,7 @@
         <rdfs:subClassOf rdf:resource="http://purl.org/iot/vocab/m3-lite#SolarRadiation"/>
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Irradiance"/>
         <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl#SolarIrradiance"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The total solar irradiance received on a horizontal surface. It is the sum of the horizontal components of direct (beam) and diffuse irradiance.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Global horizontal irradiance (GHI) is the total solar irradiance received on a horizontal surface. GHI = DHI + DNI * cos(z), where z = solar zenith angle.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Global horizontal irradiance</rdfs:label>
     </owl:Class>
