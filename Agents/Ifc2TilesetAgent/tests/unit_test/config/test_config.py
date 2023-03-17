@@ -16,6 +16,7 @@ import agent.config.config as properties
 
 ENDPOINT = "http://www.example.org/test"
 
+
 def gen_test_yaml_file(output_path):
     """
     Generates a sample yaml file with required properties for retrieval
@@ -24,24 +25,24 @@ def gen_test_yaml_file(output_path):
     output_path - output file path for the test yaml file
     """
     data = dict(
-        root_tile = dict(
-            x_center = 40,
-            y_center = 0,
-            z_center = 15,
-            length = 100,
-            width = 100,
-            height = 10
+        root_tile=dict(
+            x_center=40,
+            y_center=0,
+            z_center=15,
+            length=100,
+            width=100,
+            height=10
         ),
-        child_tile = dict(
-            x_center = 10,
-            y_center = 0,
-            z_center = 5,
-            length = 50,
-            width = 50,
-            height = 6
+        child_tile=dict(
+            x_center=10,
+            y_center=0,
+            z_center=5,
+            length=50,
+            width=50,
+            height=6
         ),
-        query_endpoint = ENDPOINT,
-        update_endpoint = ENDPOINT
+        query_endpoint=ENDPOINT,
+        update_endpoint=ENDPOINT
     )
     # Generate the file
     with open(output_path, 'w') as outfile:
@@ -69,9 +70,10 @@ def test_set_properties():
         os.remove(yaml_path)
 
 
+# To be removed
 def test_bbox_root():
     """
     Tests set_bbox()
     """
     expected_bbox = [40, 0, 16, 100, 0, 0, 0, 100, 0, 0, 0, 20]
-    assert expected_bbox == properties.set_bbox(40,0,16,200,200,40)
+    assert expected_bbox == properties.set_bbox(40, 0, 16, 200, 200, 40)

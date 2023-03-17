@@ -13,7 +13,6 @@ import pandas as pd
 import trimesh
 
 # Self import
-import agent.config.config as properties
 from agent.ifc2tileset.root_tile import append_tileset_schema_and_metadata, gen_root_content
 from agent.ifc2tileset.tile_helper import make_tileset, make_root_tile
 from . import testconsts as C
@@ -93,15 +92,11 @@ def test_gen_root_content_no_building_no_furniture_no_assets():
     """
     Tests gen_root_content() when there is no building and furniture.gltf detected
     """
-    # arrange
-    building_iri = "test_iri"
-    expected = make_bim_tileset(properties.bbox_root, building_iri)
-
     # act
     actual = gen_root_content("test_iri", pd.DataFrame())
 
     # assert
-    assert actual == expected
+    assert actual is None
 
 
 def test_gen_root_content_only_building():

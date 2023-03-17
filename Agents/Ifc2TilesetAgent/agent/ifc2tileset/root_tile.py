@@ -13,7 +13,6 @@ from py4jps import agentlogging
 
 # Self imports
 import agent.app as state
-import agent.config.config as properties
 from agent.ifc2tileset.schema import Tileset
 from agent.ifc2tileset.tile_helper import make_tileset, make_root_tile, compute_bbox
 
@@ -54,8 +53,9 @@ def append_tileset_schema_and_metadata(tileset: Tileset, building_iri: str):
 
 def gen_root_content(building_iri: str, asset_data: pd.DataFrame):
     """
-    Add the root content of building and background furniture to tileset
-    If there are no assets, the tileset generated in this function is sufficient for visualisation
+    Add the root content of building and background furniture to tileset.
+    If there are no assets, the tileset generated in this function is sufficient for visualisation.
+    If there are no building, furniture, or assets, returns None.
 
     Arguments:
         building_iri - data IRI of the building
@@ -66,12 +66,12 @@ def gen_root_content(building_iri: str, asset_data: pd.DataFrame):
     # Respective filepaths
     building_file_path = "./data/gltf/building.gltf"
     bpath = Path(building_file_path)
-    furniture_file_path = "./data/gltf/furniture.gltf"
-    fpath = Path(furniture_file_path)
 
-    # In a special case where there is no building and furniture, no root content is added
     if bpath.is_file():
         building_content = {"uri": state.asset_url + "building.gltf"}
+
+        furniture_file_path = "./data/gltf/furniture.gltf"
+        fpath = Path(furniture_file_path)
 
         # If there are furniture, use the multiple nomenclature
         if fpath.is_file():
@@ -86,10 +86,12 @@ def gen_root_content(building_iri: str, asset_data: pd.DataFrame):
             # Tileset Nomenclature for 1 geometry file = content:{}
             root_tile = make_root_tile(bbox=bbox, content=building_content)
     else:
+        if asset_data.empty:
+            # No bim tileset should be generated if there is no builidng, no furniture, and no assets
+            return None
+
         # In the scenario where there is no building and no furniture, the root bbox should enclose all assets
-        bbox = compute_bbox([f"./data/glb/{file}.glb" for file in asset_data["file"]]) \
-            if not asset_data.empty \
-            else properties.bbox_root
+        bbox = compute_bbox([f"./data/glb/{file}.glb" for file in asset_data["file"]])
         root_tile = make_root_tile(bbox=bbox)
 
     tileset = make_tileset(root_tile)

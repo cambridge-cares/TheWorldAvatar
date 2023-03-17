@@ -5,16 +5,19 @@ This module provides methods to generate tilesets related to assets.
 """
 
 # Standard library imports
-from typing import List
+from typing import List, Optional
 
 # Third party imports
 import pandas as pd
+from py4jps import agentlogging
 
 # Self imports
 import agent.app as state
 from agent.ifc2tileset.schema import Tileset, Tile, Content
 from agent.ifc2tileset.tile_helper import compute_bbox
 from agent.kgutils.const import NAME_VAR, ID_VAR, IRI_VAR
+
+logger = agentlogging.get_logger("dev")
 
 
 def append_asset_metadata_schema(tileset: Tileset):
@@ -54,7 +57,7 @@ def append_assets_to_tile_node(tile: Tile, asset_df: pd.DataFrame):
         asset_df - dataframe containing mappings for asset metadata
         tile - parent node to have assets added as a child node
     """
-    def asset_data_to_tileset_content(row: pd.Series):
+    def _asset_data_to_tileset_content(row: pd.Series):
         # Add geometry and uid for each asset
         return {
             "uri": state.asset_url + row["file"] + ".gltf",
@@ -69,7 +72,7 @@ def append_assets_to_tile_node(tile: Tile, asset_df: pd.DataFrame):
             }
         }
 
-    contents: List[Content] = asset_df.apply(asset_data_to_tileset_content, axis=1).tolist()
+    contents: List[Content] = asset_df.apply(_asset_data_to_tileset_content, axis=1).tolist()
     bbox = compute_bbox([f"./data/glb/{file}.glb" for file in asset_df["file"]])
 
     tile["children"] = [{
@@ -104,7 +107,7 @@ def append_assets(tileset: Tileset, asset_df: pd.DataFrame):
         #     break
 
 
-def gen_tileset_assets(tileset: Tileset, asset_df: pd.DataFrame):
+def append_tileset_assets(tileset: Optional[Tileset], asset_df: pd.DataFrame):
     """
     Add asset properties into the tileset.
 
@@ -114,6 +117,10 @@ def gen_tileset_assets(tileset: Tileset, asset_df: pd.DataFrame):
     Returns:
     The tileset generated with asset metadata as a python dictionary
     """
-    # Initialise tileset structure for assets
+    if tileset is None or asset_df.empty:
+        return
+
+    logger.info("Individual glTF assets detected. Attaching tileset with asset metadata...")
+
     append_asset_metadata_schema(tileset)
     append_assets(tileset, asset_df)

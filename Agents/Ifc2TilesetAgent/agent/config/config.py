@@ -7,6 +7,7 @@ This module gives all modules access to the properties.yml.
 # Third party imports
 import yaml
 
+# to be removed
 bbox_root = []
 bbox_child = []
 
@@ -39,6 +40,7 @@ def set_properties(path):
     return query_endpoint, update_endpoint
 
 
+# To be deprecated
 def set_bbox(x_center, y_center, z_center, length, width, height):
     """
     Defines and set the bounding boxes pf tiles required in generating the tilesets

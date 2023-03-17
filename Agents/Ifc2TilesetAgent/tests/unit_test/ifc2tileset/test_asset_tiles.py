@@ -13,7 +13,7 @@ import trimesh
 
 # Self import
 import agent.config.config as properties
-from agent.ifc2tileset.asset_tiles import append_asset_metadata_schema, gen_tileset_assets, append_assets, \
+from agent.ifc2tileset.asset_tiles import append_asset_metadata_schema, append_tileset_assets, append_assets, \
     append_assets_to_tile_node
 from agent.ifc2tileset.root_tile import make_tileset, append_tileset_schema_and_metadata
 from agent.ifc2tileset.schema import Tile, Content
@@ -248,7 +248,7 @@ def test_append_assets_more_than_six_assets():
             os.remove(file)
 
 
-def test_gen_tileset_assets():
+def test_append_tileset_assets():
     """
     Tests gen_tileset_assets()
     """
@@ -277,7 +277,7 @@ def test_gen_tileset_assets():
 
     try:
         # Execute test method
-        gen_tileset_assets(tileset, sample_df)
+        append_tileset_assets(tileset, sample_df)
 
         # Process result for programmatic testing
         test_dict_list = []

@@ -11,7 +11,7 @@ from py4jps import agentlogging
 # Self imports
 from agent.ifc2tileset.tile_helper import gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter
 from agent.ifc2tileset.root_tile import gen_root_content
-from agent.ifc2tileset.asset_tiles import gen_tileset_assets
+from agent.ifc2tileset.asset_tiles import append_tileset_assets
 
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
@@ -33,13 +33,9 @@ def gen_tilesets(asset_data: pd.DataFrame, building_iri: str):
     bim_tileset = gen_root_content(building_iri, asset_data)
 
     # If there are assets, append tileset with asset information
-    if not asset_data.empty:
-        logger.info("Individual glTF assets detected. Attaching tileset with asset metadata...")
-        gen_tileset_assets(bim_tileset, asset_data)
+    append_tileset_assets(bim_tileset, asset_data)
 
-    # If there are any root content (building or furniture) or asset info
-    if "contents" in bim_tileset["root"] or \
-            "content" in bim_tileset["root"] or \
-            "children" in bim_tileset["root"]:
-        # In such cases, generate the bim tileset
+    # If there are any building, furniture, or asset, bim_tileset will be not None
+    if bim_tileset is not None:
+        # In such case, generate the bim tileset
         jsonwriter(bim_tileset, "tileset_bim")
