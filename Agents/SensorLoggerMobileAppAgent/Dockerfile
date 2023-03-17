@@ -23,20 +23,15 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /root/sensorloggermobileapp_agent
 ADD https://jdbc.postgresql.org/download/postgresql-42.5.4.jar ./resources/
-# COPY --from=builder /root/sensorloggermobileapp_agent/output/SensorLoggerMobileAppAgent##1.0.0.war $CATALINA_HOME/webapps/
 
 
-# # Start the Tomcat server
-# ENTRYPOINT ["catalina.sh", "run"]
 # #==================================================================================================
-
-
 # Copy the compiled jar from the builder
-# COPY --from=war_builder /root/code/output/* $CATALINA_HOME/webapps/
 COPY --from=builder /root/sensorloggermobileapp_agent/output/SensorLoggerMobileAppAgent##1.0.0.war $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
 # # Port for Java debugging
-# EXPOSE 5005
+EXPOSE 5005
+EXPOSE 10102
 
 ENTRYPOINT ["./entrypoint.sh"]

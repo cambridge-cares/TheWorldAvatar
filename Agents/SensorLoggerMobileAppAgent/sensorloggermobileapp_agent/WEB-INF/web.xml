@@ -4,12 +4,12 @@
     <description>A simple java agent for mobile app sensors.</description>
 
     <servlet>
-        <servlet-name>SensorLoggerMobileAppAgentServlet</servlet-name>
-        <servlet-class>uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.SensorLoggerMobileAppServlet</servlet-class>
+        <servlet-name>SensorLoggerMobileAppAgent</servlet-name>
+        <servlet-class>uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.SensorLoggerMobileAppAgent</servlet-class>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>SensorLoggerMobileAppAgentServlet</servlet-name>
+        <servlet-name>SensorLoggerMobileAppAgent</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 

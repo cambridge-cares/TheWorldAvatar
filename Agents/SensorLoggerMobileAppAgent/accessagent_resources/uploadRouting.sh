@@ -2,7 +2,7 @@
 
 # NB: The port number must match that in docker-compose, or, if running
 # within a stack, the main entry port to the stack, e.g. 3838.
-accessagentURL=http://localhost:48888/access-agent/upload
+accessagentURL=http://localhost:3838/access-agent/upload
 
 # Routing information
 routingInfo=./routing.json
