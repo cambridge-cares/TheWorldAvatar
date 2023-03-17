@@ -50,19 +50,28 @@ def rdf_diff(old, new):
     in_second.serialize(fp3, format="ttl")
 
 
-def get_unique_predicates_with_counts(nt_file_path, include_subjects=False):
+def get_unique_predicates_with_counts(nt_file_path, include_subjects=False,
+                                      only_types=False):
     # Load the .nt file into a graph
     g = Graph()
     g.parse(nt_file_path, format="nt")
 
     if include_subjects:
-        query = """
-        SELECT distinct ?s ?p ?o ?type
-        WHERE {
-            ?s ?p ?o . 
-            OPTIONAL { ?s a ?type . }
-        }
-    """
+        if only_types:
+            query = """
+            SELECT distinct ?type ?p
+            WHERE {
+                ?s ?p ?o . 
+                ?s a ?type .
+            }"""
+        else:
+            query = """
+            SELECT distinct ?s ?p ?o ?type
+            WHERE {
+                ?s ?p ?o . 
+                OPTIONAL { ?s a ?type . }
+            }
+            """
     else:
         query = """
             SELECT distinct ?s ?p ?o
@@ -117,8 +126,8 @@ def align_uuids(rdf_file, replace_with='123'):
 if __name__ == '__main__':
 
     # Specify input file paths (relative path)
-    fp1 = r'..\data\outputs\clean_slate.nt'
-    fp2 = r'..\data\outputs\no_warnings.nt'
+    fp1 = r'..\data\inputs\dh_magnus.nt'
+    fp2 = r'..\data\inputs\ontoheatnet.nt'
     # Specify output file paths
     fp3 = r'..\data\outputs\predicates.txt'
     fp4 = r'..\data\outputs\subject_predicate_pairs.txt'
@@ -140,8 +149,8 @@ if __name__ == '__main__':
     #
     # 2) Compare instantiated subject-predicates pairs
     #
-    sub_pred1 = get_unique_predicates_with_counts(triples1, include_subjects=True)
-    sub_pred2 = get_unique_predicates_with_counts(triples2, include_subjects=True)
+    sub_pred1 = get_unique_predicates_with_counts(triples1, include_subjects=True, only_types=True)
+    sub_pred2 = get_unique_predicates_with_counts(triples2, include_subjects=True, only_types=True)
     with open(os.path.join(Path(__file__).parent, fp4), 'w') as f:
         for diff in list(dictdiffer.diff(sub_pred1, sub_pred2)):
             print(diff, file=f)
