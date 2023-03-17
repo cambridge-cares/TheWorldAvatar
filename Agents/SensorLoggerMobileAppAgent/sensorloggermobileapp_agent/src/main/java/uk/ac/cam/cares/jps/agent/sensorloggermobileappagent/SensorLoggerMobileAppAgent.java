@@ -30,8 +30,9 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import uk.ac.cam.cares.downsampling.Downsampling;
 
-import static uk.ac.cam.cares.jps.agent.sensorloggermobileappagent.InstantiationClient.instantiationMethod;
+
 
 
 @WebServlet(urlPatterns = "/update")
@@ -90,12 +91,35 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
     private boolean isTimerStarted = false;
     private boolean hasData = false;
 
+    private static Long accelDSResolution;
+    private static Downsampling.Type accelDSType;
+
+    private static Long gravityDSResolution;
+    private static Downsampling.Type gravityDSType;
+
+    private static Long magnetometerDSResolution;
+    private static Downsampling.Type magnetometerDSType;
+
+    private static Long dbfsDSResolution;
+    private static Downsampling.Type dbfsDSType;
+
+    private static Long rbDSResolution;
+    private static Downsampling.Type rbDSType;
+
+    private static Long lightValueDSResolution;
+    private static Downsampling.Type lightValueDSType;
+
+
     public void init() {
+        //Readconfig
+        readConfig();
+
+
         if (!isTimerStarted) {
             isTimerStarted = true;
             // Start the timer
             timer = new Timer();
-            timer.schedule(new instantiationTask(), 2000,5000); // 5000 milliseconds = 5 seconds
+            timer.schedule(new instantiationTask(), timerDelay*1000,timerFrequency*1000); // 5000 milliseconds = 5 seconds
 
             //Create POSTGIS Database in the stack
             PostGISClient postGISClient = PostGISClient.getInstance();
@@ -126,8 +150,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        //Readconfig
-        readConfig();
+
 
         // Send a response back to the client with a 200 status code
         response.setStatus(HttpServletResponse.SC_OK);
@@ -287,10 +310,29 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
     private static void readConfig() {
         ResourceBundle config = ResourceBundle.getBundle("config");
-        downsamplingType= Integer.parseInt(config.getString("downsamplingType"));
-        downsamplingRate= Long.valueOf(config.getString("downsamplingRate"));
+
+        accelDSResolution=Long.valueOf(config.getString("accelDSResolution"));
+        accelDSType=Downsampling.Type.valueOf(config.getString("accelDSType"));
+
+        gravityDSResolution=Long.valueOf(config.getString("gravityDSResolution"));
+        gravityDSType=Downsampling.Type.valueOf(config.getString("gravityDSType"));
+
+        magnetometerDSResolution= Long.valueOf(config.getString("magnetometerDSResolution"));
+        magnetometerDSType=Downsampling.Type.valueOf(config.getString("magnetometerDSType"));
+
+        dbfsDSResolution=Long.valueOf(config.getString("dbfsDSResolution"));
+        dbfsDSType=Downsampling.Type.valueOf(config.getString("dbfsDSType"));
+
+        rbDSResolution=Long.valueOf(config.getString("rbDSResolution"));
+        rbDSType=Downsampling.Type.valueOf(config.getString("rbDSType"));
+
+        lightValueDSResolution= Long.valueOf(config.getString("lightValueDSResolution"));
+        lightValueDSType=Downsampling.Type.valueOf(config.getString("lightValueDSType"));
+
         timerDelay= Integer.valueOf(config.getString("timerDelay"));
         timerFrequency= Integer.valueOf(config.getString("timerFrequency"));
+
+
 
         EndpointConfig endpointConfig = new EndpointConfig();
         rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
@@ -300,7 +342,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
 
     private static boolean staticInstantiated = false;
-    public void tsInstantiation(){
+    public void tsInstantiation() throws Exception {
         smartphoneString=BASEURI+"Smartphone_"+DEVICEID;
         Node smartphoneIRI= NodeFactory.createURI(smartphoneString);
         List tsList = new ArrayList();
@@ -343,6 +385,11 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             accel_lolValues= new ArrayList<>();
 
             TimeSeries accelTS = new TimeSeries(timesList, dataIRIList, lolvalues);
+
+            //Carry out downsampling here
+
+            accelTS = Downsampling.downsampleTS(accelTS,accelDSResolution, accelDSType);
+
             tsList.add(accelTS);
         }
 
@@ -384,7 +431,13 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             gravityList_z=  new ArrayList<>();
             gravity_lolValues= new ArrayList<>();
 
+
+
             TimeSeries gravityTS = new TimeSeries(timesList, dataIRIList, lolvalues);
+
+            //Carry out downsampling here
+            gravityTS = Downsampling.downsampleTS(gravityTS,gravityDSResolution, gravityDSType);
+
             tsList.add(gravityTS);
         }
 
@@ -426,6 +479,10 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             magnetometer_lolValues= new ArrayList<>();
 
             TimeSeries magnetometerTS = new TimeSeries(timesList, dataIRIList, lolvalues);
+
+            //Carry out downsampling here
+            magnetometerTS = Downsampling.downsampleTS(magnetometerTS,magnetometerDSResolution, magnetometerDSType);
+
             tsList.add(magnetometerTS);
         }
 
@@ -475,6 +532,9 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             location_lolValues= new ArrayList<>();
 
             TimeSeries locationTS = new TimeSeries(timesList, dataIRIList, lolvalues);
+
+            //Downsampling is not applicable to locationTS
+
             tsList.add(locationTS);
         }
 
@@ -502,8 +562,10 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             dBFSList = new ArrayList<>();
             dBFS_lolValues = new ArrayList<>();
 
-            TimeSeries locationTS = new TimeSeries(timesList, dataIRIList, lolvalues);
-            tsList.add(locationTS);
+            TimeSeries dbfsTS = new TimeSeries(timesList, dataIRIList, lolvalues);
+            dbfsTS = Downsampling.downsampleTS(dbfsTS,dbfsDSResolution, dbfsDSType);
+
+            tsList.add(dbfsTS);
         }
 
         //RelativeBrightness
@@ -531,6 +593,11 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             brightness_lolValues= new ArrayList<>();
 
             TimeSeries relativeBrightnessTS = new TimeSeries(timesList, dataIRIList, lolvalues);
+
+            //Carry out downsampling here
+            relativeBrightnessTS = Downsampling.downsampleTS(relativeBrightnessTS,rbDSResolution, rbDSType);
+
+
             tsList.add(relativeBrightnessTS);
         }
 
@@ -559,6 +626,10 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             lightValue_lolValues=new ArrayList<>();
 
             TimeSeries lightValueTS = new TimeSeries(timesList, dataIRIList, lolvalues);
+
+            //Carry out downsampling here
+            lightValueTS = Downsampling.downsampleTS(lightValueTS,lightValueDSResolution, lightValueDSType);
+            
             tsList.add(lightValueTS);
         }
 
@@ -566,7 +637,7 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
         if (iriHashmap.size()==maxSize && !staticInstantiated){
             iriHashmap.put("deviceID", smartphoneString);
-            instantiationMethod(iriHashmap);
+            InstantiationClient.instantiationMethod(iriHashmap);
             LOGGER.info(String.format("Units is now instantiated"));
             staticInstantiated = true;
         }else if (iriHashmap.size()==maxSize && staticInstantiated)
