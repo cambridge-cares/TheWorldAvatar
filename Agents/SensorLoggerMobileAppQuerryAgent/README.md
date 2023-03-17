@@ -2,6 +2,9 @@
 ## Description 
 This query agent is designed to work with data instantiated by SensorLoggerMobileAppAgent. 
 
+## To deploy this agent
+1) Spin it up on the stack
+2) Send POST request and it will system output print the tables from the points. 
 
 ## To use this agent
 Send POST request containing the scope and timeframe to query. 

@@ -30,5 +30,7 @@ WORKDIR /root/
 COPY --from=builder /root/output/SensorLoggerMobileAppQueryAgent##1.0.0.war $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
+EXPOSE 10103
+
 
 ENTRYPOINT ["./entrypoint.sh"]
