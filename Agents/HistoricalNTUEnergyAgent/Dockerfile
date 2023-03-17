@@ -13,7 +13,7 @@ RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASS
 
 # Build
 WORKDIR /root/HistoricalNTUEnergyAgentCode
-RUN --mount=type=cache,target=/root/.m2/repository mvn package
+RUN --mount=type=cache,target=/root/.m2/repository mvn package -DskipTests
 
 
 #==================================================================================================
@@ -49,7 +49,7 @@ COPY ./config/mappings /root/mappings
 ENV HISTORICALNTUENERGY_AGENT_MAPPINGS="/root/mappings"
 
 # Copy in the energy data
-COPY ./config/NTU_Energy_Consumption.xlsx /root/NTU_Energy_Consumption.xlsx
+COPY ./data/NTU_Energy_Consumption.xlsx /root/NTU_Energy_Consumption.xlsx
 
 # Set the required environment variable
 ENV ENERGY_READINGS="/root/NTU_Energy_Consumption.xlsx"

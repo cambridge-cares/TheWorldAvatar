@@ -42,4 +42,5 @@ for row_number, row in enumerate(ws.iter_rows(min_row=2, values_only=True), star
 
 # Save the updated workbook to a file
 wb.save('NTU_Energy_Consumption.xlsx')
+print("Successfully converted the .xslx file!")
 

@@ -44,7 +44,9 @@ public class HistoricalNTUEnergyAgent {
     /**
      * The prefix to use when no IRI exists for a JSON key originally
      */
-    public static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "ntuenergy";
+    //public static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "ntuenergy";
+    public static final String OmPrefix = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
+    public static final String generatedIRIPrefix = OmPrefix + "measure";
     /**
      * The time unit used for all time series maintained by the agent
      */
