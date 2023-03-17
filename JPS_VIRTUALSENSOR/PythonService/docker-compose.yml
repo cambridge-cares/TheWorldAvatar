@@ -12,5 +12,12 @@ services:
       target: production
     ports:
       - 5000:5000
+    volumes:
+      - vis_data:/var/www/html
     networks:
       - stack
+  
+volumes:
+  vis_data:
+    name: "vis_data"
+    external: true

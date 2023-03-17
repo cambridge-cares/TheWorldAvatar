@@ -64,24 +64,19 @@ def get_aermod_geojson(aermod_output, srid):
     contour_level = 30
     fig, ax = plt.subplots()
     concLog = np.log10(conc_matrix)
-    colors = ["#3887BE", "#DB1F1F"]
-    values = [np.floor(np.amin(concLog)).astype(int),np.ceil(np.amax(concLog)).astype(int)]
-    ticks = range(values[0], values[1]+1, 100000)
-    labels = [f'£ {t:,}' for t in ticks]
-    labels = [labels[i] if i%2==1 else None for i in range(len(labels))]
 
     crf = ax.contourf(x_matrix, y_matrix, concLog, levels=contour_level,cmap=plt.cm.jet)
     # cbar = fig.colorbar(crf,ax)
     try :
-       fig = plt.figure( figsize=(1,4) )
-       ax2 = fig.add_axes([0.05, 0.05, 0.25, 0.9])
-       norm = mpl.colors.Normalize(vmin=min(values), vmax=max(values))  
-       normed_vals = norm(values)
-       cmap = LinearSegmentedColormap.from_list("mypalette", list(zip(normed_vals, colors)), N=1000)  
-       cb = mpl.colorbar.ColorbarBase(ax2, cmap=cmap, norm=norm, orientation='vertical')
-       # Add tick locations and desired ticklabels
-       cb.set_ticks(ticks)
-       cb.ax.set_yticklabels(labels)
+       cm = 1/2.54
+       plt.figure(figsize=(10*cm, 20*cm))
+       concBar = np.log10(np.asarray(conc_list))
+       concBar = np.expand_dims(concBar,0)
+       img = plt.imshow(concBar, cmap=plt.cm.jet)
+       plt.gca().set_visible(False)
+       cax = plt.axes([0.1, 0.2, 0.1, 1.0])
+       plt.colorbar(orientation="vertical", cax=cax)
+    #    plt.title(r"Logarithm of CO$_{2}$ concentrations ($\mu$g/m$^3$)")
        plt.savefig("/var/www/html/colourbar.png", dpi=300, bbox_inches='tight')
     except Exception as e :
        print(e)

@@ -19,4 +19,5 @@ services:
 volumes:
   vis_data:
     name: "vis_data"
+    external: true
  
