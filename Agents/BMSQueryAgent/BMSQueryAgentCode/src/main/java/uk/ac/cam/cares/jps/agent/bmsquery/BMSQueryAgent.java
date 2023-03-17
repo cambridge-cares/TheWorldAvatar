@@ -18,6 +18,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class BMSQueryAgent {
 
     public JSONObject queryTimeSeriesWithinBound(String dataIRI) {
         List<String> dataIRIs = Collections.singletonList(dataIRI);
-        OffsetDateTime currentTime = OffsetDateTime.parse("2023-03-08T14:20:39+08");
+        OffsetDateTime currentTime = OffsetDateTime.parse("2023-03-02T09:05:56Z");
         OffsetDateTime oneHourAgo = currentTime.minusHours(1);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
@@ -66,6 +67,19 @@ public class BMSQueryAgent {
 
         query.prefix(P_BMS).select(instance).where(instance.has(RDF.TYPE, classIRI));
         JSONArray jsonResult = rsClient.executeQuery(query.getQueryString());
-        return jsonResult.getJSONObject(0);
+
+        return parseQueryResult(jsonResult);
+    }
+
+    private JSONObject parseQueryResult(JSONArray queryResult) {
+        ArrayList<String> dataIris = new ArrayList<>();
+        LOGGER.error(queryResult.toString());
+        for (int i = 0; i < queryResult.length(); i++) {
+            dataIris.add(queryResult.getJSONObject(i).getString("x0"));
+        }
+
+        JSONObject result = new JSONObject();
+        result.put("Equipments", dataIris);
+        return result;
     }
 }

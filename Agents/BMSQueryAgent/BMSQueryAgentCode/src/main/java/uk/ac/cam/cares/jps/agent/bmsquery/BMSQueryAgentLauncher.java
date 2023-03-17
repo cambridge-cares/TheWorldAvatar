@@ -9,6 +9,7 @@ import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -35,7 +36,18 @@ public class BMSQueryAgentLauncher extends JPSAgent {
     public static final String RSCLIENT_CONSTRUCTION_ERROR_MSG = "Could not construct the remote store client needed by the input agent.";
 
     @Override
+    public void init() throws ServletException {
+        super.init();
+        LOGGER.debug("This is a debug message.");
+        LOGGER.info("This is an info message.");
+        LOGGER.warn("This is a warn message.");
+        LOGGER.error("This is an error message.");
+        LOGGER.fatal("This is a fatal message.");
+    }
+
+    @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+
         String url = request.getRequestURI();
         if (url.contains("?")) url = url.split(Pattern.quote("?"))[0];
         JSONObject jsonMessage = new JSONObject();
@@ -76,6 +88,7 @@ public class BMSQueryAgentLauncher extends JPSAgent {
 
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        LOGGER.debug("Getting requestParams: " + requestParams.toString());
 
         if (requestParams.isEmpty()) {
             LOGGER.error(EMPTY_PARAMETER_ERROR_MSG);
@@ -101,12 +114,16 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         return true;
     }
 
+    // TODO: refactor everything with clientpropertyfile, which comes from local container configuration
     public BMSQueryAgent initializeAgent(String clientPropertyFile, JSONObject jsonMessage) {
+        EndpointConfig endpointConfig = new EndpointConfig();
+
+        RemoteStoreClient rsClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
+        TimeSeriesClient<OffsetDateTime> tsClient = new TimeSeriesClient<>(rsClient, OffsetDateTime.class, endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
+
         BMSQueryAgent agent = createBMSQueryAgent(jsonMessage);
-
-        agent.setTSClient(createTimeSeriesClient(jsonMessage, clientPropertyFile));
-
-        agent.setRSClient(createRemoteStoreClient(jsonMessage, clientPropertyFile));
+        agent.setRSClient(rsClient);
+        agent.setTSClient(tsClient);
 
         LOGGER.info("Input agent object initialized.");
         jsonMessage.accumulate("Message", "Input agent object initialized.");
@@ -124,59 +141,63 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         return agent;
     }
 
-    private TimeSeriesClient<OffsetDateTime> createTimeSeriesClient(JSONObject jsonMessage, String clientPropertyFile) {
-        TimeSeriesClient<OffsetDateTime> tsClient;
-        try {
-            tsClient = new TimeSeriesClient<>(OffsetDateTime.class, clientPropertyFile);
-        } catch (IOException | JPSRuntimeException e) {
-            LOGGER.error(TSCLIENT_CONSTRUCTION_ERROR_MSG, e);
-            throw new JPSRuntimeException(TSCLIENT_CONSTRUCTION_ERROR_MSG, e);
-        }
-        LOGGER.info("Time series client object initialized.");
-        jsonMessage.accumulate("Message", "Time series client object initialized.");
-        return tsClient;
-    }
-
-    private RemoteStoreClient createRemoteStoreClient(JSONObject jsonMessage, String clientPropertyFile) {
-        RemoteStoreClient kbClient = new RemoteStoreClient();
-        try {
-            setSparqlConfig(clientPropertyFile, kbClient);
-        } catch (IOException e) {
-            throw new JPSRuntimeException(RSCLIENT_CONSTRUCTION_ERROR_MSG, e);
-        }
-        LOGGER.info("Remote store client object initialized.");
-        jsonMessage.accumulate("Message", "Remote store client object initialized.");
-        return kbClient;
-    }
-
-    private void setSparqlConfig(String filepath, TripleStoreClientInterface kbClient) throws IOException {
-        File file = new File(filepath);
-        if (!file.exists()) {
-            throw new JPSRuntimeException("No properties file found at specified filepath: " + filepath);
-        }
-
-        // Try-with-resource to ensure closure of input stream
-        try (InputStream input = new FileInputStream(file)) {
-
-            // Load properties file from specified path
-            Properties prop = new Properties();
-            prop.load(input);
-
-            // Get the property values and assign
-            if (prop.containsKey("sparql.query.endpoint")) {
-                kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));
-            } else {
-                throw new JPSRuntimeException("Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\" ");
-            }
-            if (prop.containsKey("sparql.update.endpoint")) {
-                kbClient.setUpdateEndpoint(prop.getProperty("sparql.update.endpoint"));
-            } else {
-                throw new JPSRuntimeException("Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\" ");
-            }
-        }
-    }
-
     public void getStatus(JSONObject jsonMessage) {
         jsonMessage.accumulate("Message", "BMSQueryAgent is ready.");
     }
+
+
+    // ****************************** endpoint set up for non-stack version ********************************************
+//    private TimeSeriesClient<OffsetDateTime> createTimeSeriesClient(JSONObject jsonMessage, String clientPropertyFile) {
+//        TimeSeriesClient<OffsetDateTime> tsClient;
+//        try {
+//            tsClient = new TimeSeriesClient<>(OffsetDateTime.class, clientPropertyFile);
+//        } catch (IOException | JPSRuntimeException e) {
+//            LOGGER.error(TSCLIENT_CONSTRUCTION_ERROR_MSG, e);
+//            throw new JPSRuntimeException(TSCLIENT_CONSTRUCTION_ERROR_MSG, e);
+//        }
+//        LOGGER.info("Time series client object initialized.");
+//        jsonMessage.accumulate("Message", "Time series client object initialized.");
+//        return tsClient;
+//    }
+//
+//    private RemoteStoreClient createRemoteStoreClient(JSONObject jsonMessage, String clientPropertyFile) {
+//        RemoteStoreClient kbClient = new RemoteStoreClient();
+//        try {
+//            setSparqlConfig(clientPropertyFile, kbClient);
+//        } catch (IOException e) {
+//            throw new JPSRuntimeException(RSCLIENT_CONSTRUCTION_ERROR_MSG, e);
+//        }
+//        LOGGER.info("Remote store client object initialized.");
+//        jsonMessage.accumulate("Message", "Remote store client object initialized.");
+//        return kbClient;
+//    }
+//
+//    private void setSparqlConfig(String filepath, TripleStoreClientInterface kbClient) throws IOException {
+//        File file = new File(filepath);
+//        if (!file.exists()) {
+//            throw new JPSRuntimeException("No properties file found at specified filepath: " + filepath);
+//        }
+//
+//        // Try-with-resource to ensure closure of input stream
+//        try (InputStream input = new FileInputStream(file)) {
+//
+//            // Load properties file from specified path
+//            Properties prop = new Properties();
+//            prop.load(input);
+//
+//            // Get the property values and assign
+//            if (prop.containsKey("sparql.query.endpoint")) {
+//                kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));
+//            } else {
+//                throw new JPSRuntimeException("Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\" ");
+//            }
+//            if (prop.containsKey("sparql.update.endpoint")) {
+//                kbClient.setUpdateEndpoint(prop.getProperty("sparql.update.endpoint"));
+//            } else {
+//                throw new JPSRuntimeException("Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\" ");
+//            }
+//        }
+//    }
+    // *****************************************************************************************************************
+
 }
