@@ -44,9 +44,8 @@ public final class OntopService extends ContainerService {
     public OntopService(String stackName, ServiceConfig config) {
         super(stackName, config);
 
-        endpointConfig = new OntopEndpointConfig(
-                config.getName(), getHostName(), DEFAULT_PORT,
-                "", null);
+        endpointConfig = new OntopEndpointConfig(StackClient.removeStackName(config.getName()),
+                getHostName(), DEFAULT_PORT, "", null);
     }
 
     @Override
