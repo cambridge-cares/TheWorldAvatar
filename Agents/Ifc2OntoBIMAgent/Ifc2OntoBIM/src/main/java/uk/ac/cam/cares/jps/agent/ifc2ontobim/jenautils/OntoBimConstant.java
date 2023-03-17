@@ -53,6 +53,16 @@ public class OntoBimConstant {
     public static final String BUILDING_STRUCTURE_HAS_TREAD_LENGTH = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + "hasTreadLength";
     // OntoBIM modelling position properties
     public static final String BIM_HAS_LOCAL_POSITION = NamespaceMapper.BIM_NAMESPACE + "hasLocalPosition";
+    public static final String BIM_HAS_REL_POSITION = NamespaceMapper.BIM_NAMESPACE + "hasRelativePositionTo";
+    public static final String BIM_HAS_REF_POINT = NamespaceMapper.BIM_NAMESPACE + "hasRefPoint";
+    public static final String BIM_HAS_X_COORDINATE = NamespaceMapper.BIM_NAMESPACE + "hasXCoordinate";
+    public static final String BIM_HAS_Y_COORDINATE = NamespaceMapper.BIM_NAMESPACE + "hasYCoordinate";
+    public static final String BIM_HAS_Z_COORDINATE = NamespaceMapper.BIM_NAMESPACE + "hasZCoordinate";
+    public static final String BIM_HAS_REF_DIRECTION = NamespaceMapper.BIM_NAMESPACE + "hasRefDirection";
+    public static final String BIM_HAS_AXIS_DIRECTION = NamespaceMapper.BIM_NAMESPACE + "hasAxisDirection";
+    public static final String BIM_HAS_X_DIR_RATIO = NamespaceMapper.BIM_NAMESPACE + "hasXDirectionRatio";
+    public static final String BIM_HAS_Y_DIR_RATIO = NamespaceMapper.BIM_NAMESPACE + "hasYDirectionRatio";
+    public static final String BIM_HAS_Z_DIR_RATIO = NamespaceMapper.BIM_NAMESPACE + "hasZDirectionRatio";
     // OntoBim classes
     public static final String PROJECT_CLASS = "IfcProjectRepresentation";
     public static final String BIM_PROJECT_CLASS = NamespaceMapper.BIM_NAMESPACE + PROJECT_CLASS;
@@ -115,6 +125,8 @@ public class OntoBimConstant {
     public static final String BIM_CART_TRANS_OPERATOR_CLASS = NamespaceMapper.BIM_NAMESPACE + CART_TRANS_OPERATOR_CLASS;
     public static final String LOCAL_PLACEMENT_CLASS = "LocalPlacement";
     public static final String BIM_LOCAL_PLACEMENT_CLASS = NamespaceMapper.BIM_NAMESPACE + LOCAL_PLACEMENT_CLASS;
+    public static final String CARTESIAN_POINT_CLASS = "CartesianPoint";
+    public static final String BIM_CARTESIAN_POINT_CLASS = NamespaceMapper.BIM_NAMESPACE + CARTESIAN_POINT_CLASS;
     // OM classes
     public static final String HEIGHT_CLASS = NamespaceMapper.OM_NAMESPACE + "Height";
     public static final String MEASURE_CLASS = NamespaceMapper.OM_NAMESPACE + "Measure";
