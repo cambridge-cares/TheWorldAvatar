@@ -48,8 +48,8 @@ public class OpenMeteoAgent extends JPSAgent {
 
     private List<String> API_PARAMETERS = Arrays.asList(API_PARAMETER_TEMP, API_PARAMETER_HUMIDITY, API_PARAMETER_DEWPOINT, API_PARAMETER_PRESSURE, API_PARAMETER_RAIN, API_PARAMETER_SNOW, API_PARAMETER_CLOUD, API_PARAMETER_DNI, API_PARAMETER_DHI, API_PARAMETER_WINDSPEED, API_PARAMETER_WINDDIRECTION);
 
-    private String latitude;
-    private String longitude;
+    private Double latitude;
+    private Double longitude;
 
     public static final String URI_INSTANTIATE = "/instantiate";
     public static final String URI_DELETE = "/delete";
@@ -62,8 +62,8 @@ public class OpenMeteoAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         if (validateInput(requestParams)) {
-            latitude = requestParams.getString(KEY_LAT);
-            longitude = requestParams.getString(KEY_LONG);
+            latitude = requestParams.getDouble(KEY_LAT);
+            longitude = requestParams.getDouble(KEY_LONG);
             JSONObject weatherData = getWeatherData(latitude, longitude, requestParams.getString(KEY_START), requestParams.getString(KEY_END));
         }
         return requestParams;
@@ -133,7 +133,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param endDate End date of the time interval, in yyyy-mm-dd format
      * @return Weather data as a JSONObject
      */
-    public JSONObject getWeatherData(String latitude, String longitude, String startDate, String endDate) {
+    public JSONObject getWeatherData(Double latitude, Double longitude, String startDate, String endDate) {
         String query = KEY_LAT + "=" + latitude + "&";
         query = query + KEY_LONG + "=" + longitude + "&";
         query = query + KEY_START + "=" + startDate + "&";
@@ -154,7 +154,6 @@ public class OpenMeteoAgent extends JPSAgent {
             String line;
             while ((line = rd.readLine()) != null && !line.isEmpty()){
                 response.append(line);
-                response.append('\r');
             }
             rd.close();
             return new JSONObject(response.toString());
