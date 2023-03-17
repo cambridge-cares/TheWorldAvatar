@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   landregistry_agent:
-    image: ghcr.io/cambridge-cares/landregistry_agent:1.0.0
+    image: ghcr.io/cambridge-cares/landregistry_agent:1.1.0-SNAPSHOT
     environment:
       - STACK_NAME=${STACK_NAME}
       # Specify PostGIS/PostgreSQL database name
