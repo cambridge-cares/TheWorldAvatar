@@ -30,8 +30,6 @@ def read_reactions_file(reaction_file_path):
                 if lfr not in doubles:
                     doubles[lfr] = []
                 doubles[lfr].append([bs1, bs2])
-    #print(singles)
-    #print(doubles )
     return doubles, singles
 
 
@@ -142,21 +140,6 @@ def write_csv(data, filename):
             for plate in plates:
                 writer.writerow([group, plate])
 
-
-def count_values(file_path):
-    counts = {}
-    with open(file_path, 'r') as f:
-        reader = csv.reader(f)
-        next(reader)  # skip header row
-        for row in reader:
-            key = row[0]
-            value = row[1]
-            if key in counts:
-                counts[key] += 1
-            else:
-                counts[key] = 1
-    return counts
-
             
 bs_data = read_bs_data(bs_file_path)
 
@@ -174,10 +157,3 @@ bs_cores_all = [bs_core_1, bs_core_2p, bs_core_2u]
 
 merged_cores = merge_sets(bs_cores_all)
 write_csv(merged_cores, output_file)
-
-print(len(merged_cores))
-old_core_count = count_values(precursors_file_path)
-new_bs_core_count = count_values(output_file)
-
-print(old_core_count)
-print(new_bs_core_count)
