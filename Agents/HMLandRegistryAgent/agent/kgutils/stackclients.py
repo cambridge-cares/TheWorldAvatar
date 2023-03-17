@@ -8,7 +8,6 @@
 
 import glob
 import jaydebeapi
-import json
 
 from agent.errorhandling.exceptions import StackException
 from agent.kgutils.javagateway import stackClientsGw, jpsBaseLibGW

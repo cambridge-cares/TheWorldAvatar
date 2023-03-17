@@ -8,9 +8,10 @@
 
 
 from agent.errorhandling.exceptions import TSException
-from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from agent.utils.stack_configs import QUERY_ENDPOINT
+
+from pyderivationagent import PySparqlClient
 
 # Initialise logger
 from py4jps import agentlogging
@@ -28,9 +29,10 @@ def scale_property_price_index(ppi_iri, scaler, kg_client=None,
         scaler (float): Factor by which to scale time series data
     """
     
-    # Initialise KG client (no update required!)
+    # Initialise KG Client with PySparqlClient instance (no update required!)
     if not kg_client:
-        kg_client = KGClient(query_endpoint, query_endpoint)
+        kg_client = PySparqlClient(query_endpoint=query_endpoint,
+                                   update_endpoint=query_endpoint)
     # Initialise TS client
     ts_client = TSClient(kg_client=kg_client)
 

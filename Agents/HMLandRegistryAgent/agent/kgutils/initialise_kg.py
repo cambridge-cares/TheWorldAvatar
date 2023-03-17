@@ -12,8 +12,9 @@ import requests
 from agent.datamodel.iris import *
 from agent.datamodel.data_mapping import GBP_PER_SM, GBP
 from agent.errorhandling.exceptions import KGException
-from agent.kgutils.kgclient import KGClient
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+
+from pyderivationagent import PySparqlClient
 
 # Initialise logger
 from py4jps import agentlogging
@@ -102,8 +103,8 @@ def upload_ontology(tbox_url=TBOX_URL, abox_url=None):
         abox_url - URL to ABox
     """
 
-    # Create KGclient to upload .owl files
-    kg_client = KGClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
+    # Create PySparqlClient to upload .owl files
+    kg_client = PySparqlClient(QUERY_ENDPOINT, UPDATE_ENDPOINT)
 
     # Verify that TBox has not been initialized
     try:

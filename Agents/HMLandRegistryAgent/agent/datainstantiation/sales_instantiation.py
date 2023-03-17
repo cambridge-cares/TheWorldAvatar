@@ -16,12 +16,13 @@ from fuzzywuzzy import fuzz, process, utils
 from agent.datamodel.iris import *
 from agent.datamodel.data_mapping import TIME_FORMAT, DATACLASS, PPD_PROPERTY_TYPES
 from agent.errorhandling.exceptions import TSException
-from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from agent.kgutils.querytemplates import *
 from agent.utils.api_endpoints import HM_SPARQL_ENDPOINT
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from agent.kgutils.stackclients import PostGISClient, GeoserverClient
+
+from pyderivationagent import PySparqlClient
 
 # Initialise logger
 from py4jps import agentlogging
@@ -52,11 +53,11 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
     instantiated_tx = 0
     updated_tx = 0
 
-    # Initialise KG clients
+    # Initialise PySparqlClients instances
     if not kg_client_obe:
-        kg_client_obe = KGClient(query_endpoint, update_endpoint)
+        kg_client_obe = PySparqlClient(query_endpoint, update_endpoint)
     if not kg_client_hm:
-        kg_client_hm = KGClient(api_endpoint, api_endpoint)
+        kg_client_hm = PySparqlClient(api_endpoint, api_endpoint)
 
     # Initialise relevant Stack Clients and parameters
     postgis_client = PostGISClient()
@@ -144,8 +145,8 @@ def update_all_transaction_records(min_conf_score=90,
     updated_ukhpi = 0
 
     # Initialise KG clients
-    kg_client_obe = KGClient(query_endpoint, update_endpoint)
-    kg_client_hm = KGClient(api_endpoint, api_endpoint)
+    kg_client_obe = PySparqlClient(query_endpoint, update_endpoint)
+    kg_client_hm = PySparqlClient(api_endpoint, api_endpoint)
     # Initialise TimeSeriesClient with default settings
     ts_client = TSClient(kg_client=kg_client_obe)
 
@@ -460,7 +461,7 @@ def create_ukhpi_timeseries(local_authority_iri, ppi_iri, months=240,
 
     # Initialise KG client
     if not kg_client_hm:
-        kg_client_hm = KGClient(api_endpoint, api_endpoint)
+        kg_client_hm = PySparqlClient(api_endpoint, api_endpoint)
 
     query = get_ukhpi_monthly_data_for_district(ons_local_authority_iri=local_authority_iri, 
                                                 months=months)
