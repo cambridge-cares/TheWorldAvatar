@@ -9,7 +9,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/"
      xmlns:ontoSensorLoggerMobileApp="http://www.theworldavatar.com/ontology/ontosensorloggermobileapp/ontoSensorLoggerMobileApp.owl#">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontosensorloggermobileapp/ontoSensorLoggerMobileApp.owl">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">25 January 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">17 March 2023</dc:date>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The OntoSensorLoggerMobileApp ontology (OntoSensorLoggerMobileApp) is an ontology developed to represent the detailed information and spatial relationships</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
@@ -34,10 +34,10 @@
 
     <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/SoundPressureLevelUnit"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontouom/SoundPressureLevelUnit"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontouom/SoundPressureLevelUnit</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/SoundPressureLevelUnit</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">hasUnit</rdfs:label>
     </owl:ObjectProperty>
     
@@ -50,7 +50,7 @@
         <rdfs:domain rdf:resource="https://w3id.org/MON/person.owl#Person"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/SmartPhone"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Possess a</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoSensorLoggerMobileApp</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/sensorloggerapp</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">hasA</rdfs:label>
     </owl:ObjectProperty>
     
@@ -80,6 +80,18 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/hasGeoLocation -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodevice/hasGeoLocation">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/GPSDevice"/>
+        <rdfs:range rdf:resource="http://www.opengis.net/ont/sf#Point"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/hasGeoLocation</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">hasGeoLocation</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/measures -->
 
 
@@ -97,6 +109,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries">
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:domain rdf:resource="http://www.opengis.net/ont/sf#Point"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has time series</rdfs:label>
@@ -132,11 +145,23 @@
 
 
     <owl:DatatypeProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/symbol">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/SoundPressureLevelUnit"/>
         <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontouom/SoundPressureLevelUnit"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">symbol</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.opengis.net/ont/geosparql#asWKT -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.opengis.net/ont/geosparql#asWKT">
+        <rdfs:domain rdf:resource="http://www.opengis.net/ont/sf#Geometry"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.opengis.net/ont/sf#</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">asWKT</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -230,6 +255,38 @@
     
 
 
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ratio</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/SoundPressureLevel -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/SoundPressureLevel">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SoundPressureLevel</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/SoundPressureLevelUnit -->
+
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/SoundPressureLevelUnit">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SoundPressureLevelUnit</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Speed -->
 
 
@@ -251,13 +308,34 @@
     
 
 
+    <!-- http://www.opengis.net/ont/sf#Geometry -->
+
+
+    <owl:Class rdf:about="http://www.opengis.net/ont/sf#Geometry">
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.opengis.net/ont/sf#</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Geometry</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.opengis.net/ont/sf#Point -->
+
+
+    <owl:Class rdf:about="http://www.opengis.net/ont/sf#Point">
+        <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/sf#Geometry"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.opengis.net/ont/sf#</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Point</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontosensorloggermobileapp/ontoSensorLoggerMobileApp.owl#Accel_x -->
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensorloggermobileapp/ontoSensorLoggerMobileApp.owl#Accel_x">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the linear acceleration in the device&apos;s cooordinate system in the x-direction</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoSensorLoggerMobileApp</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/sensorloggerapp</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Accel_x</rdfs:label>
     </owl:Class>
     
@@ -269,7 +347,7 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensorloggermobileapp/ontoSensorLoggerMobileApp.owl#Accel_y">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the linear acceleration in the device&apos;s cooordinate system in the y-direction</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoSensorLoggerMobileApp</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/sensorloggerapp</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Accel_y</rdfs:label>
     </owl:Class>
     
@@ -281,7 +359,7 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensorloggermobileapp/ontoSensorLoggerMobileApp.owl#Accel_z">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the linear acceleration in the device&apos;s cooordinate system in the z-direction</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoSensorLoggerMobileApp</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/sensorloggerapp</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Accel_z</rdfs:label>
     </owl:Class>
     
@@ -293,7 +371,7 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensorloggermobileapp/ontoSensorLoggerMobileApp.owl#Gravity_x">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the acceleration vector due to gravity with respect to phone&apos;s coordinate reference system in the x-direction (Short edge)</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoSensorLoggerMobileApp</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/sensorloggerapp</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gravity_x</rdfs:label>
     </owl:Class>
     
@@ -305,7 +383,7 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensorloggermobileapp/ontoSensorLoggerMobileApp.owl#Gravity_y">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the acceleration vector due to gravity with respect to phone&apos;s coordinate reference system in the y-direction (Long edge)</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoSensorLoggerMobileApp</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/sensorloggerapp</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gravity_y</rdfs:label>
     </owl:Class>
     
@@ -317,7 +395,7 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensorloggermobileapp/ontoSensorLoggerMobileApp.owl#Gravity_z">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the acceleration vector due to gravity with respect to phone&apos;s coordinate reference system in the z-direction (Through the phone)</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoSensorLoggerMobileApp</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/sensorloggerapp</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gravity_z</rdfs:label>
     </owl:Class>
     
@@ -329,7 +407,7 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensorloggermobileapp/ontoSensorLoggerMobileApp.owl#MagneticFluxDensity_x">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the direction of magnetic north with respect to the device in the x direction</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoSensorLoggerMobileApp</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/sensorloggerapp</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MagneticFluxDensity_x</rdfs:label>
     </owl:Class>
     
@@ -341,7 +419,7 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensorloggermobileapp/ontoSensorLoggerMobileApp.owl#MagneticFluxDensity_y">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the direction of magnetic north with respect to the device in the y direction</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoSensorLoggerMobileApp</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/sensorloggerapp</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MagneticFluxDensity_y</rdfs:label>
     </owl:Class>
     
@@ -353,7 +431,7 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensorloggermobileapp/ontoSensorLoggerMobileApp.owl#MagneticFluxDensity_z">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Measures the direction of magnetic north with respect to the device in the z direction</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/ontoSensorLoggerMobileApp</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/kg/sensorloggerapp</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MagneticFluxDensity_z</rdfs:label>
     </owl:Class>
     
@@ -406,20 +484,19 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Device">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An object designed and manufactured to perform one or more functions.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Device</rdfs:label>
     </owl:Class>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontodevice/GPSSensor -->
+    <!-- https://www.theworldavatar.com/kg/ontodevice/GPSDevice -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/GPSSensor">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/GPSDevice">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">GPS sensor</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">GPSDevice</rdfs:label>
     </owl:Class>
     
 
@@ -457,6 +534,17 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontodevice/RelativeBrightness -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/RelativeBrightness">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Ratio"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">RelativeBrightness</rdfs:label>
+    </owl:Class>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontodevice/SmartPhone -->
 
 
@@ -474,38 +562,6 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries">
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/TimeSeries</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Time Series</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontouom/Noise -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/Noise">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontouom/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Noise</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontouom/SoundPressureLevel -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/SoundPressureLevel">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/Noise"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontouom/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SoundPressureLevel</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontouom/SoundPressureLevelUnit -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/SoundPressureLevelUnit">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontouom/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">SoundPressureLevelUnit</rdfs:label>
     </owl:Class>
 </rdf:RDF>
 
