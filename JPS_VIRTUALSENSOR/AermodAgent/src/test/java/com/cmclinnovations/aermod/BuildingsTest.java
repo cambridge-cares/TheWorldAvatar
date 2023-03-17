@@ -269,7 +269,7 @@ public class BuildingsTest {
 
     @Test
     public void testrun() {
-        int rds = Buildings.runBPIPPRM();
+        int rds = bp.runBPIPPRM();
         Assertions.assertEquals(rds,0);
     }
     @Test

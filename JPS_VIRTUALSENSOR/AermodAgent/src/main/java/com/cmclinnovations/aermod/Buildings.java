@@ -23,8 +23,6 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.io.IOUtils;
 
-import static java.lang.Math.min;
-
 
 public class Buildings {
 
@@ -40,40 +38,40 @@ public class Buildings {
             Arrays.asList("POLYGON ((103.650684 1.216988, 103.743038 1.216988, 103.743038 1.308804, 103.650684 1.308804, 103.650684 1.216988))")) ;
 
 
-    public static int locindex = -1;
-    public static String StackQueryIRI;
-    public static String GeospatialQueryIRI;
+    public int locindex = -1;
+    public String StackQueryIRI;
+    public String GeospatialQueryIRI;
 
 
     // Coordinate reference systems used by database (DatabaseCoordSys) and AERMOD(UTMCoordSys)
 
-    public static String DatabaseCoordSys, UTMCoordSys ;
+    public String DatabaseCoordSys, UTMCoordSys ;
 
     /* Each element of StackProperties contains the (x,y) coordinates of the center of the base polygon of the stack and the stack height.
     Each element of BuildingVertices contains the coordinates of the vertices of the base polygon.
      */
-    public static List<String> StackProperties = new ArrayList<>()  ;
-    public static List<Double> StackEmissions = new ArrayList<>()  ;
-    public static List<Double> StackDiameter = new ArrayList<>()  ;
+    public List<String> StackProperties = new ArrayList<>()  ;
+    public List<Double> StackEmissions = new ArrayList<>()  ;
+    public List<Double> StackDiameter = new ArrayList<>()  ;
 
     /* Each element of BuildingProperties contains the (x,y) coordinates of the center of the base polygon of the building and the building height.
     Each element of BuildingVertices contains the coordinates of the vertices of the base polygon.
      */
-    public static List<String> BuildingVertices = new ArrayList<>() ;
-    public static List<String> BuildingProperties = new ArrayList<>() ;
+    public List<String> BuildingVertices = new ArrayList<>() ;
+    public List<String> BuildingProperties = new ArrayList<>() ;
 
     // Variables used to run AERMOD and its preprocessors
-    public static List<List<String>> BPIPPRMBuildingInput = new ArrayList<>();
-    public static List<String> BPIPPRMStackInput = new ArrayList<>() ;
+    public List<List<String>> BPIPPRMBuildingInput = new ArrayList<>();
+    public List<String> BPIPPRMStackInput = new ArrayList<>() ;
 
-    public static Path simulationDirectory;
-    public static Path bpipprmDirectory;
-    public static Path aermodDirectory;
-    public static Path aermetDirectory;
-    public static Path aermapDirectory;
-    public static Polygon scope;
-    public static int nx;
-    public static int ny;
+    public Path simulationDirectory;
+    public Path bpipprmDirectory;
+    public Path aermodDirectory;
+    public Path aermetDirectory;
+    public Path aermapDirectory;
+    public Polygon scope;
+    public int nx;
+    public int ny;
     
 
     public void init(Path simulationDirectory, Polygon scope, int srid, int nx, int ny) throws ParseException {
@@ -119,14 +117,6 @@ public class Buildings {
             "AERMOD will be run for ships only without buildings and plant items.");
         }  
         UTMCoordSys = "EPSG:" + srid;
-
-        StackProperties.clear();
-        StackEmissions.clear();
-        StackDiameter.clear();
-        BuildingVertices.clear();
-        BuildingProperties.clear();
-        BPIPPRMBuildingInput.clear();
-        BPIPPRMStackInput.clear();
 
 
 
@@ -227,7 +217,7 @@ public class Buildings {
     }
 
     /* Get geometrical and geospatial properties of stacks and buildings */
-    public static void getProperties() {
+    public void getProperties() {
 
         JSONArray StackIRIQueryResult = QueryClient.StackQuery(StackQueryIRI);
         List<String> StackIRIString = IntStream
@@ -508,7 +498,7 @@ public class Buildings {
     }
 
 
-    public static int createAERMAPSourceInput() {
+    public int createAERMAPSourceInput() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < StackProperties.size(); i++) {
             String[] avecoord = StackProperties.get(i).split("#");
@@ -535,7 +525,7 @@ public class Buildings {
         return writeToFile(aermapDirectory.resolve("aermapSources.dat"), sb.toString());
     }
 
-    public static int createAERMAPReceptorInput(int nx, int ny) {
+    public int createAERMAPReceptorInput(int nx, int ny) {
 
         List<Double> xDoubles = new ArrayList<>();
         List<Double> yDoubles = new ArrayList<>();
@@ -626,7 +616,7 @@ public class Buildings {
         return 0;
     }
 
-    public static int processAERMAPOutput() {
+    public int processAERMAPOutput() {
         // Update BPIPPRMBuildingInput and BPIPPRMStackInput
         Path filepath = aermapDirectory.resolve("buildingSources.dat");
 
@@ -671,7 +661,7 @@ public class Buildings {
     }
 
     // This method should be called only if AERMAP was not run.
-    public static int updateElevationData() {
+    public int updateElevationData() {
         
         int numberBuildings = BPIPPRMBuildingInput.size();
         for (int i = 0; i < numberBuildings; i++) {
@@ -696,7 +686,7 @@ public class Buildings {
 
 
     /* Write out data to BPIPPRM input file and run this program. */
-    public static int createBPIPPRMInput() {
+    public int createBPIPPRMInput() {
 
         List<String> frontmatter = new ArrayList<>();
         frontmatter.add("\'BPIPPRM test run\' \n");
@@ -726,7 +716,7 @@ public class Buildings {
 
     }
 
-    private static int writeToFile(Path path, String content ) {
+    private int writeToFile(Path path, String content ) {
 
         try {
             boolean res = Files.deleteIfExists(path);
@@ -747,7 +737,7 @@ public class Buildings {
     }
 
 
-    public static int runBPIPPRM() {
+    public int runBPIPPRM() {
         try {
             Process process = Runtime.getRuntime().exec(new String[]{EnvConfig.BPIPPRM_EXE, "bpipprm.inp","building.dat","buildings_summary.dat"}, null, bpipprmDirectory.toFile());
             if (process.waitFor() != 0) {
@@ -778,7 +768,7 @@ public class Buildings {
         return 0;
     }
 
-    public static int createAERMODBuildingsInput() {
+    public int createAERMODBuildingsInput() {
 
         
         StringBuilder sb = new StringBuilder();
@@ -803,7 +793,7 @@ public class Buildings {
         return writeToFile(aermodDirectory.resolve("buildings.dat"), sb.toString());
     }
 
-    public static int createAERMODSourceInput() {
+    public int createAERMODSourceInput() {
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < StackProperties.size(); i++) {
@@ -833,7 +823,7 @@ public class Buildings {
 
     }
 
-    public static int createAERMODReceptorInput(int nx, int ny) {
+    public int createAERMODReceptorInput(int nx, int ny) {
 
         List<Double> xDoubles = new ArrayList<>();
         List<Double> yDoubles = new ArrayList<>();
