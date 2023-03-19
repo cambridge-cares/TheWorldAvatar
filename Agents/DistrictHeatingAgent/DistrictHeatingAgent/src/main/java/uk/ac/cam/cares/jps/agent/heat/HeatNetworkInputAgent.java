@@ -215,14 +215,6 @@ public class HeatNetworkInputAgent {
         // For GridConnection part
         UpdateBuilder GridConnection_ub =
                 new UpdateBuilder()
-                        .addInsert(NodeFactory.createURI(KB + "UPMunicipal" + "SHC"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_SHC))
-                        .addInsert(NodeFactory.createURI(KB + "DownMunicipal" + "SHC"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_SHC))
-                        .addInsert(NodeFactory.createURI(KB + "UPEfW" + "SHC"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_SHC))
-                        .addInsert(NodeFactory.createURI(KB + "DownEfW" + "SHC"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_SHC))
-                        .addInsert(NodeFactory.createURI(KB + "UPMunicipal" + "Density"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DENSITY))
-                        .addInsert(NodeFactory.createURI(KB + "DownMunicipal" + "Density"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DENSITY))
-                        .addInsert(NodeFactory.createURI(KB + "UPEfW" + "Density"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DENSITY))
-                        .addInsert(NodeFactory.createURI(KB + "DownEfW" + "Density"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DENSITY))
                         .addInsert(NodeFactory.createURI(KB + "GridConnectionUPMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "UPMunicipal" + "Pressure"))
                         .addInsert(NodeFactory.createURI(KB + "GridConnectionDownMunicipal"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "DownMunicipal" + "Pressure"))
                         .addInsert(NodeFactory.createURI(KB + "GridConnectionUPEfW"), NodeFactory.createURI(OHN + "hasObservableProperty"), NodeFactory.createURI(KB + "UPEfW" + "Pressure"))
@@ -536,7 +528,9 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "IsPublicHoliday"+"Location_1"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI("http://purl.org/dc/terms/Location"))
                         .addInsert(NodeFactory.createURI(KB + "IsPublicHoliday"+"Location_1"), NodeFactory.createURI(RDFS_LABEL), "Rheinland-Pfalz")   
                         .addInsert(NodeFactory.createURI(IsHoliday), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "IsPublicHoliday"))
-                        .addInsert(NodeFactory.createURI(IsVacation), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "IsSchoolVacation"))
+                        .addInsert(NodeFactory.createURI(IsVacation), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "IsSchoolVacation")) 
+                        .addInsert(NodeFactory.createURI(IsHoliday), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(XSD_BOOLEAN))
+                        .addInsert(NodeFactory.createURI(IsVacation), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(XSD_BOOLEAN))     
                         .addInsert(NodeFactory.createURI(KB + "AirTemperature"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(EMS + "AirTemperature"));
         UpdateRequest CalendarEffect_ur = CalendarEffect_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, CalendarEffect_ur.toString());
