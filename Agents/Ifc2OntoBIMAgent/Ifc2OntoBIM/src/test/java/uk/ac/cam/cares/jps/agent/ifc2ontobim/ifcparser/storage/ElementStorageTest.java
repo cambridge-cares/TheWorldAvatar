@@ -10,7 +10,6 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Ro
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Stair;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Wall;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ElementStorage;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.ArrayList;
@@ -23,6 +22,7 @@ class ElementStorageTest {
     private static ElementStorage testMappings;
     private static final String TEST_BASE_URI = "http://www.example.org/";
     private static final String NON_EXISTENT_IRI = TEST_BASE_URI + "DOES/NOT/EXIST_1223";
+    private static final String TEST_ELEMENT_PLACEMENT_IRI = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS + "_532";
     private static final String TEST_ELEMENT_CLASS = "IfcDoor";
     private static final String TEST_ELEMENT_IRI = TEST_BASE_URI + TEST_ELEMENT_CLASS + "_12";
     private static final String TEST_SEC_ELEMENT_IRI = TEST_BASE_URI + TEST_ELEMENT_CLASS + "_10581";
@@ -88,7 +88,7 @@ class ElementStorageTest {
     @Test
     void testAddAndGetWall() {
         // Create a new sample representation
-        Wall sampleWall = new Wall(TEST_ELEMENT_IRI, null, null, null, null, null, null);
+        Wall sampleWall = new Wall(TEST_ELEMENT_IRI, null, null, TEST_ELEMENT_PLACEMENT_IRI, null, null, null);
         // Execute method
         testMappings.add(TEST_ELEMENT_IRI, sampleWall);
         // Assert if they are equals
@@ -98,7 +98,7 @@ class ElementStorageTest {
     @Test
     void testAddAndGetFloor() {
         // Create a new sample representation
-        Floor sampleFloor = new Floor(TEST_ELEMENT_IRI, null, null, null, null, null);
+        Floor sampleFloor = new Floor(TEST_ELEMENT_IRI, null, null, TEST_ELEMENT_PLACEMENT_IRI, null, null);
         // Execute method
         testMappings.add(TEST_ELEMENT_IRI, sampleFloor);
         // Assert if they are equals
@@ -108,7 +108,7 @@ class ElementStorageTest {
     @Test
     void testAddAndGetRoof() {
         // Create a new sample representation
-        Roof sampleRoof = new Roof(TEST_ELEMENT_IRI, null, null, null, null, null);
+        Roof sampleRoof = new Roof(TEST_ELEMENT_IRI, null, null, TEST_ELEMENT_PLACEMENT_IRI, null, null);
         // Execute method
         testMappings.add(TEST_ELEMENT_IRI, sampleRoof);
         // Assert if they are equals
@@ -118,7 +118,7 @@ class ElementStorageTest {
     @Test
     void testAddAndGetStair() {
         // Create a new sample representation
-        Stair sampleStair = new Stair(TEST_ELEMENT_IRI, null, null, null, null);
+        Stair sampleStair = new Stair(TEST_ELEMENT_IRI, null, null, TEST_ELEMENT_PLACEMENT_IRI, null);
         // Execute method
         testMappings.add(TEST_ELEMENT_IRI, sampleStair);
         // Assert if they are equals
@@ -167,7 +167,7 @@ class ElementStorageTest {
         assertFalse(testMappings.containsStairAssemblyIri(TEST_ELEMENT_IRI));
         assertFalse(testMappings.containsStairAssemblyIri(NON_EXISTENT_IRI));
         // Create a new sample representation
-        Stair sampleStair = new Stair(TEST_ELEMENT_IRI, null, null, null, null);
+        Stair sampleStair = new Stair(TEST_ELEMENT_IRI, null, null, TEST_ELEMENT_PLACEMENT_IRI, null);
         // Execute method
         testMappings.add(TEST_ELEMENT_IRI, sampleStair);
         // Assert that non-existing IRIs return false and existing IRIs return true

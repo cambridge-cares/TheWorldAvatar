@@ -17,7 +17,9 @@ class IfcAbstractRepresentationTest {
     private static final String testClass = JunitTestUtils.bimUri + testClassName1;
     private static final String testName1 = "Free land";
     private static final String testUID1 = "afi193";
-    private static final String testPlacementIri1 = testBaseUri1+ "LocalPlacement_324";
+    private static final String testPlacementIriVal = "324";
+    private static final String testPlacementIri1 = testBaseUri1 + "IfcLocalPlacement_" + testPlacementIriVal;
+    private static final String testBimPlacementIri = testBaseUri1 + "LocalPlacement_" + testPlacementIriVal;
     private static final String testBaseUri2 = "http://www.example.org/test#";
     private static final String testIri2 = testBaseUri2 + "IfcAbstractRepresentation_142";
     private static final String testClassName2 = "IfcStoreyRepresentation";
@@ -34,7 +36,7 @@ class IfcAbstractRepresentationTest {
         assertTrue(sample.getIri().contains(testBaseUri1 + testClassName1 + "_"));
         assertEquals(testName1, sample.getName());
         assertEquals(testUID1, sample.getUid());
-        assertEquals(testPlacementIri1, sample.getPlacementIri());
+        assertEquals(testBimPlacementIri, sample.getPlacementIri());
 
         IfcAbstractRepresentation sample2 = new IfcAbstractRepresentation(testIri2, testClassName2, testName2, testUID2, testPlacementIri2);
         // Test that the sample fields are correct
@@ -64,8 +66,8 @@ class IfcAbstractRepresentationTest {
         expected.add(testBaseUri1 + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, " + testClass);
         expected.add(testBaseUri1 + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + testName1);
         expected.add(testBaseUri1 + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + testUID1);
-        expected.add(testBaseUri1 + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + testPlacementIri1);
-        expected.add(testPlacementIri1 + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
+        expected.add(testBaseUri1 + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + testBimPlacementIri);
+        expected.add(testBimPlacementIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
         return expected;
     }
 }

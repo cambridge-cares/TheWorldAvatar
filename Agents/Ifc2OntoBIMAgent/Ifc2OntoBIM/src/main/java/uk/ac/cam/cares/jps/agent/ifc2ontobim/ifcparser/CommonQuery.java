@@ -121,6 +121,17 @@ public class CommonQuery {
     public static final String REP_MAP_VAR = "?representationmap";
     public static final String GEOM_AXIS_PLACEMENT_VAR = "?geomaxisplacement";
     public static final String CART_TRANSFORMER_VAR = "?cartesiantransformer";
+    // Modelling operator variables
+    public static final String REL_PLACEMENT_VAR = "?relativeplacement";
+    public static final String REF_DIR_VECTOR_VAR = "?refdirection";
+    public static final String AXIS_DIR_VECTOR_VAR = "?axisdirection";
+    public static final String CART_POINT_VAR = "?cartesianpoint";
+    public static final String DIR_VECTOR_VAR = "?directionvector";
+    public static final String X_VALUE_VAR = "?xvalue";
+    public static final String Y_VALUE_VAR = "?yvalue";
+    public static final String Z_VALUE_VAR = "?zvalue";
+    public static final String X_LIST_VAR = "?xlist";
+    public static final String Y_LIST_VAR = "?ylist";
     // IfcOwl Properties
     public static final String EXPRESS_HASDOUBLE = "/express:hasDouble";
     public static final String EXPRESS_HASINTEGER = "/express:hasInteger";
@@ -171,6 +182,15 @@ public class CommonQuery {
     public static final String IFC_MAPPING_ORIGIN = NamespaceMapper.IFC_PREFIX + ":mappingOrigin_IfcRepresentationMap";
     public static final String IFC_MAPPED_REP = NamespaceMapper.IFC_PREFIX + ":mappedRepresentation_IfcRepresentationMap";
     public static final String IFC_OBJ_PLACEMENT = NamespaceMapper.IFC_PREFIX + ":objectPlacement_IfcProduct";
+    // IfcOwl modelling operator properties
+    public static final String IFC_PLACEMENT_POSITION = NamespaceMapper.IFC_PREFIX + ":relativePlacement_IfcLocalPlacement";
+    public static final String IFC_PLACEMENT_LOCATION = NamespaceMapper.IFC_PREFIX + ":location_IfcPlacement";
+    public static final String IFC_REL_PLACEMENT = NamespaceMapper.IFC_PREFIX + ":placementRelTo_IfcLocalPlacement";
+    public static final String IFC_REF_DIRECTION_2D = NamespaceMapper.IFC_PREFIX + ":refDirection_IfcAxis2Placement2D";
+    public static final String IFC_REF_DIRECTION_3D = NamespaceMapper.IFC_PREFIX + ":refDirection_IfcAxis2Placement3D";
+    public static final String IFC_AXIS_DIRECTION_3D = NamespaceMapper.IFC_PREFIX + ":axis_IfcAxis2Placement3D";
+    public static final String IFC_COORDINATES = NamespaceMapper.IFC_PREFIX + ":coordinates_IfcCartesianPoint";
+    public static final String IFC_DIR_RATIOS = NamespaceMapper.IFC_PREFIX + ":directionRatios_IfcDirection";
     // IfcOwl Classes
     public static final String IFCPROJECT = NamespaceMapper.IFC_PREFIX + ":IfcProject";
     public static final String IFCSITE = NamespaceMapper.IFC_PREFIX + ":IfcSite";
@@ -213,6 +233,9 @@ public class CommonQuery {
     public static final String IFC_REL_FILLS_ELEMENT = NamespaceMapper.IFC_PREFIX + ":IfcRelFillsElement";
     public static final String IFC_REL_VOIDS_ELEMENT = NamespaceMapper.IFC_PREFIX + ":IfcRelVoidsElement";
     public static final String IFC_COVERING_TYPE = NamespaceMapper.IFC_PREFIX + ":IfcCoveringType";
+    // IfcOwl modelling operator classes
+    public static final String IFC_CART_POINT = NamespaceMapper.IFC_PREFIX + ":IfcCartesianPoint";
+    public static final String IFC_DIRECTION = NamespaceMapper.IFC_PREFIX + ":IfcDirection";
     // IfcOwl enum
     public static final String IFC_CEILING_ENUM = NamespaceMapper.IFC_PREFIX + ":CEILING";
     public static final String IFC_SLAB_FLOOR_ENUM = NamespaceMapper.IFC_PREFIX + ":FLOOR";

@@ -7,7 +7,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.BuildingStructureFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.ElementFacade;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.ModellingOperatorFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.SpatialZoneFacade;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ElementStorage;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ModellingOperatorStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.SpatialZoneStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcgeometry.GeomConstructBuilderMediator;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.*;
@@ -77,7 +80,8 @@ public class OntoBimConverter {
                 .toModel();
         // Reset the values from previous iterations
         SpatialZoneStorage.resetSingleton();
-
+        ElementStorage.resetSingleton();
+        ModellingOperatorStorage.resetSingleton();
         // Retrieve and add namespaces to builder
         ConstructBuilder builder = new ConstructBuilder();
         Map<String, String> nsMapping = NamespaceMapper.retrieveNamespace(this.owlModel);
@@ -189,10 +193,7 @@ public class OntoBimConverter {
         geomElements.put("areasolid", "ifc:IfcExtrudedAreaSolid");
         geomElements.put("polyline", "ifc:IfcPolyline");
         geomElements.put("subcontext", "bim:GeometricRepresentationSubContext");
-        geomElements.put("localplacement", "bim:LocalPlacement");
         geomElements.put("cartesiantransformer", "bim:CartesianTransformationOperator");
-        geomElements.put("directionvector", "bim:DirectionVector");
-        geomElements.put("cartesianpt", "bim:CartesianPoint");
 
         for (String geomElement : geomElements.keySet()) {
             LOGGER.info("Preparing query for the common geometry element: " + geomElement);
@@ -213,6 +214,15 @@ public class OntoBimConverter {
             this.storeInTempFiles(result);
             LOGGER.info("Stored statements for " + geomElement + " in temporary file");
         }
+
+        // Remove all the geometries to be ignored when writing the remaining types
+        ignoreGeom = new HashSet<>();
+        ModellingOperatorStorage operatorMappings = ModellingOperatorStorage.Singleton();
+        LOGGER.info("Retrieving and generating statements related to local placement, direction, and cartesian points...");
+        ModellingOperatorFacade.retrieveOperatorInstances(this.owlModel);
+        operatorMappings.constructAllStatements(statementSet);
+        this.storeInTempFiles(statementSet);
+        LOGGER.info("Stored statements for all modelling operators in temporary file");
     }
 
     /**

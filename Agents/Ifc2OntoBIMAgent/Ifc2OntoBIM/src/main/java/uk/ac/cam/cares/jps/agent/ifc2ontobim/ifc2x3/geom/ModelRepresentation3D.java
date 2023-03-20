@@ -47,7 +47,12 @@ public class ModelRepresentation3D {
         appendGeometry(geomIri);
         // Optional fields: if the argument is null, the field will still be null
         this.repType = repType;
-        this.sourcePlacementIri = sourcePlacementIri;
+        if (sourcePlacementIri != null) {
+            String instVal = StringUtils.getStringAfterLastCharacterOccurrence(sourcePlacementIri, StringUtils.UNDERSCORE);
+            this.sourcePlacementIri = prefix + OntoBimConstant.LOCAL_PLACEMENT_CLASS + OntoBimConstant.UNDERSCORE + instVal;
+        } else {
+            this.sourcePlacementIri = null;
+        }
         this.targetPlacementIri = cartesianTransformerIri;
     }
 

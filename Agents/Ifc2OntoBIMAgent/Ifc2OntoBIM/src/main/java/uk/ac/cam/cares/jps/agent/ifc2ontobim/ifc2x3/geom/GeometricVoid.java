@@ -35,7 +35,12 @@ public class GeometricVoid {
         this.elementIRI = elementIri;
         this.voidModelRepIRI = voidModelRepIri;
         this.voidType = voidType;
-        this.placementIRI = placementIri;
+        if (placementIri != null) {
+            String instVal = StringUtils.getStringAfterLastCharacterOccurrence(placementIri, StringUtils.UNDERSCORE);
+            this.placementIRI = prefix + OntoBimConstant.LOCAL_PLACEMENT_CLASS + OntoBimConstant.UNDERSCORE + instVal;
+        } else {
+            this.placementIRI = null;
+        }
     }
 
     /**

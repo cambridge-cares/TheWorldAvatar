@@ -17,7 +17,9 @@ class GeometricVoidTest {
     private static final String testIri2 = testBaseUri2 + "Roof_138110";
     private static final String testVoidModelRepIri = testBaseUri1 + "ModelRepresentation3D_39185";
     private static final String testRepType = "Opening";
-    private static final String testPlacementIRI = testBaseUri1 + "LocalPlacement_1517";
+    private static final String testPlacementValIRI = "1517";
+    private static final String testPlacementIRI = testBaseUri1 + "IfcLocalPlacement_" + testPlacementValIRI;
+    private static final String testBIMPlacementIRI = testBaseUri1 + "LocalPlacement_" + testPlacementValIRI;
 
     @Test
     void testConstructor() {
@@ -46,8 +48,8 @@ class GeometricVoidTest {
         expected.add(testBaseUri1 + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricVoid");
         expected.add(testBaseUri1 + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasGeometricRepresentation, " + testVoidModelRepIri);
         expected.add(testBaseUri1 + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasVoidType, \"" + testRepType);
-        expected.add(testBaseUri1 + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + testPlacementIRI);
-        expected.add(testPlacementIRI + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
+        expected.add(testBaseUri1 + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + testBIMPlacementIRI);
+        expected.add(testBIMPlacementIRI + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
         return expected;
     }
 }

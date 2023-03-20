@@ -19,6 +19,7 @@ import java.util.List;
 class ElementFacadeTest {
     private static Model sampleModel;
     private static final String TEST_BASE_URI = "http://www.theworldavatar.com/test/";
+    private static final String TEST_ZONE_PLACEMENT_IRI = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS + "_385";
     private static final String ROOM_INST = TEST_BASE_URI + "Room_281";
     private static final String BUILDING_ELEMENT_PROXY_CLASS = "IfcBuildingElementProxy";
     private static final String FLOW_TERMINAL_CLASS = "IfcFlowTerminal";
@@ -63,7 +64,7 @@ class ElementFacadeTest {
     static void addTestZoneMappings() {
         // Create a new storey instance, which does not require any values except for the IRI
         // This IRI is necessary to generate the Storey IRI within the element class
-        IfcRoomRepresentation room = new IfcRoomRepresentation(ROOM_INST, null, null, null, null);
+        IfcRoomRepresentation room = new IfcRoomRepresentation(ROOM_INST, null, null, TEST_ZONE_PLACEMENT_IRI, null);
         // Add the storey to the singleton
         SpatialZoneStorage zoneMappings = SpatialZoneStorage.Singleton();
         zoneMappings.add(ROOM_INST, room);

@@ -39,6 +39,7 @@ class QueryHandlerTest {
     private static final String testDoubleLiteral = "102";
     private static final String testIriVar = "IRI";
     private static final String testBaseUri = "http://www.example.org/";
+    private static final String testPlacementIri = testBaseUri + JunitTestUtils.BIM_PLACEMENT_CLASS + "_1041";
     private static final String testIri = testBaseUri + "Test_124";
     private static final String testParentZoneVar = "subzone";
     private static final String testParentStoreyIri = testBaseUri + "IfcBuildingStorey_51076";
@@ -88,8 +89,8 @@ class QueryHandlerTest {
     static void addTestZoneMappings() {
         // Create a new storey and room instance, which does not require any values except for the IRI
         // This IRI is necessary to generate the respective zone IRI within the class
-        storey = new IfcStoreyRepresentation(testParentStoreyIri, null, null, null, null, null);
-        room = new IfcRoomRepresentation(testParentRoomIri, null, null, null, null);
+        storey = new IfcStoreyRepresentation(testParentStoreyIri, null, null, testPlacementIri, null, null);
+        room = new IfcRoomRepresentation(testParentRoomIri, null, null, testPlacementIri, null);
         // Add the storey and room to the singleton
         zoneMappings = SpatialZoneStorage.Singleton();
         zoneMappings.add(testParentStoreyIri, storey);
@@ -235,7 +236,7 @@ class QueryHandlerTest {
     void testAddVoidGeometryStatements() {
         // Set up required objects
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        Floor sampleFloor = new Floor(testFloorIRI, null, null, null, null, null);
+        Floor sampleFloor = new Floor(testFloorIRI, null, null, testPlacementIri, null, null);
         ElementStorage sampleElementMappings = ElementStorage.Singleton();
         // Create a sample query solution for testing
         QuerySolutionMap solution = new QuerySolutionMap();

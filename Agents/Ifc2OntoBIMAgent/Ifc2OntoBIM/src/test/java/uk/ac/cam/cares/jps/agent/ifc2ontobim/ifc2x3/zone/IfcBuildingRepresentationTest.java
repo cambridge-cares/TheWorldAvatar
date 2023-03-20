@@ -18,7 +18,10 @@ class IfcBuildingRepresentationTest {
     private static final String testClassName = "IfcBuildingRepresentation";
     private static final String testName = "Building Host";
     private static final String testUID = "0192auje134";
-    private static final String testPlacementIri = testBaseUri1+ "LocalPlacement_3131";
+    private static final String testPlacementIriVal = "3131";
+    private static final String testPlacementIri = testBaseUri1 + "IfcLocalPlacement_" + testPlacementIriVal;
+    private static final String testBimPlacementIri = testBaseUri1 + "LocalPlacement_" + testPlacementIriVal;
+    private static final String testBimPlacementIri2 = testBaseUri2 + "LocalPlacement_" + testPlacementIriVal;
     private static final String testProjectIri = testBaseUri1 + "IfcProjectRepresentation_ba12";
     private static final String testSiteIri = testBaseUri1 + "Site_531";
     private static final Double testRefElev1 = 125.0;
@@ -42,7 +45,7 @@ class IfcBuildingRepresentationTest {
         assertTrue(sample.getIri().contains(testBaseUri1 + testClassName + "_"));
         assertEquals(testName, sample.getName());
         assertEquals(testUID, sample.getUid());
-        assertEquals(testPlacementIri, sample.getPlacementIri());
+        assertEquals(testBimPlacementIri, sample.getPlacementIri());
         assertEquals(testRefElev1, sample.getRefElevation());
         assertEquals(testTerElev1, sample.getTerElevation());
         assertTrue(sample.getBotBuildingIRI().contains(sample.getPrefix() + "Building_"));
@@ -54,7 +57,7 @@ class IfcBuildingRepresentationTest {
         assertTrue(sample2.getIri().contains(testBaseUri2 + testClassName + "_"));
         assertEquals(testName, sample2.getName());
         assertEquals(testUID, sample2.getUid());
-        assertEquals(testPlacementIri, sample2.getPlacementIri());
+        assertEquals(testBimPlacementIri2, sample2.getPlacementIri());
         assertEquals(testRefElev1, sample2.getRefElevation());
         assertEquals(testTerElev1, sample2.getTerElevation());
         assertTrue(sample2.getBotBuildingIRI().contains(sample2.getPrefix() + "Building_"));
@@ -156,8 +159,8 @@ class IfcBuildingRepresentationTest {
         expected.add(testBaseUri1 + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + testName);
         expected.add(testBaseUri1 + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + testUID);
         expected.add(testSiteIri + ", https://w3id.org/bot#hasBuilding, " + testBaseUri1 + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(testBaseUri1 + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + testPlacementIri);
-        expected.add(testPlacementIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
+        expected.add(testBaseUri1 + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + testBimPlacementIri);
+        expected.add(testBimPlacementIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
         return expected;
     }
 

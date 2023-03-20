@@ -18,7 +18,9 @@ class ModelRepresentation3DTest {
     private static final String testSubContextIri = testBaseUri1 + "GeometricRepresentationSubContext_117";
     private static final String testGeomIri = testBaseUri1 + "FacetedBrep_9185";
     private static final String testShapeRepType = "Brep";
-    private static final String testPlacementIri = testBaseUri1 + "LocalPlacement_515";
+    private static final String testPlacementValIRI = "2517";
+    private static final String testPlacementIri = testBaseUri1 + "IfcLocalPlacement_" + testPlacementValIRI;
+    private static final String testBIMPlacementIRI = testBaseUri1 + "LocalPlacement_" + testPlacementValIRI;
     private static final String testTransformOperatorIri = testBaseUri1 + "CartesianTransformationOperator_515";
     private static final String testGeomClass = JunitTestUtils.bimUri + "FacetedBrep";
     private static final String testAdditionalGeomIri = testBaseUri1 + "ExtrudedAreaSolid_37216";
@@ -111,8 +113,8 @@ class ModelRepresentation3DTest {
     private List<String> genExpectedOptionalStatements() {
         List<String> expected = new ArrayList<>();
         expected.add(testBaseUri1 + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"Brep");
-        expected.add(testBaseUri1 + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSourcePlacement, " + testPlacementIri);
-        expected.add(testPlacementIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
+        expected.add(testBaseUri1 + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSourcePlacement, " + testBIMPlacementIRI);
+        expected.add(testBIMPlacementIRI + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
         expected.add(testBaseUri1 + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTargetPlacement, " + testTransformOperatorIri);
         expected.add(testTransformOperatorIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/CartesianTransformationOperator");
         return expected;

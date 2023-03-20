@@ -19,6 +19,7 @@ import java.util.List;
 class BuildingStructureFacadeTest {
     private static Model sampleModel;
     private static final String TEST_BASE_URI = "http://www.theworldavatar.com/test/";
+    private static final String TEST_ZONE_PLACEMENT_IRI = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS + "_385";
     // Element Instances
     private static final String CEILING_CLASS = "IfcCovering";
     private static final String CEILING_INST = TEST_BASE_URI + CEILING_CLASS + "_106932";
@@ -42,22 +43,26 @@ class BuildingStructureFacadeTest {
     private static final String STAIR_LANDING_INST = TEST_BASE_URI + STAIR_LANDING_CLASS + "_10938";
     private static final String STAIR_LANDING_NAME = "Wood landing";
     private static final String STAIR_LANDING_ID = "e19jfa9";
-    private static final String STAIR_LANDING_POSITION_INST = TEST_BASE_URI + "IfcLocalPlacement_591092";
+    private static final String STAIR_LANDING_POSITION_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_591092";
+    private static final String STAIR_LANDING_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS +  "_591092";
     private static final String STAIR_RAILING_CLASS = "IfcRailing";
     private static final String STAIR_RAILING_INST = TEST_BASE_URI + STAIR_RAILING_CLASS + "_3378";
     private static final String STAIR_RAILING_NAME = "Metal railings";
     private static final String STAIR_RAILING_ID = "masu81z7";
-    private static final String STAIR_RAILING_POSITION_INST = TEST_BASE_URI + "IfcLocalPlacement_310409";
+    private static final String STAIR_RAILING_POSITION_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_310409";
+    private static final String STAIR_RAILING_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS +  "_310409";
     private static final String STAIR_FLIGHT_CLASS = "IfcStairFlight";
     private static final String STAIR_FLIGHT_INST = TEST_BASE_URI + STAIR_FLIGHT_CLASS + "_41750";
     private static final String STAIR_FLIGHT_NAME = "Concrete stairs";
     private static final String STAIR_FLIGHT_ID = "e19jpasf91urjkfa9";
-    private static final String STAIR_FLIGHT_POSITION_INST = TEST_BASE_URI + "IfcLocalPlacement_571572";
+    private static final String STAIR_FLIGHT_POSITION_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_571572";
+    private static final String STAIR_FLIGHT_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS +  "_571572";
     private static final String STAIR_STRUCT_COMP_CLASS = "IfcMember";
     private static final String STAIR_STRUCT_COMP_INST = TEST_BASE_URI + STAIR_STRUCT_COMP_CLASS + "_15189";
     private static final String STAIR_STRUCT_COMP_NAME = "Stringer";
     private static final String STAIR_STRUCT_COMP_ID = "vaski31ra";
-    private static final String STAIR_STRUCT_COMP_POSITION_INST = TEST_BASE_URI + "IfcLocalPlacement_8884918";
+    private static final String STAIR_STRUCT_COMP_POSITION_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_8884918";
+    private static final String STAIR_STRUCT_COMP_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS +  "_8884918";
     private static final String WALL_CLASS = "IfcWall";
     private static final String WALL_INST = TEST_BASE_URI + WALL_CLASS + "_6165";
     private static final String WALL_NAME = "Brickwall";
@@ -70,7 +75,8 @@ class BuildingStructureFacadeTest {
     private static final String COVERING_TYPE_INST = TEST_BASE_URI + "IfcCoveringType_37775";
     private static final String ELEMENT_ID = "01294juas";
     // Generic element geometry instances
-    private static final String ELEMENT_POSITION_INST = TEST_BASE_URI + "IfcLocalPlacement_1041";
+    private static final String ELEMENT_POSITION_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_1041";
+    private static final String ELEMENT_POSITION_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS +  "_1041";
     private static final String IFC_SHAPE_REP_INST = TEST_BASE_URI + "IfcShapeRepresentation_5108";
     private static final String IFC_SHAPE_REP_LIST_INST = TEST_BASE_URI + "IfcShapeRepresentation_List_5108";
     private static final String IFC_MAPPED_SHAPE_REP = TEST_BASE_URI + "IfcShapeRepresentation_8672";
@@ -81,7 +87,8 @@ class BuildingStructureFacadeTest {
     private static final String IFC_FACETED_BREP_SEC_INST = TEST_BASE_URI + FACETED_BREP_CLASS + "_18517";
     private static final String IFC_REP_TYPE_VAL = "Faceted Brep";
     private static final String IFC_MAPPED_REP_TYPE_VAL = "MappedRepresentation";
-    private static final String IFC_SOURCE_PLACEMENT_INST = TEST_BASE_URI + "IfcLocalPlacement_571261";
+    private static final String IFC_SOURCE_PLACEMENT_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_571261";
+    private static final String IFC_SOURCE_PLACEMENT_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS +  "_571261";
     private static final String IFC_TARGET_TRANSFORMATION_OPERATOR_INST = TEST_BASE_URI + "IfcCartesianTransformationOperator3D_3098157";
     private static final String IFC_MAPPED_ITEM_INST = TEST_BASE_URI + "IfcMappedItem_185218";
     private static final String IFC_REP_MAP_INST = TEST_BASE_URI + "IfcRepresentationMap_3213";
@@ -111,7 +118,8 @@ class BuildingStructureFacadeTest {
     private static final String IFC_GEOMETRIC_VOID_INST = TEST_BASE_URI + "GeometricVoid_31296";
     private static final String IFC_VOID_TYPE = "Opening";
     private static final String IFC_VOID_SHAPE_REP_TYPE = "Swept Solid";
-    private static final String IFC_VOID_PLACEMENT_INST = TEST_BASE_URI + "LocalPlacement_312965";
+    private static final String IFC_VOID_PLACEMENT_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_312965";
+    private static final String IFC_VOID_PLACEMENT_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS +  "_312965";
     private static final String IFC_VOID_SHAPE_REP_INST = TEST_BASE_URI + "ModelRepresentation3D_1753";
     private static final String IFC_VOID_SUB_CONTEXT_INST = TEST_BASE_URI + "IfcGeometricRepresentationSubContext_451852";
     private static final String IFC_VOID_GEOM_INST = TEST_BASE_URI + "ExtrudedAreaSolid_8152";
@@ -138,7 +146,7 @@ class BuildingStructureFacadeTest {
     static void addTestZoneMappings() {
         // Create a new storey instance, which does not require any values except for the IRI
         // This IRI is necessary to generate the Storey IRI within the element class
-        IfcStoreyRepresentation storey = new IfcStoreyRepresentation(STOREY_INST, null, null, null, null, null);
+        IfcStoreyRepresentation storey = new IfcStoreyRepresentation(STOREY_INST, null, null, TEST_ZONE_PLACEMENT_IRI, null, null);
         // Add the storey to the singleton
         SpatialZoneStorage zoneMappings = SpatialZoneStorage.Singleton();
         zoneMappings.add(STOREY_INST, storey);
@@ -257,7 +265,7 @@ class BuildingStructureFacadeTest {
         addWallAssemblyTriples(DOOR_INST);
         // Get the singleton to add the assembly inst
         ElementStorage elementMappings = ElementStorage.Singleton();
-        Wall wall = new Wall(WALL_INST, WALL_NAME, null, null, null, null, null);
+        Wall wall = new Wall(WALL_INST, WALL_NAME, null, ELEMENT_POSITION_INST, null, null, null);
         elementMappings.add(WALL_INST, wall);
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
         addGeometryTriples(sampleModel.getResource(DOOR_INST));
@@ -284,7 +292,7 @@ class BuildingStructureFacadeTest {
         addWallAssemblyTriples(DOOR_INST);
         // Get the singleton to add the assembly inst
         ElementStorage elementMappings = ElementStorage.Singleton();
-        Wall wall = new Wall(WALL_INST, WALL_NAME, null, null, null, null, null);
+        Wall wall = new Wall(WALL_INST, WALL_NAME, null, ELEMENT_POSITION_INST, null, null, null);
         elementMappings.add(WALL_INST, wall);
         // Generate the alternate mapped geometry representation triples
         addMappedGeometryTriples(sampleModel.getResource(DOOR_INST));
@@ -470,16 +478,16 @@ class BuildingStructureFacadeTest {
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Stair", STAIR_NAME), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(IFC_REP_TYPE_VAL), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("StairFlight", STAIR_FLIGHT_NAME, STAIR_FLIGHT_ID, STAIR_FLIGHT_POSITION_INST), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("StairFlight", STAIR_FLIGHT_NAME, STAIR_FLIGHT_ID, STAIR_FLIGHT_POSITION_BIM_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(STAIR_FLIGHT_GEOM_INST, EXTRUDED_AREA_SOLID_CLASS), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(STAIR_FLIGHT_REP_TYPE_VAL), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Landing", STAIR_LANDING_NAME, STAIR_LANDING_ID, STAIR_LANDING_POSITION_INST), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Landing", STAIR_LANDING_NAME, STAIR_LANDING_ID, STAIR_LANDING_POSITION_BIM_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(STAIR_LANDING_GEOM_INST, EXTRUDED_AREA_SOLID_CLASS), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(STAIR_LANDING_REP_TYPE_VAL), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Railing", STAIR_RAILING_NAME, STAIR_RAILING_ID, STAIR_RAILING_POSITION_INST), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Railing", STAIR_RAILING_NAME, STAIR_RAILING_ID, STAIR_RAILING_POSITION_BIM_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(STAIR_RAILING_GEOM_INST, FACETED_BREP_CLASS), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(STAIR_RAILING_REP_TYPE_VAL), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("StairStructuralComponent", STAIR_STRUCT_COMP_NAME, STAIR_STRUCT_COMP_ID, STAIR_STRUCT_COMP_POSITION_INST), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("StairStructuralComponent", STAIR_STRUCT_COMP_NAME, STAIR_STRUCT_COMP_ID, STAIR_STRUCT_COMP_POSITION_BIM_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(STAIR_STRUCT_COMP_GEOM_INST, FACETED_BREP_CLASS), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(STAIR_STRUCT_COMP_REP_TYPE_VAL), result);
         JunitTestUtils.doesExpectedListExist(genExpectedStoreyStatements(), result);
@@ -557,7 +565,7 @@ class BuildingStructureFacadeTest {
         addWallAssemblyTriples(WINDOW_INST);
         // Get the singleton to add the assembly inst
         ElementStorage elementMappings = ElementStorage.Singleton();
-        Wall wall = new Wall(WALL_INST, WALL_NAME, null, null, null, null, null);
+        Wall wall = new Wall(WALL_INST, WALL_NAME, null, ELEMENT_POSITION_INST, null, null, null);
         elementMappings.add(WALL_INST, wall);
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
         addGeometryTriples(sampleModel.getResource(WINDOW_INST));
@@ -584,7 +592,7 @@ class BuildingStructureFacadeTest {
         addWallAssemblyTriples(WINDOW_INST);
         // Get the singleton to add the assembly inst
         ElementStorage elementMappings = ElementStorage.Singleton();
-        Wall wall = new Wall(WALL_INST, WALL_NAME, null, null, null, null, null);
+        Wall wall = new Wall(WALL_INST, WALL_NAME, null, ELEMENT_POSITION_INST, null, null, null);
         elementMappings.add(WALL_INST, wall);
         // Generate the alternate mapped geometry representation triples
         addMappedGeometryTriples(sampleModel.getResource(WINDOW_INST));
@@ -837,7 +845,7 @@ class BuildingStructureFacadeTest {
     }
 
     private List<String> genExpectedBaseStatements(String bimElementClass, String name) {
-        List<String> expected  = genExpectedBaseStatements(bimElementClass, name, ELEMENT_ID, ELEMENT_POSITION_INST);
+        List<String> expected  = genExpectedBaseStatements(bimElementClass, name, ELEMENT_ID, ELEMENT_POSITION_BIM_INST);
         expected.add(TEST_BASE_URI + "Storey_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://w3id.org/bot#containsElement, " + TEST_BASE_URI + bimElementClass + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         return expected;
     }
@@ -880,8 +888,8 @@ class BuildingStructureFacadeTest {
 
     private List<String> genExpectedOptionalGeomStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSourcePlacement, " + IFC_SOURCE_PLACEMENT_INST);
-        expected.add(IFC_SOURCE_PLACEMENT_INST + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSourcePlacement, " + IFC_SOURCE_PLACEMENT_BIM_INST);
+        expected.add(IFC_SOURCE_PLACEMENT_BIM_INST + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTargetPlacement, " + IFC_TARGET_TRANSFORMATION_OPERATOR_INST);
         expected.add(IFC_TARGET_TRANSFORMATION_OPERATOR_INST + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/CartesianTransformationOperator");
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + IFC_MAPPED_REP_TYPE_VAL);
@@ -905,8 +913,8 @@ class BuildingStructureFacadeTest {
         expected.add(TEST_BASE_URI + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricVoid");
         expected.add(TEST_BASE_URI + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasGeometricRepresentation, " + TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         expected.add(TEST_BASE_URI + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasVoidType, \"" + IFC_VOID_TYPE);
-        expected.add(TEST_BASE_URI + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + IFC_VOID_PLACEMENT_INST);
-        expected.add(IFC_VOID_PLACEMENT_INST + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
+        expected.add(TEST_BASE_URI + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + IFC_VOID_PLACEMENT_BIM_INST);
+        expected.add(IFC_VOID_PLACEMENT_BIM_INST + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D");
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSubContext, " + IFC_VOID_SUB_CONTEXT_INST);
         expected.add(IFC_VOID_SUB_CONTEXT_INST + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");

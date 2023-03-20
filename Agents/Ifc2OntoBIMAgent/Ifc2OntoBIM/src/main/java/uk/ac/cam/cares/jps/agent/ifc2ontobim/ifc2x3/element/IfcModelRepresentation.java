@@ -34,7 +34,8 @@ public class IfcModelRepresentation {
         this.ifcRepIri = this.prefix + OntoBimConstant.ASSET_MODEL_REP_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.name = name;
         this.uid = uid;
-        this.placementIri = placementIri;
+        String instVal = StringUtils.getStringAfterLastCharacterOccurrence(placementIri, StringUtils.UNDERSCORE);
+        this.placementIri = prefix + OntoBimConstant.LOCAL_PLACEMENT_CLASS + OntoBimConstant.UNDERSCORE + instVal;
     }
 
     public String getIfcRepIri() { return this.ifcRepIri;}

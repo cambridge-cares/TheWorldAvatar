@@ -25,6 +25,9 @@ public class JunitTestUtils {
     public static final String IFC2X3_NAME_PROPERTY = ifc2x3Uri + "name_IfcRoot";
     public static final String IFC2X3_HOST_ZONE_PROPERTY = ifc2x3Uri + "relatingStructure_IfcRelContainedInSpatialStructure";
     public static final String IFC2X3_CONTAIN_ELEMENT_PROPERTY = ifc2x3Uri + "relatedElements_IfcRelContainedInSpatialStructure";
+    public static final String BIM_PLACEMENT_CLASS = "LocalPlacement";
+    public static final String IFC_PLACEMENT_CLASS = "IfcLocalPlacement";
+
     public static void addPrefix(ConstructBuilder builder) {
         Map<String, String> nsMapping = new HashMap<>();
         nsMapping.put("rdfs", rdfsUri);

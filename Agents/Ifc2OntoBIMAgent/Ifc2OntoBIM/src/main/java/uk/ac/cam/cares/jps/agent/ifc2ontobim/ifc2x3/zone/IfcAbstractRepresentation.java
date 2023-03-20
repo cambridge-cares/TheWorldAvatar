@@ -36,7 +36,8 @@ public class IfcAbstractRepresentation {
         this.iri = this.prefix + className + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.name = name;
         this.uid = uid;
-        this.placementIri = placementIri;
+        String instVal = StringUtils.getStringAfterLastCharacterOccurrence(placementIri, StringUtils.UNDERSCORE);
+        this.placementIri = prefix + OntoBimConstant.LOCAL_PLACEMENT_CLASS + OntoBimConstant.UNDERSCORE + instVal;
     }
 
     protected String getIri() { return this.iri;}
