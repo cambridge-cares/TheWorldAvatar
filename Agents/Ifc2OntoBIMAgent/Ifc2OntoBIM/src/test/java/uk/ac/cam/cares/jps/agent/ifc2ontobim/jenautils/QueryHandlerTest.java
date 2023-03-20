@@ -35,6 +35,9 @@ class QueryHandlerTest {
     private static final String testConstructClass = "Building";
     private static final String testVar = "name";
     private static final String testLiteral = "Building1";
+    private static final String testInchNameVar = "inchname";
+    private static final String testLiteralWithInch = "Wall:2\"x2\":test";
+    private static final String testLiteralWithInchResult = "Wall:2\\\"x2\\\":test";
     private static final String testHeightVar = "height";
     private static final String testDoubleLiteral = "102";
     private static final String testIriVar = "IRI";
@@ -148,9 +151,11 @@ class QueryHandlerTest {
         // Create a sample query solution for testing
         QuerySolutionMap solution = new QuerySolutionMap();
         solution.add(testVar, ResourceFactory.createPlainLiteral(testLiteral));
+        solution.add(testInchNameVar, ResourceFactory.createPlainLiteral(testLiteralWithInch));
         solution.add(testHeightVar, ResourceFactory.createTypedLiteral(testDoubleLiteral));
         // Execute the method and ensure results are string
         assertEquals(testLiteral, QueryHandler.retrieveLiteral(solution, testVar));
+        assertEquals(testLiteralWithInchResult, QueryHandler.retrieveLiteral(solution, testInchNameVar));
         assertEquals(testDoubleLiteral, QueryHandler.retrieveLiteral(solution, testHeightVar));
         // If the variable does not exist, ensure that null is return
         assertNull(QueryHandler.retrieveLiteral(solution, "nonExisting"));

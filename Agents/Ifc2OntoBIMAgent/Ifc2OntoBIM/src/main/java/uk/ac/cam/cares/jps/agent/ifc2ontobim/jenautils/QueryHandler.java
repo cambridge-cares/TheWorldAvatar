@@ -86,8 +86,12 @@ public class QueryHandler {
      */
     public static String retrieveLiteral(QuerySolution soln, String variable) {
         if (soln.contains(variable)) {
+            String literal = soln.getLiteral(variable).getString();
+            if (literal.contains("\"")){
+                literal = literal.replace("\"", "\\\"");
+            }
             // Retrieve only the literal value with getString(), do not retrieve the namespace
-            return soln.getLiteral(variable).getString();
+            return literal;
         } else {
             return null;
         }
