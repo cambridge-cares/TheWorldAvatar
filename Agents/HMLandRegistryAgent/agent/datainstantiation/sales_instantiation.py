@@ -7,7 +7,7 @@
 # the HM Land Registry Open Data SPARQL endpoint according to OntoBuiltEnv
 
 import re
-import json
+import time
 import uuid
 import numpy as np
 import pandas as pd
@@ -21,8 +21,11 @@ from agent.kgutils.querytemplates import *
 from agent.utils.api_endpoints import HM_SPARQL_ENDPOINT
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from agent.kgutils.stackclients import PostGISClient, GeoserverClient
+from agent.datainstantiation.derivation_markup import retrieve_avgsqmprice_postal_code_info, \
+                                                      avg_sqm_price_derivation_markup
 
 from pyderivationagent import PySparqlClient
+from pyderivationagent import PyDerivationClient
 
 # Initialise logger
 from py4jps import agentlogging
@@ -33,7 +36,8 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
                                api_endpoint=HM_SPARQL_ENDPOINT,
                                query_endpoint=QUERY_ENDPOINT, 
                                update_endpoint=UPDATE_ENDPOINT, 
-                               kg_client_obe=None, kg_client_hm=None):
+                               kg_client_obe=None, kg_client_hm=None,
+                               add_avgsqm_derivation_markup=True):
     """
     Retrieves HM Land Registry's Price Paid data for provided properties from
     given endpoint and instantiates them in the KG according to OntoBuiltEnv
@@ -42,6 +46,8 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
         property_iris - list of property IRIs for which to retrieve sales data
                         (i.e. retrieval of sales data done via address matching)
         min_conf_score - minimum confidence score for address matching [0-100]
+        add_avgsqm_derivation_markup - boolean flag whether to add derivation markup for 
+                                       Average Square Metre Price per Postal Code
         api_endpoint - SPARQL endpoint for HM Land Registry Open Data
         query_endpoint/update_endpoint - SPARQL endpoint with instantiated OntoCityGml buildings
     Returns:
@@ -58,6 +64,11 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
         kg_client_obe = PySparqlClient(query_endpoint, update_endpoint)
     if not kg_client_hm:
         kg_client_hm = PySparqlClient(api_endpoint, api_endpoint)
+    # Create PyDerivationClient instance
+    if add_avgsqm_derivation_markup:
+        derivation_client = PyDerivationClient(
+            derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
+            query_endpoint=query_endpoint, update_endpoint=update_endpoint)
 
     # Initialise relevant Stack Clients and parameters
     postgis_client = PostGISClient()
@@ -74,7 +85,8 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
 
     # Query Price Paid Data postcode by postcode (trade-off between query speed and number of queries)
     logger.info('Querying HM Land Registry Price Paid Data in batches of individual postcodes ...')
-    for pc in obe['postcode'].unique():
+    postcodes = list(obe['postcode'].unique())
+    for pc in postcodes:
         pc_data = obe[obe['postcode'] == pc].copy()
         pc_data.drop_duplicates(inplace=True)
 
@@ -113,12 +125,34 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
                 geoserver_client.create_workspace()
                 geoserver_client.create_postgis_layer()
 
-            # Upload latest market value estimate to PostGIS
+            # Upload property sales price to PostGIS
             # (overwrites previous value if available, otherwise creates new row)
-            logger.info('Uploading property values to PostGIS ...')
+            logger.info('Uploading property price to PostGIS ...')
             postgis_client.upload_property_value(building_iri=tx.get('property_iri'),
                                                  value_estimate=tx.get('price'))
     
+    if add_avgsqm_derivation_markup:
+        # 5) Add derivation markup for Average Square Metre Price per Postal Code
+        #    (optional as more efficient in update_all_transaction_records considering all postcodes)
+        # Retrieve relevant postal code info
+        postal_code_info_lst = retrieve_avgsqmprice_postal_code_info(sparql_client=kg_client_obe,
+                                                                     postcodes=postcodes)
+        print(f'Adding derivation markup for {len(postal_code_info_lst)} postcodes ...')
+        # Add derivation markup for each postal code
+        for i in range(len(postal_code_info_lst)):
+            time.sleep(1)
+            logger.info(f"Processing postal code {i+1}/{len(postal_code_info_lst)}")
+            avg_sqm_price_derivation_markup(
+                derivation_client=derivation_client,
+                sparql_client=kg_client_obe,
+                postal_code_iri=postal_code_info_lst[i]['postal_code'],
+                transaction_record_iri_lst=postal_code_info_lst[i]['tx'],
+                property_price_index_iri=postal_code_info_lst[i]['ppi'],
+                existing_avg_sqm_price_iri=postal_code_info_lst[i].get('asp'),
+                existing_asp_derivation_iri=postal_code_info_lst[i].get('derivation'),
+                existing_asp_derivation_tx_iri_lst=postal_code_info_lst[i].get('deriv_tx'),
+            )   
+
     return instantiated_tx, updated_tx
 
 
@@ -149,6 +183,10 @@ def update_all_transaction_records(min_conf_score=90,
     kg_client_hm = PySparqlClient(api_endpoint, api_endpoint)
     # Initialise TimeSeriesClient with default settings
     ts_client = TSClient(kg_client=kg_client_obe)
+    # Create PyDerivationClient instance
+    derivation_client = PyDerivationClient(
+        derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
+        query_endpoint=query_endpoint, update_endpoint=update_endpoint)
 
     # 1) Retrieve all instantiated properties with associated postcodes
     print('Retrieving instantiated properties with attached postcodes ...')
@@ -175,11 +213,33 @@ def update_all_transaction_records(min_conf_score=90,
         # Update transaction records for list of property IRIs
         tx_new, tx_upd = update_transaction_records(property_iris=prop_iris, 
                             min_conf_score=min_conf_score, api_endpoint=api_endpoint,
-                            kg_client_obe=kg_client_obe, kg_client_hm=kg_client_hm)
+                            kg_client_obe=kg_client_obe, kg_client_hm=kg_client_hm,
+                            add_avgsqm_derivation_markup=False)
         instantiated_tx += tx_new
         updated_tx += tx_upd
 
-    # 3) Retrieve instantiated Admin Districts + potentially already instantiated
+        # 3) Add derivation markup for Average Square Metre Price per Postal Code
+        # Retrieve relevant postal code info
+        postal_code_info_lst = retrieve_avgsqmprice_postal_code_info(sparql_client=kg_client_obe,
+                                                                     postcodes=postcodes)
+        print(f'Adding derivation markup for {len(postal_code_info_lst)} postcodes ...')
+        # Add derivation markup for each postal code
+        for i in range(len(postal_code_info_lst)):
+            # TODO: necessary to sleep here?
+            time.sleep(1)
+            logger.info(f"Processing postal code {i+1}/{len(postal_code_info_lst)}")
+            avg_sqm_price_derivation_markup(
+                derivation_client=derivation_client,
+                sparql_client=kg_client_obe,
+                postal_code_iri=postal_code_info_lst[i]['postal_code'],
+                transaction_record_iri_lst=postal_code_info_lst[i]['tx'],
+                property_price_index_iri=postal_code_info_lst[i]['ppi'],
+                existing_avg_sqm_price_iri=postal_code_info_lst[i].get('asp'),
+                existing_asp_derivation_iri=postal_code_info_lst[i].get('derivation'),
+                existing_asp_derivation_tx_iri_lst=postal_code_info_lst[i].get('deriv_tx'),
+            ) 
+
+    # 4) Retrieve instantiated Admin Districts + potentially already instantiated
     #    Property Price Indices in OntoBuiltEnv
     print('Updating UK House Price Index ...')
     #logger.info('Updating UK House Price Index ...')
@@ -207,12 +267,12 @@ def update_all_transaction_records(min_conf_score=90,
         else:
             updated_ukhpi += 1
 
-        # 4) Retrieve Property Price Index from HM Land Registry
+        # 5) Retrieve Property Price Index from HM Land Registry
         logger.info('Update UK House Price Index data.')
         ts = create_ukhpi_timeseries(local_authority_iri=d['ons_district'], 
                                      ppi_iri=d['ukhpi'], kg_client_hm=kg_client_hm)
 
-        # 5) Update Property Price Index time series data in KG
+        # 6) Update Property Price Index time series data in KG
         try:
             with ts_client.connect() as conn:
                 ts_client.tsclient.addTimeSeriesData(ts, conn)

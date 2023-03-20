@@ -4,8 +4,9 @@
 # Date: 16 Mar 2023                            #
 ################################################
 
-# This module provides functionality to create derivation markup for newly 
-# instantiated flood warnings/alert to be picked up by the flood assessment agent
+# This module provides functionality to create derivation markup for
+# 1) average price per square meter (asp) of a postal code
+# 2) property market value estimate of a property
 
 from typing import Any, Dict, List
 
@@ -23,8 +24,10 @@ logger = agentlogging.get_logger('dev')
 # =============================================================================
 # Average Square Metre Price Derivation Markup (per PostalCode)
 
-def retrieve_postal_code_info(sparql_client: PySparqlClient):
-    # Construct query to retrieve below information for each postal code from KG
+def retrieve_avgsqmprice_postal_code_info(sparql_client: PySparqlClient,
+                                          postcodes: List[str] = []):
+    # Construct query to retrieve below information for postcodes of interest/
+    # each instantiated postcode from KG
     # NOTE the query is designed to also retrieve postal codes with currently no 
     #      property in them (in such cases, the AvgSqmPrice agent will retrieve
     #      property sales transactions from nearby postcodes from Land Registry API)
@@ -37,9 +40,18 @@ def retrieve_postal_code_info(sparql_client: PySparqlClient):
     # - average price per square meter (asp) IRI
     # - average price per square meter derivarion (derivation)
     # - transaction record used to calculate the existing asp (deriv_tx)
+
+    if postcodes:
+        # If list of postcodes provides, retrieve information for those postcodes only ...
+        value_statement = f"VALUES ?postal {{ {' '.join([f'<{pc}>' for pc in postcodes])} }}"
+    else:
+        # ... otherwise, retrieve information for all postcodes
+        value_statement = ""
+    
     query = f"""{pda_iris.PREFIX_RDF} {pda_iris.PREFIX_RDFS}
             SELECT DISTINCT ?postal ?ppi ?tx ?asp ?derivation ?deriv_tx
             WHERE {{
+                {value_statement}
                 ?postal rdf:type <{OBE_POSTALCODE}>.
                 ?address <{OBE_HAS_POSTALCODE}> ?postal;
                          <{OBE_HAS_ADMIN_DISTRICT}> ?district.
@@ -107,38 +119,30 @@ def avg_sqm_price_derivation_markup(
 ):
     if existing_avg_sqm_price_iri is None:
         try:
-            # TODO [when turning this script into an agent]
-            # It has been observed that the function call createSyncDerivationForNewInfo sometimes fails with the error:
-            # ERROR - HTTPConnectionPool(host='statistics.data.gov.uk', port=80): Max retries exceeded
-            #   (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f5d38710a60>: Failed to establish a new connection: [Errno 111] Connection refused'))
-            # Given the current design, the derivation will not be created if the above error occurs
-            # i.e. from the KG point of view, nothing happened
-            # One might want to consider retrying the function call if the same error occurs
-            # Either here or in the AverageSquareMetrePriceAgent where the HTTP request is made (the latter is preferred)
-
             # Create sync derivation for new info to get avg_sqm_price computed
-            # NOTE Here we use the function call createSyncDerivationForNewInfoWithHttpUrl instead of createSyncDerivationForNewInfo
-            # This is to workaround the fact that the hasHttpUrl for the agent operation is stored with host.docker.internal
-            #   which is not accessible from the host machine, hence we converted it to localhost and manually pass it in
-            # TODO [when turning this script into an agent] keep host.docker.internal or let stack manager to take care of the routing
-            derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
+            # NOTE createSyncDerivationForNewInfo assumes derivation agent to listen 
+            #      on URL containing host.docker.internal
+            #      For other URLs, e.g. localhost, use createSyncDerivationForNewInfoWithHttpUrl
+
+            #derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
+            derivation = derivation_client.createSyncDerivationForNewInfo(
                 agentIRI=AVERAGE_SQUARE_METRE_PRICE_AGENT_IRI,
-                agentURL=AVERAGE_SQUARE_METRE_PRICE_AGENT_URL,
+                # NOTE only relevant for createSyncDerivationForNewInfoWithHttpUrl
+                #agentURL=AVERAGE_SQUARE_METRE_PRICE_AGENT_URL,
                 inputsIRI=[postal_code_iri, property_price_index_iri] + transaction_record_iri_lst,
                 derivationType=pda_iris.ONTODERIVATION_DERIVATION,
             )
             logger.info(f"Created sync derivation for new info: {derivation.getIri()}")
-            logger.info(f"Created OBE_AVERAGE_SM_PRICE: {derivation.getBelongsToIris(iris.OBE_AVERAGE_SM_PRICE)}")
+            logger.info(f"Created OBE_AVERAGE_SM_PRICE: {derivation.getBelongsToIris(OBE_AVERAGE_SM_PRICE)}")
         except Exception as e:
             logger.error(f"Failed to create sync derivation for new info, inputsIRI: {str([postal_code_iri, property_price_index_iri] + transaction_record_iri_lst)}")
             raise e
     else:
-        # Construct a list of tx iri that are not used to calculate the existing avg sqm price
+        # Construct a list of tx iris that are not used to calculate the existing avg sqm price
         new_tx_iri_lst = [iri for iri in transaction_record_iri_lst if iri not in existing_asp_derivation_tx_iri_lst]
         # Add the new tx iri to the existing derivation and request for update
         if bool(new_tx_iri_lst):
-            # NOTE this block of code is never reached in the derivation mvp as we only changed PropertyPriceIndex
-            # TODO [when turning this script into an agent] test this block of code
+            # TODO: Test
             # Add timestamp to new tx iri (nothing happens if the iri already has timestamp)
             derivation_client.addTimeInstanceCurrentTimestamp(new_tx_iri_lst)
             # Add new tx iri to the existing derivation

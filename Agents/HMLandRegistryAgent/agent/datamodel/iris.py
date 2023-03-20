@@ -57,6 +57,7 @@ OBE_REPRESENTATIVE_FOR = OBE + 'representativeFor'
 OBE_PROPERTY_PRICE_INDEX = OBE + 'PropertyPriceIndex'
 OBE_HAS_OCGML_REPRESENTATION = OBE + 'hasOntoCityGMLRepresentation'
 OBE_HAS_GROUND_ELEVATION = OBE + 'hasGroundElevation'
+OBE_AVERAGE_SM_PRICE = OBE + 'AveragePricePerSqm'
 # LRPPI: https://landregistry.data.gov.uk/app/root/doc/ppd
 LRPPI_TRANSACTION_RECORD = LRPPI + 'TransactionRecord'
 LRPPI_PROPERTY_ADDRESS = LRPPI + 'propertyAddress'
