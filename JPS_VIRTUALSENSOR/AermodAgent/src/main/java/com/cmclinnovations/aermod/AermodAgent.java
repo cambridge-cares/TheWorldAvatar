@@ -144,6 +144,7 @@ public class AermodAgent extends DerivationAgent {
         // layer name
         String dispLayerName = "disp_" + simulationDirectory.getFileName();
         String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent
+        String plantsLayerName = "source_layer" ;
 
         // upload to PostGIS using GDAL
         GDALClient gdalClient = new GDALClient();
@@ -162,7 +163,7 @@ public class AermodAgent extends DerivationAgent {
 
         // ships_ is hardcoded here and in ShipInputAgent
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), outputFileURL, dispLayerName, shipLayerName, simulationTime);
-        if (aermod.createDataJson(shipLayerName, dispLayerName) != 0) {
+        if (aermod.createDataJson(shipLayerName, dispLayerName, plantsLayerName) != 0) {
             LOGGER.error("Failed to create data.json file for visualisation, terminating");
             return;
         }

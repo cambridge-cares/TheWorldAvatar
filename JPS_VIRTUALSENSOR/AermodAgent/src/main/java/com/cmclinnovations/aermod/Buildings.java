@@ -23,6 +23,11 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.io.IOUtils;
 
+import com.cmclinnovations.stack.clients.gdal.GDALClient;
+import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
+import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
+
 
 public class Buildings {
 
@@ -126,6 +131,11 @@ public class Buildings {
     public int run() {
         try {
             getProperties();
+
+            if (createPlantItemsGeoServerLayer() != 0) {
+                LOGGER.error("Failed to create GeoServer Layer for plant items, terminating");
+                return 1;
+            }
 
             /* Currently unable to compile AERMAP code and copy executable in the Docker environment.  
             if (createAERMAPInputFile() != 0) {
@@ -480,6 +490,55 @@ public class Buildings {
         }
 
     }
+
+    public int createPlantItemsGeoServerLayer() {
+
+        // define a list of (longitude, latitude) coordinates
+        List<List<Double>> utmCoordinates = new ArrayList<>();
+
+        for (int i = 0; i < StackProperties.size(); i++) {
+            String[] avecoord = StackProperties.get(i).split("#");
+            double StackEastUTM = Double.parseDouble(avecoord[0]);
+            double StackNorthUTM = Double.parseDouble(avecoord[1]);
+            List<Double> tmp = Arrays.asList(StackEastUTM, StackNorthUTM);
+            utmCoordinates.add(tmp);  
+        }
+        List<List<Double>> LonLatCoords = convertCoordinates(utmCoordinates, UTMCoordSys, "ESPG:4326");
+
+
+        // create a JSONObject that represents a GeoJSON Feature Collection
+        JSONObject featureCollection = new JSONObject();
+        featureCollection.put("type", "FeatureCollection");
+        JSONArray features = new JSONArray();
+
+        // loop through the coordinates and add them as GeoJSON Points to the Feature Collection
+        for (List<Double> coordinate : LonLatCoords) {
+            JSONObject geometry = new JSONObject();
+            geometry.put("type", "Point");
+            geometry.put("coordinates", new JSONArray(coordinate));
+            JSONObject feature = new JSONObject();
+            feature.put("type", "Feature");
+            feature.put("geometry", geometry);
+            features.put(feature);
+        }
+        featureCollection.put("features", features);
+
+        LOGGER.info("Uploading plant items GeoJSON to PostGIS");
+		GDALClient gdalclient = new GDALClient();
+		gdalclient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER, featureCollection.toString(), new Ogr2OgrOptions(), true);
+
+		LOGGER.info("Creating plant items layer in Geoserver");
+		GeoServerClient geoserverclient = new GeoServerClient();
+		geoserverclient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
+		geoserverclient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER, new GeoServerVectorSettings());
+
+        // convert the Feature Collection to a JSON string
+        // String geojsonString = featureCollection.toString();
+        // System.out.println(geojsonString);
+
+        return 0;
+
+    } 
 
     public int createAERMAPInputFile() {
 

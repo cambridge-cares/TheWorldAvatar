@@ -378,16 +378,19 @@ public class Aermod {
         }
     }
 
-    int createDataJson(String shipLayerName, String dispersionLayerName) {
+    int createDataJson(String shipLayerName, String dispersionLayerName, String plantsLayerName) {
         // wms endpoints template without the layer name
         String shipWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile" +
             "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, shipLayerName);
 
         String dispWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true" +
             "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, dispersionLayerName);
+        
+        String plantWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile" +
+            "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, plantsLayerName);
 
         JSONObject group = new JSONObject();
-        group.put("name", "Plymouth"); // hardcoded
+        group.put("name", "Aermod Simulation"); // hardcoded
         group.put("stack", "http://featureInfoAgent");
 
         // sources
@@ -397,12 +400,18 @@ public class Aermod {
         shipSource.put("type", "vector");
         shipSource.put("tiles", new JSONArray().put(shipWms));
 
+        JSONObject plantSource = new JSONObject();
+        plantSource.put("id", "plant-source");
+        plantSource.put("type", "vector");
+        plantSource.put("tiles", new JSONArray().put(plantWms));
+
+
         JSONObject dispersionSource = new JSONObject();
         dispersionSource.put("id", "dispersion-source");
         dispersionSource.put("type", "raster");
         dispersionSource.put("tiles", new JSONArray().put(dispWms));
 
-        sources.put(shipSource).put(dispersionSource);
+        sources.put(shipSource).put(dispersionSource).put(plantSource);
         group.put("sources", sources);
 
         // layers
@@ -416,6 +425,17 @@ public class Aermod {
         shipLayer.put("minzoom", 4);
         shipLayer.put("layout", new JSONObject().put("visibility", "visible"));
 
+
+        JSONObject plantsLayer = new JSONObject();
+        plantsLayer.put("id", "plants-layer");
+        plantsLayer.put("type", "circle");
+        plantsLayer.put("name", "Chemical Plant Items");
+        plantsLayer.put("source", "plant-source");
+        plantsLayer.put("source-layer", plantsLayerName);
+        plantsLayer.put("minzoom", 4);
+        plantsLayer.put("layout", new JSONObject().put("visibility", "visible"));
+
+
         JSONObject dispersionLayer = new JSONObject();
         dispersionLayer.put("type", "raster");
         dispersionLayer.put("name", "Dispersion");
@@ -424,7 +444,7 @@ public class Aermod {
         dispersionLayer.put("minzoom", 4);
         dispersionLayer.put("layout", new JSONObject().put("visibility", "visible"));
 
-        layers.put(dispersionLayer).put(shipLayer);
+        layers.put(dispersionLayer).put(shipLayer).put(plantsLayer);
         group.put("layers", layers);
 
         JSONObject data = new JSONObject();

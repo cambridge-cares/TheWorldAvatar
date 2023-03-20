@@ -15,6 +15,7 @@ public class EnvConfig {
     public static final String GEOSERVER_WORKSPACE = System.getenv("GEOSERVER_WORKSPACE");
     public static final String DISPERSION_LAYER = System.getenv("DISPERSION_LAYER");
     public static final String DISPERSION_STYLE_NAME = System.getenv("DISPERSION_STYLE_NAME");
+    public static final String SOURCE_LAYER = System.getenv("SOURCE_LAYER");
     public static final String VIS_FOLDER = System.getenv("VIS_FOLDER");
     public static final String GEOSERVER_URL = System.getenv("GEOSERVER_URL");
 

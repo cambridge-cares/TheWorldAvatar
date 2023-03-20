@@ -24,6 +24,7 @@ services:
       - SIMULATION_DIR=/root/aermod/simulations
       - FILE_SERVER_URL=http://file-server:8080/FileServer/
       - DISPERSION_STYLE_NAME=dispersion_style
+      - SOURCE_LAYER=source_layer
       - VIS_FOLDER=/vis_data
       - GEOSERVER_URL=http://localhost:3838/geoserver # specifying here because WMS endpoint does not work with container name
     configs:
