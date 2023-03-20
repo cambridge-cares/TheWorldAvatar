@@ -76,6 +76,7 @@ def get_aermod_geojson(aermod_output, srid):
        plt.gca().set_visible(False)
        cax = plt.axes([0.1, 0.2, 0.1, 1.0])
        plt.colorbar(orientation="vertical", cax=cax)
+       cax.tick_params(axis='y', which='major', labelsize=28)
     #    plt.title(r"Logarithm of CO$_{2}$ concentrations ($\mu$g/m$^3$)")
        plt.savefig("/var/www/html/colourbar.png", dpi=300, bbox_inches='tight')
     except Exception as e :
