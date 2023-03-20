@@ -3,6 +3,7 @@ package com.cmclinnovations.stack.clients.utils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 
@@ -29,22 +30,30 @@ public class LocalTempDir extends TempDir {
     @Override
     public void copyFrom(Path sourcePath) {
         Path targetDir = getPath();
+
         if (Files.isDirectory(sourcePath)) {
             try {
                 FileUtils.copyDirectory(sourcePath.toFile(), targetDir.toFile());
+                try (Stream<Path> paths = Files.walk(targetDir).parallel()) {
+                    paths.forEach(this::changePermissions);
+                }
             } catch (IOException ex) {
-                throw new RuntimeException("Failed to copy directory '" + sourcePath + "' into '" + targetDir + "'.",
+                throw new RuntimeException(
+                        "Failed to copy directory '" + sourcePath + "' into '" + targetDir + "'.",
                         ex);
             }
         } else if (Files.isRegularFile(sourcePath)) {
             try {
-                Files.copy(sourcePath, targetDir.resolve(sourcePath.getFileName()));
+                Path targetFile = targetDir.resolve(sourcePath.getFileName());
+                Files.copy(sourcePath, targetFile);
+                changePermissions(targetFile);
             } catch (IOException ex) {
-                throw new RuntimeException("Failed to copy file '" + sourcePath + "' into '" + targetDir + "'.", ex);
+                throw new RuntimeException("Failed to copy file '" + sourcePath + "' into '" + targetDir + "'.",
+                        ex);
             }
         } else {
             throw new RuntimeException("Couldn't copy '" + sourcePath + "' into '" + targetDir
-                    + "' as the source was niether a file nor a directory.");
+                    + "' as the source was neither a file nor a directory.");
         }
     }
 }

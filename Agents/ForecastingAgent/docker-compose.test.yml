@@ -1,20 +1,21 @@
-version: "3.8"
+version: '3.8'
 
 services:
-
-  blazegraph_fc_test:
-    container_name: "blazegraph_fc_agent_test"
+  # Blazegraph
+  blazegraph_test:
     image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    container_name: blazegraph_test
     restart: unless-stopped
     ports:
-      - "9998:8080"
+      - 27149:8080
 
-  postgres_fc_test:
-    container_name: "postgres_fc_agent_test"
+  # PostgreSQL
+  postgres_test:
+    container_name: postgres_test
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     image: postgres:13.3
     restart: unless-stopped
     ports:
-      - "9431:5432"
+      - 7432:5432

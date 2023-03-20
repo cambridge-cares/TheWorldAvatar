@@ -68,31 +68,7 @@ function getDefaultImagery() {
  * @returns 
  */
 function updateURL(originalURL: string): string {
-    if(!originalURL.includes("localhost") && !originalURL.includes("127.0.0.1")) {
-        return originalURL;
-    }
-
-    // Get the URL that the visualisation is currently accessed from
-    let winURL = window.location;
-	let baseURL = winURL.protocol + "//" + winURL.host + winURL.pathname;
-
-    originalURL = originalURL.replace("http://", "");
-    originalURL = originalURL.replace("https://", "");
-    originalURL = originalURL.replace("localhost", "");
-    originalURL = originalURL.replace("127.0.0.1", "");
-
-    if(originalURL.startsWith(":")) {
-        if(baseURL.endsWith("/")) {
-            return baseURL.substring(0, baseURL.length - 1) + originalURL;
-        }
-        return originalURL + baseURL;
-    } else {
-        if(originalURL.startsWith("/") || baseURL.endsWith("/")) {
-            return baseURL + originalURL;
-        } else {
-            return baseURL + "/" + originalURL;
-        }
-    }
+    return originalURL;
 }
 
 /**

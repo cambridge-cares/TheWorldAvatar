@@ -1,19 +1,21 @@
 ################################################
-# Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
+# Authors: Markus Hofmeister (mh807@cam.ac.uk) #
 # Date: 17 Oct 2022                            #
 ################################################
 
 # The purpose of this module is to provide functionality to use
 # the TimeSeriesClient from the JPS_BASE_LIB
 
-from forecasting.errorhandling.exceptions import TSException
-from forecasting.kgutils.javagateway import jpsBaseLibGW
-from forecasting.datamodel.data_mapping import TIMECLASS
-from forecasting.utils.properties import *
 from contextlib import contextmanager
 
-
 from py4jps import agentlogging
+
+from forecasting.errorhandling.exceptions import TSException
+from forecasting.utils.baselib_gateway import jpsBaseLibGW
+from forecasting.datamodel.data_mapping import INSTANT
+from forecasting.utils.default_configs import DB_URL, DB_USER, DB_PASSWORD
+
+# Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
 
 class TSClient:
@@ -23,7 +25,7 @@ class TSClient:
     jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.query.*")
     jpsBaseLibGW.importPackages(jpsBaseLibView, "uk.ac.cam.cares.jps.base.timeseries.*")
 
-    def __init__(self, kg_client, timeclass=TIMECLASS, rdb_url=DB_URL, 
+    def __init__(self, kg_client, timeclass=INSTANT, rdb_url=DB_URL, 
                  rdb_user=DB_USER, rdb_password=DB_PASSWORD):
         """
         Initialise TimeSeriesClient (default properties taken from environment variables)
@@ -84,14 +86,28 @@ class TSClient:
         
         return timeseries
 
-def init_ts(iri, dates, values, tsClient, ts_type, time_format):
-    # call client
-    with tsClient.connect() as conn:
-        tsClient.tsclient.initTimeSeries([iri], [ts_type], time_format, conn)
-        ts = TSClient.create_timeseries(
-            dates.to_list(), [iri], [values.to_list()])
-        tsClient.tsclient.addTimeSeriesData(ts, conn)
-    logger.info(f"Time series initialised in KG: {iri}")
+
+    def init_ts(self, datairi, times, values, ts_type, time_format):
+        """
+        This method instantiates a new time series and immediately adds data to it.
+        
+        Arguments:
+            datairi (str): IRI of instance with hasTimeSeries relationship
+            times (list): List of times/dates
+            values (list): List of list of values per dataIRI   
+            tsClient (TSClient): TSClient object
+            ts_type (Java class): Java class of time series values
+            time_format (str): Time format (e.g. "yyyy-MM-dd'T'HH:mm:ss.SSS'Z')
+        """
+
+        with self.connect() as conn:
+            self.tsclient.initTimeSeries([datairi], [ts_type], time_format, conn)
+            ts = TSClient.create_timeseries(
+                        times.to_list(), [datairi], [values.to_list()])
+            self.tsclient.addTimeSeriesData(ts, conn)
+        logger.info(f"Time series initialised in KG: {datairi}")
+
+
 """
 HOW TO USE:
 

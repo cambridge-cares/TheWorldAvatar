@@ -2,19 +2,25 @@ version: "3.8"
 
 services:
   landregistry_agent:
-    image: ghcr.io/cambridge-cares/landregistry_agent:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/landregistry_agent:1.0.0
     environment:
       - STACK_NAME=${STACK_NAME}
       # Specify PostGIS/PostgreSQL database name
       - DATABASE=postgres
+      # Target Blazegraph namespace
+      - NAMESPACE=kingslynn
+      # Target layer name in Geoserver, also table name in PostGIS
+      - LAYERNAME=building_sales
+      - GEOSERVER_WORKSPACE=buildings
+      # PostGIS table containing all building footprints
+      - BUILDINGS_TABLE=buildings
     ports:
-      - "5002:5000"
+      - "5008:5000"
     volumes:
       - logs:/root/.jps
     configs:
       - blazegraph
       - geoserver
-      - ontop
       - postgis
     secrets:
       - geoserver_password
