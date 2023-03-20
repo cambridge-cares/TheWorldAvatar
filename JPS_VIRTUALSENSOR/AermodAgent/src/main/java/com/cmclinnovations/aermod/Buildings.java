@@ -137,34 +137,45 @@ public class Buildings {
                 return 1;
             }
 
-            /* Currently unable to compile AERMAP code and copy executable in the Docker environment.  
-            if (createAERMAPInputFile() != 0) {
-                LOGGER.error("Failed to create AERMAP input file, terminating");
-                return 1;
-            }
+            boolean includeElev = false;
 
-            if (createAERMAPSourceInput() != 0) {
-                LOGGER.error("Failed to create AERMAP source input, terminating");
-                return 1;
-            }
-            if (createAERMAPReceptorInput(nx, ny) != 0) {
-                LOGGER.error("Failed to create AERMAP receptor input, terminating");
-                return 1;
-            }
+            if (includeElev) {
+                if (createAERMAPInputFile() != 0) {
+                    LOGGER.error("Failed to create AERMAP input file, terminating");
+                    return 1;
+                }
+    
+                if (createAERMAPSourceInput() != 0) {
+                    LOGGER.error("Failed to create AERMAP source input, terminating");
+                    return 1;
+                }
+                if (createAERMAPReceptorInput(nx, ny) != 0) {
+                    LOGGER.error("Failed to create AERMAP receptor input, terminating");
+                    return 1;
+                }
+    
+                if (runAERMAP() != 0 ) {
+                    LOGGER.error("Failed to run AERMAP, terminating");
+                    return 1;
+                }
+                if (processAERMAPOutput() != 0) {
+                    LOGGER.error("Failed to process AERMAP output, terminating");
+                    return 1;
+                }    
+            } else {
+                // This method should be called only if AERMAP was not run.
+                if (updateElevationData() != 0) {
+                    LOGGER.error("Failed to update elevation data, terminating");
+                    return 1;
+                }
+                
+                if (createAERMODReceptorInput(nx,ny) != 0) {
+                    LOGGER.error("Failed to create AERMOD receptor input file, terminating");
+                    return 1;
+                }
 
-            if (runAERMAP() != 0 ) {
-                LOGGER.error("Failed to run AERMAP, terminating");
-                return 1;
             }
-            if (processAERMAPOutput() != 0) {
-                LOGGER.error("Failed to process AERMAP output, terminating");
-                return 1;
-            }
-            */
-            if (updateElevationData() != 0) {
-                LOGGER.error("Failed to update elevation data, terminating");
-                return 1;
-            }
+                         
             if (createBPIPPRMInput() != 0) {
                 LOGGER.error("Failed to create BPIPPRM input, terminating");
                 return 1;
@@ -183,10 +194,7 @@ public class Buildings {
                 LOGGER.error("Failed to create AERMOD sources input file, terminating");
                 return 1;
             }
-            if (createAERMODReceptorInput(nx,ny) != 0) {
-                LOGGER.error("Failed to create AERMOD receptor input file, terminating");
-                return 1;
-            }
+            
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             return 1;
@@ -627,6 +635,7 @@ public class Buildings {
             String line = reader.readLine();
             while (line != null) {
                 if (line.contains("DATAFILE")) {
+                    line = line.trim();
                     String [] linesplit = line.split("\\s+");
                     dataFiles.add(linesplit[1]);
 
