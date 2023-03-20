@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.agent.bmsquery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
+import org.springframework.stereotype.Controller;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
@@ -12,22 +13,26 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.time.OffsetDateTime;
+import java.util.Date;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-
+@Controller
 @WebServlet(urlPatterns = {"/retrieve/ts", "/status", "/retrieve/equipment"})
 public class BMSQueryAgentLauncher extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(BMSQueryAgentLauncher.class);
 
     private static final String KEY_DATAIRI = "dataIRI";
-    private static final String KEY_CLIENT_PROPERTIES = "clientProperties";
+//    private static final String KEY_CLIENT_PROPERTIES = "clientProperties";
 
     public static final String PARAMETERS_VALIDATION_ERROR_MSG = "Unable to validate request sent to the agent.";
     public static final String EMPTY_PARAMETER_ERROR_MSG = "Empty Request.";
@@ -46,91 +51,98 @@ public class BMSQueryAgentLauncher extends JPSAgent {
     }
 
     @Override
-    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        response.setContentType("text/json");
+        response.setHeader("Access-Control-Allow-Origin", "http://localhost");
+        response.setHeader("Access-Control-Allow-Methods", "GET,PUT,OPTIONS");
+        response.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Origin, Content-Type, Accept, Accept-Language, Origin, User-Agent");
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
+        String datetime = dateFormat.format(new Date());
+        LOGGER.info("Request received at: {}", datetime);
 
         String url = request.getRequestURI();
         if (url.contains("?")) url = url.split(Pattern.quote("?"))[0];
-        JSONObject jsonMessage = new JSONObject();
 
         if (url.contains("status")) {
-            getStatus(jsonMessage);
-            return jsonMessage;
+            getStatus(response);
+            return;
         }
 
         if (url.contains("retrieve")) {
-            if (!validateInput(requestParams)) {
+            if (!validateInput(request)) {
                 LOGGER.error(PARAMETERS_VALIDATION_ERROR_MSG);
                 throw new JPSRuntimeException(PARAMETERS_VALIDATION_ERROR_MSG);
             }
 
-            String dataIRI = requestParams.getString(KEY_DATAIRI);
-            String clientProperties = requestParams.getString(KEY_CLIENT_PROPERTIES);
-            String clientPropertiesFile = System.getenv(clientProperties);
+            String dataIRI = request.getParameter(KEY_DATAIRI);
+//            String clientProperties = request.getParameter(KEY_CLIENT_PROPERTIES);
+//            String clientPropertiesFile = System.getenv(clientProperties);
 
-            BMSQueryAgent agent = initializeAgent(clientPropertiesFile, jsonMessage);
+            BMSQueryAgent agent = initializeAgent();
 
             if (url.contains("ts")) {
                 // handle the case "retrieve/ts", return the timeseries data and time only
                 JSONObject queryResult = agent.queryTimeSeriesWithinBound(dataIRI);
-                jsonMessage.accumulate("Result", queryResult);
+
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write(queryResult.toString());
             } else if (url.contains("equipment")) {
                 // handle the case "retrieve/equipment", return the list of equipment of the selected type
                 JSONObject queryResult = agent.queryEquipmentInstance(dataIRI);
-                jsonMessage.accumulate("Result", queryResult);
-            }
 
-            jsonMessage.accumulate("Message", "POST request has been sent successfully.");
-            return jsonMessage.append("test message", request.getRequestURI() + "; getURL " + request.getRequestURL());
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write(queryResult.toString());
+            }
+            return;
         }
 
         throw new JPSRuntimeException("Route: " + url + " does not exist");
     }
 
-    @Override
-    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        LOGGER.debug("Getting requestParams: " + requestParams.toString());
+    public boolean validateInput(HttpServletRequest request) throws BadRequestException {
+        LOGGER.info("Getting requestParams: " + request.getQueryString());
 
-        if (requestParams.isEmpty()) {
+        if (request.getParameterMap().isEmpty()) {
             LOGGER.error(EMPTY_PARAMETER_ERROR_MSG);
             return false;
         }
 
-        if (!requestParams.has(KEY_DATAIRI)) {
+        if (request.getParameter(KEY_DATAIRI).isEmpty()) {
             LOGGER.error(KEY_DATAIRI + "is missing.");
             return false;
         }
+        LOGGER.info("Data Received: " + request.getParameter(KEY_DATAIRI));
 
-        if (!requestParams.has(KEY_CLIENT_PROPERTIES)) {
-            LOGGER.error(KEY_CLIENT_PROPERTIES + "is missing.");
-            return false;
-        }
-
-        String clientProperties = requestParams.getString(KEY_CLIENT_PROPERTIES);
-        if (System.getenv(clientProperties) == null) {
-            LOGGER.error("Client property file is not found in the environment variable.");
-            return false;
-        }
+//        if (request.getParameter(KEY_CLIENT_PROPERTIES).isEmpty()) {
+//            LOGGER.error(KEY_CLIENT_PROPERTIES + "is missing.");
+//            return false;
+//        }
+//
+//        String clientProperties = request.getParameter(KEY_CLIENT_PROPERTIES);
+//        if (System.getenv(clientProperties) == null) {
+//            LOGGER.error("Client property file is not found in the environment variable.");
+//            return false;
+//        }
 
         return true;
     }
 
-    // TODO: refactor everything with clientpropertyfile, which comes from local container configuration
-    public BMSQueryAgent initializeAgent(String clientPropertyFile, JSONObject jsonMessage) {
+    public BMSQueryAgent initializeAgent() {
         EndpointConfig endpointConfig = new EndpointConfig();
 
         RemoteStoreClient rsClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         TimeSeriesClient<OffsetDateTime> tsClient = new TimeSeriesClient<>(rsClient, OffsetDateTime.class, endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
 
-        BMSQueryAgent agent = createBMSQueryAgent(jsonMessage);
+        BMSQueryAgent agent = createBMSQueryAgent();
         agent.setRSClient(rsClient);
         agent.setTSClient(tsClient);
 
         LOGGER.info("Input agent object initialized.");
-        jsonMessage.accumulate("Message", "Input agent object initialized.");
         return agent;
     }
 
-    private BMSQueryAgent createBMSQueryAgent(JSONObject jsonMessage) {
+    private BMSQueryAgent createBMSQueryAgent() {
         BMSQueryAgent agent;
         try {
             agent = new BMSQueryAgent();
@@ -141,8 +153,11 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         return agent;
     }
 
-    public void getStatus(JSONObject jsonMessage) {
-        jsonMessage.accumulate("Message", "BMSQueryAgent is ready.");
+    public void getStatus(HttpServletResponse response) throws IOException {
+        LOGGER.info("Detected request to get agent status...");
+
+        response.setStatus(Response.Status.OK.getStatusCode());
+        response.getWriter().write("{\"description\":\"BMSQueryAgent is ready.\"}");
     }
 
 
