@@ -41,17 +41,21 @@
 </head>
 
 <body>
-    <label for="equipment-select">Select an equipment:</label>
-    <select name="Equipment" id="equipment-select">
+    <div id="equipmentSelectControlContainer"></div>
+
+    <!-- <select name="Equipment" id="equipment-select">
         <option value="http://www.theworldavatar.com/BMS/CaresLab#WalkIn-FumeHood_1">WFH-01</option>
         <option value="http://www.theworldavatar.com/BMS/CaresLab#WalkIn-FumeHood_2">WFH-02</option>
-    </select>
+    </select> -->
 
     <div id="metaTimeContainer"></div>
 </body>
 
 <script>
-    function processRawData(rawJSON) {
+    var stack = "http://localhost:3838/";
+    // var stack = "http://192.168.1.6:3838/";
+
+    function visualiseTimeSeriesData(rawJSON) {
         console.log("response received");
                 let meta = rawJSON["meta"];
                 let time = rawJSON["time"];
@@ -90,41 +94,67 @@
                 }
     }
 
-    function getJSONFailure() {
-        console.warn("Could not get valid response from the agent");
+    function addEquipmentSelect(rawJSON) {
+        var selectHTML = `
+            <label for="equipment-select">Select an equipment:</label>
+            <select name="equipment-select" id="equipment-select" onchange="refreshUI()">
+        `;
+
+        rawJSON.Equipments.forEach(entry => {
+            selectHTML += `
+            <option value="` + entry["dataIRI"] + `">` + entry["label"] + `</option>
+            `
+        });
+
+        selectHTML += `</select>`;
+        
+        $("#equipmentSelectControlContainer").html(selectHTML);
     }
 
-    function refreshUI() {
+    function refreshEquipmentSelect() {
+        var FIAUri = stack + "feature-info-agent/get";
         var params = {
                 "iri": $("#equipment-select").val()
         };
-        console.log("sending request to " + FIAUri + " with params " + params);
+        console.log("sending request to " + FIAUri + " with params " + params.iri);
         $.ajax({
                 dataType: "json",
                 url: FIAUri,
                 data: params,
-                success: processRawData,
+                success: visualiseTimeSeriesData,
                 error: getJSONFailure
         })
     }
 
+    function initEquipmentSelect(rawJSON) {
+        addEquipmentSelect(rawJSON);
+        refreshEquipmentSelect();
+    }
 
-    // var stack = "http://localhost:3838/";
-    var stack = "http://192.168.1.6:3838/";
-    var FIAUri = stack + "feature-info-agent/get";
+    function getJSONFailure() {
+        console.warn("Could not get valid response from the agent");
+    }
+
+    function setupEquimentSelect() {
+        var BMSQueryUri = stack + "bms-query-agent/retrieve/equipment";
+        var params = {
+                "dataIRI": "http://www.theworldavatar.com/BMS/CaresLab#WalkIn-FumeHood",
+                "clientProperties": "CLIENT_PROPERTIES"
+        };
+        console.log("sending request to " + BMSQueryUri + " with params " + params);
+        $.ajax({
+                dataType: "json",
+                url: BMSQueryUri,
+                data: params,
+                success: initEquipmentSelect,
+                error: getJSONFailure
+        })
+    }
 
     var timeseriesHandler = new TimeseriesHandler();
 
     $(document).ready(function () {
-
-        // init
-        refreshUI()
-
-        $("#equipment-select").change(function () {
-
-            console.log("equipment selected");
-            refreshUI();
-        });
+        setupEquimentSelect();
     });
 
 
