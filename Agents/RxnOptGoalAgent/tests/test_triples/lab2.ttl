@@ -233,6 +233,19 @@
     saref:hasState :state_VapourtecRS400_Dummy;
     # collection
     OntoVapourtec:hasCollectionMethod :CollectionMethod_VapourtecRS400;
+    # recommended reaction scale
+    OntoVapourtec:recommendedReactionScale :ReactionScale_VapourtecRS400;
+.
+
+:ReactionScale_VapourtecRS400
+    a om:Volume;
+    om:hasValue :ReactionScale_VapourtecRS400_Value;
+.
+
+:ReactionScale_VapourtecRS400_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "2"^^xsd:double;
 .
 
 :CollectionMethod_VapourtecRS400

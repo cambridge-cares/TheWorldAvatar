@@ -106,6 +106,7 @@ def formNewExperiment(
     ] + [
         param for param in doe.hasDomain.hasFixedParameter if param.refersTo.clz == dm.ONTOREACTION_REACTIONSCALE
     ]
+    _rxn_scale_id_list = [_rs.positionalID for _rs in _rxn_scale_list]
     if not all([_rs.positionalID in [_sr.positionalID for _sr in _stoi_ratio_list] for _rs in _rxn_scale_list]):
         raise Exception(f"The ReactionScale {_rxn_scale_list} is not identifying any of the chemicals pointed by StoichiometryRatio {_stoi_ratio_list}.")
 
@@ -118,6 +119,7 @@ def formNewExperiment(
         solvent_as_constraint=_solvent,
         species_to_exclude=_product,
         list_of_labs_as_constraint=[lab_iri] if lab_iri else None,
+        is_ref_chemical=True if stoi.positionalID in _rxn_scale_id_list else False,
     ) for stoi in _stoi_ratio_list}
     logger.debug(f"Input chemical dict: {_input_chemical_dict}")
 
@@ -257,7 +259,18 @@ def formNewExperiment(
             for fixed_param in doe.hasDomain.hasFixedParameter:
                 # Prepare numerical value for the OM_Measure
                 # NOTE TODO here we took a short-cut wrt decimal places, in the future, this should be connected to KG
-                _raw_numerical_value_ = fixed_param.refersTo.hasValue.hasNumericalValue
+                # NOTE if the fixed parameter is a reaction scale, then we need to use the value of the recommended reaction scale
+                if fixed_param.refersTo.clz == dm.ONTOREACTION_REACTIONSCALE:
+                    _recommended_reaction_scale = _input_chemical_dict[fixed_param.positionalID].recommended_reaction_scale
+                    if _recommended_reaction_scale is not None:
+                        _raw_numerical_value_ = _recommended_reaction_scale.hasValue.hasNumericalValue
+                        _unit = _recommended_reaction_scale.hasValue.hasUnit
+                    else:
+                        _raw_numerical_value_ = fixed_param.refersTo.hasValue.hasNumericalValue
+                        _unit = fixed_param.refersTo.hasValue.hasUnit
+                else:
+                    _raw_numerical_value_ = fixed_param.refersTo.hasValue.hasNumericalValue
+                    _unit = fixed_param.refersTo.hasValue.hasUnit
 
                 try:
                     _decimal_place = dm.ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT[fixed_param.refersTo.clz]
@@ -270,7 +283,7 @@ def formNewExperiment(
                 om_measure = dm.OM_Measure(
                     instance_iri=dm.INSTANCE_IRI_TO_BE_INITIALISED,
                     namespace_for_init=dm.getNameSpace(fixed_param.instance_iri),
-                    hasUnit=fixed_param.refersTo.hasValue.hasUnit,
+                    hasUnit=_unit,
                     # TODO for the moment, a new om:Measure instance is always created
                     hasNumericalValue=_decimal_numerical_val
                 )

@@ -270,6 +270,7 @@ class Chemical(OntoCAPE_Material):
 
 class InputChemical(Chemical):
     clz: str = ONTOREACTION_INPUTCHEMICAL
+    recommended_reaction_scale: OM_Volume = None # TODO [future work] make proper design for this recommended
 
     def is_reactant_stream(self, reactant_species_iris: List[str]) -> bool:
         # It is a reactant stream if any of the species in the InputChemical appears in reactant_species_iris

@@ -227,6 +227,7 @@ class VapourtecRS400(LabEquipment):
     clz: str = ONTOVAPOURTEC_VAPOURTECRS400
     hasState: VapourtecState
     hasCollectionMethod: CollectionMethod
+    recommendedReactionScale: Optional[OM_Volume]
 
     # def get_collection_site_number(self, collection_site: str) -> int:
     #     return int([site.locationID for site in self.get_autosampler().hasSite if site.instance_iri == collection_site][0])

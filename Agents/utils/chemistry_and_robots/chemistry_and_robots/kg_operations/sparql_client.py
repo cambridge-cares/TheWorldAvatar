@@ -463,7 +463,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         solvent_as_constraint: List[str]=None,
         species_to_exclude: List[str]=None,
         list_vapourtec_rs400_iri: Union[str, list]=None,
-        list_of_labs_as_constraint: list=None
+        list_of_labs_as_constraint: list=None,
+        is_ref_chemical: bool=False,
     ) -> Optional[InputChemical]:
         list_vapourtec_rs400 = self.get_vapourtec_rs400(
             list_vapourtec_rs400_iri=list_vapourtec_rs400_iri,
@@ -483,6 +484,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 return InputChemical(
                     instance_iri=material.instance_iri,
                     thermodynamicBehaviour=material.thermodynamicBehaviour,
+                    recommended_reaction_scale=vapourtec_rs400.recommendedReactionScale if is_ref_chemical else None,
                 )
         return None
 
@@ -1133,6 +1135,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         query = f"""SELECT ?rs400 ?rs400_manufacturer ?laboratory ?rs400_power_supply ?state
                            ?state_type ?last_update ?autosampler ?is_managed_by
                            ?collection_method ?collection_method_type ?waste_receptacle
+                           ?recommended_reaction_scale ?recommended_reaction_scale_measure ?recommended_reaction_scale_unit ?recommended_reaction_scale_val
                 WHERE {{
                     {"VALUES ?rs400 { <%s> } ." % '> <'.join(list_vapourtec_rs400_iri) if list_vapourtec_rs400_iri is not None else ""}
                     {"VALUES ?laboratory { <%s> } ." % '> <'.join(list_of_labs_as_constraint) if list_of_labs_as_constraint is not None else ""}
@@ -1146,7 +1149,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     ?rs400 <{ONTOVAPOURTEC_HASCOLLECTIONMETHOD}> ?collection_method.
                     ?collection_method a ?collection_method_type.
                     OPTIONAL{{?collection_method <{ONTOVAPOURTEC_TORECEPTACLE}> ?waste_receptacle.}}
-                OPTIONAL{{?rs400 <{ONTOLAB_ISMANAGEDBY}> ?is_managed_by.}}
+                    OPTIONAL {{
+                        ?rs400 <{ONTOVAPOURTEC_RECOMMENDEDREACTIONSCALE}> ?recommended_reaction_scale.
+                        ?recommended_reaction_scale <{OM_HASVALUE}> ?recommended_reaction_scale_measure. ?recommended_reaction_scale_measure <{OM_HASUNIT}> ?recommended_reaction_scale_unit; <{OM_HASNUMERICALVALUE}> ?recommended_reaction_scale_val.
+                    }}
+                    OPTIONAL{{?rs400 <{ONTOLAB_ISMANAGEDBY}> ?is_managed_by.}}
                 }}"""
 
         response = self.performQuery(query)
@@ -1182,10 +1189,14 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     stateLastUpdatedAt=res['last_update']
                 ),
                 hasCollectionMethod=CollectionMethod(
-                instance_iri=res['collection_method'],
-                clz=res['collection_method_type'],
-                toReceptacle=res['waste_receptacle'],
-                )
+                    instance_iri=res['collection_method'],
+                    clz=res['collection_method_type'],
+                    toReceptacle=res['waste_receptacle'],
+                ),
+                recommendedReactionScale=OM_Volume(
+                    instance_iri=res['recommended_reaction_scale'],
+                    hasValue=OM_Measure(instance_iri=res['recommended_reaction_scale_measure'],hasUnit=res['recommended_reaction_scale_unit'],hasNumericalValue=res['recommended_reaction_scale_val'])
+                ) if 'recommended_reaction_scale' in res else None,
             )
             list_vapourtec_rs400_instance.append(vapourtec_rs400)
 
@@ -1195,6 +1206,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         query = f"""{PREFIX_RDF}
                 SELECT ?rs400 ?rs400_manufacturer ?laboratory ?rs400_power_supply ?state ?state_type ?last_update ?is_managed_by
                 ?collection_method ?collection_method_type ?waste_receptacle
+                ?recommended_reaction_scale ?recommended_reaction_scale_measure ?recommended_reaction_scale_unit ?recommended_reaction_scale_val
                 WHERE {{
                     ?rs400 <{SAREF_CONSISTSOF}> <{autosampler.instance_iri}>;
                             rdf:type <{ONTOVAPOURTEC_VAPOURTECRS400}>;
@@ -1207,6 +1219,10 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     ?collection_method a ?collection_method_type.
                     OPTIONAL{{?collection_method <{ONTOVAPOURTEC_TORECEPTACLE}> ?waste_receptacle.}}
                     OPTIONAL{{?rs400 <{ONTOLAB_ISMANAGEDBY}> ?is_managed_by.}}
+                    OPTIONAL {{
+                        ?rs400 <{ONTOVAPOURTEC_RECOMMENDEDREACTIONSCALE}> ?recommended_reaction_scale.
+                        ?recommended_reaction_scale <{OM_HASVALUE}> ?recommended_reaction_scale_measure. ?recommended_reaction_scale_measure <{OM_HASUNIT}> ?recommended_reaction_scale_unit; <{OM_HASNUMERICALVALUE}> ?recommended_reaction_scale_val.
+                    }}
                 }}"""
 
         response = self.performQuery(query)
@@ -1241,7 +1257,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 instance_iri=res['collection_method'],
                 clz=res['collection_method_type'],
                 toReceptacle=res['waste_receptacle'],
-            )
+            ),
+            recommendedReactionScale=OM_Volume(
+                instance_iri=res['recommended_reaction_scale'],
+                hasValue=OM_Measure(instance_iri=res['recommended_reaction_scale_measure'],hasUnit=res['recommended_reaction_scale_unit'],hasNumericalValue=res['recommended_reaction_scale_val'])
+            ) if 'recommended_reaction_scale' in res else None,
         )
 
         return vapourtec_rs400
