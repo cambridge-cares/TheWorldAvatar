@@ -1,4 +1,5 @@
 package uk.ac.cam.cares.jps.agent.historicalntuenergy;
+import com.hp.hpl.jena.graph.Triple;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 
@@ -50,8 +51,20 @@ public class HistoricalQueryBuilder {
     public static final String powerSystem = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerSystem";
     public static final String powerSystemModel = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerSystemModel";
     public static final String busNode = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#BusNode";
+    public static final String powerGenerator = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator";
+    public static final String branch = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Branch";
     public static final String absorbedActivePower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#AbsorbedActivePower";
     public static final String absorbedReactivePower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#AbsorbedReactivePower";
+
+
+    /**
+     * Model variables
+     */
+    public static final String PowerSystemModelPrefix = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#";
+
+
+
+    // Busnode model variables
     public static final String BusNumber = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNumber";
     public static final String BusType = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusType";
     public static final String Area = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Area";
@@ -63,6 +76,42 @@ public class HistoricalQueryBuilder {
     public static final String Zone = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Zone";
     public static final String Vm = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Vm";
     public static final String Va = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Va";
+
+    //PowerGenerator model variables
+    public static final String QC2Max = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC2Max";
+    public static final String genCostn = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostn";
+    public static final String QC1Max = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC1Max";
+    public static final String genCostc0 = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostc0";
+    public static final String QMax = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QMax";
+    public static final String StopCost = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#StopCost";
+    public static final String Pc2 = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Pc2";
+    public static final String QMin = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QMin";
+    public static final String Status = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Status";
+    public static final String PMin = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMin";
+    public static final String CostModel = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#CostModel";
+    public static final String PMax = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMax";
+    public static final String Rampagc = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Rampagc";
+    public static final String mBase = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#mBase";
+    public static final String StartCost = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#StartCost";
+    public static final String genCostcn_1 = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostcn-1";
+    public static final String GeneratedActivePower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedActivePower";
+    public static final String GeneratedReactivePower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedReactivePower";
+    public static final String Ramp10 = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Ramp10";
+    public static final String Pg = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Pg";
+    public static final String Qg = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Qg";
+    public static final String QC1Min = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC1Min";
+
+    // public static final String BusNumber = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNumber";
+
+    public static final String Vg = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Vg";
+    public static final String Ramp30 = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Ramp30";
+    public static final String APF = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#APF";
+    public static final String genCostcn_2 = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostcn-2";
+    public static final String Pc1 = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Pc1";
+    public static final String QC2Min = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC2Min";
+
+
+
     public static final String modelVariableSpecification = "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification";
     public static final String Measure = "http://www.ontology-of-units-of-measure.org/resource/om-2/Measure";
 
@@ -97,6 +146,23 @@ public class HistoricalQueryBuilder {
      */
     HashMap<String, Integer> NTUBuildingToBusNum = new HashMap<>();
 
+    /**
+     * A List of HashMap for branches
+     */
+    HashMap<String, List<String>> branchParams = new HashMap<String, List<String>>();
+
+    /**
+     * A List of HashMap for buses
+     */
+    HashMap<String, List<String>> busParams = new HashMap<String, List<String>>();
+
+    /**
+     * HashMaps for model variables
+     */
+    HashMap<String, String> BusNodeModelVariables = new HashMap<>();
+    HashMap<String, String> BranchModelVariables = new HashMap<>();
+    HashMap<String, String> GeneratorModelVariables = new HashMap<>();
+
 
     RemoteStoreClient kbClient;
     public String agentProperties;
@@ -130,6 +196,94 @@ public class HistoricalQueryBuilder {
         NTUBuildingToBusNum.put("PIONEER_HALL", 13);
         NTUBuildingToBusNum.put("NEC", 14);
         NTUBuildingToBusNum.put("THE_WAVE", 15);
+
+        //BusNode model variables
+        BusNodeModelVariables.put("BusNumber", PowerSystemModelPrefix + "BusNumber");
+        BusNodeModelVariables.put("BusType", PowerSystemModelPrefix + "BusType");
+        BusNodeModelVariables.put("Area", PowerSystemModelPrefix + "Area");
+        BusNodeModelVariables.put("Bs", PowerSystemModelPrefix + "Bs");
+        BusNodeModelVariables.put("Gs", PowerSystemModelPrefix + "Gs");
+        BusNodeModelVariables.put("BaseKV", PowerSystemModelPrefix + "BaseKV");
+        BusNodeModelVariables.put("VmMin", PowerSystemModelPrefix + "VmMin");
+        BusNodeModelVariables.put("VmMax", PowerSystemModelPrefix + "VmMax");
+        BusNodeModelVariables.put("Zone", PowerSystemModelPrefix + "Zone");
+        BusNodeModelVariables.put("Vm", PowerSystemModelPrefix + "Vm");
+        BusNodeModelVariables.put("Va", PowerSystemModelPrefix + "Va");
+        //PowerGenerator model variables
+        GeneratorModelVariables.put("BusNumber", PowerSystemModelPrefix + "BusNumber");
+        GeneratorModelVariables.put("QC2Max", PowerSystemModelPrefix + "QC2Max");
+        GeneratorModelVariables.put("genCostn", PowerSystemModelPrefix + "genCostn");
+        GeneratorModelVariables.put("QC1Max", PowerSystemModelPrefix + "QC1Max");
+        GeneratorModelVariables.put("genCostc0", PowerSystemModelPrefix + "genCostc0");
+        GeneratorModelVariables.put("QMax", PowerSystemModelPrefix + "QMax");
+        GeneratorModelVariables.put("StopCost", PowerSystemModelPrefix + "StopCost");
+        GeneratorModelVariables.put("Pc2", PowerSystemModelPrefix + "Pc2");
+        GeneratorModelVariables.put("QMin", PowerSystemModelPrefix + "QMin");
+        GeneratorModelVariables.put("Status", PowerSystemModelPrefix + "Status");
+        GeneratorModelVariables.put("PMin", PowerSystemModelPrefix + "PMin");
+        GeneratorModelVariables.put("CostModel", PowerSystemModelPrefix + "CostModel");
+        GeneratorModelVariables.put("PMax", PowerSystemModelPrefix + "PMax");
+        GeneratorModelVariables.put("Rampagc", PowerSystemModelPrefix + "Rampagc");
+        GeneratorModelVariables.put("mBase", PowerSystemModelPrefix + "mBase");
+        GeneratorModelVariables.put("StartCost", PowerSystemModelPrefix + "StartCost");
+        GeneratorModelVariables.put("GeneratedActivePower", PowerSystemModelPrefix + "GeneratedActivePower");
+        GeneratorModelVariables.put("GeneratedReactivePower", PowerSystemModelPrefix + "GeneratedReactivePower");
+        GeneratorModelVariables.put("Ramp10", PowerSystemModelPrefix + "Ramp10");
+        GeneratorModelVariables.put("Pg", PowerSystemModelPrefix + "Pg");
+        GeneratorModelVariables.put("Qg", PowerSystemModelPrefix + "Qg");
+        GeneratorModelVariables.put("Vg", PowerSystemModelPrefix + "Vg");
+        GeneratorModelVariables.put("Ramp30", PowerSystemModelPrefix + "Ramp30");
+        GeneratorModelVariables.put("QC1Min", PowerSystemModelPrefix + "Ramp30");
+        GeneratorModelVariables.put("APF", PowerSystemModelPrefix + "APF");
+        GeneratorModelVariables.put("genCostcn-2", PowerSystemModelPrefix + "genCostcn-2");
+        GeneratorModelVariables.put("QC2Min", PowerSystemModelPrefix + "QC2Min");
+        //Branch model variables
+        BranchModelVariables.put("QAverage", PowerSystemModelPrefix + "QAverage");
+        BranchModelVariables.put("RateB", PowerSystemModelPrefix + "RateB");
+        BranchModelVariables.put("RateC", PowerSystemModelPrefix + "RateC");
+        BranchModelVariables.put("RatioCoefficient", PowerSystemModelPrefix + "RatioCoefficient");
+        BranchModelVariables.put("AngleMax", PowerSystemModelPrefix + "AngleMax");
+        BranchModelVariables.put("PAverage", PowerSystemModelPrefix + "PAverage");
+        BranchModelVariables.put("BusFrom", PowerSystemModelPrefix + "BusFrom");
+        BranchModelVariables.put("X", PowerSystemModelPrefix + "X");
+        BranchModelVariables.put("B", PowerSystemModelPrefix + "B");
+        BranchModelVariables.put("RateA", PowerSystemModelPrefix + "RateA");
+        BranchModelVariables.put("Angle", PowerSystemModelPrefix + "Angle");
+        BranchModelVariables.put("AngleMin", PowerSystemModelPrefix + "AngleMin");
+        BranchModelVariables.put("QLoss", PowerSystemModelPrefix + "QLoss");
+        BranchModelVariables.put("SAverage", PowerSystemModelPrefix + "SAverage");
+        BranchModelVariables.put("R", PowerSystemModelPrefix + "R");
+        BranchModelVariables.put("BusTo", PowerSystemModelPrefix + "BusTo");
+        BranchModelVariables.put("PLoss", PowerSystemModelPrefix + "PLoss");
+        BranchModelVariables.put("BranchStatus", PowerSystemModelPrefix + "BranchStatus");
+
+
+        branchParams.put("fbus", Arrays.asList("1", "2", "3", "4", "2", "9", "2", "6", "6", "3", "11", "12", "4", "4"));
+        branchParams.put("tbus", Arrays.asList("2", "3", "4", "5", "9", "10", "6", "7", "8", "11", "12", "13", "14", "15"));
+        branchParams.put("r", Arrays.asList("1.35309", "1.17024", "0.84111", "1.52348", "2.01317", "1.68671", "2.55727", "1.0882", "1.25143", "1.79553", "2.44845", "2.01317", "2.23081", "1.19702"));
+        branchParams.put("x", Arrays.asList("1.32349", "1.14464", "0.82271", "1.0276", "1.3579", "1.1377", "1.7249", "0.734", "0.8441", "1.2111", "1.6515", "1.3579", "1.5047", "0.8074"));
+        branchParams.put("b", Arrays.asList("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        branchParams.put("rateA", Arrays.asList("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        branchParams.put("rateB", Arrays.asList("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        branchParams.put("rateC", Arrays.asList("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        branchParams.put("ratio", Arrays.asList("0", "0", "1", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        branchParams.put("angle", Arrays.asList("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        branchParams.put("status", Arrays.asList("1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"));
+        branchParams.put("angmin", Arrays.asList("-360", "-360", "-360", "-360", "-360", "-360", "-360", "-360", "-360", "-360", "-360", "-360", "-360", "-360"));
+        branchParams.put("angmax", Arrays.asList("360", "360", "360", "360", "360", "360", "360", "360", "360", "360", "360", "360", "360", "360"));
+
+
+        busParams.put("bus_i", Arrays.asList("1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15"));
+        busParams.put("type", Arrays.asList("3", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"));
+        busParams.put("Gs", Arrays.asList("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        busParams.put("Bs", Arrays.asList("0", "0", "1", "0", "0", "0", "0", "1", "1", "0", "0", "1", "0", "1", "0"));
+        busParams.put("area", Arrays.asList("1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"));
+        busParams.put("Vm", Arrays.asList("1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"));
+        busParams.put("Va", Arrays.asList("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
+        busParams.put("baseKV", Arrays.asList("11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "11"));
+        busParams.put("Zone", Arrays.asList("1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"));
+        busParams.put("Vmax", Arrays.asList("1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1"));
+        busParams.put("Vmin", Arrays.asList("1", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9"));
 
         kbClient = new RemoteStoreClient();
         kbClient.setUpdateEndpoint(updateEndpoint);
@@ -228,6 +382,105 @@ public class HistoricalQueryBuilder {
     }
 
     public void instantiateTriples(){
+
+        String powerSystemIRI = PowsysPrefix + "PowerSystem_NTU";
+        TriplePattern powerSysisType = iri(powerSystemIRI).isA(iri(powerSystem));
+        InsertDataQuery powersysInsertion = Queries.INSERT_DATA(powerSysisType);
+        kbClient.executeUpdate(powersysInsertion.getQueryString());
+
+        /**
+         * Instantiate Generator-related triples
+         */
+        String powerGeneratorIRI = PowsysPrefix + "NTU_PowerGenerator";
+        String GeneratorModelIRI = PowsysPrefix + "NTU_PowerGenerator_Model";
+        TriplePattern PSHasGenerator = iri(powerSystemIRI).has(iri(hasSubSystem), iri(powerGeneratorIRI));
+        TriplePattern GeneratorisType = iri(powerGeneratorIRI).isA(iri(powerGenerator));
+        TriplePattern GeneratorIsModeledByModel = iri(powerGeneratorIRI).has(iri(isModeledBy), iri(GeneratorModelIRI));
+        TriplePattern GeneratorModelisType = iri(GeneratorModelIRI).isA(iri(powerSystemModel));
+
+        InsertDataQuery generatorInsertion1 = Queries.INSERT_DATA(PSHasGenerator, GeneratorisType, GeneratorIsModeledByModel, GeneratorModelisType);
+        kbClient.executeUpdate(generatorInsertion1.getQueryString());
+
+        for (Map.Entry<String, String> set : GeneratorModelVariables.entrySet()) {
+            String GeneratorModelVariable = set.getValue();
+            String GeneratorModelName = set.getKey();
+            String GeneratorModelVariableIRI = PowsysPrefix + set.getKey();
+            //PowerSystemModelIRI hasModelVariable GeneratorModelVariableIRI
+            TriplePattern ModelHasVariable = iri(GeneratorModelIRI).has(iri(hasModelVariable), iri(GeneratorModelVariableIRI));
+            TriplePattern VariableisTypeVariable = iri(GeneratorModelVariableIRI).isA(iri(GeneratorModelVariable));
+
+            //GeneratorModelVariableIRI hasValue ModelVariableSpecificationIRI
+            String ModelVariableSpecificationIRI = PowsysPrefix + "_ModelVariable_" + GeneratorModelName;
+            TriplePattern GeneratorModelVariableHasValueSpec = iri(GeneratorModelVariableIRI).has(iri(OntoCapeHasValue), iri(ModelVariableSpecificationIRI));
+            TriplePattern ModelVariableSpecificationisType = iri(ModelVariableSpecificationIRI).isA(iri(modelVariableSpecification));
+
+            InsertDataQuery GeneratorInsertion2 = Queries.INSERT_DATA(ModelHasVariable, VariableisTypeVariable, GeneratorModelVariableHasValueSpec, ModelVariableSpecificationisType);
+            kbClient.executeUpdate(GeneratorInsertion2.getQueryString());
+        }
+
+        /**
+         * Instantiate Branch-related triples
+         */
+        String branchIRI = PowsysPrefix + "NTU_Branch";
+        String branchModelIRI = PowsysPrefix + "NTU_Branch_Model";
+        TriplePattern PSHasBranch = iri(powerSystemIRI).has(iri(hasSubSystem), iri(branchIRI));
+        TriplePattern branchisType = iri(branchIRI).isA(iri(branch));
+        TriplePattern branchIsModeledByModel = iri(branchIRI).has(iri(isModeledBy), iri(branchModelIRI));
+        TriplePattern branchModelisType = iri(branchModelIRI).isA(iri(powerSystemModel));
+
+        InsertDataQuery branchInsertion1 = Queries.INSERT_DATA(PSHasBranch, branchisType, branchIsModeledByModel, branchModelisType);
+        kbClient.executeUpdate(branchInsertion1.getQueryString());
+
+        for (Map.Entry<String, String> set : BranchModelVariables.entrySet()) {
+            String BranchModelVariable = set.getValue();
+            String BranchModelName = set.getKey();
+            String BranchModelVariableIRI = PowsysPrefix + set.getKey();
+            //PowerSystemModelIRI hasModelVariable BranchModelVariableIRI
+            TriplePattern ModelHasVariable = iri(branchModelIRI).has(iri(hasModelVariable), iri(BranchModelVariableIRI));
+            TriplePattern VariableisTypeVariable = iri(BranchModelVariableIRI).isA(iri(BranchModelVariable));
+
+            //BranchModelVariableIRI hasValue ModelVariableSpecificationIRI
+            String ModelVariableSpecificationIRI = PowsysPrefix + "_ModelVariable_" + BranchModelName;
+            TriplePattern BranchModelVariableHasValueSpec = iri(BranchModelVariableIRI).has(iri(OntoCapeHasValue), iri(ModelVariableSpecificationIRI));
+            TriplePattern ModelVariableSpecificationisType = iri(ModelVariableSpecificationIRI).isA(iri(modelVariableSpecification));
+
+            InsertDataQuery BranchInsertion2 = Queries.INSERT_DATA(ModelHasVariable, VariableisTypeVariable, BranchModelVariableHasValueSpec, ModelVariableSpecificationisType);
+            kbClient.executeUpdate(BranchInsertion2.getQueryString());
+        }
+
+
+        /**
+         * Instantiate Bus Node-related triples
+         */
+        String busNodeIRI = PowsysPrefix + "NTU_BusNode";
+        String busNodeModelIRI = PowsysPrefix + "NTU_BusNode_Model";
+        TriplePattern PSHasBusNode = iri(powerSystemIRI).has(iri(hasSubSystem), iri(busNodeIRI));
+        TriplePattern BusNodeIsType = iri(busNodeIRI).isA(iri(busNode));
+        TriplePattern BusNodeIsModeledByModel = iri(busNodeIRI).has(iri(isModeledBy), iri(busNodeModelIRI));
+        TriplePattern BusNodeModelisType = iri(busNodeModelIRI).isA(iri(powerSystemModel));
+
+        InsertDataQuery busNodeInsertion1 = Queries.INSERT_DATA(PSHasBusNode, BusNodeIsType, BusNodeIsModeledByModel, BusNodeModelisType);
+        kbClient.executeUpdate(busNodeInsertion1.getQueryString());
+
+        for (Map.Entry<String, String> set : BusNodeModelVariables.entrySet()) {
+            String BusNodeModelVariable = set.getValue();
+            String BusNodeModelName = set.getKey();
+            String BusNodeModelVariableIRI = PowsysPrefix + set.getKey();
+            //PowerSystemModelIRI hasModelVariable BusNodeModelVariableIRI
+            TriplePattern ModelHasVariable = iri(busNodeModelIRI).has(iri(hasModelVariable), iri(BusNodeModelVariableIRI));
+            TriplePattern VariableisTypeVariable = iri(BusNodeModelVariableIRI).isA(iri(BusNodeModelVariable));
+
+            //BusNodeModelVariableIRI hasValue ModelVariableSpecificationIRI
+            String ModelVariableSpecificationIRI = PowsysPrefix + "_ModelVariable_" + BusNodeModelName;
+            TriplePattern BusNodeModelVariableHasValueSpec = iri(BusNodeModelVariableIRI).has(iri(OntoCapeHasValue), iri(ModelVariableSpecificationIRI));
+            TriplePattern ModelVariableSpecificationisType = iri(ModelVariableSpecificationIRI).isA(iri(modelVariableSpecification));
+
+            InsertDataQuery BusNodeInsertion2 = Queries.INSERT_DATA(ModelHasVariable, VariableisTypeVariable, BusNodeModelVariableHasValueSpec, ModelVariableSpecificationisType);
+            kbClient.executeUpdate(BusNodeInsertion2.getQueryString());
+        }
+
+
+
         InsertDataQuery insertion;
 
         for (JSONKeyToIRIMapper mapping : mappings){
