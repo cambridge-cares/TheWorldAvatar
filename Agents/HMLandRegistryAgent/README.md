@@ -2,7 +2,7 @@
 
 The `Property Sales Instantiation` agent is an input agent which queries [HM Land Registry Open Data] and instantiates it according to the [OntoBuiltEnv] ontology in the [TheWorldAvatar] knowledge graph. More precisely, it queries the [Price Paid Linked Data] as well as the [UK House Price Index Linked Data] from the publicly available [HM Land Registry SPARQL endpoint].
 
-After instantiating new property sales data, the agent also instantiates the relevant derivation mark-ups (i.e. to allow for automatic assessment of the `Average Square Metre Price Per Postal Code` as well as the `Market Value Estimate of a Property` which are implemented using the Derivation Framework). Both of these derivations are initialised as synchronous derivations to create new info immediately.
+After instantiating new property sales data, the agent also instantiates the relevant derivation mark-ups to allow for automatic assessment of the `Average Square Metre Price Per Postal Code` as well as the `Market Value Estimate per Property` (both implemented using the Derivation Framework).
 
 The agent is designed to be deployed to a Docker stack spun up by the stack manager. 
 
@@ -29,8 +29,14 @@ BUILDINGS_TABLE       # PostGIS table containing all building footprints
                       # NOTE: This must match the table where EPC data got uploaded to
 ```
 
+### **2) Derivation Framework**
 
-### **2) Accessing Github's Container registry**
+The agent updates the timestamps of pure derivation inputs as well as instantiates and updates the required markups for both the `Average Square Metre Price per Postal Code` and the `Market Value Estimate per Property` derivations. Both of these derivations are initialised as synchronous derivations to create new info immediately. As the `Property Value Estimate` depends on the `Average Square Metre Price`, the latter one is marked up first to ensure availability of the required derivation input.
+
+To ensure successful instantiation of the derivations, both derivation agents need to be successfully registered in the KG before requesting any update by the `Property Sales Instantiation` agent. The registered derivation agent IRIs need to match the value specified in [iris.py] (to be specified in their respective `docker-compose.yml` files).
+
+
+### **3) Accessing Github's Container registry**
 
 While building the Docker image of the agent, it also gets pushed to the [Container registry on Github]. Access needs to be ensured beforehand via your github [personal access token], which must have a `scope` that [allows you to publish and install packages]. To log in to the [Container registry on Github] simply run the following command to establish the connection and provide the access token when prompted:
 ```
@@ -38,11 +44,11 @@ While building the Docker image of the agent, it also gets pushed to the [Contai
   $ <github_personal_access_token>
 ```
 
-### **3) Accessing CMCL docker registry**
+### **4) Accessing CMCL docker registry**
 
 The agent requires building the [Stack-Clients] resource from a Docker image published at the CMCL docker registry. In case you don't have credentials for that, please email `support<at>cmclinnovations.com` with the subject `Docker registry access`. Further information can be found at the [CMCL Docker Registry] wiki page.
 
-### **4) VS Code specifics**
+### **5) VS Code specifics**
 
 In order to avoid potential launching issues using the provided `tasks.json` shell commands, please ensure the `augustocdias.tasks-shell-input` plugin is installed.
 
@@ -170,3 +176,4 @@ Markus Hofmeister (mh807@cam.ac.uk), March 2023
 <!-- files -->
 [docker compose file]: ./docker-compose.yml
 [resources]: ./resources
+[iris.py]: ./agent/datamodel/iris.py
