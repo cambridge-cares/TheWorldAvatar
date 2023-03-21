@@ -2,10 +2,11 @@
 
 The `Property Sales Instantiation` agent is an input agent which queries [HM Land Registry Open Data] and instantiates it according to the [OntoBuiltEnv] ontology in the [TheWorldAvatar] knowledge graph. More precisely, it queries the [Price Paid Linked Data] as well as the [UK House Price Index Linked Data] from the publicly available [HM Land Registry SPARQL endpoint].
 
+After instantiating new property sales data, the agent also instantiates the relevant derivation mark-ups (i.e. to allow for automatic assessment of the `Average Square Metre Price Per Postal Code` as well as the `Market Value Estimate of a Property` which are implemented using the Derivation Framework). Both of these derivations are initialised as synchronous derivations to create new info immediately.
+
 The agent is designed to be deployed to a Docker stack spun up by the stack manager. 
 
-<span style="color:red">Tests are currently still excluded.</span>
-
+&nbsp;
 # 1. Setup
 
 This section specifies the minimum requirements to build and deploy the Docker image of the agent. 
@@ -27,6 +28,7 @@ GEOSERVER_WORKSPACE
 BUILDINGS_TABLE       # PostGIS table containing all building footprints
                       # NOTE: This must match the table where EPC data got uploaded to
 ```
+
 
 ### **2) Accessing Github's Container registry**
 
