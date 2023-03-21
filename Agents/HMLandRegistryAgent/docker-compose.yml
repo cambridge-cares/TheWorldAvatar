@@ -16,6 +16,10 @@ services:
       - BUILDINGS_TABLE=buildings
     ports:
       - "5008:5000"
+    extra_hosts:
+      # To allow connecting to 'host.docker.internal' on Linux
+      # details: https://github.com/moby/libnetwork/pull/2348#issuecomment-1177610499
+      - "host.docker.internal:host-gateway"
     volumes:
       - logs:/root/.jps
     configs:
