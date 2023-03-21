@@ -12,7 +12,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     packages=find_namespace_packages(exclude=['tests','tests.*']),
-    install_requires=['pyderivationagent>=1.4.3', 'summit>=0.8.9', 'pandas', 'pydantic==1.9.0', 'chemistry_and_robots>=1.3.0'],
+    install_requires=['pyderivationagent>=1.4.3', 'summit>=0.8.9', 'pandas', 'pydantic==1.9.0', 'chemistry_and_robots>=1.4.0'],
     extras_require={
         "dev": [
             "testcontainers>=3.4.2",
