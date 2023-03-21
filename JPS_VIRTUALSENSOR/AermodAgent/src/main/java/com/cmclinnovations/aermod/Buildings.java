@@ -137,7 +137,7 @@ public class Buildings {
                 return 1;
             }
 
-            boolean includeElev = false;
+            boolean includeElev = Boolean.parseBoolean(EnvConfig.INCLUDE_ELEVATION) ;
 
             if (includeElev) {
                 if (createAERMAPInputFile() != 0) {
@@ -569,22 +569,16 @@ public class Buildings {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < StackProperties.size(); i++) {
             String[] avecoord = StackProperties.get(i).split("#");
-            List<Double> inputcoords = Arrays.asList(Double.parseDouble(avecoord[0]), Double.parseDouble(avecoord[1]));
-            List<List<Double>> inputcoordinates = Arrays.asList(inputcoords);
-            List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates, DatabaseCoordSys, UTMCoordSys);
-            double StackEastUTM = outputcoordinates.get(0).get(0);
-            double StackNorthUTM = outputcoordinates.get(0).get(1);
+            double StackEastUTM = Double.parseDouble(avecoord[0]);
+            double StackNorthUTM = Double.parseDouble(avecoord[1]);
             String stkId = "Stk" + (i + 1);
             sb.append(String.format("SO LOCATION %s POINT %f %f %f \n", stkId, StackEastUTM, StackNorthUTM, 0.0));
         }
 
         for (int i = 0; i < BuildingProperties.size(); i++) {
             String[] avecoord = BuildingProperties.get(i).split("#");
-            List<Double> inputcoords = Arrays.asList(Double.parseDouble(avecoord[0]), Double.parseDouble(avecoord[1]));
-            List<List<Double>> inputcoordinates = Arrays.asList(inputcoords);
-            List<List<Double>> outputcoordinates = convertCoordinates(inputcoordinates, DatabaseCoordSys, UTMCoordSys);
-            double BuildEastUTM = outputcoordinates.get(0).get(0);
-            double BuildNorthUTM = outputcoordinates.get(0).get(1);
+            double BuildEastUTM = Double.parseDouble(avecoord[0]);
+            double BuildNorthUTM = Double.parseDouble(avecoord[1]) ;
             String buildId = "Build" + (i + 1);
             sb.append(String.format("SO LOCATION %s POINT %f %f %f \n", buildId, BuildEastUTM, BuildNorthUTM, 0.0));
         }
@@ -670,6 +664,22 @@ public class Buildings {
             if (process.waitFor() != 0) {
                 return 1;
             }
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            // Read the output from the command
+            LOGGER.info("Here is the standard output of AERMAP:\n");
+            String s = null;
+            while ((s = stdInput.readLine()) != null) {
+                LOGGER.info(s);
+            }
+
+            // Read any errors from the attempted command
+            LOGGER.info("Here is the standard error of AERMAP (if any):\n");
+            while ((s = stdError.readLine()) != null) {
+                LOGGER.info(s);
+            }
         } catch (IOException e) {
             LOGGER.error("Error executing aermap");
             LOGGER.error(e.getMessage());
@@ -694,15 +704,16 @@ public class Buildings {
             BufferedReader reader = new BufferedReader(new FileReader(filepath.toString()));
             String line = reader.readLine();
             while (line != null) {
-                if (line.isBlank() || line.substring(0,2).equals("**")) continue;
-                if (line.contains("ELEVUNIT") ) sb.append(line + "\n");
+                if (line.isBlank() || line.substring(0,2).equals("**")) ;
+                else if (line.contains("ELEVUNIT") ) sb.append(line + "\n");
                 else if (line.contains("STK")) {
                     sb.append(line + "\n");
+                    line = line.trim();
                     String [] StackInfo = line.split("\\s+");
                     String StackElevation = StackInfo[StackInfo.length - 1];
-                    int StackNum = Integer.parseInt(StackInfo[2].substring(3,4));
+                    int StackNum = Integer.parseInt(StackInfo[2].substring(StackInfo[2].indexOf("STK") + 3,StackInfo[2].length()));
                     String StackLine = BPIPPRMStackInput.get(StackNum-1);
-                    StackLine.replace("BASE_ELEVATION", StackElevation);
+                    StackLine = StackLine.replace("BASE_ELEVATION", StackElevation);
                     BPIPPRMStackInput.set(StackNum-1, StackLine);
                     String stackProp = StackProperties.get(StackNum-1);
                     String propElevation = "#" + StackElevation;
@@ -710,11 +721,12 @@ public class Buildings {
                     StackProperties.set(StackNum-1, stackProp);
                 }
                 else if (line.contains("BUILD")) {
-                    String [] buildInfo = line.split("\\s+");
+                    line = line.trim();
+                    String [] buildInfo = line.split("\\s+");                    
                     String buildElevation = buildInfo[buildInfo.length - 1] ;
-                    int buildNum = Integer.parseInt(buildInfo[2].substring(5,6));
+                    int buildNum = Integer.parseInt(buildInfo[2].substring(buildInfo[2].indexOf("BUILD") + 5,buildInfo[2].length()));
                     String BuildLine = BPIPPRMBuildingInput.get(buildNum-1).get(0);
-                    BuildLine.replace("BASE_ELEVATION", buildElevation);
+                    BuildLine = BuildLine.replace("BASE_ELEVATION", buildElevation);
                     BPIPPRMBuildingInput.get(buildNum-1).set(0,BuildLine);
                 }
                 line = reader.readLine();
