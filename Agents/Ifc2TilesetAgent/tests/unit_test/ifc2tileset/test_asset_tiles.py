@@ -12,7 +12,6 @@ from typing import List
 import trimesh
 
 # Self import
-import agent.config.config as properties
 from agent.ifc2tileset.asset_tiles import append_asset_metadata_schema, append_tileset_assets, append_assets, \
     append_assets_to_tile_node
 from agent.ifc2tileset.root_tile import make_tileset, append_tileset_schema_and_metadata
@@ -26,11 +25,10 @@ def test_append_asset_metadata_schema():
     Tests init_asset_tiles()
     """
     # Initialise test parameters
-    properties.bbox_child = []
     building_iri = "buildingIri"
 
     # Init root tile for input
-    root_tile = make_root_tile(properties.bbox_root)
+    root_tile = make_root_tile([])
     tileset = make_tileset(root_tile)
     append_tileset_schema_and_metadata(tileset, building_iri)
 

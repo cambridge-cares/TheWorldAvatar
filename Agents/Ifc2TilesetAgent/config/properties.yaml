@@ -1,24 +1,3 @@
----
-# Bounding box for root tile
-root_tile:
-  x_center: 40
-  y_center: 0
-  z_center: 15
-  # length, width, and height propagates from model center
-  length: 200 # x-axis
-  width: 200 # y-axis
-  height: 10 # z-axis
-
-# Bounding box for children tiles
-child_tile:
-  x_center: 0
-  y_center: 25
-  z_center: 10
-  # length, width, and height propagates from model center
-  length: 100 # x-axis
-  width: 50 # y-axis
-  height: 5 # z-axis
-
 # SPARQL endpoints
 # Valid Format: http://IPv4ADDRESS:PORTNO/blazegraph/namespace/NAMESPACE/sparql
 # localhost and docker.internal.host are not accessible without further network configurations

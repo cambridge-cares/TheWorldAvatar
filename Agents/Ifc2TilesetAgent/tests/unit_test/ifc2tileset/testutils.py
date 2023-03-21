@@ -23,7 +23,7 @@ def read_json(json_filepath: str):
     return data
 
 
-def gen_sample_tileset(bbox: List[float] = properties.bbox_root, building_iri: str = "buildingIri"):
+def gen_sample_tileset(bbox: List[float] = [40, 0, 15, 100, 0, 0, 0, 100, 0, 0, 0, 5], building_iri: str = "buildingIri"):
     root_tile = make_root_tile(bbox)
     tileset = make_tileset(root_tile)
     append_tileset_schema_and_metadata(tileset, building_iri)
