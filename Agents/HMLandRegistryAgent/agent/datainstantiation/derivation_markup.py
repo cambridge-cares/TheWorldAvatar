@@ -25,25 +25,33 @@ logger = agentlogging.get_logger('dev')
 # Average Square Metre Price Derivation Markup (per PostalCode)
 
 def retrieve_avgsqmprice_postal_code_info(sparql_client: PySparqlClient,
-                                          postcodes: List[str] = []):
-    # Construct query to retrieve below information for postcodes of interest/
-    # each instantiated postcode from KG
-    # NOTE the query is designed to also retrieve postal codes with currently no 
-    #      property in them (in such cases, the AvgSqmPrice agent will retrieve
-    #      property sales transactions from nearby postcodes from Land Registry API)
-    # - postal code (postal) IRI
-    # - property price index (ppi) IRI
-    # - transaction record (tx) IRI (if available) - to accommodate for the case 
-    #   where there is no tx for a postal code but buildings in the postal code 
-    #   are affected by a flood
-    # Also, the query retrieve below information for each postal code if available
-    # - average price per square meter (asp) IRI
-    # - average price per square meter derivarion (derivation)
-    # - transaction record used to calculate the existing asp (deriv_tx)
+                                          postcodes: List[str] = None):
+    """
+    Construct query to retrieve below information for postcodes of interest/
+    each instantiated postcode from KG
 
-    if postcodes:
+    Arguments:
+        postcodes: list of postcode strings (e.g. ['CB1 1AA', 'CB1 1AB'])
+
+    NOTE the query is designed to also retrieve postal codes with currently no 
+        property in them (in such cases, the AvgSqmPrice agent will retrieve
+        property sales transactions from nearby postcodes from Land Registry API)
+    - postal code (postal) IRI
+    - property price index (ppi) IRI
+    - transaction record (tx) IRI (if available) - to accommodate for the case 
+    where there is no tx for a postal code but buildings in the postal code 
+    are affected by a flood
+    Also, the query retrieve below information for each postal code if available
+    - average price per square meter (asp) IRI
+    - average price per square meter derivarion (derivation)
+    - transaction record used to calculate the existing asp (deriv_tx)
+    """
+
+    if postcodes is not None:
         # If list of postcodes provides, retrieve information for those postcodes only ...
-        value_statement = f"VALUES ?postal {{ {' '.join([f'<{pc}>' for pc in postcodes])} }}"
+        value_statement = f"""VALUES ?postal_string {{ {' '.join([f'"{pc}"' for pc in postcodes])} }} .
+                              ?postal <{RDFS_LABEL}> ?postal_string .
+        """
     else:
         # ... otherwise, retrieve information for all postcodes
         value_statement = ""
@@ -142,15 +150,16 @@ def avg_sqm_price_derivation_markup(
         new_tx_iri_lst = [iri for iri in transaction_record_iri_lst if iri not in existing_asp_derivation_tx_iri_lst]
         # Add the new tx iri to the existing derivation and request for update
         if bool(new_tx_iri_lst):
-            # TODO: Test
             # Add timestamp to new tx iri (nothing happens if the iri already has timestamp)
             derivation_client.addTimeInstanceCurrentTimestamp(new_tx_iri_lst)
             # Add new tx iri to the existing derivation
             sparql_client.performUpdate(
                 f"""
-                INSERT DATA {{
+                INSERT {{
+                    <{existing_asp_derivation_iri}> <{pda_iris.ONTODERIVATION_ISDERIVEDFROM}> ?tx .
+                }}
+                WHERE {{
                     VALUES ?tx {{ {' '.join([f'<{iri}>' for iri in new_tx_iri_lst])} }}
-                    <{existing_asp_derivation_iri}> <{pda_iris.ONTODERIVATION_ISDERIVEDFROM}> ?tx.
                 }}"""
             )
             # Request for derivation update
