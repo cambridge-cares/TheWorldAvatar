@@ -1,7 +1,14 @@
 Prerequisites
-1) Set Mapbox user and API key in DispersionVis/index.html
-2) Ship data needs to be present in ShipInputAgent/data
+1) Make a copy of DispersionVis/indexTemplate.html and set its file name to be 'index.html'. Set Mapbox user and API key in DispersionVis/index.html
+2) Ship data needs to be present in ShipInputAgent/data. If the agent is being run for chemical plants instead of ships, 
+it is still necessary to define one ship in a .json file in this folder. In this case, the ship should be placed outside the region for which AERMOD will be run, which is specified in WKT format in the POST request to the DispersionInteractor class. The longitude of each coordinate must be specified before the latitude.  
+
+    The pollutant emitting points located within chemical plants need to be instantiated in TheWorldAvatar blazegraph with an rdf:type of PlantItem. See https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontochemplant/OntoChemPlant.owl for details of the ontology. There must be at least one pollutant source (either ship or chemical plant item) located within the region of interest. 
+
+
 3) Set openweather API key in ../Agents/WeatherAgent, more details in that folder
+
+4) Set the values of the following in the AermodAgent/docker-compose.yml file: NUMBER_SOURCES, NUMBER_BUILDINGS, INCLUDE_ELEVATION. Note that setting NUMBER_BUILDINGS to a value greater than 500 may result in the buildings pre-processor,  BPIPPRM, taking a long time to complete. The terrain pre-processor, AERMAP, may also take a long time to run for large numbers of receptors. As elevation data is an optional input for AERMOD, the user has the option of not running AERMAP by specifying INCLUDE_ELEVATION=false.  
 
 Stack needs to be up and running:
 1) Navigate to Deploy/stacks/dynamic/stack-manager, do all required setup as described by the README and execute (in a WSL terminal)
@@ -37,3 +44,4 @@ curl -X POST "http://localhost:8084/DispersionInteractor/TriggerUpdateDispersion
 ```
 http://localhost:8090
 ```
+The updated version of the agent also displays the legend for the contour plot in the sidebar. It may be necessary to open an incognito browser window to view it. 
