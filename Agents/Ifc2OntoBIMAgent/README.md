@@ -80,13 +80,27 @@ docker-compose up -d
 *WIP to transfer these Maven credentials over agents, instead of being implemented as Docker instructions
 
 #### 2.3 Running the Agent
-##### 2.3.1 Precursor
-Place your IFC file into the `<root>/data/` directory. This is directly linked to the relevant directory in a Docker container.
+The agent currently offers two API routes:
+##### 2.3.1 GET ROUTE: `~url~/ifc2ontobim-agent/status` 
+
+This route requires a GET request without any parameters, to retrieve the agent's current status. A sample request is as follows:
+```
+// Written in curl syntax (as one line)
+curl localhost:3025/ifc2ontobim-agent/status 
+```
+If the agent ran successfully, a JSON Object would be returned as follows:
+```
+{"Result":["Agent is ready to receive requests."]}
+```
+
+##### 2.3.2 POST ROUTE: `~url~/ifc2ontobim-agent/convert`
+This route requires a POST request with the following parameters, to convert IFC models to TTL formats. Before attempting to
+send the request, please place your IFC file into the `<root>/data/` directory. This is directly linked to the relevant directory in a Docker container.
 The agent is able to convert multiple IFC files at once. However, it is unable to upload them into separate endpoints or namespaces 
 at one go. 
 
-##### 2.3.2 POST Request Parameters
-The agent currently accepts two parameters. 
+###### POST request parameters
+The route currently accepts two parameters. 
 1. Base URI - Mandatory
 
 This sets the base URI for all instances. Examples of valid URIs include `http://www.theworldavatar.com/ifc/` and  `https://www.theworldavatar.com/bim#`.
@@ -104,15 +118,15 @@ Example: `http://docker.internal.host:9999/blazegraph/namespace/ifc/sparql`.
 
 If you do not want to upload the TTL file, do not send this parameter in the request.
 
-##### 2.3.3 POST Request
-Run the agent by sending a POST request with the required JSON Object to `http://localhost:3025/ifc2ontobim-agent/retrieve`. A sample request is as follows:
+###### Sample POST request
+Run the agent by sending a POST request with the required JSON Object to `http://localhost:3025/ifc2ontobim-agent/convert`. A sample request is as follows:
 ```
-POST http://localhost:3025/ifc2ontobim-agent/retrieve
+POST http://localhost:3025/ifc2ontobim-agent/convert
 Content-Type: application/json
 {"uri":"http://www.theworldavatar.com/ifc/building/","endpoint","http://IPv4ADDRESS:PORTNO/blazegraph/namespace/ifc/sparql"}
 
 // Written in curl syntax (as one line)
-curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/','endpoint':'http://IPv4ADDRESS:PORTNO/blazegraph/namespace/ifc/sparql'}" localhost:3025/ifc2ontobim-agent/retrieve 
+curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/','endpoint':'http://IPv4ADDRESS:PORTNO/blazegraph/namespace/ifc/sparql'}" localhost:3025/ifc2ontobim-agent/convert 
 ```
 
 If the agent ran successfully, a JSON Object would be returned as follows:
@@ -123,7 +137,7 @@ If the agent ran successfully, a JSON Object would be returned as follows:
 {"Result":["File.ttl has been successfully converted!","File.ttl has been uploaded to endpoint","All ttl files have been generated in OntoBIM. Please check the directory."]}
 ```
 
-#### 2.4 Post-Build
+###### Post-task
 The generated TTL files can be retrieved at the `<root>/data/` directory.
 
 If an endpoint has been provided and only ONE IFC input is provided, the triples would be uploaded to the endpoint as well.

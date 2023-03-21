@@ -26,6 +26,13 @@ class Ifc2OntoBIMAgentTest {
     private static Path sampleTtl;
     private static Ifc2OntoBIMAgent agent;
     private static final String KEY_BASEURI = "uri";
+    private static final String KEY_METHOD = "method";
+    private static final String GET_METHOD = "GET";
+    private static final String POST_METHOD = "POST";
+    private static final String KEY_ROUTE = "requestUrl";
+    private static final String BASE_ROUTE = "http://localhost:3025/ifc2ontobim-agent/";
+    private static final String GET_ROUTE = BASE_ROUTE + "status";
+    private static final String POST_ROUTE = BASE_ROUTE + "convert";
     private static final String KEY_ENDPOINT = "endpoint";
 
     @BeforeAll
@@ -45,10 +52,39 @@ class Ifc2OntoBIMAgentTest {
     }
 
     @Test
-    void testProcessRequestParameters() {
+    void testProcessRequestParametersForUndefinedRoute() {
+        JSONObject requestParams = new JSONObject();
+        requestParams.put(KEY_METHOD, GET_METHOD);
+        requestParams.put(KEY_ROUTE, BASE_ROUTE);
+        JSONObject response = agent.processRequestParameters(requestParams);
+        assertTrue(response.isEmpty());
+    }
+
+    @Test
+    void testProcessRequestParametersForStatusRouteViaGET() {
+        JSONObject requestParams = new JSONObject();
+        requestParams.put(KEY_METHOD, GET_METHOD);
+        requestParams.put(KEY_ROUTE, GET_ROUTE);
+        JSONObject response = agent.processRequestParameters(requestParams);
+        assertEquals("Agent is ready to receive requests.", response.getString("Result"));
+    }
+
+    @Test
+    void testProcessRequestParametersForStatusRouteViaInvalidPOST() {
+        JSONObject requestParams = new JSONObject();
+        requestParams.put(KEY_METHOD, POST_METHOD);
+        requestParams.put(KEY_ROUTE, GET_ROUTE);
+        JSONObject response = agent.processRequestParameters(requestParams);
+        assertEquals("Invalid request type! Route status can only accept GET request.", response.getString("Result"));
+    }
+
+    @Test
+    void testProcessRequestParametersForConvertRouteViaPOST() {
         JSONObject requestParams = new JSONObject();
         String uri = "http://www.theworldavatar.com/ifc/building/";
         requestParams.put(KEY_BASEURI, uri);
+        requestParams.put(KEY_METHOD, POST_METHOD);
+        requestParams.put(KEY_ROUTE, POST_ROUTE);
         Set<String> ttlFileSet = genFileSet();
 
         JSONObject testMessage;
@@ -64,17 +100,27 @@ class Ifc2OntoBIMAgentTest {
                 Mockito.verify(mockBimConverter.constructed().get(0)).convertOntoBIM(Mockito.anyString());
             }
         }
-
         String expected = ".ttl has been successfully converted!\",\"All ttl files have been generated in OntoBIM. Please check the directory.";
         assertTrue(testMessage.toString().contains(expected));
     }
 
     @Test
-    void testProcessRequestParametersEmptyParams() {
+    void testProcessRequestParametersEmptyParamsForConvertRouteViaPOST() {
         JSONObject requestParams = new JSONObject();
+        requestParams.put(KEY_METHOD, POST_METHOD);
+        requestParams.put(KEY_ROUTE, POST_ROUTE);
         JSONObject testMessage = agent.processRequestParameters(requestParams);
         String expected = "Request parameters are not defined correctly.";
         assertTrue(testMessage.toString().contains(expected));
+    }
+
+    @Test
+    void testProcessRequestParametersForConvertRouteViaInvalidGET() {
+        JSONObject requestParams = new JSONObject();
+        requestParams.put(KEY_METHOD, GET_ROUTE);
+        requestParams.put(KEY_ROUTE, POST_ROUTE);
+        JSONObject response = agent.processRequestParameters(requestParams);
+        assertEquals("Invalid request type! Route convert can only accept POST request.", response.getString("Result"));
     }
 
     @Test
