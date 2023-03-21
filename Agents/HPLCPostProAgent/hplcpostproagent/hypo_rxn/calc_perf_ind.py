@@ -161,10 +161,16 @@ def calculate_run_material_cost(rxn_exp_instance: ReactionExperiment, hypo_react
     _total_material_cost = sum([s._run_volume.hasNumericalValue * s.def_cost.hasNumericalValue for s in reactant_catalyst_solvent])
 
     # Obtain the total run volume of all the reactants and solvents
-    _total_run_volume = sum([s._run_volume.hasNumericalValue for s in reactant_catalyst_solvent])
+    _rxn_scale = rxn_exp_instance.get_reaction_scale()
+
+    _rxn_scale_volume = unit_conv.unit_conversion_return_value(
+        _rxn_scale.hasValue.hasNumericalValue,
+        _rxn_scale.hasValue.hasUnit,
+        unit_conv.UNIFIED_VOLUME_UNIT
+    )
 
     # Calculate the cost per unit volume of the inlet stream
-    _run_material_cost = round(_total_material_cost / _total_run_volume, 2) # Round the decimal place
+    _run_material_cost = round(_total_material_cost / _rxn_scale_volume, 2) # Round the decimal place
 
     pi_run_material_cost = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _run_material_cost, unit_conv.UNIFIED_RUN_MATERIAL_COST_UNIT)
 
