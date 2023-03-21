@@ -9,15 +9,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Request {
 
     @JsonInclude(Include.NON_NULL)
-    String jobID;
+    private final String jobID;
     @JsonProperty("SimulationType")
-    private String simulationType;
+    private final String simulationType;
     @JsonProperty("Algorithms")
     @JsonInclude(Include.NON_NULL)
-    private List<Algorithm> algorithms;
+    private final List<Algorithm> algorithms;
     @JsonProperty("Inputs")
     @JsonInclude(Include.NON_NULL)
-    private Data inputs;
+    private final Data inputs;
     @JsonProperty("Outputs")
     @JsonInclude(Include.NON_NULL)
     private Data outputs;
@@ -25,36 +25,33 @@ public class Request {
     @JsonInclude(Include.NON_NULL)
     private List<SensitivityResult> sensitivities;
 
-    public String getJobID() {
-        return jobID;
+    private Request() {
+        this(null, null);
     }
 
-    public void setJobID(String jobID) {
+    public Request(String jobID, String simulationType) {
         this.jobID = jobID;
+        this.simulationType = simulationType;
+        this.algorithms = null;
+        this.inputs = null;
+        this.outputs = null;
+        this.sensitivities = null;
+    }
+
+    public String getJobID() {
+        return jobID;
     }
 
     public String getSimulationType() {
         return simulationType;
     }
 
-    public void setSimulationType(String simulationType) {
-        this.simulationType = simulationType;
-    }
-
     public List<Algorithm> getAlgorithms() {
         return algorithms;
     }
 
-    public void setAlgorithms(List<Algorithm> algorithms) {
-        this.algorithms = algorithms;
-    }
-
     public Data getInputs() {
         return inputs;
-    }
-
-    public void setInputs(Data inputs) {
-        this.inputs = inputs;
     }
 
     public Data getOutputs() {

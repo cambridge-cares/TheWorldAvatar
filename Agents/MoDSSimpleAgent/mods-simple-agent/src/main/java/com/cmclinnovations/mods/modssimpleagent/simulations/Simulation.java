@@ -422,10 +422,7 @@ public class Simulation {
     }
 
     public Request getResponse() {
-        Request response = new Request();
-        response.setJobID(getJobID());
-        response.setSimulationType(request.getSimulationType());
-        return response;
+        return new Request(getJobID(), request.getSimulationType());
     }
 
     public Request getResults() {
