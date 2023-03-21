@@ -1,25 +1,31 @@
 {
 	"SimulationType": "Sensitivity",
-	"SurrogateToLoad": "mods-sim-13239911731462719501",
-	"Algorithms": [{
+	"Algorithms": [
+		{
 			"name": "algorithm1",
 			"type": "GenSurrogateAlg",
-			"variables": [{
+			"variables": [
+				{
 					"name": "var1",
 					"type": "input"
-				}, {
+				},
+				{
 					"name": "var2",
 					"type": "input"
-				}, {
+				},
+				{
 					"name": "var3",
 					"type": "input"
-				}, {
+				},
+				{
 					"name": "var4",
 					"type": "output"
-				}, {
+				},
+				{
 					"name": "var5",
 					"type": "output"
-				}, {
+				},
+				{
 					"name": "var6",
 					"type": "output"
 				}

@@ -24,12 +24,6 @@ public class Request {
     @JsonProperty("Sensitivities")
     @JsonInclude(Include.NON_NULL)
     private List<SensitivityResult> sensitivities;
-    @JsonProperty("SurrogateToLoad")
-    @JsonInclude(Include.NON_NULL)
-    private String surrogateToLoad;
-    @JsonProperty("SaveSurrogate")
-    @JsonInclude(Include.NON_NULL)
-    private Boolean saveSurrogate;
 
     public String getJobID() {
         return jobID;
@@ -79,20 +73,7 @@ public class Request {
         this.sensitivities = sensitivities;
     }
 
-    public Boolean getSaveSurrogate() {
-        return saveSurrogate;
+    public Algorithm getAlgorithmOfType(String algType) {
+        return getAlgorithms().stream().filter(alg -> alg.getType().equals(algType)).findFirst().orElseThrow();
     }
-
-    public void setSaveSurrogate(Boolean saveSurrogate) {
-        this.saveSurrogate = saveSurrogate;
-    }
-
-    public String getSurrogateToLoad() {
-        return surrogateToLoad;
-    }
-
-    public void setSurrogateToLoad(String surrogateToLoad) {
-        this.surrogateToLoad = surrogateToLoad;
-    }
-    
 }
