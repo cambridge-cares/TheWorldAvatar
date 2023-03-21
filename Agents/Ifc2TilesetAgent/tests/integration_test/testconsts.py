@@ -41,26 +41,29 @@ INVALID_PARAM_API_RESPONSE = "Missing `assetUrl` parameter in request!"
 # Test inputs and expected results
 # ----------------------------------------------------------------------------------
 base_namespace = "http://www.example.org/test/"
-prefix = f"""PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
-    PREFIX base:<{base_namespace}>
-    PREFIX bot:<https://w3id.org/bot#>
-    PREFIX ontobim:<http://www.theworldavatar.com/ontology/ontobim/ontoBIM#>
-    PREFIX ifc2x3:<http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#>
-    PREFIX ifc4:<https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL#>
-    PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n"""
+prefix = f"""\
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX base: <{base_namespace}>
+PREFIX bot: <https://w3id.org/bot#>
+PREFIX ontobim: <http://www.theworldavatar.com/kg/ontobim/>
+PREFIX ontobuildingstructure: <http://www.theworldavatar.com/kg/ontobuildingstructure/>
+PREFIX ifc2x3: <http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+"""
 
 insert_element_query = prefix + "INSERT DATA { base:Inst_1 a bot:Element }"
 select_element_query = "PREFIX bot:<https://w3id.org/bot#> SELECT ?inst WHERE {?inst a bot:Element}"
 expected_select_element_result = [{'inst': base_namespace + 'Inst_1'}]
 
-insert_wall_query = prefix + """
-    INSERT DATA {
-        base:Wall_1 rdf:type bot:Element;
-                    rdf:type ifc2x3:IfcWall;
-                    ontobim:hasIfcId 'a01912518'^^xsd:string;
-                    rdfs:label 'Wall Standard'^^xsd:string. 
-    }"""
+insert_wall_query = prefix + """\
+INSERT DATA {
+    base:Wall_1 rdf:type ontobuildingstructure:Wall;
+                ontobim:hasIfcRepresentation base:IfcModelRepresentation_0001.
+    base:IfcModelRepresentation_0001 ontobim:hasIfcId 'a01912518'^^xsd:string;
+                                     rdfs:label 'Wall Standard'^^xsd:string. 
+}
+"""
 
 expected_assets1 = ["building"]
 
@@ -69,29 +72,39 @@ sample_box_id = "c12746"
 sample_panel_id = "d7213"
 
 insert_assets_query = f"""{prefix}
-    INSERT DATA {{
-        base:Meter_1 rdf:type bot:Element;
-                     rdf:type ifc2x3:IfcBuildingElementProxy;
-                     ontobim:hasIfcId '{sample_meter_id}'^^xsd:string;
-                     rdfs:label 'Water Meter'^^xsd:string.
-        base:ElectricWireBox_3 rdf:type bot:Element;
-                               rdf:type ifc2x3:IfcFurnishingElement;
-                               ontobim:hasIfcId '{sample_box_id}'^^xsd:string;
-                               rdfs:label 'Electric Wire Box'^^xsd:string.
-        base:SolarPanel_51 rdf:type bot:Element;
-                           rdf:type ifc2x3:IfcBuildingElementProxy;
-                           ontobim:hasIfcId '{sample_panel_id}'^^xsd:string;
-                           rdfs:label 'Solar Panel'^^xsd:string.
-    }}"""
+INSERT DATA {{
+    base:Meter_1 rdf:type ifc2x3:IfcBuildingElementProxy;
+                 ontobim:hasIfcRepresentation base:IfcModelRepresentation_0002.
+    base:IfcModelRepresentation_0002 rdf:type ontobim:IfcModelRepresentation;
+                                     ontobim:hasIfcId '{sample_meter_id}'^^xsd:string;
+                                     rdfs:label 'Water Meter'^^xsd:string.
+
+    base:ElectricWireBox_3 rdf:type ifc2x3:IfcFurnishingElement;
+                           ontobim:hasIfcRepresentation base:IfcModelRepresentation_0003.
+    base:IfcModelRepresentation_0003 rdf:type ontobim:IfcModelRepresentation;
+                                     ontobim:hasIfcId '{sample_box_id}'^^xsd:string;
+                                     rdfs:label 'Electric Wire Box'^^xsd:string.
+
+    base:SolarPanel_51 rdf:type ifc2x3:IfcBuildingElementProxy;
+                       ontobim:hasIfcRepresentation base:IfcModelRepresentation_0004.
+    base:IfcModelRepresentation_0004 rdf:type ontobim:IfcModelRepresentation;
+                                     ontobim:hasIfcId '{sample_panel_id}'^^xsd:string;
+                                     rdfs:label 'Solar Panel'^^xsd:string.
+}}
+"""
 
 sample_building_inst = "Building_1"
 sample_building_iri = base_namespace + sample_building_inst
 insert_building_query = f"""{prefix} 
-    INSERT DATA {{
-        base:{sample_building_inst} bot:hasStorey base:Storey_5a9f7642-2d12-11b2-8040-cdbcaabc8e65;
-        rdf:type bot:Building;
-        ontobim:hasIfcRepresentation base:IfcBuildingRepresentation_130.
-    }}"""
+INSERT DATA {{
+    base:{sample_building_inst} bot:hasStorey base:Storey_5a9f7642-2d12-11b2-8040-cdbcaabc8e65;
+                                rdf:type bot:Building;
+                                ontobim:hasIfcRepresentation base:IfcBuildingRepresentation_130.
+    base:IfcBuildingRepresentation_130 rdf:type ontobim:IfcModelRepresentation;
+                                        ontobim:hasIfcId "0jvyVdjY901wSsMTGJsL4G";
+                                        rdfs:label "TestBuilding";
+}}
+"""
 
 expected_assets2 = ["building", "asset1", "furniture", "solarpanel"]
 

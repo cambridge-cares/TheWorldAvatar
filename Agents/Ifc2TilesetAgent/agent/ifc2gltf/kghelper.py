@@ -14,7 +14,7 @@ from agent.utils import find_word
 from agent.kgutils import *
 
 # Retrieve logger
-logger = agentlogging.get_logger('dev')
+logger = agentlogging.get_logger("dev")
 
 
 def create_metadata_query():
@@ -24,26 +24,50 @@ def create_metadata_query():
     Returns:
         The required sparql query
     """
-    builder = QueryBuilder()
-    builder.add_prefix("http://www.w3.org/1999/02/22-rdf-syntax-ns#", RDF_PREFIX)
-    builder.add_prefix("http://www.w3.org/2000/01/rdf-schema#", RDFS_PREFIX)
-    builder.add_prefix("https://w3id.org/bot#", BOT_PREFIX)
-    builder.add_prefix("http://www.theworldavatar.com/ontology/ontobim/ontoBIM#", BIM_PREFIX)
-    builder.add_prefix("http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#", IFC2_PREFIX)
-    builder.add_prefix("https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL#", IFC4_PREFIX)
-    builder.add_select_var(IRI_VAR, ID_VAR, NAME_VAR)
-    builder.add_where_triple(IRI_VAR, RDF_PREFIX + ":type", BOT_PREFIX + ":Element", 1)
-    builder.add_where_triple(IRI_VAR, BIM_PREFIX + ":hasIfcId", ID_VAR, 5)
-    builder.add_where_triple(IRI_VAR, RDFS_PREFIX + ":label", NAME_VAR, 5)
-    # IFC class var is needed for filtering the relevant classes, and should not be selected
-    buildingproxy = ":IfcBuildingElementProxy"
-    furnishing = ":IfcFurnishingElement"
-    flowterminal = ":IfcFlowTerminal"
-    builder.add_where_triple(IRI_VAR, RDF_PREFIX + ":type", IFCCLASS_VAR, 5)
-    builder.add_values_where(IFCCLASS_VAR, IFC2_PREFIX + buildingproxy,
-                             IFC2_PREFIX + furnishing, IFC2_PREFIX + flowterminal, IFC4_PREFIX + buildingproxy,
-                             IFC4_PREFIX + furnishing, IFC4_PREFIX + flowterminal)
-    return str(builder)
+    return """\
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+PREFIX bot:<https://w3id.org/bot#>
+
+PREFIX ontobim:<http://www.theworldavatar.com/kg/ontobim/>
+PREFIX ontobuildingstructure:<http://www.theworldavatar.com/kg/ontobuildingstructure/>
+
+SELECT ?iri ?uid ?name WHERE {
+  ?iri ontobim:hasIfcRepresentation ?modelRep.
+  ?modelRep rdf:type ontobim:IfcModelRepresentation;
+                     ontobim:hasIfcId ?uid;
+                     rdfs:label ?name.
+  ?iri rdf:type ?class.
+  FILTER (
+    ?class != bot:Element && 
+    ?class NOT IN (
+      ontobuildingstructure:BuildingStructureComponent,
+      ontobuildingstructure:Assembly,
+      ontobuildingstructure:Stair,
+      ontobuildingstructure:StairFlight,
+      ontobuildingstructure:Landing,
+      ontobuildingstructure:Railing,
+      ontobuildingstructure:StairStructuralComponent,
+      ontobuildingstructure:Wall,
+      ontobuildingstructure:Door,
+      ontobuildingstructure:Window,
+      ontobuildingstructure:Column,
+      ontobuildingstructure:Ceiling,
+      ontobuildingstructure:Floor,
+      ontobuildingstructure:Roof,
+      ontobuildingstructure:InclinedRoof,
+      ontobuildingstructure:FlatRoof
+    ) &&
+    ?class NOT IN (
+      bot:Zone,
+      bot:Site,
+      bot:Building,
+      bot:Storey
+    ) &&
+    ?class != ontobim:Room
+  )
+}
+"""
 
 
 def classify_file_name(dataframe: pd.DataFrame):
@@ -57,7 +81,7 @@ def classify_file_name(dataframe: pd.DataFrame):
         Dataframe after classification
     """
     # Initialise a new empty column to contain file name
-    dataframe['file'] = np.nan
+    dataframe["file"] = np.nan
     # Initialise a list containing partial names of individual assets to be split
     assetlist = ["Sensor", "Weather Station", "Meter",
                  "Fume Hood", "Explosive Precursor", "Chemistry Robot",
@@ -67,17 +91,17 @@ def classify_file_name(dataframe: pd.DataFrame):
     for row in range(len(dataframe.index)):
         # If asset is to be split, generate it as an asset file
         if find_word(assetlist, dataframe[NAME_VAR].iloc[row]):
-            dataframe.at[row, 'file'] = "asset" + str(counter)
+            dataframe.at[row, "file"] = "asset" + str(counter)
             counter = counter + 1
         # If asset is a solar panel, generate it as a solarpanel file
         elif find_word(["Solar Panel"], dataframe[NAME_VAR].iloc[row]):
-            dataframe.at[row, 'file'] = "solarpanel"
+            dataframe.at[row, "file"] = "solarpanel"
         # If asset is a manhole, generate it as a sewage file
         elif find_word(["Manhole"], dataframe[NAME_VAR].iloc[row]):
-            dataframe.at[row, 'file'] = "sewagenetwork"
+            dataframe.at[row, "file"] = "sewagenetwork"
         # Else, all other asset types are generated as a furniture file
         else:
-            dataframe.at[row, 'file'] = "furniture"
+            dataframe.at[row, "file"] = "furniture"
     return dataframe
 
 
