@@ -305,7 +305,6 @@ def property_value_estimation_derivation_markup(
             raise e
     else:
         # Property already has instantiated property value estimation 
-        # TODO test
         logger.info(f"Market value {market_value_iri} exists for Property {property_iri}, no need to create derivation, checking if need to add any new transaction record...")
 
         if market_value_derivation_tx_iri is None:

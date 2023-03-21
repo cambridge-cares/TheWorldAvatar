@@ -21,7 +21,9 @@ from agent.utils.api_endpoints import HM_SPARQL_ENDPOINT
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from agent.kgutils.stackclients import PostGISClient, GeoserverClient
 from agent.datainstantiation.derivation_markup import retrieve_avgsqmprice_postal_code_info, \
-                                                      avg_sqm_price_derivation_markup
+                                                      avg_sqm_price_derivation_markup, \
+                                                      retrieve_marketvalue_property_info, \
+                                                      property_value_estimation_derivation_markup
 
 from pyderivationagent import PySparqlClient
 from pyderivationagent import PyDerivationClient
@@ -37,7 +39,8 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
                                update_endpoint=UPDATE_ENDPOINT, 
                                kg_client_obe=None, kg_client_hm=None,
                                derivation_client=None,
-                               add_avgsqm_derivation_markup=True):
+                               add_avgsqm_derivation_markup=True,
+                               add_propvalue_derivation_markup=True):
     """
     Retrieves HM Land Registry's Price Paid data for provided properties from
     given endpoint and instantiates them in the KG according to OntoBuiltEnv
@@ -48,6 +51,8 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
         min_conf_score - minimum confidence score for address matching [0-100]
         add_avgsqm_derivation_markup - boolean flag whether to add derivation markup for 
                                        Average Square Metre Price per Postal Code
+        add_propvalue_derivation_markup - boolean flag whether to add derivation markup for 
+                                          Market Value Estimate per Property
         api_endpoint - SPARQL endpoint for HM Land Registry Open Data
         query_endpoint/update_endpoint - SPARQL endpoint with instantiated OntoCityGml buildings
     Returns:
@@ -157,8 +162,31 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
                 existing_avg_sqm_price_iri=postal_code_info_lst[i].get('asp'),
                 existing_asp_derivation_iri=postal_code_info_lst[i].get('derivation'),
                 existing_asp_derivation_tx_iri_lst=postal_code_info_lst[i].get('deriv_tx'),
-            )   
-
+            )
+    
+    if add_propvalue_derivation_markup:
+        # 7) Add derivation markup for Market Value Estimate per Property
+        #    (optional as more efficient in update_all_transaction_records considering all postcodes)
+        # Retrieve relevant property info
+        property_info_dct = retrieve_marketvalue_property_info(sparql_client=kg_client_obe,
+                                                               property_iris=property_iris)
+        print(f'Adding derivation markup for {len(property_info_dct)} properties ...')
+        # Add derivation markup for each property
+        for i, (iri, info) in enumerate(property_info_dct.items()):
+            logger.info(f"Processing property {i+1}/{len(property_info_dct)}")
+            property_value_estimation_derivation_markup(
+                derivation_client=derivation_client,
+                sparql_client=kg_client_obe,
+                property_iri=iri,
+                property_price_index_iri=info['ppi'],
+                floor_area_iri=info['area'],
+                transaction_record_iri=info['tx'],
+                avg_sqm_price_iri=info['asp'],
+                market_value_iri=info['mv'],
+                market_value_derivation_iri=info['derivation'],
+                market_value_derivation_tx_iri=info['deriv_tx']
+            )
+    
     return instantiated_tx, updated_tx
 
 
