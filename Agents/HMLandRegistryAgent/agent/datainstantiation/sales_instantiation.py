@@ -7,6 +7,7 @@
 # the HM Land Registry Open Data SPARQL endpoint according to OntoBuiltEnv
 
 import re
+import time
 import uuid
 import numpy as np
 import pandas as pd
@@ -292,7 +293,8 @@ def update_all_transaction_records(min_conf_score=90,
                             min_conf_score=min_conf_score, api_endpoint=api_endpoint,
                             kg_client_obe=kg_client_obe, kg_client_hm=kg_client_hm,
                             derivation_client = derivation_client,
-                            add_avgsqm_derivation_markup=False)
+                            add_avgsqm_derivation_markup=False,
+                            add_propvalue_derivation_markup=False)
         instantiated_tx += tx_new
         updated_tx += tx_upd
 
@@ -313,8 +315,32 @@ def update_all_transaction_records(min_conf_score=90,
                 existing_avg_sqm_price_iri=postal_code_info_lst[i].get('asp'),
                 existing_asp_derivation_iri=postal_code_info_lst[i].get('derivation'),
                 existing_asp_derivation_tx_iri_lst=postal_code_info_lst[i].get('deriv_tx'),
-            ) 
+            )
+        # Allow for some time to update derivations in KG (10s is arbitrary)
+        logger.info(f"Derivation markup for postcodes completed. Waiting shortly before continuing with properties ...")
+        time.sleep(10)
     
+        # 7) Add derivation markup for Market Value Estimate per Property
+        #    (optional as more efficient in update_all_transaction_records considering all postcodes)        # Retrieve relevant property info
+        property_info_dct = retrieve_marketvalue_property_info(sparql_client=kg_client_obe,
+                                                               property_iris=prop_iris)
+        print(f'Adding derivation markup for {len(property_info_dct)} properties ...')
+        # Add derivation markup for each property
+        for i, (iri, info) in enumerate(property_info_dct.items()):
+            logger.info(f"Processing property {i+1}/{len(property_info_dct)}")
+            property_value_estimation_derivation_markup(
+                derivation_client=derivation_client,
+                sparql_client=kg_client_obe,
+                property_iri=iri,
+                property_price_index_iri=info['ppi'],
+                floor_area_iri=info['area'],
+                transaction_record_iri=info['tx'],
+                avg_sqm_price_iri=info['asp'],
+                market_value_iri=info['mv'],
+                market_value_derivation_iri=info['derivation'],
+                market_value_derivation_tx_iri=info['deriv_tx']
+            )
+
     return (instantiated_tx, updated_tx, instantiated_ukhpi, updated_ukhpi)
 
 
@@ -540,7 +566,7 @@ def get_admin_district_index_dict(kglient) -> list:
     return dict_list
 
 
-def create_ukhpi_timeseries(local_authority_iri, ppi_iri, months=240,
+def create_ukhpi_timeseries(local_authority_iri, ppi_iri, months=480,
                             api_endpoint=HM_SPARQL_ENDPOINT, kg_client_hm=None):
     """
     Retrieve UKHPI data for a given local authority ONS IRI 
