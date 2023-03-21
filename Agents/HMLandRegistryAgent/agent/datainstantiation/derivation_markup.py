@@ -164,11 +164,16 @@ def avg_sqm_price_derivation_markup(
                     VALUES ?tx {{ {' '.join([f'<{iri}>' for iri in new_tx_iri_lst])} }}
                 }}"""
             )
-            # Request for derivation update
-            derivation_client.unifiedUpdateDerivation(existing_asp_derivation_iri)
             logger.info(f"Added new tx iri ({new_tx_iri_lst}) to existing derivation: {existing_asp_derivation_iri}")
         else:
             logger.info(f"No new tx iri to add to existing derivation: {existing_asp_derivation_iri}")
+        
+        # Request for derivation update: 2 potential options
+        # (as pure inputs (especially Property Price Index) have likely changed)
+        # 1) Request derivation update for immediate execution (i.e. as synchronous call)
+        derivation_client.unifiedUpdateDerivation(existing_asp_derivation_iri)
+        # 2) Only mark derivation as requested to be executed with next asynchronous call
+        #derivation_client.derivation_client.updateMixedAsyncDerivation(existing_asp_derivation_iri)
 
 
 # =============================================================================
@@ -177,6 +182,35 @@ def avg_sqm_price_derivation_markup(
 
 # =============================================================================
 # Utility functions
+
+def retrieve_derivation_instances(ppi_iri: str, sparql_client: PySparqlClient):
+    """
+    Retrieves ALL AvgSqmPrice and PropertyValueEstimation derivation instances 
+    for a given Property Price Index (ppi_iri)
+    """
+
+    query = f"""
+            SELECT DISTINCT ?deriv_avg ?deriv_value
+            WHERE {{
+                {{ ?deriv_avg <{pda_iris.ONTODERIVATION_ISDERIVEDFROM}> <{ppi_iri}> , 
+                                                                        ?pc . 
+                    ?pc <{RDF_TYPE}> <{OBE_POSTALCODE}> .
+                }} UNION {{
+                    ?deriv_value <{pda_iris.ONTODERIVATION_ISDERIVEDFROM}> <{ppi_iri}> , 
+                                                                           ?area . 
+                    ?area <{RDF_TYPE}> <{OM_AREA}> .
+                }}
+            }}"""
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    logger.info(f"Query to retrieve derivation instances: {query}")
+    response = sparql_client.performQuery(query)
+    # Extract lists of unique derivation instances
+    avg_derivs = get_unique_values_in_list_of_dict(response, 'deriv_avg')
+    value_derivs = get_unique_values_in_list_of_dict(response, 'deriv_value')
+
+    return avg_derivs, value_derivs
+
 
 def check_if_key_in_list_of_dict(list_of_dict: List[dict], key: str):
     for d in list_of_dict:

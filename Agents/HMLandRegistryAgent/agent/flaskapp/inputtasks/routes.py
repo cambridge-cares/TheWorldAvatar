@@ -122,6 +122,12 @@ def api_scale_property_price_index():
     except Exception as ex:
         logger.error('Invalid "Property Price Index IRI" provided.')
         raise InvalidInput('Invalid "Property Price Index IRI" provided.') from ex
+    # Retrieve number of latest months to scale
+    try:
+        months = int(query['months'])
+    except Exception as ex:
+        logger.error('Invalid number of "Months to scale" provided.')
+        months = 1
     # Retrieve scaling factor
     try:
         scaler = float(query['scaler'])
@@ -130,7 +136,7 @@ def api_scale_property_price_index():
         raise InvalidInput('Invalid "Scaling Factor" provided.') from ex
     try:
         # Scale property price index data
-        scale_property_price_index(ppi_iri=ppi_iri, scaler=scaler)
+        scale_property_price_index(ppi_iri=ppi_iri, timesteps=months, scaler=scaler)
         return jsonify({'msg': 'Property price index data scaled successfully'}), 200
     except Exception as ex:
         logger.error('Unable to scale property price index data: {}'.format(ex))
