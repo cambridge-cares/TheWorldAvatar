@@ -25,6 +25,10 @@ public class Request {
     @JsonInclude(Include.NON_NULL)
     private List<SensitivityResult> sensitivities;
 
+    private Request() {
+        this(null, null);
+    }
+
     public Request(String jobID, String simulationType) {
         this.jobID = jobID;
         this.simulationType = simulationType;
