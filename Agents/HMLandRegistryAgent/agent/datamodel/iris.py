@@ -8,6 +8,8 @@ DERIVATION_INSTANCE_BASE_URL = 'https://www.theworldavatar.com/kg/derivation/'
 #       files of the respective agents.
 AVERAGE_SQUARE_METRE_PRICE_AGENT_IRI = 'https://www.theworldavatar.com/resource/agents/Service__KL_AvgSqmPrice/Service'
 AVERAGE_SQUARE_METRE_PRICE_AGENT_URL = 'http://host.docker.internal:5011/AvgSqmPrice'
+PROPERTY_VALUE_ESTIMATION_AGENT_IRI = 'https://www.theworldavatar.com/resource/agents/Service__KL_PropertyValueEstimation/Service'
+PROPERTY_VALUE_ESTIMATION_AGENT_URL = 'http://host.docker.internal:5012/PropertyValueEstimation'
 
 ###--- Common Base URLs ---###
 # External ontologies
@@ -58,6 +60,8 @@ OBE_PROPERTY_PRICE_INDEX = OBE + 'PropertyPriceIndex'
 OBE_HAS_OCGML_REPRESENTATION = OBE + 'hasOntoCityGMLRepresentation'
 OBE_HAS_GROUND_ELEVATION = OBE + 'hasGroundElevation'
 OBE_AVERAGE_SM_PRICE = OBE + 'AveragePricePerSqm'
+OBE_HAS_TOTAL_FLOORAREA = OBE + 'hasTotalFloorArea'
+OBE_HASMARKETVALUE = OBE + 'hasMarketValue'
 # LRPPI: https://landregistry.data.gov.uk/app/root/doc/ppd
 LRPPI_TRANSACTION_RECORD = LRPPI + 'TransactionRecord'
 LRPPI_PROPERTY_ADDRESS = LRPPI + 'propertyAddress'

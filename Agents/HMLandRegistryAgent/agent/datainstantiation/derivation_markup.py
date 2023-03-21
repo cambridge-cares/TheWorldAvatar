@@ -48,7 +48,7 @@ def retrieve_avgsqmprice_postal_code_info(sparql_client: PySparqlClient,
     """
 
     if postcodes is not None:
-        # If list of postcodes provides, retrieve information for those postcodes only ...
+        # If list of postcodes provided, retrieve information for those postcodes only ...
         value_statement = f"""VALUES ?postal_string {{ {' '.join([f'"{pc}"' for pc in postcodes])} }} .
                               ?postal <{RDFS_LABEL}> ?postal_string .
         """
@@ -129,7 +129,7 @@ def avg_sqm_price_derivation_markup(
 ):
     if existing_avg_sqm_price_iri is None:
         try:
-            # Create sync derivation for new info to get avg_sqm_price computed
+            # Create sync derivation for new info to get average square metre price computed
             # NOTE createSyncDerivationForNewInfo assumes derivation agent to listen 
             #      on URL containing host.docker.internal
             #      For other URLs, e.g. localhost, use createSyncDerivationForNewInfoWithHttpUrl
@@ -178,6 +178,178 @@ def avg_sqm_price_derivation_markup(
 
 # =============================================================================
 # Property Market Value Derivation Markup (per Property)
+
+def retrieve_marketvalue_property_info(sparql_client: PySparqlClient,
+                                       property_iris: List[str] = None):
+    """
+    Construct query to retrieve below information for properties of interest/
+    each instantiated property from KG
+
+    Arguments:
+        property_iris: list of property IRIs for which to retrieve data
+
+    - property price index (ppi) IRI
+    - floor area (area) IRI
+    - transaction record (tx) IRI (if available)
+    - average sqm price (asp) IRI (if available)
+    NOTE for this iteration, it's assumed that the average square metre price is already
+         computed when the derivation is created (i.e. created as synchronous derivation)
+    Also query if the market value is already computed
+    - market value (mv) IRI (if available)
+    - market value derivation IRI (if available)
+    - market value derivation isDerivedFrom existing transaction record (if available)
+    """
+    
+    if property_iris is not None:
+        # If list of property IRIs provided, retrieve information for those properties only ...
+        value_statement = f"VALUES ?property {{ {' '.join([f'<{prop}>' for prop in property_iris])} }} "
+    else:
+        # ... otherwise, retrieve information for all postcodes
+        value_statement = ""
+    
+    query = f"""{pda_iris.PREFIX_RDF} {pda_iris.PREFIX_RDFS}
+            SELECT DISTINCT ?property ?ppi ?area ?tx ?asp ?mv ?derivation ?deriv_tx
+            WHERE {{
+                {value_statement}
+                ?property rdf:type/rdfs:subClassOf* <{OBE_PROPERTY}>.
+                ?property <{OBE_HAS_ADDRESS}> ?address.
+                ?address <{OBE_HAS_ADMIN_DISTRICT}> ?district.
+                ?ppi <{OBE_REPRESENTATIVE_FOR}> ?district.
+                ?property <{OBE_HAS_TOTAL_FLOORAREA}> ?area.
+                OPTIONAL {{
+                    ?property <{OBE_HAS_LATEST_TRANSACTION}> ?tx.
+                }}
+                OPTIONAL {{
+                    ?address <{OBE_HAS_POSTALCODE}> ?postal.
+                    ?asp <{OBE_REPRESENTATIVE_FOR}> ?postal.
+                    ?asp rdf:type <{OBE_AVERAGE_SM_PRICE}>.
+                }}
+                OPTIONAL {{
+                    ?property <{OBE_HASMARKETVALUE}> ?mv.
+                    ?mv <{pda_iris.ONTODERIVATION_BELONGSTO}> ?derivation.
+                    OPTIONAL {{
+                        ?derivation <{pda_iris.ONTODERIVATION_ISDERIVEDFROM}> ?deriv_tx.
+                        ?deriv_tx rdf:type <{LRPPI_TRANSACTION_RECORD}>.
+                    }}
+                }}
+            }}"""
+
+    # Remove unnecessary whitespaces
+    query = ' '.join(query.split())
+    logger.info(f"Query to retrieve property info: {query}")
+    response = sparql_client.performQuery(query)
+    logger.info(f"Length of response: {len(response)}")
+
+    # Rearrange response into a dictionary where the information for each property are grouped together
+    # Target format of the dictionary:
+    # {
+    #     "property": {
+    #         'ppi': iri,
+    #         'area': iri,
+    #         'tx': iri,
+    #         'asp': iri,
+    #     },
+    #     ... (other properties)
+    # }
+    # NOTE As tx/asp are optional, they may not be presented in the returned dictionary
+    property_info_dct = {}
+    property_lst = get_unique_values_in_list_of_dict(response, 'property')
+    for property_iri in property_lst:
+        property_info_dct[property_iri] = {}
+        sub_response = get_sublist_in_list_of_dict_matching_key_value(response, 'property', property_iri)
+        # it will be assigned as None if the key is not found, and it will raise an error if there are more than one
+        property_info_dct[property_iri]['ppi'] = get_the_unique_value_in_list_of_dict(sub_response, 'ppi')
+        property_info_dct[property_iri]['area'] = get_the_unique_value_in_list_of_dict(sub_response, 'area')
+        property_info_dct[property_iri]['tx'] = get_the_unique_value_in_list_of_dict(sub_response, 'tx')
+        property_info_dct[property_iri]['asp'] = get_the_unique_value_in_list_of_dict(sub_response, 'asp')
+        property_info_dct[property_iri]['mv'] = get_the_unique_value_in_list_of_dict(sub_response, 'mv')
+        property_info_dct[property_iri]['derivation'] = get_the_unique_value_in_list_of_dict(sub_response, 'derivation')
+        property_info_dct[property_iri]['deriv_tx'] = get_the_unique_value_in_list_of_dict(sub_response, 'deriv_tx')
+
+    return property_info_dct
+
+
+def property_value_estimation_derivation_markup(
+    derivation_client: PyDerivationClient,
+    sparql_client: PySparqlClient,
+    property_iri: str,
+    property_price_index_iri: str,
+    floor_area_iri: str,
+    transaction_record_iri: str = None,
+    avg_sqm_price_iri: str = None,
+    market_value_iri: str = None,
+    market_value_derivation_iri: str = None,
+    market_value_derivation_tx_iri: str = None,
+):
+    if market_value_iri is None:
+        try:
+            # Create sync derivation for new info to get property value estimation computed
+            input_lst = [property_price_index_iri, floor_area_iri, transaction_record_iri, avg_sqm_price_iri]
+            input_iris = [iri for iri in input_lst if iri is not None]
+            # NOTE createSyncDerivationForNewInfo assumes derivation agent to listen 
+            #      on URL containing host.docker.internal
+            #      For other URLs, e.g. localhost, use createSyncDerivationForNewInfoWithHttpUrl
+            
+            #derivation = derivation_client.createSyncDerivationForNewInfoWithHttpUrl(
+            derivation = derivation_client.createSyncDerivationForNewInfo(
+                agentIRI=PROPERTY_VALUE_ESTIMATION_AGENT_IRI,
+                # NOTE only relevant for createSyncDerivationForNewInfoWithHttpUrl
+                #agentURL=PROPERTY_VALUE_ESTIMATION_AGENT_URL,
+                inputsIRI=input_iris,
+                derivationType=pda_iris.ONTODERIVATION_DERIVATION,
+            )
+            logger.info(f"Created sync derivation for new info: {derivation.getIri()}")
+            logger.info(f"Created OM_AMOUNT_MONEY: {derivation.getBelongsToIris(iris.OM_AMOUNT_MONEY)}")
+        except Exception as e:
+            logger.error(f"Failed to create sync derivation for new info, inputsIRI: {str(input_iris)}")
+            raise e
+    else:
+        # Property already has instantiated property value estimation 
+        # TODO test
+        logger.info(f"Market value {market_value_iri} exists for Property {property_iri}, no need to create derivation, checking if need to add any new transaction record...")
+
+        if market_value_derivation_tx_iri is None:
+            if transaction_record_iri is not None:
+                # This means that instantiated property value is derived from AverageSquareMetrePrice
+                # and FloorArea, but not from TransactionRecord
+                # However, a new TransactionRecord was made available in HM Land Registry after the 
+                # last time the PropertyValueEstimation was computed 
+                # --> Add the new TransactionRecord to the inputs of derivation
+
+                # Add timestamp to new tx iri (nothing happens if the iri already has timestamp)
+                derivation_client.addTimeInstanceCurrentTimestamp(transaction_record_iri)
+                # Add new tx iri to the existing derivation
+                sparql_client.performUpdate(
+                    f"""
+                    INSERT DATA {{
+                        <{market_value_derivation_iri}> <{pda_iris.ONTODERIVATION_ISDERIVEDFROM}> <{transaction_record_iri}>.
+                    }}"""
+                )
+                logger.info(f"Added new tx iri ({transaction_record_iri}) to existing derivation: {market_value_derivation_iri} and requested for an update")
+            else:
+                # This means that instantiated property value is derived from AverageSquareMetrePrice 
+                # and FloorArea, but not from TransactionRecord AND there's no new TransactionRecord
+                # --> Do nothing
+                logger.info(f"Market value {market_value_iri} already exist for Property {property_iri} and its inputs include AverageSquareMetrePrice {avg_sqm_price_iri} and FloorArea {floor_area_iri}, but not TransactionRecord, no new TransactionRecord is made available in HM Land Registry")
+        else:
+            # This means that instantiated property value is derived from TransactionRecord
+            # Given the design of PropertySalesInstantiation (HM Land Registry) Agent: 
+            #   IRI of a TransactionRecord will be kept the same, even if a new transaction
+            #   record is published (i.e. only instantiated values and timestamp will be updated)
+            # --> market_value_derivation_tx_iri and transaction_record_iri MUST be the same
+
+            if market_value_derivation_tx_iri != transaction_record_iri:
+                raise Exception(f"Market value {market_value_iri} already exist for Property {property_iri} and its inputs include TransactionRecord {market_value_derivation_tx_iri}, but it is different from the TransactionRecord {transaction_record_iri} directly connected to Property {property_iri} via {OBE_HAS_LATEST_TRANSACTION}")
+            else:
+                # One may choose to request for update this derivation here but it is not strictly necessary
+                logger.info(f"Market value {market_value_iri} already exist for Property {property_iri} and its inputs include TransactionRecord {transaction_record_iri}")
+                
+        # Request for derivation update: 2 potential options
+        # (as pure inputs (especially Property Price Index) have likely changed)
+        # 1) Request derivation update for immediate execution (i.e. as synchronous call)
+        derivation_client.unifiedUpdateDerivation(market_value_derivation_iri)
+        # 2) Only mark derivation as requested to be executed with next asynchronous call
+        #derivation_client.derivation_client.updateMixedAsyncDerivation(market_value_derivation_iri)
 
 
 # =============================================================================
