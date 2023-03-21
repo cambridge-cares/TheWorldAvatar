@@ -14,7 +14,7 @@ services:
       # For details, see: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_derivation_agent/pyderivationagent/conf/agent_conf.py
       - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__KL_PropertyValueEstimation/Service
       # Host and port of ONTOAGENT_OPERATION_HTTP_URL should match port specified in `port` node below
-      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5012/PropertyValueEstimation
+      - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5012/PropertyValueEstimation
       - DERIVATION_INSTANCE_BASE_URL=https://www.theworldavatar.com/kg/derivation/
       - DERIVATION_PERIODIC_TIMESCALE=604800
       - REGISTER_AGENT=true
