@@ -71,8 +71,10 @@ def retrieve_avgsqmprice_postal_code_info(sparql_client: PySparqlClient,
                 OPTIONAL {{
                     ?asp <{OBE_REPRESENTATIVE_FOR}> ?postal.
                     ?asp <{pda_iris.ONTODERIVATION_BELONGSTO}> ?derivation.
-                    ?derivation <{pda_iris.ONTODERIVATION_ISDERIVEDFROM}> ?deriv_tx.
-                    ?deriv_tx rdf:type <{LRPPI_TRANSACTION_RECORD}>.
+                    OPTIONAL {{
+                        ?derivation <{pda_iris.ONTODERIVATION_ISDERIVEDFROM}> ?deriv_tx.
+                        ?deriv_tx rdf:type <{LRPPI_TRANSACTION_RECORD}>.
+                    }}
                 }}
             }}"""
     # Remove unnecessary whitespaces

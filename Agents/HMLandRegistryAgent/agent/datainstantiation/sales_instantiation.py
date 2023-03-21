@@ -7,7 +7,6 @@
 # the HM Land Registry Open Data SPARQL endpoint according to OntoBuiltEnv
 
 import re
-import time
 import uuid
 import numpy as np
 import pandas as pd
@@ -148,7 +147,6 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
         print(f'Adding derivation markup for {len(postal_code_info_lst)} postcodes ...')
         # Add derivation markup for each postal code
         for i in range(len(postal_code_info_lst)):
-            time.sleep(1)
             logger.info(f"Processing postal code {i+1}/{len(postal_code_info_lst)}")
             avg_sqm_price_derivation_markup(
                 derivation_client=derivation_client,
@@ -277,8 +275,6 @@ def update_all_transaction_records(min_conf_score=90,
         print(f'Adding derivation markup for {len(postal_code_info_lst)} postcodes ...')
         # Add derivation markup for each postal code
         for i in range(len(postal_code_info_lst)):
-            # TODO: necessary to sleep here?
-            time.sleep(1)
             logger.info(f"Processing postal code {i+1}/{len(postal_code_info_lst)}")
             avg_sqm_price_derivation_markup(
                 derivation_client=derivation_client,
