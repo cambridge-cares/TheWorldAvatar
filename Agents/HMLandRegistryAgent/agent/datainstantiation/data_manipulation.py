@@ -86,3 +86,8 @@ def scale_property_price_index(ppi_iri: str, scaler: float, timesteps: int = 1,
         # Only mark derivation as requested to be executed with next asynchronous call
         #derivation_client.derivation_client.updateMixedAsyncDerivation(d)
     # 2) Property Value Estimation
+    for d in value_derivations:
+        # Request derivation update for immediate execution (i.e. as synchronous call)
+        derivation_client.unifiedUpdateDerivation(d)
+        # Only mark derivation as requested to be executed with next asynchronous call
+        #derivation_client.derivation_client.updateMixedAsyncDerivation(d)
