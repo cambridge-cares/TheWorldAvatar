@@ -209,7 +209,7 @@ public class TripleStoreProvider {
 	 * @return
 	 */
 	private GenericContainer<?> createRDF4JServer(int port) {
-		String imageName = "eclipse/rdf4j-workbench:3.7.4";
+		String imageName = "eclipse/rdf4j-workbench:3.7.7";
 		GenericContainer<?> tripleStore = createContainerByImage(imageName).withExposedPorts(port);
 		tripleStore.start();
 		LOGGER.debug("Docker image was started, name=" + imageName + ", port=" + port);

@@ -1,14 +1,12 @@
 # NOTE courtesy of Daniel (dln22), this file is adapted from https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_BASE_LIB/python_uploader/tests/conftest.py
 from rdflib import Graph
-import logging
+import requests
 import pkgutil
 import pytest
 import shutil
 import time
 import uuid
 import os
-
-logging.getLogger("py4j").setLevel(logging.INFO)
 
 from pyderivationagent.conf import config_derivation_agent
 
@@ -23,6 +21,13 @@ URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url'
 DOWNLOADED_DIR = os.path.join(THIS_DIR,'downloaded_files_for_test')
 HPLC_REPORT_XLS_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls.xls'
 HPLC_REPORT_TXT_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt.txt'
+HPLC_REPORT_XLS_INCOMPLETE_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls_incomplete.xls'
+HPLC_REPORT_TXT_INCOMPLETE_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt_incomplete.txt'
+HPLC_REPORT_XLS_UNIDENTIFIED_PEAKS_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls_unidentified_peaks.xls'
+HPLC_REPORT_TXT_UNIDENTIFIED_PEAKS_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt_unidentified_peaks.txt'
+HPLC_REPORT_XLS_NO_PRODUCT_PATH_IN_PKG = 'sample_data/raw_hplc_report_xls_no_product.xls'
+HPLC_REPORT_TXT_NO_PRODUCT_PATH_IN_PKG = 'sample_data/raw_hplc_report_txt_no_product.txt'
+
 
 KG_SERVICE = "blazegraph"
 KG_ROUTE = "blazegraph/namespace/kb/sparql"
@@ -78,12 +83,20 @@ def get_service_url(session_scoped_container_getter):
     def _get_service_url(service_name, url_route):
         service = session_scoped_container_getter.get(service_name).network_info[0]
         service_url = f"http://localhost:{service.host_port}/{url_route}"
-        return service_url
 
-    # this will run only once per entire test session and ensures that all the services
-    # in docker containers are ready. Increase the sleep value in case services need a bit
-    # more time to run on your machine.
-    time.sleep(8)
+        # this will run only once per entire test session
+        # it ensures that the services requested in docker containers are ready
+        # e.g. the blazegraph service is ready to accept SPARQL query/update
+        service_available = False
+        while not service_available:
+            try:
+                response = requests.head(service_url)
+                if response.status_code != requests.status_codes.codes.not_found:
+                    service_available = True
+            except requests.exceptions.ConnectionError:
+                time.sleep(3)
+
+        return service_url
     return _get_service_url
 
 @pytest.fixture(scope="session")
@@ -169,20 +182,34 @@ def create_hplc_postpro_agent():
             agent_iri=hplc_postpro_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
             time_interval=hplc_postpro_agent_config.DERIVATION_PERIODIC_TIMESCALE,
             derivation_instance_base_url=hplc_postpro_agent_config.DERIVATION_INSTANCE_BASE_URL,
-            kg_url=hplc_postpro_agent_config.SPARQL_QUERY_ENDPOINT,
-            kg_update_url=hplc_postpro_agent_config.SPARQL_UPDATE_ENDPOINT,
+            kg_url=host_docker_internal_to_localhost(hplc_postpro_agent_config.SPARQL_QUERY_ENDPOINT),
+            kg_update_url=host_docker_internal_to_localhost(hplc_postpro_agent_config.SPARQL_UPDATE_ENDPOINT),
             kg_user=hplc_postpro_agent_config.KG_USERNAME,
             kg_password=hplc_postpro_agent_config.KG_PASSWORD,
-            fs_url=hplc_postpro_agent_config.FILE_SERVER_ENDPOINT,
+            fs_url=host_docker_internal_to_localhost(hplc_postpro_agent_config.FILE_SERVER_ENDPOINT),
             fs_user=hplc_postpro_agent_config.FILE_SERVER_USERNAME,
             fs_password=hplc_postpro_agent_config.FILE_SERVER_PASSWORD,
             agent_endpoint=hplc_postpro_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
             app=Flask(__name__),
             flask_config=FlaskConfigTest(), # NOTE prevent "AssertionError: View function mapping is overwriting an existing endpoint function: scheduler.get_scheduler_info"
-            logger_name='dev'
+            logger_name='dev',
+            max_thread_monitor_async_derivations=hplc_postpro_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+            email_recipient=hplc_postpro_agent_config.EMAIL_RECIPIENT,
+            email_subject_prefix=hplc_postpro_agent_config.EMAIL_SUBJECT_PREFIX+' WSL2',
+            email_username=hplc_postpro_agent_config.EMAIL_USERNAME,
+            email_auth_json_path=os.path.join(SECRETS_PATH,'email_auth.json'),
+            email_start_end_async_derivations=hplc_postpro_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
         )
         return hplc_postpro_agent
     return _create_hplc_postpro_agent
+
+
+# ----------------------------------------------------------------------------------
+# Helper functions
+# ----------------------------------------------------------------------------------
+
+def host_docker_internal_to_localhost(endpoint: str):
+    return endpoint.replace("host.docker.internal:", "localhost:")
 
 def generate_random_download_path(filename_extension):
     return os.path.join(DOWNLOADED_DIR,f'{str(uuid.uuid4())}.'+filename_extension)

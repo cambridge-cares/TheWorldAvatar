@@ -1,14 +1,12 @@
 import hplcpostproagent.tests.conftest as conftest
 from rdflib import Graph
-import logging
 import pkgutil
 import pytest
 import time
 import os
 
-
-logging.getLogger("py4j").setLevel(logging.INFO)
-logger = logging.getLogger("test_hplc_postpro")
+from py4jps import agentlogging
+logger = agentlogging.get_logger('dev')
 
 pytest_plugins = ["docker_compose"]
 
@@ -19,6 +17,18 @@ pytest_plugins = ["docker_compose"]
         (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, True),
         (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, False),
         (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_INCOMPLETE_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_INCOMPLETE_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_INCOMPLETE_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_INCOMPLETE_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_UNIDENTIFIED_PEAKS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_UNIDENTIFIED_PEAKS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_UNIDENTIFIED_PEAKS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_UNIDENTIFIED_PEAKS_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_NO_PRODUCT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_NO_PRODUCT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, True),
+        (conftest.NEW_RXN_EXP_1_IRI, conftest.HPLC_REPORT_XLS_NO_PRODUCT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_1, conftest.CHEMICAL_SOLUTION_1, conftest.HPLC_METHOD_IRI, False),
+        (conftest.NEW_RXN_EXP_2_IRI, conftest.HPLC_REPORT_TXT_NO_PRODUCT_PATH_IN_PKG, conftest.HPLC_DIGITAL_TWIN_2, conftest.CHEMICAL_SOLUTION_2, conftest.HPLC_METHOD_IRI, False),
     ],
 )
 def test_hplc_postpro_agent(
@@ -47,6 +57,21 @@ def test_hplc_postpro_agent(
         remote_report_subdir=remote_report_subdir,
         hplc_digital_twin=hplc_digital_twin
     )
+    # NOTE the following sparql update is a workaround for the dockerised test
+    # This is due to the fact that the remoteFilePath of the HPLC report uploaded here will start from http://localhost:
+    # However, to make it work with the HPLCPostPro Agent, we need to change the remoteFilePath to start from http://host.docker.internal: due to issue https://github.com/cambridge-cares/TheWorldAvatar/issues/347
+    # It might worth noting tho, the original remoteFilePath has type xsd:anyURI, while the new one has type xsd:string
+    # But this doesn't seem to be a problem for the tests now...
+    if not local_agent_test:
+        sparql_client.performUpdate(
+            f"""
+            DELETE {{ <{hplc_report_iri}> <{conftest.ONTOHPLC_REMOTEFILEPATH}> ?path. }}
+            INSERT {{ <{hplc_report_iri}> <{conftest.ONTOHPLC_REMOTEFILEPATH}> ?new_path. }}
+            WHERE {{
+                <{hplc_report_iri}> <{conftest.ONTOHPLC_REMOTEFILEPATH}> ?path.
+                BIND(REPLACE(str(?path), "localhost:", "host.docker.internal:") AS ?new_path)
+            }}"""
+        )
 
     # Make the below connections (note that in normal operation, this should be done as part of HPLCAgent and VapourtecExecutionAgent)
     # <hplc_report> <OntoHPLC:generatedFor> <chemical_solution>
@@ -62,14 +87,8 @@ def test_hplc_postpro_agent(
     # Construct derivation_inputs with the iri of HPLCReport
     derivation_inputs = [hplc_report_iri]
 
-    # Iterate over the list of inputs to add and update the timestamp
-    for input in derivation_inputs:
-        hplc_postpro_agent.derivationClient.addTimeInstance(input)
-        # Update timestamp is needed as the timestamp added using addTimeInstance() is 0
-        hplc_postpro_agent.derivationClient.updateTimestamp(input)
-
     # Create derivation instance given above information, the timestamp of this derivation is 0
-    derivation_iri = hplc_postpro_agent.derivationClient.createAsyncDerivationForNewInfo(hplc_postpro_agent.agentIRI, derivation_inputs)
+    derivation_iri = hplc_postpro_agent.derivation_client.createAsyncDerivationForNewInfo(hplc_postpro_agent.agentIRI, derivation_inputs)
     logger.info(f'Initialised successfully, created derivation instance: <{derivation_iri}>')
 
     # Query timestamp of the derivation for every 20 seconds until it's updated
@@ -99,6 +118,11 @@ def test_hplc_postpro_agent(
             logger.info("============================================")
         assert pi.hasValue.hasUnit is not None
         assert pi.hasValue.hasNumericalValue is not None
+        if report_path_in_pkg in [conftest.HPLC_REPORT_XLS_NO_PRODUCT_PATH_IN_PKG, conftest.HPLC_REPORT_TXT_NO_PRODUCT_PATH_IN_PKG]:
+            if pi.clz in [conftest.ONTOREACTION_YIELD, conftest.ONTOREACTION_CONVERSION]:
+                assert pi.hasValue.hasNumericalValue == 0
+            elif pi.clz in [conftest.ONTOREACTION_ENVIRONMENTALFACTOR, conftest.ONTOREACTION_RUNMATERIALCOST]:
+                assert pi.hasValue.hasNumericalValue == float("inf")
     reload_output_chemical_lst = reload_rxn_rxp_instance.hasOutputChemical
     for oc in reload_output_chemical_lst:
         assert oc.clz == conftest.ONTOREACTION_OUTPUTCHEMICAL

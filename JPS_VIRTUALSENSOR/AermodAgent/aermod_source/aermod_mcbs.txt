@@ -1,0 +1,3436 @@
+=======================================================================
+
+-----  Summaries of AERMOD model changes associated with 22112 are 
+       provided below:
+       
+=======================================================================
+
+       This revised version of AERMOD (dated 22112) includes the
+       following modifications relative to the previous version
+       (dated 21112; see MCB#15 and AERMOD User's Guide.
+ 
+-----  Bug Fixes:
+
+       1.  Tall Stacks/Urban
+           Updated DISTF to calculate plume penetration factor for an 
+           urban source only when the stack height is less than the mixing 
+           height and the stack height plus plume rise is greater than or 
+           equal to mixing height. Prior to this change, the penetration 
+           factor was calculated when the stack height plus plume rise was 
+           greater than or equal to mixing height without consideration for 
+           the stack height relative to the mixing height. Adding the 
+           additional consideration for stack height less than mixing height 
+           avoids NaN for penetration factor calculations when stack height 
+           is at or above mixing height.
+       
+       2.  Premature EOF - Errors.out
+           End-of-File logical variable (EOF) was prematurely set to TRUE 
+           in subroutine SUMTBL in aermod.f when reading from temporary 
+           error file and writing AERMOD.OUT file after encountering 999 
+           warnings in temporary file. In some circumstances, this would 
+           result in overwriting existing messages beyond the first 999 
+           in the temporary file before messages are written to the 
+           permanent ERRORS.OUT file. Subroutine in SUMTBL in aermod.f 
+           was updated to read to end of the temporary file to avoid 
+           overwriting existing messages.
+       
+       3.  NO2 Background - PVMRM
+           Corrected double counting of NO2 background concentrations when 
+           the PVMRM NOX-to-NO2 Tier 3 method is applied when modeling NO2.
+       
+       4.  BLPINPUT Checks
+           Corrected the logic in SOSET.f to check that a BLPINPUT record 
+           is present in the input control file when one or more buoyant 
+           line sources are modeled. Also added checks for the omission or 
+           presence of combinations of BUOYLINE source type, BLPINPUT 
+           keyword, and BLPGROUP keyword
+       
+       5.  URBANOPT - Monin-Obukhov Length
+           Corrected Monin-Obukhov Length calculation for URBANOPT to select 
+           the most neutral value for nighttime hours and the most convective 
+           for daytime hours.
+       
+       6.  URBANOPT - BUOYLINE PG Stability
+           Corrected the PG Stability class assignment for the BOUYLINE 
+           source when urban option is used. PG stability class is now set 
+           to 4 for stable hours when the URBANOPT is used.
+       
+       7.  BUOYLINE Source Limit
+           The array DEL was changed from a fixed value (10) to an allocatable 
+           array. Corrected an additional bug in which two or more BLPGROUP 
+           keywords with the same BLP Group ID (BLPGrpID) caused an error 
+           during setup, i.e., BLPGROUP was not repeatable with the same 
+           BLPGrpID, inconsistent with the AERMOD User’s Guide
+       
+       8.  BL_INTRSE - Loop Indices
+           Corrected selection of indices to be used in an interpolation in 
+           subroutine BL_INTRSE in file bline.f. A limited number of indices 
+           were selected in v21112, the correction allows all indices to be 
+           selected.       
+       
+       9.  Vertical Velocity Profile Discontinuity
+           Corrected discontinuity in vertical velocity profile at 
+           (Z = Z0 +_DISPHT).
+              
+      10.  Initial Lateral Sigma-y
+           Corrected double counting of initial lateral dispersion (sigmay) 
+           for RLINE source types.
+      
+      11.  RLINEXT Barrier Algorithm
+           Corrections to RLINEXT barrier algorithm: initialize barrier 
+           variables in RLCALC; correct location of barrier relative to 
+           road in TRANSLATE_ROTATE; correct location of release for 
+           upwind barriers in oblique winds
+      
+      12.  Order of Variable Declarations
+           Corrected order of variable declarations for array lengths in 
+           POLYINTERP in rline.f, needed for some compilers.
+      
+      13.  Debug File Units
+           Added 900 to the file units for AWMADWDBUNT, RLINEDBUNT, 
+           PLATFMDBUNT, URBNUT, URBNUT1, and BLPUNT in modules.f to 
+           avoid possible output file unit conflict with several system 
+           files. Conflict is still possible, but user now receives 
+           warning of conflict.
+
+-----  Enhancements:
+
+       1.  Unused Variables
+           Comment out variables that are set but never used and variables 
+           that are defined but never used.
+       
+       2.  User Options Summary
+           Reformatted user options summary that is reported in the standard 
+           aermod.out file to simplify future code maintenance.
+       
+       3.  BUOYLINE Debug File
+           Added debug file for the BOUYLINE source, RLINE source types, 
+           and the urban option, URBANOPT.
+       
+       4.  EVALFIL Format
+           Modified the EVALFIL output to have only one line per hour/receptor 
+           rather than screen breaks.
+       
+       5.  RLINE Meander
+           Implemented MEANDR subroutine in RLINE for calculating FRAN 
+           (fraction of random plume). This update replaces original RLINE 
+           meander calculations and further integrates RLINE into AERMOD 
+           for consistency with AERMOD formulation for other source types.
+       
+       6.  Error/Warning Messages - Array Indices
+           Updated error/warning message arrays to use dynamic array indices 
+           (incremented variable) rather than hardcoded numbers to simplify 
+           future code maintenance.
+       
+       7.  RLINE FASTALL
+           Added a FAST option for RLINE source types based on CALINE 
+           interpolation approach for estimating plume width. This same 
+           approach has been applied in estimating the effective wind speed 
+           for RLINE in which a look-up table us used to determine plume
+           wind speed, reducing computation time.
+       
+       8.  RLINE/BUOYLINE - Urban
+           Removed ALPHA requirement for using the URBAN option with the 
+           RLINE or BOUYLINE sources
+           using the subroutine LTOPG.
+
+-----  Formulation Updates - Regulatory:
+
+       1.  Minimum Ozone
+           NOMINO3 option has been added that removes the nighttime, 
+           stable, minimum ozone restriction for NO2 conversion. Unless 
+           NOMINO3 option is specified, AERMOD will limit the minimum 
+           nighttime ozone to 40 ppb (78 ug/m3) for NO conversion in OLM, 
+           PVMRM, GRSM, and TTRM. NOMINO3 option should be used in 
+           consultation with reviewing agency.
+
+-----  Formulation Updates - BETA:
+
+       1.  Generic Reaction Set Method (GRSM)
+           The GRSM NO2 conversion method has been changed from ALPHA to 
+           BETA status.
+
+-----  Formulation Updates - ALPHA:
+
+       1.  PLATFORM Downwash
+           Added new keyword, PLATFORM, on SO pathway to input overwater 
+           platform dimensions. One platform is associated with one SRCID. 
+           Modified POINT source type processing to enhance plume spread 
+           and decrease plume rise when a platform is present.
+       
+       2.  RLINEFDH
+           Added model option RLINEFDH, which removes the displacement 
+           height from RLINE wind speed profile.       
+       
+       3.  Travel Time Reaction Method - 2
+           The TTRM2 NO2 conversion method has been added as a new ALPHA NO2 
+           conversion technique. TTRM2 applies the existing TTRM method 
+           with one of ARM2, OLM, or PVMRM and will select the lowest 
+           NO2 concentration from TTRM and the other selected NO2 
+           technique.
+       
+       4.  SWPOINT - Sidewash
+           Experimental source type SWPOINT was added to facilitate further 
+           research of “sidewash” phenomena caused by building downwash. 
+           Sidewash occurs when wind is at an oblique angle to the long 
+           side of an elongated building. In this circumstance, there is
+           a lateral shift of the cavity that forms on the lee side of the 
+           building. This a point type source with limited input and no 
+           buoyancy and does not utilize the PRIME building downwash algorithm.
+       
+       5.  AWMAUTURB and AWMAUTURBHX
+           Updated subroutine wake_u_turb in prime.f associated with AWMA 
+           ALPHA downwash options AWMAUTURB and AWMAUTURBHX. Limit on tiz 
+           updated from 50 to 18. Limit on tiy updated from 50 to 6.
+       
+       6.  FRANmin and PBAL
+           Added two alpha low wind options (FRANmin and PBAL) to the 
+           LOW_WIND keyword in the CO pathway. FRANmin is a user-specified 
+           minimum value for the meander factor within a range of 0.0 – 1.0 
+           which overrides the default value of 0.0. PBAL is a secondary 
+           keyword to replace the default energy balance approach to 
+           determining plume meander with a momentum balance approach.
+      
+
+
+=======================================================================
+
+-----  Summaries of AERMOD model changes prior to version 22112 are 
+       provided below:
+       
+=======================================================================
+
+       This revised version of AERMOD (dated 21112) includes the
+       following modifications relative to the previous version
+       (dated 19191); see MCB#15 and AERMOD User's Guide.
+ 
+-----  Bug Fixes:
+
+       1.  BUOYANT Line Source Flagpole Receptor Heights
+           Added capability to use flagpole receptor heights to buoyant
+           line sources.
+
+       2.  Deposition Debug File
+           Updated subroutine DEBOPT to add a default debug filename, 
+           DEPOS.DBG that contains wet deposition information when 
+           deposition debug requested and model debug is not requested.
+
+       3.  MMIF/AERMET
+           Updated subroutine METEXT to recognize MMIF data processed 
+           through AERMET as valid. Previously MMIF processed through 
+           AERMET was seen by AERMOD as possibly from an outdated version 
+           of AERMET
+
+       4.  Error Message - Background Units
+           Added error message when using ppb or ppm for background units 
+           unless pollutant is NO2, SO2, or CO. Other pollutants are 
+           assumed to be ug/m3 and do not have conversion factors built in.
+
+       5.  Duplicate Sigma-v Calculations
+           Updated PFLCNV to remove duplicate sigma-v calculations when 
+           checking to see if adjust u* has been applied. Sigma-v is 
+           initially calculated from sigma-theta if wind speed is not 
+           missing. Duplicate code calculated sigma-v from sigma-theta 
+           even if wind speed was missing. This fix only affects
+           meteorological data with site-specific turbulence measurements. 
+           Applications involving NWS data only are not affected.
+
+       6.  Parallel BUOYLINE Check
+           Added check to determine if lines in a buoyant line group are 
+           parallel; differences in excess of 5 degrees generates a warning 
+           message and AERMOD will continue the model run.
+
+       7.  Correction to for Met Params Reset
+           Corrected BL_CALC to not reset key met parameters to rural values 
+           when no urban sources.
+
+       8.  RLINE QEMIS
+           Updated RLINE.F to add local QEMIS for calculation of emissions 
+           when using EMISFACT keyword for time-varying emission factors 
+           with RLINE sources.
+
+       9.  AO3CONC
+           Updated HRLOOP to set AO3CONC to missing when reading missing 
+           values from the hourly ozone data file so that MAXDCONT results 
+           will match base AERMOD run.
+
+      10.  AWMADWDBG
+           Initialize logical variable AWMADWDBG to FALSE to avoid writing 
+           downwash debug output even when building downwash not being 
+           calculated.
+           
+      11.  AWMA_DOWNWASH
+           Updated AWMA_DOWNWASH subroutine in COSET.F to change error 
+           message for AWMAUTURB and STREAMLINE to be 126 to avoid 
+           conflict with intended purpose of error message 125. Error 
+           message 125 is for situations where keyword FINISHED is 
+           not found. Updated modules.f to include error message 126 
+           and error message 125.
+      
+      12.  SUMBACK_NO2 and EV_SUMBACK
+           Updated the SUMBACK_NO2 and EV_SUMBACK modules to properly 
+           convert background concentrations when the BACKUNIT keyword 
+           is used to convert output units.
+           
+      13.  RLINE or RLINEXT INCLUDED Files
+           Removed fatal error which would occur if processing INCLUDED 
+           files with RLINE or RLINEXT LOCATION inputs.
+
+-----  Enhancements:
+
+       1.  Parallel BUOYLINE Check
+           Added check to determine if lines in a buoyant line group are 
+           parallel; differences in excess of 5 degrees generates a warning 
+           message and AERMOD will continue the model run.
+           
+       2.  Multiple BUOYLINE Groups
+           Added capability to process multiple buoyant line groups.
+           
+       3.  'Stack height > or = EPA Formula Height
+           The warning message that has been associated with code 
+           305 - 'Stack height > or = EPA formula height for SRCID: 
+           ' has been removed and AERMOD will no longer issue this 
+           message. This warning was added in version 11059 when the WAKEFLG 
+           setting based on the wind direction specific GEP calculation was 
+           disabled. The warning was originally added at the time to inform 
+           users that downwash would be applied even though stack height 
+           was above the direction specific GEP for the hour, calculated 
+           using the direction specific building dimension for the current 
+           hour the model is processing. The message has caused confusion 
+           implying that the stack height is > or = to the non-direction 
+           specific formula GEP height based on the building height and 
+           maximum projected building width.
+           
+       4.  Gas Deposition
+           Updated SOSET to allow users to enter a 0 for gas deposition 
+           parameters to use a default value for that parameter. Also 
+           updated SOSET to allow users to enter a 0 for fine mass 
+           fraction and/or mean particle diameter for certain pollutants.
+           
+       5.  Sigma-theta, Sigma-w
+           Add new keywords in ME pathway to set non-missing σθ or σw in 
+           profile file to missing for all hours, stable hours only, or 
+           convective hours only. Options are also available to set each 
+           one missing independently of the other.
+           
+       6.  Processing Speed
+           Made changes to code to improve speed without affecting result 
+           (e.g., using integer exponent when possible).
+           
+       7.  Prognostic Data Processing
+           Added PROG to metext.f and meset.f to include PROG as viable 
+           source of met in addition to MMIF. This is to accommodate the 
+           update to AERMET with a PROG pathway. The update ensures 
+           capability with previous versions of AERMET and future AERMET 
+           updates. This only affects cases with prognostic data.
+           using the subroutine LTOPG.
+
+-----  Formulation Updates - Regulatory: None
+
+-----  Formulation Updates - BETA: None
+
+-----  Formulation Updates - ALPHA:
+
+       1.  RLINEXT - 2-Barriers
+           A 2-barrier algorithms (i.e., barriers on both sides of a roadway) 
+           was added for the RLINEXT source type. The input SO RBARRIER 
+           pathway now includes an option for a second barrier. 
+           
+       2.  RLINEXT - 1 Barrier
+           The existing 1-barrier algorithms were updated for the RLINEXT 
+           source type based on Ahangar et al. 2017 and Venkatram et al. 2021.
+          
+       3.  AWMAENTRAIN and AWMAUTURBHX
+           Added two new ALPHA options (AWMAENTRAIN and AWMAUTURBHX) that affect 
+           that affect the PRIME downwash algorithm. AWMAENTRAIN changes the 
+           beta entrainment coefficient for PRIME downwash referred to in 
+           the code as, beta0 and betap, from 0.60 to 0.35 in PRIME.f. 
+           AWMAUTURBHX enables enhanced calculation of tiz, tiy using 
+           subroutine wake_u_turb; it is also used to get a new value of 
+           velocity deficit like AWMAUTURB. With this option all enhanced 
+           calculations use the PRIME plume rise at each x value.
+           
+       4.  SWMIN and BIGT
+           Add two new ALPHA low wind options (SWMIN and BIGT) which allow 
+           the user to override AERMOD’s default values of minimum sigma-w 
+           and the time period used to calculate the time scale TRAN, 
+           respectively. AERMOD’s default value for SWMIN is 0.02 m/s. 
+           With the SWMIN option, the user can specify a value within a 
+           range of 0.0 m/s to 3.0 m/s. AERMOD’s default value for BIGT 
+           is 24.0 hours. With the BIGT option, the user can specify a value 
+           within a range of 0.5 hours to 48.0 hours.
+           
+       5.  Generic Reaction Set Method (GRSM)
+           Added the Generic Reaction Set Method (GRSM) for computing NO to NO2 
+           conversion based on equilibrium chemistry between NO, NO2, and the 
+           reaction with ozone. Method requires ozone background through the 
+           OZONEVAL, O3VALUES, or OZONEFIL keyword and NOx background through 
+           new NOXVALUE, NOX_VALS, or NOX_FILE keyword.
+           
+       6.  Travel Time Reaction Method (TTRM)
+           Added the Travel Time Reaction Method (TTRM) for computing NO to NO2 
+           conversion based on the reaction with ozone and limitations of the 
+           travel time between the source and receptor. Method requires ozone 
+           background through the OZONEVAL, O3VALUES, or OZONEFIL keyword.         
+       
+
+=======================================================================
+
+       This revised version of AERMOD (dated 19191) includes the
+       following modifications relative to the previous version
+       (dated 18181); see MCB#14 and AERMOD User's Guide.
+
+-----  Bug Fixes:
+
+       1.  BACKGROUND Concentrations output units
+           Modified subroutine SUMBACK to convert background concentrations
+           to the model output units requested via the EMISUNIT or CONCUNIT
+           keywords. Background concentrations are converted internally in
+           AERMOD to μg/m3 but were not being converted to the requested
+           output units when model outputs were not μg/m3. Background
+           concentrations are converted to the requested model output 
+           units by dividing EMIFAC(1) by 1.0x106 (the default conversion
+           of grams to mg) in SUMBACK.
+
+       2.  BACKGROUND Concentrations and deposition
+           Modified subroutine SUMBACK to not include background
+           concentrations with deposition outputs. Previously, if
+           background concentrations were in an AERMOD run with
+           deposition outputs, background concentrations were added
+           to deposition fluxes.
+
+       3.  Wet particle deposition and Method_2 particle deposition
+           Modified subroutine SCAVRAT to calculate the scavenging
+           ratio when using Method_2 particle deposition based on a 
+           parameterization of the washout ratio from Wesely 2002. 
+           Washout ratio is calculated based on the fine mass fraction, 
+           and an assumed diameter of 6 microns for the coarse mode. 
+           The washout ratio is used to calculate the collision efficiency 
+           which is then used to calculate the scavenging ratio. Previously, 
+           AERMOD used particle density and settling velocity for the fine 
+           particle to calculate wet deposition parameters when using 
+           Method 1 or 2 for particle deposition. These were inconsistent
+           with the Method 2 inputs in that density is not an input for 
+           Method 2 and Method 2 dry deposition assumes a settling 
+           velocity of 0 m/s for the fine particle mode.
+           
+       4.  Buoyant Line Source Minimum Release Height and Minimum Wind Speed
+           A minimum release height of 2.0 meters is imposed. A buoyant 
+           line source release height of 0.0 meters caused AERMOD to run 
+           very slowly and produce 0.0 ug/m3 for all hours and receptors. 
+           A minimum reference height wind speed of 1.0 m/s is imposed. 
+           This value is consistent with the meteorology that was produced 
+           with the CRSTER meteorological processor, the met processor for 
+           the Buoyant Line and Point (BLP) model.
+
+       5.  MODELOPT Number 6
+           Previously, the AERMOD.out summary file lists two No. 6 user-specified 
+           options when user selects non-DFAULT and URBANOPT. One of the two 
+           messages incorrectly indicates a NO2 conversion is applied when 
+           non-NO2 POLLUTID used. An if statement was added for NO2 processing 
+           in inpsum.f to remove the duplicated message.
+          
+       6.  DFAULT with ADJ_Ustar
+           Previously, a W402 warning message was returned in the AERMOD.out 
+           summary file when the DFAULT MODELOPT was used without use of the 
+           AERMET ADJ_U*. The block of code responsible for the incorrect warning
+           message was eliminated in PFLCNV subroutine of metext.f.
+
+       7.  ERRMSG(18)
+           ERRMSG(18) was defined three times in modules.f, using ERRHDL numbers 
+           133, 137, and 138, which resulted in some compilers (g95) not 
+           functioning properly. The modules.f file was reorganized sequentially 
+           and ERRMSG(18) usage of ERRHDL 137 and 138 was removed. ERRHDL 137 
+           and 138 were replaced with ERRMSG 204 in the coset.f.
+
+       8.  LOW_WIND Undefined ERROR Message
+           Previously, an undefined ERROR message and “ELWD” error code was 
+           returned in the AERMOD.out summary file when the LOW_WIND MODELOPT 
+           was used without the ALPHA MODELOPT. The ERROR message code was 
+           modified to “E133” in coset.f.
+
+       9.  ELEVUNIT
+           Previously, the optional ELEVUNIT keyword to convert elevation 
+           units from feet to meters was not applied to LINE or BUOYLINE sources.  
+           The SOLOCA subroutine in soset.f was modified to apply the feet to  
+           meters conversion used for other source types to LINE and BUOYLINE sources.
+
+-----  Enhancements:
+
+       1.  ARM2 Enabled with BETA RLINE and ALPHA RLINEXT Source Types
+           ARM2 was extended for application to sources and source groups 
+           that include the BETA RLINE and ALPHA RLINEXT line sources.
+
+       2.  EVENT Processing Enabled with BETA RLINE and ALPHA RLINEXT Source Types
+           EVENT processing was extended for application to sources and 
+           source groups that include RLINE and RLINEXT line sources.
+
+       3.  Urban Stability Enabled with BETA RLINE and ALPHA RLINEXT Source Types
+           The URBAN option was extended for application to sources 
+           and source groups that include RLINE and RLINEXT line sources.
+
+       4.  Buoyant Line Source Urban Stability
+           Previously, AERMOD treated a buoyant line source in an urban 
+           environment as a source in a rural environment, as is done 
+           in the Buoyant Line and Point (BLP) model. The capability to 
+           process a buoyant line source in an urban environment was 
+           added as an ALPHA option. The surface roughness (SFCZ0), 
+           Monin-Obukhov length (OBULEN), and mixing height (ZI) are 
+           adjusted for an urban environment and a new value of the 
+           Pasquill-Gifford (P-G) stability category (KST) is computed 
+           using the subroutine LTOPG.
+
+-----  Formulation updates: None
+
+-----  BETA
+
+       1.  RLINE Source Type
+           The RLINE source type was added to model roadways, or 
+           similar line-type releases, which uses the dispersion 
+           calculations from the R-LINE model (version 1.2) and 
+           requires the BETA and FLAT model options. The RLINE 
+           source type has identical inputs to the LINE source type
+           R-LINE model: current version 1.2, last updated November 2013 
+           (https://www.cmascenter.org/r-line).  
+
+-----  ALPHA
+
+       1.  Enhanced Building Downwash Options
+           Options to examine the effects of enhanced building downwash 
+           algorithms for point sources was added. The user can 
+           selectively apply one or more of these options in the 
+           AERMOD input control file. Two new keywords are added 
+           to the CO pathway: ORD_DWNW and AWMADWNW. Each of these 
+           keywords has several parameters that control downwash 
+           processing. For ORD_DWNW, the parameters are: ORDUEFF to 
+           control the height at which an effective wind speed is 
+           calculated for main plume concentrations; ORDTURB to control 
+           an adjustment for the non-dimensional vertical turbulence 
+           intensity, wiz0, from 0.6 to 0.7; and ORDCAV to shift the 
+           point at which the vertical and lateral dispersion coefficients 
+           begin to grow with downwind distance from the lee edge of the 
+           building to the end of the cavity. Parameters available for the 
+           AWMADWNW keyword are: AWMAUEFF to control the height at which 
+           an effective wind speed is calculated for main plume 
+           concentrations; AWMAUTURB to specify new lower and upper 
+           bounds for calculating the effective parameters ueff, sweff, 
+           sveff, and tgeff; and STREAMLINE (or STREAMLINED) to perform 
+           downwash for a streamlined building such as a cooling tower. 
+           Any combination of parameters is allowed EXCEPT ORDUEFF and 
+           AWMAUEFF cannot both be specified in the same model run. 
+           In addition, STREAMLINE (or STREAMLINED) requires the AWMAUTURB 
+           option to also be specified. If any of these keywords and 
+           parameters are used, the ALPHA option must be specified on 
+           the MODELOPT record. An optional debug file is available 
+           for the options associated with the AWMADWNW keyword by 
+           specifying AWMADW on the DEBUGOPT keyword. If none of 
+           these options are applied, the standard AERMOD building 
+           downwash algorithms will be used.
+
+       2.  RLINEXT Source Type
+           The RLINEXT source type was added to model roadways, 
+           or similar line-type releases, using the dispersion 
+           calculations from the R-LINE model (version 1.2) and 
+           requires the ALPHA and FLAT model options. The RLINEXT 
+           source has inputs and capabilities identical to the R-LINE model. 
+           The RLINEXT source has capability to model depressed roadways 
+           and roadside barriers; the RLINE source does not have these 
+           capabilities.
+           R-LINE model: current version 1.2, last updated November 2013 
+           (https://www.cmascenter.org/r-line).
+
+       3.  Method 2 particle deposition and gas deposition ALPHA Option
+           Gas deposition and method 2 particle deposition were 
+           switched from non-DEFAULT to ALPHA options. While the 
+           two deposition options were previously non-DEFAULT, 
+           there has been little evaluation of their use in AERMOD. 
+           It was decided to make these two options ALPHA options 
+           while the deposition algorithms undergo evaluation. 
+           Note that METHOD 1 particle deposition is still allowed 
+           with the DFAULT option as it is based on a method from 
+           a previous model, the Acid Deposition and Oxidant model (ADOM)
+       
+
+=======================================================================
+
+       This revised version of AERMOD (dated 18081) includes the
+       following modifications relative to the previous version
+       (dated 16216); see MCB#13 and AERMOD User's Guide.
+
+-----  Bug Fixes:
+
+       1.  In the subroutine SZSFCLPR in prime.f, the calculation of 
+           the surface layer dispersion term is different for stable 
+           and unstable conditions. For unstable conditions, in 15181 
+           the term was calculated if the receptor height was less 
+           than 1/10 of the mixing height. Otherwise, the surface 
+           layer dispersion term was set to 0.0 in unstable conditions.
+
+           In 16216r, the conditional statement was modified to 
+           calculate the term if the release was considered a surface 
+           release, regardless of the receptor height. Thus, the 
+           surface layer dispersion term is applied in 16216r under 
+           unstable conditions to all receptors if defined as a 
+           surface release which is determined differently under 
+           different conditions.
+
+           Code was reverted back to 15181.
+
+       2.  AERMOD includes a decay coefficient for URBAN SO2sources.  
+           This decay will automatically apply if the DFAULT option 
+           is specified, but was not applied for Non-DFAULT 
+           applications of AERMOD (i.e., when DFAULT option keyword 
+           was omitted). The 4-hour half-life is now applied to SO2 
+           urban sources regardless of whether the DFAULT option is 
+           specified or not and a user-defined value is not specified.
+           The default decay coefficient is 4-hours if a user-defined 
+           value is not specified. Subroutines BL_CALC in calc1.f and 
+           DECAY in calc2.f were updated to apply the default (or 
+           user-defined) decay coefficient to urban SO2 sources for 
+           non-default applications.
+
+       3.  For multi-year runs, when outputting ANNUAL POSTFILEs, 
+           AERMOD would output each year's annual concentration 
+           at each receptor with year numbers 1,2, etc.  Following 
+           all of the individual years' concentrations, AERMOD would 
+           output the multi-year average at each receptor and labeled 
+           the row with the final year number.  Reporting individual 
+           year's concentrations was introduced in 15181.  Prior to 
+           15181, the POSTFILE would output the multi-year average, 
+           not individual years. In this release, the POSTFILE will 
+           have the individual years, but not the multi-year average. 
+           The multi-year average can still be obtained from a 
+           PLOTFILE. In aermod.f, the condition of call to subroutine 
+           PSTANN was modified to avoid writing period average to 
+           annual POSTFILE.
+
+       4.  Summary table of buoyant line source parameters was not 
+           included in the AERMOD.OUT file along with the summaries 
+           for other source types. Summary table was added.
+
+       5.  AERMOD was using the wrong seasonal assignment for 
+           calculation of cuticle resistance for ozone (Rcox) for 
+           winter and snow precipitation in subroutine VDP in 
+           calc1.f. Conditional statement was corrected to reference 
+           seasonal code 4 (winter with snow) rather than 5.
+
+       6.  Corrections were made to the range checks for user-defined 
+           ARM2 limits and Error and Warning messages were updated 
+           accordingly.
+
+       7.  AERMOD was printing the SECT1 values for both SECT1 and 
+           SECT2 for: SEASON, MONTH, HROFDY, HRDOW, HRDOW7, SHRDOW, 
+           SHRDOW7, MHRDOW, MHRDOW7 (functioning correctly for SEASHR). 
+           SECT2 values were correctly used in the model, but were 
+           printed incorrectly in the output list file Also, AERMOD 
+           was not writing any values for WSPEED. Reporting errors 
+           were corrected in this release.
+
+       8.  The minimum wind speed was applied to vector winds in 
+           calc1.f and iblval.f by taking the max of the calculated 
+           effective wind speed and minimum wind set as a lower limit 
+           (either a default value or user-defined value that is 
+           entered with the ALPHA and LOW_WIND keywords).
+
+       9.  If the surface meteorological file existed, but was empty, 
+           AERMOD would enter an infinite error loop. This cause AERMOD 
+           to write to the error file until the local disk was full. 
+           meset.f was modified to check to see if the file was empty 
+           on first read and issue the correct warning if so.
+
+-----  Enhancements:
+
+       1.  ARM2 was extended for application to buoyant line sources 
+           and source groups that include buoyant line sources.
+
+       2.  Similar to the BETA option flag, an ALPHA option flag was 
+           added to distinguish options that are considered 
+           research/experimental options (ALPHA) from those that have 
+           been vetted within the scientific community that are under 
+           consideration for promulgation as regulatory options (BETA).
+
+       3.  Capability added for user to specify control filename 
+           (.inp) and standard output filename (.out) on the 
+           command-line when AERMOD is executed. User can include 0, 1, 
+           or 2 arguments. If no arguments are included, AERMOD will 
+           assume the default names (aermod.inp and aermod.out). When 
+           included, the first argument must be the control filename, 
+           and the second argument must be the output filename. If only 
+           the control filename is provided, AERMOD will use the path 
+           and base of the control filename (excluding extension) as the 
+           path and base filename for the output file and append “.out” 
+           to the end of the filename.  Filenames can include the 
+           absolute path or relative path from the working directory.
+
+       4.  Individual BETA options LOWWIND1, LOWWIND2, LOWWIND3 were 
+           removed and replaced with LOW_WIND ALPHA option that enables 
+           user to specify different values for minimum wind speed, 
+           sigma-v, and maximum meander factor (see LOW-WIND Alpha 
+           Option in the Enhancements section).
+
+       5.  A new ALPHA option LOW_WIND which enables the user to 
+           enter user-defined values for minimum wind speed, sigma-v, 
+           and maximum meander factor in lieu of LOWWIND1, LOWWIND2, 
+           and LOWWIND3.
+
+       6.  The original Ambient Ratio Method (ARM), which was replaced 
+           with ARM2, was still functional in AERMOD 16216r and could be 
+           specified when the DFAULT keyword was also specified. ARM has 
+           been removed from AERMOD. Equivalent functionality can be 
+           obtained by setting the maximum and minimum ambient ratio to 
+           the desired value using the ARM2 options. 
+
+       7.  Absoft and gfortran compilers issued warnings that the 
+           user-defined functions ERF and ERFC in prime.f were named 
+           the same as two intrinsic functions. User-defined functions 
+           were renamed FNERF and FNERFC to avoid a potential name 
+           conflict. Call statements were updated to reference new 
+           function names.
+
+       8.  Initialized variables identified by gfortran compiler as 
+           uninitialized. Exceptions are the allocated arrays.  All 
+           variables that were initialized are set = 0.0D0 (all are 
+           double precision). All variables identified were found to 
+           be set somewhere in the code either as the value of another 
+           variable or by formula, so initialization has no effect. 
+           Allocatable arrays were already initialized in code at 
+           some point after allocation.
+
+-----  Formulation updates:
+       
+       None
+       
+=======================================================================
+
+       This revised version of AERMOD (dated 16216) includes the
+       following modifications relative to the previous version
+       (dated 15181); see MCB#12 and AERMOD User's Guide Addendum.
+
+-----  Bug Fixes:
+
+       1.  Modified subroutine HRLOOP to use .LE. instead of .LT. in
+           comparing FULLDATE vs. IEDATE. This affects all pollutants
+           and all source types.
+
+       2.  Modified subroutine ALLSETUP to increment the array
+           dimensions associated with AREA source types by 1 to
+           accommodate more complex AREAPOLY sources. This affects
+           all pollutants and AREA source types.
+
+       3.  Modified subroutine PRESET  to account for name changes
+           in the beta low wind options.
+
+       4.  Modified subroutine SBLRIS to avoid potential runtime
+           errors in calculating plume rise under stable conditions
+           if (TERMB*TERMC+1-TERMD) .LE. 0.0  This affects all
+           pollutants and POINT source types.
+
+       5.  Modified subroutine SETSRC to initialize SURFAC = .T. for
+           sources with release heights less than 0.1 times the
+           mixing height (ZI). This affects all pollutants and POINT
+           source types.
+
+       6.  Modified subroutine CENTROID to set SURFAC = .F. for
+           sources with release heights greater than or equal to the
+           mixing height (ZI). This affects all pollutants and POINT
+           source types.
+
+       7.  Added code to define a receptor exclusion zone in which
+           receptors within the maximum extents of a buoyant line
+           source are omitted from calculations. This affects all
+           pollutants and BUOYLINE source types.
+
+       8.  An individual line in a buoyant line source can be
+           included in a SRCGROUP . This affects all pollutants and
+           all source types.
+
+       9.  The hourly emissions file for a buoyant line source now
+           requires a buoyancy flux parameter for each line of a
+           buoyant line source.  This affects all pollutants and all
+           source types.
+
+       10. Included buoyant line sources in event processing.  This
+           affects all pollutants and BUOYLINE source types.
+
+-----  Enhancements:
+
+       1.  Subroutine PRESET was modified to account for BLP
+           options. This affects all pollutants and all source
+           types.
+
+       2.  Replaced the previous PVMRM option with the PVMRM2
+           option, retaining PVMRM as the option name.   This
+           affects NO2 pollutants and all source types.
+
+       3.  Removed the requirement for specifying the BETA option
+           for application of the PVMRM, OLM, and ARM2 options for
+           NO2. This affects NO2 pollutants and all source types.
+
+       4.  Modified subroutine SOLOCA to remove the BETA/Non-default
+           status of POINTCAP and/or POINTHOR sources. This affects
+           all pollutants and POINTCAP & POINTHOR source types.
+
+       5.  Modified subroutine MEOPEN to remove BETA/Non-default
+           status of MMIF meteorological data.  This affects all
+           pollutants and all source types.
+
+       6.  Modified subroutines MEOPEN and PFLCNV to identify
+           whether measured turbulence parameters (i.e., Sigma-Theta
+           and/or Sigma-W) are included in the PROFFILE input file.
+           This information is used to determine whether an
+           application utilizing the ADJ_U* option in AERMET is
+           considered to be “regulatory” or non-DFAULT. This affects
+           all pollutants and all source types.
+
+-----  MISCELLANEOUS:
+
+       1.  The format of the MODOPS array included in the header
+           records of AERMOD output files has been slightly
+           modified. This affects all pollutants and all source
+           types.
+       
+
+=======================================================================
+
+
+       This revised version of AERMOD (dated 15181) includes the
+       following modifications relative to the previous version
+       (dated 14134); see MCB#11 and AERMOD User's Guide Addendum.
+
+-----  Bug Fixes:
+
+       1.  Modified subroutine PCALC to check for POINTCAP
+           and POINTHOR options before checking for the NOSTD
+           option. Previous versions checked for NOSTD first, which
+           could result in skipping the POINTCAP option and
+           producing erroneous results for capped stacks if the
+           NOSTD option was included on the MODELOPT keyword.
+           Results for POINTHOR sources would not have been affected
+           by this bug since the POINTHOR option is consistent with
+           the NOSTD option. This affects all pollutants and
+           pointcap source types.
+
+       2.  Modified subroutine CENTROID to account for
+           distance-dependent centroid height (CENTER) and SURFAC
+           logical variable under stable conditions. This affects
+           all pollutants and all source types.
+
+       3.  Modified subroutines REFL_HT and DISTF to address a
+           formulation bug that imposed unrealistic limits on plume
+           rise for some tall sources in urban areas (see
+           Section 5.1 of the AERMOD Implementation Guide). The new
+           formulation emulates the plume rise for penetrated plumes
+           during convective conditions if the initial plume height
+           estimate is greater than or equal to the urban mixing
+           height. This affects all pollutants and all source types.
+
+       4.  Modified subroutines PCALC, VCALC, ACALC, and OCALC to
+           include an array to save the flow vectors for each source
+           for use in the MAXDCONT processing. This affects NO2,
+           SO2, and PM2.5 pollutants and all source types.
+
+       5.  Modified subroutines ACALC and OCALC to reset the
+           emission rate (QTK) after processing each receptor since
+           it may have been changed if the point source
+           approximation was used under the FASTAREA or FASTALL
+           options. This affects all pollutants and AREA, AREACIRC,
+           AREAPOLY, LINE, and OPENPIT source types.
+
+       6.  Modified subroutines PLUME_VOL, PCALC, VCALC, ACALC, and
+           OCALC to include the vertical and horizontal dimensions
+           of the contributing sources for the penetrated plume
+           contribution for the PVMRM and PVMRM2 options. This
+           affects NO2 pollutants and all source types.
+
+       7.  Modified subroutines PVMRM_CALC and MAJOR_CONT to remove
+           the CWDELT and DWDELT variables previously used in
+           determining which sources contributed to the NO to NO2
+           conversion under the PVMRM option. This affects NO2
+           pollutants and all source types.
+
+       8.  Modified subroutine MAJOR_CONT to define the elevation of
+           the receptor above the source elevation (ZRT) to use ZRT
+           based on the dominant source instead of varying for each
+           source. This affects NO2 pollutants and all source types.
+
+       9.  Modified subroutine MOLES_NOX to determine the total NOx
+           emissions of major contributing sources separately based
+           on the horizontal plume component and the
+           terrainresponding plume component under the PVMRM and
+           PVMRM2 options. The NOx emissions associated with the
+           penetrated plume contribution were also added for
+           horizontal and terrain-responding plume components. This
+           affects NO2 pollutants and all source types.
+
+       10. Modified subroutine OZONVALS to use ISECT instead of
+           IO3SECT as the array index for variable O3 concentrations
+           for the HRDOW variable emission option. This affects NO2
+           pollutants and all source types.
+
+       11.  Modified subroutines HRLOOP, SET_METDAT and DAYRNG to
+           include separate IPROC and IPROCL arrays to identify
+           which days to process for non-leap years and leap years,
+           respectively, under the ME DAYRANGE keyword. This affects
+           all pollutants and all source types.
+
+       12.  Modified subroutines PSIDE and PSIDE_TOX to change the
+           tolerance parameter passed to subroutine ZBRENT from 1.0
+           to 0.001. Earlier versions may have produced anomalous
+           results for winds blowing nearly perpendicular to AREA
+           LINE sources in some cases. This affects all pollutants
+           and area, areapoly, areacirc, line, and, openpit source
+           types.
+
+-----  Enhancements:
+
+       1.  Included a new Plume Volume Molar Ration Method 2
+           non-DFAULT/BETA option that uses total dispersion
+           coefficients instead of relative dispersion coefficients
+           for stable conditions and relative dispersion
+           coefficients for unstable conditions. The new PVMRM2
+           option incorporates additional modifications relative to
+           the PVMRM option, including the use of downwind distance
+           instead of radial distance from source to receptor to
+           calculate the plume volume and moles of NOx. See the
+           modified Model Formulation Document Addendum for
+           additional details. This affects NO2 pollutants and all
+           source types.
+
+       2.  Included a new LowWind3 non-DFAULT/BETA option that
+           increases the minimum value of sigma-v from 0.2 to 0.3,
+           consistent with the LowWind2 option, but eliminates
+           upwind dispersion, consistent with the LowWind1 option.
+           The LowWind3 option uses an “effective” sigma-y value
+           that replicates the centerline concentration accounting
+           for meander, but sets concentrations to zero (0) for
+           receptors that are more than 6*sigma-y off the plume
+           centerline, similar to the FASTALL option. This affects
+           all pollutants and all source types.
+
+       3.  Included a new source type option, BUOYLINE, to allow
+           modeling of buoyant line sources based on the BLP model.
+           This affects all pollutants and BUOYLINE source types.
+
+       4.  Included a new debug file for the relative dispersion
+           coefficients used with the PVMRM and PVMRM2 options. This
+           affects NO2 pollutants and all source types.
+
+       5.  Modified subroutine PSTANN to include ANNUAL results for
+           each year in the data period for ANNUAL POSTFILEs. This
+           affects all pollutants and all source types.
+
+       6.  Modified subroutine OUCARD to allow use of the MAXDAILY
+           and MDYBYYR output options for 24-hour PM2.5 processing.
+           This affects PM2.5 pollutants and all source types.
+
+       7.  Modified subroutine COCARD to include a field in the
+           MODOPS array incorporated in the page header for all
+           output files to indicate whether all sources were modeled
+           as RURAL, all sources were modeled as URBAN, or if both
+           RURAL and URBAN sources were included. This affects all
+           pollutants and all source types.
+
+-----  Miscellaneous:
+
+       1.  Modified subroutine METDEB to clarify that the ambient
+           temperature included in the METEOR debug file is at stack
+           height rather that at the surface. This affects all
+           pollutants and all source types.
+       
+
+=======================================================================
+
+
+       This revised version of AERMOD (dated 14134) includes the
+       following modifications relative to the previous version
+       (dated 13350); see MCB#10 and AERMOD User's Guide Addendum.
+
+-----  Bug Fixes:
+
+       1.  Modified several subroutines to address issues with EVENT
+           processing. Subroutine EVCALC was modified to call PCALC
+           VCALC/ACALC/OCALC (as appropriate) if the PVMRM, OLM,
+           ARM, or ARM2 options apply, even if the source is not
+           included in the source group for the event being
+           processed, since the full CHI array of hourly results for
+           each source and receptor is needed for these NO2 options.
+           Subroutine EVLOOP was modified to perform date
+           synchronization checks based on YR/MN/DY (without the HR)
+           due to the fact that hourly events within the same day
+           may not be in chronological order, and to include a
+           logical array to keep track of whether an EVENT has
+           already been processed to avoid reprocessing of events
+           that may occur within the say day but may not be in
+           chronological order. Subroutine EVLOOP was also modified
+           to call PVMRM_CALC and OLM_CALC for hours with missing
+           ozone data. This affects NO2 pollutants and all source
+           types.
+
+       2.  Modified subroutines ARM_CALC and ARM2_CALC to address
+           several issues associated with the ARM and ARM2 options,
+           including the omission of applying ARM for ANNUAL
+           averages, and also modified subroutine PERAVE to
+           eliminate code specific to the ARM and ARM2 options to
+           correct problems with annual averages for ARM and ARM2.
+           This affects NO2 pollutants and all source types.
+
+       3.  Modified subroutines PVMRM_CALC and PLUME_VOL to include
+           the receptor index in the call to PLUME_VOL to account
+           for distance-dependent plume penetration factor (PPFACT).
+           This affects NO2 pollutants and all source types.
+
+       4.  To address issues associated with the NO2 options in
+           general, subroutines SUMVAL and SUMBACK were modified to
+           remove the source group loop, and subroutines PCALC,
+           VCALC, ACALC, and OCALC, as well as ARM_CALC, ARM2_CALC,
+           OLM_CALC, and PVMRM_CALC, were modified to include a
+           source group loop when calling SUMVAL and SUMBACK. This
+           affects NO2 pollutants and all source types.
+
+       5.  Modified subroutines PCALC, VCALC, ACALC, and OCALC, to
+           fully account for cases when concentration calculations
+           are skipped, e.g., receptor located less than 1m from a
+           POINT source, located “inside” a VOLUME or OPENPIT
+           source, or receptor located upwind of an AREA source, in
+           terms of reinitializing the CHI array associated with the
+           PVMRM, OLM, ARM, or ARM2 options, and other arrays
+           associated with the PVMRM option. This affects NO2
+           pollutants and POINT, VOLUME, and OPENPIT source types.
+
+       6.  Modified subroutines PCALC, VCALC, ACALC, and OCALC, to
+           store the EPSEFF parameter to an array by source and
+           receptor for use in PVMRM_CALC for the PVMRM option. This
+           affects NO2 pollutants and all source types.
+
+       7.  Modified subroutine LPARM to include checks on the aspect
+           ratio (length/width) of LINE sources and issue a warning
+           message if the aspect ratio is greater than 100:1,
+           consistent with the checks for AREA sources. This affects
+           all pollutants and LINE source types.
+
+       8.  Modified subroutine IBLVAL to include LINE source type in
+           the call to subroutine ADISZ to calculate vertical
+           dispersion coefficients based on distance-dependent
+           effective parameters. Previous versions omitted this call
+           for LINE sources, which may have caused incorrect results
+           in some cases. This affects all pollutants and LINE source types.
+
+       9.  Modified subroutines SOGRP, OLMGRP, and PSDGRP to check
+           for the existence of single SrcIDs input on the SRCGROUP,
+           OLMGROUP, and PSDGROUP keywords. Previous versions only
+           checked for whether the userspecified SrcID was within a
+           range of SrcID’s, but would not issue any message if the
+           single SrcID had not been defined. This affects all
+           pollutants and all source types.
+
+       10.  Modified subroutine EVCALC to assign METHDR = .T. in
+           order to print source-&-receptor-independent
+           meteorological debug information in the METEOR debug
+           output file. Also modified sub EVCALC to call sub EV
+           SUMBACK for the ARM and ARM2 options. This affects all
+           pollutants and all source types.
+
+       11.  Modified subroutine MEREAD to use new MEREAD_Date
+           variable to check for end of the year for EVENT
+           processing, and to assign IHOUR = 24 when setting date
+           variables for date synchronization checks since full days
+           of met data are read in the EVENT mode. Also modified
+           subroutine MEREAD to identify and process embedded header
+           records (containing station IDs and AERMET version date)
+           in concatenated surface meteorology files. This affects
+           all pollutants and all source types.
+
+       12.  Modified subroutine O3READ to use YR/MN/DY date variable
+           to perform date synchronization checks for the EVENT
+           loop, similar to subroutine MEREAD. Modified O3READ to
+           use the IO3HR variable read from the hourly O3 file as
+           the hour index for the EV_O3CONC array, and also modified
+           O3READ to allow 0.0 as a valid hourly O3 value; version
+           13350 incorrectly treated cases with a zero O3 value as
+           missing O3 data. This affects NO2 pollutants and all
+           source types.
+
+       13.  Modified subroutine BGREAD to use IBGHR variable read
+           from the hourly background file as the hour index for the
+           EV_BGCONC array. Also modified BGREAD to perform date
+           consistency checks based on YR/MN/DY since hour for
+           events within the same day may not be in order. This
+           affects all pollutants and all source types.
+
+       14.  Modified subroutine METEXT to improve error handling and
+           reporting for cases where the input met data file does
+           not begin with hour 1 for applications involving 1-hr
+           NO2, 1-hr SO2 and 24-hr PM2.5, since these applications
+           require full years of data. This included modifying
+           subroutine METEXT to limit assigning a runtime error for
+           cases when the first “hour” of the met data file is not
+           hour 1 and the MAXDCONT option is being used. Non-fatal
+           warning messages are issued if the first hour is not hour
+           1 if the NO2AVE, SO2AVE or PM25AVE options are being used
+           without the MAXDCONT option. This affects NO2, SO2, PM2.5
+           pollutants and all source types.
+
+       15.  Modified subroutine SRCSIZ to check for whether the
+           TMPSRCID array has been allocated before checking for
+           AREACIRC source IDs. This affects all pollutants and
+           AREACIRC source types.
+
+       16.  Modified subroutine MAXDCONT_LOOP to remove unneeded
+           IDYMAX array, and to use DABS of the difference between
+           the original concentration and MAXDCONT value before
+           applying the consistency test. This affects NO2, SO2, and
+           PM2 pollutants and all source types.
+
+       17.  Subroutine DEBOPT was modified to increase the number of
+           fields on DEBUGOPT keyword to accommodate all applicable
+           DEBUG options, including the optional userspecified file
+           names. Note that a new AREA/LINE debug option had been
+           added with v14134 (see below under enhancements). This
+           affects all pollutants and all source types.
+
+       18.  Modified MAIN routine to compare the maximum value in
+           the SHVALS array for the SEASONHR output file used in the
+           test for issuing a warning message to utilize the ‘EXP’
+           option to 9999.99999999D0 (instead of 9999999.99999D0) to
+           be consistent with the output format of F13.8 used in
+           subroutine SHOUT. This affects all pollutants and all
+           source types.
+
+       19.  Modified subroutine HRLOOP to include additional checks
+           for runtime errors (RUNERR = .T.) after processing of
+           hourly emission files, hourly background data, and hourly
+           ozone data to avoid extraneous error or warning messages
+           that may be generated. This affects all pollutants and
+           all source types.
+
+       20.  Modified the IF-THEN block in subroutine HRLOOP for NO2
+           options to check for calm or missing met data first
+           rather than including those checks for each of the
+           options. This Affects NO2 pollutants and all source
+           types.
+
+       21.  Modified subroutine HRLOOP to increment the number of
+           hours remaining in the year if the FULLDATE variable
+           equals the ISDATE variable. This affects all pollutants
+           and all source types.
+
+-----  Enhancements:
+
+       1.  Modified subroutine POLLID to allow for an additional
+           user-specified field to disable the special processing
+           associated with the 1-hr NO2, 1-hr SO2 and 24-hr PM2.5
+           NAAQS, which are based on a multi-year average of ranked
+           maximum daily values (1-hr values in the case of NO2 and
+           SO2 and 24-hr values in the case of PM2.5). The optional
+           field allowed after than pollutant ID can be ‘H1H’, 
+           H2H’, or ‘INC’ (without the single quotes), indicating
+           that the results will be processed consistent with a
+           deterministic standard, such as the original 3-hr and 24
+           hr SO2 standards, which could be exceeded once per year,
+           and consistent with PSD increments, which can also be
+           exceeded once per year. These options are intended to
+           provide a mechanism for modeling to demonstrate
+           compliance with the 24-hr PM2.5 increments, and also to
+           provide a mechanism to evaluate the various NO2 chemistry
+           options incorporated in AERMOD without the requirement
+           for modeling complete years of meteorological data. This
+           affects NO2, SO2, and PM2.5 pollutants and all source types.
+
+       2.  Modified subroutine DEBOPT to include a new AREA/LINE
+           debug option, which is output to a separate file,
+           including an optional user-specified file name. This
+           includes additional information regarding AREA/LINE (and
+           OPENPIT) calculations as compared to the AREArelated
+           debug information included under the previous DEBUG
+           option. Also modified subroutines ACALC and PSIDE to
+           output AREA/LINE debug information under the new AREA
+           LINE debug option. Debug information is no longer
+           included in the main ‘aermod.out’ file. This affects all
+           pollutants and AREA, LINE, and OPENPIT source types.
+
+       3.  Modified subroutine MEOPEN to check for flags in the
+           header record of the input SURFFILE indicating that MMIF
+           generated meteorological inputs were used, which is
+           currently treated as non-DFAULT/BETA option, and for use
+           of BULKRN option, which is treated as a DFAULT option.
+           Subroutine MEOPEN also checks for measurement heights in
+           the input PROFFILE file and issues a warning if heights
+           exceed 999m, which could indicate that inputs were based
+           on MMIF or other gridded meteorological data that were
+           processed in a manner that did not include identifying
+           information in the surface file header record (e.g.,
+           processing MMIF-generated pseudo- surface and upper air
+           data with user-defined surface characteristics rather
+           than the AERSURF file generate by MMIF. Subroutine MEOPEN
+           was also modified to include checks for blank/missing
+           upper air, surface and/or onsite station IDs in the
+           surface file header record, and issues warning messages
+           if the respective station IDs specified on the ME pathway
+           in the aermod input file are not zero (0). This affects
+           all pollutants and all source types.
+
+       4.  Modified subroutine PRTSRC to include a table of SrcIDs
+           for sources identified as urban sources under the
+           URBANSRC keyword. This affects all pollutants and all
+           source types.
+
+       5.  Modified subroutine PRTDET to include the original GrpVal
+           concentration from the Non-EVENT run in the header
+           information for the DETAIL output option under EVENT
+           processing. This affects all pollutants and all source
+           types.
+
+-----  Miscellaneous:
+
+       1.  Modified subroutine PRTOPT to include additional
+           information on the initial input summary page of the 
+           aermod.out’ file related to the use of NO2 options, and
+           to identify which debug options have been selected on the
+           CO DEBUGOPT keyword. This affects NO2 pollutants and all
+           source types.
+
+       2.  Modified subroutine SRCQA to issue a warning message,
+           instead of a fatal error, if source group ALL is not
+           included for the ARM or ARM2 options. The revised
+           implementation of the ARM and ARM2 options in v14134 of
+           AERMOD no longer requires the user to specify source
+           group ALL. This affects NO2 pollutants and all source
+           types.
+
+       3.  Modified subroutine PRESET, SETUP, PREINCLUD, and EV
+           SETUP to check for blank records in the ‘aermod.inp’ file
+           and cycle the read loop based on LEN_TRIM(RUNST1) = 0, to
+           optimize processing of the aermod input file by avoiding
+           unnecessary calls to LWRUPR, DEFINE and GETFLD. Also
+           modified to include comment records from the CO, SO, and
+           ME pathways from the non-EVENT input file in the EVENT
+           file. This affects all pollutants and all source types.
+
+       4.  Modified subroutine METEXT to replace the logical
+           variable L_NewMetData used to flag whether input surface
+           met file includes NAD/ADJ flags introduced with version
+           11059 of AERMOD with variable L_NAD_ADJ_Flags for better
+           clarity. This affects all pollutants and all source
+           types.
+
+       5.  Modified subroutines HEADER, PRTOPT, and EVSET to
+           generate and use a character string containing only the
+           applicable modeling options to include in the header
+           records of the ‘aermod.out’ file and other text output
+           files, rather than printing the entire ModelOpts array
+           including blank fields, as done in previous versions. The
+           new model options string is also included in the header
+           records for all of the DEBUG option files, except for the
+           DEPOS debug file. This affects all pollutants and all
+           source types.
+
+       6.  Modified subroutine BACK_GRND to include additional
+           checks on the optional user-specified Fortran FORMAT
+           statement for reading the background data and issues
+           warning messages to flag potential errors. This affects
+           all pollutants and all source types.
+
+       7.  The “acceptable” AERMET version date has been modified to
+           version 12345, and AERMOD will not run if meteorological
+           data generated by earlier versions of AERMET are input.
+           AERMOD will run if meteorological data from versions
+           12345 or 13350 are used, but a warning message will be
+           issued and AERMET version 14134 should be used for
+           regulatory applications of AERMOD. This affects all
+           pollutants and all source types.
+
+       8.  Several obsolete error/warning messages associated with
+           inputs exceeding array limits were consolidated since
+           array sizes are dynamically allocated at runtime. This
+           affects all pollutants and all source types.
+
+=======================================================================
+
+       This revised version of AERMOD (dated 13350) includes the
+       following modifications relative to the previous version
+       (dated 12345); see MCB#9 and AERMOD User's Guide Addendum.
+
+-----  Bug Fixes:
+
+       1.  Modified subroutine HRQEXT to remove the FATAL = .TRUE. 
+           statement for cases when the exit temp < 200K (about -100F) 
+           with non-zero emissions in the HOUREMIS file.  This case was 
+           intended to be treated as a non-fatal warning condition, but 
+           was inadvertently treated as a fatal error in version 12345 
+           by including the FATAL = .TRUE. statement. A fatal error 
+           message is still generated if the hourly exit temperature is 
+           less than 200K (about -100F) and the exit velocity is greater 
+           than 200m/s, unless the hourly emissions are zero (0) for 
+           that hour, since this would likely indicate that exit velocity
+           and exit temperature were swithed in the HOUREMIS file.
+
+       2.  Modified subroutine HRLOOP to correct a bug associated with 
+           use of the DAYRANGE keyword for multiple years of meteorological 
+           data, where the YR/MN/DY conversion to Julian may be incorrect in
+           relation to leap-years vs. non-leap-years. This problem was 
+           partially corrected in version 12345.
+
+       3.  Modified subroutine BGREAD to move the unit conversion for 
+           hourly background concentrations to follow the READ statements 
+           to avoid "double counting" unit conversion for non-hourly 
+           background since unit conversion for BGFILL has already been
+           applied in sub_BGVAL.
+
+       4.  Moved calculation of the center of effective area source for 
+           OPENPIT sources from subroutine ARDIST to subroutine PITEFF. 
+           Previous versions would have skipped calculation of center 
+           coordinates if the first receptor was located inside the 
+           actual OPENPIT source.
+
+       5.  Modified subroutine AREAIN to include an additional check 
+           for the number of sides exceeding the maximum number for an 
+           AREAPOLY source and to issue an AERMOD error message to avoid 
+           a compiler-generated runtime error.
+
+       6.  Modified subroutines wake_dfsn and wake_dfsn2 to correct a
+           problem with virtual sigma-z values for the cavity source,
+           which could result in anomalously high concentrations in
+           some cases due to the initial dispersion coefficient for 
+           the "cavity source" being set to zero (0).
+           
+       7.  Modified subroutine OLM_CALC to include a check for the 
+           OLM value (variable OLMVAL) being zero(0) to avoid a
+           zero-devide in calculating PercentNO2.
+
+       8.  Modified subroutine HEFF to include plume rise for penetrated
+           source, DHP3, for purposes of calculating plume height at 20km 
+           for use in wet deposition/depletion calculations.
+           
+       9.  Modified subroutine IBLVAL to use a minimum value of 5m for 
+           ZHI in the calculation of effective parameters.
+           
+       10. Modified subroutine O3READ to avoid including a substituted 
+           ozone (O3) value for hours with missing O3 data in the calculation 
+           of the maximum ozone value within the past 24 hours, which may be
+           used in the adjustment of the hourly O3 value under stable 
+           conditions.
+
+
+-----  Enhancements:
+ 
+       1.  Incorporated new options for modeling NO2, including a new 
+           Default option for the Ambient Ratio Method (ARM) and a 
+           non-Default BETA option for the Ambient Ratio Method - 2 
+           (ARM2).
+       
+       2.  Incorporated options to vary background ozone (O3) data by 
+           wind sector (new CO O3SECTOR keyword), and options to vary 
+           background concentrations for the pollutant being modeled by 
+           wind sector (new SO BGSECTOR keyword).  Any of the existing 
+           options for specifying background data can be used with the
+           new sector-varying options, and will continue to work as 
+           before if no sectors are defined.  The applicable sector 
+           is determined by the flow vector (downwind) based on the 
+           wind direction in the surface meteorological data file.
+           
+       3.  Added new "debug" output file options for the OLM option
+           and for the new ARM and ARM2 options for NO2. Also added
+           a new PRIME debug option to separate the debug information
+           associated with the PRIME downwash algorithm from the 
+           non-PRIME related information provided under the MODEL
+           debug option.  Also removed all debug inforation from
+           the main 'aermod.out' file.
+
+
+-----  Miscellaneous:
+
+       1.  Modified module MAIN1 and subroutine SRCSIZ to include a
+           new NVPOLY parameter for the number of additional vertices 
+           to include for AREAPOLY sources, beyond the number of 
+           vertices used to define the source.  This is needed to 
+           account for the integrated portion of the area intersecting 
+           several sides of the polygon, depending on the geometry of 
+           the source, receptor, and wind direcion. The NVPOLY parameter 
+           is assigned a value of 12, which should work in most cases, 
+           but users are cautioned to avoid overly complex shapes for 
+           AREAPOLY sources to avoid model runtime errors. Reducing the 
+           complexity of AREAPOLY sources will also reduce model runime 
+           in most cases. The value of NVPOLY is added to NVMAX (determined 
+           based on the maximum number of area sources vertices defined 
+           by the user) in subroutine SRCSIZ for purposes of allocating 
+           arrays for AREAPOLY sources. The previous version of AERMOD 
+           added a value of 8 to NVMAX in subroutine SRCSIZ.
+           
+       2.  Incorporated checks on the consistency of concentrations that
+           are calculated during the EVENT processing mode with the original
+           value calculated during normal processing, which is included on 
+           the EVENTPER keyword. Warning messages are generated if the 
+           results are inconsistent, which may indicate a potential error
+           in the AERMOD code.
+
+       3.  Modified several subroutines to include the AERMET version date
+           associated with the input meteorological data in the header records
+           of the 'aermod.out' file and all other output file options. Also
+           modified the earliest acceptable version date for AERMET inputs
+           from 11059 to 12345. However, users are encouraged to use input
+           meteorological data based on the latest version of the AERMET 
+           processor (dated 13350).
+           
+       4.  Modified subroutines MEREAD, MEOPEN, and METEXT to extract met
+           data station IDs from the header record of the surface met data
+           file based on the index of keywords within the header record 
+           to provide more flexibility in the positioning of station IDs 
+           within the surface header record.
+
+       5.  Modified some error/warning messages to improve the clarity of the
+           message and to provide more flexibility in the error reporting.
+           For example:
+           
+           a. Errors associated with allocating arrays to have been modified 
+              to identify the type of array(s) being allocated when the
+              error occurs;
+           
+           b. Additional error handling and reporting has been incorporated 
+              for problems associated with opening, reading, and/or writing 
+              to external data files;
+           
+           c. Subroutine JULIAN was modified to provide additional information 
+              errors occur to faciliate diagnosing and correcting problems;
+           
+           d. Subroutines ERRHDL, TERRST, and other subroutines that call these
+              routines, were modified to include up to 12 characters in the module 
+              names included in error/warning/informational messages. The previous 
+              version limited the module name to 6 characters.
+
+
+-----  MODIFIED BY:    Roger W. Brode
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       December 16, 2013
+
+-----  MODIFIED FROM:        AERMOD
+                       (Version Dated 12345)
+
+
+=======================================================================
+
+       This revised version of AERMOD (dated 12345) includes the
+       following modifications relative to the previous version
+       (dated 12060); see MCB#8 and AERMOD User's Guide Addendum.
+
+-----  Bug Fixes:
+
+       1.  Adjustments to wind speeds based on the assumption that input
+           wind speeds are vector (or resultant) mean winds have been 
+           removed (see Eq. 112 on page 79 of the AERMOD Model Formulation 
+           Document, EPA-454/R-03-004). This is considered a formulation bug
+           fix since current EPA guidance for site-specific meteorological 
+           monitoring (EPA-454/R-99-005) recommends that scalar mean wind 
+           speeds be used in steady-state Gaussian dispersion models. 
+           Furthermore, all wind speeds derived from NWS or FAA airport 
+           data represent scalar mean wind speeds.  
+       
+           An option has also been included on the MODELOPT keyword 
+           on the CO pathway (VECTORWS) that allows users to specify that 
+           input wind speeds are vector means, in which case the previous 
+           adjustments will be included. The new VECTORWS option is not 
+           linked with the DFAULT option, but users should be able to 
+           confirm that input speeds are vector means in order to justify 
+           use of the option.  However, scalar mean wind speeds, if 
+           available, should be used based on the current guidance.  
+           This change affected several subroutines.
+    
+       2.  Modified subroutine HRLOOP to correct a problem associated
+           with missing hourly ozone data during MAXDCONT post-processing
+           when no O3 values have been specified for substitution through
+           the OZONEVAL or O3VALUES keywords on the CO pathway. The 
+           MAXDCONT results in those cases were invalid and may have 
+           shown up as negative concentrations.
+    
+       3.  Modified subroutines DAYRNG, METEXT, and SET_DATES to correct a 
+           bug associated with use of the DAYRANGE keyword for multiple years
+           of meteorological data, where the YR/MN/DY conversion to Julian
+           may be incorrect.  Also included checks of the year specified on
+           the SURFDATA keyword with the first year included in the surface
+           meteorological data file. The ISYEAR variable is now adjusted to 
+           match the first year of the data file, unless the DAYRANGE keyword 
+           is being used. In that case, a fatal error is generated since the 
+           ISYEAR variable is used to determine leap vs. non-leap years for 
+           the YR/MN/DY conversion to Julian day for the DAYRANGE option.
+           
+       4.  Modified subroutine HRQREAD to check for large negative hourly 
+           emissions (< -90), which may be used as missing indicators.
+           Since AERMOD allows inputs of negative emissions for use in 
+           emission credit calculations, negative values used as missing 
+           indicators in the HOUREMIS file resulted in negative hourly 
+           concentrations in the previous versions.  Warning messages are 
+           generated and the emission rate is set to zero (0) for these cases.
+           
+       5.  Modified subroutine EVALFL to address a potential problem 
+           with URBAN applications where the L_MorningTrans logical
+           variable was not defined.
+
+       6.  Modified MAIN program and subroutine PRESET to check for 
+           duplicate STARTING keywords on the SO or RE pathways,since
+           that would reset the array limits for setup arrays to zero
+           during the PRESET phase, resulting in array subscript 
+           out-of-bounds runtime errors.
+
+
+-----  Enhancements:
+    
+       1.  Incorporated two new BETA (non-Default) options to address
+           concerns regarding model performance under low wind speed
+           conditions.  The LOWWIND1 option increases the minimum value
+           of sigma-v from 0.2 to 0.5 m/s and "turns off" the horizontal
+           meander component. The LOWWIND2 option increases the minimum
+           value of sigma-v from 0.2 to 0.3 m/s, and incorporates the 
+           meander component, with some adjustments to the algorithm, 
+           including an upper limit on the meander factor (FRAN) of 0.95.
+           A new LOW_WIND keyword has been added to the CO pathway that
+           allows users to adjust the minimum sigma-v value (within a
+           range of 0.01 to 1.0 m/s), and the minimum wind speed value
+           (within a range from 0.01 to 1.0 m/s), with a default value
+           of 0.2828 m/s, consistent with the default applied in previous
+           versions based on SQRT(2*SVmin*SVmin) with SVmin=0.2. The new
+           LOW_WIND keyword also allows users to adjust the maximum value
+           for the meander factor (FRAN) within a range of 0.50 to 1.0,
+           inclusive, when the LOWWIND2 option is used.  Both of the new 
+           LowWind BETA options also modify the the adjustment of vector 
+           mean wind speeds (based on Eq. 112, p. 79, of the AERMOD Model 
+           Formulation Document) to use the original values of sigma-v
+           before they are adjusted based on SVmin. The new LOWWIND1
+           and LOWWIND2 options are mutually exclusive and the model will
+           issue a fatal warning message if both options are specified.
+   
+           These new LowWind BETA options can also be used in conjunction 
+           with the new option in AERMET (v12345) to adjust the surface 
+           friction velocity (U*) under low-wind/stable conditions (ADJ_U*), 
+           based on Qian, W., and A. Venkatram, 2011: "Performance of Steady-
+           State Dispersion Models Under Low Wind-Speed Conditions", Boundary-
+           Layer Meteorology, 138, 475-491. The ADJ_U* option in AERMET is 
+           also considered a non-Default option, and users must also specify 
+           the BETA option on the MODELOPT keyword in AERMOD in order to 
+           process meteorological inputs derived using the new ADJ_U* option. 
+           See the AERMET Model Change Bulletin (MCB) #3 and AERMET User's 
+           Guide Addendum for additional details regarding the ADJ_U* option 
+           in AERMET.
+           
+           The new LowWind BETA options in AERMOD and the new ADJ_U*
+           option in AERMET are considered to be non-Default options
+           and are therefore subject to the alternative model provisions
+           in Section 3.2 of Appendix W (40 CFR Part 51). Users should
+           coordinate with the appropriate reviewing authority regarding
+           the procedures and requirements for approval of these BETA
+           options for regulatory modeling applications.
+          
+       2.  A new LINE source type has been included that allows users
+           to specify line-type sources based on a start-point and 
+           end-point of the line and the width of the line, as an 
+           alternative to the current AREA source type for rectangular
+           sources. The LINE source type utilizes the same routines as
+           the AREA source type, and will give identical results for 
+           equivalent source inputs.  The LINE source type also includes
+           an optional initial sigma-z parameter to account for initial
+           dilution of the emissions. As with the AREA source type, the
+           LINE source type does not include the horizontal meander 
+           component in AERMOD. This change affected several subroutines
+           and also includes a new LPARM subroutine.
+
+
+-----  Miscellaneous:
+
+       1.  Modified subroutine HRQEXT to include additional range checks
+           on hourly stack exit velocities and exit temperatures input
+           through the HOUREMIS option. A fatal error is generated if
+           the hourly exit temperature is less than 200K (about -100F)
+           and the exit velocity is greater than 200m/s, unless the hourly 
+           emissions are zero (0) for that hour. This may indicate that 
+           incorrect units for exit temperature have been used, or that 
+           the order of exit temperature and exit velocity may have been 
+           reversed in the HOUREMIS file. Also added a new warning message 
+           for exit velocities larger than 250 m/s. Comparable changes 
+           were incorporated also in subroutine PPARM for inputs on the 
+           SRCPARAM keyword.
+
+       2.  Modified subroutine MEOPEN to adjust the acceptable AERMET
+           version date from 06341 to 11059. AERMOD will no longer run
+           with met data based on version 06341 of AERMET.  AERMOD will 
+           run using met data based on version 11059. However, a warning 
+           message will be generated, and users are strongly encouraged 
+           to update their meteorological data to version 12345 of AERMET
+           due to the scope of changes included in that update.
+
+           
+-----  MODIFIED BY:    Roger W. Brode
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       December 10, 2012
+
+-----  MODIFIED FROM:        AERMOD
+                       (Version Dated 12060)
+
+
+=======================================================================
+
+       This revised version of AERMOD (dated 12060) includes the
+       following modifications relative to the previous version
+       (dated 11353); see MCB#7.
+
+-----  Bug Fixes:
+
+       1.  Modified subroutine MAXDCONT_LOOP to correct problems with the
+           MAXDCONT option for applications that vary emissions (EMISFACT), 
+           background ozone data (O3VALUES), or background concentrations 
+           (BACKGRND) with a day-of-week component, e.g., SHRDOW or SHRDOW7, 
+           etc. Also modified subroutine MAXDCALC to correct the MAXDCONT 
+           option for applications that include hourly emissions (HOUREMIS) 
+           for at least one source, but not all sources. Both of these bugs 
+           associated with the MAXDCONT option may have caused significant 
+           errors in the source group contributions in the MAXDCONT output 
+           file. 
+   
+           Subroutine MAXDCONT_LOOP was also modified to include checks on 
+           the consistency between results in the SUMVAL_MAXD and SUMHNH 
+           arrays for the "target" source group under the MAXDCONT option. 
+           The SUMVAL_MAXD array values are recalulated during the MAXDCONT 
+           processing, whereas the SUMHNH array values are calculated during 
+           normal processing. Results in these two arrays should match for 
+           the "target" source group. These consistency checks will serve
+           to flag any potential problems with the MAXDCONT option.
+
+       2.  Modified subroutine O3READ to correct a problem with the OLM and
+           PVMRM options under the EVENT processing mode when only the 
+           CO OZONEVAL keyword is used to specify a background ozone value,
+           without an hourly ozone file through the CO OZONEFIL keyword or
+           varying ozone values through the CO O3VALUES keyword.  Previous
+           versions effectively assumed a background ozone value of 0 (zero)
+           in these cases, resulting in underestimated source contributions 
+           in the EVENT output file.
+
+       3.  Modified subroutine LTOPG to use code from CTDMPLUS (also used
+           in CALPUFF) for estimating PG class from Monin-Obukhov length 
+           and surface roughness based on Golder (1972). The CTDMPLUS code
+           more closely matches the PG-class curves in Figure 4 of the Golder 
+           (1972) paper. The LTOPG routine is only used to determine the
+           stability-dependent distance for transitioning to a virtual point 
+           source approximiation for area sources under the FASTAREA
+           or FASTALL options.
+           
+-----  Enhancements:
+   
+       1.  Modified subroutines PRESET, SRCSIZ, and URBANS to allow for 
+           the use of URBANSRC ALL on the SO pathway to indicate that 
+           all sources are to be treated as URBAN sources. This option 
+           assumes that only one (1) urban area has been defined using 
+           the CO URBANOPT keyword.
+   
+       2.  Modified subroutines PRESET and MECARD and added subroutine 
+           NUMYR to allow the user to specify the number of years of 
+           meteorological data that are being processed for a particular 
+           run.  The option is exercised with the new NUMYEARS keyword on 
+           the ME pathway. The value specified on the NUMYEARS keyword 
+           is used to allocate storage for the arrays that are used in 
+           the MAXDCONT option, and allows the user to reduce the memory 
+           storage requirements under the MAXDCONT option when less than 
+           five (5) years of met data are being used. The default number 
+           of years used for the MAXDCONT array allocation without the 
+           NUMYEARS keyword is still 5 years (formerly specified by 
+           the NYEARS PARAMETER).
+   
+-----  Miscellaneous:
+   
+       1.  Modified subroutine ALLRESULT to eliminate the arrays of 
+           profile met data (the observed data in the PROFFILE input) 
+           by hour-of-year, level, and year for use with the MAXDCONT 
+           option. The profile met data arrays are not needed for the 
+           MAXDCONT option and their removal reduces the memory 
+           requirements for that option. Additional adjustments to the
+           array allocations for the MAXDCONT option were made based
+           on the options used for a specific model run in order to 
+           minimize the memory requirements for the MAXDCONT option.
+           Subroutine ALLRESULT was also modified to improve the 
+           accuracy of the memory storage estimates included on the
+           first page of the AERMOD.OUT file.
+   
+       2.  Modified subroutine OUMAXD_CONT to include checks on the use 
+           of a limited range of ranks (specified on the OU RECTABLE 
+           keyword) with the THRESH option on the OU MAXDCONT keyword. 
+           A fatal error message will be generated if the range of ranks 
+           specified is less than or equal to the design value rank for 
+           the specified pollutant plus 4, i.e., a fatal error will be 
+           generated if the range of ranks is less than or equal to 8 
+           for 1-hr SO2, or less than or equal to 12 for 1-hr NO2 or 
+           24-hr PM2.5. A non-fatal warning message is also generated 
+           if the range of ranks is less than or equal to the design 
+           value rank plus 20, i.e., if the range of ranks is less than 
+           or equal to 24 for 1-hr SO2, or less than or equal to 28 for 
+           1-hr NO2 or 24-hr PM2.5.
+
+
+-----  MODIFIED BY:    Roger W. Brode
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       February 29, 2012
+
+-----  MODIFIED FROM:          AERMOD
+                       (Version Dated 11353)
+
+
+=======================================================================
+
+       This revised version of AERMOD (dated 11353) includes the
+       following modifications relative to the previous version
+       (dated 11103); see MCB#6.
+
+-----  Bug Fixes:
+
+       1.  Modified subroutines METEXT, MAXD_METEXT, ALLRESULT to fix the
+           MAXDCONT option for URBAN applications. Source contributions 
+           reported in MAXDCONT files generated by the previous version
+           could be erroneous for applications involving URBAN sources.
+
+       2.  Modified subroutine OUTQA to include logical variable PLFILE 
+           for PLOTFILEs in the check for output file options that use
+           the FILEFORM keyword specifying whether fixed-format or 
+           exp-format is used. Previous versions erroneously issued 
+           warning message W399 if PLOTFILE was the only relevant output 
+           option used with the FILEFORM keyword.
+
+       3.  Modified subroutine O3VALS to correct the test for number of 
+           parameters to be .GE. 4 to allow for the ANNUAL option.
+
+       4.  Modified subroutine METEXT to only increment the hour index and 
+           year index if MAXDCONT option is being used. This change avoids 
+           unnecessary runtime error if the met data file includes a single 
+           hour (or more) beyond the maximum number of years specified by the 
+           NYEARS PARAMETER, which is initialized to 5 in the MAIN1 module.
+
+       5.  Modified subroutine PRTO3VALS to use the O3FLAG variable which
+           identifies the user-specified option for defining temporally-
+           varying background ozone concentrations. The previous version 
+           erroneously referenced the BFLAG variable associated with 
+           user-specified BACKGROUND concentrations. This error would not
+           have affected modeled concentrations based on the previous 
+           version of the model, but could result in a runtime error due 
+           to an array subscript out-of-bounds for some applications, or 
+           could result in skipping the summary of user-specified ozone
+           values in the output file for some applications.
+
+
+-----  MODIFIED BY:    Roger W. Brode
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       December 19, 2011
+
+-----  MODIFIED FROM:          AERMOD
+                       (Version Dated 11103)
+
+
+=======================================================================
+
+       This revised version of AERMOD (dated 11103) includes the
+       following modifications relative to the previous version
+       (dated 11059); see MCB#5 and updated User's Guide Addendum.
+
+-----  Bug Fixes:
+
+       1.  Modified subroutine MXDLYFL to include an IF-THEN block 
+           to account for cases with NHIMXDLY = 1, i.e., only the 
+           1st-highest rank was selected on the RECTABLE keyword.  
+           The previous version (11059) resulted in all short-term 
+           values being 0.0 if only the 1st-highest rank was selected 
+           for applications involving the special processing for 
+           daily maximum values (24hr PM25, 1hr NO2 and 1hr SO2).
+           This bug did not affect the results for applications
+           that included other ranks on the RECTABLE keyword,
+           including single ranks other than 1st-highest or any
+           range of ranks, or applications that do not utilize
+           the special processing for the 24hr PM25, 1hr NO2 and 
+           1hr SO2 NAAQS.
+
+-----  Miscellaneous:
+
+       1.  Modified subroutines O3FIL and BACK_GRND to include checks
+           for potential problems with the Fortran format specifier 
+           for hourly ozone files and hourly background files.  The 
+           hourly ozone and/or background concentrations may have been 
+           assigned values of zero (0) in previous versions of AERMOD 
+           if the user-specified Fortran format includes an integer 
+           (I) format to read the concentration values.  This could
+           significantly affect modeled concentrations for the OLM
+           and PVMRM options based on hourly ozone data, without any
+           clear indication of a problem.  The user-specified format
+           must use an integer format to read the date variables and
+           a real format (F, E, or D) to read the concentration 
+           variable.  Warning messages will be generated if the format
+           does not meet these requirements.  In addition, the compiler
+           options for the AERMOD executable distributed on SCRAM have 
+           been modified to include an option to check for consistency 
+           between variable types and format specifiers, which will 
+           cause AERMOD to issue a fatal error when reading the file 
+           in cases where real variables are read with an integer
+           format, or vice versa.  The AERMOD User's Guide Addendum 
+           has also been modified to clarify the requirements for 
+           user-specified Fortran formats with these options.
+
+
+-----  MODIFIED BY:    Roger W. Brode
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       April 13, 2011
+
+-----  MODIFIED FROM:          AERMOD
+                       (Version Dated 11059)
+
+
+=======================================================================
+
+       This revised version of AERMOD (dated 11059) includes the
+       following modifications relative to the previous version
+       (dated 09292); see MCB#4 and updated User's Guide Addendum:
+
+-----  Bug Fixes:
+
+       1.  Modified subroutines PVMRM_CALC, MAJOR_CONT, and 
+           MOLES_NOX to include calls to subroutine SETSRC for 
+           all source types, and modified subroutine SETSRC to 
+           initialize arrays for area source dimensions and 
+           initial sigmas to correct initialization problems 
+           with the PVMRM option.  Also modified subroutine 
+           RELDISP to more appropriately account for initial
+           sigmas for volume and area sources in the calculation 
+           of relative dispersion coefficients for determining 
+           plume volume.
+
+       2.  Modified subroutines PVMRM_CALC and MOLES_NOX to
+           include calls to subroutine EMFACT to apply emission
+           factors, if appropriate, in order to use the 
+           EMISFACT-adjusted emission rates in the calculations
+           of the moles of NOx. Previous versions used the 
+           emission rate specified on the SRCPARAM keyword
+           to calculate the models of NOx.
+
+       NOTE:  These bugs related to the PVMRM option could have 
+              significant impacts on modeled concentrations using 
+              the PVMRM option with the EMISFACT option and/or with
+              mixed source types.  The magnitude and bias of the
+              differences associated with these bugs will depend on 
+              the specifics of the application, but there may
+              be a tendency to overestimate NO2 concentrations 
+              for POINT sources due to the first item when the 
+              application also included VOLUME sources with large
+              initial sigma values.
+
+       3.  Modified subroutine HRLOOP to skip call to CHK_ENDYR
+           to determine whether the end of the year has been 
+           reached if the NOCHKD or WARNCHKD options are specified, 
+           since the end-of-year processing is only applicable to
+           sequential meteorological data.  Since the NOCHKD option
+           is invoked if the SCREEN option is specified, the call
+           to CHK_ENDYR will also be skipped for screening met data
+           with AERSCREEN.
+           
+       4.  Modified subroutine CHKDAT to correct problems with 
+           date sequence checks involving gaps of complete days 
+           or complete years.  A gap of complete calendar years 
+           is allowed even without the NOCHKD or WARNCHKD options
+           to account for missing years due to data completeness
+           issues for applications involving design values that
+           are based on multi-year averages (e.g., 1hr NO2/SO2
+           and 24hr PM2.5).
+        
+       5.  Modified subroutine TERRST to correct problems with 
+           determining the number of calm and/or missing hours 
+           only for the data period that is processed.   
+
+       6.  Modified subroutine EVLINI to include initializations
+           for SZMAX(:) and HSBLMX(:) arrays used for EVALFILEs.
+
+       7.  Corrected subroutines OUMXFL, OUPOST, OUPLOT, PERPST, 
+           PERPLT, OUTOXX, OUSEAS, OURANK, and OUEVAL to set lower 
+           limit for acceptable user-specified file units to 31, 
+           in order to avoid potential conflicts with hardcoded 
+           file units. Previous version incorrectly used '.LT. 30' 
+           rather than '.LE. 30' for checks on user-specified file 
+           units, allowing for potential file units conflicts with 
+           the debug file for particle deposition velocities.
+
+-----  Enhancements:
+
+       1.  A number of enhancements have been incorporated to more 
+           fully support the form of the new 1-hour NO2 and SO2 
+           NAAQS, as well as the 24-hour PM2.5 standard.  The 
+           form of these standards are similar in that they are 
+           based on a ranked percentile value averaged over the 
+           number of years processed.  To more fully support 
+           implementation of recent guidance on these NAAQS, 
+           the RECTABLE keyword has been modified to allow 
+           user-specified ranks of short-term averages (for all 
+           pollutants) up to the 999th highest value.  The 
+           previous version of AERMOD was limited to the 
+           10th-highest value and also restricted the rank 
+           for the 24-hour PM2.5 NAAQS to the 8th-highest value
+           (corresponding to the 98th percentile of daily values
+           during a year).  Note that the range of ranks specified
+           on the RECTABLE keyword (not the individual ranks) also
+           determines the range of ranks that may be considered 
+           with the new MAXDCONT option, described below.
+
+       2.  Added new MAXDAILY option on the OU pathway to output a 
+           summary of daily maximum 1-hour values for each day
+           processed.  These files provide an interim output product
+           that may be used to analyze new 1-hour NO2 and SO2 NAAQS
+           based on a specified percentile rank of daily maximum 
+           1-hour values.
+
+       3.  Added new MXDYBYYR option on the OU pathway to output a
+           summary of daily maximum 1-hour values by year and rank.  
+           These files provide an interim output product that may
+           be used to analyze the new 1-hour NO2 and SO2 NAAQS based 
+           on a specified percentile rank of daily maximum 1-hour 
+           values.
+
+       4.  Added new MAXDCONT option on the OU pathway to output a
+           summary of source group contributions to high ranked values
+           for a target group, averaged across the number of years 
+           processed and paired in time and space.  The new MAXDCONT 
+           option is applicable to daily maximum values for the 24-hour 
+           PM2.5 NAAQS and the new 1-hour NO2 and SO2 standards, and
+           can be used to determine whether a source or a group of 
+           sources contributes significantly to modeled violations of
+           the NAAQS, paired in time and space.
+
+       5.  For applications addressing the 24-hour PM2.5 standard 
+           or the 1-hour NO2 and SO2 standards, which are based on 
+           ranked values averaged across the number of years modeled, 
+           the PLOTFILE option has been enhanced to include values 
+           for each of the years processed based on the specified 
+           rank, in addition to the multi-year average.
+
+       6.  Added new BACKGRND option on the SO pathway to allow 
+           users to specify background concentrations, which can
+           be added to impacts from modeled emission sources to 
+           determine cumulative impacts.  Background concentrations
+           can be varied temporally using options similar to the
+           EMISFACT keyword for temporally-varying source emissions.
+           The new BACKGRND keyword also allows an option to use
+           a separate file of background concentrations on an hourly
+           basis. Applications with hourly background concentrations
+           can also include temporally-varying background values 
+           based on the EMISFACT options, such as SEASHR for season
+           by hour-of-day, which are used to substitute for missing
+           hourly values.
+
+       7.  For applications using the OLM or PVMRM options for NO2, 
+           a new option for specifying background ozone concentrations 
+           has been incorporated.  Similar to the new BACKGRND keyword, 
+           the new O3VALUES keyword on the CO pathway allows the user 
+           to specify temporally-varying background O3 concentrations 
+           using many of the same options available on the EMISFACT 
+           keyword for source emission factors.  The O3VALUES keyword 
+           can be used by itself or in conjunction with an hourly 
+           ozone file.  In the latter case, the O3VALUES are used to 
+           fill in for missing values in the hourly ozone file.
+           A separate OZONUNIT keyword is also available on the CO
+           pathway to specify units for the concentrations input 
+           through the O3VALUES keyword.
+
+       8.  Incorporated the equilibrium NO2/NOx ratio component of the
+           PVMRM option into the OLM option for estimating conversion 
+           from NOx emissions to ambient NO2 concentrations. The same
+           NO2EQUIL keyword on the CO pathway can be used to specify
+           the equilibrium ratio for either option, and a default 
+           ratio of 0.90 is assumed for both options if the NO2EQUIL
+           option is omitted.
+ 
+       9.  Modified subroutine DEBOPT to allow user to specify
+           debug output only for PVMRM or deposition options
+           on the DEBUGOPT keyword, avoiding large output files 
+           under the MODEL debug option. Debug output for deposition 
+           options will still be generated if the MODEL debug option 
+           is selected. See AERMOD User's Guide Addendum for details 
+           on the DEBUGOPT keyword.  Also assigned file unit 9 to 
+           variable PVMDBG for the PVMRM debug file, and adjusted 
+           the PVMRM debug output to report total PercentNO2, 
+           including in-stack NO2/NOx contribution.
+
+      10.  A modification to the urban option has been implemented 
+           to address issues with the transition from the nighttime 
+           urban boundary layer to the daytime convective boundary 
+           layer. Under the new default urban option, the model will
+           continue to apply the urban boundary layer approach for
+           urban sources until the daytime convective boundary layer
+           exceeds the population-dependent urban boundary layer 
+           height. This enhancement is desribed in more detail in 
+           Appendix E of the updated AERMOD User's Guide Addendum.  
+           A non-DFAULT option has also been included to allow
+           users to revert to the original urban implementation.
+
+      11.  Increased the maximum length of source IDs from 8 to 12
+           characters, and increased the length of EVENT names from
+           8 to 10 characters, involving modifications to several 
+           subroutines.
+
+      12.  Included a new NOHEADER keyword on the OU pathway to allow
+           users to suppress the file header records for formatted 
+           output files.
+
+
+-----  Miscellaneous:
+
+       1.  Modified subroutines CHK_ENDYR, PRTPM25, PRTPM25SUM,
+           OUHIGH, and PRTOPT to allow for user-specified rank for
+           processing PM2.5 24-hour averages to accommodate current
+           recommendations for PM2.5 modeling. Also changed the
+           name of array used to store these values from SUMH8H 
+           to SUMHNH.
+
+       2.  The table of distances used in calculating the dominant 
+           plume volume for the PVMRM option (in subroutine PLUME_VOL)
+           was adjusted to use a more logical progression of distance 
+           intervals and to reduce the total number of intervals. This 
+           change may affect results slightly, but will also reduce 
+           model runtime. 
+
+       3.  Subroutine WAKFLG was modified to no longer ignore potential 
+           downwash effects for stack heights that equal or exceed the 
+           EPA formula height.  The determination of whether building
+           downwash effects apply is based on the criterion implemented
+           within the PRIME downwash algorithm.
+
+       4.  Modified subroutine URBPOP to adjust the limit for issuing 
+           a warning for urban population out-of-range from 10,000 to 
+           21,206, which corresponds to a population density of 
+           750/sq-km for an area within a 3km radius, consistent with 
+           the Appendix W criterion for urban/rural determination based 
+           on the population density.
+
+       5.  Several miscellaneous changes to address output formatting 
+           issues, replace DO loops with array assignments for array
+           initializations, and other minor code cleanup.
+
+       6.  Moved setup-related subroutines for EVENT processing option
+           from the 'evcalc.f' source file to the 'evset.f' source file.
+
+
+-----  MODIFIED BY:    Roger W. Brode
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       February 28, 2011
+
+-----  MODIFIED FROM:          AERMOD
+                       (Version Dated 09292)
+
+=======================================================================
+
+       This revised version of AERMOD (dated 09292) includes the
+       following modifications relative to the previous version
+       (dated 07026); see MCB#3:
+
+-----  Bug Fixes:
+
+       1.  Modified subroutine OLM_CALC to correct initialization 
+           problem with OLMGROUP keyword option.  The NO2VAL and NO_VAL 
+           arrays need to be reinitialized for each receptor when the 
+           OLMGROUP keyword is used.  This bug may result in significant
+           errors in concentration estimates for applications of the
+           OLM option with OLMGROUPs.  More details regarding this bug
+           are provided in the Addendum to MCB#3.
+
+       2.  Modified subroutine CHK_ENDYR to check for allocation
+           status of allocatable arrays during array initializations;
+           this has caused runtime errors on some compilers related to 
+           initializing unallocated ALLOCATABLE arrays when ANNUAL or 
+           PERIOD averages were calculated.         
+
+       3.  Modified ISSTAT() array indices in subroutine SOCARD to
+           eliminate potential conflicts among different options
+           referencing the same index.
+
+       4.  Modified subroutine MEOPEN to correct problems with
+           processing of the 'SCREEN' option in the AERMET version
+           date field of the header record of the surface file to 
+           support the use of screening meteorological data with 
+           AERSCREEN.
+
+       5.  Modified subroutine SETIDG to use 'I8' format for an internal
+           read of the source group ID from NUMID to avoid runtime errors 
+           with some compilers.
+
+       6.  Modified subroutines METEXT and MEREAD to include a more 
+           robust check for stable or missing hours in calculation
+           of solar irradiance (QSW) for use in dry deposition
+           calculations.
+
+       7.  Modified subroutine OUTQA to correct write statement for
+           message '540' to accommodate MONTH average option, labeled
+           as 720-hr option. Also modified subroutine OUTQA to include 
+           error checking for file name and file unit conflicts across 
+           output file options.
+
+       8.  Modified subroutines OUMXFL, OUPOST, OUPLOT, PERPST, PERPLT,
+           OUTOXX, OUSEAS, OURANK, and OUEVAL to set lower limit for
+           acceptable user-specified file units to 31, in order to avoid 
+           potential conflicts with hardcoded file units.  Also modified 
+           file units for deposition debug files to be within the range
+           established for hardcoded file units.
+
+       9.  Modified subroutine METH_2 to check for out-of-range inputs
+           for fine mass fraction (finemass) for the Method 2 particle
+           deposition option.
+
+      10.  Modified subroutine PLUME_VOL to include a call to subroutine
+           PENFCT to calculate plume penetration factor.  This corrects
+           potential errors with the PVMRM option for penetrated plumes.
+    
+      11.  Modified subroutine SIGZ to include a check on the sign of 
+           TGEFF before calculation of BVFRQ to avoid potential runtime 
+           errors.
+
+      12.  Modified subroutine SRCQA to check for source being defined
+           as both particulate and gaseous.  Also modified SRCQA to check
+           for invalid shape of AREAPOLY source, identified with
+           an area = 0.
+
+      13.  Modified subroutine VDP1 to output ZRDEP instead of undefined
+           variable ZREF.
+
+      14.  Modified subroutine METQA to include error checking for a 
+           value of wind speed reference height (UREFHT) of less than 
+           0.001m for non-missing and non-calm hours. Fatal error issued
+           to avoid runtime errors that may occur for values entered as 
+           zero.
+
+      15.  Modified several subroutines to address potential problems
+           related to options that assume full years of meteorological
+           data.  This includes modifications to subroutines STAEND and 
+           METEXT for setting the month, day, and hour for the "end of 
+           the year", based on the first hour of the meteorological data 
+           file or on the STARTEND keyword, to resolve potential problems 
+           for PM-2.5 and ANNUAL average applications in which the 
+           "starting hour" is not 01.  Modified subroutine METEXT to 
+           determine "end of the year" for the MULTYEAR option, and 
+           modified subroutine HRLOOP to call CHK_ENDYR for the MULTYEAR 
+           option to allow error checking for use of incomplete years or 
+           periods longer than a year with the MULTYEAR option.  Modified 
+           subroutine RSINIT to adjust the "starting hour" read from a 
+           re-start file (based on the INITFILE or MULTYEAR keyword) by 
+           adding 1 hour for the re-started model run.  Also improved the 
+           error handling in subroutine STAEND for user-specified start and
+           end dates, including a check for the user-specified STARTEND
+           period being less than 1 complete year when the ANNUAL average
+           option and/or the MULTYEAR option are specified, resulting
+           in a setup error.
+
+      16.  Modified code in subroutines RSINIT and METEXT to include
+           checks for potential conflicts between the first date of met
+           data file or the user-specified start date on STARTEND keyword
+           being later than the "start date" from a re-start file.  This 
+           data gap results in a fatal error message for INITFILE re-starts
+           and a warning message for MULTYEAR re-starts.  Also checks for
+           overlapping periods for MULTYEAR applications with start date
+           from STARTEND keyword being earlier than start date from the 
+           MULTYEAR re-start file.  This condition results in a fatal error
+           message.
+
+      17.  Modified subruotines METEXT and MEREAD to check for the
+           meteorological data file starting hour, and issue appropriate
+           warnings regarding short-term averages for the first day
+           of data if the starting hour is not 01, since they may 
+           represent partial data periods.  Modifications were also 
+           made to subroutine MEREAD to cycle through the meteorological 
+           data file until the hour matches the hour loop index for 
+           EVENT processing.
+
+      18.  Modified MAIN program to adjust the order of calls to 
+           subroutine RSDUMP to write results arrays to the SAVEFILE
+           for ANNUAL averages and for PERIOD averages with the MULTYEAR
+           option.  These adjustments ensure that the summary of overall
+           maximum PERIOD averages with the MULTYEAR option are based on
+           the maximum individual PERIOD values across the years processed, 
+           while the maximum ANNUAL averages reflect the multi-year 
+           average of the ANNUAL values across the years processed.  
+           The order of calculating averages by season and hour-of-day 
+           with the SEASONHR option was also adjusted to ensure that the 
+           SEASONHR averages are correct across the years of data processed.
+           Subroutine PRTSUM was modified to include a message in the
+           summary tables of maximum PERIOD and high ranked short-term
+           averages to indicate the number of years represented by the 
+           results when the MULTYEAR option is used.  Subroutine PRTOPT 
+           was also modified to clarify what PERIOD averages represent 
+           when the MULTYEAR option is used.
+
+      19.  Modified several subrountines, including HRLOOP, METEXT,
+           HRQREAD, O3READ, and O3EXT, to provide additional error
+           handling for premature "end-of-file" (EOF) condition for
+           input meteorological data, hourly emissions data (HOUREMIS
+           keyword), and ozone data files.  A fatal error is generated 
+           if the data files end before the "end date" specified by the 
+           user on the STARTEND keyword.
+
+      20.  Modified subroutines OUMXFL and OUPOST to correct problems
+           with MAXIFILE and POSTFILE outputs for re-started model 
+           runs using the SAVEFILE/INITFILE option.  The previous 
+           version of AERMOD used the 8-digit date from the MAXIFILE
+           and POSTFILE files to compare with the "full" 10-digit
+           date read from the INITFILE, and also read the 8-digit 
+           date from the wrong columns for POSTFILEs.  Also added
+           error handling for missing MAXIFILE and/or POSTFILE
+           files with INITFILE option, and for MAXIFILE and/or
+           POSTFILE files with data past the start date for the
+           MULTYEAR option.
+
+      21.  Modified subroutine INCLUD to include the EV pathway to
+           ensure proper handling of INCLUDED files for events on the
+           EV pathway.  Also incorporated additional error handling
+           for INCLUDED files.
+
+      22.  Modified assignment of ILAND_NDX based on flow vector (AFV)
+           in subroutine VDP to be consistent with assignment of the
+           flow vector sector for downwash, IFVSEC.
+
+      23.  Modified subroutine OCALC to correct the calculation of the
+           adjusted emission rate for the point source approximation 
+           for OPENPIT sources under the FASTAREA option to use the 
+           length and width of the "effective" area source rather than 
+           length and width of the original openpit source.  Also 
+           modified subroutine ARDIST to recalculate the coordinates
+           for the center of the "effective" area source used for the
+           OPENPIT source algorithm, rather than using the center
+           coordinates of the original OPENPIT source.
+
+      24.  Modified several subroutines to correct and clarify aspects
+           of the logic related to use of the deposition algorithms
+           for both gas and particle deposition, especially in relation
+           to the depletion options for applications including both
+           gaseous and particulate emissions.  Previous versions of
+           AERMOD would allow a particulate source and a gaseous source
+           in the same model run for calculating concentrations only,
+           but would indicate that dry and wet depletion were being 
+           applied, even if no deposition parameters were specified 
+           for the gaseous source.  The updated version will only 
+           allow both gaseous and particulate sources in the same model
+           run for concentrations if deposition parameters are also 
+           specified for the gaseous source, or if dry and wet depletion 
+           are turned off by specifying the NODRYDPLT and NOWETDPLT 
+           options on the MODELOPT keyword.  Specifying NODRYDPLT and
+           NOWETDPLT removes any requirement for deposition parameters 
+           for the gaseous source. See the AERMOD User's Guide Addendum 
+           for more details regarding use of deposition algorithms. 
+
+-----  Enhancements:
+
+       1.  Incorporated additional options under EMISFACT keyword to 
+           vary emissions by hour-of-day and day-of-week (HRDOW and 
+           HRDOW7).
+
+       2.  Improved efficiency of allocating array storage, including
+           more precise allocation of array limits for AREAPOLY and
+           AREACIRC sources, more precise allocation for number of 
+           particle size categories for particulate sources, and 
+           allocating the building downwash arrays only when needed.  
+           Also included additional informational messages to identify 
+           where allocation errors occur with a list of array limits 
+           and preliminary memory storage estimate to facilitate 
+           diagnosis of problems.  Modifications made to MAIN program, 
+           MODULE MAIN1, and subroutines ALLSETUP, ALLRESULT, PRESET, 
+           and SRCSIZ.
+
+       3.  Modified subroutines HRQREAD (renamed from HQREAD), HRQEXT,
+           and EV_HRQEXT to allow option of specifying hourly varying 
+           release height and initial dispersion coefficients for VOLUME 
+           and AREA sources (including AREAPOLY and AREACIRC) through 
+           the optional HOUREMIS file.  Also eliminated redundant code 
+           for processing hourly emission files for 'normal' vs. 'event' 
+           processing to ensure consistency and simplify code maintenance.
+
+       4.  Increased maximum length for filenames to 200 (controlled by
+           the ILEN_FLD parameter in modules.f), and the maximum input
+           string length to 512 (controlled by the ISTRG parameter in
+           modules.f).  Also modified subroutine DEFINE to allow double 
+           quotes (") as field delimiters in the 'aermod.inp' file to 
+           support filenames with embedded spaces.
+
+       5.  Modified subroutines SRCQA and OCALC to allow for use of the 
+           non-DFAULT METHOD_2 option for particulate emissions and for
+           non-particulate (gaseous) emissions for OPENPIT sources.
+
+       6.  Modified several subroutines to allow for the non-DFAULT 
+           option of FLAT terrain to be specified for individual sources,
+           allowing both FLAT and ELEV terrain treatments within the 
+           same model run (see Section 4.1 of the AERMOD Implementation
+           Guide regarding modeling of sources with terrain-following 
+           plumes in sloped terrain).  This non-DFAULT option is 
+           activated by specifying both 'ELEV' and 'FLAT' on the 
+           CO MODELOPT keyword.  The user identifies which sources to
+           model with the FLAT terrain option by specifying 'FLAT' (not
+           case-sensitive) on the SO LOCATION keyword in place of the 
+           field for source elevation.  Sources treated as FLAT terrain 
+           will be identified in the 'aermod.out' file in the summary 
+           tables of source input parameters.  The 'aermod.out' page 
+           header of model options, and other output file headers, 
+           will include the field 'FLAT and ELEV' to identify use 
+           of this feature.                    
+
+       7.  Incorporated a non-DFAULT option to optimize model runtime
+           for POINT and VOLUME sources through an alternative 
+           implementation of the horizontal meander algorithm,
+           which preserves the centerline concentration based on 
+           the DFAULT meander algorithm, but uses of an effective 
+           sigma-y for the lateral spread of the plume. This eliminates 
+           the upwind component of dispersion that occurs under the 
+           DFAULT meander algorithm for POINT and VOLUME sources, 
+           which should significantly reduce model runtime.  This 
+           option is selected by including 'FASTALL' on the 
+           CO MODELOPT keyword.  The FASTALL option also activates 
+           the optimized treatment for AREA sources (including AREAPOLY, 
+           AREACIRC, and OPENPIT sources) formerly associated with the 
+           TOXICS option, which is now obsolete (see Item #22 below 
+           under 'Miscellaneous' and the AERMOD User's Guide Addendum).
+
+       8.  Incorporated non-DFAULT option for user-specified dry 
+           deposition velocity for gaseous emissions, using the GASDEPVD 
+           keyword on the CO pathway.  The user-specified dry deposition 
+           velocity will be used for all gaseous sources.  Particulate 
+           sources can also be included in the same model run, but no 
+           wet deposition calculations (WDEP, DEPOS or WETDPLT) will
+           be allowed.
+
+       9.  Modified OPEN statements for input data files to use the
+           ACTION='READ' specifier to allow file sharing across 
+           multiple model runs.  This includes the 'aermod.inp' input
+           file, INCLUDED files referenced from 'aermod.inp', surface 
+           and profile meteorological inputs, hourly emission files, 
+           and hourly ozone data files.
+
+      10.  Added new SUMMFILE option on the OU pathway to output the 
+           summary of high ranked values to a separate file.  The new
+           SUMMFILE includes the "MODEL SETUP OPTIONS SUMMARY" page, 
+           the summary of meteorological data periods processed and
+           summary of first 24 hours of meteorological data, the
+           summaries of high ranked values provided at the end of 
+           the standard output file, and the summary of error and 
+           warning messages.
+
+      11.  Added new FILEFORM option on the OU pathway to allow
+           the user to specify exponential-formatted rather than
+           fixed-format output of model results (CONC, DEPOS, DDEP, 
+           and/or WDEP) for external results files.  Output file 
+           options affected by this feature are MAXIFILE, PLOTFILE,
+           POSTFILE (using PLOT format), RANKFILE, and the SEASONHR
+           file.  The default will continue to be fixed format for
+           these output files.  Results included in the 'aermod.out' 
+           file and optional SUMMFILE output file are not affected
+           by this new keyword.  Also included checks on values that
+           may exceed the output format limit, and a warning message
+           is generated if the FILEFORM = EXP option is not used.
+
+      12.  Modified several subroutines to include model run date
+           and run time in the header records for output files,
+           including the MAXIFILE, PLOTFILE, POSTFILE (using PLOT 
+           format), RANKFILE, and SEASONHR file options.
+
+      13.  Modified several subroutines to include a new option 
+           on the MODELOPT keyword to issue warnings rather than
+           fatal errors for records out of date sequence in the
+           meteorological data files.  The new option is selected
+           with the WARNCHKD parameter on the MODELOPT keyword.  
+           This option is primarily intended for multi-year 
+           meteorological data files that include gaps between 
+           years of meteorological data.  The WARNCHKD option is 
+           allowed under the regulatory DFAULT option, but should 
+           only be used when processing files with data gaps is 
+           clearly documented and justified.
+
+-----  Miscellaneous:
+
+       1.  Modified subroutine URBOPT to prohibit use of urban roughness
+           length not equal to 1.0m for regulatory DFAULT applications, 
+           as discussed in Section 5.3 of the AERMOD Implementation Guide.  
+           Also modified limits on urban roughness length used to generate 
+           warning messages.
+
+       2.  Modified code (most modules and subroutines) to explicitly
+           declare most non-integer variables as DOUBLE PRECISION.
+           This addresses some long-standing concerns regarding the 
+           potential sensitivity of the model to precision involving 
+           UTM coordinates, with the full Northing coordinate near 
+           the limit of single precision.  More serious concerns have 
+           arisen recently with a case showing a consistent negative 
+           bias of about 3 percent for modeled concentrations based on 
+           source group ALL as compared to the sum of concentrations 
+           from the same sources grouped separately.  These differences 
+           were attributable to precision errors, with the group ALL 
+           results biased low due to the impacts from many sources being 
+           truncated as a result of the wide range of impacts across  
+           sources.  This change should also result generally in more 
+           consistent concentration estimates from AERMOD across different
+           compilers, compiler options, and computing platforms.
+
+       3.  Modified code in subroutines METEXT and MEREAD for processing
+           multi-year meteorological data files to determine whether an 
+           embedded header record is included between individual calendar
+           years of data in the surface file, which may occur if the files
+           have been concatenated.  An error while attempting to read 
+           the data as a header record will be interpreted to mean that 
+           there is no embedded header record, while the presence of a 
+           colon (':') will be interpreted to mean that there is an embedded 
+           header record. AERMOD should accept data with or without the
+           embedded header records.  However, if multi-year surface files
+           based on non-calendar year periods are concatenated, then the 
+           embedded header records must be removed before input to AERMOD.
+           The revised code also issues warning messages if UAIR and 
+           SURF IDs do not match inputs in the runstream file for multiple 
+           years since AERMOD allows mismatch (with warning) for single 
+           year files.
+
+       4.  Modified subroutines PRTANN, SPRTHT, and PRTPM25 to include
+           EVALCART receptors with DISCCART receptors for output tables.
+
+       5.  Expanded array sizes (in 'modules.f') to 50 for ICSTAT,
+           ISSTAT, IRSTAT, IMSTAT, and IOSTAT arrays.  Also changed the
+           index used for the FINISHED keyword on each pathway to 50
+           instead of 25.
+
+       6.  Removed obsolete code inherited from ISCST3 code, including
+           TGSET.FOR and other references to the 'TG' (terrain grid)
+           pathway; reference to IRSTAT(7) in subroutine RECARD and
+           other references to BOUNDARY receptors in subroutine PRTDAY;
+           'HE>ZI' option; and NWET parameter.  Also removed obsolete
+           MODULE DEPVAR from the 'modules.f' source file.
+
+       7.  Replaced *.pri "INCLUDE" files used for global data storage
+           in PRIME subroutines with MODULE subprograms. The new MODULE
+           subprograms are contained in the 'modules.f' source file.
+           Also imposed explicit variable type declarations through use
+           of IMPLICIT NONE within the PRIME portions of the AERMOD code.
+
+       8.  Incorporated several modifications to subroutine PRTOPT, 
+           including a more "refined" estimate of memory storage
+           requirements, including the DFAULT urban roughness 
+           length and a more complete summary of options when DFAULT
+           option is not specified, correcting cosmetic problems with
+           the output option summary for EVENT vs. standard processing,
+           clarification of deposition option logic, inclusion of 
+           emission and output units for both concentrations and
+           deposition when needed, and more complete explanations 
+           for some options.
+
+       9.  Modified subroutine SRCQA to issue warning messages for 
+           sources that are not included in any SRCGROUPs, modified
+           checks for urban areas without urban sources, and changed
+           warning to fatal error for urban areas with no urban sources.
+           Additional error-checking for OLMGROUPs and PSDGROUPSs has
+           also been included.
+
+      10.  Modified criterion for issuing a warning message regarding
+           aspect ratio for rectangular AREA sources being out of range,
+           from an aspect ratio of 10:1 to an aspect ratio of 100:1. 
+           The upper limit of aspect ratio for stable performance of 
+           the numerical integration algorithm for area sources has not 
+           been fully tested and documented, and may vary depending on 
+           the specifics of the application.  A ratio of 10:1 is probably 
+           too strict and may unnecessarily lead to a large number of 
+           warning messages in some cases.  Users should always carefully 
+           quality assure the source inputs provided to AERMOD for 
+           accuracy and appropriateness for the application.
+
+      11.  Added error message (number 499) to handle PRIME plume rise
+           error when maximum number of downwind distances for numerical
+           plume rise (MXNW) is exceeded. This error condition has
+           occurred with application of Model Clearinghouse procedure
+           for capped stacks (using large effective stack diameter),
+           which is not appropriate with PRIME algorithms. Also
+           modified subroutine NUMRISE to include additional information
+           regarding this error message. 
+
+      12.  Modified subroutine PRTSRC to remove reference to "STABILITY
+           CATEGORY" and correct format statement 9024 for 'WSPEED' 
+           EMISFACT option (inherited from legacy ISCST3 code for
+           'STAR' option).
+
+      13.  Modified subroutines PPARM, VPARM, APARM, APPARM, ACPARM, and 
+           OPARM to issue a fatal error message for source release heights 
+           that exceed 3,000 meters.  Such abnormally high release heights 
+           have resulted in runtime errors and are considered beyond the 
+           range of applicability for AERMOD.
+
+      14.  Modified subroutines RANKFL and VARINI to increase number of
+           high ranked values allowed in the RANKFILE option without
+           overflowing the field, from 999 to 999,999.
+
+      15.  Modified subroutine HEADER in aermod.f to use ASCII
+           form feed character (ACHAR(12)) in 'aermod.out' file to 
+           eliminate need for the non-standard CARRIAGECONTROL='FORTRAN'
+           option in the OPEN statement for the 'aermod.out' file.  
+           Modified subroutine FILOPN to eliminate the use of the 
+           CARRIAGECONTROL='FORTRAN' option when opening the
+           'aermod.out' file.  Also modified subroutine SETUP 
+           to remove '1X' from format statements for echoing 
+           the runstream inputs to the output file since Fortran 
+           carriage-control is no longer applied.  These modifications 
+           will improve the portability of the AERMOD code to other
+           compilers and platforms.
+
+      16.  Modified several subroutines to reflect updates to the
+           listing of MODELOPT options based on other modifications
+           to the model.  The summary of model options in the page
+           header of output files has been modified to more clearly
+           indicate when the regulatory default mode (DFAULT) is in
+           effect and whether non-DFAULT options are being used for
+           applications where the DFAULT option has not been specified.
+           Also included error checking for conflicting options being
+           included on the MODELOPT keyword, such as the DRYDPLT and
+           NODRYDPLT options.
+
+      17.  Modified subroutine PNPOLY to use an Internal Function 
+           for EOR rather than a Statement Function, which has been 
+           identified as obsolescent in Fortran 95.  
+
+      18.  Modified subroutine METEXT to check for the presence of 
+           additional variables in the surface meteorological file 
+           needed for use of the deposition options when required.
+           A fatal error is issued if less than the minimum number 
+           of variables is included in the surface file.
+
+      19.  Modified subroutines SURFIL and PROFIL in meset.f to remove 
+           the optional user-specified READ format for the surface and 
+           profile meteorological input files.  AERMOD assumes FREE 
+           format for all input meteorological data files, i.e., the data 
+           fields must be space or comma-delimited.  Note that the 
+           "header" record for the surface file must conform to the 
+           format used by AERMET.
+
+      20.  Modified subroutines SOLOCA and RECARD to check for missing
+           source or receptor elevations, coded as -9999.0 by AERMAP.
+           Missing elevations will generate a fatal error, requiring the
+           user to resolve the issue(s) associated with the missing 
+           elevations.
+
+      21.  Modified subroutine FILOPN in aermod.f to use lower case for
+           'aermod.inp' and 'aermod.out' files.  Also modified Fortran
+           source code filenames to use lower case with '.f' file
+           extensions.  These changes may be important for operating
+           systems that recognize case-sensitive file names.
+
+      22.  Modified several subroutines to remove the non-DFAULT 
+           TOXICS option, inherited by AERMOD from the ISCST3 model 
+           code.  The area source optimizations previously activated 
+           with the TOXICS option are now associated with the new
+           non-DFAULT 'FASTAREA' option, and are also included under
+           the new non-DFAULT 'FASTALL' option (see Item #7 above
+           under 'Enhancements' and the AERMOD User's Guide Addendum).
+           The TOXICS option is no longer required to utilize the 
+           gas deposition options or the METHOD_2 option for particle
+           deposition.  However, these options are still considered
+           to be non-DFAULT options within AERMOD.  Also modified
+           several subroutines to clarify reporting of deposition
+           options in the 'aermod.out' file, including previously 
+           undocumented options to turn off dry depletion (NODRYDPLT)
+           and wet depletion (NOWETDPLT).
+
+      23.  Modified subroutine MODOPT in coset.f to use fatal error
+           (message number 204) for several options that conflict 
+           with the regulatory DFAULT option, including the BETA,
+           OLM, PVMRM, PSDCREDIT, SCIM, FASTALL, FASTAREA, and 
+           AREADPLT options.
+
+      24.  Modified subroutines COCARD and MECARD to skip keywords
+           that are not valid for EVENT processing runs, including
+           EVENTFIL, SAVEFILE, INITFILE, and MULTYEAR on the CO 
+           pathway, and STARTEND and DAYRANGE on the ME pathway.  
+           These keywords are not echoed to the input file created 
+           with the EVENTFIL keyword, so this change would only 
+           impact cases where these keywords were added to the
+           EVENTFIL after the file was created by the standard 
+           run, or EVENT input files created through other means.
+
+      25.  Modified subroutines HRQREAD and O3EXT to allow for 
+           4-digit years in the HOUREMIS and OZONEFIL data files.
+
+      26.  Modified subroutine CHKREC to include a check for 
+           receptors beyond MAXDIST from sources, using the center 
+           coordinates for AREA/AREACIRC/AREAPOLY and OPENPIT 
+           sources.  MAXDIST is set to 80km under the non-DFAULT 
+           FASTALL and FASTAREA options.
+
+      27.  Modified subroutine MYEAR to treat the 'H6H' field 
+           for the MULTYEAR keyword as optional, with a warning 
+           indicating that it is no longer required.
+
+      28.  Modified subroutine METQA to calculate the total 
+           precipitation amount from the surface met data file.
+           Also modified subroutine SUMTBL to include the total
+           precipitation amount with the message summary in the
+           'aermod.out' file, and included a warning message for
+           applications using wet deposition algorithms with a 
+           total precipitation amount of zero (0).
+
+      29.  Modified subroutine TERRST to determine the number of
+           calm and/or missing hours only for the meteorological
+           data period being processed when the STARTEND and/or 
+           DAYRANGE keywords are used.  Also modified subroutine 
+           SUMTBL to include the number of hours processed from 
+           the meteorological data file in the message summary.
+
+      30.  Modified subroutines PRTSUM and PRTPM25SUM to adjust 
+           format of column headers and other write statements in
+           the summary tables of high ranked values, including removal 
+           of '1X' used to skip the Fortran carriage-control character, 
+           which is no longer needed.
+
+      31.  Miscellaneous code clean-up, including the removal of 
+           extraneous Fortran 'SAVE' statements and specifying the
+           SAVE attribute only where needed for local variable type
+           declaration statements, removal of subroutines PRESOINC
+           and PREREINC to eliminate unnecessary code redundancy, 
+           removal of unused subroutine EV_CHKDAT, removal of obsolete
+           PRIME subroutine NUMMET, removal of unused PARAMETERS in 
+           MODULE MAIN1, replacement of DO loops for variable 
+           initialization with array assignments, improved consistency 
+           of error handling for processing of numeric inputs from 
+           the runstream file, adjusting header format in subroutine
+           SHOUT for SEASONHR files with multiple output typse, and 
+           removal of code associated with "wet SCIM'ing" option 
+           which is not supported in AERMOD.  The input format for
+           the SCIMBYHR keyword has also been adjusted to remove 
+           the parameters associated with wet SCIM'ing, but the
+           model should still process input files based on the 
+           previous format while issuing a warning message.
+
+
+-----  MODIFIED BY:    Roger W. Brode
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       October 19, 2009
+
+-----  MODIFIED FROM:          AERMOD
+                       (Version Dated 07026)
+
+=======================================================================
+
+       This revised version of AERMOD (dated 07026) includes the
+       following modifications relative to the previous version
+       (dated 06341); see MCB#2:
+
+-----  Bug Fixes:
+
+       1.  Corrected array indexing problem for POINT, POINTCAP, and
+           POINTHOR sources in subroutine SOPARM that could result 
+           in incorrect processing of SRCPARAM data for some sources 
+           and/or incorrect issuance of fatal runtime errors for number
+           of parameters specified (error code 'E201').
+
+       2.  Modified subroutine SRCQA to include QA checks on the
+           number of emission factors input for MHRDOW and MHRDOW7
+           options.
+
+       3.  Modified subroutines SRCSIZ and PRESOINC to correct
+           potential problem with assignment of array size for
+           MHRDOW option.
+
+       4.  Modified subroutine SRCQA to use DOUBLE PRECISION in the
+           calculation of area and centroid coordinates for AREAPOLY
+           sources. This change avoids problems encountered with
+           the Compaq Visual Fortran compiler producing erroneous
+           results for some compiler options.
+
+       5.  Modified subroutine MEREAD to assign non-array logical
+           variables STABLE and UNSTAB for use in subroutine COMPTG
+           for EVENT processing mode.
+
+       6.  Modified subroutines PCALC, VCALC, ACALC and OCALC to
+           include calls to subroutine HEFF prior to calculation of
+           zsubp for deposition applications.
+
+       7.  Modified subroutine HRQEXT for the HOUREMIS option to
+           correct processing of missing parameters for point sources
+           to assign all parameters to 0.0 if any of the parameters 
+           are missing, in conformance with Section 3.3.9 of the 
+           AERMOD User's Guide.
+
+       8.  Modified subroutine VDP to prevent potential zero-divide
+           condition for cases with zero specific humidity deficit.
+
+       9.  Modified subroutines VARINI and RESINI to check for 
+           allocation status of allocatable arrays during array 
+           initializations.
+
+-----  Miscellaneous:
+
+       1.  Included additional error-checking for the non-DFAULT,
+           BETA-test PSDCREDIT option.
+
+       2.  Modified subroutine PRTSRC to correct format for printing
+           QFLAG from A6 to A7 to accommodate SHRDOW7 and MHRDOW7,
+           and other minor adjustments to formatting.
+
+       3.  Modified code to read the header record of the surface file
+           in subroutines MEOPEN, METEXT, and MEREAD to include a 
+           separate test on the AERMET version date field under the 
+           SCREEN option, to allow for the future use of screening 
+           meteorology that is not directly linked to a specific
+           version of the AERMET processor.  Also modified subroutine
+           METDAT to include meteorological data version date in the
+           summary of met data inputs.
+
+
+-----  MODIFIED BY:    Roger W. Brode
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       January 24, 2007
+
+       MODIFIED FROM:          AERMOD
+                       (Version Dated 06341)
+
+=======================================================================
+
+       This revised version of AERMOD (dated 06341) includes the
+       following modifications relative to the previous version
+       (dated 04300); see MCB#1:
+
+-----  Bug Fixes:
+
+       1.  Initialize HE = HS prior to first call to ADISY in
+           subroutines ACALC and OCALC.
+
+       2.  Replaced undefined variable lbd with .TRUE. in calls to
+           WAKE_XSIG to ignore BID for "outside" cavity source
+           in subroutine CAV_SRC.
+
+       3.  Modified subroutine PRMDELH to save L_INWAKE to local
+           variable.
+
+       4.  Modified subroutines WAKE_DFSN and WAKE_DFSN2 to initialize
+           dummy variables zkdum and ykdum to 0.0.  Otherwise these
+           variables may be undefined in subrountine WAKE_SIG under
+           some circumstances.
+
+       5.  Moved call to RSDUMP for MULTYR option from subroutine
+           HIPER to MAIN to resolve minor discrepancy in ANNUAL
+           averages for MULTYR option.
+
+       6.  Added arrays to store WDSIN and WDCOS by source for use
+           in determining the wind direction for the dominant source
+           in the PVMRM option.
+
+       7.  Deleted code in subroutine PCALC that adjusts DHCRIT based
+           on distance to well-mixed layer for stable conditions for
+           consistency with Model Formulation Document.
+
+       8.  Added error checking for missing GASDEPOS inputs.
+
+       9.  Corrected variable type from INTEGER to REAL for variable
+           NEWRAD (effective radius) in subroutine GENCIR for AREACIRC
+           sources.
+
+-----  Enhancements:
+
+       1.  A new 'BETA' option has been added to the CO MODELOPT card
+           to identify and allow use of new features added to the model
+           that are still in a draft BETA-test status.  The  BETA option
+           is a non-DFAULT option, and will be overridden if the DFAULT
+           option is specified.
+
+           The following two draft enhancements are included in
+           this update to AERMOD under the BETA option:
+
+           a) options for capped stacks (source type = POINTCAP) and for
+              horizontal releases (source type = POINTHOR); and
+           b) the PSDCREDIT option for PVMRM to account for NO/NO2 plume
+              chemistry of combined plumes in the computation PSD credits.
+
+           Inclusion of these draft BETA-test options does not imply
+           any endorsement of their use for regulatory or non-regulatory
+           applications of the model. In addition, the designation of
+           BETA-test to these draft enhancements does not imply that
+           these options have completed rigorous internal (Alpha) testing
+           prior to being included in a public release of the model.
+
+       2.  Additional options under EMISFACT keyword to vary emissions
+           by month, hour-of-day, and day-of-week (MHRDOW and MHRDOW7).
+
+       3.  Expanded urban option to allow multiple urban areas to
+           be defined through multiple URBANOPT cards.  A new
+           Urban ID parameter has been added to link sources with
+           specific urban areas.  Existing input files with a single
+           urban area do NOT need to be modified to run with this
+           version of the model.
+
+       4.  The following changes have been made to ensure consistency
+           with the current PM NAAQS:
+
+           a) Added special processing for PM-2.5 to calculate design
+              values in accordance with the PM NAAQS.  The design value
+              for 24-hour averages is based on the high-eighth-high (H8H)
+              averaged over N years, as an unbiased surrogate for the 98th
+              percentile.  The long-term design value for PM-2.5 is based
+              on the highest annual average concentration averaged over
+              N years using the ANNUAL keyword on the AVERTIME card.
+
+           b) The "post-1997" PM-10 processing based on H4H averaged over
+              N years has been removed since that standard was vacated.
+              The PM-10 design value for 24-hour averages is based on the
+              high-sixth-high (H6H) over five years (for NWS data), or more
+              generally by the high-N+1-high value over N years. This can
+              be accomplished using the existing CO MULTYEAR option with
+              multiple 1-year input met data files, or using single
+              five-year data files without the MULTYEAR option.
+
+       5.  Added option to specify initial in-stack NO2 ratio for
+           PVMRM and OLM options with CO NO2STACK card.  Default ratio
+           without the NO2STACK card for OLM is 0.10.  No default ratio
+           has been determined for PVMRM, so user must either use the
+           CO NO2STACK card to initialize ratio for all sources, or
+           specify ratio for each source using the SO NO2RATIO card.
+           The SO NO2RATIO card can be used to override the value
+           specified on the CO NO2STACK card for specific sources.
+
+       6.  The maximum number of vertices for an AREAPOLY source is now
+           allocated dynamically at runtime.  The previous version of
+           AERMOD allowed a maximum of 20 vertices.  The maximum number
+           of vertices allowed for AREACIRC sources is not allocated
+           dynamically.  However, the maximum number of vertices allowed
+           for AREACIRC sources will always be at least 50, and if both
+           AREAPOLY and AREACIRC sources are included in the same model
+           run, then the maximum number of vertices identified for the
+           AREAPOLY sources will also define the maximum number allowed
+           for the AREACIRC sources if it is larger than 50.
+
+-----  Miscellaneous:
+
+       1.  Added range check on value of vertical potential temperature
+           gradient above ZI (variable VPTGZI), to avoid problems with
+           data provided from sources other than AERMET.  A minimum
+           value of 0.005 K/m is applied for consistency with AERMET,
+           and a warning message is also generated for values larger
+           than 0.10 K/m.
+
+       2.  Refined the process of dynamically allocating array storage
+           to skip allocation of arrays that are not needed based on the
+           model options selected, in order to reduce unnecessary memory
+           usage.
+
+       3.  Removed calls to subroutines VDP and SCAVRAT from subroutine
+           PLUME_VOL.
+
+       4.  Removed references to obsolete BOUNDARY keyword for receptors
+           in RECSIZ and PREREINC subroutines to allocate receptor arrays,
+           and in subroutines PRTANN, SPRTHT, and PRTPM25 of OUTPUT.FOR.
+
+       5.  Changed AMAX1/AMIN1 intrinsics to MAX/MIN.
+
+
+-----  MODIFIED BY:    Roger W. Brode
+                       U.S. EPA, OAQPS/AQAD
+                       Air Quality Modeling Group
+
+                       James O. Paumier (PSDCREDIT option)
+                       MACTEC Federal Programs, Inc.
+
+                       December 7, 2006
+
+       MODIFIED FROM:          AERMOD
+                       (Version Dated 04300)
+
+=======================================================================
+
+       This DRAFT version (dated 04300) includes the Plume Volume Molar
+       Ratio Method (PVMRM) and the Ozone Limiting Method (OLM) for
+       modeling conversion of NOx to NO2.  This work was supported by
+       BP Exploration (Alaska), Inc., Phillips Exploration, Inc.,
+       and the Alaska Department of Environmental Conservation.
+
+       This DRAFT version (dated 04300) also includes the following
+       modifications:
+
+       1.  Dry depletion (DRYDPLT) and wet depletion (WETDPLT) are no
+           longer optional for deposition applications.  These options
+           for removal of mass from the plume due to dry and/or wet
+           deposition processes will automatically be invoked for
+           applications in which dry and/or wet deposition are
+           considered.  The DRYDPLT and WETDPLT options on the
+           MODELOPT card will be ignored, and need not be removed
+           from the model input file for the model to run.
+
+       2.  Correction made to area source algorithm, subroutine PLUMEF,
+           to include a call to CRITDS to calculate the critical
+           dividing streamline height for gaseous pollutants.  Also
+           modified PLUMEF to correct a problem with the AREADPLT option.
+
+       3.  Corrections made to area source and openpit algorithms,
+           in subroutines ACALC and OCALC, to include tilted plume
+           for point source approximation of particle emissions, and
+           to include reinitialization of __VAL arrays at end of
+           receptor loop (reinitializations also included in PCALC and
+           VCALC for point and volume sources for consistency).  The
+           latter correction fixes a potential problem with particle
+           emissions for area sources when the point source
+           approximation is used under the TOXICS option.
+
+       4.  Corrected calling arguments for call to WAKE_SIG from
+           subroutine WAKE_DFSN2, to use wakiz and wakiy instead of
+           turbz and turby.
+
+       5.  Minor correction made to wet deposition calculations to
+           include lateral term (FSUBY) in weighting of direct
+           and penetrated source contributions for WETFLUX.
+
+       6.  Modified suroutine PRMCALC to place receptor on centerline
+           of cavity plumes by setting Y2 = 0.0 for SCREEN option.
+
+       7.  Modified subroutine SRCQA to calculate equivalent XINIT
+           and YINIT values for AREAPOLY sources to allow for
+           calculation of area of source under TOXICS option and
+           for PVMRM option.  Also modified SRCQA to include a more
+           refined computation of centroid for AREAPOLY sources.
+
+       8.  Included check in subroutine METQA for absolute values of
+           Monin-Obukhov length (OBULEN) less than 1.0.  Adjustment
+           of OBULEN is made to limit ABS(OBULEN) .GE. 1.0.  The
+           sign of OBULEN is assigned the opposite of the sign of the
+           heat flux if OBULEN is 0.0.  This limit on OBULEN is
+           already applied in AERMET, so this change in AERMOD will
+           only affect input data generated by other means.
+
+       9.  Moved call to SUB. METDAT ahead of call to SUB. SET_METDATA
+           to avoid potential problem with negative (missing) 
+           precipitation for first hour.
+
+      10.  Added range check on gas deposition parameters to trap
+           on input of zero (0.0) values.
+
+      11.  Modified subroutine METQA to reduce number of extraneous
+           warning messages, especially for hours with missing
+           meteorological data.  Also modified range check for missing
+           wind direction in subroutine CHKMSG.
+
+      12.  Modified PLOTFILE output to include date field.
+
+      13.  Modifications to some debug output statements based on
+           code provided by ENSR.
+
+       MODIFIED BY:    Roger W. Brode
+                       MACTEC Federal Programs, Inc.
+                       (formerly known as PES, Inc.)
+                       October 26, 2004
+
+       MODIFIED FROM:          AERMOD
+                       (Version Dated 04079)
+
+=======================================================================
+
+       This revised DRAFT version (dated 04079) incorporates
+       modifications to the wet deposition algorithms for both
+       gaseous and particle emissions.  For both gaseous and particle
+       wet deposition, the wet fluxes have been corrected to include
+       a factor of 3600.*SQRT(2*PI) in the denominator.  The factor
+       of 3600 was needed to correct a unit conversion error between
+       seconds and hours in the final calculation of the flux.
+       The factor of SQRT(2*PI) is needed to complete the integrated
+       vertical term.  A problem causing potential runtime errors for
+       volume and area sources with dry depletion was also corrected.
+
+       In addition to the corrections identified above, the particle
+       wet deposition algorithms were also modified to include an
+       algorithm for calculating the collision efficiency as a function
+       of particle size and raindrop size.  The previous version of
+       the model included a fixed value of 4.0e-4 for the collision
+       efficiency.
+
+
+       MODIFIED BY:    Roger W. Brode
+                       MACTEC Federal Programs, Inc.
+                       (formerly known as PES, Inc.)
+                       March 19, 2004
+
+       MODIFIED FROM:           AERMOD
+                         (Version Dated 03273)
+
+=======================================================================
+
+       This DRAFT version (dated 03273) incorporates wet and dry
+       deposition algorithms based on the draft ANL report (Wesely,
+       et. al, 2001), with modifications to the wet deposition
+       algorithms based on peer review comments.  The dry deposition
+       algorithms include dry depletion based on the simple source
+       depletion method.
+
+       NOTE:  The wet SCIM'ing and output by particle size options 
+       from the ISCST3 model have not been implemented yet in AERMOD.
+
+       This version includes the following modifications relative to
+       the previous draft (dated 03213):
+
+       1.  Removed depletion for the "inside cavity source" from the
+           PRIME calculations.
+
+       2.  Moved the code to adjust for TS < TA (used to model a fixed
+           delta TS-TA) from SUBROUTINE SETSRC back to SUBROUTINE
+           FLUXES.  This corrects some minor discrepancies between
+           the consequence analysis results for non-buoyant sources
+           relative to version 02222.
+
+       3.  Removed the dry particle deposition code associated with
+           DFAULT mode in ISCST3.  The only dry particle deposition
+           in AERMOD is based on the ANL report for Methods 1 and 2.
+           This also corrects a logic problem if neither TOXICS nor
+           DFAULT options are specified.
+
+       4.  Modified FUNCTION F2INT to only call DELTAH for point
+           sources during plume depletion calculation.
+
+       5.  Added identification of urban sources and Method 2 sources
+           in summary of source inputs.
+
+       6.  Included optional dry depletion option for Method 2.
+
+       7.  Additional code cleanup and documentatino, including removal
+           of unused data arrays associated with ISCST3 depletion code
+           and moving the call to SUBROUTINE METINI to follow the call
+           to SETSRC in SUBROUTINE OCALC for open pit sources.
+
+
+       Version 03213 (August 1, 2003) included the following
+       modifications relative to the previous draft (dated 03171):
+
+       1.  Corrects problem with calculation of f2 term used in gas
+           dry deposition.  The calculation of Wnew and f2 had to be
+           moved outside the source loop to properly account for
+           accumulated precipitation over three hour period.
+
+       2.  Changed the definition of the "top of the plume" to be based
+           on the plume centerline height plus 2.15*sigma-z, evaluated
+           at 20km downwind.  The previous definition was based on
+           3.9*sigma-z.
+
+       3.  Terrain effects are now incorporated in the dry depletion
+           calculation.  The terrain elevation is linearly interpolated
+           between the source base elevation and the terrain elevation
+           at the receptor.  The hill height scale is linearly
+           interpolated between the stack release height at the
+           source and the hill height scale from AERMAP at the receptor
+           location.
+
+       4.  Modified the short-term EVENT processing option to be
+           compatible with the deposition algorithms.  If more than
+           one output type is selected in the normal model run that
+           generates the EVENT input file, the events will be defined
+           based on the first output type, in the order of CONC, DEPOS,
+           DDEP, WDEP.
+
+       5.  Modified summary of first 24-hours of met data to include
+           additional parameters for deposition applications.
+
+       6.  Modified the program to use free-formatted READ for the
+           surface meteorological input file for all cases.  Decision
+           on whether to read additional parameters needed for deposition
+           is based on logical variables associated with deposition
+           calculations.
+
+       7.  Incorporated a patch in SUBROUTINE UNLUMP of PRIME.FOR to
+           avoid potential math error for downwash calculations.
+           The plume temperature calculated by NUMRISE is limited to
+           be greater than or equal to the ambient temperature minus
+           10 K.  This avoids a potential SQRT of a negative number.
+
+       MODIFIED BY:    Roger W. Brode
+                       MACTEC Federal Programs, Inc.
+                       (formerly known as PES, Inc.)
+                       September 30, 2003
+
+       MODIFIED FROM:           AERMOD
+                         (Version Dated 02222)
+
+=======================================================================
+
+       This DRAFT version (dated 02222) includes fixes to the following
+       bugs:
+
+       1) modification to ACALC to avoid potential math errors
+          for AREAPOLY sources;
+       2) correction to METSUM to output missing temperatures correctly
+          for the SCIM option;
+       3) correction to EMVARY to replace 'STAR' option with
+          'WSPEED' option;
+       4) modified CAV_SRC to keep "outside" cavity source in array
+          element 3 for cases when no "inside" cavity source contribution
+          occurs;
+       5) corrected meander algorithm to combine "plume" and
+          "pancake" components of concentrations rather than just
+          blending the lateral dispersion term, removed limit on pancake
+          term to be smaller than plume lateral term, and removed meander
+          from the PRIME component for sources subject to building
+          downwash;
+       6) corrected problem in NUMRISE to avoid referencing an
+          undefined variable (xbi);
+       7) corrected calling arguments for call to WAKE_SIG from
+          subroutine WAKE_DFSN, to use wakiz and wakiy instead of
+          turbz, and turby; and
+       8) correction of Z_iuo in subroutine URBCALC from 500 to 400
+          meters.
+
+       Modified to remove command line arguments for specifying
+       input and output file names, and use hardwired names of
+       AERMOD.INP and AERMOD.OUT.
+
+       This version includes an adjustment to ustar and L for urban stable
+       cases, by equating the "convective" sigma-w based on the urban
+       "convective" w* with the mechanical sigma-w based on u*
+       evaluated at a height of 7 times the urban roughness length.
+       The URBANOPT keyword was modified to allow the user to input
+       the urban roughness length as an optional parameter following
+       the optional city name.  If no urban roughness length is input,
+       then the model assumes an urban roughness length of 1.0 meter.
+
+       This version also includes a modification to the minimum layer
+       depth near the ground used to calculate effective parameters.
+       A minimum layer depth of 5 meters is used instead of 2 meters
+       if the plume centroid height and receptor height are both below
+       5 meters.
+
+       MODIFIED BY:    Roger W. Brode
+                       PES, Inc.
+                       September 10, 2002
+
+       MODIFIED FROM:           AERMOD
+                         (Version Dated 01247)
+
+=======================================================================
+
+       This draft version (dated 01247) includes the PRIME building
+       downwash algorithms based on the ISC-PRIME model (dated 99207).
+       For cases involving building downwash, the model calculates a
+       non-wake contribution using the AERMOD algorithms, a wake
+       contribution using the PRIME algorithms, and blends the two
+       results using a factor called GAMFACT that varies based on the
+       location of the receptor relative to the wake.  For receptors
+       within the wake region, where the lateral and vertical boundaries
+       are defined by the wake half-width and height, respectively, and
+       the longitudinal boundary is defined by a distance equal to 15R
+       or the point where wake turbulence intensity decays to ambient
+       turbulence intensity, whichever is greater, measured from the
+       upwind edge of the building, GAMFACT is set equal to 1.0 (i.e.,
+       uses the PRIME result only).  The PRIME algorithm has been
+       modified to use the AERMOD meteorological profiles and
+       definitions of ambient turbulence.
+
+       This version also includes a modification to the DTHETA/DZ 
+       profile (TEMPGRID.FOR) for extrapolating above the highest
+       measurement height for cases with observed temperature profiles,
+       a modification to the upper limit on the integration for
+       HCRIT (CALC2.FOR), a correction to the calculation of FYPAN
+       for meander (CALC2.FOR), and an adjustment to ISTRT_WIND used
+       for Y2K compliance to subtract 1 from ISTRT_WIND in case the
+       meteorological data file contains data from the end of the
+       previous year.
+
+       MODIFIED BY:    Roger W. Brode
+                       PES, Inc.
+                       September 4, 2001
+
+       MODIFIED FROM:           AERMOD
+                         (Version Dated 00357)
+
+=======================================================================
+
+       This version (dated 00357) includes enhancements based on the
+       current ISCST3 model (dated 00101).  These include:  1) the use of
+       globally allocatable arrays for data storage; 2) expanded data
+       structures to allow for output of concentration and deposition in
+       a single model run (for use when deposition algorithms are added
+       to AERMOD); 3) EVENT processing for short-term culpability analyses;
+       4) post-1997 PM10 processing; 5) TOXICS option enhancements such as
+       optimizations for area sources, the SCIM option, and SEASONHR output
+       file option; 6) explicit treatment of multiple-year meteorological
+       data files and ANNUAL averages; 7) the SHRDOW and SHRDOW7 options
+       for specifying emissions that vary by season, hour-of-day, and
+       day-of-week; and 8) improved data structures for field length and
+       filename lengths.
+
+       The following modifications have also been made to correct errors:
+       1) the PARAMETER LAMDAY was implicitly typed as integer in previous
+       versions, and is now explicitly typed as real, which has an impact
+       on the plume height calculations for the indirect source; 2) the
+       calculation of the plume centroid height for unstable conditions
+       for area sources was moved from SUB. ACALC to be included inside
+       the area source integration in SUB. PLUMEF and SUB. PWIDTH, which
+       affects results for area sources during unstable conditions,
+       especially for receptors located inside an elongated area source
+       with the wind blowing along the long dimension of the source; and
+       3) the STABLE and UNSTAB logical variables are now assigned prior
+       to the call to COMPTG in SUB. METEXT, potentially affecting the
+       observed DTHETA/DZ profile for the first stable hour in a day;
+       4) the calculation of wind direction (WDIR) at stack top in SUB.
+       METINI and at stack height plus 0.5*deltaH in SUB. PCALC was
+       corrected to account for possible 0-360 crossover in the profile;
+       5) corrections were made to the vertical terms to correct the
+       reflection component for receptors located below stack base elevation;
+       6) corrected calculation of FYPAN term for meander in SUB. FYTERM
+       to use radial distance (DISTR) instead of downwind distance (X); and
+       7) application of meander to both stable and unstable conditions.
+       Additional modifications were made to consolidate redundant code
+       and simplify future maintenance activities.
+
+       MODIFIED BY:    Roger W. Brode
+                       PES, Inc.
+                       December 22, 2000
+
+       MODIFIED FROM:           AERMOD
+                         (Version Dated 99351)
+
+========================================================================
+
+                              (Version Dated 99351)
+                                December 17, 1999
+
+        This version (99351) includes the following corrections to the
+        implementation of the Schulman-Scire downwash algorithm:  1) added
+        call to DHPSS in calculation of plume centroid height (CENTER) in
+        subroutine PCALC; and 2) modified to use SZ3LB and SY3LB based on
+        building enhanced dispersion curves only in subroutine DHPSS.
+        Additional modifications were made to improve consistency with
+        ISCST3 implementation of Schulman-Scire downwash algorithm.
+        Also includes changes to subroutine PCCODE to facilitate
+        compilation of the model using the DEC Visual Fortran compiler.
+        The output file unit number, IOUNIT, was also changed from 6 to 9
+        in order for runtime status update to appear on the screen for
+        DEC-compiled executables.  Minor, inconsequential changes were
+        also made to comment headers and variable declarations in
+        SIGGRID.FOR.
+
+
+        MODIFIED FROM:
+                              (Version Dated 99211)
+                                  July 30, 1999
+
+========================================================================
+
+        This version (99211) incorporates modifications for Y2K compliance.
+        Uses a window of 1950 to 2049 for 2-digit years.  Will utilize
+        4-digit year if input for surface and profile files using FREE
+        format (the default read format still reads a 2-digit year).
+        Changes also include calculation of a 10-digit date variable
+        (FULLDATE) with 4-digit year for date comparisons, and changes of
+        the output formats for the 8-digit variable, KURDAT, to I8.8 to
+        include leading zeros.  The date and time routines used for the
+        page headers have been modified to use the standard Fortran 90
+        routines, and minor changes have been made to remove obsolescent
+        features from the code.  Changes also include a correction to
+        a variable name in SUBROUTINE DELTAH.
+
+
+        MODIFIED FROM:
+                              (Version Dated 98314)
+                                November 10, 1998
+
+========================================================================
+
+        This version (dated 98314) incorporates modifications for the final
+        draft AERMOD Model. This draft represents the final version of the
+        model prior to the Notice of Proposed Rulemaking for including
+        AERMOD in the modeling Guideline and subsequent public comment period.
+        Changes to the model are too numerous to list here in detail.
+        Changes to the interface are incorporated in the revised
+        AERMOD user's guide, and pertain primarily to the regulatory
+        default option on the CO MODELOPT card, and removal of the
+        developmental options for terrain affects.  The CO TERRHGTS
+        keyword is now obsolete, and a new mandatory ME PROFBASE
+        keyword has been added for inputting the base elevation above
+        MSL for the gridded potential temperature profile.
+
+
+        MODIFIED FROM:
+                               (Version Dated 98022)
+                                  January 22, 1998
+
+========================================================================
+
+        This version (dated 98022) incorporates modifications for the revised
+        draft AERMOD Model. This draft represents the final Phase I version
+        of the model.  This version includes the use a minimum sigma-v of
+        0.2 m/s. It also incorporates corrections to the downwash algorithms.
+        It limits the number of iterations on inhomogeneity to 1,
+        i.e., effective parameters are calculated based on an average
+        for the layer from plume centerline to 2.15 sigma-z, where
+        sigma-z is based on parameters at plume centerline height.
+        The transport wind direction is based on the modpoint between
+        stack height and "final" plume height.  Modifications have also
+        been made to the dtheta/dz profile, the Tly and Tlz used for stable
+        plumes above the CBL, and the height of the effective reflecting
+        surface for stable plumes.
+
+
+        MODIFIED FROM:
+                               (Version Dated 97350)
+                                 December 16, 1997
+
+========================================================================
+
+        This draft includes an option for specifying the transport wind
+        direction.  The option is specified on the MODELOPT card, where
+        WDOPT1 is for wind direction taken at stack height, and
+        WDOPT2 is for wind direction at the midpoint between stack height
+        and "final" plume height.  The default option is WDOPT1.
+        This version does not include conditional compilation code to
+        support the Microsoft Fortran compiler.  This version of the
+        code is compatible with the Lahey F77L3 and Lahey LF/90 compilers.
+        The deposition algorithm for AERMOD is still under development,
+        and is not operational in this version.
+                   R.W. Brode, PES, Inc., December 16, 1997
+
+
+        MODIFIED FROM:
+                               (Version Dated 97064)
+                                   March 5, 1997
+
+========================================================================
+
+        Incorporates modifications for second round of Beta Testing,
+        including code clean-up and removing obsolete options.  Since
+        the urban stable boundary layer algorithm in AERMOD is still
+        under development, the keywords for implementing the urban
+        option in AERMOD have been disabled for this revised draft
+        Beta release of the model.
+                   R.W. Brode, PES, Inc., March 5, 1997
+
+        MODIFIED FROM:
+                               (Version Dated 96239)
+                                   August 26, 1996
+
+========================================================================
+
+        Includes modification to wind direction gridded profiling in
+        SUB. GRDWD, correcting a problem with wind directions backing
+        through 360 degrees.  This could result in a level of observed
+        wind direction being erroneously counted as missing.
+                   R.W. Brode, PES, Inc., August 26, 1996
+
+        MODIFIED FROM:
+                               (Version Dated 96228)
+                                   August 15, 1996
+
+========================================================================
+
+        Includes modifications for low wind/low turbulence cases.  Also
+        changed definition of "valid lower bound" to be 7zo instead of
+        20zo for consistency with recent changes to AERMET.  The terrain
+        options have also been reinstated on the CO MODELOPT card as
+        TERROPT1 and TERROPT2.  The command line developmental option
+        switch has been enabled in this version.
+                   R.W. Brode, PES, Inc., August 15, 1996
+
+        MODIFIED FROM:
+
+                               (Version Dated 96198)
+                                    July 16, 1996
+
+========================================================================
+
+        Includes Urban Boundary Layer Option based on the Model Coding
+        Abstract by Akula Ventkatram dated 4/1/96.  Modified inputs
+        include two new keywords:
+
+                 CO URBANOPT  Urbpop  (Urbnam)
+                    where Urbpop is the population of the urban area, and
+                          Urbnam is an optional character field
+                          for the name of the urban area.
+
+                 SO URBANSRC  Srcid's  and/or  Srcrng's
+                    where Srcid's identifies individual sources to be
+                          modeled as urban sources, and Srcrng's
+                          identifies a range of sources to be modeled
+                          as urban.
+
+
+        MODIFIED FROM:
+                               (Version Dated 96131)
+                                    May 10, 1996
+
+        Includes OPTG3 and OPTG4 for stable plume reflection options.
+
+        MODIFIED FROM:
+                               (Version Dated 96053)
+                                 February 22, 1996
+
+        Includes flow vector, AFV, in the EVALFILE output.
+
+        MODIFIED FROM:
+                               (Version Dated 96046)
+                                 February 15, 1996
+
+        Includes new sigma-v and sigma-w profiles coded by Bob Paine,
+        some modifications to TEMPGRID.FOR to avoid discontinuities in
+        the VPTG profile, reinstates command-line input for developmental
+        options for the Lahey version, modifies the default option settings
+        to remove stable plume reflections, reinstates the original stable
+        profile for TLz, increases the maximum number of iterations in
+        IBLVAL from 5 to 20, and includes patches for smoothed h < 0 and
+        for mixing heights at (or near) 5,000m.
+                   R.W. Brode, PES, Inc., February 15, 1996
+
+        MODIFIED FROM:
+                               (Version Dated 95272)
+
+        Includes a SCREEN mode option on CO MODELOPT card,
+        addition of AREAPOLY and AREACIRC source types,
+        and INCLUDED keyword option for including data from
+        an external file for the SO and RE pathways.  The
+        INCLUDED option is intended as a link to AERMAP and
+        for use with the screening version of AERMOD.
+
+        MODIFIED FROM:
+                               (Version Dated 95188)
+
+        Hardcoded option settings for the Beta release of AERMOD.
+
+        MODIFIED FROM:
+                               (Version Dated 95066)
+
+        "Optionized" version of AERMOD for Developmental Evaluation.
+        Developmental options are selected by use of an additional
+        10-character command line argument, e.g. '1213121111'.
+        If the additional command line argument is not present, then
+        the model will default to the Base Model.  This is equivalent
+        to using an additional command line argument of '1111111111'.
+        Note that the single quotes are not included on the command line.
+                   R.W. Brode, PES, Inc., January 27, 1995
+
+        Version 95066 includes a few minor fixes, some modifications to
+        the EVALFILE output, and the volume source option (mostly untested).
+        The fixes affect the SBL plume reflection option (OPTG2), and two of
+        the inhomogeneity options (OPTD2 and OPTD3).  In the latter cases,
+        the effective wind speed was allowed to be less than the effective
+        sigma-w.  Also, included EVALCART receptors with DISCCART receptors
+        for output purposes (RECTABLE, DAYTABLE, etc., and INPSUM.FOR).
+                   R.W. Brode, PES, Inc., February 16, 1995
+
+        Base Case Model for AERMOD Developmental Evaluation - 12/8/94
+
+        MODIFIED FROM:    ISC2 Short Term Model - ISCST2
+                               (Version Dated 93109)
+
+        MODIFIED FROM:         (Version Dated 92273)
+
+        MODIFIED FROM:         (Version Dated 92062)
+
+        PURPOSE: Controls Overall Flow and Processing of ISCST2 Model
+
+        PROGRAMMED BY: Roger W. Brode
+                       James O. Paumier
+                       Jayant A. Hardikar
+                       Pacific Environmental Services, Inc.
+                       P.O. Box 12077
+                       Research Triangle Park, North Carolina  27709
+
+        DATE:    November 9, 1993
+
+        INPUTS:  Command Line Options
+
+        OUTPUTS: Model Results
+
+========================================================================

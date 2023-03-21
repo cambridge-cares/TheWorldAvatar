@@ -10,6 +10,3 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-      labels:
-        authors: "jb2197@cam.ac.uk"
-        description: "Execute the requested reaction experiment."
