@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.bmsqueryapp.ui.main;
+package uk.ac.cam.cares.jps.bmsqueryapp.ui.tab;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,7 +20,7 @@ import org.apache.log4j.Logger;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.FragmentVisualizationBinding;
 
 public class VisualizationFragment extends Fragment {
-    private static final Logger LOGGER = LogManager.getLogger(TabFragment.class);
+    private static final Logger LOGGER = LogManager.getLogger(VisualizationFragment.class);
 
     private String DTVFURI = "http://192.168.1.6:80";
     private String TESTURI = "http://www.google.com";

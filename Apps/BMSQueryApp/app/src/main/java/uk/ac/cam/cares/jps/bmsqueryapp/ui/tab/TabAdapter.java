@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.bmsqueryapp.ui.main;
+package uk.ac.cam.cares.jps.bmsqueryapp.ui.tab;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -12,7 +12,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
  */
 public class TabAdapter extends FragmentStateAdapter {
 
-    private final int NUM_TABS = 4;
+    private final int NUM_TABS = 2;
 
     public TabAdapter(FragmentManager manager, Lifecycle lifecycle) {
         super(manager, lifecycle);
@@ -21,7 +21,12 @@ public class TabAdapter extends FragmentStateAdapter {
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return new VisualizationFragment();
+        if (position == 0) {
+            return new VisualizationFragment();
+        } else {
+            return new EditFragment();
+        }
+
     }
 
     @Override

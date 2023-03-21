@@ -25,6 +25,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name=".EquipmentInstanceActivity"
+            android:exported="false"
+            android:theme="@style/Theme.BMSQueryApp.NoActionBar"/>
     </application>
 
 
