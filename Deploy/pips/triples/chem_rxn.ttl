@@ -279,46 +279,55 @@ placeholder:D_S_7095_V a om:Measure; om:hasUnit om:kilogramPerLitre; om:hasNumer
 ## Placeholder Material Cost data -- TODO to find a proper way of representing it ##
 ####################################################################################
 
+# BA B1334-2.5L £83.60 --> £33.44/L
 <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b> placeholder:hasMaterialCost placeholder:MaterialCost_Species_240.
 placeholder:MaterialCost_Species_240 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_240_V;.
-placeholder:M_C_S_240_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "18.0024"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+placeholder:M_C_S_240_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "33.44"^^xsd:double;.
 
+# https://www.fishersci.co.uk/shop/products/acetone-laboratory-reagent-99-5-honeywell-8/15691640#?keyword=67641
+# acetone
 <http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3> placeholder:hasMaterialCost placeholder:MaterialCost_Species_180.
 placeholder:MaterialCost_Species_180 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_180_V;.
-placeholder:M_C_S_180_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "6.38176"^^xsd:double;. # calculated from https://doi.org/10.1002/cmtd.202000044
+placeholder:M_C_S_180_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "28.45"^^xsd:double;.
 
-# dummy data
+# product W288101-1KG-K £73.60 --> £73.60/kg --> £73.60/L
 <http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2> placeholder:hasMaterialCost placeholder:MaterialCost_Species_637759.
 placeholder:MaterialCost_Species_637759 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_637759_V;.
-placeholder:M_C_S_637759_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "500"^^xsd:double;.
+placeholder:M_C_S_637759_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "73.60"^^xsd:double;.
 
-# dummy data
+# side product 246425-10G £28.00 --> £2800/kg --> £3080/L
 <http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b> placeholder:hasMaterialCost placeholder:MaterialCost_Species_640180.
 placeholder:MaterialCost_Species_640180 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_640180_V;.
-placeholder:M_C_S_640180_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "10"^^xsd:double;.
+placeholder:M_C_S_640180_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "3080"^^xsd:double;.
 
+# https://www.fishersci.co.uk/shop/products/sodium-hydroxide-white-pellets-fisher-bioreagents/10192863#?keyword=1310732
+# NaOH £39.90/500g --> £79.8/kg --> £169.97/L
 <http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202> placeholder:hasMaterialCost placeholder:MaterialCost_Species_14798.
 placeholder:MaterialCost_Species_14798 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_14798_V;.
-placeholder:M_C_S_14798_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "58.575"^^xsd:double;. # calculated from https://doi.org/10.1002/cmtd.202000044
+placeholder:M_C_S_14798_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "169.97"^^xsd:double;.
 
+# https://www.fishersci.co.uk/shop/products/acetonitrile-hplc-fisher-chemical-8/10754361?searchHijack=true&searchTerm=A%2F0626%2F17&searchType=RAPID&matchedCatNo=A%2F0626%2F17
+# ACN
 <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb> placeholder:hasMaterialCost placeholder:MaterialCost_Species_6342.
 placeholder:MaterialCost_Species_6342 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_6342_V;.
-placeholder:M_C_S_6342_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "8.83"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+placeholder:M_C_S_6342_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "127.0"^^xsd:double;.
 
+# https://uk.vwr.com/store/product/733157/ethanol-absolute-99-8-analar-normapur-acs-reag-ph-eur-analytical-reagent
+# ethanol
 <http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983> placeholder:hasMaterialCost placeholder:MaterialCost_Species_702.
 placeholder:MaterialCost_Species_702 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_702_V;.
-placeholder:M_C_S_702_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "8.83"^^xsd:double;. # from https://doi.org/10.1002/cmtd.202000044
+placeholder:M_C_S_702_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "131.00"^^xsd:double;.
 
-# dummy data
+# naphthalene 84679-1G £37.80 --> £37800/kg --> £43092/L
 <http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340> placeholder:hasMaterialCost placeholder:MaterialCost_Species_931.
 placeholder:MaterialCost_Species_931 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_931_V;.
-placeholder:M_C_S_931_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "400"^^xsd:double;.
+placeholder:M_C_S_931_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "43092"^^xsd:double;.
 
-# https://www.sigmaaldrich.com/GB/en/product/usp/1073423
-# £316 for 500mg --> £632 for 1g --> £657.912 for 1L
+# https://www.sigmaaldrich.com/GB/en/product/aldrich/w312908
+# biphenyl £50.00/kg --> £52.05/L
 <http://www.theworldavatar.com/kb/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22> placeholder:hasMaterialCost placeholder:MaterialCost_Species_7095.
 placeholder:MaterialCost_Species_7095 a om:SpecificAmountOfMoney; om:hasValue placeholder:M_C_S_7095_V;.
-placeholder:M_C_S_7095_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "657.912"^^xsd:double;.
+placeholder:M_C_S_7095_V a om:Measure; om:hasUnit om:poundSterlingPerLitre; om:hasNumericalValue "52.05"^^xsd:double;.
 
 ###############################################################################
 ## Placeholder EcoScore data -- TODO to find a proper way of representing it ##
