@@ -8,7 +8,7 @@ A test suite for the agent.ifc2gltf.kghelper submodule.
 import pandas as pd
 
 # Self import
-from agent.ifc2gltf.kghelper import create_metadata_query, classify_file_name
+from agent.ifc2gltf.kghelper import classify_file_name
 
 
 def test_create_query():

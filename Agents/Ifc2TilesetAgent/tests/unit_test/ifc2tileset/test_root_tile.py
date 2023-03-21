@@ -16,7 +16,7 @@ import trimesh
 from agent.ifc2tileset.root_tile import append_tileset_schema_and_metadata, gen_root_content
 from agent.ifc2tileset.tile_helper import make_tileset, make_root_tile
 from . import testconsts as C
-from .testutils import gen_sample_asset_df, gen_sample_asset_contents
+from .testutils import gen_sample_asset_df
 
 ENDPOINT = "http://www.example.org/sparql"
 

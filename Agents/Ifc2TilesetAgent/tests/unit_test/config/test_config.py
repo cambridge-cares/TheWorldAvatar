@@ -8,7 +8,6 @@ A test suite for the agent.config.config submodule.
 import os
 
 # Third party import
-import pytest
 import yaml
 
 # Self import

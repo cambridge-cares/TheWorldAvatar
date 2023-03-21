@@ -3,7 +3,6 @@ from typing import List
 
 import pandas as pd
 
-import agent.config.config as properties
 from agent.ifc2tileset.root_tile import append_tileset_schema_and_metadata
 from agent.ifc2tileset.tile_helper import make_root_tile, make_tileset
 

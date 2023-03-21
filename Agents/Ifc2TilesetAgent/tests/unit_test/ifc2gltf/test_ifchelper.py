@@ -4,12 +4,7 @@
 A test suite for the agent.ifc2gltf.ifchelper submodule.
 """
 
-# Standard import
-import os
-
 # Third party import
-import pytest
-import ifcopenshell
 import pandas as pd
 
 # Self import
