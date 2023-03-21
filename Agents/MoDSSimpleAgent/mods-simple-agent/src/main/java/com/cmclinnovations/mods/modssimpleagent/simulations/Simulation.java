@@ -210,8 +210,7 @@ public class Simulation {
     }
 
     protected Algorithm getAlgorithmOfType(String algType) {
-        return getRequest().getAlgorithms().stream().filter(alg -> alg.getType().equals(algType)).findFirst()
-                .orElseThrow();
+        return getRequest().getAlgorithmOfType(algType);
     }
 
     public String getFullCaseName(String caseGroupName, String caseName) {
@@ -334,19 +333,21 @@ public class Simulation {
     }
 
     public void save() {
-        if (request.getSaveSurrogate() != null && request.getSaveSurrogate()) {
-            Path saveDirectory = getSaveDirectory();
-            Path surrogateDirectory = getSurrogateDirectory(modsBackend);
+        for (Algorithm algorithm : request.getAlgorithms()) {
+            if (algorithm.getSaveSurrogate() != null && algorithm.getSaveSurrogate()) {
+                Path saveDirectory = getSaveDirectory();
+                Path surrogateDirectory = getSurrogateDirectory(modsBackend);
 
-            try {
-                copyDirectory(surrogateDirectory, saveDirectory);
-                inputMetaData.writeToCSV(saveDirectory.resolve(InputMetaData.DEFAULT_INPUT_INFO_FILE_NAME));
-            } catch (FileGenerationException ex) {
-                throw new ResponseStatusException(HttpStatus.NO_CONTENT,
-                        "Job '" + getModsBackend().getJobID() + "' failed to save.", ex);
+                try {
+                    copyDirectory(surrogateDirectory, saveDirectory);
+                    inputMetaData.writeToCSV(saveDirectory.resolve(InputMetaData.DEFAULT_INPUT_INFO_FILE_NAME));
+                } catch (FileGenerationException ex) {
+                    throw new ResponseStatusException(HttpStatus.NO_CONTENT,
+                            "Job '" + getModsBackend().getJobID() + "' failed to save.", ex);
+                }
+
+                LOGGER.info("Job '{}' saved at '{}'.", getModsBackend().getJobID(), saveDirectory.toAbsolutePath());
             }
-
-            LOGGER.info("Job '{}' saved at '{}'.", getModsBackend().getJobID(), saveDirectory.toAbsolutePath());
         }
     }
 
@@ -360,31 +361,34 @@ public class Simulation {
     }
 
     public static void load(Request request, MoDSBackend modsBackend) {
-        if (request.getSurrogateToLoad() != null) {
-            try {
-                Path surrogateDirectory = getSurrogateDirectory(modsBackend);
-                Path loadDirectory = getLoadDirectory(request);
+        for (Algorithm algorithm : request.getAlgorithms()) {
+            if (algorithm.getSurrogateToLoad() != null) {
+                try {
+                    Path surrogateDirectory = getSurrogateDirectory(modsBackend);
+                    Path loadDirectory = getLoadDirectory(algorithm);
 
-                if (!Files.exists(loadDirectory)) {
-                    throw new IOException(
-                            "File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
+                    if (!Files.exists(loadDirectory)) {
+                        throw new IOException(
+                                "File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
+                    }
+
+                    copyDirectory(loadDirectory, surrogateDirectory);
+
+                    LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
+                            surrogateDirectory.toAbsolutePath());
+
+                } catch (IOException ex) {
+                    throw new ResponseStatusException(HttpStatus.NO_CONTENT,
+                            "Job '" + modsBackend.getJobID() + "' failed to load.", ex);
                 }
-
-                copyDirectory(loadDirectory, surrogateDirectory);
-
-                LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
-                        surrogateDirectory.toAbsolutePath());
-
-            } catch (IOException ex) {
-                throw new ResponseStatusException(HttpStatus.NO_CONTENT,
-                        "Job '" + modsBackend.getJobID() + "' failed to load.", ex);
             }
         }
     }
 
-    private static Path getLoadDirectory(Request request) {
-        return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH
-                .resolve(request.getSurrogateToLoad()).resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+    private static Path getLoadDirectory(Algorithm algorithm) {
+        return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH.resolve(algorithm.getSurrogateToLoad())
+                .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+
     }
 
     private static void copyDirectory(Path sourceDirectory, Path destinationDirectory) throws FileGenerationException {
