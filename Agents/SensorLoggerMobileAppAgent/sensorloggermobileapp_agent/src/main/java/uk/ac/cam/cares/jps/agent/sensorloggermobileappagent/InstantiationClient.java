@@ -13,6 +13,10 @@ public class InstantiationClient {
     public static void instantiationMethod(HashMap IRI) {
 
 
+        String BASEURI = "https://www.theworldavatar.com/kg/sensorloggerapp/";
+        String DEVICEID=IRI.get("deviceID").toString();
+
+
        /**
         * For stack
         */
@@ -32,7 +36,7 @@ public class InstantiationClient {
         Person person = context.createNewModel(Person.class, "https://www.theworldavatar.com/kg/sensorloggerapp/person_"+UUID.randomUUID());
 
         //Smartphone
-        Smartphone smartphone = context.createNewModel(Smartphone.class, IRI.get("deviceID").toString());
+        Smartphone smartphone = context.createNewModel(Smartphone.class,BASEURI+"Smartphone_"+DEVICEID);
 
         //Ontodevice:Sensors
         Accelerometer accelerometer= context.createNewModel(Accelerometer.class, "https://www.theworldavatar.com/kg/sensorloggerapp/accelerometer_"+UUID.randomUUID());
@@ -154,6 +158,8 @@ public class InstantiationClient {
          */
         smartphone.person=person;
         smartphoneRDF.smartphone=smartphone;
+
+        smartphone.DeviceIDString=DEVICEID;
 
         smartphone.devices.add(camera);
         cameraRDF.camera=camera;
@@ -352,6 +358,9 @@ public class InstantiationClient {
 
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/hasScreenBrightness")
         protected InstantiationClient.RelativeBrightness relativeBrightness;
+
+        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/hasDeviceID")
+        protected String DeviceIDString;
     }
     public static class SmartphoneRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)

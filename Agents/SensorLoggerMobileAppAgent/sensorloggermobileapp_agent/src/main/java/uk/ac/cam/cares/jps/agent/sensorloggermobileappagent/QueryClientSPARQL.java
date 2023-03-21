@@ -4,6 +4,7 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
+import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.json.JSONArray;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -33,6 +34,22 @@ public class QueryClientSPARQL {
     String getIRIfromJSONarray(JSONArray jsonArray){
         if(jsonArray.length()!=1){System.out.println("There is more than 1 data in this JSONArray, only the first one is returned");}
         return jsonArray.getJSONObject(0).get(str_o).toString();
+    }
+
+    JSONArray getSmartPhoneIRI(String deviceID) throws ParseException {
+
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("ontodevice", ONTODEVICE)
+                .addPrefix("rdf", RDF)
+                .addWhere(VAR_O, "rdf:type", "ontodevice:Smartphone")
+                .addWhere(VAR_O, "ontodevice:hasDeviceID", deviceID);
+
+        SelectBuilder sb = new SelectBuilder()
+                .setDistinct(true)
+                .addVar(VAR_O).addWhere(wb);
+
+        JSONArray queryResult=storeClient.executeQuery(sb.buildString());
+        return queryResult;
     }
 
 
