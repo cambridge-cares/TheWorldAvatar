@@ -2,11 +2,12 @@
 	"SimulationType": "MOOonly",
 	"Algorithms": [
 		{
+			"name": "algorithm1",
 			"type": "GenSurrogateAlg",
 			"surrogateToLoad": "mods-sim-8700472979756370358"
 		},
 		{
-			"name": "algorithm1",
+			"name": "algorithm2",
 			"type": "MOO",
 			"maxNumberOfResults": 10,
 			"variables": [
