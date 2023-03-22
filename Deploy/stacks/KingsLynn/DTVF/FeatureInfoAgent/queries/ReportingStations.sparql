@@ -3,6 +3,7 @@ prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix ems:  <https://www.theworldavatar.com/kg/ontoems/>
 prefix skos: <http://www.w3.org/2004/02/skos/core#>
 prefix rt:   <http://environment.data.gov.uk/flood-monitoring/def/core/>
+prefix om:   <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 
 SELECT ?Property ?Value ?Unit
 WHERE {
@@ -40,5 +41,20 @@ WHERE {
   } UNION {
     BIND ("Downstream station" AS ?Property )
     [IRI] ems:hasDownstreamStation ?Value .
+  }
+  # Add Trend and Range for WaterLevelReportingStations
+  # (workaround as additional info on time series panel not shown)
+  UNION {
+    BIND ("Current waterlevel range" AS ?Property )
+    [IRI] ems:reports ?Measurement .
+    ?Measurement rdf:type ems:WaterLevel ; 
+                 om:hasValue/ems:hasCurrentRange ?range_ini . 
+    BIND (replace(replace(str(?range_ini), str(ems:), ''), 'Range', '') as ?Value)
+  } UNION {
+    BIND ("Current waterlevel trend" AS ?Property )
+    [IRI] ems:reports ?Measurement .
+    ?Measurement rdf:type ems:WaterLevel ; 
+                 om:hasValue/ems:hasCurrentTrend ?trend_ini . 
+    BIND (replace(replace(str(?trend_ini), str(ems:), ''), 'Trend', '') as ?Value)
   }
 }
