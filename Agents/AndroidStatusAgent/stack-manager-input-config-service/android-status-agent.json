@@ -1,0 +1,16 @@
+{
+  "ServiceSpec": {
+    "Name": "android-status-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "bms-query-agent:1.0.0-SANPSHOT"
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/android-status-agent/",
+      "externalPath": "/android-status-agent/"
+    }
+  }
+}

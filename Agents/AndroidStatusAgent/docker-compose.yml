@@ -1,0 +1,6 @@
+version: "3.8"
+
+services:
+  android-status-agent:
+    image: android-status-agent:1.0.0-SNAPSHOT
+    build: .
