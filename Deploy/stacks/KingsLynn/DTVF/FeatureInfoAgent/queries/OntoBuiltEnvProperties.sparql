@@ -118,5 +118,12 @@ WHERE {
 	  BIND (replace(replace(str(?value_ini), '\\,' ,''), '\\.', '') as ?value_interim)
     BIND (concat(substr(?value_interim, 0, ?l-2), ',', substr(?value_interim, ?l-2, 3)) as ?value)
     BIND ("£" AS ?unit )
+  } UNION { 
+    BIND ("Current market value (estimate)" AS ?label )
+    [IRI] obe:hasMarketValue/om:hasValue/om:hasNumericalValue ?value_ini .
+    BIND (strlen(str(?value_ini)) as ?l)
+	  BIND (replace(replace(str(?value_ini), '\\,' ,''), '\\.', '') as ?value_interim)
+    BIND (concat(substr(?value_interim, 0, ?l-2), ',', substr(?value_interim, ?l-2, 3)) as ?value)
+    BIND ("£" AS ?unit )
   }
 }
