@@ -73,6 +73,7 @@ public class BMSQueryAgent {
         JSONArray jsonResult = rsClient.executeQuery(query.getQueryString());
         JSONObject result = new JSONObject();
         result.put("Equipments", jsonResult);
+        LOGGER.info("Getting result:" + result);
 
         return result;
     }

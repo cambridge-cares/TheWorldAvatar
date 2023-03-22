@@ -53,7 +53,7 @@ public class BMSQueryAgentLauncher extends JPSAgent {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/json");
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost");
+        response.setHeader("Access-Control-Allow-Origin", "*");
         response.setHeader("Access-Control-Allow-Methods", "GET,PUT,OPTIONS");
         response.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Origin, Content-Type, Accept, Accept-Language, Origin, User-Agent");
 
