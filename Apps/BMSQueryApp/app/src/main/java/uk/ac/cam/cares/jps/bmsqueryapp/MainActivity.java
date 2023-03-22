@@ -1,7 +1,14 @@
 package uk.ac.cam.cares.jps.bmsqueryapp;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -18,13 +25,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.HttpUrl.Builder;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.ActivityMainBinding;
 import uk.ac.cam.cares.jps.bmsqueryapp.ui.equipmentinstancelist.EquipmentAdapter;
 import uk.ac.cam.cares.jps.bmsqueryapp.ui.equipmentinstancelist.OnEquipmentClickedListener;
+import uk.ac.cam.cares.jps.bmsqueryapp.util.BaseArrayAdapter;
 import uk.ac.cam.cares.jps.bmsqueryapp.util.Constants;
 import uk.ac.cam.cares.jps.bmsqueryapp.util.SingletonConnection;
 
@@ -46,17 +56,68 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // spinner 1: fixed list, can be ignored
+        // facility_spinner : fixed list, can be ignored for now
+        initFacilitySelection();
 
-        // spinner 2: fixed list, need to use to fetch the available instance
+        // equip_type_spinner: fixed list, use the selection to fetch the available instance of the type
+        initTypeSelection();
 
-        // recycleview 1: get from FIA, when click on the item should jump to new activity for visualisation and modification
+        // equip_instance_list: get from BMSQueryAgent, when click on the item should jump to new activity for visualisation and modification
+        initEquipmentInstanceList();
 
-        initEquipmentRecyclerView();
-        getListOfEquipInstances("http://www.theworldavatar.com/BMS/CaresLab#WalkIn-FumeHood");
     }
 
-    private void initEquipmentRecyclerView() {
+    private void initFacilitySelection() {
+        // TODO: not implemented yet
+        BaseArrayAdapter<String> facilityAdapter = new BaseArrayAdapter<>(this);
+        facilityAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        facilityAdapter.add("Facility Name");
+        binding.facilitySpinner.setAdapter(facilityAdapter);
+        binding.facilitySpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedLabel = ((TextView) view).getText().toString();
+                LOGGER.info(selectedLabel + " is selected");
+                if (i > 0) {
+                    // TODO: Not Implemented
+                } else {
+                    ((TextView) view).setTextColor(Color.GRAY);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // Do nothing
+            }
+        });
+    }
+
+    private void initTypeSelection() {
+        ArrayAdapter<String> typeAdapter = new BaseArrayAdapter<>(this);;
+        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        typeAdapter.add("Equipment Type");
+        typeAdapter.addAll(Constants.EQUIPMENT_TYPES.keySet());
+        binding.equipTypeSpinner.setAdapter(typeAdapter);
+        binding.equipTypeSpinner.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                String selectedLabel = ((TextView) view).getText().toString();
+                LOGGER.info(selectedLabel + " is selected");
+                if (i > 0) {
+                    getListOfEquipInstances(Constants.EQUIPMENT_TYPES.get(selectedLabel));
+                } else {
+                    ((TextView) view).setTextColor(Color.GRAY);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // Do nothing
+            }
+        });
+    }
+
+    private void initEquipmentInstanceList() {
         OnEquipmentClickedListener listener = item -> {
             Intent intent = new Intent(getBaseContext(), EquipmentInstanceActivity.class);
             CharSequence selectedEquipment = item.getTextView().getText();
@@ -117,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
         LOGGER.error(response.getMessage());
         Toast.makeText(getBaseContext(), "Unable to get the available equipment, please try again later", Toast.LENGTH_SHORT).show();
     }
+
 
 
 }

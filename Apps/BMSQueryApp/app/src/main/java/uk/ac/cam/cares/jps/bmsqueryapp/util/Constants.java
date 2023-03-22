@@ -2,6 +2,9 @@ package uk.ac.cam.cares.jps.bmsqueryapp.util;
 
 import androidx.annotation.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import okhttp3.HttpUrl;
 
 public class Constants {
@@ -17,8 +20,16 @@ public class Constants {
             "http://www.theworldavatar.com/BMS/CaresLab#V_DamperStateOfVAV-E/7-12"};
 
     public static HttpUrl.Builder constructUrlBuilder(String path) {
-        HttpUrl.Builder builder = new HttpUrl.Builder().scheme("http").host(HOST).port(3838);
+        HttpUrl.Builder builder = new HttpUrl.Builder().scheme("http").host(HOST_TEST).port(3838);
         return builder.addPathSegments(path);
+    }
+
+    public static final Map<String, String> EQUIPMENT_TYPES = getEquipmentTypes();
+
+    private static Map<String, String> getEquipmentTypes() {
+        Map<String, String> equipmentTypes = new HashMap<>();
+        equipmentTypes.put("WalkIn-FumeHood", "http://www.theworldavatar.com/BMS/CaresLab#WalkIn-FumeHood");
+        return equipmentTypes;
     }
 
 }

@@ -8,5 +8,5 @@
     <color name="banner_color">#10616C</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="grey">#E1E1E1</color>
+    <color name="gray">#E1E1E1</color>
 </resources>
