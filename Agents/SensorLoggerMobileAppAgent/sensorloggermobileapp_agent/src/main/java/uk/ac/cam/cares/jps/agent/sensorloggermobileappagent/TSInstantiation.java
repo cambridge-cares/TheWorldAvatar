@@ -114,50 +114,50 @@ public class TSInstantiation implements Cloneable  {
 
 
     //Accelerometer list
-    private static ArrayList<OffsetDateTime> accel_tsList = new ArrayList<>();
-    private static List<Double> accelList_x = new ArrayList<>();
-    private static List<Double> accelList_y = new ArrayList<>();
-    private static List<Double> accelList_z = new ArrayList<>();
-    private static List<List<?>> accel_lolValues= Arrays.asList(accelList_x,accelList_y,accelList_z);
+    private  ArrayList<OffsetDateTime> accel_tsList = new ArrayList<>();
+    private  List<Double> accelList_x = new ArrayList<>();
+    private  List<Double> accelList_y = new ArrayList<>();
+    private  List<Double> accelList_z = new ArrayList<>();
+    private  List<List<?>> accel_lolValues= Arrays.asList(accelList_x,accelList_y,accelList_z);
 
     //Magnetometer list
-    private static ArrayList<OffsetDateTime> magnetometer_tsList = new ArrayList<>();
-    private static List<Double> magnetometerList_x = new ArrayList<>();
-    private static List<Double> magnetometerList_y = new ArrayList<>();
-    private static List<Double> magnetometerList_z = new ArrayList<>();
-    private static List<List<?>> magnetometer_lolValues= Arrays.asList(magnetometerList_x,magnetometerList_y,magnetometerList_z);
+    private  ArrayList<OffsetDateTime> magnetometer_tsList = new ArrayList<>();
+    private  List<Double> magnetometerList_x = new ArrayList<>();
+    private  List<Double> magnetometerList_y = new ArrayList<>();
+    private  List<Double> magnetometerList_z = new ArrayList<>();
+    private  List<List<?>> magnetometer_lolValues= Arrays.asList(magnetometerList_x,magnetometerList_y,magnetometerList_z);
 
     //Gravity sensor list
-    private static ArrayList<OffsetDateTime> gravity_tsList = new ArrayList<>();
-    private static List<Double> gravityList_x = new ArrayList<>();
-    private static List<Double> gravityList_y = new ArrayList<>();
-    private static List<Double> gravityList_z = new ArrayList<>();
-    private static List<List<?>> gravity_lolValues= Arrays.asList(gravityList_x,gravityList_y,gravityList_z);
+    private  ArrayList<OffsetDateTime> gravity_tsList = new ArrayList<>();
+    private  List<Double> gravityList_x = new ArrayList<>();
+    private  List<Double> gravityList_y = new ArrayList<>();
+    private  List<Double> gravityList_z = new ArrayList<>();
+    private  List<List<?>> gravity_lolValues= Arrays.asList(gravityList_x,gravityList_y,gravityList_z);
 
     //Location list
-    private static ArrayList<OffsetDateTime> location_tsList = new ArrayList<>();
-    private static List<Double> bearingList = new ArrayList<>();
-    private static List<Double> speedList = new ArrayList<>();
-    private static List<Double> altitudeList = new ArrayList<>();
-    private static List<Point> geomLocationList = new ArrayList<>();
-    private static List<List<?>> location_lolValues= Arrays.asList(bearingList,speedList,altitudeList,geomLocationList);
+    private  ArrayList<OffsetDateTime> location_tsList = new ArrayList<>();
+    private  List<Double> bearingList = new ArrayList<>();
+    private  List<Double> speedList = new ArrayList<>();
+    private  List<Double> altitudeList = new ArrayList<>();
+    private  List<Point> geomLocationList = new ArrayList<>();
+    private  List<List<?>> location_lolValues= Arrays.asList(bearingList,speedList,altitudeList,geomLocationList);
 
     //Microphone lists
-    private static ArrayList<OffsetDateTime> dBFS_tsList = new ArrayList<>();
-    private static List<Double> dBFSList = new ArrayList<>();
-    private static List<List<?>> dBFS_lolValues= Arrays.asList(dBFSList);
+    private  ArrayList<OffsetDateTime> dBFS_tsList = new ArrayList<>();
+    private  List<Double> dBFSList = new ArrayList<>();
+    private  List<List<?>> dBFS_lolValues= Arrays.asList(dBFSList);
 
     //Light value lists
-    private static ArrayList<OffsetDateTime> lightValue_tsList = new ArrayList<>();
-    private static List<Double> lightValueList = new ArrayList<>();
-    private static List<List<?>> lightValue_lolValues= Arrays.asList(lightValueList);
+    private  ArrayList<OffsetDateTime> lightValue_tsList = new ArrayList<>();
+    private  List<Double> lightValueList = new ArrayList<>();
+    private  List<List<?>> lightValue_lolValues= Arrays.asList(lightValueList);
 
-    private static ArrayList<OffsetDateTime> brightness_tsList = new ArrayList<>();
-    private static List<Double> brightnessList = new ArrayList<>();
-    private static List<List<?>> brightness_lolValues= Arrays.asList(brightnessList);
+    private  ArrayList<OffsetDateTime> brightness_tsList = new ArrayList<>();
+    private  List<Double> brightnessList = new ArrayList<>();
+    private  List<List<?>> brightness_lolValues= Arrays.asList(brightnessList);
 
-    private static int maxSize = accel_lolValues.size()+magnetometer_lolValues.size()+gravity_lolValues.size()+location_lolValues.size()+dBFS_lolValues.size()+lightValue_lolValues.size()+brightness_lolValues.size();
-    private static String DEVICEID;
+    private int maxSize = accel_lolValues.size()+magnetometer_lolValues.size()+gravity_lolValues.size()+location_lolValues.size()+dBFS_lolValues.size()+lightValue_lolValues.size()+brightness_lolValues.size();
+    private String DEVICEID;
     private static final long serialVersionUID = 1L;
     private static final String BASEURI = "https://www.theworldavatar.com/kg/sensorloggerapp/";
 
@@ -199,9 +199,9 @@ public class TSInstantiation implements Cloneable  {
         if (!isTimerStarted) {
             isTimerStarted = true;
             // Start the timer
-            timer = new Timer();
+            this.timer = new Timer();
             System.out.println("Timer started for device:"+DEVICEID +"; Delay:" +timerDelay+"seconds ; Frequency:"+timerFrequency+"seconds ");
-            timer.schedule(new instantiationTask(), timerDelay*1000,timerFrequency*1000); // 5000 milliseconds = 5 seconds
+            this.timer.schedule(new instantiationTask(), timerDelay*1000,timerFrequency*1000); // 5000 milliseconds = 5 seconds
         }
     }
 
@@ -228,27 +228,27 @@ public class TSInstantiation implements Cloneable  {
     private static RemoteStoreClient storeClient;
     private static QueryClientSPARQL queryClientSPARQL;
 
-    private static final Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppAgent.class);
+    private  final Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppAgent.class);
 
-    private static String accel_xIRI;
-    private static String accel_yIRI;
-    private static String accel_zIRI;
-    private static String gravity_xIRI;
-    private static String gravity_yIRI;
-    private static String gravity_zIRI;
-    private static String magnetometer_xIRI;
-    private static String magnetometer_yIRI;
-    private static String magnetometer_zIRI;
-    private static String bearingIRI;
-    private static String speedIRI;
-    private static String altitudeIRI;
-    private static String pointIRI;
-    private static String dbfsIRI;
-    private static String relativeBrightnessIRI;
-    private static String light_valueIRI;
-    private static ArrayList<OffsetDateTime> timesList;
-    private static List<List<?>> lolvalues;
-    private static final String timeUnit = OffsetDateTime.class.getSimpleName();
+    private  String accel_xIRI;
+    private  String accel_yIRI;
+    private  String accel_zIRI;
+    private  String gravity_xIRI;
+    private  String gravity_yIRI;
+    private  String gravity_zIRI;
+    private  String magnetometer_xIRI;
+    private  String magnetometer_yIRI;
+    private  String magnetometer_zIRI;
+    private  String bearingIRI;
+    private  String speedIRI;
+    private  String altitudeIRI;
+    private  String pointIRI;
+    private  String dbfsIRI;
+    private  String relativeBrightnessIRI;
+    private  String light_valueIRI;
+    private  ArrayList<OffsetDateTime> timesList;
+    private  List<List<?>> lolvalues;
+    private  final String timeUnit = OffsetDateTime.class.getSimpleName();
     private HashMap iriHashmap = new HashMap();
 
     private static void readConfig() {
