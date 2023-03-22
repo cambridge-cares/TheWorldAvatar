@@ -42,7 +42,7 @@
 
 <body>
     <!-- <div id="equipmentSelectControlContainer"></div> -->
-
+    <p id="notAvailaleP" style="display: none;"> The visualisation for the item is not ready at this moment. </p>
     <div id="metaTimeContainer"></div>
 </body>
 
@@ -107,6 +107,7 @@
     }
 
     function getJSONFailure() {
+        $("#notAvailaleP").show();
         console.warn("Could not get valid response from the agent");
     }
 
