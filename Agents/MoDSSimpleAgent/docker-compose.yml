@@ -14,7 +14,7 @@ services:
     secrets:
       - mods_agent_licence
     volumes:
-      - "./SavedSurrogates:/usr/local/mods-simple-agent/SavedSurrogates/"
+      - "./savedsurrogates:/usr/local/mods-simple-agent/savedsurrogates/"
 
 # Secrets
 secrets:

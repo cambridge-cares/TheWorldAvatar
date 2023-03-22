@@ -50,7 +50,7 @@ public class Simulation {
 
     public static final String DEFAULT_SURROGATE_MODEL_NAME = "SurrogateModel";
 
-    public static final Path DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH = Path.of("SavedSurrogates");
+    public static final Path DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH = Path.of("savedsurrogates");
 
     public static final String INITIAL_FILE_NAME = "initialFile.csv";
     public static final String SAMPLING_ALGORITHM_FILE_NAME = "SamplingAlg_data";
