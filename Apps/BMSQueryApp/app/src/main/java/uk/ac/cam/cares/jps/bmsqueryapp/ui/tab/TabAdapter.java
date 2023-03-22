@@ -13,6 +13,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 public class TabAdapter extends FragmentStateAdapter {
 
     private final int NUM_TABS = 2;
+    private VisualizationFragment dtvfTab;
 
     public TabAdapter(FragmentManager manager, Lifecycle lifecycle) {
         super(manager, lifecycle);
@@ -22,7 +23,8 @@ public class TabAdapter extends FragmentStateAdapter {
     @Override
     public Fragment createFragment(int position) {
         if (position == 0) {
-            return new VisualizationFragment();
+            dtvfTab = new VisualizationFragment();
+            return dtvfTab;
         } else {
             return new EditFragment();
         }
@@ -32,5 +34,9 @@ public class TabAdapter extends FragmentStateAdapter {
     @Override
     public int getItemCount() {
         return NUM_TABS;
+    }
+
+    public VisualizationFragment getDtvfTab() {
+        return dtvfTab;
     }
 }

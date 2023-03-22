@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.bmsqueryapp.ui.tab;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +29,7 @@ public class VisualizationFragment extends Fragment {
 
     public int requestedStatus;
     private FragmentVisualizationBinding binding;
+    private ProgressBar progressBar;
 
     public VisualizationFragment() {
         super();
@@ -46,6 +49,10 @@ public class VisualizationFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+    }
+
+    public void loadDTVF() {
         WebView dtvfViz = binding.dtvfViz;
         dtvfViz.setWebViewClient(new WebViewClient() {
 
@@ -66,5 +73,10 @@ public class VisualizationFragment extends Fragment {
         dtvfViz.getSettings().setJavaScriptEnabled(true);
         binding.dtvfViz.loadUrl(DTVFURI);
         LOGGER.info("view created");
+
+        binding.progressBarWrapper.setVisibility(View.GONE);
+        dtvfViz.setVisibility(View.VISIBLE);
     }
+
+
 }

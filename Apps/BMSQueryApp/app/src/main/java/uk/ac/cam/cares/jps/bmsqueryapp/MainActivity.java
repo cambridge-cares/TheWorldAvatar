@@ -25,6 +25,7 @@ import okhttp3.HttpUrl.Builder;
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.ActivityMainBinding;
 import uk.ac.cam.cares.jps.bmsqueryapp.ui.equipmentinstancelist.EquipmentAdapter;
 import uk.ac.cam.cares.jps.bmsqueryapp.ui.equipmentinstancelist.OnEquipmentClickedListener;
+import uk.ac.cam.cares.jps.bmsqueryapp.util.Constants;
 import uk.ac.cam.cares.jps.bmsqueryapp.util.SingletonConnection;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,10 +33,7 @@ public class MainActivity extends AppCompatActivity {
     private static final Logger LOGGER = LogManager.getLogger(MainActivity.class);
 //    private ActivityMainDepBinding binding;
     private ActivityMainBinding binding;
-
-    private final String HOST_TEST = "10.0.2.2";
-    private final String HOST = "192.168.1.6";
-    private final Builder BMS_URL_BUILDER = new Builder().scheme("http").host(HOST).port(3838).addPathSegments("bms-query-agent/retrieve/equipment");
+    private final Builder BMS_URL = Constants.constructUrlBuilder("bms-query-agent/retrieve/equipment");
 
     Map<String, String> equipmentInsts = new HashMap<>();
     EquipmentAdapter equipmentAdapter;
@@ -79,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getListOfEquipInstances(String typeIRI) {
 
-        String requestUri = BMS_URL_BUILDER.addQueryParameter("dataIRI", typeIRI).build().toString();
+        String requestUri = BMS_URL.addQueryParameter("dataIRI", typeIRI).build().toString();
 
         StringRequest jsonRequest = new StringRequest(Request.Method.GET, requestUri,
                 this::processEquipmentResponse, this::showFailureMessage);
