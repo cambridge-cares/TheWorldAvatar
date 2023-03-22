@@ -8,6 +8,7 @@ services:
     environment:
       DATA_DIR: /app/files
       CMCL_LICENSE_PATH: "/run/secrets/mods_agent_licence"
+      MODS_SAVE_DIR: "/usr/local/mods-simple-agent/savedsurrogates"
     ports:
       - "58085:58085"
       - "8000:8000"
