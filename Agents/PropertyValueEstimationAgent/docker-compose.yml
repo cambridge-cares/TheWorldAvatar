@@ -40,8 +40,10 @@ services:
       - logs:/root/.jps
     configs:
       - blazegraph
+      - geoserver
       - postgis
     secrets:
+      - geoserver_password
       - postgis_password
 
 volumes:

@@ -29,6 +29,8 @@ WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
 COPY ./requirements.txt .
+# Add JDBC driver to allow for retrieval of JDBC connection properties from PostGIS client
+ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 
 # Access build arguments from docker-compose.yml
 # (Use ENV instead of ARG for variable to be available in ENTRYPOINT command)
