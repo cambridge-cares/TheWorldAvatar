@@ -183,8 +183,7 @@ public class HistoricalNTUEnergyAgent {
 
     /**
      * Updates the database with new readings.
-     * @param particleReadings The particle readings retrieved from the excel file
-     * @param gasReadings The gas readings retrieved from the excel file
+     * @param energyReadings The energy readings retrieved from the excel file
      */
     public void updateData(JSONArray energyReadings) {
         // Check for null parameters
@@ -199,16 +198,60 @@ public class HistoricalNTUEnergyAgent {
             throw new IllegalArgumentException("Readings cannot be empty");
         }
 
+        Map<String, List<?>> energyOutputMap = new HashMap<>();
+        ArrayList<String> values = new ArrayList<String>();
+        values.add("TIME");
+        values.add("GENERATOR_NODE_VA_DEGREE");
+        values.add("GENERATOR_NODE_VM_KV");
+        values.add("CONNECTION_NODE_VA_DEGREE");
+        values.add("CONNECTION_NODE_VM_KV");
+        values.add("NEC_VA_DEGREE");
+        values.add("NEC_VM_KV");
+        values.add("CANTEEN_2_VA_DEGREE");
+        values.add("CANTEEN_2_VM_KV");
+        values.add("SPMS_VA_DEGREE");
+        values.add("SPMS_VM_KV");
+        values.add("RTP_VA_DEGREE");
+        values.add("RTP_VM_KV");
+        values.add("N1_3_VA_DEGREE");
+        values.add("N1_3_VM_KV");
+        values.add("N_2_VA_DEGREE");
+        values.add("N_2_VM_KV");
+        values.add("N_2_1_VA_DEGREE");
+        values.add("N_2_1_VM_KV");
+        values.add("SBS_VA_DEGREE");
+        values.add("SBS_VM_KV");
+        values.add("PIONEER_HALL_VA_DEGREE");
+        values.add("PIONEER_HALL_VM_KV");
+        values.add("THE_WAVE_VA_DEGREE");
+        values.add("THE_WAVE_VM_KV");
+        values.add("HALL_4_VA_DEGREE");
+        values.add("HALL_4_VM_KV");
+        values.add("EMB_VA_DEGREE");
+        values.add("EMB_VM_KV");
+        values.add("NYA_VA_DEGREE");
+        values.add("NYA_VM_KV");
+
+        // Loop through the values and print them out
+        for (String value : values) {
+            energyOutputMap.put(value, new ArrayList<>());
+            LOGGER.info(energyOutputMap.toString());
+        }
+
+        //TODO: add empty readings for VM and VA timeseries instantiation
+
         // Convert hash maps to time series
-        List<TimeSeries<OffsetDateTime>> timeSeries;
+        List<TimeSeries<OffsetDateTime>> inputTimeSeries;
+        List<TimeSeries<OffsetDateTime>> outputTimeSeries;
         try {
-            timeSeries = convertReadingsToTimeSeries(energyReadingsMap);
+            inputTimeSeries = convertReadingsToTimeSeries(energyReadingsMap);
+            outputTimeSeries = convertReadingsToTimeSeries(energyOutputMap);
         } catch (NoSuchElementException e) {
             throw new IllegalArgumentException("Readings can not be converted to proper time series!", e);
         }
 
         // Update each time series in the database
-        for (TimeSeries<OffsetDateTime> ts : timeSeries) {
+        for (TimeSeries<OffsetDateTime> ts : inputTimeSeries) {
             // Only update if there actually is data
             if (!ts.getTimes().isEmpty()) {
                 try {
@@ -220,6 +263,19 @@ public class HistoricalNTUEnergyAgent {
                 }
             }
         }
+        for (TimeSeries<OffsetDateTime> ts : outputTimeSeries) {
+            // Only update if there actually is data
+            if (!ts.getTimes().isEmpty()) {
+                try {
+                    tsClient.addTimeSeriesData(ts);
+                    LOGGER.debug("Time series updated for the following IRIs: {}", String.join(", ", ts.getDataIRIs()));
+                } catch (Exception e) {
+                    LOGGER.error("Error updating time series", e);
+                    throw new JPSRuntimeException("Could not add time series data", e);
+                }
+            }
+        }
+
     }
 
 
@@ -284,8 +340,7 @@ public class HistoricalNTUEnergyAgent {
 
     /**
      * Converts the readings in form of maps to time series' using the mappings from JSON key to IRI.
-     * @param particleReadings The particle readings as map.
-     * @param gasReadings The gas readings as map.
+     * @param energyReadings The energy readings as map.
      * @return A list of time series objects (one per mapping) that can be used with the time series client.
      */
     private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> energyReadings)
@@ -300,6 +355,7 @@ public class HistoricalNTUEnergyAgent {
                 .map(timestamp -> (convertStringToOffsetDateTime(timestamp.toString()))).collect(Collectors.toList());
         // Construct a time series object for each mapping
         List<TimeSeries<OffsetDateTime>> timeSeries = new ArrayList<>();
+        int addedTSCounter = 0;
         for (JSONKeyToIRIMapper mapping: mappings) {
             // Initialize the list of IRIs
             List<String> iris = new ArrayList<>();
@@ -307,25 +363,28 @@ public class HistoricalNTUEnergyAgent {
             List<List<?>> values = new ArrayList<>();
             // Go through all keys in the mapping
             for(String key: mapping.getAllJSONKeys()) {
-                // Add IRI
-                iris.add(mapping.getIRI(key));
+
                 // Always try the particle readings first (all general information are contained there)
                 if (energyReadings.containsKey(key)) {
+                    // Add IRI
+                    iris.add(mapping.getIRI(key));
                     values.add(energyReadings.get(key));
+                    LOGGER.info("Added " + key);
+                    addedTSCounter += 1;
                 }
                 // Will create a problem as length of iris and values do not match when creating the time series.
                 // Could add an empty list, but the length of the list needs to match length of times. So what values to
                 // fill it with?
-
-                else {
-                    throw new NoSuchElementException("The key " + key + " is not contained in the readings!");
-                }
+                //else {
+                //    throw new NoSuchElementException("The key " + key + " is not contained in the readings!");
+                //}
             }
             // Timestamps depend on which readings are used for the mapping
             List<OffsetDateTime> times = energyTimestamps;
             // Create the time series object and add it to the list
             TimeSeries<OffsetDateTime> currentTimeSeries = new TimeSeries<>(times, iris, values);
             timeSeries.add(currentTimeSeries);
+            LOGGER.info("Added " + String.valueOf(addedTSCounter) + " timeseries!");
         }
 
         return timeSeries;
