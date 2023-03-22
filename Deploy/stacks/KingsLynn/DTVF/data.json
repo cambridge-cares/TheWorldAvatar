@@ -36,17 +36,54 @@
                     "tiles": [
                         "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=test:building_sales&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
+                },
+                {
+                    "id": "test_building_values",  
+                    "type": "vector",
+                    "tiles": [
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:marketvalues&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                    ]
                 }
             ], 
             "layers": [
                 {
-                    "id": "test_buildings-layer-value",
-                    "name": "Test Buildings",
+                    "id": "test_buildings-layer-sales",
+                    "name": "Test Buildings (prices)",
                     "source": "test_building_sales",
                     "source-layer": "building_sales",
                     "type": "fill-extrusion",
                     "minzoom": 8, 
                     "order": 5,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "fill-extrusion-color": [
+                            "case", 
+                            ["==", ["get", "price"], null], "#000000", [
+                            "interpolate", ["linear"],
+                            ["number", ["get", "price"]],
+                            100000, "#3887BE",
+                            1100000, "#DB1F1F"
+                        ]],
+                        "fill-extrusion-opacity": 0.8,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building height"],
+                            ["*", 1.4, ["to-number", ["get", "building height"]]],
+                            8
+                        ]
+                    }
+                },
+                {
+                    "id": "test_buildings-layer-value",
+                    "name": "Test Buildings (values)",
+                    "source": "test_building_values",
+                    "source-layer": "marketvalues",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 5.5,
                     "layout": {
                         "visibility": "visible"
                     },
