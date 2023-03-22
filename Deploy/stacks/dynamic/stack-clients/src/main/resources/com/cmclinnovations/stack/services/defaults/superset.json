@@ -1,9 +1,10 @@
 {
+    "type": "superset",
     "ServiceSpec": {
         "Name": "superset",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "apache/superset:pr-23227",
+                "Image": "apache/superset:2.0.1",
                 "Env": [
                     "APP_NAME=Dashboard",
                     "PUBLIC_ROLE_LIKE=Gamma"
@@ -11,6 +12,9 @@
                 "Secrets": [
                     {
                         "SecretName": "superset_password"
+                    },
+                    {
+                        "SecretName": "superset_secret_key"
                     }
                 ]
             }
