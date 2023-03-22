@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent;
 
 import com.cmclinnovations.stack.clients.postgis.PostGISClient;
-import com.github.dockerjava.api.model.Device;
 import org.apache.jena.graph.Node;
 import org.apache.jena.graph.NodeFactory;
 import org.apache.log4j.LogManager;
@@ -20,62 +19,18 @@ import java.util.*;
 
 
 
-public class TSInstantiation implements Cloneable  {
+public class TimeseriesInstantiation implements Cloneable  {
     private HashMap data;
 
-    public TSInstantiation(HashMap data) {
+    public TimeseriesInstantiation(HashMap data) {
         this.data = data;
-        this.timer=timer;
         this.addDataIntoTheLists(data);
     }
 
     public void setData(HashMap data) {
         this.data = data;
-        this.timer=timer;
         addDataIntoTheLists(data);
     }
-    // public TSInstantiation clone() {
-    //     try {
-    //         TSInstantiation copy = (TSInstantiation) super.clone();
-    //         // Deep copy of lists
-    //         copy.accel_tsList = new ArrayList<>(this.accel_tsList);
-    //         copy.accelList_x = new ArrayList<>(this.accelList_x);
-    //         copy.accelList_y = new ArrayList<>(this.accelList_y);
-    //         copy.accelList_z = new ArrayList<>(this.accelList_z);
-
-    //         copy.magnetometer_tsList = new ArrayList<>(this.magnetometer_tsList);
-    //         copy.magnetometerList_x = new ArrayList<>(this.magnetometerList_x);
-    //         copy.magnetometerList_y = new ArrayList<>(this.magnetometerList_y);
-    //         copy.magnetometerList_z = new ArrayList<>(this.magnetometerList_z);
-
-    //         copy.gravity_tsList = new ArrayList<>(this.gravity_tsList);
-    //         copy.gravityList_x = new ArrayList<>(this.gravityList_x);
-    //         copy.gravityList_y = new ArrayList<>(this.gravityList_y);
-    //         copy.gravityList_z = new ArrayList<>(this.gravityList_z);
-
-    //         copy.location_tsList = new ArrayList<>(this.location_tsList);
-    //         copy.bearingList = new ArrayList<>(this.bearingList);
-    //         copy.speedList = new ArrayList<>(this.speedList);
-    //         copy.altitudeList = new ArrayList<>(this.altitudeList);
-    //         copy.geomLocationList = new ArrayList<>(this.geomLocationList);
-
-    //         copy.dBFS_tsList = new ArrayList<>(this.dBFS_tsList);
-    //         copy.dBFSList = new ArrayList<>(this.dBFSList);
-
-    //         copy.lightValue_tsList = new ArrayList<>(this.lightValue_tsList);
-    //         copy.lightValueList = new ArrayList<>(this.lightValueList);
-
-    //         copy.brightness_tsList = new ArrayList<>(this.brightness_tsList);
-    //         copy.brightnessList = new ArrayList<>(this.brightnessList);
-    //         return copy;
-    //     } catch (CloneNotSupportedException e) {
-    //         throw new AssertionError(); // should not happen
-    //     }
-    // }
-
-
-
-    
 
     public void addDataIntoTheLists(HashMap data){
         DEVICEID= (String) data.get("deviceID");
@@ -226,7 +181,7 @@ public class TSInstantiation implements Cloneable  {
     private static int timerFrequency;
     private static RemoteRDBStoreClient rdbStoreClient;
     private static RemoteStoreClient storeClient;
-    private static QueryClientSPARQL queryClientSPARQL;
+    private static KGQueryClient KGQueryClient;
 
     private  final Logger LOGGER = LogManager.getLogger(SensorLoggerMobileAppAgent.class);
 
@@ -279,7 +234,7 @@ public class TSInstantiation implements Cloneable  {
         EndpointConfig endpointConfig = new EndpointConfig();
         rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
         storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        queryClientSPARQL = new QueryClientSPARQL(storeClient);
+        KGQueryClient = new KGQueryClient(storeClient);
     }
 
 
@@ -293,9 +248,9 @@ public class TSInstantiation implements Cloneable  {
         if (!accel_tsList.isEmpty() && !accelList_x.isEmpty() && !accelList_y.isEmpty() && !accelList_z.isEmpty()){
         //Accelerometer
         List <String> dataIRIList = new ArrayList<>();
-        accel_xIRI=queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getAccel_xIRIArray(smartphoneIRI));
-        accel_yIRI=queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getAccel_yIRIArray(smartphoneIRI));
-        accel_zIRI=queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getAccel_zIRIArray(smartphoneIRI));
+        accel_xIRI= KGQueryClient.getIRIfromJSONarray(KGQueryClient.getAccel_xIRIArray(smartphoneIRI));
+        accel_yIRI= KGQueryClient.getIRIfromJSONarray(KGQueryClient.getAccel_yIRIArray(smartphoneIRI));
+        accel_zIRI= KGQueryClient.getIRIfromJSONarray(KGQueryClient.getAccel_zIRIArray(smartphoneIRI));
         dataIRIList.add(accel_xIRI);
         dataIRIList.add(accel_yIRI);
         dataIRIList.add(accel_zIRI);
@@ -324,9 +279,9 @@ public class TSInstantiation implements Cloneable  {
         //GravitySensor
         if (!gravity_tsList.isEmpty() && !gravityList_x.isEmpty() && !gravityList_y.isEmpty() && !gravityList_z.isEmpty()){
         List <String> dataIRIList = new ArrayList<>();
-        gravity_xIRI=queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getGravity_xIRIArray(smartphoneIRI));
-        gravity_yIRI=queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getGravity_yIRIArray(smartphoneIRI));
-        gravity_zIRI=queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getGravity_zIRIArray(smartphoneIRI));
+        gravity_xIRI= KGQueryClient.getIRIfromJSONarray(KGQueryClient.getGravity_xIRIArray(smartphoneIRI));
+        gravity_yIRI= KGQueryClient.getIRIfromJSONarray(KGQueryClient.getGravity_yIRIArray(smartphoneIRI));
+        gravity_zIRI= KGQueryClient.getIRIfromJSONarray(KGQueryClient.getGravity_zIRIArray(smartphoneIRI));
         dataIRIList.add(gravity_xIRI);
         dataIRIList.add(gravity_yIRI);
         dataIRIList.add(gravity_zIRI);
@@ -355,9 +310,9 @@ public class TSInstantiation implements Cloneable  {
         //Magnetometer
         if (!magnetometer_tsList.isEmpty() && !magnetometerList_x.isEmpty() && !magnetometerList_y.isEmpty() && !magnetometerList_z.isEmpty()) {
             List<String> dataIRIList = new ArrayList<>();
-            magnetometer_xIRI = queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getMagnetometer_xIRIArray(smartphoneIRI));
-            magnetometer_yIRI = queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getMagnetometer_yIRIArray(smartphoneIRI));
-            magnetometer_zIRI = queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getMagnetometer_zIRIArray(smartphoneIRI));
+            magnetometer_xIRI = KGQueryClient.getIRIfromJSONarray(KGQueryClient.getMagnetometer_xIRIArray(smartphoneIRI));
+            magnetometer_yIRI = KGQueryClient.getIRIfromJSONarray(KGQueryClient.getMagnetometer_yIRIArray(smartphoneIRI));
+            magnetometer_zIRI = KGQueryClient.getIRIfromJSONarray(KGQueryClient.getMagnetometer_zIRIArray(smartphoneIRI));
             dataIRIList.add(magnetometer_xIRI);
             dataIRIList.add(magnetometer_yIRI);
             dataIRIList.add(magnetometer_zIRI);
@@ -385,10 +340,10 @@ public class TSInstantiation implements Cloneable  {
         //GPSDevice
         if (!location_tsList.isEmpty() && !bearingList.isEmpty() && !speedList.isEmpty() && !altitudeList.isEmpty() && !geomLocationList.isEmpty()) {
             List<String> dataIRIList = new ArrayList<>();
-            bearingIRI = queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getBearingIRIArray(smartphoneIRI));
-            speedIRI = queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getSpeedIRIArray(smartphoneIRI));
-            altitudeIRI = queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getAltitudeIRIArray(smartphoneIRI));
-            pointIRI = queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getPointIRIArray(smartphoneIRI));
+            bearingIRI = KGQueryClient.getIRIfromJSONarray(KGQueryClient.getBearingIRIArray(smartphoneIRI));
+            speedIRI = KGQueryClient.getIRIfromJSONarray(KGQueryClient.getSpeedIRIArray(smartphoneIRI));
+            altitudeIRI = KGQueryClient.getIRIfromJSONarray(KGQueryClient.getAltitudeIRIArray(smartphoneIRI));
+            pointIRI = KGQueryClient.getIRIfromJSONarray(KGQueryClient.getPointIRIArray(smartphoneIRI));
             dataIRIList.add(bearingIRI);
             dataIRIList.add(speedIRI);
             dataIRIList.add(altitudeIRI);
@@ -417,7 +372,7 @@ public class TSInstantiation implements Cloneable  {
         //Microphone
         if (!dBFS_tsList.isEmpty() && !dBFSList.isEmpty()) {
             List<String> dataIRIList = new ArrayList<>();
-            dbfsIRI = queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getSoundPressureLevelIRIArray(smartphoneIRI));
+            dbfsIRI = KGQueryClient.getIRIfromJSONarray(KGQueryClient.getSoundPressureLevelIRIArray(smartphoneIRI));
             dataIRIList.add(dbfsIRI);
 
             dBFS_lolValues = Arrays.asList(dBFSList);
@@ -438,7 +393,7 @@ public class TSInstantiation implements Cloneable  {
         //RelativeBrightness
         if (!brightnessList.isEmpty() && !brightness_tsList.isEmpty()) {
             List<String> dataIRIList = new ArrayList<>();
-            relativeBrightnessIRI = queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getRelativeBrightnessIRIArray(smartphoneIRI));
+            relativeBrightnessIRI = KGQueryClient.getIRIfromJSONarray(KGQueryClient.getRelativeBrightnessIRIArray(smartphoneIRI));
             dataIRIList.add(relativeBrightnessIRI);
 
             brightness_lolValues = Arrays.asList(brightnessList);
@@ -461,7 +416,7 @@ public class TSInstantiation implements Cloneable  {
         //Camera
         if (!lightValueList.isEmpty() && !lightValue_tsList.isEmpty()) {
             List<String> dataIRIList = new ArrayList<>();
-            light_valueIRI = queryClientSPARQL.getIRIfromJSONarray(queryClientSPARQL.getIlluminanceIRIArray(smartphoneIRI));
+            light_valueIRI = KGQueryClient.getIRIfromJSONarray(KGQueryClient.getIlluminanceIRIArray(smartphoneIRI));
             dataIRIList.add(light_valueIRI);
 
             lightValue_lolValues = Arrays.asList(lightValueList);
@@ -497,7 +452,7 @@ public class TSInstantiation implements Cloneable  {
         Node smartphoneIRI= NodeFactory.createURI(smartphoneString);
 
         //Accelerometer
-        if(queryClientSPARQL.getAccel_xIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getAccel_yIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getAccel_zIRIArray(smartphoneIRI).isEmpty()) {
+        if(KGQueryClient.getAccel_xIRIArray(smartphoneIRI).isEmpty() && KGQueryClient.getAccel_yIRIArray(smartphoneIRI).isEmpty() && KGQueryClient.getAccel_zIRIArray(smartphoneIRI).isEmpty()) {
             List<String> dataIRIList = new ArrayList<>();
             accel_xIRI = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_accel_x_" + UUID.randomUUID();
             accel_yIRI = "https://www.theworldavatar.com/kg/sensorloggerapp/measure_accel_y_" + UUID.randomUUID();
@@ -515,7 +470,7 @@ public class TSInstantiation implements Cloneable  {
         }
 
         //GravitySensor
-        if(queryClientSPARQL.getGravity_xIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getGravity_yIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getGravity_zIRIArray(smartphoneIRI).isEmpty())
+        if(KGQueryClient.getGravity_xIRIArray(smartphoneIRI).isEmpty() && KGQueryClient.getGravity_yIRIArray(smartphoneIRI).isEmpty() && KGQueryClient.getGravity_zIRIArray(smartphoneIRI).isEmpty())
         {
             List<String> dataIRIList = new ArrayList<>();
             gravity_xIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_gravity_x_"+ UUID.randomUUID();
@@ -535,7 +490,7 @@ public class TSInstantiation implements Cloneable  {
         }
 
         //Magnetometer
-        if(queryClientSPARQL.getMagnetometer_xIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getMagnetometer_yIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getMagnetometer_zIRIArray(smartphoneIRI).isEmpty())
+        if(KGQueryClient.getMagnetometer_xIRIArray(smartphoneIRI).isEmpty() && KGQueryClient.getMagnetometer_yIRIArray(smartphoneIRI).isEmpty() && KGQueryClient.getMagnetometer_zIRIArray(smartphoneIRI).isEmpty())
         {
             List<String> dataIRIList = new ArrayList<>();
             magnetometer_xIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_magnetometer_x_"+ UUID.randomUUID();
@@ -554,7 +509,7 @@ public class TSInstantiation implements Cloneable  {
         }
 
         //GPSDevice
-        if(queryClientSPARQL.getBearingIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getSpeedIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getAltitudeIRIArray(smartphoneIRI).isEmpty() && queryClientSPARQL.getPointIRIArray(smartphoneIRI).isEmpty())
+        if(KGQueryClient.getBearingIRIArray(smartphoneIRI).isEmpty() && KGQueryClient.getSpeedIRIArray(smartphoneIRI).isEmpty() && KGQueryClient.getAltitudeIRIArray(smartphoneIRI).isEmpty() && KGQueryClient.getPointIRIArray(smartphoneIRI).isEmpty())
         {
             List<String> dataIRIList = new ArrayList<>();
             bearingIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_bearing_"+ UUID.randomUUID();
@@ -577,7 +532,7 @@ public class TSInstantiation implements Cloneable  {
         }
         
         //Microphone
-        if(queryClientSPARQL.getSoundPressureLevelIRIArray(smartphoneIRI).isEmpty())
+        if(KGQueryClient.getSoundPressureLevelIRIArray(smartphoneIRI).isEmpty())
         {
             List<String> dataIRIList = new ArrayList<>();
             dbfsIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/measure_dbfs_"+ UUID.randomUUID();
@@ -589,7 +544,7 @@ public class TSInstantiation implements Cloneable  {
         }
         
         //RelativeBrightness
-        if(queryClientSPARQL.getRelativeBrightnessIRIArray(smartphoneIRI).isEmpty())
+        if(KGQueryClient.getRelativeBrightnessIRIArray(smartphoneIRI).isEmpty())
         {
             List<String> dataIRIList = new ArrayList<>();
             relativeBrightnessIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/relativeBrightness_"+ UUID.randomUUID();
@@ -601,7 +556,7 @@ public class TSInstantiation implements Cloneable  {
         }
 
         //Camera
-        if(queryClientSPARQL.getIlluminanceIRIArray(smartphoneIRI).isEmpty())
+        if(KGQueryClient.getIlluminanceIRIArray(smartphoneIRI).isEmpty())
         {
             List<String> dataIRIList = new ArrayList<>();
             light_valueIRI ="https://www.theworldavatar.com/kg/sensorloggerapp/light_value_"+ UUID.randomUUID();
@@ -614,7 +569,7 @@ public class TSInstantiation implements Cloneable  {
         
         if (iriHashmap.size()==maxSize){
             iriHashmap.put("deviceID", DEVICEID);
-            InstantiationClient.instantiationMethod(iriHashmap);
+            StaticInstantiation.instantiationMethod(iriHashmap);
             LOGGER.info(String.format("Units is now instantiated"));
         }
         else if (iriHashmap.size()!=maxSize)

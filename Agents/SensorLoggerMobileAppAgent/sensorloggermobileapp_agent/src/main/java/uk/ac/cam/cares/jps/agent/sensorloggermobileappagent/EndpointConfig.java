@@ -37,15 +37,6 @@ public class EndpointConfig {
     public String getKgurl() {
         return this.kgurl;
     }
-    public String getKguser() {
-        return this.kguser;
-    }
-    public String getKgpassword() {
-        return this.kgpassword;
-    }
-    public String getOntopurl() {
-        return this.ontopurl;
-    }
     public String getDburl() {
         return this.dburl;
     }

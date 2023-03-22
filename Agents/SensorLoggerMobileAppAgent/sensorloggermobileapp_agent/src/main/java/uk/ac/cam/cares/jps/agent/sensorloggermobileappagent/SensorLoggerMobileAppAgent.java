@@ -1,56 +1,40 @@
 package uk.ac.cam.cares.jps.agent.sensorloggermobileappagent;
 
-import com.cmclinnovations.stack.clients.postgis.PostGISClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import it.unimi.dsi.fastutil.Hash;
-import org.apache.jena.graph.Node;
-import org.apache.jena.graph.NodeFactory;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.postgis.Point;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.crypto.Data;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
-import uk.ac.cam.cares.downsampling.Downsampling;
-
-
-
+import java.util.concurrent.locks.*;
 
 @WebServlet(urlPatterns = "/update")
 
 public class SensorLoggerMobileAppAgent extends JPSAgent {
-    private QueryClientSPARQL queryClientSPARQL;
+    private KGQueryClient KGQueryClient;
     private RemoteStoreClient storeClient;
     private LinkedList<HttpServletRequest> requestQueue;
 
-    
     public void init() {
         EndpointConfig endpointConfig = new EndpointConfig();
         storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        queryClientSPARQL = new QueryClientSPARQL(storeClient);
+        KGQueryClient = new KGQueryClient(storeClient);
         requestQueue = new LinkedList<>();
 
     }
@@ -66,8 +50,9 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
         requestQueue.add(request);
 
         // Process queue if necessary
+        synchronized(this){
         processRequestQueue(response);
-
+        }
     }
 
     private void processRequestQueue(HttpServletResponse response) throws IOException {
@@ -236,22 +221,25 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
 
             try {
-                if (queryClientSPARQL.getSmartPhoneIRI(DEVICEID).isEmpty() || !smartphoneHashmap.containsKey(DEVICEID)) {
+                if (KGQueryClient.getSmartPhoneIRI(DEVICEID).isEmpty() || !smartphoneHashmap.containsKey(DEVICEID)) {
                     synchronized(this){
-                    TSInstantiation firstTSInstantiation = new TSInstantiation(dataHashmap);
-                    firstTSInstantiation.startTimer();
-                    smartphoneHashmap.put(DEVICEID, firstTSInstantiation);
+                    TimeseriesInstantiation firstTimeseriesInstantiation = new TimeseriesInstantiation(dataHashmap);
+                    firstTimeseriesInstantiation.startTimer();
+                    smartphoneHashmap.put(DEVICEID, firstTimeseriesInstantiation);
                     }
 
+
                 } else {
-                    TSInstantiation retrievedTSInstantiation = (TSInstantiation) smartphoneHashmap.get(DEVICEID);
-                    retrievedTSInstantiation.setData(dataHashmap);
+                    TimeseriesInstantiation retrievedTimeseriesInstantiation = (TimeseriesInstantiation) smartphoneHashmap.get(DEVICEID);
+                    retrievedTimeseriesInstantiation.setData(dataHashmap);
                 }
             } catch (ParseException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        
+
+
+
 
             // Log the request data
             System.out.println("Received POST request with data");

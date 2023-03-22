@@ -9,7 +9,7 @@ import uk.ac.cam.cares.ogm.models.ModelContext;
 import java.util.*;
 
 //Accessagent needs to be running with proper JSON Routing
-public class InstantiationClient {
+public class StaticInstantiation {
     public static void instantiationMethod(HashMap IRI) {
 
 
@@ -339,11 +339,11 @@ public class InstantiationClient {
      */
     public static class Person extends SensorLoggerModel {
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/sensorloggerapp/hasA")
-        protected InstantiationClient.Smartphone smartphone;
+        protected StaticInstantiation.Smartphone smartphone;
     }
     public static class PersonRDF extends SensorLoggerModel {
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Person person;
+        protected StaticInstantiation.Person person;
     }
 
     
@@ -352,19 +352,19 @@ public class InstantiationClient {
      */
     public static class Smartphone extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/sensorloggerapp/hasA", backward = true)
-        protected InstantiationClient.Person person;
+        protected StaticInstantiation.Person person;
         @Getter @Setter @FieldAnnotation(value = "https://saref.etsi.org/core/consistsOf", innerType = OntoDeviceModel.class)
         protected ArrayList<OntoDeviceModel> devices;
 
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/hasScreenBrightness")
-        protected InstantiationClient.RelativeBrightness relativeBrightness;
+        protected StaticInstantiation.RelativeBrightness relativeBrightness;
 
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/hasDeviceID")
         protected String DeviceIDString;
     }
     public static class SmartphoneRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Smartphone smartphone;
+        protected StaticInstantiation.Smartphone smartphone;
     }
 
 
@@ -376,33 +376,33 @@ public class InstantiationClient {
     public static class Accelerometer extends OntoDeviceModel{}
     public static class AccelerometerRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Accelerometer accelerometer;
+        protected StaticInstantiation.Accelerometer accelerometer;
     }
     
     public static class Accel_x extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected InstantiationClient.OntoDeviceModel accelerometer;
+        protected StaticInstantiation.OntoDeviceModel accelerometer;
     }
     public static class Accel_xRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Accel_x accel_x;
+        protected StaticInstantiation.Accel_x accel_x;
     }
 
     public static class Accel_y extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected InstantiationClient.OntoDeviceModel accelerometer;
+        protected StaticInstantiation.OntoDeviceModel accelerometer;
     }
     public static class Accel_yRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Accel_y accel_y;
+        protected StaticInstantiation.Accel_y accel_y;
     }
     public static class Accel_z extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected InstantiationClient.OntoDeviceModel accelerometer;
+        protected StaticInstantiation.OntoDeviceModel accelerometer;
     }
     public static class Accel_zRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Accel_z accel_z;
+        protected StaticInstantiation.Accel_z accel_z;
     }
 
 
@@ -412,33 +412,33 @@ public class InstantiationClient {
     public static class GravitySensor extends OntoDeviceModel{}
     public static class GravitySensorRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.GravitySensor gravitySensor;
+        protected StaticInstantiation.GravitySensor gravitySensor;
     }
     public static class Gravity_x extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected InstantiationClient.OntoDeviceModel gravitysensor;
+        protected StaticInstantiation.OntoDeviceModel gravitysensor;
     }
     public static class Gravity_xRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Gravity_x gravity_x;
+        protected StaticInstantiation.Gravity_x gravity_x;
     }
 
     public static class Gravity_y extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected InstantiationClient.OntoDeviceModel gravitysensor;
+        protected StaticInstantiation.OntoDeviceModel gravitysensor;
     }
     public static class Gravity_yRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Gravity_y gravity_y;
+        protected StaticInstantiation.Gravity_y gravity_y;
     }
     
     public static class Gravity_z extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected InstantiationClient.OntoDeviceModel gravitysensor;
+        protected StaticInstantiation.OntoDeviceModel gravitysensor;
     }
     public static class Gravity_zRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Gravity_z gravity_z;
+        protected StaticInstantiation.Gravity_z gravity_z;
     }
 
 
@@ -449,33 +449,33 @@ public class InstantiationClient {
     public static class Magnetometer extends OntoDeviceModel{}
     public static class MagnetometerRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Magnetometer magnetometer;
+        protected StaticInstantiation.Magnetometer magnetometer;
     }
     public static class Magnetometer_x extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected InstantiationClient.OntoDeviceModel magnetometer;
+        protected StaticInstantiation.OntoDeviceModel magnetometer;
     }
     public static class Magnetometer_xRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Magnetometer_x magnetometer_x;
+        protected StaticInstantiation.Magnetometer_x magnetometer_x;
     }
     
     public static class Magnetometer_y extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected InstantiationClient.OntoDeviceModel magnetometer;
+        protected StaticInstantiation.OntoDeviceModel magnetometer;
     }
     public static class Magnetometer_yRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Magnetometer_y magnetometer_y;
+        protected StaticInstantiation.Magnetometer_y magnetometer_y;
     }
 
     public static class Magnetometer_z extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected InstantiationClient.OntoDeviceModel magnetometer;
+        protected StaticInstantiation.OntoDeviceModel magnetometer;
     }
     public static class Magnetometer_zRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Magnetometer_z magnetometer_z;
+        protected StaticInstantiation.Magnetometer_z magnetometer_z;
     }
 
     /**
@@ -487,7 +487,7 @@ public class InstantiationClient {
     }
     public static class CameraRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Camera camera;
+        protected StaticInstantiation.Camera camera;
     }
 
 
@@ -506,7 +506,7 @@ public class InstantiationClient {
     }
     public static class GPSDeviceRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.GPSDevice gpsDevice;
+        protected StaticInstantiation.GPSDevice gpsDevice;
     }
 
     /**
@@ -520,7 +520,7 @@ public class InstantiationClient {
 
     public static class MicrophoneRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Microphone microphone;
+        protected StaticInstantiation.Microphone microphone;
     }
 
     /**
@@ -534,7 +534,7 @@ public class InstantiationClient {
 
     public static class RelativeBrightnessRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.RelativeBrightness relativeBrightness;
+        protected StaticInstantiation.RelativeBrightness relativeBrightness;
     }
 
 
@@ -548,7 +548,7 @@ public class InstantiationClient {
 
     public static class AccelerationRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Acceleration acceleration;
+        protected StaticInstantiation.Acceleration acceleration;
     }
 
 
@@ -560,30 +560,30 @@ public class InstantiationClient {
     }
     public static class MagneticFluxDensityRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.MagneticFluxDensity magneticFluxDensity;
+        protected StaticInstantiation.MagneticFluxDensity magneticFluxDensity;
     }
 
     public static class Speed extends SensorLoggerModel{}
     public static class SpeedRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Speed speed;
+        protected StaticInstantiation.Speed speed;
     }
     public static class Bearing extends SensorLoggerModel{}
     public static class BearingRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Bearing bearing;
+        protected StaticInstantiation.Bearing bearing;
     }
 
     public static class Point extends SensorLoggerModel{}
     public static class PointRDF extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Point point;
+        protected StaticInstantiation.Point point;
     }
 
     public static class Altitude extends SensorLoggerModel{}
     public static class AltitudeRDF extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Altitude altitude;
+        protected StaticInstantiation.Altitude altitude;
     }
     public static class SoundPressureLevel extends SensorLoggerModel{
         @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures",backward = true)
@@ -606,7 +606,7 @@ public class InstantiationClient {
     public static class Ratio extends SensorLoggerModel{}
     public static class RatioRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected InstantiationClient.Ratio ratio;
+        protected StaticInstantiation.Ratio ratio;
     }
 
     /**

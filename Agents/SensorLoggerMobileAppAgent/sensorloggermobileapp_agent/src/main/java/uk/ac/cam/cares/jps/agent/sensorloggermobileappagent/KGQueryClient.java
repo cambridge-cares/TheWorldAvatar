@@ -6,18 +6,15 @@ import org.apache.jena.graph.Node;
 import org.apache.jena.sparql.core.Var;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.json.JSONArray;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-public class QueryClientSPARQL {
+public class KGQueryClient {
 
     private RemoteStoreClient storeClient;
     // Prefixes
     static final String SLMA = "https://www.theworldavatar.com/kg/sensorloggerapp/";
     static final String OM = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     static final String SF ="http://www.opengis.net/ont/sf#";
-    static final String GEO = "http://www.opengis.net/ont/geosparql#";
-    static final String XSD = "https://www.w3.org/2001/XMLSchema#";
     static final String ONTODEVICE = "https://www.theworldavatar.com/kg/ontodevice/";
     static final String MON = "https://w3id.org/MON/person.owl";
     static final String SAREF="https://saref.etsi.org/core/";
@@ -27,7 +24,7 @@ public class QueryClientSPARQL {
     final static String str_o = "o";
     final static Var VAR_O = Var.alloc(str_o);
 
-    public QueryClientSPARQL(RemoteStoreClient storeClient) {
+    public KGQueryClient(RemoteStoreClient storeClient) {
         this.storeClient = storeClient;
     }
 
