@@ -35,7 +35,7 @@
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensorloggermobileapp/ontoSensorLoggerMobileApp.owl#hasA">
         <rdfs:domain rdf:resource="https://w3id.org/MON/person.owl#Person"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Smartphone"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a pesron and a smartphone. </rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a person possesses a smartphone.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosensorloggermobileapp/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">hasA</rdfs:label>
     </owl:ObjectProperty>
@@ -53,9 +53,9 @@
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the acceleration vector due to gravity with respect to device&apos;s coordinate reference system in the x-direction (Short edge)</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the direction of magnetic north with respect to the device in the x direction</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the linear acceleration with respect to the device&apos;s cooordinate system in the x-direction</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the acceleration vector due to gravity with respect to device&apos;s coordinate reference system in the x-direction (Short edge).</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the direction of magnetic north with respect to the device in the x direction.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the linear acceleration with respect to the device&apos;s cooordinate system in the x-direction.</rdfs:comment>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the vector in the x-direction.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosensorloggermobileapp/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">hasXComponent</rdfs:label>
@@ -74,9 +74,9 @@
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the acceleration vector due to gravity with respect to device&apos;s coordinate reference system in the y-direction (Long edge)</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the direction of magnetic north with respect to the device in the y direction</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the linear acceleration with respect to the device&apos;s cooordinate system in the y-direction</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the acceleration vector due to gravity with respect to device&apos;s coordinate reference system in the y-direction (Long edge).</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the direction of magnetic north with respect to the device in the y direction.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the linear acceleration with respect to the device&apos;s cooordinate system in the y-direction.</rdfs:comment>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the vector in the y-direction.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosensorloggermobileapp/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">hasYComponent</rdfs:label>
@@ -95,9 +95,9 @@
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the acceleration vector due to gravity with respect to device&apos;s coordinate reference system in the z-direction (Through the phone)</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the direction of magnetic north with respect to the device in the z direction</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the linear acceleration with respect to the device&apos;s cooordinate system in the z-direction</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the acceleration vector due to gravity with respect to device&apos;s coordinate reference system in the z-direction (Through the phone).</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the direction of magnetic north with respect to the device in the z direction.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the linear acceleration with respect to the device&apos;s cooordinate system in the z-direction.</rdfs:comment>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the vector in the z-direction.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosensorloggermobileapp/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">hasZComponent</rdfs:label>
@@ -177,7 +177,7 @@
                 <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A vector quantity that represents the rate of change of velocity</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A vector quantity that represents the rate of change of velocity.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosensorloggermobileapp/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">AccelerationVector</rdfs:label>
     </owl:Class>
@@ -207,7 +207,7 @@
                 <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A vector quantity that represents the direction and magnitude of the force of gravity</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A vector quantity that represents the direction and magnitude of the force of gravity.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosensorloggermobileapp/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">GravityVector</rdfs:label>
     </owl:Class>
@@ -237,7 +237,7 @@
                 <owl:allValuesFrom rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A vector quantity that represents the strength and direction of a magnetic field</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A vector quantity that represents the strength and direction of a magnetic field.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosensorloggermobileapp/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">MagneticFluxDensityVector</rdfs:label>
     </owl:Class>
@@ -248,7 +248,7 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensorloggermobileapp/ontoSensorLoggerMobileApp.owl#Vector">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A quantity that has magnitude and direction</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A quantity that has magnitude and direction.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontosensorloggermobileapp/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Vector</rdfs:label>
     </owl:Class>
