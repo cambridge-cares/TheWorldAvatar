@@ -23,7 +23,7 @@ STACK_NAME            # Name of stack to which agent shall be deployed
 NAMESPACE             # Blazegraph namespace into which to instantiate data 
                       # NOTE: This must match the namespace where EPC data got instantiated
 DATABASE              # PostGIS/PostgreSQL database name (default: `postgres`)
-LAYERNAME             # Geoserver layer name, ALSO table name for building market values
+LAYERNAME             # Geoserver layer name, ALSO table name for actual building sales prices
 GEOSERVER_WORKSPACE
 BUILDINGS_TABLE       # PostGIS table containing all building footprints
                       # NOTE: This must match the table where EPC data got uploaded to

@@ -135,8 +135,8 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
             # Upload property sales price to PostGIS
             # (overwrites previous value if available, otherwise creates new row)
             logger.info('Uploading property price to PostGIS ...')
-            postgis_client.upload_property_value(building_iri=tx.get('property_iri'),
-                                                 value_estimate=tx.get('price'))
+            postgis_client.upload_property_price(building_iri=tx.get('property_iri'),
+                                                 tx_price=tx.get('price'))
             
         # 5) Update timestamps of updated pure inputs (only takes effect if instantiated)
         # NOTE 'tx_iri' is None for newly instantiated transactions and only available
