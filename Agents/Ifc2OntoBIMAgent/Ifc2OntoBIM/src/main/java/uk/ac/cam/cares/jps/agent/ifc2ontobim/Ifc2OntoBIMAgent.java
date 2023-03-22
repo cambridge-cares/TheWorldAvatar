@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim;
 
+import org.apache.jena.rdf.model.Statement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
@@ -10,6 +11,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.file.Paths;
+import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -26,10 +29,7 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
     private static final String INVALID_ROUTE_ERROR_MSG = "Invalid request type! Route ";
     private static final String IFCOWL_CONVERSION_ERROR_MSG = "Failed to convert to IfcOwl schema. ";
     private static final String KEY_BASEURI = "uri";
-    private static final String KEY_ENDPOINT = "endpoint";
     private static final String ttlDir = Paths.get(System.getProperty("user.dir"), "data").toString();
-    private static String endpoint;
-    private static final String IFCOWL_API_URl = "http://ifcowlconverter:8080/ifcowlconverter/";
 
     /**
      * Perform required setup.
@@ -81,7 +81,6 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
                 if (validateInput(requestParams)) {
                     // Process request parameters
                     String baseURI = requestParams.getString(KEY_BASEURI);
-                    endpoint = requestParams.has(KEY_ENDPOINT) ? requestParams.getString(KEY_ENDPOINT) : "";
                     String[] args = (!baseURI.equals("default")) ? new String[]{baseURI} : new String[]{"default"};
                     jsonMessage = this.runAgent(args);
                 } else if (!requestType.equals("POST")) {
@@ -121,11 +120,6 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
                 // Base URI passed must either be default or a valid URL (starts with http/https and ends with / or #)
                 validate = baseURI.equals("default") ||
                         (baseURI.startsWith("http://www.") || baseURI.startsWith("https://www.")) && (baseURI.endsWith("/") || baseURI.endsWith("#"));
-                // When there is an optional endpoint specified, verify it is correct
-                if (requestParams.has(KEY_ENDPOINT)) {
-                    String endpoint = requestParams.getString(KEY_ENDPOINT);
-                    validate = endpoint.startsWith("http") && endpoint.contains("/blazegraph/namespace") && endpoint.endsWith("/sparql");
-                }
             }
         }
         return validate;
@@ -154,49 +148,44 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
      */
     protected JSONObject runAgent(String[] args) {
         JSONObject response = new JSONObject();
+        Map<String, String> config = AccessClient.retrieveClientProperties();
         // Convert the IFC files in the target directory to TTL using IfcOwl Schema
         LOGGER.info("Sending POST request to IfcOwlConverterAgent...");
         try {
             String inputJson = "{\"" + KEY_BASEURI + "\":\"" + args[0] + "\"}";
-            AccessClient.sendPostRequest(IFCOWL_API_URl, inputJson);
+            AccessClient.sendPostRequest(config.get(AccessClient.IFC_OWL_CONVERTER_API), inputJson);
         } catch (Exception e) {
             LOGGER.fatal(IFCOWL_CONVERSION_ERROR_MSG + e.getMessage());
             throw new JPSRuntimeException(IFCOWL_CONVERSION_ERROR_MSG + e.getMessage());
         }
-        LOGGER.info("All IFC files have been successfully converted to IfcOwl instances.");
-        OntoBimConverter bimConverter = new OntoBimConverter();
+        LOGGER.info("All IFC files have been successfully instantiated as IfcOwl instances.");
         // Generate a set of ttl files  in target directory
-        Set<String> ttlFileList = bimConverter.listTTLFiles(ttlDir);
+        Set<String> ttlFileList = AccessClient.listTTLFiles(ttlDir);
         // Validate file availability
         if (ttlFileList.size() == 0) {
             LOGGER.info("No TTL file detected! Please place at least 1 IFC file input.");
             response.put("Result", "No TTL file detected! Please place at least 1 IFC file input.");
             return response;
-        } else if (ttlFileList.size() > 1 && !endpoint.isEmpty()) {
-            LOGGER.info("More than one TTL file detected! Files will not be uploaded to " + endpoint);
-            response.put("Result", "More than one TTL file detected! Files will not be uploaded to " + endpoint);
+        } else if (ttlFileList.size() > 1) {
+            LOGGER.info("More than one TTL file detected! Files cannot be converted or uploaded.");
+            response.put("Result", "More than one TTL file detected! Files cannot be converted or uploaded.");
+            return response;
         }
-
-        if (ttlFileList.size() != 0) {
-            // Convert each TTL file with IFCOwl instances to ontoBIM instances
-            for (String ttlFile : ttlFileList) {
-                LOGGER.info("Preparing to convert IFCOwl to OntoBIM schema for TTL file: " + ttlFile);
-                bimConverter.convertOntoBIM(ttlFile);
-                LOGGER.info(ttlFile + " has been successfully converted!");
-                response.accumulate("Result", ttlFile + " has been successfully converted!");
-
-                // Load to an endpoint if specified
-                if (!endpoint.isEmpty()) {
-                    if (ttlFileList.size() == 1) {
-                        AccessClient.uploadTTL(endpoint, ttlFile);
-                        LOGGER.info(ttlFile + " has been uploaded to " + endpoint);
-                        response.accumulate("Result", ttlFile + " has been uploaded to " + endpoint);
-                    }
-                }
-            }
+        // Only one TTL file containing the IFCOwl instances should exist
+        // Retrieve the endpoint and start instantiation using the OntoBIM schema
+        String endpoint = config.get(AccessClient.UPDATE_ENDPOINT);
+        OntoBimConverter bimConverter = new OntoBimConverter();
+        for (String ttlFile : ttlFileList) {
+            LOGGER.info("Preparing to convert IFCOwl to OntoBIM schema for TTL file: " + ttlFile);
+            LinkedHashSet<Statement> statementSet = bimConverter.convertOntoBIM(ttlFile);
+            LOGGER.info("Uploading statements to " + endpoint);
+            AccessClient.uploadStatements(endpoint, statementSet);
+            AccessClient.cleanUp(ttlFile);
+            String ifc = StringUtils.getStringAfterLastCharacterOccurrence(ttlFile, StringUtils.SLASH);
+            ifc = StringUtils.getStringBeforeLastCharacterOccurrence(ifc, ".");
+            LOGGER.info(ifc + ".ifc has been successfully instantiated and uploaded to " + endpoint);
+            response.accumulate("Result", ifc + ".ifc has been successfully instantiated and uploaded to " + endpoint);
         }
-        LOGGER.info("All ttl files have been generated in OntoBIM. Please check the directory for the files at :");
-        response.accumulate("Result", "All ttl files have been generated in OntoBIM. Please check the directory.");
         return response;
     }
 }

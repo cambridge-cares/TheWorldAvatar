@@ -1,6 +1,6 @@
 # Ifc2OntoBim Agent
 
-This agent converts IFC files into TTL files defined by the OntoBIM ontology, and may upload them to the specified endpoint.
+This agent instantiates IFC models using the OntoBIM ontology into the specified endpoint.
 It requires support from the [IfcOwlConverterAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/IfcOwlConverterAgent).
 
 ```mermaid
@@ -35,7 +35,6 @@ Other elements are always linked to their Storey, even if there is a Space defin
 - Java 11
 - Apache Maven 3.8+
 - Docker
-
 
 ### 2. Building the Agent
 The agent is designed for execution through a Docker container. Other deployment workflows are beyond the scope of this document.
@@ -94,50 +93,39 @@ If the agent ran successfully, a JSON Object would be returned as follows:
 ```
 
 ##### 2.3.2 POST ROUTE: `~url~/ifc2ontobim-agent/convert`
-This route requires a POST request with the following parameters, to convert IFC models to TTL formats. Before attempting to
-send the request, please place your IFC file into the `<root>/data/` directory. This is directly linked to the relevant directory in a Docker container.
-The agent is able to convert multiple IFC files at once. However, it is unable to upload them into separate endpoints or namespaces 
-at one go. 
+The agent will require two inputs to convert the IFC model:
+
+First, the IFC file should be placed at the `<root>/data/` directory. This is directly linked to the relevant directory in a Docker container. 
+Only one IFC file can be instantiated and uploaded at a time.
+
+Second, a configuration file called `config.properties` should be placed at the `<root>/config/` directory. This will contain the
+configuration for:
+- `sparql.query.endpoint`: The SPARQL query endpoint
+- `sparql.update.endpoint`: The SPARQL update endpoint to upload the instantiated triples
+- `ifc.owl.agent`: The IfcOwlConverterAgent dependency's API endpoint
+
+
 
 ###### POST request parameters
-The route currently accepts two parameters. 
+Once both inputs are ready, a POST request can be sent to this route to convert IFC models to TTL formats with the following parameter:
 1. Base URI - Mandatory
 
 This sets the base URI for all instances. Examples of valid URIs include `http://www.theworldavatar.com/ifc/` and  `https://www.theworldavatar.com/bim#`.
 
 A default URI of `http://www.theworldavatar.com/ifc/resources_16UUID/` is also available. Please access this with a request of `"uri":"default"`.
 
-2. SPARQL Endpoint - Optional
-
-The TTL file generated will be uploaded to the namespace indicated in the endpoint (Please create this namespace). 
-Do note that the upload is ONLY APPLICABLE when there is ONLY ONE IFC input. 
-Multiple IFC inputs will NOT be uploaded automatically.   
-
-Valid format: `http://IPv4ADDRESS:PORTNO/blazegraph/namespace/NAMESPACE/sparql`.
-Example: `http://docker.internal.host:9999/blazegraph/namespace/ifc/sparql`.
-
-If you do not want to upload the TTL file, do not send this parameter in the request.
-
 ###### Sample POST request
 Run the agent by sending a POST request with the required JSON Object to `http://localhost:3025/ifc2ontobim-agent/convert`. A sample request is as follows:
 ```
 POST http://localhost:3025/ifc2ontobim-agent/convert
 Content-Type: application/json
-{"uri":"http://www.theworldavatar.com/ifc/building/","endpoint","http://IPv4ADDRESS:PORTNO/blazegraph/namespace/ifc/sparql"}
+{"uri":"http://www.theworldavatar.com/ifc/building/"}
 
 // Written in curl syntax (as one line)
-curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/','endpoint':'http://IPv4ADDRESS:PORTNO/blazegraph/namespace/ifc/sparql'}" localhost:3025/ifc2ontobim-agent/convert 
+curl -X POST --header "Content-Type: application/json" -d "{'uri':'http://www.theworldavatar.com/ifc/building/'}" localhost:3025/ifc2ontobim-agent/convert 
 ```
 
-If the agent ran successfully, a JSON Object would be returned as follows:
+If the agent ran successfully, a JSON Object would be returned as follows, and the triples can be accessed at the specified endpoint.
 ```
-// When endpoint is left out
-{"Result":["File.ttl has been successfully converted!","All ttl files have been generated in OntoBIM. Please check the directory."]}
-// Full results
-{"Result":["File.ttl has been successfully converted!","File.ttl has been uploaded to endpoint","All ttl files have been generated in OntoBIM. Please check the directory."]}
+{"Result":["IFCNAME.ifc has been successfully instantiated and uploaded to ENDPOINT"]}
 ```
-
-###### Post-task
-The generated TTL files can be retrieved at the `<root>/data/` directory.
-
-If an endpoint has been provided and only ONE IFC input is provided, the triples would be uploaded to the endpoint as well.

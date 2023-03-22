@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim;
 
 import org.apache.jena.rdf.model.*;
-import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.riot.RDFParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,17 +11,8 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.SpatialZoneFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ElementStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ModellingOperatorStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.SpatialZoneStorage;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcgeometry.GeomConstructBuilderMediator;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.*;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.IgnoreClassHelper;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.TTLWriter;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-import java.io.IOException;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 
@@ -33,13 +23,7 @@ import java.util.*;
  */
 public class OntoBimConverter {
     private Model owlModel;
-    private TTLWriter writer;
-    private Set<String> ignoreGeom;
-    private final Map<String, String> classMapping = new HashMap<>();
-    private final List<Path> tempFilePaths = new ArrayList<>();
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
-    private static final String TARGET_DIR_ERROR_MSG = "Failed to access target directory at: ";
-
 
     /**
      * Standard Constructor
@@ -48,31 +32,9 @@ public class OntoBimConverter {
     }
 
     /**
-     * List all .ttl files in the target directory and store them in a Set
-     *
-     * @return A set object containing all the ttl files in the target directory
+     * Read the ttl file output for IfcOwl and instantiate them as OntoBIM instances.
      */
-    public Set<String> listTTLFiles(String ttlDir) {
-        Set<String> fileSet = new HashSet<>();
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(Paths.get(ttlDir))) {
-            for (Path path : stream) {
-                if (!Files.isDirectory(path) &&
-                        path.getFileName().toString().substring(
-                                path.getFileName().toString().lastIndexOf('.') + 1).equals("ttl")) {
-                    // Add only ttl files to the list
-                    fileSet.add(path.toString());
-                }
-            }
-        } catch (IOException e) {
-            LOGGER.fatal(TARGET_DIR_ERROR_MSG + ttlDir + "\n" + e.getMessage());
-            throw new JPSRuntimeException(TARGET_DIR_ERROR_MSG + ttlDir + "\n" + e.getMessage());
-        }
-        return fileSet;
-    }
-    /**
-     * Read the ttl file output for IfcOwl, modify according to OntoBIM Tbox, and overwrite the ttl file
-     */
-    public void convertOntoBIM(String ttlFile) {
+    public LinkedHashSet<Statement> convertOntoBIM(String ttlFile) {
         // Load the existing IfcOwl triples into a model
         Path ttlFilePath = Path.of(ttlFile);
         this.owlModel = RDFParser.create()
@@ -82,91 +44,42 @@ public class OntoBimConverter {
         SpatialZoneStorage.resetSingleton();
         ElementStorage.resetSingleton();
         ModellingOperatorStorage.resetSingleton();
-        // Retrieve and add namespaces to builder
-        ConstructBuilder builder = new ConstructBuilder();
-        Map<String, String> nsMapping = NamespaceMapper.retrieveNamespace(this.owlModel);
-        builder.addPrefixes(nsMapping);
-        this.writer = new TTLWriter(nsMapping);
-
         // Create a new Set to ensure statements are kept in one object and not duplicated
         LinkedHashSet<Statement> statementSet = new LinkedHashSet<>();
-        ignoreGeom = IgnoreClassHelper.genIgnoreSet();
-        genSpatialZoneStatements(statementSet);
-        genElementsStatements(statementSet);
-        genCommonGeometryContentStatements(builder, statementSet);
-
-        writer.writeTTLWithIntermediateFiles(this.tempFilePaths, ttlFilePath, classMapping);
+        genZoneAndElementStatements(statementSet);
+        genGeometryContentStatements(statementSet);
+        return statementSet;
     }
 
 
     /**
-     * Query the generated TTL file for spatial zones and their relevant information.
-     * The results returned are constructed as statements in the OntoBIM schema and stored as a set.
-     * Note that the statements will be written to a temporary file to prevent heap overflow.
+     * Generate the OntoBIM triples for spatial zones and elements.
      *
      * @param statementSet Stores the relevant queried statements into this set.
      */
-    private void genSpatialZoneStatements(LinkedHashSet<Statement> statementSet) {
+    private void genZoneAndElementStatements(LinkedHashSet<Statement> statementSet) {
         LOGGER.info("Retrieving and generating spatial zones statements...");
         SpatialZoneFacade.genZoneTriples(this.owlModel, statementSet);
-        this.storeInTempFiles(statementSet);
-        LOGGER.info("Stored statements for spatial zones in temporary file");
-    }
-
-    /**
-     * Query the generated TTL file for Ifc elements and their relevant information.
-     * The results returned are constructed as statements in the OntoBIM schema and stored as a set.
-     * Note that the statements will be written to a temporary file to prevent heap overflow.
-     *
-     * @param statementSet Stores the relevant queried statements into this set.
-     */
-    private void genElementsStatements(LinkedHashSet<Statement> statementSet) {
         // Create a new helper object
         BuildingStructureFacade buildingStructureHelper = new BuildingStructureFacade();
         LOGGER.info("Retrieving and generating statements related to ceiling elements...");
         buildingStructureHelper.addCeilingStatements(this.owlModel, statementSet);
-        this.storeInTempFiles(statementSet);
-        LOGGER.info("Stored statements for ceiling elements in temporary file");
-
         LOGGER.info("Retrieving and generating statements related to column elements...");
         buildingStructureHelper.addColumnStatements(this.owlModel, statementSet);
-        this.storeInTempFiles(statementSet);
-        LOGGER.info("Stored statements for column elements in temporary file");
-
         LOGGER.info("Retrieving and generating statements related to floor elements...");
         buildingStructureHelper.addFloorStatements(this.owlModel, statementSet);
-        this.storeInTempFiles(statementSet);
-        LOGGER.info("Stored statements for floor elements in temporary file");
-
         LOGGER.info("Retrieving and generating statements related to roof elements...");
         buildingStructureHelper.addRoofStatements(this.owlModel, statementSet);
-        this.storeInTempFiles(statementSet);
-        LOGGER.info("Stored statements for roof elements in temporary file");
-
         LOGGER.info("Retrieving and generating statements related to wall elements...");
         buildingStructureHelper.addWallStatements(this.owlModel, statementSet);
-        this.storeInTempFiles(statementSet);
-        LOGGER.info("Stored statements for wall elements in temporary file");
-
         LOGGER.info("Retrieving and generating statements related to door elements...");
         buildingStructureHelper.addDoorStatements(this.owlModel, statementSet);
-        this.storeInTempFiles(statementSet);
-        LOGGER.info("Stored statements for door elements in temporary file");
-
         LOGGER.info("Retrieving and generating statements related to window elements...");
         buildingStructureHelper.addWindowStatements(this.owlModel, statementSet);
-        this.storeInTempFiles(statementSet);
-        LOGGER.info("Stored statements for window elements in temporary file");
-
         LOGGER.info("Retrieving and generating statements related to stair elements...");
         buildingStructureHelper.addStairStatements(this.owlModel, statementSet);
-        this.storeInTempFiles(statementSet);
-        LOGGER.info("Stored statements for stair elements in temporary file");
-
         LOGGER.info("Retrieving and generating statements related to all remaining elements...");
         ElementFacade.addElementStatements(this.owlModel, statementSet);
-        this.storeInTempFiles(statementSet);
-        LOGGER.info("Stored statements for all remaining elements in temporary file");
     }
 
     /**
@@ -180,60 +93,12 @@ public class OntoBimConverter {
      * Repeating the query will add duplicate results. Moreover, as IFC is verbose, the extension to the
      * SPARQL query syntax for including these common geometries will slow down the SPARQL query process.
      *
-     * @param builder      The construct builder to add new query statements.
      * @param statementSet Stores the relevant queried statements into this set.
      */
-    private void genCommonGeometryContentStatements(ConstructBuilder builder, LinkedHashSet<Statement> statementSet) {
-        // Requires a Map that retain sequential information
-        // The IfcBooleanClippingResult must run first as it also contains the other geometry contents
-        Map<String, String> geomElements = new LinkedHashMap<>();
-        geomElements.put("clipres", "ifc:IfcBooleanClippingResult");
-        geomElements.put("boundedhalfspace", "ifc:IfcPolygonalBoundedHalfSpace");
-        geomElements.put("brep", "ifc:IfcFacetedBrep");
-        geomElements.put("areasolid", "ifc:IfcExtrudedAreaSolid");
-        geomElements.put("polyline", "ifc:IfcPolyline");
-        geomElements.put("subcontext", "bim:GeometricRepresentationSubContext");
-        geomElements.put("cartesiantransformer", "bim:CartesianTransformationOperator");
-
-        for (String geomElement : geomElements.keySet()) {
-            LOGGER.info("Preparing query for the common geometry element: " + geomElement);
-            // Retrieves the subject IRI of the statements that belongs to a specific geometry element
-            String geomClass = geomElements.get(geomElement);
-            GeomSubjectNodeRetriever retriever = new GeomSubjectNodeRetriever(geomElement, geomClass);
-            List<RDFNode> iriList = retriever.retrieveIriAsList(statementSet);
-
-            ConstructBuilder tempBuilder = builder.clone(); // Clone the builder to ensure that query statements are not transferred across different elements
-            String query = new GeomConstructBuilderMediator().createSparqlQuery(tempBuilder, iriList);
-            // Store the results in a separate set before adding to the main set
-            // Important to add back as new geometries and operators may be added
-            LinkedHashSet<Statement> result = new LinkedHashSet<>();
-            QueryHandler.queryConstructStatementsAsSet(query, this.owlModel, result);
-            statementSet.addAll(result);
-            LOGGER.info("Retrieved statements related to common geometry elements of " + geomElement);
-            IgnoreClassHelper.removeIgnoredClass(geomClass, ignoreGeom);
-            this.storeInTempFiles(result);
-            LOGGER.info("Stored statements for " + geomElement + " in temporary file");
-        }
-
-        // Remove all the geometries to be ignored when writing the remaining types
-        ignoreGeom = new HashSet<>();
+    private void genGeometryContentStatements(LinkedHashSet<Statement> statementSet) {
         ModellingOperatorStorage operatorMappings = ModellingOperatorStorage.Singleton();
         LOGGER.info("Retrieving and generating statements related to local placement, direction, and cartesian points...");
         ModellingOperatorFacade.retrieveOperatorInstances(this.owlModel);
         operatorMappings.constructAllStatements(statementSet);
-        this.storeInTempFiles(statementSet);
-        LOGGER.info("Stored statements for all modelling operators in temporary file");
-    }
-
-    /**
-     * Store the current statements constructed into temporary files, stores their file path, and removes statements from the Set.
-     * This help to prevent heap overflow, especially for larger, more complex IFC files.
-     *
-     * @param statementSet An ordered set holding the required statements.
-     */
-    private void storeInTempFiles(LinkedHashSet<Statement> statementSet) {
-        Path tempFilePath;
-        tempFilePath = writer.writeIntermediateTempFile(statementSet, ignoreGeom);
-        this.tempFilePaths.add(tempFilePath);
     }
 }

@@ -13,10 +13,7 @@ import org.mockito.stubbing.Answer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -25,6 +22,9 @@ class Ifc2OntoBIMAgentTest {
     private static Path tempDir;
     private static Path sampleTtl;
     private static Ifc2OntoBIMAgent agent;
+    private static final Map<String, String> sampleConfig = new HashMap<>();
+    private static final String sampleEndpoint = "http://www.example.org/sparql";
+    private static final String sampleIfcOwlAPI = "http://ifcowlconverter:8080/ifcowlconverter/";
     private static final String KEY_BASEURI = "uri";
     private static final String KEY_METHOD = "method";
     private static final String GET_METHOD = "GET";
@@ -33,17 +33,19 @@ class Ifc2OntoBIMAgentTest {
     private static final String BASE_ROUTE = "http://localhost:3025/ifc2ontobim-agent/";
     private static final String GET_ROUTE = BASE_ROUTE + "status";
     private static final String POST_ROUTE = BASE_ROUTE + "convert";
-    private static final String KEY_ENDPOINT = "endpoint";
 
     @BeforeAll
     static void init() throws IOException {
         sampleTtl = tempDir.resolve("test.ttl");
         List<String> lines = new ArrayList<>();
-        lines.add("@prefix rdf: <"+ JunitTestUtils.rdfUri +"> .");
-        lines.add("@prefix bim: <"+ JunitTestUtils.bimUri +"> .");
+        lines.add("@prefix rdf: <" + JunitTestUtils.rdfUri + "> .");
+        lines.add("@prefix bim: <" + JunitTestUtils.bimUri + "> .");
         lines.add("");
         lines.add("bim:Zone_19 rdf:type bim:Zone .");
         Files.write(sampleTtl, lines);
+        sampleConfig.put("sparql.query.endpoint", sampleEndpoint);
+        sampleConfig.put("sparql.update.endpoint", sampleEndpoint);
+        sampleConfig.put("ifc.owl.agent", sampleIfcOwlAPI);
     }
 
     @BeforeEach
@@ -86,22 +88,22 @@ class Ifc2OntoBIMAgentTest {
         requestParams.put(KEY_METHOD, POST_METHOD);
         requestParams.put(KEY_ROUTE, POST_ROUTE);
         Set<String> ttlFileSet = genFileSet();
-
-        JSONObject testMessage;
-        try (MockedStatic<AccessClient> mockAccessClient = Mockito.mockStatic(AccessClient.class)){
+        try (MockedStatic<AccessClient> mockAccessClient = Mockito.mockStatic(AccessClient.class)) {
             // Stub the method to do nothing when called
             mockAccessClient.when(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString())).thenAnswer((Answer<Void>) invocation -> null);
-            try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class,
-                    // Stub the method to return the file list when called
-                    (mock, context) -> Mockito.when(mock.listTTLFiles(Mockito.any())).thenReturn(ttlFileSet))) {
-                testMessage = agent.processRequestParameters(requestParams);
+            // Stub the method to return the sample config when ran
+            mockAccessClient.when(AccessClient::retrieveClientProperties).thenAnswer((Answer<Map<String, String>>) invocation -> sampleConfig);
+            // Stub the method to return the file list when it is running
+            mockAccessClient.when(() -> AccessClient.listTTLFiles(Mockito.anyString())).thenAnswer((Answer<Set<String>>) invocation -> ttlFileSet);
+            try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class)) {
+                JSONObject response = agent.runAgent(new String[]{"test"});
                 // Verify methods was called
-                Mockito.verify(mockBimConverter.constructed().get(0)).listTTLFiles(Mockito.any());
+                mockAccessClient.verify(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString()));
+                mockAccessClient.verify(() -> AccessClient.listTTLFiles(Mockito.anyString()));
                 Mockito.verify(mockBimConverter.constructed().get(0)).convertOntoBIM(Mockito.anyString());
+                assertEquals("test.ifc has been successfully instantiated and uploaded to " + sampleEndpoint, response.getString("Result"));
             }
         }
-        String expected = ".ttl has been successfully converted!\",\"All ttl files have been generated in OntoBIM. Please check the directory.";
-        assertTrue(testMessage.toString().contains(expected));
     }
 
     @Test
@@ -147,9 +149,7 @@ class Ifc2OntoBIMAgentTest {
         // Test both variations of accepted uris
         JSONObject requestParams = new JSONObject();
         String uri = "http://www.theworldavatar.com/";
-        String endpoint = "http://localhost:9999/blazegraph/namespace/test/sparql";
         requestParams.put(KEY_BASEURI, uri);
-        requestParams.put(KEY_ENDPOINT, endpoint);
         assertTrue(agent.validateInput(requestParams));
     }
 
@@ -166,21 +166,6 @@ class Ifc2OntoBIMAgentTest {
         uri = "https://www.theworldavatar.com/ifc";
         requestParams.put(KEY_BASEURI, uri);
         assertFalse(agent.validateInput(requestParams));
-
-        // Test bad endpoint url
-        requestParams = new JSONObject();
-        uri = "default";
-        String endpoint = "localhost:9999";
-        requestParams.put(KEY_BASEURI, uri);
-        requestParams.put(KEY_ENDPOINT, endpoint);
-        assertFalse(agent.validateInput(requestParams));
-
-        // Test bad endpoint url
-        requestParams = new JSONObject();
-        endpoint = "http://localhost:9999/blazegraph/namespace/bah";
-        requestParams.put(KEY_BASEURI, uri);
-        requestParams.put(KEY_ENDPOINT, endpoint);
-        assertFalse(agent.validateInput(requestParams));
     }
 
     @Test
@@ -196,14 +181,17 @@ class Ifc2OntoBIMAgentTest {
         try (MockedStatic<AccessClient> mockAccessClient = Mockito.mockStatic(AccessClient.class)) {
             // Stub the method to do nothing when called
             mockAccessClient.when(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString())).thenAnswer((Answer<Void>) invocation -> null);
-            try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class,
-                    // Stub the method to return the file list when it is running
-                    (mock, context) -> Mockito.when(mock.listTTLFiles(Mockito.any())).thenReturn(ttlFileSet))) {
-                agent.runAgent(new String[]{"test"});
+            // Stub the method to return the sample config when ran
+            mockAccessClient.when(AccessClient::retrieveClientProperties).thenAnswer((Answer<Map<String, String>>) invocation -> sampleConfig);
+            // Stub the method to return the file list when it is running
+            mockAccessClient.when(() -> AccessClient.listTTLFiles(Mockito.anyString())).thenAnswer((Answer<Set<String>>) invocation -> ttlFileSet);
+            try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class)) {
+                JSONObject response = agent.runAgent(new String[]{"test"});
                 // Verify methods was called
                 mockAccessClient.verify(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString()));
-                Mockito.verify(mockBimConverter.constructed().get(0)).listTTLFiles(Mockito.any());
+                mockAccessClient.verify(() -> AccessClient.listTTLFiles(Mockito.anyString()));
                 Mockito.verify(mockBimConverter.constructed().get(0)).convertOntoBIM(Mockito.anyString());
+                assertEquals("test.ifc has been successfully instantiated and uploaded to " + sampleEndpoint, response.getString("Result"));
             }
         }
     }
@@ -213,20 +201,52 @@ class Ifc2OntoBIMAgentTest {
         try (MockedStatic<AccessClient> mockAccessClient = Mockito.mockStatic(AccessClient.class)) {
             // Stub the method to do nothing when called
             mockAccessClient.when(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString())).thenAnswer((Answer<Void>) invocation -> null);
-            try (MockedConstruction<OntoBimConverter> mockBimConverter = Mockito.mockConstruction(OntoBimConverter.class)) {
-                JSONObject message = agent.runAgent(new String[]{"test"});
-                // Verify method was called
-                mockAccessClient.verify(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString()));
-                Mockito.verify(mockBimConverter.constructed().get(0)).listTTLFiles(Mockito.any());
-                // Verify that the OntoBimConverter class was not constructed as there is no TTL file listed
-                assertEquals("No TTL file detected! Please place at least 1 IFC file input.", message.getString("Result"));
-            }
+            // Stub the method to return the sample config when ran
+            mockAccessClient.when(AccessClient::retrieveClientProperties).thenAnswer((Answer<Map<String, String>>) invocation -> sampleConfig);
+            JSONObject response = agent.runAgent(new String[]{"test"});
+            // Verify method was called
+            mockAccessClient.verify(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString()));
+            mockAccessClient.verify(() -> AccessClient.listTTLFiles(Mockito.anyString()));
+            // Verify that the OntoBimConverter class was not constructed as there is no TTL file listed
+            assertEquals("No TTL file detected! Please place at least 1 IFC file input.", response.getString("Result"));
+            // Verify that ontoBIM converter has not been created or any method executed as code fails before
+            OntoBimConverter mockBimConverter = Mockito.mock(OntoBimConverter.class);
+            Mockito.verifyNoInteractions(mockBimConverter);
+        }
+    }
+
+    @Test
+    void testRunAgentMultipleTTLFile() {
+        // Set up
+        Set<String> ttlFileSet = genMultipleFileSet();
+        try (MockedStatic<AccessClient> mockAccessClient = Mockito.mockStatic(AccessClient.class)) {
+            // Stub the method to do nothing when called
+            mockAccessClient.when(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString())).thenAnswer((Answer<Void>) invocation -> null);
+            // Stub the method to return the sample config when ran
+            mockAccessClient.when(AccessClient::retrieveClientProperties).thenAnswer((Answer<Map<String, String>>) invocation -> sampleConfig);
+            // Stub the method to return the file list when it is running
+            mockAccessClient.when(() -> AccessClient.listTTLFiles(Mockito.anyString())).thenAnswer((Answer<Set<String>>) invocation -> ttlFileSet);
+            JSONObject response = agent.runAgent(new String[]{"test"});
+            // Verify method was called
+            mockAccessClient.verify(() -> AccessClient.sendPostRequest(Mockito.anyString(), Mockito.anyString()));
+            mockAccessClient.verify(() -> AccessClient.listTTLFiles(Mockito.anyString()));
+            // Verify that the OntoBimConverter class was not constructed as there is no TTL file listed
+            assertEquals("More than one TTL file detected! Files cannot be converted or uploaded.", response.getString("Result"));
+            // Verify that ontoBIM converter has not been created or any method executed as code fails before
+            OntoBimConverter mockBimConverter = Mockito.mock(OntoBimConverter.class);
+            Mockito.verifyNoInteractions(mockBimConverter);
         }
     }
 
     private Set<String> genFileSet() {
         Set<String> ttlFileSet = new HashSet<>();
         ttlFileSet.add(sampleTtl.toString());
+        return ttlFileSet;
+    }
+
+    private Set<String> genMultipleFileSet() {
+        Set<String> ttlFileSet = genFileSet();
+        ttlFileSet.add("data/sample.ttl");
         return ttlFileSet;
     }
 }
