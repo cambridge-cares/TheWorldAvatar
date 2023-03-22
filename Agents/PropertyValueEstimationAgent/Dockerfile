@@ -131,6 +131,7 @@ RUN sed -i "s|False|True|g" ./tests/mockutils/env_configs_mock.py
 # Overwrite/Mock all stack interactions with pre-defined settings from testing Docker stack
 RUN cp ./tests/mockutils/env_configs_mock.py ./$AGENTDIR/utils/env_configs.py
 RUN cp ./tests/mockutils/stack_configs_mock.py ./$AGENTDIR/utils/stack_configs.py
+RUN cp ./tests/mockutils/stackclients_mock.py ./$AGENTDIR/utils/stackclients.py
 # Adjust relative import statement
 RUN sed -i "s|env_configs_mock|env_configs |g" ./$AGENTDIR/utils/stack_configs.py
 
