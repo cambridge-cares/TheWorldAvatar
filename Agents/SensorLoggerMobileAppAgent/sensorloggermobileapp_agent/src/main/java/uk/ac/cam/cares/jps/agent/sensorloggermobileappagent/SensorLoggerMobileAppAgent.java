@@ -45,11 +45,14 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
     private QueryClientSPARQL queryClientSPARQL;
     private RemoteStoreClient storeClient;
     private LinkedList<HttpServletRequest> requestQueue;
+
+    
     public void init() {
         EndpointConfig endpointConfig = new EndpointConfig();
         storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         queryClientSPARQL = new QueryClientSPARQL(storeClient);
         requestQueue = new LinkedList<>();
+
     }
 
 
@@ -230,16 +233,19 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
 
 
             
+
+
             try {
-                if (queryClientSPARQL.getSmartPhoneIRI(DEVICEID).isEmpty() && !smartphoneHashmap.containsKey(DEVICEID)) {
+                if (queryClientSPARQL.getSmartPhoneIRI(DEVICEID).isEmpty() || !smartphoneHashmap.containsKey(DEVICEID)) {
+                    synchronized(this){
                     TSInstantiation firstTSInstantiation = new TSInstantiation(dataHashmap);
-                    smartphoneHashmap.put(DEVICEID, firstTSInstantiation);
                     firstTSInstantiation.startTimer();
+                    smartphoneHashmap.put(DEVICEID, firstTSInstantiation);
+                    }
+
                 } else {
                     TSInstantiation retrievedTSInstantiation = (TSInstantiation) smartphoneHashmap.get(DEVICEID);
-                    synchronized(this) {
                     retrievedTSInstantiation.setData(dataHashmap);
-                    }
                 }
             } catch (ParseException e) {
                 // TODO Auto-generated catch block

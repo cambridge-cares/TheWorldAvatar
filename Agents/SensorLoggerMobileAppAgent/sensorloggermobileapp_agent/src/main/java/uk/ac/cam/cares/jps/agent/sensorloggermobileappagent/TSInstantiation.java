@@ -20,18 +20,62 @@ import java.util.*;
 
 
 
-public class TSInstantiation  {
+public class TSInstantiation implements Cloneable  {
     private HashMap data;
 
     public TSInstantiation(HashMap data) {
         this.data = data;
-        addDataIntoTheLists(data);
+        this.timer=timer;
+        this.addDataIntoTheLists(data);
     }
 
     public void setData(HashMap data) {
         this.data = data;
+        this.timer=timer;
         addDataIntoTheLists(data);
     }
+    // public TSInstantiation clone() {
+    //     try {
+    //         TSInstantiation copy = (TSInstantiation) super.clone();
+    //         // Deep copy of lists
+    //         copy.accel_tsList = new ArrayList<>(this.accel_tsList);
+    //         copy.accelList_x = new ArrayList<>(this.accelList_x);
+    //         copy.accelList_y = new ArrayList<>(this.accelList_y);
+    //         copy.accelList_z = new ArrayList<>(this.accelList_z);
+
+    //         copy.magnetometer_tsList = new ArrayList<>(this.magnetometer_tsList);
+    //         copy.magnetometerList_x = new ArrayList<>(this.magnetometerList_x);
+    //         copy.magnetometerList_y = new ArrayList<>(this.magnetometerList_y);
+    //         copy.magnetometerList_z = new ArrayList<>(this.magnetometerList_z);
+
+    //         copy.gravity_tsList = new ArrayList<>(this.gravity_tsList);
+    //         copy.gravityList_x = new ArrayList<>(this.gravityList_x);
+    //         copy.gravityList_y = new ArrayList<>(this.gravityList_y);
+    //         copy.gravityList_z = new ArrayList<>(this.gravityList_z);
+
+    //         copy.location_tsList = new ArrayList<>(this.location_tsList);
+    //         copy.bearingList = new ArrayList<>(this.bearingList);
+    //         copy.speedList = new ArrayList<>(this.speedList);
+    //         copy.altitudeList = new ArrayList<>(this.altitudeList);
+    //         copy.geomLocationList = new ArrayList<>(this.geomLocationList);
+
+    //         copy.dBFS_tsList = new ArrayList<>(this.dBFS_tsList);
+    //         copy.dBFSList = new ArrayList<>(this.dBFSList);
+
+    //         copy.lightValue_tsList = new ArrayList<>(this.lightValue_tsList);
+    //         copy.lightValueList = new ArrayList<>(this.lightValueList);
+
+    //         copy.brightness_tsList = new ArrayList<>(this.brightness_tsList);
+    //         copy.brightnessList = new ArrayList<>(this.brightnessList);
+    //         return copy;
+    //     } catch (CloneNotSupportedException e) {
+    //         throw new AssertionError(); // should not happen
+    //     }
+    // }
+
+
+
+    
 
     public void addDataIntoTheLists(HashMap data){
         DEVICEID= (String) data.get("deviceID");
@@ -156,9 +200,8 @@ public class TSInstantiation  {
             isTimerStarted = true;
             // Start the timer
             timer = new Timer();
+            System.out.println("Timer started for device:"+DEVICEID +"; Delay:" +timerDelay+"seconds ; Frequency:"+timerFrequency+"seconds ");
             timer.schedule(new instantiationTask(), timerDelay*1000,timerFrequency*1000); // 5000 milliseconds = 5 seconds
-
-
         }
     }
 
@@ -167,16 +210,10 @@ public class TSInstantiation  {
         public void run() {
             // This code will be executed when the timer expires
             try{
-                if(!data.isEmpty()) {
                     tsInstantiate();
-                    System.out.println("Timer expired, timeseries instantiated!");
-                }else
-                {
-                    System.out.println("Timer expired, but no timeseries data, so no timeseries were instantiated");
-                }
-
+                    System.out.println("Timer task ran succesfully for device:"+DEVICEID);
             }catch (Exception e){
-                System.out.println("Timeseries not instantiated, exception caught");
+                System.out.println("Timeseries not instantiated for device:"+DEVICEID+", exception caught");
             }
         }
     }
@@ -444,12 +481,13 @@ public class TSInstantiation  {
             tsList.add(lightValueTS);
         }
 
-        if (tsList.size() != 7){
-            System.out.println("It did not get all 7 timeseries");
+        if (!tsList.isEmpty()){
+            System.out.println(tsList.size()+" timeseries data has been added for device:"+DEVICEID);
             bulkAddTimeSeriesData(tsList);
-        }else {
-            System.out.println("All 7 timeseries has been collected");
-            bulkAddTimeSeriesData(tsList);
+        }else if (tsList.isEmpty()){
+            System.out.println("No data has been provieded, therefore non added for device:"+DEVICEID);
+        }else{
+            System.out.println("Error, timeseries data has not been added for device:"+DEVICEID);
         }
     }
 

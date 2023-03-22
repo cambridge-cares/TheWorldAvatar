@@ -101,7 +101,7 @@ public class InstantiationClient {
         PersonRDF personRDF = context.createNewModel(PersonRDF.class, "https://w3id.org/MON/person.owl/");
 
         //Smartphone
-        SmartphoneRDF smartphoneRDF = context.createNewModel(SmartphoneRDF.class,"https://theworldavatar.com/kg/ontodevice/Smartphone");
+        SmartphoneRDF smartphoneRDF = context.createNewModel(SmartphoneRDF.class,"https://www.theworldavatar.com/kg/ontodevice/Smartphone");
 
         //Ontodevice:Sensors
         AccelerometerRDF accelerometerRDF= context.createNewModel(AccelerometerRDF.class, "https://www.theworldavatar.com/kg/ontodevice/Accelerometer");
