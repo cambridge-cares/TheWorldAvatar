@@ -41,80 +41,59 @@
 </head>
 
 <body>
-    <div id="equipmentSelectControlContainer"></div>
-
-    <!-- <select name="Equipment" id="equipment-select">
-        <option value="http://www.theworldavatar.com/BMS/CaresLab#WalkIn-FumeHood_1">WFH-01</option>
-        <option value="http://www.theworldavatar.com/BMS/CaresLab#WalkIn-FumeHood_2">WFH-02</option>
-    </select> -->
+    <!-- <div id="equipmentSelectControlContainer"></div> -->
 
     <div id="metaTimeContainer"></div>
 </body>
 
 <script>
-    var stack = "http://localhost:3838/";
-    // var stack = "http://192.168.1.6:3838/";
+    // var stack = "http://localhost:3838/";
+    var stack = "http://192.168.1.6:3838/";
 
     function visualiseTimeSeriesData(rawJSON) {
         console.log("response received");
-                let meta = rawJSON["meta"];
-                let time = rawJSON["time"];
+        let meta = rawJSON["meta"];
+        let time = rawJSON["time"];
 
-                if (meta != null) console.log("Got a meta object!");
-                if (time != null) console.log("Got a time object!");
+        if (meta != null) console.log("Got a meta object!");
+        if (time != null) console.log("Got a time object!");
 
-                // TODO: ignore meta for now
+        // TODO: ignore meta for now
 
-                document.getElementById("metaTimeContainer").innerHTML = "";
+        document.getElementById("metaTimeContainer").innerHTML = "";
 
-                if (time != null) {
-                    // Plot data
-                    timeseriesHandler.parseData(time);
-                    // for (i = 0; i < timeseriesHandler._selectedData.length; i++) {
-                    //     console.log(i);
-                    //     start = timeseriesHandler._selectedData[i].times.length - 20;
-                    //     end = timeseriesHandler._selectedData[i].times.length;
-                    //     timeseriesHandler._selectedData[i].times = timeseriesHandler._selectedData[i].times.slice(start, end);
-                    //     timeseriesHandler._selectedData[i].values = timeseriesHandler._selectedData[i].values.slice(start, end);
-                    // }
+        if (time != null) {
+            // Plot data
+            timeseriesHandler.parseData(time);
+            // for (i = 0; i < timeseriesHandler._selectedData.length; i++) {
+            //     console.log(i);
+            //     start = timeseriesHandler._selectedData[i].times.length - 20;
+            //     end = timeseriesHandler._selectedData[i].times.length;
+            //     timeseriesHandler._selectedData[i].times = timeseriesHandler._selectedData[i].times.slice(start, end);
+            //     timeseriesHandler._selectedData[i].values = timeseriesHandler._selectedData[i].values.slice(start, end);
+            // }
 
-                    timeseriesHandler.showData("metaTimeContainer");
+            timeseriesHandler.showData("metaTimeContainer");
 
-                    console.log($("#time-series-select").val());
-                    timeseriesHandler.update($("#time-series-select").val());
+            console.log($("#time-series-select").val());
+            timeseriesHandler.update($("#time-series-select").val());
 
-                    // $("#time-series-select").off("change");
-                    $("#time-series-select").change(function() {
-                        console.log("selection is " + $("#time-series-select").val());
-                        timeseriesHandler.update($("#time-series-select").val());
-                    });
+            // $("#time-series-select").off("change");
+            $("#time-series-select").change(function() {
+                console.log("selection is " + $("#time-series-select").val());
+                timeseriesHandler.update($("#time-series-select").val());
+            });
 
-                } else {
-                    console.warn("No 'time' node found, skipping timeseries visualisation.");
-                }
+        } else {
+            console.warn("No 'time' node found, skipping timeseries visualisation.");
+        }
     }
 
-    function addEquipmentSelect(rawJSON) {
-        var selectHTML = `
-            <label for="equipment-select">Select an equipment:</label>
-            <select name="equipment-select" id="equipment-select" onchange="refreshUI()">
-        `;
+    function refreshEquipmentSelect(rawJSON) {
 
-        rawJSON.Equipments.forEach(entry => {
-            selectHTML += `
-            <option value="` + entry["dataIRI"] + `">` + entry["label"] + `</option>
-            `
-        });
-
-        selectHTML += `</select>`;
-        
-        $("#equipmentSelectControlContainer").html(selectHTML);
-    }
-
-    function refreshEquipmentSelect() {
         var FIAUri = stack + "feature-info-agent/get";
         var params = {
-                "iri": $("#equipment-select").val()
+                "iri": rawJSON["equipmentIRI"]
         };
         console.log("sending request to " + FIAUri + " with params " + params.iri);
         $.ajax({
@@ -124,29 +103,20 @@
                 success: visualiseTimeSeriesData,
                 error: getJSONFailure
         })
-    }
-
-    function initEquipmentSelect(rawJSON) {
-        addEquipmentSelect(rawJSON);
-        refreshEquipmentSelect();
+            
     }
 
     function getJSONFailure() {
         console.warn("Could not get valid response from the agent");
     }
 
-    function setupEquimentSelect() {
-        var BMSQueryUri = stack + "bms-query-agent/retrieve/equipment";
-        var params = {
-                "dataIRI": "http://www.theworldavatar.com/BMS/CaresLab#WalkIn-FumeHood",
-                "clientProperties": "CLIENT_PROPERTIES"
-        };
-        console.log("sending request to " + BMSQueryUri + " with params " + params);
+    function getSelectionFromAndroidStatusAgent() {
+        var AndroidStatusUri = stack + "android-status-agent/get";
+        console.log("sending request to " + AndroidStatusUri);
         $.ajax({
                 dataType: "json",
-                url: BMSQueryUri,
-                data: params,
-                success: initEquipmentSelect,
+                url: AndroidStatusUri,
+                success: refreshEquipmentSelect,
                 error: getJSONFailure
         })
     }
@@ -154,7 +124,7 @@
     var timeseriesHandler = new TimeseriesHandler();
 
     $(document).ready(function () {
-        setupEquimentSelect();
+        getSelectionFromAndroidStatusAgent();
     });
 
 
