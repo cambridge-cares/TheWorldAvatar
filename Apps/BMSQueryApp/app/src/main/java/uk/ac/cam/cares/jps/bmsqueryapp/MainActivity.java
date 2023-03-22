@@ -26,6 +26,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,7 +158,9 @@ public class MainActivity extends AppCompatActivity {
             response = new JSONObject(responseStr);
             parseEquipmentList(response);
 
-            equipmentAdapter.updateEquipments(new ArrayList<>(equipmentInsts.keySet()));
+            List<String> equipmentInstsList = new ArrayList<>(equipmentInsts.keySet());
+            Collections.sort(equipmentInstsList);
+            equipmentAdapter.updateEquipments(equipmentInstsList);
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
