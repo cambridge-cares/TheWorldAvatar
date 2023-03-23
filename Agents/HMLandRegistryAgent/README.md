@@ -27,13 +27,19 @@ LAYERNAME             # Geoserver layer name, ALSO table name for actual buildin
 GEOSERVER_WORKSPACE
 BUILDINGS_TABLE       # PostGIS table containing all building footprints
                       # NOTE: This must match the table where EPC data got uploaded to
+# Derivation Agent configurations
+# NOTE: values need to match their counterparts specified in the docker-compose.yml files of the respective agents)
+AVERAGE_SQUARE_METRE_PRICE_AGENT_IRI
+PROPERTY_VALUE_ESTIMATION_AGENT_IRI
+AVERAGE_SQUARE_METRE_PRICE_AGENT_URL
+PROPERTY_VALUE_ESTIMATION_AGENT_URL
 ```
 
 ### **2) Derivation Framework**
 
 The agent updates the timestamps of pure derivation inputs as well as instantiates and updates the required markups for both the `Average Square Metre Price per Postal Code` and the `Market Value Estimate per Property` derivations. Both of these derivations are initialised as synchronous derivations to create new info immediately. As the `Property Value Estimate` depends on the `Average Square Metre Price`, the latter one is marked up first to ensure availability of the required derivation input.
 
-To ensure successful instantiation of the derivations, both derivation agents need to be successfully registered in the KG before requesting any update by the `Property Sales Instantiation` agent. The registered derivation agent IRIs need to match the value specified in [iris.py] (to be specified in their respective `docker-compose.yml` files).
+To ensure successful instantiation of the derivations, both derivation agents need to be successfully registered in the KG before requesting any update by the `Property Sales Instantiation` agent. The registered derivation agent IRIs need to match the values specified in the `docker-compose.yml` file. *Please note:* The values for the agent IRIs are always required, while the exact values for the agent URLs are only needed if derivations are initialised using `createSyncDerivationForNewInfoWithHttpUrl`. This is currently not the case as all agents are deployed to the same stack, with resolvable `host.docker.internal` URLs to communicate between containers.
 
 
 ### **3) Accessing Github's Container registry**

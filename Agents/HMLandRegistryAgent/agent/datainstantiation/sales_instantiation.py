@@ -111,7 +111,7 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
         matched_tx = get_best_matching_transactions(obe_data=pc_data, ppd_data=ppd,
                                                     min_match_score=min_conf_score)
 
-        # 4) Update transaction records ...        
+        # 4) Update transaction records ...
         for tx in matched_tx:
             if tx['tx_iri']:
                 updated_tx += 1
