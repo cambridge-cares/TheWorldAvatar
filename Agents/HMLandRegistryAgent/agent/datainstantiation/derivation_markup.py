@@ -164,6 +164,8 @@ def avg_sqm_price_derivation_markup(
                     VALUES ?tx {{ {' '.join([f'<{iri}>' for iri in new_tx_iri_lst])} }}
                 }}"""
             )
+            # Request for derivation update
+            derivation_client.unifiedUpdateDerivation(existing_asp_derivation_iri)
             logger.info(f"Added new tx iri ({new_tx_iri_lst}) to existing derivation: {existing_asp_derivation_iri}")
         else:
             logger.info(f"No new tx iri to add to existing derivation: {existing_asp_derivation_iri}")
@@ -171,9 +173,12 @@ def avg_sqm_price_derivation_markup(
         # Request for derivation update: 2 potential options
         # (as pure inputs (especially Property Price Index) have likely changed)
         # 1) Request derivation update for immediate execution (i.e. as synchronous call)
-        derivation_client.unifiedUpdateDerivation(existing_asp_derivation_iri)
+        #derivation_client.unifiedUpdateDerivation(existing_asp_derivation_iri)
         # 2) Only mark derivation as requested to be executed with next asynchronous call
         #derivation_client.derivation_client.updateMixedAsyncDerivation(existing_asp_derivation_iri)
+        # NOTE: The design intention of the Derivation Framework is to have the update
+        # on-demand upon accessing the information. Hence, for the flood assessment use
+        # case the FloodAssessmentAgent shall trigger updates for affected buildings
 
 
 # =============================================================================
@@ -324,6 +329,8 @@ def property_value_estimation_derivation_markup(
                         <{market_value_derivation_iri}> <{pda_iris.ONTODERIVATION_ISDERIVEDFROM}> <{transaction_record_iri}>.
                     }}"""
                 )
+                # Request for derivation update
+                derivation_client.unifiedUpdateDerivation(market_value_derivation_iri)
                 logger.info(f"Added new tx iri ({transaction_record_iri}) to existing derivation: {market_value_derivation_iri} and requested for an update")
             else:
                 # This means that instantiated property value is derived from AverageSquareMetrePrice 
@@ -346,9 +353,12 @@ def property_value_estimation_derivation_markup(
         # Request for derivation update: 2 potential options
         # (as pure inputs (especially Property Price Index) have likely changed)
         # 1) Request derivation update for immediate execution (i.e. as synchronous call)
-        derivation_client.unifiedUpdateDerivation(market_value_derivation_iri)
+        #derivation_client.unifiedUpdateDerivation(market_value_derivation_iri)
         # 2) Only mark derivation as requested to be executed with next asynchronous call
         #derivation_client.derivation_client.updateMixedAsyncDerivation(market_value_derivation_iri)
+        # NOTE: The design intention of the Derivation Framework is to have the update
+        # on-demand upon accessing the information. Hence, for the flood assessment use
+        # case the FloodAssessmentAgent shall trigger updates for affected buildings
 
 
 # =============================================================================
