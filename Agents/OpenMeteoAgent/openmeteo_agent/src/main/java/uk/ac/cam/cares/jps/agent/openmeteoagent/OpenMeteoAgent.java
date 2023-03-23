@@ -6,6 +6,9 @@ import javax.ws.rs.BadRequestException;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.jena.graph.NodeFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
@@ -62,8 +65,13 @@ public class OpenMeteoAgent extends JPSAgent {
     private static final String API_PARAMETER_WINDDIRECTION = "winddirection_10m";
     private static final String ONTOEMS_WINDDIRECTION = "WindDirection";
     private static final String API_WINDSPEED_UNIT = "windspeed_unit=ms";
+
+    private String ontoemsURI;
+    private String omURI;
+    private String rdfURI;
     private static final String OM_C = "degreeCelsius";
     private static final String OM_PA = "pascal";
+    private static final String OM_PER = "percent";
     private static final String OM_MM = "millimetre";
     private static final String OM_CM = "centimetre";
     private static final String OM_MS = "metrePerSecond-Time";
@@ -77,6 +85,8 @@ public class OpenMeteoAgent extends JPSAgent {
 
     public static final String URI_INSTANTIATE = "/instantiate";
     public static final String URI_DELETE = "/delete";
+
+    public OpenMeteoAgent() {readConig();}
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -99,7 +109,17 @@ public class OpenMeteoAgent extends JPSAgent {
     }
 
     /**
-     * Checks validity of incoming request
+     * Get ontology uri from config.properties
+     */
+    private void readConig(){
+        ResourceBundle config = ResourceBundle.getBundle("config");
+        ontoemsURI = config.getString("uri.ontology.ontoems");
+        omURI = config.getString("uri.ontology.om");
+        rdfURI = config.getString("uri.ontology.rdf");
+    }
+
+    /**
+     * Check validity of incoming request
      * @param requestParams Request parameters as JSONObject
      * @return Validity of request
      */
@@ -155,7 +175,7 @@ public class OpenMeteoAgent extends JPSAgent {
     }
 
     /**
-     * Calls the Open-Meteo Historical Weather API to retrieve the hourly weather data from start_date to end_date with weather parameter in API_PARAMETERS for weather station located at (latitude, longitude)
+     * Call the Open-Meteo Historical Weather API to retrieve the hourly weather data from start_date to end_date with weather parameter in API_PARAMETERS for weather station located at (latitude, longitude)
      * @param latitude Geographical WGS84 coordinate of the weather station
      * @param longitude Geographical WGS84 coordinate of the weather station
      * @param startDate Start date of the time interval, in yyyy-mm-dd format
@@ -194,7 +214,7 @@ public class OpenMeteoAgent extends JPSAgent {
     }
 
     /**
-     * Parses weatherData into list
+     * Parse weatherData into list
      * @param weatherData JSONObject containing weather data retrieved by the API
      * @param weatherUnit JSONObject containing the units of the weather data retrieved by the API
      * @return a Map object with the key being the API weather parameters, and the values being the corresponding units ontology and the corresponding data parsed to a list
@@ -217,15 +237,17 @@ public class OpenMeteoAgent extends JPSAgent {
     }
 
     /**
-     * Converts the unit text string to its representative ontology concept name
-     * @param unit the unit text string
-     * @return the unit ontology concept name
+     * Convert unit text string to its representative ontology concept name
+     * @param unit unit text string
+     * @return unit ontology concept name
      */
     public String getUnitOntology(String unit){
         if (unit.contains("°C")){return OM_C;}
         if (unit.contains("°")){return OM_DEGREE;}
 
         switch (unit){
+            case("%"):
+                return OM_PER;
             case("mm"):
                 return OM_MM;
             case("hPa"):
@@ -237,5 +259,22 @@ public class OpenMeteoAgent extends JPSAgent {
             default:
                 return "";
         }
+    }
+
+    /**
+     * Create SPARQL update according to the ontoems ontology
+     * @param builder where builder
+     * @param station reporting station iri
+     * @param quantity quantity iri
+     * @param type type of quantity
+     * @param measure measure iri
+     * @param unit unit of quantity
+     */
+    public void createUpdate(WhereBuilder builder, String station, String quantity, String type, String measure, String unit){
+        builder.addWhere(NodeFactory.createURI(station),  "ontoems:reports", NodeFactory.createURI(quantity))
+                .addWhere(NodeFactory.createURI(quantity), "rdf:type", NodeFactory.createURI(type))
+                .addWhere(NodeFactory.createURI(quantity), "om:hasValue", NodeFactory.createURI(measure))
+                .addWhere(NodeFactory.createURI(measure), "rdf:type", "om:Measure")
+                .addWhere(NodeFactory.createURI(measure), "om:hasUnit", unit);
     }
 }
