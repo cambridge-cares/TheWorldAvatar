@@ -12,7 +12,8 @@ public class KGQueryClient {
 
     private RemoteStoreClient storeClient;
     // Prefixes
-    static final String SLMA = "https://www.theworldavatar.com/kg/sensorloggerapp/";
+    static final String ONTOSLMA = "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/";
+    static final String SLA = "https://www.theworldavatar.com/kg/sensorloggerapp/";
     static final String OM = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     static final String SF ="http://www.opengis.net/ont/sf#";
     static final String ONTODEVICE = "https://www.theworldavatar.com/kg/ontodevice/";
@@ -33,7 +34,7 @@ public class KGQueryClient {
         return jsonArray.getJSONObject(0).get(str_o).toString();
     }
 
-    JSONArray getSmartPhoneIRI(String deviceID) throws ParseException {
+    JSONArray getSmartPhoneIRI(String deviceID)  {
 
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("ontodevice", ONTODEVICE)
@@ -53,7 +54,7 @@ public class KGQueryClient {
     JSONArray getPersonIRI(String smartphoneIRI)  {
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("slma", SLA)
                 .addWhere(VAR_S, "slma:hasA", smartphoneIRI);
 
         SelectBuilder sb = new SelectBuilder()
@@ -66,16 +67,18 @@ public class KGQueryClient {
     JSONArray getAccel_xIRIArray(Node smartphoneIRI)  {
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("ontoslma",ONTOSLMA)
+                .addPrefix("slma", SLA)
                 .addPrefix ("saref",SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
                 .addPrefix("om",OM)
                 .addWhere(smartphoneIRI,"saref:consistsOf","?accelerometer")
                 .addWhere("?accelerometer","rdf:type","ontodevice:Accelerometer")
-                .addWhere("?accelerometer","ontodevice:measures","?slma_accel_x")
-                .addWhere("?slma_accel_x","rdf:type","slma:Accel_x")
-                .addWhere("?slma_accel_x", "om:hasValue", VAR_O);
+                .addWhere("?accelerometer","ontodevice:measures","?vector")
+                .addWhere("?vector","rdf:type","ontoslma:AccelerationVector")
+                .addWhere("?vector", "ontoslma:hasXComponent", "?quantity")
+                .addWhere("?quantity", "om:hasValue", VAR_O);
 
         SelectBuilder sb = new SelectBuilder()
                 .addVar(VAR_O).addWhere(wb);
@@ -86,16 +89,18 @@ public class KGQueryClient {
     JSONArray getAccel_yIRIArray(Node smartphoneIRI)  {
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("ontoslma",ONTOSLMA)
+                .addPrefix("slma", SLA)
                 .addPrefix ("saref",SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
                 .addPrefix("om",OM)
                 .addWhere(smartphoneIRI,"saref:consistsOf","?accelerometer")
                 .addWhere("?accelerometer","rdf:type","ontodevice:Accelerometer")
-                .addWhere("?accelerometer","ontodevice:measures","?slma_accel_y")
-                .addWhere("?slma_accel_y","rdf:type","slma:Accel_y")
-                .addWhere("?slma_accel_y", "om:hasValue", VAR_O);
+                .addWhere("?accelerometer","ontodevice:measures","?vector")
+                .addWhere("?vector","rdf:type","ontoslma:AccelerationVector")
+                .addWhere("?vector", "ontoslma:hasYComponent", "?quantity")
+                .addWhere("?quantity", "om:hasValue", VAR_O);
 
         SelectBuilder sb = new SelectBuilder()
                 .addVar(VAR_O).addWhere(wb);
@@ -105,16 +110,18 @@ public class KGQueryClient {
     }
     JSONArray getAccel_zIRIArray(Node smartphoneIRI)  {
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("ontoslma",ONTOSLMA)
+                .addPrefix("slma", SLA)
                 .addPrefix ("saref",SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
                 .addPrefix("om",OM)
                 .addWhere(smartphoneIRI,"saref:consistsOf","?accelerometer")
                 .addWhere("?accelerometer","rdf:type","ontodevice:Accelerometer")
-                .addWhere("?accelerometer","ontodevice:measures","?slma_accel_z")
-                .addWhere("?slma_accel_z","rdf:type","slma:Accel_z")
-                .addWhere("?slma_accel_z", "om:hasValue", VAR_O);
+                .addWhere("?accelerometer","ontodevice:measures","?vector")
+                .addWhere("?vector","rdf:type","ontoslma:AccelerationVector")
+                .addWhere("?vector", "ontoslma:hasZComponent", "?quantity")
+                .addWhere("?quantity", "om:hasValue", VAR_O);
 
         SelectBuilder sb = new SelectBuilder()
                 .addVar(VAR_O).addWhere(wb);
@@ -128,16 +135,18 @@ public class KGQueryClient {
 
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("ontoslma",ONTOSLMA)
+                .addPrefix("slma", SLA)
                 .addPrefix ("saref",SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
                 .addPrefix("om",OM)
                 .addWhere(smartphoneIRI,"saref:consistsOf","?gravitySensor")
                 .addWhere("?gravitySensor","rdf:type","ontodevice:GravitySensor")
-                .addWhere("?gravitySensor","ontodevice:measures","?slma_gravity_x")
-                .addWhere("?slma_gravity_x","rdf:type","slma:Gravity_x")
-                .addWhere("?slma_gravity_x", "om:hasValue", VAR_O);
+                .addWhere("?gravitySensor","ontodevice:measures","?vector")
+                .addWhere("?vector","rdf:type","ontoslma:GravityVector")
+                .addWhere("?vector", "ontoslma:hasXComponent", "?quantity")
+                .addWhere("?quantity", "om:hasValue", VAR_O);
 
         SelectBuilder sb = new SelectBuilder()
                 .addVar(VAR_O).addWhere(wb);
@@ -149,17 +158,18 @@ public class KGQueryClient {
 
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("ontoslma",ONTOSLMA)
+                .addPrefix("slma", SLA)
                 .addPrefix ("saref",SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
                 .addPrefix("om",OM)
                 .addWhere(smartphoneIRI,"saref:consistsOf","?gravitySensor")
                 .addWhere("?gravitySensor","rdf:type","ontodevice:GravitySensor")
-                .addWhere("?gravitySensor","ontodevice:measures","?slma_gravity_y")
-                .addWhere("?slma_gravity_y","rdf:type","slma:Gravity_y")
-                .addWhere("?slma_gravity_y", "om:hasValue", VAR_O);
-
+                .addWhere("?gravitySensor","ontodevice:measures","?vector")
+                .addWhere("?vector","rdf:type","ontoslma:GravityVector")
+                .addWhere("?vector", "ontoslma:hasYComponent", "?quantity")
+                .addWhere("?quantity", "om:hasValue", VAR_O);
         SelectBuilder sb = new SelectBuilder()
                 .addVar(VAR_O).addWhere(wb);
 
@@ -169,16 +179,18 @@ public class KGQueryClient {
     JSONArray getGravity_zIRIArray(Node smartphoneIRI)  {
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("ontoslma",ONTOSLMA)
+                .addPrefix("slma", SLA)
                 .addPrefix ("saref",SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
                 .addPrefix("om",OM)
                 .addWhere(smartphoneIRI,"saref:consistsOf","?gravitySensor")
                 .addWhere("?gravitySensor","rdf:type","ontodevice:GravitySensor")
-                .addWhere("?gravitySensor","ontodevice:measures","?slma_gravity_z")
-                .addWhere("?slma_gravity_z","rdf:type","slma:Gravity_z")
-                .addWhere("?slma_gravity_z", "om:hasValue", VAR_O);
+                .addWhere("?gravitySensor","ontodevice:measures","?vector")
+                .addWhere("?vector","rdf:type","ontoslma:GravityVector")
+                .addWhere("?vector", "ontoslma:hasZComponent", "?quantity")
+                .addWhere("?quantity", "om:hasValue", VAR_O);
 
         SelectBuilder sb = new SelectBuilder()
                 .addVar(VAR_O).addWhere(wb);
@@ -190,17 +202,18 @@ public class KGQueryClient {
     JSONArray getMagnetometer_xIRIArray(Node smartphoneIRI)  {
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("ontoslma",ONTOSLMA)
+                .addPrefix("slma", SLA)
                 .addPrefix ("saref",SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
                 .addPrefix("om",OM)
                 .addWhere(smartphoneIRI,"saref:consistsOf","?magnetometer")
                 .addWhere("?magnetometer","rdf:type","ontodevice:Magnetometer")
-                .addWhere("?magnetometer","ontodevice:measures","?slma_magnetometer_x")
-                .addWhere("?slma_magnetometer_x","rdf:type","slma:Magnetometer_x")
-                .addWhere("?slma_magnetometer_x", "om:hasValue", VAR_O);
-
+                .addWhere("?magnetometer","ontodevice:measures","?vector")
+                .addWhere("?vector","rdf:type","ontoslma:MagneticFluxDensityVector")
+                .addWhere("?vector", "ontoslma:hasXComponent", "?quantity")
+                .addWhere("?quantity", "om:hasValue", VAR_O);
         SelectBuilder sb = new SelectBuilder()
                 .addVar(VAR_O).addWhere(wb);
 
@@ -209,16 +222,18 @@ public class KGQueryClient {
     }
     JSONArray getMagnetometer_yIRIArray(Node smartphoneIRI)  {
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("ontoslma",ONTOSLMA)
+                .addPrefix("slma", SLA)
                 .addPrefix ("saref",SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
                 .addPrefix("om",OM)
                 .addWhere(smartphoneIRI,"saref:consistsOf","?magnetometer")
                 .addWhere("?magnetometer","rdf:type","ontodevice:Magnetometer")
-                .addWhere("?magnetometer","ontodevice:measures","?slma_magnetometer_y")
-                .addWhere("?slma_magnetometer_y","rdf:type","slma:Magnetometer_y")
-                .addWhere("?slma_magnetometer_y", "om:hasValue", VAR_O);
+                .addWhere("?magnetometer","ontodevice:measures","?vector")
+                .addWhere("?vector","rdf:type","ontoslma:MagneticFluxDensityVector")
+                .addWhere("?vector", "ontoslma:hasYComponent", "?quantity")
+                .addWhere("?quantity", "om:hasValue", VAR_O);
 
         SelectBuilder sb = new SelectBuilder()
                 .addVar(VAR_O).addWhere(wb);
@@ -229,16 +244,18 @@ public class KGQueryClient {
     JSONArray getMagnetometer_zIRIArray(Node smartphoneIRI)  {
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("ontoslma",ONTOSLMA)
+                .addPrefix("slma", SLA)
                 .addPrefix ("saref",SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
                 .addPrefix("om",OM)
                 .addWhere(smartphoneIRI,"saref:consistsOf","?magnetometer")
                 .addWhere("?magnetometer","rdf:type","ontodevice:Magnetometer")
-                .addWhere("?magnetometer","ontodevice:measures","?slma_magnetometer_z")
-                .addWhere("?slma_magnetometer_z","rdf:type","slma:Magnetometer_z")
-                .addWhere("?slma_magnetometer_z", "om:hasValue", VAR_O);
+                .addWhere("?magnetometer","ontodevice:measures","?vector")
+                .addWhere("?vector","rdf:type","ontoslma:MagneticFluxDensityVector")
+                .addWhere("?vector", "ontoslma:hasZComponent", "?quantity")
+                .addWhere("?quantity", "om:hasValue", VAR_O);
 
         SelectBuilder sb = new SelectBuilder()
                 .addVar(VAR_O).addWhere(wb);
@@ -250,7 +267,7 @@ public class KGQueryClient {
     JSONArray getBearingIRIArray(Node smartphoneIRI)  {
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("slma", SLA)
                 .addPrefix ("saref",SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
@@ -270,7 +287,7 @@ public class KGQueryClient {
     JSONArray getAltitudeIRIArray(Node smartphoneIRI)  {
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("slma", SLA)
                 .addPrefix ("saref",SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
@@ -291,7 +308,7 @@ public class KGQueryClient {
     JSONArray getSpeedIRIArray(Node smartphoneIRI)  {
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("slma", SLA)
                 .addPrefix ("saref",SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
@@ -311,7 +328,7 @@ public class KGQueryClient {
     JSONArray getPointIRIArray(Node smartphoneIRI)  {
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("slma", SLA)
                 .addPrefix ("saref",SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
@@ -332,7 +349,7 @@ public class KGQueryClient {
     JSONArray getSoundPressureLevelIRIArray(Node smartphoneIRI)  {
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("slma", SLA)
                 .addPrefix ("saref",SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
@@ -352,7 +369,7 @@ public class KGQueryClient {
     JSONArray getIlluminanceIRIArray(Node smartphoneIRI)  {
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("slma", SLA)
                 .addPrefix ("saref",SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)
@@ -372,7 +389,7 @@ public class KGQueryClient {
     JSONArray getRelativeBrightnessIRIArray(Node smartphoneIRI)  {
 
         WhereBuilder wb = new WhereBuilder()
-                .addPrefix("slma",SLMA)
+                .addPrefix("slma", SLA)
                 .addPrefix ("saref",SAREF)
                 .addPrefix("ontodevice", ONTODEVICE)
                 .addPrefix("rdf", RDF)

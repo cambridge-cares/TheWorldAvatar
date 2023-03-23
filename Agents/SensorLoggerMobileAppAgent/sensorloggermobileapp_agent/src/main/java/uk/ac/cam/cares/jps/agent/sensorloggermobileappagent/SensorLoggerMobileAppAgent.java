@@ -216,29 +216,18 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             dataHashmap.put("brightnessList", brightnessList);
 
 
-
-            
-
-
-            try {
-                if (KGQueryClient.getSmartPhoneIRI(DEVICEID).isEmpty() || !smartphoneHashmap.containsKey(DEVICEID)) {
-                    synchronized(this){
-                    TimeseriesInstantiation firstTimeseriesInstantiation = new TimeseriesInstantiation(dataHashmap);
-                    firstTimeseriesInstantiation.startTimer();
-                    smartphoneHashmap.put(DEVICEID, firstTimeseriesInstantiation);
-                    }
-
-
-                } else {
-                    TimeseriesInstantiation retrievedTimeseriesInstantiation = (TimeseriesInstantiation) smartphoneHashmap.get(DEVICEID);
-                    retrievedTimeseriesInstantiation.setData(dataHashmap);
+            if (KGQueryClient.getSmartPhoneIRI(DEVICEID).isEmpty() || !smartphoneHashmap.containsKey(DEVICEID)) {
+                synchronized(this){
+                TimeseriesInstantiation firstTimeseriesInstantiation = new TimeseriesInstantiation(dataHashmap);
+                firstTimeseriesInstantiation.startTimer();
+                smartphoneHashmap.put(DEVICEID, firstTimeseriesInstantiation);
                 }
-            } catch (ParseException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+
+
+            } else {
+                TimeseriesInstantiation retrievedTimeseriesInstantiation = (TimeseriesInstantiation) smartphoneHashmap.get(DEVICEID);
+                retrievedTimeseriesInstantiation.setData(dataHashmap);
             }
-
-
 
 
             // Log the request data

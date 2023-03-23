@@ -23,10 +23,10 @@ public class StaticInstantiation {
        // Create context to work in, and also clear any old existing data
        ModelContext context = new ModelContext("http://test-access-agent:8080/test");
 
-        // /**
-        //  * For local
-        //  */
-        // ModelContext context = new ModelContext("http://localhost:48888/test");
+//         /**
+//          * For local
+//          */
+//         ModelContext context = new ModelContext("http://localhost:48888/test");
 
         /**
          * Creating instances and randomUUID.
@@ -36,7 +36,7 @@ public class StaticInstantiation {
         Person person = context.createNewModel(Person.class, "https://www.theworldavatar.com/kg/sensorloggerapp/person_"+UUID.randomUUID());
 
         //Smartphone
-        Smartphone smartphone = context.createNewModel(Smartphone.class,BASEURI+"Smartphone_"+DEVICEID);
+        Smartphone smartphone = context.createNewModel(Smartphone.class,BASEURI+"smartphone_"+DEVICEID);
 
         //Ontodevice:Sensors
         Accelerometer accelerometer= context.createNewModel(Accelerometer.class, "https://www.theworldavatar.com/kg/sensorloggerapp/accelerometer_"+UUID.randomUUID());
@@ -46,19 +46,22 @@ public class StaticInstantiation {
         GPSDevice gpsDevice = context.createNewModel(GPSDevice.class, "https://www.theworldavatar.com/kg/sensorloggerapp/gpsDevice_"+UUID.randomUUID());
         Microphone microphone = context.createNewModel(Microphone.class, "https://www.theworldavatar.com/kg/sensorloggerapp/microphone_"+UUID.randomUUID());
 
-        
+        //Vector classes
+        MagneticFluxDensityVector magneticFluxDensityVector = context.createNewModel(MagneticFluxDensityVector.class, "https://www.theworldavatar.com/kg/sensorloggerapp/magneticFluxDensityVector_"+UUID.randomUUID());
+        GravityVector gravityVector = context.createNewModel(GravityVector.class, "https://www.theworldavatar.com/kg/sensorloggerapp/gravityVector_"+UUID.randomUUID());
+        AccelerationVector accelerationVector = context.createNewModel(AccelerationVector.class, "https://www.theworldavatar.com/kg/sensorloggerapp/accelerationVector_"+UUID.randomUUID());
+
         //Measured classes instances
-        Accel_x accel_x = context.createNewModel(Accel_x.class, "https://www.theworldavatar.com/kg/sensorloggerapp/accel_x_"+UUID.randomUUID());
-        Accel_y accel_y = context.createNewModel(Accel_y.class, "https://www.theworldavatar.com/kg/sensorloggerapp/accel_y_"+UUID.randomUUID());
-        Accel_z accel_z = context.createNewModel(Accel_z.class, "https://www.theworldavatar.com/kg/sensorloggerapp/accel_z_"+UUID.randomUUID());
-        Gravity_x gravity_x = context.createNewModel(Gravity_x.class, "https://www.theworldavatar.com/kg/sensorloggerapp/gravity_x_"+UUID.randomUUID());
-        Gravity_y gravity_y = context.createNewModel(Gravity_y.class, "https://www.theworldavatar.com/kg/sensorloggerapp/gravity_y_"+UUID.randomUUID());
-        Gravity_z gravity_z = context.createNewModel(Gravity_z.class, "https://www.theworldavatar.com/kg/sensorloggerapp/gravity_z_"+UUID.randomUUID());
-        Magnetometer_x magnetometer_x = context.createNewModel(Magnetometer_x.class, "https://www.theworldavatar.com/kg/sensorloggerapp/magnetometer_x_"+UUID.randomUUID());
-        Magnetometer_y magnetometer_y = context.createNewModel(Magnetometer_y.class, "https://www.theworldavatar.com/kg/sensorloggerapp/magnetometer_y_"+UUID.randomUUID());
-        Magnetometer_z magnetometer_z = context.createNewModel(Magnetometer_z.class, "https://www.theworldavatar.com/kg/sensorloggerapp/magnetometer_z_"+UUID.randomUUID());
-        Acceleration acceleration = context.createNewModel(Acceleration.class, "https://www.theworldavatar.com/kg/sensorloggerapp/acceleration_"+UUID.randomUUID());
-        MagneticFluxDensity magneticFluxDensity = context.createNewModel(MagneticFluxDensity.class, "https://www.theworldavatar.com/kg/sensorloggerapp/magneticFluxDensity_"+UUID.randomUUID());
+        Acceleration accel_x = context.createNewModel(Acceleration.class, "https://www.theworldavatar.com/kg/sensorloggerapp/acceleration_"+UUID.randomUUID());
+        Acceleration accel_y = context.createNewModel(Acceleration.class, "https://www.theworldavatar.com/kg/sensorloggerapp/acceleration_"+UUID.randomUUID());
+        Acceleration accel_z = context.createNewModel(Acceleration.class, "https://www.theworldavatar.com/kg/sensorloggerapp/acceleration_"+UUID.randomUUID());
+        Acceleration gravity_x = context.createNewModel(Acceleration.class, "https://www.theworldavatar.com/kg/sensorloggerapp/acceleration_"+UUID.randomUUID());
+        Acceleration gravity_y = context.createNewModel(Acceleration.class, "https://www.theworldavatar.com/kg/sensorloggerapp/acceleration_"+UUID.randomUUID());
+        Acceleration gravity_z = context.createNewModel(Acceleration.class, "https://www.theworldavatar.com/kg/sensorloggerapp/acceleration_"+UUID.randomUUID());
+        MagneticFluxDensity magnetometer_x = context.createNewModel(MagneticFluxDensity.class, "https://www.theworldavatar.com/kg/sensorloggerapp/magneticFluxDensity_"+UUID.randomUUID());
+        MagneticFluxDensity magnetometer_y = context.createNewModel(MagneticFluxDensity.class, "https://www.theworldavatar.com/kg/sensorloggerapp/magneticFluxDensity_"+UUID.randomUUID());
+        MagneticFluxDensity magnetometer_z = context.createNewModel(MagneticFluxDensity.class, "https://www.theworldavatar.com/kg/sensorloggerapp/magneticFluxDensity_"+UUID.randomUUID());
+
         Speed speed = context.createNewModel(Speed.class, "https://www.theworldavatar.com/kg/sensorloggerapp/speed_"+UUID.randomUUID());
         Bearing bearing = context.createNewModel(Bearing.class, "https://www.theworldavatar.com/kg/sensorloggerapp/bearing_"+UUID.randomUUID());
         Altitude altitude = context.createNewModel(Altitude.class, "https://www.theworldavatar.com/kg/sensorloggerapp/altitude_"+UUID.randomUUID());
@@ -103,6 +106,13 @@ public class StaticInstantiation {
         //Smartphone
         SmartphoneRDF smartphoneRDF = context.createNewModel(SmartphoneRDF.class,"https://www.theworldavatar.com/kg/ontodevice/Smartphone");
 
+        //Vector classes
+        MagneticFluxDensityVectorRDF magneticFluxDensityVectorRDF = context.createNewModel(MagneticFluxDensityVectorRDF.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/MagneticFluxDensityVector");
+        GravityVectorRDF gravityVectorRDF = context.createNewModel(GravityVectorRDF.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/GravityVector");
+        AccelerationVectorRDF accelerationVectorRDF = context.createNewModel(AccelerationVectorRDF.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/AccelerationVector");
+
+        Vector vector = context.createNewModel(Vector.class, "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/Vector");
+
         //Ontodevice:Sensors
         AccelerometerRDF accelerometerRDF= context.createNewModel(AccelerometerRDF.class, "https://www.theworldavatar.com/kg/ontodevice/Accelerometer");
         CameraRDF cameraRDF = context.createNewModel(CameraRDF.class, "https://www.theworldavatar.com/kg/ontodevice/Camera");
@@ -113,15 +123,6 @@ public class StaticInstantiation {
         RelativeBrightnessRDF relativeBrightnessRDF = context.createNewModel(RelativeBrightnessRDF.class, "https://www.theworldavatar.com/kg/ontodevice/RelativeBrightness");
 
         //Measured classes instances
-        Accel_xRDF accel_xRDF = context.createNewModel(Accel_xRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Accel_x");
-        Accel_yRDF accel_yRDF = context.createNewModel(Accel_yRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Accel_y");
-        Accel_zRDF accel_zRDF = context.createNewModel(Accel_zRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Accel_z");
-        Gravity_xRDF gravity_xRDF = context.createNewModel(Gravity_xRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Gravity_x");
-        Gravity_yRDF gravity_yRDF = context.createNewModel(Gravity_yRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Gravity_y");
-        Gravity_zRDF gravity_zRDF = context.createNewModel(Gravity_zRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Gravity_z");
-        Magnetometer_xRDF magnetometer_xRDF = context.createNewModel(Magnetometer_xRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Magnetometer_x");
-        Magnetometer_yRDF magnetometer_yRDF = context.createNewModel(Magnetometer_yRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Magnetometer_y");
-        Magnetometer_zRDF magnetometer_zRDF = context.createNewModel(Magnetometer_zRDF.class, "https://www.theworldavatar.com/kg/sensorloggerapp/Magnetometer_z");
         AccelerationRDF accelerationRDF = context.createNewModel(AccelerationRDF.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Acceleration");
         MagneticFluxDensityRDF magneticFluxDensityRDF = context.createNewModel(MagneticFluxDensityRDF.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/MagneticFluxDensity");
         SpeedRDF speedRDF = context.createNewModel(SpeedRDF.class, "http://www.ontology-of-units-of-measure.org/resource/om-2/Speed");
@@ -183,48 +184,56 @@ public class StaticInstantiation {
         relativeBrightnessRDF.relativeBrightness=relativeBrightness;
 
         /**
+         * Vector class
+         */
+        //Link to vector main class
+        vector.vectorRDF.add(magneticFluxDensityVector);
+        vector.vectorRDF.add(gravityVector);
+        vector.vectorRDF.add(accelerationVector);
+
+        //Link to vector main class
+        magneticFluxDensityVectorRDF.vectorRDF.add(magneticFluxDensityVector);
+        gravityVectorRDF.vectorRDF.add(gravityVector);
+        accelerationVectorRDF.vectorRDF.add(accelerationVector);
+
+        magneticFluxDensityVector.devices.add(magnetometer);
+        gravityVector.devices.add(gravitySensor);
+        accelerationVector.devices.add(accelerometer);
+
+        magneticFluxDensityVector.hasXComponent.add(magnetometer_x);
+        magneticFluxDensityVector.hasYComponent.add(magnetometer_y);
+        magneticFluxDensityVector.hasZComponent.add(magnetometer_z);
+
+        gravityVector.hasXComponent.add(gravity_x);
+        gravityVector.hasYComponent.add(gravity_y);
+        gravityVector.hasZComponent.add(gravity_z);
+
+        accelerationVector.hasXComponent.add(accel_x);
+        accelerationVector.hasYComponent.add(accel_y);
+        accelerationVector.hasZComponent.add(accel_z);
+
+
+        /**
          * Accelerometer class
          */
-        accel_x.accelerometer=accelerometer;
-        accel_y.accelerometer=accelerometer;
-        accel_z.accelerometer=accelerometer;
-        accel_xRDF.accel_x=accel_x;
-        accel_yRDF.accel_y=accel_y;
-        accel_zRDF.accel_z=accel_z;
-
-        acceleration.accelerationVariables.add(accel_x);
-        acceleration.accelerationVariables.add(accel_y);
-        acceleration.accelerationVariables.add(accel_z);
-
-        accelerationRDF.acceleration=acceleration;
+        accelerationRDF.acceleration.add(accel_x);
+        accelerationRDF.acceleration.add(accel_y);
+        accelerationRDF.acceleration.add(accel_z);
 
         /**
          * GravitySensor class
          */
-        gravity_x.gravitysensor=gravitySensor;
-        gravity_y.gravitysensor=gravitySensor;
-        gravity_z.gravitysensor=gravitySensor;
-        gravity_xRDF.gravity_x=gravity_x;
-        gravity_yRDF.gravity_y=gravity_y;
-        gravity_zRDF.gravity_z=gravity_z;
+        accelerationRDF.acceleration.add(gravity_x);
+        accelerationRDF.acceleration.add(gravity_y);
+        accelerationRDF.acceleration.add(gravity_z);
 
-        acceleration.accelerationVariables.add(gravity_x);
-        acceleration.accelerationVariables.add(gravity_y);
-        acceleration.accelerationVariables.add(gravity_z);
         /**
          * Magnetometer class
          */
-        magnetometer_x.magnetometer=magnetometer;
-        magnetometer_y.magnetometer=magnetometer;
-        magnetometer_z.magnetometer=magnetometer;
-        magnetometer_xRDF.magnetometer_x=magnetometer_x;
-        magnetometer_yRDF.magnetometer_y=magnetometer_y;
-        magnetometer_zRDF.magnetometer_z=magnetometer_z;
+        magneticFluxDensityRDF.magneticFluxDensity.add(magnetometer_x);
+        magneticFluxDensityRDF.magneticFluxDensity.add(magnetometer_y);
+        magneticFluxDensityRDF.magneticFluxDensity.add(magnetometer_z);
 
-        magneticFluxDensity.magneticFluxDensityVariables.add(magnetometer_x);
-        magneticFluxDensity.magneticFluxDensityVariables.add(magnetometer_y);
-        magneticFluxDensity.magneticFluxDensityVariables.add(magnetometer_z);
-        magneticFluxDensityRDF.magneticFluxDensity=magneticFluxDensity;
 
         /**
          * GPSDevice
@@ -367,6 +376,33 @@ public class StaticInstantiation {
         protected StaticInstantiation.Smartphone smartphone;
     }
 
+    //Vector branch
+    public static class Vector extends SensorLoggerModel {
+        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true, innerType = OntoDeviceModel.class)
+        protected ArrayList<OntoDeviceModel> devices;
+        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/hasXComponent", innerType = SensorLoggerModel.class)
+        protected ArrayList<SensorLoggerModel> hasXComponent;
+
+        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/hasYComponent", innerType = SensorLoggerModel.class)
+        protected ArrayList<SensorLoggerModel> hasYComponent;
+
+        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontosensorloggermobileapp/hasZComponent", innerType = SensorLoggerModel.class)
+        protected ArrayList<SensorLoggerModel> hasZComponent;
+
+
+        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", innerType = SensorLoggerModel.class, backward = true)
+        protected ArrayList<SensorLoggerModel> vectorRDF;
+
+    }
+    public static class MagneticFluxDensityVector extends Vector { }
+    public static class AccelerationVector extends Vector { }
+    public static class GravityVector extends Vector { }
+
+    public static class MagneticFluxDensityVectorRDF extends Vector { }
+    public static class AccelerationVectorRDF extends Vector { }
+    public static class GravityVectorRDF extends Vector { }
+
+
 
 
 
@@ -378,32 +414,7 @@ public class StaticInstantiation {
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
         protected StaticInstantiation.Accelerometer accelerometer;
     }
-    
-    public static class Accel_x extends SensorLoggerModel{
-        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected StaticInstantiation.OntoDeviceModel accelerometer;
-    }
-    public static class Accel_xRDF extends OntoDeviceModel{
-        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected StaticInstantiation.Accel_x accel_x;
-    }
 
-    public static class Accel_y extends SensorLoggerModel{
-        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected StaticInstantiation.OntoDeviceModel accelerometer;
-    }
-    public static class Accel_yRDF extends OntoDeviceModel{
-        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected StaticInstantiation.Accel_y accel_y;
-    }
-    public static class Accel_z extends SensorLoggerModel{
-        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected StaticInstantiation.OntoDeviceModel accelerometer;
-    }
-    public static class Accel_zRDF extends OntoDeviceModel{
-        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected StaticInstantiation.Accel_z accel_z;
-    }
 
 
     /**
@@ -414,32 +425,7 @@ public class StaticInstantiation {
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
         protected StaticInstantiation.GravitySensor gravitySensor;
     }
-    public static class Gravity_x extends SensorLoggerModel{
-        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected StaticInstantiation.OntoDeviceModel gravitysensor;
-    }
-    public static class Gravity_xRDF extends OntoDeviceModel{
-        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected StaticInstantiation.Gravity_x gravity_x;
-    }
 
-    public static class Gravity_y extends SensorLoggerModel{
-        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected StaticInstantiation.OntoDeviceModel gravitysensor;
-    }
-    public static class Gravity_yRDF extends OntoDeviceModel{
-        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected StaticInstantiation.Gravity_y gravity_y;
-    }
-    
-    public static class Gravity_z extends SensorLoggerModel{
-        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected StaticInstantiation.OntoDeviceModel gravitysensor;
-    }
-    public static class Gravity_zRDF extends OntoDeviceModel{
-        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected StaticInstantiation.Gravity_z gravity_z;
-    }
 
 
     /**
@@ -450,32 +436,6 @@ public class StaticInstantiation {
     public static class MagnetometerRDF extends OntoDeviceModel{
         @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
         protected StaticInstantiation.Magnetometer magnetometer;
-    }
-    public static class Magnetometer_x extends SensorLoggerModel{
-        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected StaticInstantiation.OntoDeviceModel magnetometer;
-    }
-    public static class Magnetometer_xRDF extends OntoDeviceModel{
-        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected StaticInstantiation.Magnetometer_x magnetometer_x;
-    }
-    
-    public static class Magnetometer_y extends SensorLoggerModel{
-        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected StaticInstantiation.OntoDeviceModel magnetometer;
-    }
-    public static class Magnetometer_yRDF extends OntoDeviceModel{
-        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected StaticInstantiation.Magnetometer_y magnetometer_y;
-    }
-
-    public static class Magnetometer_z extends SensorLoggerModel{
-        @Getter @Setter @FieldAnnotation(value = "https://www.theworldavatar.com/kg/ontodevice/measures", backward = true)
-        protected StaticInstantiation.OntoDeviceModel magnetometer;
-    }
-    public static class Magnetometer_zRDF extends OntoDeviceModel{
-        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected StaticInstantiation.Magnetometer_z magnetometer_z;
     }
 
     /**
@@ -542,25 +502,21 @@ public class StaticInstantiation {
 
 
     public static class Acceleration extends SensorLoggerModel{
-        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",innerType = SensorLoggerModel.class,backward = true)
-        protected ArrayList<SensorLoggerModel> accelerationVariables;
     }
 
     public static class AccelerationRDF extends OntoDeviceModel{
-        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected StaticInstantiation.Acceleration acceleration;
+        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", innerType = Acceleration.class, backward = true)
+        protected ArrayList<Acceleration> acceleration;
     }
 
 
 
 
     public static class MagneticFluxDensity extends SensorLoggerModel{
-        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",innerType = SensorLoggerModel.class,backward = true)
-        protected ArrayList<SensorLoggerModel> magneticFluxDensityVariables;
     }
     public static class MagneticFluxDensityRDF extends OntoDeviceModel{
-        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", backward = true)
-        protected StaticInstantiation.MagneticFluxDensity magneticFluxDensity;
+        @Getter @Setter @FieldAnnotation(value = "http://www.w3.org/1999/02/22-rdf-syntax-ns#type", innerType = MagneticFluxDensity.class, backward = true)
+        protected ArrayList<MagneticFluxDensity> magneticFluxDensity;
     }
 
     public static class Speed extends SensorLoggerModel{}

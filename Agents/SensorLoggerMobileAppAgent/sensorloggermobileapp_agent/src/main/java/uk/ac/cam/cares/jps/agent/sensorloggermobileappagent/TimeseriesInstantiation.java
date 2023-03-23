@@ -156,7 +156,7 @@ public class TimeseriesInstantiation implements Cloneable  {
             // Start the timer
             this.timer = new Timer();
             System.out.println("Timer started for device:"+DEVICEID +"; Delay:" +timerDelay+"seconds ; Frequency:"+timerFrequency+"seconds ");
-            this.timer.schedule(new instantiationTask(), timerDelay*1000,timerFrequency*1000); // 5000 milliseconds = 5 seconds
+            this.timer.schedule(new instantiationTask(), timerDelay*1000,timerFrequency*1000); // Timer is in milliseconds, therefore has to be multiplied by 1000
         }
     }
 
@@ -240,7 +240,7 @@ public class TimeseriesInstantiation implements Cloneable  {
 
 
     public void tsInstantiate() throws Exception {
-        smartphoneString=BASEURI+"Smartphone_"+DEVICEID;
+        smartphoneString=BASEURI+"smartphone_"+DEVICEID;
         Node smartphoneIRI= NodeFactory.createURI(smartphoneString);
         List tsList = new ArrayList();
 
@@ -448,7 +448,7 @@ public class TimeseriesInstantiation implements Cloneable  {
 
 
     private void initSensorTimeseries(){
-        smartphoneString=BASEURI+"Smartphone_"+DEVICEID;
+        smartphoneString=BASEURI+"smartphone_"+DEVICEID;
         Node smartphoneIRI= NodeFactory.createURI(smartphoneString);
 
         //Accelerometer
