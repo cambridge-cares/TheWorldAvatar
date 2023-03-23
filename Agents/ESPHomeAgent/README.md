@@ -4,7 +4,7 @@ This agent is designed to query for the relevant IRIs and information from the k
 The agent will toggle the status of a component that is being controlled via the ESPHome web server based on the latest timeseries data value, latest status of the component and the setpoint value that it queries from the knowledge graph.(e.g. controlling the on off state of a cooling fan based on the latest measured temperature and temperature setpoint queried from the knowledge graph.)
 
 
-The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and [Access Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT) from the JPS_BASE_LIB to interact with both the KG and database.
+The agent uses the [time-series client](https://github.com/cambridge-cares/TheWorldAvatar/tree/develop/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/timeseries) and [Access Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT) to interact with both the KG and database.
 
 Before explaining the usage of the agent, we will briefly summarize the ESPHome API that is contacted by one of the classes in this package to retrieve data.
 
