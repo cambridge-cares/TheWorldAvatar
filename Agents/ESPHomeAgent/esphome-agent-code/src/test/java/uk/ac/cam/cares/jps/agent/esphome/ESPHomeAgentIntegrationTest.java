@@ -289,9 +289,19 @@ public class ESPHomeAgentIntegrationTest {
         catch (IOException e) {
             Assert.assertEquals("Properties file is missing \"db.password=<db_password>\"", e.getMessage());
         }
+
+        // Test for missing db.url
+        writePropertyFile(filePath, Arrays.asList("db.user=test_user", "db.password=test_password"));
+        try {
+        	agent.loadTsClientProperties(filePath);
+            Assert.fail();
+        }
+        catch (IOException e) {
+            Assert.assertEquals("Properties file is missing \"db.url=<db_url>\"", e.getMessage());
+        }
         
         //Test for missing sparql.query.endpoint
-        writePropertyFile(filePath, Arrays.asList("db.user=test_user", "db.password=test_password"));
+        writePropertyFile(filePath, Arrays.asList("db.user=test_user", "db.password=test_password", "db.url=test_url"));
         try {
         	agent.loadTsClientProperties(filePath);
             Assert.fail();
@@ -301,7 +311,7 @@ public class ESPHomeAgentIntegrationTest {
         }
         
       //Test for missing sparql.update.endpoint
-        writePropertyFile(filePath, Arrays.asList("db.user=test_user", "db.password=test_password", "sparql.query.endpoint=test_query"));
+        writePropertyFile(filePath, Arrays.asList("db.user=test_user", "db.password=test_password", "db.url=test_url", "sparql.query.endpoint=test_query"));
         try {
         	agent.loadTsClientProperties(filePath);
             Assert.fail();
@@ -311,7 +321,7 @@ public class ESPHomeAgentIntegrationTest {
         }
         
         //Test for missing data IRI
-        writePropertyFile(filePath, Arrays.asList("db.user=test_user", "db.password=test_password", "sparql.query.endpoint=test_query", "sparql.update.endpoint=test_update"));
+        writePropertyFile(filePath, Arrays.asList("db.user=test_user", "db.password=test_password", "db.url=test_url", "sparql.query.endpoint=test_query", "sparql.update.endpoint=test_update"));
         try {
         	agent.loadTsClientProperties(filePath);
             Assert.fail();
@@ -319,46 +329,6 @@ public class ESPHomeAgentIntegrationTest {
         catch (IOException e) {
             Assert.assertEquals("Properties file is missing \"dataIRI=<data_IRI>\"", e.getMessage());
         }
-    }
-    
-    @Test
-    public void getTimeSeriesIRIError() throws IOException {
-    	// One connector constructed using a properties file
-    	String propertiesFile = Paths.get(folder.getRoot().toString(), "all.properties").toString();
-        //one mock properties file with all the necessary properties, properties file contain invalid data IRI
-        writePropertyFile(propertiesFile, Arrays.asList("db.user=postgres", "db.password=cares1010", "sparql.query.endpoint="+endpoint, "sparql.update.endpoint="+endpoint, "dataIRI=invalid_IRI", "esphome.url=test_url", "esphome.threshold=25"));
-    	String [] args = new String[] {propertiesFile, propertiesFile, propertiesFile};
-    	try {
-    		agent.initializeAgent(args);
-    		Assert.fail();
-    	} catch (JPSRuntimeException e) {
-    		Assert.assertEquals("Unable to query for timeseries IRI from this data IRI!", e.getMessage());
-    	}
-    }
-    
-    @Test
-    public void getDbUrlError() throws IOException {
-    	RemoteStoreClient kbClient = new RemoteStoreClient();
-    	kbClient.setQueryEndpoint(endpoint);
-    	kbClient.setUpdateEndpoint(endpoint);
-    	IRIs = new ArrayList<>();
-        IRIs.add(examplePrefix+key);
-    	// One connector constructed using a properties file
-    	String propertiesFile = Paths.get(folder.getRoot().toString(), "all.properties").toString();
-    	String tsIRI = tsClient.getTimeSeriesIRI(IRIs.get(0));
-    	//remove relation between timeseries IRI and db url
-    	DeleteDataQuery delete = Queries.DELETE_DATA(iri(tsIRI).has(hasRDB, postgres.getJdbcUrl()));
-		delete.prefix(prefix_ontology);
-		kbClient.executeUpdate(delete.getQueryString());
-        //one mock properties file with all the necessary properties
-        writePropertyFile(propertiesFile, Arrays.asList("db.user=postgres", "db.password=cares1010", "sparql.query.endpoint="+endpoint, "sparql.update.endpoint="+endpoint, "dataIRI="+examplePrefix+key, "esphome.url=test_url", "esphome.threshold=25"));
-    	String [] args = new String[] {propertiesFile, propertiesFile, propertiesFile};
-    	try {
-    		agent.initializeAgent(args);
-    		Assert.fail();
-    	} catch (JPSRuntimeException e) {
-    		Assert.assertEquals("Unable to query for db url from this timeseries IRI!", e.getMessage());
-    	}
     }
 }
     	
