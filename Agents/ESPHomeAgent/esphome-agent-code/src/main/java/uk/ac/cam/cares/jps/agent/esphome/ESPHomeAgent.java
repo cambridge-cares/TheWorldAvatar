@@ -165,27 +165,6 @@ public class ESPHomeAgent extends JPSAgent{
 		} catch (IOException | JPSRuntimeException e) {
 			throw new JPSRuntimeException(LOADCONFIGS_ERROR_MSG, e);
 		}
-    	//set timeseriesClient to only query from the kb
-    	tsClient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, null, dbUser, dbPassword);
-    	//query for timeseries IRI linked to data IRI
-    	try {
-    		timeseriesIRI = tsClient.getTimeSeriesIRI(dataIRI);
-		if (timeseriesIRI == null) {
-				throw new JPSRuntimeException(GETTIMESERIESIRI_ERROR_MSG);
-			}
-    	} catch (JSONException e) {
-			throw new JPSRuntimeException(GETTIMESERIESIRI_ERROR_MSG);
-		}
-    	//query for db URL linked to timeseries IRI
-		try {
-    	dbUrl = tsClient.getDbUrl(timeseriesIRI);
-    	if (dbUrl == null) {
-			throw new JPSRuntimeException(GETDBURL_ERROR_MSG);
-		}
-		} catch (JSONException e) {
-			throw new JPSRuntimeException(GETDBURL_ERROR_MSG);
-		}
-    	
     	//set tsClient to query for latest timeseries data
     	try {
     		tsClient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, dbUrl, dbUser, dbPassword);
@@ -216,27 +195,6 @@ public class ESPHomeAgent extends JPSAgent{
 		} catch (IOException | JPSRuntimeException e) {
 			throw new JPSRuntimeException(LOADCONFIGS_ERROR_MSG, e);
 		}
-    	//set timeseriesClient to only query from the kb
-    	tsClient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, null, dbUser, dbPassword);
-    	//query for timeseries IRI linked to data IRI
-    	try {
-    		timeseriesIRI = tsClient.getTimeSeriesIRI(dataIRI);
-		if (timeseriesIRI == null) {
-				throw new JPSRuntimeException(GETTIMESERIESIRI_ERROR_MSG);
-			}
-    	} catch (JSONException e) {
-			throw new JPSRuntimeException(GETTIMESERIESIRI_ERROR_MSG);
-		}
-    	//query for db URL linked to timeseries IRI
-		try {
-    	dbUrl = tsClient.getDbUrl(timeseriesIRI);
-    	if (dbUrl == null) {
-			throw new JPSRuntimeException(GETDBURL_ERROR_MSG);
-		}
-		} catch (JSONException e) {
-			throw new JPSRuntimeException(GETDBURL_ERROR_MSG);
-		}
-    	
     	//set tsClient to query for latest timeseries data
     	try {
     		tsClient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, dbUrl, dbUser, dbPassword);
@@ -261,17 +219,18 @@ public class ESPHomeAgent extends JPSAgent{
 		//query for threshold from KG based on ontodevice
 		double esphomeThreshold;
 
+		
 		try {
-		queryBuilder = new QueryBuilder(args[1]);
+		queryBuilder = new QueryBuilder();
 		} catch (Exception e) {
 			throw new JPSRuntimeException(QUERYBUILDER_ERROR_MSG, e);
 		}
 
-		String queryResult = queryBuilder.queryForDeviceWithStateIRI(dataIRI);
-		queryResult = queryBuilder.queryForSetpointWithHasSetpoint(queryResult);
-		queryResult = queryBuilder.queryForQuantityWithHasQuantity(queryResult);
-		queryResult = queryBuilder.queryForMeasureWithHasValue(queryResult);
-		esphomeThreshold = queryBuilder.queryForNumericalValueWithHasNumericalValue(queryResult);
+		String queryResult = queryStore(System.getenv("ACCESS_AGENT_TARGETRESOURCEID"), queryBuilder.queryForDeviceWithStateIRI(dataIRI)).getJSONObject(0).getString("device");
+		queryResult = queryStore(System.getenv("ACCESS_AGENT_TARGETRESOURCEID"), queryBuilder.queryForSetpointWithHasSetpoint(queryResult)).getJSONObject(0).getString("setpoint");
+		queryResult = queryStore(System.getenv("ACCESS_AGENT_TARGETRESOURCEID"), queryBuilder.queryForQuantityWithHasQuantity(queryResult)).getJSONObject(0).getString("quantity");
+		queryResult = queryStore(System.getenv("ACCESS_AGENT_TARGETRESOURCEID"), queryBuilder.queryForMeasureWithHasValue(queryResult)).getJSONObject(0).getString("measure");
+		esphomeThreshold = queryStore(System.getenv("ACCESS_AGENT_TARGETRESOURCEID"), queryBuilder.queryForNumericalValueWithHasNumericalValue(queryResult)).getJSONObject(0).getDouble("numericalValue");
 
     	//set ESPHome API with properties from ESPHome API properties file
 		try {
@@ -316,6 +275,11 @@ public class ESPHomeAgent extends JPSAgent{
                 this.dbPassword = prop.getProperty("db.password");
             } else {
                 throw new IOException("Properties file is missing \"db.password=<db_password>\"");
+            }
+			if (prop.containsKey("db.url")) {
+                this.dbUrl = prop.getProperty("db.url");
+            } else {
+                throw new IOException("Properties file is missing \"db.url=<db_url>\"");
             }
             if (prop.containsKey("sparql.query.endpoint")) {
 	        	kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));

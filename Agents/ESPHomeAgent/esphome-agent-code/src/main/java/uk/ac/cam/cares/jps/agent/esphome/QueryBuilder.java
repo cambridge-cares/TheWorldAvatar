@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.agent.esphome;
 
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,8 +16,6 @@ import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
-import org.json.JSONArray;
-
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
 
@@ -67,54 +64,19 @@ public class QueryBuilder {
     private static final Iri hasQuantity = PREFIX_ONTODEVICE.iri("hasQuantity");
     private static final Iri hasValue = PREFIX_OM.iri("hasValue");
     private static final Iri hasNumericalValue = PREFIX_OM.iri("hasNumericalValue");
-
-    /**
-     * Standard constructor
-     * @param filepath1 The filepath that contains the sparql endpoints of where the status data IRI is located in.
-     */
-    public QueryBuilder(String filepath1) throws IOException {
-        // Check whether properties file exists at specified location of filepath1
-        File file = new File(filepath1);
-        if (!file.exists()) {
-            throw new FileNotFoundException("No properties file found at specified filepath: " + filepath1);
-        }
-        
-        try (InputStream input = new FileInputStream(file)) {
-            // Load properties file from specified path
-            Properties prop = new Properties();
-            prop.load(input);
-            if (prop.containsKey("sparql.query.endpoint")) {
-                this.kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));
-            } else {
-                throw new IOException("Properties file is missing \"sparql.query.endpoint=<sparql_query_endpoint>\"");
-            }
-            if (prop.containsKey("sparql.update.endpoint")) {
-                this.kbClient.setUpdateEndpoint(prop.getProperty("sparql.update.endpoint"));
-            } else {
-                throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_update_endpoint>\"");
-            }
-        }
+/*
+    public QueryBuilder() throws IOException {
     }
-    
+    */
     //SELECT ?device WHERE { ?device saref:hasState <IRIString> }
     public String queryForDeviceWithStateIRI(String IRIString) {
-         String result = null;
+         
          Variable device = SparqlBuilder.var("device");
          SelectQuery query = Queries.SELECT();
         //create triple pattern
         TriplePattern queryPattern = device.has(hasState, iri(IRIString));
         query.prefix(PREFIX_ONTODEVICE, PREFIX_SAREF).select(device).where(queryPattern);
-        kbClient.setQuery(query.getQueryString());
-        try {
-        JSONArray queryResult = kbClient.executeQuery();
-        if(!queryResult.isEmpty()){
-            LOGGER.info(kbClient.executeQuery().getJSONObject(0));
-            result = kbClient.executeQuery().getJSONObject(0).getString("device");
-        }
-    } catch (Exception e){
-        throw new JPSRuntimeException(GETDEVICE_ERROR_MSG);
-    }
-    return result;
+        return query.getQueryString();
     }
     
     //SELECT ?setpoint WHERE { <IRIString> ontodevice:hasSetpoint ?setpoint }
@@ -125,17 +87,7 @@ public class QueryBuilder {
         //create triple pattern
         TriplePattern queryPattern = iri(IRIString).has(hasSetpoint, setpoint);
         query.prefix(PREFIX_ONTODEVICE).select(setpoint).where(queryPattern);
-        kbClient.setQuery(query.getQueryString());
-        try {
-        JSONArray queryResult = kbClient.executeQuery();
-        if(!queryResult.isEmpty()){
-            LOGGER.info(kbClient.executeQuery().getJSONObject(0));
-            result = kbClient.executeQuery().getJSONObject(0).getString("setpoint");
-        }
-    } catch (Exception e) {
-        throw new JPSRuntimeException(GETSETPOINT_ERROR_MSG);
-    }
-    return result;
+        return query.getQueryString();
     }
 
     //SELECT ?quantity WHERE { <IRIString> ontodevice:hasQuantity ?quantity }
@@ -146,17 +98,7 @@ public class QueryBuilder {
         //create triple pattern
         TriplePattern queryPattern = iri(IRIString).has(hasQuantity, quantity);
         query.prefix(PREFIX_ONTODEVICE).select(quantity).where(queryPattern);
-        kbClient.setQuery(query.getQueryString());
-        try {
-        JSONArray queryResult = kbClient.executeQuery();
-        if(!queryResult.isEmpty()){
-            LOGGER.info(kbClient.executeQuery().getJSONObject(0));
-            result = kbClient.executeQuery().getJSONObject(0).getString("quantity");
-        }
-    } catch (Exception e) {
-        throw new JPSRuntimeException(GETQUANTITY_ERROR_MSG);
-    }
-    return result;
+        return query.getQueryString();
     }
 
     //SELECT ?measure WHERE { <IRIString> om:hasValue ?measure }
@@ -167,38 +109,18 @@ public class QueryBuilder {
         //create triple pattern
         TriplePattern queryPattern = iri(IRIString).has(hasValue, measure);
         query.prefix(PREFIX_OM).select(measure).where(queryPattern);
-        kbClient.setQuery(query.getQueryString());
-        try {
-        JSONArray queryResult = kbClient.executeQuery();
-        if(!queryResult.isEmpty()){
-            LOGGER.info(kbClient.executeQuery().getJSONObject(0));
-            result = kbClient.executeQuery().getJSONObject(0).getString("measure");
-        }
-    } catch (Exception e) {
-        throw new JPSRuntimeException(GETMEASURE_ERROR_MSG);
-    }
-    return result;
+        return query.getQueryString();
     }
 
     //SELECT ?numericalValue WHERE { <IRIString> om:hasNumericalValue ?numericalValue }
-    public Double queryForNumericalValueWithHasNumericalValue(String IRIString) {
+    public String queryForNumericalValueWithHasNumericalValue(String IRIString) {
         Double result = null;
         Variable numericalValue = SparqlBuilder.var("numericalValue");
         SelectQuery query = Queries.SELECT();
         //create triple pattern
         TriplePattern queryPattern = iri(IRIString).has(hasNumericalValue, numericalValue);
         query.prefix(PREFIX_OM).select(numericalValue).where(queryPattern);
-        kbClient.setQuery(query.getQueryString());
-        try {
-        JSONArray queryResult = kbClient.executeQuery();
-        if(!queryResult.isEmpty()){
-            LOGGER.info(kbClient.executeQuery().getJSONObject(0));
-            result = kbClient.executeQuery().getJSONObject(0).getDouble("numericalValue");
-        }
-    } catch (Exception e) {
-        throw new JPSRuntimeException(GETNUMERICALVALUE_ERROR_MSG);
-    }
-    return result;
+        return query.getQueryString();
     }
 }
 
