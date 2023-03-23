@@ -22,6 +22,7 @@ logger = agentlogging.get_logger("prod")
 
 
 def scale_property_price_index(ppi_iri: str, scaler: float, timesteps: int = 1,
+                               update_derivations: bool = False,
                                kg_client=None, query_endpoint=QUERY_ENDPOINT,
                                update_endpoint=UPDATE_ENDPOINT):
     """
@@ -72,22 +73,26 @@ def scale_property_price_index(ppi_iri: str, scaler: float, timesteps: int = 1,
     except Exception as ex:
         logger.error('Error adding time series data: {}'.format(ex))
         raise TSException('Error adding time series data') from ex
-
-    # 4) Trigger new derivation cascade
+    
     # Update timestamp of pure input
     derivation_client.updateTimestamp(ppi_iri)
-    # Request for derivation update
-    avg_derivations, value_derivations = retrieve_derivation_instances(ppi_iri, 
-                                                                       sparql_client=kg_client)
-    # 1) Average Square Metre Price per Postal Code
-    for d in avg_derivations:
-        # Request derivation update for immediate execution (i.e. as synchronous call)
-        derivation_client.unifiedUpdateDerivation(d)
-        # Only mark derivation as requested to be executed with next asynchronous call
-        #derivation_client.derivation_client.updateMixedAsyncDerivation(d)
-    # 2) Property Value Estimation
-    for d in value_derivations:
-        # Request derivation update for immediate execution (i.e. as synchronous call)
-        derivation_client.unifiedUpdateDerivation(d)
-        # Only mark derivation as requested to be executed with next asynchronous call
-        #derivation_client.derivation_client.updateMixedAsyncDerivation(d)
+
+    # 4) Trigger new derivation cascade
+    # NOTE: This can either be done here for all buildings or (preferred)
+    #       by the Flood Assessment Agent on demand
+    if update_derivations:
+        # Retrieve derivation instances
+        avg_derivations, value_derivations = retrieve_derivation_instances(ppi_iri, 
+                                                                           sparql_client=kg_client)
+        # 1) Average Square Metre Price per Postal Code
+        for d in avg_derivations:
+            # Request derivation update for immediate execution (i.e. as synchronous call)
+            derivation_client.unifiedUpdateDerivation(d)
+            # Only mark derivation as requested to be executed with next asynchronous call
+            #derivation_client.derivation_client.updateMixedAsyncDerivation(d)
+        # 2) Property Value Estimation
+        for d in value_derivations:
+            # Request derivation update for immediate execution (i.e. as synchronous call)
+            derivation_client.unifiedUpdateDerivation(d)
+            # Only mark derivation as requested to be executed with next asynchronous call
+            #derivation_client.derivation_client.updateMixedAsyncDerivation(d)
