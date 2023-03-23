@@ -25,7 +25,6 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
 	public static final String KEY_XLSXCONNECTORPROPERTIES = "xlsxConnectorProperties";
 	public static final String KEY_CLIENTPROPERTIES = "clientProperties";
 
-
     /**
      * Logger for reporting info/errors.
      */

@@ -1,5 +1,4 @@
 package uk.ac.cam.cares.jps.agent.historicalntuenergy;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jooq.exception.DataAccessException;
@@ -8,20 +7,13 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient.Type;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.text.*;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -44,7 +36,6 @@ public class HistoricalNTUEnergyAgent {
     /**
      * The prefix to use when no IRI exists for a JSON key originally
      */
-    //public static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "ntuenergy";
     public static final String OmPrefix = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     public static final String generatedIRIPrefix = OmPrefix + "measure";
     /**
@@ -183,69 +174,68 @@ public class HistoricalNTUEnergyAgent {
 
     /**
      * Updates the database with new readings.
-     * @param energyReadings The energy readings retrieved from the excel file
+     * @param energyReadings The energy readings retrieved from the Excel file
      */
     public void updateData(JSONArray energyReadings) {
         // Check for null parameters
         Objects.requireNonNull(energyReadings, "Energy readings cannot be null");
-        //System.out.println(energyReadings);
-
         // Convert readings to hash maps
         Map<String, List<?>> energyReadingsMap = jsonArrayToMap(energyReadings);
-
         // Check for empty readings
         if (energyReadingsMap.isEmpty()) {
             throw new IllegalArgumentException("Readings cannot be empty");
         }
 
-        Map<String, List<?>> energyOutputMap = new HashMap<>();
-        ArrayList<String> values = new ArrayList<String>();
-        values.add("TIME");
-        values.add("GENERATOR_NODE_VA_DEGREE");
-        values.add("GENERATOR_NODE_VM_KV");
-        values.add("CONNECTION_NODE_VA_DEGREE");
-        values.add("CONNECTION_NODE_VM_KV");
-        values.add("NEC_VA_DEGREE");
-        values.add("NEC_VM_KV");
-        values.add("CANTEEN_2_VA_DEGREE");
-        values.add("CANTEEN_2_VM_KV");
-        values.add("SPMS_VA_DEGREE");
-        values.add("SPMS_VM_KV");
-        values.add("RTP_VA_DEGREE");
-        values.add("RTP_VM_KV");
-        values.add("N1_3_VA_DEGREE");
-        values.add("N1_3_VM_KV");
-        values.add("N_2_VA_DEGREE");
-        values.add("N_2_VM_KV");
-        values.add("N_2_1_VA_DEGREE");
-        values.add("N_2_1_VM_KV");
-        values.add("SBS_VA_DEGREE");
-        values.add("SBS_VM_KV");
-        values.add("PIONEER_HALL_VA_DEGREE");
-        values.add("PIONEER_HALL_VM_KV");
-        values.add("THE_WAVE_VA_DEGREE");
-        values.add("THE_WAVE_VM_KV");
-        values.add("HALL_4_VA_DEGREE");
-        values.add("HALL_4_VM_KV");
-        values.add("EMB_VA_DEGREE");
-        values.add("EMB_VM_KV");
-        values.add("NYA_VA_DEGREE");
-        values.add("NYA_VM_KV");
+        /**
+         * Create a hashmap for time-series that are not in the Excel energy readings
+         * Note: these time-series needs to be instantiated for the OPF (optimal power flow) Agent
+         * to later fill up their values.
+         */
+        Map<String, List<?>> calculatedOptimEnergyMap = new HashMap<>();
+        ArrayList<String> entries = new ArrayList<String>();
+        entries.add("TIME");
+        entries.add("GENERATOR_NODE_VA_DEGREE");
+        entries.add("GENERATOR_NODE_VM_KV");
+        entries.add("CONNECTION_NODE_VA_DEGREE");
+        entries.add("CONNECTION_NODE_VM_KV");
+        entries.add("NEC_VA_DEGREE");
+        entries.add("NEC_VM_KV");
+        entries.add("CANTEEN_2_VA_DEGREE");
+        entries.add("CANTEEN_2_VM_KV");
+        entries.add("SPMS_VA_DEGREE");
+        entries.add("SPMS_VM_KV");
+        entries.add("RTP_VA_DEGREE");
+        entries.add("RTP_VM_KV");
+        entries.add("N1_3_VA_DEGREE");
+        entries.add("N1_3_VM_KV");
+        entries.add("N_2_VA_DEGREE");
+        entries.add("N_2_VM_KV");
+        entries.add("N_2_1_VA_DEGREE");
+        entries.add("N_2_1_VM_KV");
+        entries.add("SBS_VA_DEGREE");
+        entries.add("SBS_VM_KV");
+        entries.add("PIONEER_HALL_VA_DEGREE");
+        entries.add("PIONEER_HALL_VM_KV");
+        entries.add("THE_WAVE_VA_DEGREE");
+        entries.add("THE_WAVE_VM_KV");
+        entries.add("HALL_4_VA_DEGREE");
+        entries.add("HALL_4_VM_KV");
+        entries.add("EMB_VA_DEGREE");
+        entries.add("EMB_VM_KV");
+        entries.add("NYA_VA_DEGREE");
+        entries.add("NYA_VM_KV");
 
-        // Loop through the values and print them out
-        for (String value : values) {
-            energyOutputMap.put(value, new ArrayList<>());
-            LOGGER.info(energyOutputMap.toString());
+        // Add all entries to the hashmap (for later timeseries instantiation)
+        for (String value : entries) {
+            calculatedOptimEnergyMap.put(value, new ArrayList<>());
         }
-
-        //TODO: add empty readings for VM and VA timeseries instantiation
 
         // Convert hash maps to time series
         List<TimeSeries<OffsetDateTime>> inputTimeSeries;
         List<TimeSeries<OffsetDateTime>> outputTimeSeries;
         try {
             inputTimeSeries = convertReadingsToTimeSeries(energyReadingsMap);
-            outputTimeSeries = convertReadingsToTimeSeries(energyOutputMap);
+            outputTimeSeries = convertReadingsToTimeSeries(calculatedOptimEnergyMap);
         } catch (NoSuchElementException e) {
             throw new IllegalArgumentException("Readings can not be converted to proper time series!", e);
         }
@@ -347,10 +337,6 @@ public class HistoricalNTUEnergyAgent {
             throws  NoSuchElementException {
         // Extract the timestamps by mapping the private conversion method on the list items
         // that are supposed to be string (toString() is necessary as the map contains lists of different types)
-        //LOGGER.info("---------");
-        //LOGGER.info(energyReadings.toString());
-        //LOGGER.info("----timestamp key-----");
-        //LOGGER.info(energyReadings.get(HistoricalNTUEnergyAgent.timestampKey));
         List<OffsetDateTime> energyTimestamps = energyReadings.get(HistoricalNTUEnergyAgent.timestampKey).stream()
                 .map(timestamp -> (convertStringToOffsetDateTime(timestamp.toString()))).collect(Collectors.toList());
         // Construct a time series object for each mapping
@@ -364,7 +350,6 @@ public class HistoricalNTUEnergyAgent {
             // Go through all keys in the mapping
             for(String key: mapping.getAllJSONKeys()) {
 
-                // Always try the particle readings first (all general information are contained there)
                 if (energyReadings.containsKey(key)) {
                     // Add IRI
                     iris.add(mapping.getIRI(key));
@@ -372,12 +357,6 @@ public class HistoricalNTUEnergyAgent {
                     LOGGER.info("Added " + key);
                     addedTSCounter += 1;
                 }
-                // Will create a problem as length of iris and values do not match when creating the time series.
-                // Could add an empty list, but the length of the list needs to match length of times. So what values to
-                // fill it with?
-                //else {
-                //    throw new NoSuchElementException("The key " + key + " is not contained in the readings!");
-                //}
             }
             // Timestamps depend on which readings are used for the mapping
             List<OffsetDateTime> times = energyTimestamps;
@@ -418,7 +397,5 @@ public class HistoricalNTUEnergyAgent {
         else{
             return Double.class;
         }
-
     }
-
 }
