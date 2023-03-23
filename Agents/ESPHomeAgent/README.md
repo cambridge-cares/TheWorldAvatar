@@ -130,7 +130,11 @@ repo_username.txt should contain your github username, and repo_password.txt you
 
 Modify `api.properties`, `client.properties` and `esphome-client.properties` in the `config` folder accordingly. The `Dockerfile` will copy the 3 properties files and set environment variables pointing to their location thus there is no need to shift the properties files nor add in environment variables manually. 
 
-In the `Dockerfile`, modify the value of "ACCESS_AGENT_TARGETRESOURCEID" accordingly. The value should correspond to where the Access Agent instance is located at and the label of your routing information: " http://<IP address>:<port number>/<label> ". More information can be found in the `Dockerfile` in the same directory as this README section.
+In the `Dockerfile`, modify the value of "ACCESS_AGENT_TARGETRESOURCEID" accordingly. The value should correspond to where the Access Agent instance is located at and the label of your routing information:
+```
+http://<IP address>:<port number>/<label>
+```
+More information can be found in the `Dockerfile` in the same directory as this README section.
 
 To build and start the agent, open up the command prompt in the same directory as this README, run
 ```
