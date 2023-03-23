@@ -14,6 +14,12 @@ services:
       - GEOSERVER_WORKSPACE=buildings
       # PostGIS table containing all building footprints
       - BUILDINGS_TABLE=buildings
+      # Derivation Agent configurations
+      # (values need to match their counterparts specified in the docker-compose.yml files of the respective agents)
+      - AVERAGE_SQUARE_METRE_PRICE_AGENT_IRI=https://www.theworldavatar.com/resource/agents/Service__KL_AvgSqmPrice/Service
+      - AVERAGE_SQUARE_METRE_PRICE_AGENT_URL=http://host.docker.internal:5011/AvgSqmPrice
+      - PROPERTY_VALUE_ESTIMATION_AGENT_IRI=https://www.theworldavatar.com/resource/agents/Service__KL_PropertyValueEstimation/Service
+      - PROPERTY_VALUE_ESTIMATION_AGENT_URL=http://host.docker.internal:5012/PropertyValueEstimation
     ports:
       - "5008:5000"
     extra_hosts:

@@ -4,12 +4,7 @@ TBOX_URL = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/mai
 
 ###--- Derivation Markup ---###
 DERIVATION_INSTANCE_BASE_URL = 'https://www.theworldavatar.com/kg/derivation/'
-# NOTE: Those values need to match the values specified in the docker-compose.yml
-#       files of the respective agents.
-AVERAGE_SQUARE_METRE_PRICE_AGENT_IRI = 'https://www.theworldavatar.com/resource/agents/Service__KL_AvgSqmPrice/Service'
-AVERAGE_SQUARE_METRE_PRICE_AGENT_URL = 'http://host.docker.internal:5011/AvgSqmPrice'
-PROPERTY_VALUE_ESTIMATION_AGENT_IRI = 'https://www.theworldavatar.com/resource/agents/Service__KL_PropertyValueEstimation/Service'
-PROPERTY_VALUE_ESTIMATION_AGENT_URL = 'http://host.docker.internal:5012/PropertyValueEstimation'
+
 
 ###--- Common Base URLs ---###
 # External ontologies

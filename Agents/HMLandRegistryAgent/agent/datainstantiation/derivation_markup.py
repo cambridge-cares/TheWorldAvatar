@@ -11,6 +11,10 @@
 from typing import Any, Dict, List
 
 from agent.datamodel import *
+from agent.utils.env_configs import AVERAGE_SQUARE_METRE_PRICE_AGENT_IRI, \
+                                    AVERAGE_SQUARE_METRE_PRICE_AGENT_URL, \
+                                    PROPERTY_VALUE_ESTIMATION_AGENT_IRI, \
+                                    PROPERTY_VALUE_ESTIMATION_AGENT_URL
 
 from pyderivationagent import PySparqlClient
 from pyderivationagent import PyDerivationClient
