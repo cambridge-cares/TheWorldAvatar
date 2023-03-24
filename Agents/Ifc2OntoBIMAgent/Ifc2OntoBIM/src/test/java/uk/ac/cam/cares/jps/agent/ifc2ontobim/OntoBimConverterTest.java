@@ -1,21 +1,16 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim;
 
-import org.apache.jena.rdf.model.Statement;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import org.mockito.stubbing.Answer;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.TTLWriter;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;

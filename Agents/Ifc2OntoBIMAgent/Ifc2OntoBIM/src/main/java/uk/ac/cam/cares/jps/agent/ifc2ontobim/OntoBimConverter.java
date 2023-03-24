@@ -11,8 +11,7 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.SpatialZoneFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ElementStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ModellingOperatorStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.SpatialZoneStorage;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.TTLWriter;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.IOHelper;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -25,7 +24,6 @@ import java.util.*;
  */
 public class OntoBimConverter {
     private Model owlModel;
-    private TTLWriter writer;
     private final List<Path> tempFilePaths;
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
 
@@ -49,9 +47,6 @@ public class OntoBimConverter {
         this.owlModel = RDFParser.create()
                 .source(ttlFilePath)
                 .toModel();
-        // Create a new writer object with namespaces from the model
-        Map<String, String> nsMapping = NamespaceMapper.retrieveNamespace(this.owlModel);
-        this.writer = new TTLWriter(nsMapping);
         // Create a new Set to ensure statements are kept in one object and not duplicated
         LinkedHashSet<Statement> statementSet = new LinkedHashSet<>();
         genZoneAndElementStatements(statementSet);
@@ -142,7 +137,7 @@ public class OntoBimConverter {
         // Generate a temp file only if there are statements
         if (statementSet.size()>0){
             Path tempFilePath;
-            tempFilePath = this.writer.writeIntermediateTempFile(statementSet);
+            tempFilePath = IOHelper.writeIntermediateTempFile(statementSet);
             this.tempFilePaths.add(tempFilePath);
         }
     }

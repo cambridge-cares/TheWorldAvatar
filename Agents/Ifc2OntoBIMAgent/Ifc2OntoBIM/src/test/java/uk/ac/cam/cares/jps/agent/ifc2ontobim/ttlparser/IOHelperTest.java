@@ -10,46 +10,16 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.*;
 import java.nio.file.*;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class IOHelperTest {
-    private final String testString = "test string";
 
     @Test
     void testCreateTempFile() {
         Path file = IOHelper.createTempFile();
         assertTrue(Files.exists(file));
-        // Always delete the temporary file generated
-        IOHelper.deleteTempFile(file);
-    }
-
-    @Test
-    void testReadFile() {
-        Path file = IOHelper.createTempFile();
-        // If the function did not work, there would be an exception rather than an empty list
-        List<String> result = IOHelper.readFile(file);
-        // As no text is written, the result should be empty
-        assertTrue(result.isEmpty());
-        // Always delete the temporary file generated
-        IOHelper.deleteTempFile(file);
-    }
-
-    @Test
-    void testReadFileFail() {
-        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> IOHelper.readFile(Paths.get("")));
-        assertTrue(thrownError.getMessage().contains(" cannot be accessed or opened!"));
-    }
-
-    @Test
-    void testWriteLinesToFile() {
-        Path file = IOHelper.createTempFile();
-        IOHelper.writeLinesToFile(file, testString);
-        List<String> result = IOHelper.readFile(file);
-        assertEquals(testString, result.get(0));
         // Always delete the temporary file generated
         IOHelper.deleteTempFile(file);
     }
@@ -64,29 +34,13 @@ class IOHelperTest {
                 ModelFactory.createDefaultModel().createTypedLiteral(42));
         LinkedHashSet<Statement> statements = new LinkedHashSet<>();
         statements.add(sampleStatement);
-        // Create a temporary file for testing
-        Path filePath = IOHelper.createTempFile();
         // Execute method
-        IOHelper.writeTempTTLFile(filePath, statements);
+        Path filePath = IOHelper.writeIntermediateTempFile(statements);
         // Read the contents of the file and verify it matches the expected data
         InputStream inputStream = new FileInputStream(filePath.toString());
         Model model = ModelFactory.createDefaultModel();
         RDFDataMgr.read(model, inputStream, Lang.TTL);
         assertTrue(model.containsAll(expected));
-    }
-
-    @Test
-    void testReplaceTargetFileWithSource() {
-        Path src = IOHelper.createTempFile();
-        Path tgt = IOHelper.createTempFile();
-        IOHelper.writeLinesToFile(src, testString);
-        IOHelper.replaceTargetFileWithSource(src, tgt);
-
-        // Test outcomes
-        List<String> result = IOHelper.readFile(tgt);
-        assertFalse(Files.exists(src)); // Src file should be deleted in the function
-        assertEquals(testString, result.get(0)); // Tgt file should have src file's contents
-        IOHelper.deleteTempFile(tgt); // Delete the remaining file
     }
 
     @Test

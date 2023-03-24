@@ -15,12 +15,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
-
 /**
  * Provide helper methods to handle simple input and output operations.
  *
@@ -43,34 +39,21 @@ public class IOHelper {
         }
     }
 
-    /**
-     * Reads a file and return its contents as a List of string lines.
-     *
-     * @param filePath File path to the specified file.
-     * @return The list of content lines.
-     */
-    protected static List<String> readFile(Path filePath) {
-        try {
-            return Files.readAllLines(filePath);
-        } catch (IOException e) {
-            LOGGER.error(filePath + " cannot be accessed or opened!" + e);
-            throw new JPSRuntimeException(filePath + " cannot be accessed or opened!" + e);
-        }
-    }
+
 
     /**
-     * Write a string to a specified file.
+     * Standard method to write triples to an intermediate temporary file. This method is intended to store statements
+     * at your specified breakpoint to the local disk to prevent heap overflow for larger models.
      *
-     * @param filePath File path to the specified file.
-     * @param lines    String to be added to the file.
+     * @param statementSet A set of all the statements for writing.
+     * @return file path of the temporary file created.
      */
-    protected static void writeLinesToFile(Path filePath, String lines) {
-        try {
-            Files.write(filePath, lines.getBytes(), StandardOpenOption.APPEND);
-        } catch (IOException e) {
-            LOGGER.error(lines + " cannot be written to temporary file! " + e);
-            throw new JPSRuntimeException(lines + " cannot be written to temporary file! " + e);
-        }
+    public static Path writeIntermediateTempFile(LinkedHashSet<Statement> statementSet) {
+        LOGGER.info("Writing statements to a temporary file...");
+        Path tempFile = createTempFile();
+        writeTempTTLFile(tempFile, statementSet);
+        LOGGER.info("Temporary file have been successfully generated.");
+        return tempFile;
     }
 
     /**
@@ -79,7 +62,7 @@ public class IOHelper {
      * @param filePath   File path to the specified file.
      * @param statements Statements that should be written.
      */
-    protected static void writeTempTTLFile(Path filePath, LinkedHashSet<Statement> statements) {
+    private static void writeTempTTLFile(Path filePath, LinkedHashSet<Statement> statements) {
         try (OutputStream outputStream = new FileOutputStream(filePath.toString())) {
             // Add the statements into a new model
             Model model = ModelFactory.createDefaultModel();
@@ -88,22 +71,6 @@ public class IOHelper {
         } catch (IOException e) {
             LOGGER.error("Statements cannot be written to temporary file! " + e);
             throw new JPSRuntimeException("Statements cannot be written to temporary file! " + e);
-        }
-    }
-
-    /**
-     * Replace the target file with source file.
-     *
-     * @param source File path to the source file.
-     * @param target File path to the target file.
-     */
-    protected static void replaceTargetFileWithSource(Path source, Path target) {
-        try {
-            Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
-            IOHelper.deleteTempFile(source);
-        } catch (IOException e) {
-            LOGGER.error("Source cannot be copied. Read error message for more details: " + e);
-            throw new JPSRuntimeException("Source cannot be copied. Read error message for more details: " + e);
         }
     }
 
