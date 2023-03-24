@@ -35,5 +35,5 @@ curl -X POST "http://localhost:8084/DispersionInteractor/TriggerUpdateDispersion
 
 - Visualisation can be accessed on the browser at
 ```
-http://localhost:8090
+http://localhost:8090/
 ```
