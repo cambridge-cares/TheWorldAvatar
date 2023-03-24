@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils;
+package uk.ac.cam.cares.jps.agent.ifc2ontobim.utils;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.query.*;
@@ -19,7 +19,6 @@ import java.util.*;
  */
 public class QueryHandler {
     public static final String RDF_TYPE = "rdf:type";
-    public static final String RDFS_LABEL = "rdfs:label";
 
     /**
      * Initialise a SPARQL SELECT query builder.

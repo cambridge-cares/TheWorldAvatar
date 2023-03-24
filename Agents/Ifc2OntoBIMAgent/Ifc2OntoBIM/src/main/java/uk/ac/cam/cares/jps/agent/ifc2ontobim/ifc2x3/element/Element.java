@@ -1,10 +1,10 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element;
 
 import org.apache.jena.rdf.model.Statement;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.BimElementMapper;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.OntoBimConstant;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.StatementHandler;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.StringUtils;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
 import java.util.LinkedHashSet;
 import java.util.UUID;
@@ -32,7 +32,7 @@ public class Element extends IfcModelRepresentation {
      */
     public Element(String iri, String name, String uid, String placementIri, String hostZoneIri, String geomRepIri) {
         super(iri, name, uid, placementIri);
-        this.classIRI = BimElementMapper.retrieveClass(name);
+        this.classIRI = NamespaceMapper.retrieveClass(name);
         String className = this.classIRI.contains(OntoBimConstant.HASH) ? StringUtils.getStringAfterLastCharacterOccurrence(this.classIRI, OntoBimConstant.HASH) :
                 StringUtils.getStringAfterLastCharacterOccurrence(this.classIRI, OntoBimConstant.BACKSLASH);
         this.elementIRI = this.getPrefix() + className + OntoBimConstant.UNDERSCORE + UUID.randomUUID();

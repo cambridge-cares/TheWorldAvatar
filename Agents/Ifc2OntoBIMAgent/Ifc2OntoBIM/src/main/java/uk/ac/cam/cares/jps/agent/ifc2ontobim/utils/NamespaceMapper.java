@@ -1,15 +1,36 @@
-package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
+package uk.ac.cam.cares.jps.agent.ifc2ontobim.utils;
 
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
+import org.apache.jena.arq.querybuilder.AbstractQueryBuilder;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A mapper to determine the class for an element.
+ * Provides methods to generate the required namespaces and maps them to their prefixes.
  *
- * @author qhouyee
+ *  @author qhouyee
  */
-public class BimElementMapper {
+public class NamespaceMapper {
+    public static final String RDFS_PREFIX = "rdfs";
+    public static final String RDFS_NAMESPACE= "http://www.w3.org/2000/01/rdf-schema#";
+    public static final String RDF_PREFIX = "rdf";
+    public static final String RDF_NAMESPACE= "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    public static final String BIM_PREFIX = "bim";
+    public static final String BIM_NAMESPACE = "http://www.theworldavatar.com/kg/ontobim/";
+    public static final String BOT_PREFIX = "bot";
+    public static final String BOT_NAMESPACE = "https://w3id.org/bot#";
+    public static final String OM_PREFIX = "om";
+    public static final String OM_NAMESPACE = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
+    public static final String SKOS_PREFIX = "skos";
+    public static final String SKOS_NAMESPACE = "http://www.w3.org/2004/02/skos/core#";
+    public static final String IFC_PREFIX = "ifc";
+    public static final String IFC_NAMESPACE= "http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#";
+    public static final String LIST_PREFIX = "list";
+    public static final String LIST_NAMESPACE= "https://w3id.org/list#";
+    public static final String EXPRESS_PREFIX = "express";
+    public static final String EXPRESS_NAMESPACE= "https://w3id.org/express#";
+    public static final String BUILDING_STRUCTURE_PREFIX = "ontobuildingstructure";
+    public static final String BUILDING_STRUCTURE_NAMESPACE= "http://www.theworldavatar.com/kg/ontobuildingstructure/";
     private static final String ONTO_BMS_PREFIX = "ontobms";
     private static final String ONTO_BMS_NAMESPACE = "https://www.theworldavatar.com/kg/ontobms/";
     private static final String ONTO_DEVICE_PREFIX = "ontodevice";
@@ -20,6 +41,54 @@ public class BimElementMapper {
     private static final String ONTO_LAB_NAMESPACE = "https://www.theworldavatar.com/kg/ontolab/";
     private static final String SAREF_PREFIX = "saref";
     private static final String SAREF_NAMESPACE = "https://saref.etsi.org/core/";
+    private static String baseNamespace;
+    private static final String basePrefix = "inst";
+
+    /**
+     * Sets the base namespace
+     */
+    public static void setBaseNameSpace(String baseIri) {
+        baseNamespace = baseIri;
+    }
+
+    /**
+     * Add the minimum template prefixes for sub-query builders.The superclass of AbstractQueryBuilder allows the
+     * namespaces to be generalisable for any sparql query types.
+     *
+     * @param builder Abstract Query Builder object to add the prefix statements.
+     */
+    public static void addSubqueryBuilderNamespaces(AbstractQueryBuilder builder) {
+        Map<String, String> nsMapping = genNamespaceMapping();
+        builder.addPrefixes(nsMapping);
+    }
+
+    /**
+     * Generates a map of namespaces and their prefixes for additional and duplicate namespaces for templates and sub-queries.
+     *
+     * @return A map containing the required namespace mappings.
+     */
+    private static Map<String, String> genNamespaceMapping() {
+        Map<String, String> nsMapping = new HashMap<>();
+        // Additional namespaces present in OntoBIM
+        nsMapping.put(RDFS_PREFIX, RDFS_NAMESPACE);
+        nsMapping.put(OM_PREFIX, OM_NAMESPACE);
+        nsMapping.put(BIM_PREFIX, BIM_NAMESPACE);
+        nsMapping.put(BOT_PREFIX, BOT_NAMESPACE);
+        nsMapping.put(SKOS_PREFIX, SKOS_NAMESPACE);
+        nsMapping.put(BUILDING_STRUCTURE_PREFIX, BUILDING_STRUCTURE_NAMESPACE);
+        nsMapping.put(ONTO_BMS_PREFIX, ONTO_BMS_NAMESPACE);
+        nsMapping.put(ONTO_DEVICE_PREFIX, ONTO_DEVICE_NAMESPACE);
+        nsMapping.put(ONTO_EMS_PREFIX, ONTO_EMS_NAMESPACE);
+        nsMapping.put(ONTO_LAB_PREFIX, ONTO_LAB_NAMESPACE);
+        nsMapping.put(SAREF_PREFIX, SAREF_NAMESPACE);
+        // Duplicate IfcOwl namespaces for sub-queries - require bim as well
+        nsMapping.put(IFC_PREFIX, IFC_NAMESPACE);
+        nsMapping.put(LIST_PREFIX, LIST_NAMESPACE);
+        nsMapping.put(EXPRESS_PREFIX, EXPRESS_NAMESPACE);
+        nsMapping.put(RDF_PREFIX, RDF_NAMESPACE);
+        nsMapping.put(basePrefix, baseNamespace);
+        return nsMapping;
+    }
 
     /**
      * Retrieves the element's ontoBIM class from its name.
@@ -90,20 +159,7 @@ public class BimElementMapper {
                 || elementName.contains("explosiveprecursorbottle")) {
             return ONTO_LAB_NAMESPACE + "ChemicalContainer";
         } else {
-            return NamespaceMapper.BOT_NAMESPACE + "Element";
+            return BOT_NAMESPACE + "Element";
         }
-    }
-
-    /**
-     * Add the prefix and namespace mappings used in this class.
-     *
-     * @param mapping A hashmap linking the prefix and namespace.
-     */
-    public static void addPrefixMapping(Map<String, String> mapping) {
-        mapping.put(ONTO_BMS_PREFIX, ONTO_BMS_NAMESPACE);
-        mapping.put(ONTO_DEVICE_PREFIX, ONTO_DEVICE_NAMESPACE);
-        mapping.put(ONTO_EMS_PREFIX, ONTO_EMS_NAMESPACE);
-        mapping.put(ONTO_LAB_PREFIX, ONTO_LAB_NAMESPACE);
-        mapping.put(SAREF_PREFIX, SAREF_NAMESPACE);
     }
 }

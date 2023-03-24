@@ -9,7 +9,7 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.DirectionVector;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.LocalPlacement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.CommonQuery;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ModellingOperatorStorage;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.QueryHandler;
 
 /**
  * Provides functions to generate the modelling operators' triples.

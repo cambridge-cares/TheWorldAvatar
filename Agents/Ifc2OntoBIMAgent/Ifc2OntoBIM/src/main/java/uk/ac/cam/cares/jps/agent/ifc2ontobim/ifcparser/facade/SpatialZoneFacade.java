@@ -10,8 +10,8 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.IfcProjectRepresentati
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.CommonQuery;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.SpatialZoneStorage;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.QueryHandler;
 
 import java.util.ArrayDeque;
 import java.util.LinkedHashSet;

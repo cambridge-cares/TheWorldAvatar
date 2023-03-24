@@ -1,10 +1,9 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
-import org.apache.jena.base.Sys;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 
 import java.util.ArrayList;
 import java.util.List;

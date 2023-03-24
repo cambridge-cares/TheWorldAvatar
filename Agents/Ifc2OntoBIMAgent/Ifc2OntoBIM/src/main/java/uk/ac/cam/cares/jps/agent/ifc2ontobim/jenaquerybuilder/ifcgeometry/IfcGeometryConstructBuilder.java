@@ -7,8 +7,8 @@ import org.apache.jena.sparql.lang.sparql_11.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.Ifc2OntoBIMAgent;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.QueryHandler;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.HashMap;

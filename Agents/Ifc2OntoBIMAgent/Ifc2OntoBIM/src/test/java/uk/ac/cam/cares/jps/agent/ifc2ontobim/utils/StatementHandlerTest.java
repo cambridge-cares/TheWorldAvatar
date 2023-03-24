@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils;
+package uk.ac.cam.cares.jps.agent.ifc2ontobim.utils;
 
 import org.apache.jena.rdf.model.Statement;
 import org.junit.jupiter.api.Test;

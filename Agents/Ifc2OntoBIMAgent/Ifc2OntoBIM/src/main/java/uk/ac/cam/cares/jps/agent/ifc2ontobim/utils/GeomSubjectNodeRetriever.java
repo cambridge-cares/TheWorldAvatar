@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils;
+package uk.ac.cam.cares.jps.agent.ifc2ontobim.utils;
 
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.query.*;

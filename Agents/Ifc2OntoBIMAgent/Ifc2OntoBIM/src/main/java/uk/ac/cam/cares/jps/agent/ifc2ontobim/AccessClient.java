@@ -1,15 +1,12 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim;
 
-import com.hp.hpl.jena.util.FileManager;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.rdfconnection.RDFConnection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.IOHelper;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.IOHelper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.*;

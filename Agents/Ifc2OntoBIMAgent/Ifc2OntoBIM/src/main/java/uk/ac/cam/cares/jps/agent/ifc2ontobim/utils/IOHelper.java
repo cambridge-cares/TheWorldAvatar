@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser;
+package uk.ac.cam.cares.jps.agent.ifc2ontobim.utils;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;

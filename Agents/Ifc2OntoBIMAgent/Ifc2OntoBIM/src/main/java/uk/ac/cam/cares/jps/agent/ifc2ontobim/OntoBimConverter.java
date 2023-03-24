@@ -11,7 +11,7 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.SpatialZoneFacade;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ElementStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ModellingOperatorStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.SpatialZoneStorage;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.IOHelper;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.IOHelper;
 
 import java.nio.file.Path;
 import java.util.*;

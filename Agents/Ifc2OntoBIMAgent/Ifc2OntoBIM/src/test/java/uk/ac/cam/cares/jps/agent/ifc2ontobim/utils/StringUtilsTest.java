@@ -1,6 +1,7 @@
-package uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser;
+package uk.ac.cam.cares.jps.agent.ifc2ontobim.utils;
 
 import org.junit.jupiter.api.Test;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 

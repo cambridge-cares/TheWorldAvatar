@@ -1,4 +1,6 @@
-package uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils;
+package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
+
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 
 public class OntoBimConstant {
     public static final String BACKSLASH = "/";

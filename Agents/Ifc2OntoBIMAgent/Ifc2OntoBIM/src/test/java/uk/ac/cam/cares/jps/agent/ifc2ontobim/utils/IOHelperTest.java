@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser;
+package uk.ac.cam.cares.jps.agent.ifc2ontobim.utils;
 
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
@@ -6,6 +6,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFDataMgr;
 import org.junit.jupiter.api.Test;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.IOHelper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.*;

@@ -10,7 +10,7 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.CommonQuery;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ElementStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.SpatialZoneStorage;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.QueryHandler;
 
 import java.util.LinkedHashSet;
 

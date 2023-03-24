@@ -3,8 +3,8 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser;
 import org.apache.jena.arq.querybuilder.Converters;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.sparql.lang.sparql_11.ParseException;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.QueryHandler;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 /**

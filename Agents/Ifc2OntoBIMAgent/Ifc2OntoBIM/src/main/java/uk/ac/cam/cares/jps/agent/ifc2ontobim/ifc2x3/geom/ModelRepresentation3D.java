@@ -1,10 +1,10 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom;
 
 import org.apache.jena.rdf.model.Statement;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.OntoBimConstant;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.StatementHandler;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.StringUtils;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
 import java.util.ArrayDeque;
 import java.util.LinkedHashSet;

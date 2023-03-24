@@ -2,7 +2,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.jenaquerybuilder.ifcgeometry;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
 import org.apache.jena.rdf.model.RDFNode;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.QueryHandler;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.QueryHandler;
 
 import java.util.HashMap;
 import java.util.List;

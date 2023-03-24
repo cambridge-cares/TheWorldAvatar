@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser;
+package uk.ac.cam.cares.jps.agent.ifc2ontobim.utils;
 
 /**
  * Provides all the utility methods for handling strings.

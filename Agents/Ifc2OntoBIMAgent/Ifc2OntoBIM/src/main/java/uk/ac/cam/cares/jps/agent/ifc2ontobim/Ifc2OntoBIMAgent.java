@@ -1,10 +1,10 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim;
 
-import org.apache.jena.rdf.model.Statement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.StringUtils;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -12,7 +12,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -154,6 +153,7 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
         // Convert the IFC files in the target directory to TTL using IfcOwl Schema
         LOGGER.info("Sending POST request to IfcOwlConverterAgent...");
         try {
+            NamespaceMapper.setBaseNameSpace(args[0]);
             String inputJson = "{\"" + KEY_BASEURI + "\":\"" + args[0] + "\"}";
             AccessClient.sendPostRequest(config.get(AccessClient.IFC_OWL_CONVERTER_API), inputJson);
         } catch (Exception e) {
