@@ -5,6 +5,7 @@ import java.util.Map;
 
 public final class StackClient {
 
+    public static final String EXECUTABLE_KEY = "EXECUTABLE";
     public static final String STACK_NAME_KEY = "STACK_NAME";
     public static final String STACK_NAME_LABEL = "com.docker.stack.namespace";
     public static final String PROJECT_NAME_LABEL = "com.docker.compose.project";
@@ -53,7 +54,7 @@ public final class StackClient {
     }
 
     public static String getContainerEngineName() {
-        return System.getenv().getOrDefault("EXECUTABLE", "docker");
+        return System.getenv().getOrDefault(EXECUTABLE_KEY, "docker");
     }
 
 }
