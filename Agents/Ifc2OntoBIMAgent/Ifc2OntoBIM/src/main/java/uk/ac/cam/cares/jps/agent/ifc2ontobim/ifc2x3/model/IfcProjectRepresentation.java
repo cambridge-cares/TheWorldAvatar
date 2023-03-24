@@ -47,11 +47,7 @@ public class IfcProjectRepresentation {
     public void constructStatements(LinkedHashSet<Statement> statementSet) {
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_PROJECT_CLASS);
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_CONTEXT, this.context.getIri());
-        if (this.name != null) {
-            StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.RDFS_LABEL, this.name, false);
-        }
-        if (this.phase != null) {
-            StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_PHASE, this.phase, false);
-        }
+        StatementHandler.addOptionalStatement(statementSet, this.getIri(), OntoBimConstant.RDFS_LABEL, this.name, false);
+        StatementHandler.addOptionalStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_PHASE, this.phase, false);
     }
 }

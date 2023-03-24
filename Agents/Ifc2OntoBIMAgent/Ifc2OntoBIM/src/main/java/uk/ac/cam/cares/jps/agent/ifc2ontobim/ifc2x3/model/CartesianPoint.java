@@ -56,8 +56,6 @@ public class CartesianPoint {
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_CARTESIAN_POINT_CLASS);
         StatementHandler.addStatementWithNumberLiteral(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_X_COORDINATE, this.coordinates[0]);
         StatementHandler.addStatementWithNumberLiteral(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_Y_COORDINATE, this.coordinates[1]);
-        if (this.coordinates[2] != null) {
-            StatementHandler.addStatementWithNumberLiteral(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_Z_COORDINATE, this.coordinates[2]);
-        }
+        StatementHandler.addOptionalStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_Z_COORDINATE, this.coordinates[2]);
     }
 }

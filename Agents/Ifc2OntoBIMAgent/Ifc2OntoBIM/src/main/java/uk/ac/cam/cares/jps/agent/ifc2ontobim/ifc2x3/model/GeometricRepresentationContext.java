@@ -52,12 +52,7 @@ public class GeometricRepresentationContext {
         StatementHandler.addStatementWithNumberLiteral(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_SPACE_DIMENSION, this.dimension);
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_WCS, this.wcsIri);
         StatementHandler.addStatement(statementSet, this.wcsIri, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_LOCAL_PLACEMENT_CLASS);
-        if (this.precision != null) {
-            StatementHandler.addStatementWithNumberLiteral(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_PRECISION, this.precision);
-        }
-        if (this.northDirIri != null) {
-            StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_TRUE_NORTH, this.northDirIri);
-            StatementHandler.addStatement(statementSet, this.northDirIri, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_DIR_VEC_CLASS);
-        }
+        StatementHandler.addOptionalStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_PRECISION, this.precision);
+        StatementHandler.addOptionalStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_TRUE_NORTH, this.northDirIri);
     }
 }

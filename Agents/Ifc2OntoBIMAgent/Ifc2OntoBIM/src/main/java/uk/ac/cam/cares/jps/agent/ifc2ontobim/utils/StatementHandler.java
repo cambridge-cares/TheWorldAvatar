@@ -17,8 +17,7 @@ public class StatementHandler {
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
 
     /**
-     * Overloaded method to generate a statement with subject, predicate, and object nodes,
-     * and append it to the statement set.
+     * An overloaded method to add a statement with subject, predicate, and object nodes to the statement set.
      *
      * @param statementSet Set of statements to append the newly generated statement.
      * @param subject      The subject node with a valid URI.
@@ -30,7 +29,7 @@ public class StatementHandler {
     }
 
     /**
-     * Generate a statement with the given subject, predicate, and object, and append it to the statement set.
+     * Add a statement with the given subject, predicate, and object to the statement set.
      *
      * @param statementSet Set of statements to append the newly generated statement.
      * @param subject      The subject node with a valid URI.
@@ -60,7 +59,7 @@ public class StatementHandler {
     }
 
     /**
-     * Generate a statement with the given subject, predicate, and numerical literal, and append it to the statement set.
+     * Add a statement with the given subject, predicate, and numerical literal to the statement set.
      *
      * @param statementSet Set of statements to append the newly generated statement.
      * @param subject      The subject node with a valid URI.
@@ -79,6 +78,52 @@ public class StatementHandler {
         RDFNode obj = ResourceFactory.createTypedLiteral(object);
         Statement newStatement = model.createStatement(subj, pred, obj);
         statementSet.add(newStatement);
+    }
+
+    /**
+     * Add a statement with the given subject, predicate, and object (literal or node) to the statement set.
+     * Note that this statement will only be added if the object node is not null.
+     *
+     * @param statementSet Set of statements to append the newly generated statement.
+     * @param subject      The subject node with a valid URI.
+     * @param predicate    The predicate node with a valid URI.
+     * @param object       The object node with a valid URI or a string literal.
+     * @param isObjInst    A boolean indicating if the object is a node or a string.
+     */
+    public static void addOptionalStatement(LinkedHashSet<Statement> statementSet, String subject, String predicate, String object, boolean isObjInst) {
+        if (object!=null) {
+            addStatement(statementSet, subject, predicate, object, isObjInst);
+        }
+    }
+
+    /**
+     * An overloaded method to adding an optional statement consisting of all nodes to the set.
+     * Note that this statement will only be added if the object node is not null.
+     *
+     * @param statementSet Set of statements to append the newly generated statement.
+     * @param subject      The subject node with a valid URI.
+     * @param predicate    The predicate node with a valid URI.
+     * @param object       The object node with a valid URI or a string literal.
+     */
+    public static void addOptionalStatement(LinkedHashSet<Statement> statementSet, String subject, String predicate, String object) {
+        if (object!=null) {
+            addStatement(statementSet, subject, predicate, object, true);
+        }
+    }
+
+    /**
+     * An overloaded method for adding statements with numerical literals to the set.
+     * Note that this statement will only be added if the object node is not null.
+     *
+     * @param statementSet Set of statements to append the newly generated statement.
+     * @param subject      The subject node with a valid URI.
+     * @param predicate    The predicate node with a valid URI.
+     * @param object       The object node with a valid URI or a string literal.
+     */
+    public static void addOptionalStatement(LinkedHashSet<Statement> statementSet, String subject, String predicate, Number object) {
+        if (object!=null) {
+            addStatementWithNumberLiteral(statementSet, subject, predicate, object);
+        }
     }
 
     /**

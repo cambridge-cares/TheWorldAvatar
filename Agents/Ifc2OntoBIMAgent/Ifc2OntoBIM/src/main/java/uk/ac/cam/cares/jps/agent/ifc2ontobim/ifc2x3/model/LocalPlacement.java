@@ -56,14 +56,8 @@ public class LocalPlacement {
     public void constructStatements(LinkedHashSet<Statement> statementSet) {
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_LOCAL_PLACEMENT_CLASS);
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_REF_POINT, this.refPointIRI);
-        if (this.refDirIRI != null) {
-            StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_REF_DIRECTION, this.refDirIRI);
-        }
-        if (this.axisDirIRI != null) {
-            StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_AXIS_DIRECTION, this.axisDirIRI);
-        }
-        if (this.relPlacementIRI != null) {
-            StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_REL_POSITION, this.relPlacementIRI);
-        }
+        StatementHandler.addOptionalStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_REF_DIRECTION, this.refDirIRI);
+        StatementHandler.addOptionalStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_AXIS_DIRECTION, this.axisDirIRI);
+        StatementHandler.addOptionalStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_REL_POSITION, this.relPlacementIRI);
     }
 }

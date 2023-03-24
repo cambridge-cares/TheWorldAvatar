@@ -70,6 +70,5 @@ public class IfcAbstractRepresentation {
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.RDFS_LABEL, this.getName(), false);
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_ID, this.getUid(), false);
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_LOCAL_POSITION, this.getPlacementIri());
-        StatementHandler.addStatement(statementSet, this.getPlacementIri(), OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_LOCAL_PLACEMENT_CLASS);
     }
 }

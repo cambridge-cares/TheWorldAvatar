@@ -56,8 +56,6 @@ public class DirectionVector {
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_DIR_VEC_CLASS);
         StatementHandler.addStatementWithNumberLiteral(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_X_DIR_RATIO, this.dirRatios[0]);
         StatementHandler.addStatementWithNumberLiteral(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_Y_DIR_RATIO, this.dirRatios[1]);
-        if (this.dirRatios[2] != null) {
-            StatementHandler.addStatementWithNumberLiteral(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_Z_DIR_RATIO, this.dirRatios[2]);
-        }
+        StatementHandler.addOptionalStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_Z_DIR_RATIO, this.dirRatios[2]);
     }
 }

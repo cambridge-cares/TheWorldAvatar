@@ -54,6 +54,5 @@ public class GeometricVoid {
         StatementHandler.addStatement(statementSet, this.bimIRI, OntoBimConstant.BIM_HAS_GEOM_REP, this.voidModelRepIRI);
         StatementHandler.addStatement(statementSet, this.bimIRI, OntoBimConstant.BIM_HAS_VOID_TYPE, this.voidType, false);
         StatementHandler.addStatement(statementSet, this.bimIRI, OntoBimConstant.BIM_HAS_LOCAL_POSITION, this.placementIRI);
-        StatementHandler.addStatement(statementSet, this.placementIRI, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_LOCAL_PLACEMENT_CLASS);
     }
 }

@@ -63,6 +63,5 @@ public class IfcModelRepresentation {
         StatementHandler.addStatement(statementSet, this.getIfcRepIri(), OntoBimConstant.RDFS_LABEL, this.getName(), false);
         StatementHandler.addStatement(statementSet, this.getIfcRepIri(), OntoBimConstant.BIM_HAS_ID, this.getUid(), false);
         StatementHandler.addStatement(statementSet, this.getIfcRepIri(), OntoBimConstant.BIM_HAS_LOCAL_POSITION, this.getPlacementIri());
-        StatementHandler.addStatement(statementSet, this.getPlacementIri(), OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_LOCAL_PLACEMENT_CLASS);
     }
 }

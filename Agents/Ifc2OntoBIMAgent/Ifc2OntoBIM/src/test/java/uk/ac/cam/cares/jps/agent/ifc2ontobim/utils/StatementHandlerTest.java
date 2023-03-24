@@ -24,7 +24,7 @@ class StatementHandlerTest {
         // Execute method
         StatementHandler.addStatement(testSet, testSubject, testProperty, testObject);
         // Test that only one statement is generated
-        assertTrue(testSet.size() == 1);
+        assertEquals(1, testSet.size());
         // Get the first statement
         Statement result = testSet.iterator().next();
         // Test that the statement values are correct
@@ -40,7 +40,7 @@ class StatementHandlerTest {
         // Execute method
         StatementHandler.addStatement(testSet, testSubject, testProperty, testStringLiteral, false);
         // Test that only one statement is generated
-        assertTrue(testSet.size() == 1);
+        assertEquals(1, testSet.size());
         // Get the first statement
         Statement result = testSet.iterator().next();
         // Test that the statement values are correct
@@ -56,7 +56,7 @@ class StatementHandlerTest {
         // Execute method
         StatementHandler.addStatementWithNumberLiteral(testSet, testSubject, testProperty, testDoubleLiteral);
         // Test that only one statement is generated
-        assertTrue(testSet.size() == 1);
+        assertEquals(1, testSet.size());
         // Get the first statement
         Statement result = testSet.iterator().next();
         // Test that the statement values are correct
@@ -72,7 +72,70 @@ class StatementHandlerTest {
         // Execute method
         StatementHandler.addStatementWithNumberLiteral(testSet, testSubject, testProperty, testIntegerLiteral);
         // Test that only one statement is generated
-        assertTrue(testSet.size() == 1);
+        assertEquals(testSet.size(), 1);
+        // Get the first statement
+        Statement result = testSet.iterator().next();
+        // Test that the statement values are correct
+        assertEquals(testSubject, result.getSubject().toString());
+        assertEquals(testProperty, result.getPredicate().toString());
+        assertEquals(testIntegerLiteral, result.getInt());
+    }
+
+    @Test
+    void testAddOptionalStatementForThreeNodes() {
+        // Set up
+        LinkedHashSet<Statement> testSet = new LinkedHashSet<>();
+        // Execute method for null literal
+        StatementHandler.addOptionalStatement(testSet, testSubject, testProperty, (String) null);
+        // Test that no statement is generated when it is null
+        assertEquals(0, testSet.size());
+
+        // Execute method for node with value
+        StatementHandler.addOptionalStatement(testSet, testSubject, testProperty, testObject);
+        // Test that only one statement is generated
+        assertEquals(1, testSet.size());
+        // Get the first statement
+        Statement result = testSet.iterator().next();
+        // Test that the statement values are correct
+        assertEquals(testSubject, result.getSubject().toString());
+        assertEquals(testProperty, result.getPredicate().toString());
+        assertEquals(testObject, result.getObject().toString());
+    }
+
+    @Test
+    void testAddOptionalStatementForStringLiteral() {
+        // Set up
+        LinkedHashSet<Statement> testSet = new LinkedHashSet<>();
+        // Execute method for null literal
+        StatementHandler.addOptionalStatement(testSet, testSubject, testProperty, null, false);
+        // Test that no statement is generated when it is null
+        assertEquals(0, testSet.size());
+
+        // Execute method for literal with value
+        StatementHandler.addOptionalStatement(testSet, testSubject, testProperty, testStringLiteral, false);
+        // Test that only one statement is generated
+        assertEquals(1, testSet.size());
+        // Get the first statement
+        Statement result = testSet.iterator().next();
+        // Test that the statement values are correct
+        assertEquals(testSubject, result.getSubject().toString());
+        assertEquals(testProperty, result.getPredicate().toString());
+        assertEquals(testStringLiteral, result.getString());
+    }
+
+    @Test
+    void testAddOptionalStatementForNumberLiteral() {
+        // Set up
+        LinkedHashSet<Statement> testSet = new LinkedHashSet<>();
+        // Execute method for null literal
+        StatementHandler.addOptionalStatement(testSet, testSubject, testProperty, (Number) null);
+        // Test that no statement is generated when it is null
+        assertEquals(0, testSet.size());
+
+        // Execute method for literal with value
+        StatementHandler.addOptionalStatement(testSet, testSubject, testProperty, testIntegerLiteral);
+        // Test that only one statement is generated
+        assertEquals(1, testSet.size());
         // Get the first statement
         Statement result = testSet.iterator().next();
         // Test that the statement values are correct
