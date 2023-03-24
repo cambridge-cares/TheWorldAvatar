@@ -71,7 +71,7 @@ public class HeatNetworkInputAgent {
     public static String XSD_STRING = XSD + "string";
     public static String XSD_FLOAT = XSD + "float";
     public static String XSD_DATE = XSD + "date";
-    public static String XSD_BOOLEAN = XSD + "Boolean";
+    public static String XSD_BOOLEAN = XSD + "boolean";
 
     // The time series client to interact with the knowledge graph and data storage
     private TimeSeriesClient<OffsetDateTime> tsClient;
@@ -351,15 +351,10 @@ public class HeatNetworkInputAgent {
         // For the UnitRate part
         UpdateBuilder UnitRate_ub =
                 new UpdateBuilder()
-                        .addInsert(NodeFactory.createURI(KB + "GridCharges"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "GridCharges"))
                         .addInsert(NodeFactory.createURI(KB + "ElectricitySpotPrice"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "ElectricitySpotPrice"))
-                        .addInsert(NodeFactory.createURI(KB + "CHPBonus"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CHPBonus"))
                         .addInsert(NodeFactory.createURI(KB + "CO2CertificatePrice"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CO2CertificatePrice"))
                         .addInsert(NodeFactory.createURI(KB + "GasUnitCostGT"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "GasUnitCost"))
-                        .addInsert(NodeFactory.createURI(KB + "GasUnitCostKessel"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "GasUnitCost"))
-                        .addInsert(NodeFactory.createURI(KB + "HourlyLabourCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "HourlyLabourCost"))
-                        .addInsert(NodeFactory.createURI(KB + "HourlyWearCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "HourlyWearCost"))
-                        .addInsert(NodeFactory.createURI(KB + "DemandDrivenWearCost"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "DemandDrivenWearCost"));
+                        .addInsert(NodeFactory.createURI(KB + "GasUnitCostKessel"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "GasUnitCost"));
         UpdateRequest UnitRate_ur = UnitRate_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, UnitRate_ur.toString());
 
@@ -427,7 +422,7 @@ public class HeatNetworkInputAgent {
         		.addInsert(NodeFactory.createURI(KB + "CO2CertificatePrice"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(CO2Preis))
         		.addInsert(NodeFactory.createURI(KB + "EnergyInTimeIntervalHA" +"HeatGeneratorGT"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(GTWaermeleistung))
         		.addInsert(NodeFactory.createURI(KB + "GasUnitCostGT"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(GaspreisGT))
-        		.addInsert(NodeFactory.createURI(KB + "EnergyInTimeInterval" + "HeatDemand"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(WaermemengeInnenstadt))
+        		.addInsert(NodeFactory.createURI(KB + "HeatDemand"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(WaermemengeInnenstadt))
         		.addInsert(NodeFactory.createURI(KB + "UPMunicipal" + "Temperature"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(TempRuecklauf))
         		.addInsert(NodeFactory.createURI(KB + "DownEfW" + "Temperature"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(MHKWTempVorlauf))
         		.addInsert(NodeFactory.createURI(KB + "DownMunicipal" + "Temperature"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(TempVorlauf))
@@ -525,8 +520,7 @@ public class HeatNetworkInputAgent {
         
         // For the CalendarEffect part
         UpdateBuilder CalendarEffect_ub =
-                new UpdateBuilder()
-                        .addInsert(NodeFactory.createURI(KB + "CalendarEffect"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CalendarEffect"))  
+                new UpdateBuilder() 
                         .addInsert(NodeFactory.createURI(IsHoliday), NodeFactory.createURI(OHN +"applicableLocation"), NodeFactory.createURI(KB + "isPublicHoliday"+"Location_1"))
                         .addInsert(NodeFactory.createURI(IsVacation), NodeFactory.createURI(OHN +"applicableLocation"), NodeFactory.createURI(KB + "isSchoolVacation"+"Location_1"))   
                         .addInsert(NodeFactory.createURI(KB + "isPublicHoliday"+"Location_1"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI("http://purl.org/dc/terms/Location"))
@@ -576,7 +570,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + Instance), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(KB + "Measure" + Instance))
                         .addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_MEASURE))
                         .addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(OM_HAS_UNIT), NodeFactory.createURI(KB + Unit))
-                        .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_UNIT))
+    //                  .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_UNIT))
                         .addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(OM_Has_NUMERICAL_VALUE), NumericalValue);
         UpdateRequest omHasValueNonTS_ur = omHasValueNonTS_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, omHasValueNonTS_ur.toString());
@@ -588,8 +582,8 @@ public class HeatNetworkInputAgent {
         UpdateBuilder omHasValueTS_ub =
                 new UpdateBuilder()
                         .addInsert(NodeFactory.createURI(TSIRI), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_MEASURE))
-                        .addInsert(NodeFactory.createURI(TSIRI), NodeFactory.createURI(OM_HAS_UNIT), NodeFactory.createURI(KB + Unit))
-                        .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_UNIT));
+                        .addInsert(NodeFactory.createURI(TSIRI), NodeFactory.createURI(OM_HAS_UNIT), NodeFactory.createURI(KB + Unit));
+    //                    .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_UNIT))
         UpdateRequest omHasValueTS_ur = omHasValueTS_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, omHasValueTS_ur.toString());
     }
