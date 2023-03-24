@@ -62,6 +62,7 @@ def gen_sample_ifc_file():
         run("aggregate.assign_object", model, relating_object=site, product=building)
         run("aggregate.assign_object", model,
             relating_object=building, product=storey)
+
         # Create a wall
         wall = run("root.create_entity", model, ifc_class="IfcWall")
         # Add body geometry in meters
@@ -76,20 +77,20 @@ def gen_sample_ifc_file():
 
         if is_complex:
             # Create a building element proxy for water meter and solar panel
-            meter = model.create_entity("IfcBuildingElementProxy",
-                                        GlobalId=testconsts.sample_meter_id, Name="Water Meter")
-            solarpanel = model.create_entity("IfcBuildingElementProxy",
-                                             GlobalId=testconsts.sample_panel_id, Name="Solar Panel")
+            meter = model.create_entity("IfcBuildingElementProxy", GlobalId=testconsts.sample_water_meter.ifc_id,
+                                        Name="Water Meter")
+            fridge = model.create_entity("IfcBuildingElementProxy", GlobalId=testconsts.sample_fridge.ifc_id,
+                                         Name="Fridge")
+            solarpanel = model.create_entity("IfcBuildingElementProxy", GlobalId=testconsts.sample_solar_panel.ifc_id,
+                                             Name="Solar Panel")
             # Create a random furnishing element
-            wirebox = model.create_entity("IfcFurnishingElement",
-                                          GlobalId=testconsts.sample_box_id, Name="Electric Wire Box")
+            chair = model.create_entity("IfcFurnishingElement", GlobalId=testconsts.sample_chair.ifc_id, Name="Chair")
+            table = model.create_entity("IfcFurnishingElement", GlobalId=testconsts.sample_table.ifc_id, Name="Table")
+
             # Assign geometries to each element
-            run("geometry.assign_representation", model,
-                product=meter, representation=representation)
-            run("geometry.assign_representation", model,
-                product=solarpanel, representation=representation)
-            run("geometry.assign_representation", model,
-                product=wirebox, representation=representation)
+            for element in (meter, fridge, solarpanel, chair, table):
+                run("geometry.assign_representation", model, product=element, representation=representation)
+
         # Write out to a file
         model.write(ifc_path)
         return ifc_path

@@ -3,6 +3,10 @@
 
 A module that provides all configurations, inputs, and expected results for tests.
 """
+import itertools
+from dataclasses import dataclass
+from typing import List
+
 # ----------------------------------------------------------------------------------
 # Configuration
 # ----------------------------------------------------------------------------------
@@ -48,6 +52,7 @@ PREFIX base: <{base_namespace}>
 PREFIX bot: <https://w3id.org/bot#>
 PREFIX ontobim: <http://www.theworldavatar.com/kg/ontobim/>
 PREFIX ontobuildingstructure: <http://www.theworldavatar.com/kg/ontobuildingstructure/>
+PREFIX ontodevice: <https://www.theworldavatar.com/kg/ontodevice/>
 PREFIX ifc2x3: <http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 """
@@ -56,42 +61,87 @@ insert_element_query = prefix + "INSERT DATA { base:Inst_1 a bot:Element }"
 select_element_query = "PREFIX bot:<https://w3id.org/bot#> SELECT ?inst WHERE {?inst a bot:Element}"
 expected_select_element_result = [{'inst': base_namespace + 'Inst_1'}]
 
-insert_wall_query = prefix + """\
-INSERT DATA {
-    base:Wall_1 rdf:type ontobuildingstructure:Wall;
-                ontobim:hasIfcRepresentation base:IfcModelRepresentation_0001.
-    base:IfcModelRepresentation_0001 ontobim:hasIfcId 'a01912518'^^xsd:string;
-                                     rdfs:label 'Wall Standard'^^xsd:string. 
-}
-"""
 
-expected_assets1 = ["building"]
+@dataclass
+class Element:
+    # without namespace
+    iri: str
+    # with namespace
+    type: str
+    ifc_id: str
+    label: str
 
-sample_meter_id = "b01351"
-sample_box_id = "c12746"
-sample_panel_id = "d7213"
 
-insert_assets_query = f"""{prefix}
-INSERT DATA {{
-    base:Meter_1 rdf:type ifc2x3:IfcBuildingElementProxy;
-                 ontobim:hasIfcRepresentation base:IfcModelRepresentation_0002.
-    base:IfcModelRepresentation_0002 rdf:type ontobim:IfcModelRepresentation;
-                                     ontobim:hasIfcId '{sample_meter_id}'^^xsd:string;
-                                     rdfs:label 'Water Meter'^^xsd:string.
+sample_wall = Element(
+    iri="Wall_1",
+    type="ontobuildingstructure:Wall",
+    ifc_id="a01912518",
+    label="Wall Standard"
+)
+sample_bsc = [sample_wall]
 
-    base:ElectricWireBox_3 rdf:type ifc2x3:IfcFurnishingElement;
-                           ontobim:hasIfcRepresentation base:IfcModelRepresentation_0003.
-    base:IfcModelRepresentation_0003 rdf:type ontobim:IfcModelRepresentation;
-                                     ontobim:hasIfcId '{sample_box_id}'^^xsd:string;
-                                     rdfs:label 'Electric Wire Box'^^xsd:string.
+sample_water_meter = Element(
+    iri="Meter_1",
+    type="ifc2x3:IfcBuildingElementProxy",
+    ifc_id="b01351",
+    label="Water Meter"
+)
+sample_fridge = Element(
+    iri="Fridge_3",
+    type="ontodevice:Fridge",
+    ifc_id="c12746",
+    label="Lab Fridge"
+)
+sample_assets = [sample_water_meter, sample_fridge]
 
-    base:SolarPanel_51 rdf:type ifc2x3:IfcBuildingElementProxy;
-                       ontobim:hasIfcRepresentation base:IfcModelRepresentation_0004.
-    base:IfcModelRepresentation_0004 rdf:type ontobim:IfcModelRepresentation;
-                                     ontobim:hasIfcId '{sample_panel_id}'^^xsd:string;
-                                     rdfs:label 'Solar Panel'^^xsd:string.
-}}
-"""
+sample_solar_panel = Element(
+    iri="SolarPanel_51",
+    type="ifc2x3:IfcBuildingElementProxy",
+    ifc_id="d7213",
+    label="Solar Panel"
+)
+
+sample_chair = Element(
+    iri="Chair_4",
+    type="bot:Element",
+    ifc_id="k2931",
+    label="Chair"
+)
+sample_table = Element(
+    iri="Table_91",
+    type="bot:Element",
+    ifc_id="e9411",
+    label="Table"
+)
+sample_furniture = [sample_chair, sample_table]
+
+
+counter = itertools.count()
+
+
+def make_insert_query(elements: List[Element]):
+    def _element_to_triple(element: Element):
+        ifc_model_rep_num = str(next(counter)).zfill(3)
+        return f"""base:{element.iri} rdf:type {element.type};
+                                      ontobim:hasIfcRepresentation base:IfcModelRepresentation_{ifc_model_rep_num}.
+                   base:IfcModelRepresentation_{ifc_model_rep_num} rdf:type ontobim:IfcModelRepresentation;
+                                                                   ontobim:hasIfcId '{element.ifc_id}'^^xsd:string;
+                                                                   rdfs:label '{element.label}'^^xsd:string.
+                """
+
+    triples = "".join([_element_to_triple(e) for e in elements])
+    return f"""{prefix}
+        INSERT DATA {{
+            {triples}
+        }}
+    """
+
+
+insert_bsc_query = make_insert_query(sample_bsc)
+insert_assets_query = make_insert_query(sample_assets)
+insert_solar_panel_query = make_insert_query([sample_solar_panel])
+insert_furniture_query = make_insert_query(sample_furniture)
+
 
 sample_building_inst = "Building_1"
 sample_building_iri = base_namespace + sample_building_inst
@@ -105,8 +155,6 @@ INSERT DATA {{
                                         rdfs:label "TestBuilding";
 }}
 """
-
-expected_assets2 = ["building", "asset1", "furniture", "solarpanel"]
 
 invalid_asseturl1 = "./"
 invalid_asseturl2 = "dir"

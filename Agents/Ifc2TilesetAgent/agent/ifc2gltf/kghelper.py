@@ -39,7 +39,6 @@ SELECT ?iri ?uid ?name WHERE {
                      rdfs:label ?name.
   ?iri rdf:type ?class.
   FILTER (
-    ?class != bot:Element && 
     ?class NOT IN (
       ontobuildingstructure:BuildingStructureComponent,
       ontobuildingstructure:Assembly,
@@ -125,7 +124,7 @@ def retrieve_metadata(query_endpoint: str, update_endpoint: str):
     results = client.execute_query(query)
 
     logger.debug("Storing results into dataframe...")
-    metadata = pd.DataFrame.from_dict(results)
+    metadata = pd.DataFrame(results, columns=["iri", "uid", "name"])
 
     logger.debug("Classifying results into their files...")
     return classify_file_name(metadata)

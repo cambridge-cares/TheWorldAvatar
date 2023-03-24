@@ -36,7 +36,7 @@ def assert_root_tile_compulsory_fields(tile: dict):
 
 @pytest.mark.parametrize(
     "update_query, expected_assets, expected_response",
-    [(C.insert_wall_query, C.expected_assets1, C.SUCCESSFUL_API_RESPONSE)]
+    [(C.insert_bsc_query, ["building"], C.SUCCESSFUL_API_RESPONSE)]
 )
 def test_api_simple(update_query, expected_assets, expected_response, initialise_client, flaskapp, gen_sample_ifc_file,
                     sample_properties, tileset_content, assert_asset_geometries):
@@ -85,10 +85,11 @@ def test_api_simple(update_query, expected_assets, expected_response, initialise
 
 
 @pytest.mark.parametrize(
-    "update_query, expected_assets, expected_response",
-    [(C.insert_assets_query, C.expected_assets2, C.SUCCESSFUL_API_RESPONSE)]
+    "init_queries, expected_assets, expected_response",
+    [([C.insert_building_query, C.insert_assets_query, C.insert_furniture_query, C.insert_solar_panel_query],
+      ["building", "asset1", "asset2", "furniture", "solarpanel"], C.SUCCESSFUL_API_RESPONSE)]
 )
-def test_api_complex(update_query, expected_assets, expected_response, initialise_client, flaskapp, gen_sample_ifc_file,
+def test_api_complex(init_queries, expected_assets, expected_response, initialise_client, flaskapp, gen_sample_ifc_file,
                      sample_properties, tileset_content, assert_asset_geometries):
     """
     Tests the POST request for the api route on a complex IFC model
@@ -100,8 +101,8 @@ def test_api_complex(update_query, expected_assets, expected_response, initialis
 
     # Generate the test IFC triples
     kg_client = initialise_client
-    kg_client.execute_update(update_query)
-    kg_client.execute_update(C.insert_building_query)
+    for query in init_queries:
+        kg_client.execute_update(query)
 
     # Generate sample ifc file
     ifcpath = gen_sample_ifc_file("./data/ifc/sample.ifc", True)
