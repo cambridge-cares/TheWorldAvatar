@@ -11,19 +11,25 @@ import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.NodeFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+
+import java.io.*;
 import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.Connection;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -69,24 +75,34 @@ public class OpenMeteoAgent extends JPSAgent {
     private String ontoemsURI;
     private String omURI;
     private String rdfURI;
-    private static final String OM_C = "degreeCelsius";
-    private static final String OM_PA = "pascal";
-    private static final String OM_PER = "percent";
-    private static final String OM_MM = "millimetre";
-    private static final String OM_CM = "centimetre";
-    private static final String OM_MS = "metrePerSecond-Time";
-    private static final String OM_DEGREE = "degree";
+    private static final String STATION = "ReportingStation";
+    private static final String OM_C = "om:degreeCelsius";
+    private static final String OM_PA = "om:pascal";
+    private static final String OM_PER = "om:percent";
+    private static final String OM_MM = "om:millimetre";
+    private static final String OM_CM = "om:centimetre";
+    private static final String OM_MS = "om:metrePerSecond-Time";
+    private static final String OM_DEGREE = "om:degree";
     private List<String> API_PARAMETERS = Arrays.asList(API_PARAMETER_TEMP, API_PARAMETER_HUMIDITY, API_PARAMETER_DEWPOINT, API_PARAMETER_PRESSURE, API_PARAMETER_RAIN, API_PARAMETER_SNOW, API_PARAMETER_CLOUD, API_PARAMETER_DNI, API_PARAMETER_DHI, API_PARAMETER_WINDSPEED, API_PARAMETER_WINDDIRECTION);
-    private List<String> ONTOEMS_CONCEPTS = Arrays.asList(ONTOEMS_TEMP, ONTOEMS_HUMIDITY, ONTOEMS_DEWPOINT, ONTOEMS_PRESSURE, ONTOEMS_RAIN, ONTOEMS_SNOW, ONTOEMS_CLOUD, ONTOEMS_DNI, ONTOEMS_DHI, ONTOEMS_WINDSPEED, ONTOEMS_WINDDIRECTION);
-    private Map<String, String> API_ONTOEMS= IntStream.range(0, API_PARAMETERS.size()).boxed()
-            .collect(Collectors.toMap(API_PARAMETERS::get, ONTOEMS_CONCEPTS::get));
+    private List<String> ontoems_conecpts = Arrays.asList(ONTOEMS_TEMP, ONTOEMS_HUMIDITY, ONTOEMS_DEWPOINT, ONTOEMS_PRESSURE, ONTOEMS_RAIN, ONTOEMS_SNOW, ONTOEMS_CLOUD, ONTOEMS_DNI, ONTOEMS_DHI, ONTOEMS_WINDSPEED, ONTOEMS_WINDDIRECTION);
+    private Map<String, String> api_ontoems = IntStream.range(0, API_PARAMETERS.size()).boxed()
+            .collect(Collectors.toMap(API_PARAMETERS::get, ontoems_conecpts::get));
+    private Map<String, TimeSeriesClient.Type> api_timeseries = new HashMap<>();
     private Double latitude;
     private Double longitude;
+    private RemoteRDBStoreClient rdbStoreClient;
+    private RemoteStoreClient storeClient;
+    private TimeSeriesClient tsClient;
+    private String route;
 
     public static final String URI_INSTANTIATE = "/instantiate";
     public static final String URI_DELETE = "/delete";
 
-    public OpenMeteoAgent() {readConig();}
+    public OpenMeteoAgent() {
+        readConfig();
+        setTimeSeriesTypes();
+        setStoreClient(route);
+    }
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -104,22 +120,79 @@ public class OpenMeteoAgent extends JPSAgent {
             JSONObject weatherUnit = response.getJSONObject(API_HOURLY_UNITS);
 
             Map<String, List<Object>> parsedData = parseWeatherData(weatherData, weatherUnit);
+
+            String stationIRI = createStation(latitude, longitude);
+
+            WhereBuilder wb = new WhereBuilder()
+                    .addPrefix("ontoems", ontoemsURI)
+                    .addPrefix("om", omURI)
+                    .addPrefix("rdf", rdfURI);
+
+            wb.addWhere(NodeFactory.createURI(stationIRI), "rdf:type", "ontoems:"+STATION);
+
+            String apiParam;
+            String ontoemsClass;
+            String quantityIRI;
+            String measureIRI;
+
+            List<List<String>> dataIRIs = new ArrayList<>();
+            List<String> dataIRI;
+            List<TimeSeriesClient.Type> tsTypes = new ArrayList<>();
+            List<Duration> durations = new ArrayList<>();
+            List<ChronoUnit> units = new ArrayList<>();
+
+            for (var entry: api_ontoems.entrySet()){
+                apiParam = entry.getKey();
+
+                if (parsedData.containsKey(apiParam)){
+                    List<Object> data = parsedData.get(apiParam);
+                    ontoemsClass = entry.getValue();
+                    quantityIRI = ontoemsURI + ontoemsClass + "Quantity_" + UUID.randomUUID();
+                    measureIRI = ontoemsURI + ontoemsClass + "_" + UUID.randomUUID();
+                    createUpdate(wb, stationIRI, quantityIRI, "ontoems:"+ontoemsClass, measureIRI, (String) data.get(0));
+                    dataIRI = Arrays.asList(measureIRI);
+                    dataIRIs.add(dataIRI);
+                    tsTypes.add(api_timeseries.get(apiParam));
+                    if (api_timeseries.get(apiParam) == TimeSeriesClient.Type.AVERAGE){
+                        durations.add(Duration.ofHours(1));
+                        units.add(ChronoUnit.HOURS);
+                    }
+                    else{
+                        durations.add(null);
+                        units.add(null);
+                    }
+                }
+            }
+
+            List<List<Class<?>>> dataClass = Collections.nCopies(dataIRIs.size(), Arrays.asList(Double.class));
+            List<String> timeUnit = Collections.nCopies(dataIRIs.size(), OffsetDateTime.class.getSimpleName());
+
+            UpdateBuilder ub = new UpdateBuilder()
+                    .addInsert(wb);
+
+            this.updateStore(route, ub.buildRequest().toString());
+
+            createTimeSeries(dataIRIs, dataClass, timeUnit, tsTypes, durations, units);
+
+
         }
         return requestParams;
     }
 
     /**
-     * Get ontology uri from config.properties
+     * Gets variables from config.properties
      */
-    private void readConig(){
+    private void readConfig(){
         ResourceBundle config = ResourceBundle.getBundle("config");
         ontoemsURI = config.getString("uri.ontology.ontoems");
         omURI = config.getString("uri.ontology.om");
         rdfURI = config.getString("uri.ontology.rdf");
+        route = config.getString("route.uri");
+        rdbStoreClient = new RemoteRDBStoreClient(config.getString("db.url"), config.getString("db.user"), config.getString("db.password"));
     }
 
     /**
-     * Check validity of incoming request
+     * Checks validity of incoming request
      * @param requestParams Request parameters as JSONObject
      * @return Validity of request
      */
@@ -146,7 +219,6 @@ public class OpenMeteoAgent extends JPSAgent {
                 validate = validate && start.before(end)
                         && (end.before(now) || end.equals(now));
             }
-
         }
         catch (Exception e){
             throw new BadRequestException();
@@ -160,7 +232,7 @@ public class OpenMeteoAgent extends JPSAgent {
     }
 
     /**
-     * Validate whether the string is in the yyyy-mm-dd date format
+     * Validates whether the string is in the yyyy-mm-dd date format
      * @param date The date as a string
      * @return Validity of the format of date
      */
@@ -175,7 +247,7 @@ public class OpenMeteoAgent extends JPSAgent {
     }
 
     /**
-     * Call the Open-Meteo Historical Weather API to retrieve the hourly weather data from start_date to end_date with weather parameter in API_PARAMETERS for weather station located at (latitude, longitude)
+     * Calls the Open-Meteo Historical Weather API to retrieve the hourly weather data from start_date to end_date with weather parameter in API_PARAMETERS for weather station located at (latitude, longitude)
      * @param latitude Geographical WGS84 coordinate of the weather station
      * @param longitude Geographical WGS84 coordinate of the weather station
      * @param startDate Start date of the time interval, in yyyy-mm-dd format
@@ -214,7 +286,7 @@ public class OpenMeteoAgent extends JPSAgent {
     }
 
     /**
-     * Parse weatherData into list
+     * Parses weatherData into list
      * @param weatherData JSONObject containing weather data retrieved by the API
      * @param weatherUnit JSONObject containing the units of the weather data retrieved by the API
      * @return a Map object with the key being the API weather parameters, and the values being the corresponding units ontology and the corresponding data parsed to a list
@@ -237,7 +309,7 @@ public class OpenMeteoAgent extends JPSAgent {
     }
 
     /**
-     * Convert unit text string to its representative ontology concept name
+     * Converts unit text string to its representative ontology concept name
      * @param unit unit text string
      * @return unit ontology concept name
      */
@@ -262,7 +334,19 @@ public class OpenMeteoAgent extends JPSAgent {
     }
 
     /**
-     * Create SPARQL update according to the ontoems ontology
+     * Creates OntoEMS:ReportingStation instance with location being lat, lon
+     * @param lat latitude of OntoEMS:ReportingStation instance
+     * @param lon longitude of OntoEMS:ReportingStation instance
+     * @return OntoEMS:ReportingStation instance IRI
+     */
+    public String createStation(double lat, double lon){
+        String stationIRI = ontoemsURI + STATION + "_" + UUID.randomUUID();
+
+        return stationIRI;
+    }
+
+    /**
+     * Creates SPARQL update according to the ontoems ontology
      * @param builder where builder
      * @param station reporting station iri
      * @param quantity quantity iri
@@ -272,9 +356,74 @@ public class OpenMeteoAgent extends JPSAgent {
      */
     public void createUpdate(WhereBuilder builder, String station, String quantity, String type, String measure, String unit){
         builder.addWhere(NodeFactory.createURI(station),  "ontoems:reports", NodeFactory.createURI(quantity))
-                .addWhere(NodeFactory.createURI(quantity), "rdf:type", NodeFactory.createURI(type))
+                .addWhere(NodeFactory.createURI(quantity), "rdf:type", type)
                 .addWhere(NodeFactory.createURI(quantity), "om:hasValue", NodeFactory.createURI(measure))
                 .addWhere(NodeFactory.createURI(measure), "rdf:type", "om:Measure")
                 .addWhere(NodeFactory.createURI(measure), "om:hasUnit", unit);
+    }
+
+    /**
+     * Creates time series for dataIRI
+     * @param dataIRI IRIs to create time series for
+     * @param dataClass data class
+     * @param timeUnit time unit
+     * @param type type of time series
+     * @param durations numeric duration of the averaging period for time series of TimeSeriesClient.Type.AVERAGE
+     * @param units temporal unit of the averaging period for time series of TimeSeriesClient.Type.AVERAGE
+     */
+    private void createTimeSeries(List<List<String>> dataIRI, List<List<Class<?>>> dataClass, List<String> timeUnit, List<TimeSeriesClient.Type> type, List<Duration> durations, List<ChronoUnit> units){
+        tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
+
+        try(Connection conn = rdbStoreClient.getConnection()){
+            tsClient.bulkInitTimeSeries(dataIRI, dataClass, timeUnit, conn, type, durations, units);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            throw new JPSRuntimeException(e);
+        }
+    }
+
+    /**
+     * Sets the time series types for each of the weather parameter
+     */
+    private void setTimeSeriesTypes(){
+        api_timeseries.put(API_PARAMETER_TEMP, TimeSeriesClient.Type.INSTANTANEOUS);
+        api_timeseries.put(API_PARAMETER_HUMIDITY, TimeSeriesClient.Type.INSTANTANEOUS);
+        api_timeseries.put(API_PARAMETER_DEWPOINT, TimeSeriesClient.Type.INSTANTANEOUS);
+        api_timeseries.put(API_PARAMETER_PRESSURE, TimeSeriesClient.Type.INSTANTANEOUS);
+        api_timeseries.put(API_PARAMETER_RAIN, TimeSeriesClient.Type.STEPWISECUMULATIVE);
+        api_timeseries.put(API_PARAMETER_SNOW, TimeSeriesClient.Type.STEPWISECUMULATIVE);
+        api_timeseries.put(API_PARAMETER_CLOUD, TimeSeriesClient.Type.INSTANTANEOUS);
+        api_timeseries.put(API_PARAMETER_DNI, TimeSeriesClient.Type.AVERAGE);
+        api_timeseries.put(API_PARAMETER_DHI, TimeSeriesClient.Type.AVERAGE);
+        api_timeseries.put(API_PARAMETER_WINDSPEED, TimeSeriesClient.Type.INSTANTANEOUS);
+        api_timeseries.put(API_PARAMETER_WINDDIRECTION, TimeSeriesClient.Type.INSTANTANEOUS);
+    }
+
+    /**
+     * Sets store client to the query and update endpoint of route
+     * @param route access agent route
+     */
+    private void setStoreClient(String route){
+        JSONObject queryResult = this.getEndpoints(route);
+
+        String queryEndpoint = queryResult.getString(JPSConstants.QUERY_ENDPOINT);
+        String updateEndpoint = queryResult.getString(JPSConstants.UPDATE_ENDPOINT);
+
+        if (!isDockerized()){
+            queryEndpoint = queryEndpoint.replace("host.docker.internal", "localhost");
+            updateEndpoint = updateEndpoint.replace("host.docker.internal", "localhost");
+        }
+
+        storeClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
+    }
+
+    /**
+     * Check if the agent is running in Docker
+     * @return true if running in Docker, false otherwise
+     */
+    private boolean isDockerized(){
+        File f = new File("/.dockerenv");
+        return f.exists();
     }
 }
