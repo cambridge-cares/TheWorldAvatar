@@ -10,6 +10,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.cmclinnovations.stack.clients.core.StackClient;
+import com.cmclinnovations.stack.services.DockerService;
 import com.cmclinnovations.stack.services.ServiceManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -72,6 +74,8 @@ public class Stack {
 
     public void initialiseServices() {
         List<String> defaultServices = List.of("blazegraph", "postgis", "adminer", "ontop", "gdal", "geoserver");
+
+        manager.<DockerService>initialiseService(name, StackClient.getContainerEngineName()).initialise();
 
         // Check to see if services have been specified through a config file
         if (null == config) {
