@@ -82,16 +82,16 @@ def gendict4split(dataframe: pd.DataFrame):
 
     if not dataframe.empty:
         # Initialise a list of file names for aggregated assets
-        aggregatelist = ["solarpanel", "sewagenetwork", "furniture"]
+        aggregate_list = ["solarpanel", "sewagenetwork", "furniture"]
         logger.debug("Appending aggregate assets to dictionary...")
-        append_aggregate(dataframe.loc[dataframe['file'].isin(aggregatelist)], dict_elements)
+        append_aggregate(dataframe.loc[dataframe['file'].isin(aggregate_list)], dict_elements)
 
         logger.debug("Appending individual assets to dictionary...")
-        assetdata = dataframe.loc[~dataframe['file'].isin(aggregatelist)]
-        append_individual_asset(assetdata, dict_elements)
+        asset_data = dataframe.loc[~dataframe['file'].isin(aggregate_list)]
+        append_individual_asset(asset_data, dict_elements)
     else:
-        assetdata = pd.DataFrame()
-    return dict_elements, assetdata
+        asset_data = pd.DataFrame(columns=["iri", "uid", "name", "file"])
+    return dict_elements, asset_data
 
 
 def append_ifcconvert_command(key, value, ifcconvert_command):

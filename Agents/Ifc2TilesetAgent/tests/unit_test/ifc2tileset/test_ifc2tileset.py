@@ -24,7 +24,7 @@ def test_gen_tilesets_solarpanel():
     """
     # Create a solarpanel.gltf for testing
     solarpanel_gltf = os.path.join("data", "gltf", "solarpanel.gltf")
-    open(solarpanel_gltf, "x", encoding="utf-8")
+    open(solarpanel_gltf, "x", encoding="utf-8").close()
 
     # Create sample glb file
     solarpanel_glb = os.path.join("data", "glb", "solarpanel.glb")
@@ -64,7 +64,7 @@ def test_gen_tilesets_sewage():
     """
     # Create a sewagenetwork.gltf for testing
     sewage_gltf = os.path.join("data", "gltf", "sewagenetwork.gltf")
-    open(sewage_gltf, "x", encoding="utf-8")
+    open(sewage_gltf, "x", encoding="utf-8").close()
 
     # Create sample glb file
     sewage_glb = os.path.join("data", "glb", "sewagenetwork.glb")
@@ -128,7 +128,7 @@ def test_gen_tilesets_building():
     """
     # Create a building.gltf for testing
     building = os.path.join("data", "gltf", "building.gltf")
-    open(building, "x", encoding="utf-8")
+    open(building, "x", encoding="utf-8").close()
 
     # Create sample glb file
     building_glb = os.path.join("data", "glb", "building.glb")

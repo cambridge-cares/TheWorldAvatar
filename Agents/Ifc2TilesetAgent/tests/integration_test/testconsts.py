@@ -15,23 +15,6 @@ from typing import List
 # NOTE Port must be mapped to host for this to work
 KG_ENDPOINT = "http://172.17.0.1:9999/blazegraph/namespace/kb/sparql"
 
-ROOT_TILE = dict(
-    x_center=40,
-    y_center=0,
-    z_center=15,
-    length=100,
-    width=100,
-    height=10
-)
-CHILD_TILE = dict(
-    x_center=10,
-    y_center=0,
-    z_center=5,
-    length=50,
-    width=50,
-    height=6
-)
-
 DEFAULT_RESPONSE = "The Ifc2Tileset agent offers the following functionality at the specified API endpoint:<BR>"
 DEFAULT_RESPONSE += "<BR>"
 DEFAULT_RESPONSE += "(POST) request to convert IFC models to Cesium's 3D tilesets:<BR>"
@@ -78,7 +61,6 @@ sample_wall = Element(
     ifc_id="a01912518",
     label="Wall Standard"
 )
-sample_bsc = [sample_wall]
 
 sample_water_meter = Element(
     iri="Meter_1",
@@ -137,7 +119,7 @@ def make_insert_query(elements: List[Element]):
     """
 
 
-insert_bsc_query = make_insert_query(sample_bsc)
+insert_wall_query = make_insert_query([sample_wall])
 insert_assets_query = make_insert_query(sample_assets)
 insert_solar_panel_query = make_insert_query([sample_solar_panel])
 insert_furniture_query = make_insert_query(sample_furniture)

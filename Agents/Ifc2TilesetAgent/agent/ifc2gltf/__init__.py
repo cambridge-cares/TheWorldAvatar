@@ -47,11 +47,14 @@ def conv2gltf(input_ifc: str, query_endpoint: str, update_endpoint: str):
         ifcconvert_command = append_ifcconvert_command(
             key, value_list, ifcconvert_command)
         glb2gltf_command = "gltf-pipeline -i " + glbpath + " -o " + gltfpath
+
         # Convert from IFC -> glb -> glTF
         logger.info("Converting " + key + " to glTF...")
         run_shellcommand(ifcconvert_command)
         logger.debug("IfcConvert command executed: " + " ".join(ifcconvert_command))
         run_shellcommand(glb2gltf_command, True)
         logger.debug("gltf-pipeline Command executed: " + " ".join(glb2gltf_command))
+
     logger.info("Conversion to gltf completed...")
+
     return asset_data, building_iri

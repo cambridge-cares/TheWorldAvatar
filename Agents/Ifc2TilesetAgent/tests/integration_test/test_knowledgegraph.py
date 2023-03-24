@@ -44,13 +44,13 @@ def sort_and_reset_index(df: pd.DataFrame):
 @pytest.mark.parametrize(
     "init_queries, expected",
     [(
-        # when only building structure components are present, returns empty
-        [C.insert_bsc_query],
+        # when only wall is present, returns empty
+        [C.insert_wall_query],
         pd.DataFrame(columns=["iri", "uid", "name", "file"])
     ), (
-        # when building structure components and assets are present, returns only assets
+        # when wall and assets are present, returns only assets
         # filename of assets should be appended with an integer incrementing from 1
-        [C.insert_bsc_query, C.insert_assets_query],
+        [C.insert_wall_query, C.insert_assets_query],
         pd.DataFrame(data=dict(
             iri=[C.base_namespace + e.iri for e in C.sample_assets],
             uid=[e.ifc_id for e in C.sample_assets],
@@ -58,8 +58,8 @@ def sort_and_reset_index(df: pd.DataFrame):
             file=[f"asset{i + 1}" for i in range(len(C.sample_assets))]
         ))
     ), (
-        # when building structure components, assets, and furniture are present, returns assets and furniture
-        [C.insert_bsc_query, C.insert_assets_query, C.insert_furniture_query],
+        # when wall, assets, and furniture are present, returns assets and furniture
+        [C.insert_wall_query, C.insert_assets_query, C.insert_furniture_query],
         pd.DataFrame(data=dict(
             iri=[C.base_namespace + e.iri for e in C.sample_assets + C.sample_furniture],
             uid=[e.ifc_id for e in C.sample_assets + C.sample_furniture],
@@ -82,11 +82,7 @@ def test_retrieve_metadata(init_queries, expected, initialise_client):
     assert_frame_equal(sort_and_reset_index(actual), sort_and_reset_index(expected), check_dtype=False)
 
 
-@pytest.mark.parametrize(
-    "endpoint, expected",
-    [(C.KG_ENDPOINT, C.sample_building_iri)]
-)
-def test_get_building_iri(endpoint, expected, initialise_client):
+def test_get_building_iri(endpoint, initialise_client):
     # arrange
     kg_client = initialise_client
     kg_client.execute_update(C.insert_building_query)
@@ -95,15 +91,48 @@ def test_get_building_iri(endpoint, expected, initialise_client):
     actual = get_building_iri(endpoint, endpoint)
 
     # assert
-    assert actual == expected
+    assert actual == C.sample_building_iri
 
 
 @pytest.mark.parametrize(
-    "init_queries, endpoint, expected_assets, expected_building_iri",
-    [([C.insert_building_query, C.insert_bsc_query], C.KG_ENDPOINT, ["building"], C.sample_building_iri)]
+    "init_queries, ifc_building_element_proxies, ifc_furnishing_elements, expected_gltf, expected_asset_data, "
+    "expected_building_iri",
+    [(
+        # when only building and wall are present, building gltf should be generated and asset data should be empty
+        [C.insert_building_query, C.insert_wall_query],
+        [],
+        [],
+        ["building"],
+        pd.DataFrame(columns=["iri", "uid", "name", "file"]),
+        C.sample_building_iri
+    ), (
+        # when only building, wall, and furniture are present, building and furniture gltf should be generated and
+        # asset data should be empty
+        [C.insert_building_query, C.insert_wall_query, C.insert_furniture_query],
+        [],
+        C.sample_furniture,
+        ["building", "furniture"],
+        pd.DataFrame(columns=["iri", "uid", "name", "file"]),
+        C.sample_building_iri
+    ), (
+        # when assets, furniture, solar panel are present, gltf files should be generated and asset data present
+        [C.insert_building_query, C.insert_wall_query, C.insert_assets_query, C.insert_furniture_query,
+         C.insert_solar_panel_query],
+        C.sample_assets + [C.sample_solar_panel],
+        C.sample_furniture,
+        ["building", "asset1", "asset2", "furniture", "solarpanel"],
+        pd.DataFrame(data=dict(
+            iri=[C.base_namespace + e.iri for e in C.sample_assets],
+            uid=[e.ifc_id for e in C.sample_assets],
+            name=[e.label for e in C.sample_assets],
+            file=[f"asset{i + 1}" for i in range(len(C.sample_assets))]
+        )),
+        C.sample_building_iri
+    )]
 )
-def test_conv2gltf_simple(init_queries, endpoint, expected_assets, expected_building_iri, initialise_client,
-                          gen_sample_ifc_file, assert_asset_geometries):
+def test_conv2gltf(init_queries, ifc_building_element_proxies, ifc_furnishing_elements, expected_gltf,
+                   expected_asset_data, expected_building_iri, endpoint, initialise_client, gen_sample_ifc_file,
+                   assert_asset_geometries):
     """
     Tests that the conv2gltf() in agent.ifc2gltf submodule runs and generates only one gltf file
     """
@@ -113,58 +142,17 @@ def test_conv2gltf_simple(init_queries, endpoint, expected_assets, expected_buil
         kg_client.execute_update(query)
 
     # Generate sample ifc files and file paths
-    ifcpath = gen_sample_ifc_file("./data/ifc/wall.ifc", False)
-
-    # Execute method to convert a IFC model to gltf
-    asset_data, building_iri = conv2gltf(ifcpath, endpoint, endpoint)
-
-    try:
-        assert asset_data.empty
-        # Assert that the geometry files are generated
-        assert_asset_geometries(expected_assets)
-
-        assert building_iri == expected_building_iri
-    finally:
-        os.remove(ifcpath)
-
-
-@pytest.mark.parametrize(
-    "init_queries, endpoint, expected_assets, expected_building_iri",
-    [(
-        [C.insert_building_query, C.insert_assets_query, C.insert_furniture_query, C.insert_solar_panel_query],
-        C.KG_ENDPOINT, ["building", "asset1", "asset2", "furniture", "solarpanel"], C.sample_building_iri
-    )]
-)
-def test_conv2gltf_complex(init_queries, endpoint, expected_assets, expected_building_iri, initialise_client,
-                           gen_sample_ifc_file, assert_asset_geometries):
-    """
-    Tests that the conv2gltf() in agent.ifc2gltf submodule runs and generates required geometry file
-    """
-    # Generate the test IFC triples
-    kg_client = initialise_client
-    for query in init_queries:
-        print("")
-        kg_client.execute_update(query)
-
-    # Generate sample ifc files and file paths
-    ifcpath = gen_sample_ifc_file("./data/ifc/sample.ifc", True)
-
-    expected_asset_data = pd.DataFrame(data=dict(
-        iri=[C.base_namespace + e.iri for e in C.sample_assets],
-        uid=[e.ifc_id for e in C.sample_assets],
-        name=[e.label for e in C.sample_assets],
-        file=[f"asset{i + 1}" for i in range(len(C.sample_assets))]
-    ))
+    ifcpath = gen_sample_ifc_file("./data/ifc/sample.ifc", ifc_building_element_proxies=ifc_building_element_proxies,
+                                  ifc_furnishing_elements=ifc_furnishing_elements)
 
     # Execute method to convert a IFC model to gltf
     actual_asset_data, actual_building_iri = conv2gltf(ifcpath, endpoint, endpoint)
 
     try:
-        # Assert that asset data is precisely the assets without furniture, solar panel, sewage network
         assert_frame_equal(sort_and_reset_index(actual_asset_data), sort_and_reset_index(expected_asset_data))
 
         # Assert that the geometry files are generated
-        assert_asset_geometries(expected_assets)
+        assert_asset_geometries(expected_gltf)
 
         assert actual_building_iri == expected_building_iri
     finally:
