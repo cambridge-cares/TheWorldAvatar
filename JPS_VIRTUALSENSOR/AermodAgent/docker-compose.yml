@@ -42,4 +42,4 @@ volumes:
   logs:
     name: "logs"
   vis_data:
-    name: "${STACK_NAME}_vis_data"
+    name: "vis_data"
