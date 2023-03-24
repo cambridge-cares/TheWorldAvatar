@@ -54,10 +54,35 @@ def test_append_tileset_schema():
 
 
 def make_bim_tileset(bbox: List[str], building_iri: str):
-    root_tile = make_root_tile(bbox=bbox)
-    tile = make_tileset(root_tile)
-    append_tileset_schema_and_metadata(tile, building_iri)
-    return tile
+    return {
+        "asset": {"version": "1.1"},
+        "geometricError": 1024,
+        "root": {
+            "boundingVolume": {"box": bbox},
+            "geometricError": 512,
+            "refine": "ADD",
+        },
+        "schema": {
+            "classes": {
+                "TilesetMetaData": {
+                    "name": "Tileset metadata",
+                    "description": "A metadata class for the tileset",
+                    "properties": {
+                        "buildingIri": {
+                            "description": "Data IRI of the building",
+                            "type": "STRING"
+                        }
+                    }
+                }
+            }
+        },
+        "metadata": {
+            "class": "TilesetMetaData",
+            "properties": {
+                "buildingIri": building_iri
+            }
+        }
+    }
 
 
 def test_gen_root_content_no_building_no_furniture_with_assets():

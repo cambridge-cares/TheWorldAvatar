@@ -26,6 +26,14 @@ def test_default(expected_response, flaskapp):
     assert response.data == bytes(expected_response, 'utf-8')
 
 
+def assert_root_tile_compulsory_fields(tile: dict):
+    expected_fields = {
+        "geometricError": 512,
+        "refine": "ADD"
+    }
+    assert expected_fields.items() <= tile.items()
+
+
 @pytest.mark.parametrize(
     "update_query, expected_assets, expected_response",
     [(C.insert_wall_query, C.expected_assets1, C.SUCCESSFUL_API_RESPONSE)]
@@ -64,8 +72,12 @@ def test_api_simple(update_query, expected_assets, expected_response, initialise
 
         # Assert tileset content contains the assetUrl passed and gltf files
         content = tileset_content(tileset)
-        assert content["root"]["content"]["uri"] == "./gltf/building.gltf"
-        assert "children" not in content["root"]
+        assert "root" in content
+
+        root = content["root"]
+        assert_root_tile_compulsory_fields(root)
+        assert root["content"]["uri"] == "./gltf/building.gltf"
+        assert "children" not in root
     finally:
         os.remove(ifcpath)
         os.remove(properties_path)
@@ -110,13 +122,23 @@ def test_api_complex(update_query, expected_assets, expected_response, initialis
         assert os.path.isfile(tileset_solar)
         assert_asset_geometries(expected_assets)
 
-        # Assert tileset content contains the assetUrl passed and gltf files
+        # Assert bim tileset content contains the assetUrl passed and gltf files
         content = tileset_content(tileset)
-        assert content["root"]["contents"][0]["uri"] == "./gltf/furniture.gltf"
-        assert content["root"]["contents"][1]["uri"] == "./gltf/building.gltf"
-        assert content["root"]["children"][0]["contents"][0]["uri"] == "./gltf/asset1.gltf"
+        assert "root" in content
+
+        root = content["root"]
+        assert_root_tile_compulsory_fields(root)
+        assert root["contents"][0]["uri"] == "./gltf/furniture.gltf"
+        assert root["contents"][1]["uri"] == "./gltf/building.gltf"
+        assert root["children"][0]["contents"][0]["uri"] == "./gltf/asset1.gltf"
+
+        # Assert solar tileset content contains the assetUrl passed and gltf files
         solar_content = tileset_content(tileset_solar)
-        assert solar_content["root"]["content"]["uri"] == "./gltf/solarpanel.gltf"
+        assert "root" in solar_content
+
+        solar_root = solar_content["root"]
+        assert_root_tile_compulsory_fields(solar_root)
+        assert solar_root["content"]["uri"] == "./gltf/solarpanel.gltf"
     finally:
         os.remove(ifcpath)
         os.remove(properties_path)

@@ -28,6 +28,7 @@ def make_root_tile(bbox: Optional[List[float]] = None, **kwargs):
     root_tile = Tile(
         boundingVolume=bounding_volume,
         geometricError=512,
+        refine="ADD",
     )
 
     for key, value in kwargs.items():

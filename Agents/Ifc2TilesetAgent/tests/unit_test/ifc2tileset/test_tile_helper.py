@@ -13,9 +13,36 @@ import pytest
 
 # Self import
 from agent.ifc2tileset.tile_helper import gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter, compute_bbox, \
-    make_tileset
+    make_tileset, make_root_tile
 from . import testconsts as C
 from .testutils import read_json
+
+
+@pytest.mark.parametrize(
+    "bbox, kwargs",
+    [
+        (list(range(12)), dict()),
+        (list(range(12)), dict(content={"uri": "./data/gltf/building.gltf"})),
+        (None, dict()),
+        (None, dict(contents=[{"uri": "./data/gltf/building.gltf"}, {"uri": "./data/gltf/furniture.gltf"}]))
+    ]
+)
+def test_make_root_tile(bbox, kwargs):
+    # arrange
+    expected = {
+        **{
+            "boundingVolume": {"box": bbox} if bbox is not None else {},
+            "geometricError": 512,
+            "refine": "ADD"
+        },
+        **kwargs
+    }
+
+    # act
+    actual = make_root_tile(bbox, **kwargs)
+
+    # assert
+    assert actual == expected
 
 
 def test_make_tileset():
@@ -40,6 +67,7 @@ def test_make_tileset():
 
     # assert
     assert expected == actual
+
 
 @pytest.mark.parametrize(
     "mesh_gen, expected",
