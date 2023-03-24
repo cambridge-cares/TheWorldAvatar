@@ -4,8 +4,7 @@ Prerequisites
 3) Set openweather API key in ../Agents/WeatherAgent, more details in that folder
 
 Stack needs to be up and running:
-1) Copy DispersionVis/dispersion-vis.json to Deploy/stacks/dynamic/stack-manager/inputs/config/services.
-2) Navigate to Deploy/stacks/dynamic/stack-manager, do all required setup as described by the README and execute (in a WSL terminal)
+1) Navigate to Deploy/stacks/dynamic/stack-manager, do all required setup as described by the README and execute (in a WSL terminal)
 ```
 ./stack.sh start ship-stack
 ```
