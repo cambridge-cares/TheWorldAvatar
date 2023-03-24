@@ -2,6 +2,10 @@
 TBOX_URL = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobuiltenv/OntoBuiltEnv.owl'
 # alternative: 'http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl'
 
+###--- Derivation Markup ---###
+DERIVATION_INSTANCE_BASE_URL = 'https://www.theworldavatar.com/kg/derivation/'
+
+
 ###--- Common Base URLs ---###
 # External ontologies
 DABGEO = 'http://www.purl.org/oema/infrastructure/'
@@ -50,6 +54,9 @@ OBE_REPRESENTATIVE_FOR = OBE + 'representativeFor'
 OBE_PROPERTY_PRICE_INDEX = OBE + 'PropertyPriceIndex'
 OBE_HAS_OCGML_REPRESENTATION = OBE + 'hasOntoCityGMLRepresentation'
 OBE_HAS_GROUND_ELEVATION = OBE + 'hasGroundElevation'
+OBE_AVERAGE_SM_PRICE = OBE + 'AveragePricePerSqm'
+OBE_HAS_TOTAL_FLOORAREA = OBE + 'hasTotalFloorArea'
+OBE_HASMARKETVALUE = OBE + 'hasMarketValue'
 # LRPPI: https://landregistry.data.gov.uk/app/root/doc/ppd
 LRPPI_TRANSACTION_RECORD = LRPPI + 'TransactionRecord'
 LRPPI_PROPERTY_ADDRESS = LRPPI + 'propertyAddress'

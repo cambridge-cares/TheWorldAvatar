@@ -10,6 +10,7 @@
 from typing import Any, Dict, List
 
 from agent.datamodel import *
+from agent.utils.env_configs import FLOOD_ASSESSMENT_AGENT_IRI
 
 from pyderivationagent import PySparqlClient
 from pyderivationagent import PyDerivationClient

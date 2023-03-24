@@ -4,7 +4,6 @@ ABOX_URL = 'https://github.com/cambridge-cares/TheWorldAvatar/raw/main/JPS_Ontol
 
 ###--- Derivation Markup ---###
 DERIVATION_INSTANCE_BASE_URL = 'https://www.theworldavatar.com/kg/derivation/'
-FLOOD_ASSESSMENT_AGENT_IRI = 'https://www.theworldavatar.com/resource/agents/Service__KL_FloodAssessment/Service'
 
 ###--- Common Base URLs ---###
 # External ontologies
