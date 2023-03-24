@@ -17,6 +17,7 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import java.io.*;
@@ -28,7 +29,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,6 +49,7 @@ public class OpenMeteoAgent extends JPSAgent {
     private static final String API_URL = "https://archive-api.open-meteo.com/v1/archive";
     private static final String API_HOURLY = "hourly";
     private static final String API_HOURLY_UNITS = "hourly_units";
+    private static final String API_TIME = "time";
     private static final String API_PARAMETER_TEMP = "temperature_2m";
     private static final String ONTOEMS_TEMP = "AirTemperature";
     private static final String API_PARAMETER_HUMIDITY = "relativehumidity_2m";
@@ -119,6 +121,7 @@ public class OpenMeteoAgent extends JPSAgent {
             JSONObject weatherData = response.getJSONObject(API_HOURLY);
             JSONObject weatherUnit = response.getJSONObject(API_HOURLY_UNITS);
 
+            List<LocalDateTime> timesList = getTimesList(weatherData, API_TIME);
             Map<String, List<Object>> parsedData = parseWeatherData(weatherData, weatherUnit);
 
             String stationIRI = createStation(latitude, longitude);
@@ -140,6 +143,8 @@ public class OpenMeteoAgent extends JPSAgent {
             List<TimeSeriesClient.Type> tsTypes = new ArrayList<>();
             List<Duration> durations = new ArrayList<>();
             List<ChronoUnit> units = new ArrayList<>();
+            List<TimeSeries<LocalDateTime>> tsList = new ArrayList<>();
+            List<Double> value;
 
             for (var entry: api_ontoems.entrySet()){
                 apiParam = entry.getKey();
@@ -152,6 +157,8 @@ public class OpenMeteoAgent extends JPSAgent {
                     createUpdate(wb, stationIRI, quantityIRI, "ontoems:"+ontoemsClass, measureIRI, (String) data.get(0));
                     dataIRI = Arrays.asList(measureIRI);
                     dataIRIs.add(dataIRI);
+                    value = (List<Double>) data.get(1);
+                    tsList.add(new TimeSeries<>(timesList, dataIRI, List.of(value)));
                     tsTypes.add(api_timeseries.get(apiParam));
                     if (api_timeseries.get(apiParam) == TimeSeriesClient.Type.AVERAGE){
                         durations.add(Duration.ofHours(1));
@@ -165,7 +172,7 @@ public class OpenMeteoAgent extends JPSAgent {
             }
 
             List<List<Class<?>>> dataClass = Collections.nCopies(dataIRIs.size(), Arrays.asList(Double.class));
-            List<String> timeUnit = Collections.nCopies(dataIRIs.size(), OffsetDateTime.class.getSimpleName());
+            List<String> timeUnit = Collections.nCopies(dataIRIs.size(), LocalDateTime.class.getSimpleName());
 
             UpdateBuilder ub = new UpdateBuilder()
                     .addInsert(wb);
@@ -174,6 +181,13 @@ public class OpenMeteoAgent extends JPSAgent {
 
             createTimeSeries(dataIRIs, dataClass, timeUnit, tsTypes, durations, units);
 
+            try(Connection conn = rdbStoreClient.getConnection()){
+                tsClient.bulkaddTimeSeriesData(tsList, conn);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                throw new JPSRuntimeException(e);
+            }
 
         }
         return requestParams;
@@ -372,7 +386,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param units temporal unit of the averaging period for time series of TimeSeriesClient.Type.AVERAGE
      */
     private void createTimeSeries(List<List<String>> dataIRI, List<List<Class<?>>> dataClass, List<String> timeUnit, List<TimeSeriesClient.Type> type, List<Duration> durations, List<ChronoUnit> units){
-        tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
+        tsClient = new TimeSeriesClient<>(storeClient, LocalDateTime.class);
 
         try(Connection conn = rdbStoreClient.getConnection()){
             tsClient.bulkInitTimeSeries(dataIRI, dataClass, timeUnit, conn, type, durations, units);
@@ -425,5 +439,22 @@ public class OpenMeteoAgent extends JPSAgent {
     private boolean isDockerized(){
         File f = new File("/.dockerenv");
         return f.exists();
+    }
+
+    /**
+     * Parses the times in data into a list of LocalDateTime
+     * @param data JSONObject containing the weather data
+     * @param key key to getting the times
+     * @return the times parsed into a list of LocalDateTime
+     */
+    private List<LocalDateTime> getTimesList(JSONObject data, String key){
+        JSONArray array = data.getJSONArray(key);
+        List<LocalDateTime> timesList = new ArrayList<>();
+
+        for (int i = 0; i < array.length(); i++){
+            timesList.add(LocalDateTime.parse(array.getString(i)));
+        }
+
+        return  timesList;
     }
 }
