@@ -79,7 +79,7 @@ public class DockerService extends AbstractService
         }
         dockerClient = initClient(dockerUri);
 
-        initialise(stackName);
+        createNetwork(stackName);
     }
 
     public DockerClient initClient(URI dockerUri) {
@@ -91,14 +91,12 @@ public class DockerService extends AbstractService
         return dockerClient;
     }
 
-    protected void initialise(String stackName) {
+    public void initialise() {
         startDockerSwarm();
 
         addStackSecrets();
 
         addStackConfigs();
-
-        createNetwork(stackName);
     }
 
     private void startDockerSwarm() {
