@@ -102,29 +102,14 @@ public class TTLWriter {
      * at your specified breakpoint to the local disk to prevent heap overflow for larger models.
      *
      * @param statementSet A set of all the statements for writing.
-     * @param ignoreSet    A set containing the classes that should be ignored.
-     * @return file path of the temporary file created.
-     */
-    public Path writeIntermediateTempFile(LinkedHashSet<Statement> statementSet, Set<String> ignoreSet) {
-        LOGGER.info("Writing statements to a temporary file...");
-        Path tempFile = IOHelper.createTempFile();
-        StringBuilder sbuilder = ignoreSet == null ?
-                JenaStatementParser.parseTriples(statementSet, this.inverseNsMap) :
-                JenaStatementParser.parseTriples(statementSet, this.inverseNsMap, ignoreSet);
-        IOHelper.writeLinesToFile(tempFile, sbuilder.toString());
-        LOGGER.info("Temporary file have been successfully generated.");
-        return tempFile;
-    }
-
-    /**
-     * An overloaded method that calls the standard method with a null for the second parameter.
-     * Write triples to an intermediate temporary file.
-     *
-     * @param statementSet A set of all the statements for writing.
      * @return file path of the temporary file created.
      */
     public Path writeIntermediateTempFile(LinkedHashSet<Statement> statementSet) {
-        return writeIntermediateTempFile(statementSet, null);
+        LOGGER.info("Writing statements to a temporary file...");
+        Path tempFile = IOHelper.createTempFile();
+        IOHelper.writeTempTTLFile(tempFile, statementSet);
+        LOGGER.info("Temporary file have been successfully generated.");
+        return tempFile;
     }
 
     /**

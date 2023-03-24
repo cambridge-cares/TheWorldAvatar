@@ -1,10 +1,15 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser;
 
 import org.apache.jena.rdf.model.*;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.VCARD;
 import org.junit.jupiter.api.*;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -20,6 +25,8 @@ class TTLWriterTest {
     private static final String janeFullName = "Jane Doe";
     private static final String personClass = "person";
     private static Path tempFile;
+    private static Model tempModel;
+
 
     @BeforeAll
     static void setup() {
@@ -29,7 +36,7 @@ class TTLWriterTest {
 
     @BeforeEach
     void genSampleStatements() {
-        Model tempModel = ModelFactory.createDefaultModel();
+        tempModel = ModelFactory.createDefaultModel();
         tempModel.createResource(baseURI + janeURI)
                 .addProperty(VCARD.FN, janeFullName)
                 .addProperty(RDF.type, tempModel.createResource(baseURI + personClass));
@@ -48,21 +55,14 @@ class TTLWriterTest {
     }
 
     @Test
-    void testWriteIntermediateTempFile() {
-        List<String> expected = genIntermediateFileResults();
+    void testWriteIntermediateTempFile() throws FileNotFoundException {
+        // Execute method
         tempFile = new TTLWriter(nsMap).writeIntermediateTempFile(testSet);
-        List<String> contents = IOHelper.readFile(tempFile);
-        assertEquals(expected.get(0), contents.get(0));
-        assertEquals(expected.get(1), contents.get(1));
-    }
-
-    @Test
-    void testOverloadWriteIntermediateTempFile() {
-        List<String> expected = genIntermediateFileResults();
-        tempFile = new TTLWriter(nsMap).writeIntermediateTempFile(testSet, ignoreSet);
-        List<String> contents = IOHelper.readFile(tempFile);
-        assertEquals(expected.get(1), contents.get(0));
-        assertThrows(IndexOutOfBoundsException.class, () -> contents.get(1));
+        // Read the contents of the file and verify it matches the expected data
+        InputStream inputStream = new FileInputStream(tempFile.toString());
+        Model model = ModelFactory.createDefaultModel();
+        RDFDataMgr.read(model, inputStream, Lang.TTL);
+        assertTrue(model.containsAll(tempModel));
     }
 
     @Test

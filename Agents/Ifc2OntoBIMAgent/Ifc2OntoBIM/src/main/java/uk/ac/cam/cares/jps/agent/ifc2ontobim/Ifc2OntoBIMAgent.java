@@ -10,8 +10,10 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -177,10 +179,10 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
         OntoBimConverter bimConverter = new OntoBimConverter();
         for (String ttlFile : ttlFileList) {
             LOGGER.info("Preparing to convert IFCOwl to OntoBIM schema for TTL file: " + ttlFile);
-            LinkedHashSet<Statement> statementSet = bimConverter.convertOntoBIM(ttlFile);
+            List<Path> tempFilePaths = bimConverter.convertOntoBIM(ttlFile);
             LOGGER.info("Uploading statements to " + endpoint);
-            AccessClient.uploadStatements(endpoint, statementSet);
-            AccessClient.cleanUp(ttlFile);
+            AccessClient.uploadStatements(endpoint, tempFilePaths);
+            AccessClient.cleanUp(ttlFile, tempFilePaths);
             String ifc = StringUtils.getStringAfterLastCharacterOccurrence(ttlFile, StringUtils.SLASH);
             ifc = StringUtils.getStringBeforeLastCharacterOccurrence(ifc, ".");
             LOGGER.info(ifc + ".ifc has been successfully instantiated and uploaded to " + endpoint);

@@ -11,10 +11,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -89,11 +86,19 @@ class AccessClientTest {
     @Test
     void testCleanUp() throws IOException {
         Path sample = genSampleFile("txt");
+        Path sampleTtl = genSampleFile("ttl");
+        Path sampleFake = genSampleFile("json");
         // Check the file is created and exists
         assertTrue(sample.toFile().exists());
-        AccessClient.cleanUp(sample.toString());
+        assertTrue(sampleTtl.toFile().exists());
+        assertTrue(sampleFake.toFile().exists());
+        // Generate list of file paths
+        List<Path> sampleFilePaths = genSampleFilePaths(sampleTtl, sampleFake);
+        AccessClient.cleanUp(sample.toString(), sampleFilePaths);
         // Verify it has been deleted
         assertFalse(sample.toFile().exists());
+        assertFalse(sampleTtl.toFile().exists());
+        assertFalse(sampleFake.toFile().exists());
     }
 
     @AfterAll
@@ -110,6 +115,14 @@ class AccessClientTest {
         List<String> lines = Arrays.asList("statement1", "statement2", "statement3");
         Files.write(filePath, lines);
         return filePath;
+    }
+
+    private static List<Path> genSampleFilePaths(Path ... filePaths) throws IOException {
+        List<Path> sampleFilePaths = new ArrayList<>();
+        for (Path filePath: filePaths){
+            sampleFilePaths.add(filePath);
+        }
+        return sampleFilePaths;
     }
 
     private static File genSampleConfigFile(boolean isComplete) throws IOException {

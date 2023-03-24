@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim;
 
+import com.hp.hpl.jena.util.FileManager;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Statement;
@@ -7,6 +8,8 @@ import org.apache.jena.rdfconnection.RDFConnection;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.jenautils.NamespaceMapper;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ttlparser.IOHelper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.*;
@@ -66,18 +69,24 @@ class AccessClient {
     }
 
     /**
-     * Uploads statements to a specified SPARQL endpoint.
+     * Uploads stored triples in temp TTL files to a specified SPARQL endpoint.
      *
-     * @param endpoint     The specified SPARQL endpoint.
-     * @param statementSet The statements to be uploaded into the endpoint.
+     * @param endpoint      The specified SPARQL endpoint.
+     * @param tempFilePaths A list of the temp file paths.
      */
-    public static void uploadStatements(String endpoint, LinkedHashSet<Statement> statementSet) {
-        // Add the statements into a new model
-        Model model = ModelFactory.createDefaultModel();
-        model.add(new ArrayList<>(statementSet));
-        // Upload the model directly
+    public static void uploadStatements(String endpoint, List<Path> tempFilePaths) {
+        // Create a connection using try-with-resources to close connection when complete
         try (RDFConnection conn = RDFConnection.connect(endpoint)) {
-            conn.load(model);
+            // For each temp file, load the file and upload them
+            for (Path filePath : tempFilePaths) {
+                try {
+                    Model model = ModelFactory.createDefaultModel();
+                    model.read(new FileInputStream(filePath.toString()), null, "TURTLE");
+                    conn.load(model);
+                } catch (FileNotFoundException e) {
+                    throw new JPSRuntimeException("temp file not found and cannot be uploaded");
+                }
+            }
         }
     }
 
@@ -158,14 +167,15 @@ class AccessClient {
     }
 
     /**
-     * Perform clean up operation
+     * Perform clean up operation to remove all intermediate files.
      *
-     * @param ttlFile The file path to the generated IfcOwl TTL file.
+     * @param ttlFile       The file path to the generated IfcOwl TTL file.
+     * @param tempFilePaths A list of the temp file paths.
      */
-    public static void cleanUp(String ttlFile) {
-        File file = new File(ttlFile);
-        if (file.delete()) {
-            LOGGER.debug("Generated IfcOwl file has been removed");
+    public static void cleanUp(String ttlFile, List<Path> tempFilePaths) {
+        IOHelper.deleteTempFile(Path.of(ttlFile));
+        for (Path filePath : tempFilePaths) {
+            IOHelper.deleteTempFile(filePath);
         }
     }
 }
