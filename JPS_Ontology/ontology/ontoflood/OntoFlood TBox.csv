@@ -51,11 +51,11 @@ Impact,Class,,,,,,Consequences of an event taking place.,https://www.theworldava
 resultsIn,Object Property,,,http://sweetontology.net/phen/Event,Impact,,A relationship between an Event and its effects.,https://www.theworldavatar.com/kg/ontoflood/,results in
 hasMonetaryValue,Object Property,,,Impact,http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney,exactly 1,A relationship between an Impact and the quantification of its cumulative effects in monetary terms.,https://www.theworldavatar.com/kg/ontoflood/,has monetary value
 hasClassification,Data Property,,,Impact,string,,Textual description (and classification) of an impact beyond quantification.,https://www.theworldavatar.com/kg/ontoflood/,has classification
-hasTimeInterval,Object Property,,,http://sweetontology.net/phen/Event,https://www.w3.org/2006/time#Interval,exactly 1,A relationship between an event and the time interval associated with the duration of the event.,https://www.theworldavatar.com/kg/ontoflood/,has time interval
-https://www.w3.org/2006/time#hasBeginning,Object Property,,,https://www.w3.org/2006/time#Interval,https://www.w3.org/2006/time#Instant,,,https://www.w3.org/2006/time,has beginning
-https://www.w3.org/2006/time#hasEnd,Object Property,,,https://www.w3.org/2006/time#Interval,https://www.w3.org/2006/time#Instant,,,https://www.w3.org/2006/time,has end
-https://www.w3.org/2006/time#hasXSDDuration,Data Property,,,https://www.w3.org/2006/time#Interval,duration,,,https://www.w3.org/2006/time,has duration
-https://www.w3.org/2006/time#inXSDDateTimeStamp,Data Property,,,https://www.w3.org/2006/time#Instant,dateTimeStamp,,,https://www.w3.org/2006/time,has time stamp
+hasTimeInterval,Object Property,,,http://sweetontology.net/phen/Event,http://www.w3.org/2006/time#Interval,exactly 1,A relationship between an event and the time interval associated with the duration of the event.,https://www.theworldavatar.com/kg/ontoflood/,has time interval
+http://www.w3.org/2006/time#hasBeginning,Object Property,,,http://www.w3.org/2006/time#Interval,http://www.w3.org/2006/time#Instant,,,https://www.w3.org/2006/time,has beginning
+http://www.w3.org/2006/time#hasEnd,Object Property,,,http://www.w3.org/2006/time#Interval,http://www.w3.org/2006/time#Instant,,,https://www.w3.org/2006/time,has end
+http://www.w3.org/2006/time#hasXSDDuration,Data Property,,,http://www.w3.org/2006/time#Interval,duration,,,https://www.w3.org/2006/time,has duration
+http://www.w3.org/2006/time#inXSDDateTimeStamp,Data Property,,,http://www.w3.org/2006/time#Instant,dateTimeStamp,,,https://www.w3.org/2006/time,has time stamp
 Location,Class,,,,,,The location associated with an event.,https://www.theworldavatar.com/kg/ontoflood/,Location
 ArealExtentPolygon,Class,,,,,,Polygon describing the footprint of an event.,https://www.theworldavatar.com/kg/ontoflood/,Areal extent polygon
 AdministrativeDistrict,Class,,,,,,"An area defined for administrative purposes, e.g. a county or postal code district.",https://www.theworldavatar.com/kg/ontoflood/,Administrative district
@@ -68,7 +68,7 @@ FloodForecast,Class,,,,,,A forecast of flood risk providing the indication of po
 RiskLevel,Class,,,,,,A measure of hazard potential defined by expected likelihood and forecasted impact.,https://www.theworldavatar.com/kg/ontoflood/,Risk level
 Likelihood,Class,,,,,,The probability of a forecasted flood event.,https://www.theworldavatar.com/kg/ontoflood/,Likelihood
 hasLikelihood,Object Property,,,RiskLevel,Likelihood,exactly 1,A relationship between a risk level and the underlying likelihood.,https://www.theworldavatar.com/kg/ontoflood/,has likelihood
-https://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Likelihood,string,exactly 1,"Textual description of the likelihood of a flood event (e.g. very low, low, medium, high).",https://www.theworldavatar.com/kg/ontoflood/,has textual description
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Likelihood,string,exactly 1,"Textual description of the likelihood of a flood event (e.g. very low, low, medium, high).",https://www.theworldavatar.com/kg/ontoflood/,has textual description
 hasLikelihoodScore,Data Property,,,Likelihood,integer,exactly 1,Numerical categorisation of the likelihood of a flood event (e.g. on a linear scale from 1 to 4).,https://www.theworldavatar.com/kg/ontoflood/,has likelihood score
 VeryLowLikelihood,Class,Likelihood,IS-A,,,,The likelihood of a flood with very low probability for a flood to materialise (e.g. < 20%),https://www.theworldavatar.com/kg/ontoflood/,Very likelihood
 LowLikelihood,Class,Likelihood,IS-A,,,,The likelihood of a flood with low probability for a flood to materialise (e.g. 20-40%),https://www.theworldavatar.com/kg/ontoflood/,Low likelihood
@@ -76,7 +76,7 @@ MediumLikelihood,Class,Likelihood,IS-A,,,,The likelihood of a flood with medium 
 HighLikelihood,Class,Likelihood,IS-A,,,,The likelihood of a flood with high probability for a flood to materialise (e.g. > 60%),https://www.theworldavatar.com/kg/ontoflood/,High likelihood
 PotentialImpact,Class,,,,,,The potential impacts of a forecasted flood event.,https://www.theworldavatar.com/kg/ontoflood/,Potential impact
 hasPotentialImpact,Object Property,,,RiskLevel,PotentialImpact,exactly 1,A relationship between a risk level and the underlying impact potential.,https://www.theworldavatar.com/kg/ontoflood/,has potential impact
-https://www.w3.org/2000/01/rdf-schema#label,Data Property,,,PotentialImpact,string,exactly 1,"Textual description of the impact potential of a flood event (e.g. minimal, minor, significant, severe).",https://www.theworldavatar.com/kg/ontoflood/,has textual description
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,PotentialImpact,string,exactly 1,"Textual description of the impact potential of a flood event (e.g. minimal, minor, significant, severe).",https://www.theworldavatar.com/kg/ontoflood/,has textual description
 hasImpactLevel,Data Property,,,PotentialImpact,integer,exactly 1,Numerical categorisation of the impact potential of a flood event (e.g. on a linear scale from 1 to 4).,https://www.theworldavatar.com/kg/ontoflood/,has impact level
 MinimalImpact,Class,PotentialImpact,IS-A,,,,Minimal impacts expected from a forecasted flood event.,https://www.theworldavatar.com/kg/ontoflood/,Minimal impact
 MinorImpact,Class,PotentialImpact,IS-A,,,,Minor impacts expected from a forecasted flood event.,https://www.theworldavatar.com/kg/ontoflood/,Minor impact
@@ -93,10 +93,10 @@ SurfaceWater,Class,FloodSource,IS-A,,,,Forecasted flooding due to surface water/
 predicts,Object Property,,,FloodForecast,http://purl.obolibrary.org/obo/ENVO_01000710,exactly 1,A relationship between a flood forecast and the actual flood event it refers to.,https://www.theworldavatar.com/kg/ontoflood/,predicts
 http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,Class,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertArea,EQUIVALENT-TO,,,,,https://www.theworldavatar.com/kg/ontoflood/,FloodArea
 http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,Class,http://environment.data.gov.uk/flood-monitoring/def/core/FloodWarningArea,EQUIVALENT-TO,,,,,https://www.theworldavatar.com/kg/ontoflood/,FloodArea
-https://www.w3.org/2000/01/rdf-schema#label,Data Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,string,,A relationship between a Flood Area and its textual description.,https://www.theworldavatar.com/kg/ontoflood/,has textual description
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,string,,A relationship between a Flood Area and its textual description.,https://www.theworldavatar.com/kg/ontoflood/,has textual description
 http://purl.obolibrary.org/obo/ENVO_00000063,Class,,,,,,,http://purl.obolibrary.org/obo/envo.owl,Water body
 attachedWaterBody,Object Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,http://purl.obolibrary.org/obo/ENVO_00000063,,,https://www.theworldavatar.com/kg/ontoflood/,attached water body
-https://www.w3.org/2000/01/rdf-schema#label,Data Property,,,http://purl.obolibrary.org/obo/ENVO_00000063,string,,A relationship between a water body and its textual description.,https://www.theworldavatar.com/kg/ontoflood/,has textual description
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,http://purl.obolibrary.org/obo/ENVO_00000063,string,,A relationship between a water body and its textual description.,https://www.theworldavatar.com/kg/ontoflood/,has textual description
 http://purl.obolibrary.org/obo/ENVO_00000014,Class,http://purl.obolibrary.org/obo/ENVO_00000063,IS-A,,,,,http://purl.obolibrary.org/obo/envo.owl,Canal
 http://purl.obolibrary.org/obo/ENVO_00000016,Class,http://purl.obolibrary.org/obo/ENVO_00000063,IS-A,,,,,http://purl.obolibrary.org/obo/envo.owl,Sea
 http://purl.obolibrary.org/obo/ENVO_00000020,Class,http://purl.obolibrary.org/obo/ENVO_00000063,IS-A,,,,,http://purl.obolibrary.org/obo/envo.owl,Lake
@@ -120,7 +120,7 @@ SevereFloodWarning,Class,Severity,IS-A,,,,Flood alert/warning indicating that se
 WarningNoLongerInForce,Class,Severity,IS-A,,,,Flood alert/warning indicating that the warning is no longer in force.,https://www.theworldavatar.com/kg/ontoflood/,Inactive flood warning
 hasSeverity,Object Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,Severity,exactly 1,A relationship between a Flood Alert/Warning and its severity.,https://www.theworldavatar.com/kg/ontoflood/,has severity
 hasSeverityLevel,Data Property,,,Severity,integer,exactly 1,Numerical categorisation of the severity level of a flood warning/alert (e.g. on a linear scale from 1 to 4).,https://www.theworldavatar.com/kg/ontoflood/,has severity level
-https://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Severity,string,exactly 1,"Textual description of the severity of a flood warning/alert (e.g. minimal, minor, significant, severe).",https://www.theworldavatar.com/kg/ontoflood/,label
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Severity,string,exactly 1,"Textual description of the severity of a flood warning/alert (e.g. minimal, minor, significant, severe).",https://www.theworldavatar.com/kg/ontoflood/,label
 warnsAbout,Object Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,http://purl.obolibrary.org/obo/ENVO_01000710,exactly 1,A relationship between a Flood Alert/Warning and the actual flood event it refers to.,https://www.theworldavatar.com/kg/ontoflood/,warns about
 hasAreaIdentifier,Data Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,string,,,https://www.theworldavatar.com/kg/ontoflood/,has areal identifier
 hasAlertOrWarningHistory,Object Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,FloodAlertOrWarningHistory,,,https://www.theworldavatar.com/kg/ontoflood/,has historical warning
@@ -131,18 +131,18 @@ http://environment.data.gov.uk/flood-monitoring/def/core/timeRaised,Data Propert
 http://environment.data.gov.uk/flood-monitoring/def/core/message,Data Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,string,,,https://www.theworldavatar.com/kg/ontoflood/,message
 hasSeverity,Object Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,Severity,,,https://www.theworldavatar.com/kg/ontoflood/,has severity
 hasSeverityLevel,Data Property,,,Severity,integer,,,https://www.theworldavatar.com/kg/ontoflood/,has severity level
-https://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Severity,string,,,https://www.theworldavatar.com/kg/ontoflood/,label
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Severity,string,,,https://www.theworldavatar.com/kg/ontoflood/,label
 warnsAbout,Object Property,,,http://environment.data.gov.uk/flood-monitoring/def/core/FloodAlertOrWarning,http://purl.obolibrary.org/obo/ENVO_01000710,,,https://www.theworldavatar.com/kg/ontoflood/,warns about
 hasGeospatialDistribution,Object Property,,,http://www.ontology-of-units-of-measure.org/resource/om-2/Measure,ArealDistribution,,,https://www.theworldavatar.com/kg/ontoflood/,has geospatial distribution
 hasMonetaryValue,Object Property,,,Impact,http://www.ontology-of-units-of-measure.org/resource/om-2/AmountOfMoney,,,https://www.theworldavatar.com/kg/ontoflood/,has monetary value
-hasTimeInterval,Object Property,,,http://sweetontology.net/phen/Event,https://www.w3.org/2006/time#Interval,,,https://www.theworldavatar.com/kg/ontoflood/,has time interval
+hasTimeInterval,Object Property,,,http://sweetontology.net/phen/Event,http://www.w3.org/2006/time#Interval,,,https://www.theworldavatar.com/kg/ontoflood/,has time interval
 hasWGS84LatitudeLongitude,Data Property,,,Location,http://www.bigdata.com/rdf/geospatial/literals/v1#lat-lon,,,https://www.theworldavatar.com/kg/ontoflood/,has WGS84 latitude longitude
 hasLocation,Object Property,,,http://sweetontology.net/phen/Event UNION FloodForecast UNION http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea,Location,,,https://www.theworldavatar.com/kg/ontoflood/,has location
 hasLikelihood,Object Property,,,RiskLevel,Likelihood,,,https://www.theworldavatar.com/kg/ontoflood/,has likelihood
-https://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Likelihood,string,,,https://www.theworldavatar.com/kg/ontoflood/,has textual description
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,Likelihood,string,,,https://www.theworldavatar.com/kg/ontoflood/,has textual description
 hasLikelihoodScore,Data Property,,,Likelihood,integer,,,https://www.theworldavatar.com/kg/ontoflood/,has likelihood score
 hasPotentialImpact,Object Property,,,RiskLevel,PotentialImpact,,,https://www.theworldavatar.com/kg/ontoflood/,has potential impact
-https://www.w3.org/2000/01/rdf-schema#label,Data Property,,,PotentialImpact,string,,,https://www.theworldavatar.com/kg/ontoflood/,has textual description
+http://www.w3.org/2000/01/rdf-schema#label,Data Property,,,PotentialImpact,string,,,https://www.theworldavatar.com/kg/ontoflood/,has textual description
 hasImpactLevel,Data Property,,,PotentialImpact,integer,,,https://www.theworldavatar.com/kg/ontoflood/,has impact level
 hasRiskLevel,Object Property,,,FloodForecast,RiskLevel,,,https://www.theworldavatar.com/kg/ontoflood/,has risk level
 hasEffectiveDate,Data Property,,,FloodForecast,date,,,https://www.theworldavatar.com/kg/ontoflood/,has date
