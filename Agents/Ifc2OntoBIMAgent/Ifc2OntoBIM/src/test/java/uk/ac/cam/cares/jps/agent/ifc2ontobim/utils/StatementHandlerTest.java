@@ -9,14 +9,36 @@ import java.util.LinkedHashSet;
 import static org.junit.jupiter.api.Assertions.*;
 
 class StatementHandlerTest {
-    private static final String testSubject = "http://www.example.org/Wall_12";
-    private static final String testProperty = "http://www.example.org/has";
-    private static final String testObject = "http://www.example.org/Door_12";
+    private static final String baseURI = "http://www.example.org/";
+    private static final String testSubject = baseURI + "IfcWall_12";
+    private static final String testProperty = baseURI + "has";
+    private static final String testObject = baseURI + "Door_12";
+    private static final String testBIMClass = "Wall";
+    private static final String testRenamedInstance = baseURI + "Wall_12";
+
     private static final String testStringLiteral = "Name is wall";
     private static final Double testDoubleLiteral = 1.02;
     private static final Integer testIntegerLiteral = 5;
 
 
+    @Test
+    void testCreateInstanceFromIRI() {
+        NamespaceMapper.setBaseNameSpace(baseURI);
+        String result = StatementHandler.createInstanceFromIRI(testSubject, testBIMClass);
+        // Test that the generated instance is correct
+        assertEquals(testRenamedInstance, result);
+    }
+
+    @Test
+    void testCreateInstanceFromOptionalIRI() {
+        NamespaceMapper.setBaseNameSpace(baseURI);
+        String result = StatementHandler.createInstanceFromOptionalIRI(testSubject, testBIMClass);
+        // Test that the generated instance is correct
+        assertEquals(testRenamedInstance, result);
+        // Test that when IRI is optional ie null, it returns null
+        assertNull(StatementHandler.createInstanceFromOptionalIRI(null, testBIMClass));
+    }
+    
     @Test
     void testAddStatementForThreeNodes() {
         // Set up

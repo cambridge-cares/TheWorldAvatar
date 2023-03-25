@@ -2,9 +2,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model;
 
 import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
 import java.util.LinkedHashSet;
 
@@ -30,18 +28,11 @@ public class LocalPlacement {
      * @param relPlacementIri  An optional field for this element's relative position to the parent zone/element. IfcSite usually does not have this field.
      */
     public LocalPlacement(String iri, String refPointIri, String refDirectionIri, String axisDirectionIri, String relPlacementIri) {
-        String prefix = NamespaceMapper.getBaseNameSpace();
-        String instVal = StringUtils.getStringAfterLastCharacterOccurrence(iri, StringUtils.UNDERSCORE);
-        this.iri = prefix + OntoBimConstant.LOCAL_PLACEMENT_CLASS + OntoBimConstant.UNDERSCORE + instVal;
+        this.iri = StatementHandler.createInstanceFromIRI(iri, OntoBimConstant.LOCAL_PLACEMENT_CLASS);
         this.refPointIRI = refPointIri;
         this.refDirIRI = refDirectionIri;
         this.axisDirIRI = axisDirectionIri;
-        if (relPlacementIri != null) {
-            instVal = StringUtils.getStringAfterLastCharacterOccurrence(relPlacementIri, StringUtils.UNDERSCORE);
-            this.relPlacementIRI = prefix + OntoBimConstant.LOCAL_PLACEMENT_CLASS + OntoBimConstant.UNDERSCORE + instVal;
-        } else {
-            this.relPlacementIRI = null;
-        }
+        this.relPlacementIRI = StatementHandler.createInstanceFromOptionalIRI(relPlacementIri, OntoBimConstant.LOCAL_PLACEMENT_CLASS);
     }
 
     public String getIri() {

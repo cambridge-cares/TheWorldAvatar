@@ -4,7 +4,6 @@ import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
 import java.util.LinkedHashSet;
 import java.util.UUID;
@@ -33,8 +32,7 @@ public class IfcModelRepresentation {
         this.ifcRepIri = this.prefix + OntoBimConstant.ASSET_MODEL_REP_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.name = name;
         this.uid = uid;
-        String instVal = StringUtils.getStringAfterLastCharacterOccurrence(placementIri, StringUtils.UNDERSCORE);
-        this.placementIri = prefix + OntoBimConstant.LOCAL_PLACEMENT_CLASS + OntoBimConstant.UNDERSCORE + instVal;
+        this.placementIri = StatementHandler.createInstanceFromIRI(placementIri, OntoBimConstant.LOCAL_PLACEMENT_CLASS);
     }
 
     public String getIfcRepIri() { return this.ifcRepIri;}

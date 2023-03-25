@@ -4,7 +4,6 @@ import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
 import java.util.LinkedHashSet;
 import java.util.UUID;
@@ -35,12 +34,7 @@ public class GeometricVoid {
         this.elementIRI = elementIri;
         this.voidModelRepIRI = voidModelRepIri;
         this.voidType = voidType;
-        if (placementIri != null) {
-            String instVal = StringUtils.getStringAfterLastCharacterOccurrence(placementIri, StringUtils.UNDERSCORE);
-            this.placementIRI = prefix + OntoBimConstant.LOCAL_PLACEMENT_CLASS + OntoBimConstant.UNDERSCORE + instVal;
-        } else {
-            this.placementIRI = null;
-        }
+        this.placementIRI = StatementHandler.createInstanceFromOptionalIRI(placementIri, OntoBimConstant.LOCAL_PLACEMENT_CLASS);
     }
 
     /**

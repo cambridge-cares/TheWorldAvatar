@@ -4,7 +4,6 @@ import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
 import java.util.LinkedHashSet;
 import java.util.UUID;
@@ -30,7 +29,7 @@ public class GeometricRepresentationContext {
         // Generate new geometric representation context IRI
         this.iri = prefix + OntoBimConstant.GEOM_CONTEXT_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.dimension = Double.valueOf(spaceDimension);
-        this.wcsIri = worldCoordinateSysIri;
+        this.wcsIri = StatementHandler.createInstanceFromIRI(worldCoordinateSysIri, OntoBimConstant.LOCAL_PLACEMENT_CLASS);
         // Parse the optional values
         if (precision != null) {
             this.precision = Double.valueOf(precision);
@@ -51,7 +50,6 @@ public class GeometricRepresentationContext {
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_GEOM_CONTEXT_CLASS);
         StatementHandler.addStatementWithNumberLiteral(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_SPACE_DIMENSION, this.dimension);
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_WCS, this.wcsIri);
-        StatementHandler.addStatement(statementSet, this.wcsIri, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_LOCAL_PLACEMENT_CLASS);
         StatementHandler.addOptionalStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_PRECISION, this.precision);
         StatementHandler.addOptionalStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_TRUE_NORTH, this.northDirIri);
     }

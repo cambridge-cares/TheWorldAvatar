@@ -4,6 +4,7 @@ import org.apache.jena.rdf.model.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.Ifc2OntoBIMAgent;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.LinkedHashSet;
@@ -15,6 +16,30 @@ import java.util.LinkedHashSet;
  */
 public class StatementHandler {
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
+
+    /**
+     * Creates a new instance from a required IRI while retaining the numerical identifier.
+     *
+     * @param iri      IRI of instance to be renamed
+     * @param bimClass The new class name in the OntoBIM ontology.
+     */
+    public static String createInstanceFromIRI(String iri, String bimClass) {
+        String identifier = StringUtils.getStringAfterLastCharacterOccurrence(iri, StringUtils.UNDERSCORE);
+        return NamespaceMapper.getBaseNameSpace() + bimClass + OntoBimConstant.UNDERSCORE + identifier;
+    }
+
+    /**
+     * Creates a new instance from an optional IRI while retaining the numerical identifier.
+     *
+     * @param iri      IRI of instance to be renamed
+     * @param bimClass The new class name in the OntoBIM ontology.
+     */
+    public static String createInstanceFromOptionalIRI(String iri, String bimClass) {
+        if (iri != null) {
+            return createInstanceFromIRI(iri, bimClass);
+        }
+        return null;
+    }
 
     /**
      * An overloaded method to add a statement with subject, predicate, and object nodes to the statement set.
@@ -91,7 +116,7 @@ public class StatementHandler {
      * @param isObjInst    A boolean indicating if the object is a node or a string.
      */
     public static void addOptionalStatement(LinkedHashSet<Statement> statementSet, String subject, String predicate, String object, boolean isObjInst) {
-        if (object!=null) {
+        if (object != null) {
             addStatement(statementSet, subject, predicate, object, isObjInst);
         }
     }
@@ -106,7 +131,7 @@ public class StatementHandler {
      * @param object       The object node with a valid URI or a string literal.
      */
     public static void addOptionalStatement(LinkedHashSet<Statement> statementSet, String subject, String predicate, String object) {
-        if (object!=null) {
+        if (object != null) {
             addStatement(statementSet, subject, predicate, object, true);
         }
     }
@@ -121,7 +146,7 @@ public class StatementHandler {
      * @param object       The object node with a valid URI or a string literal.
      */
     public static void addOptionalStatement(LinkedHashSet<Statement> statementSet, String subject, String predicate, Number object) {
-        if (object!=null) {
+        if (object != null) {
             addStatementWithNumberLiteral(statementSet, subject, predicate, object);
         }
     }
