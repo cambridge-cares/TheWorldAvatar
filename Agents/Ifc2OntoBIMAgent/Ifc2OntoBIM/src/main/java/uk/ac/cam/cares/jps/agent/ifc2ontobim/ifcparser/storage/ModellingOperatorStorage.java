@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.Ifc2OntoBIMAgent;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.CartesianPoint;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.CartesianTransformationOperator;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.DirectionVector;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.LocalPlacement;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -26,6 +27,7 @@ public class ModellingOperatorStorage {
     private static Map<String, DirectionVector> dirMappings;
     private static Queue<DirectionVector> directions;
     private static Queue<LocalPlacement> placements;
+    private static Queue<CartesianTransformationOperator> operators;
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
     private static final String NON_EXISTING_ERROR = " does not exist in mappings!";
 
@@ -38,6 +40,7 @@ public class ModellingOperatorStorage {
         dirMappings = new HashMap<>();
         directions = new ArrayDeque<>();
         placements = new ArrayDeque<>();
+        operators = new ArrayDeque<>();
     }
 
     /**
@@ -88,6 +91,14 @@ public class ModellingOperatorStorage {
         placements.offer(placement);
     }
 
+    /**
+     * A method to store the modelling parameter's IRI and its associated Java object as mappings.
+     *
+     * @param operator The CartesianTransformationOperator object generated from the iri.
+     */
+    public void add(CartesianTransformationOperator operator) {
+        operators.offer(operator);
+    }
 
     /**
      * Retrieve the cartesian point's Java object associated with the IRI input.
@@ -176,6 +187,9 @@ public class ModellingOperatorStorage {
         }
         while (!placements.isEmpty()) {
             placements.poll().constructStatements(statementSet);
+        }
+        while (!operators.isEmpty()) {
+            operators.poll().constructStatements(statementSet);
         }
     }
 }

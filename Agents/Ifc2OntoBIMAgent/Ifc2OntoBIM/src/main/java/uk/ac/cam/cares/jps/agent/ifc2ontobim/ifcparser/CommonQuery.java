@@ -132,6 +132,9 @@ public class CommonQuery {
     public static final String Z_VALUE_VAR = "?zvalue";
     public static final String X_LIST_VAR = "?xlist";
     public static final String Y_LIST_VAR = "?ylist";
+    public static final String X_AXIS_DIR_VECTOR_VAR = "?xaxisdirection";
+    public static final String Y_AXIS_DIR_VECTOR_VAR = "?yaxisdirection";
+    public static final String SCALE_VAR = "?scale";
     // IfcOwl Properties
     public static final String EXPRESS_HASDOUBLE = "/express:hasDouble";
     public static final String EXPRESS_HASINTEGER = "/express:hasInteger";
@@ -191,6 +194,10 @@ public class CommonQuery {
     public static final String IFC_AXIS_DIRECTION_3D = NamespaceMapper.IFC_PREFIX + ":axis_IfcAxis2Placement3D";
     public static final String IFC_COORDINATES = NamespaceMapper.IFC_PREFIX + ":coordinates_IfcCartesianPoint";
     public static final String IFC_DIR_RATIOS = NamespaceMapper.IFC_PREFIX + ":directionRatios_IfcDirection";
+    public static final String IFC_ORIGIN_TRANSFORMATION = NamespaceMapper.IFC_PREFIX + ":localOrigin_IfcCartesianTransformationOperator";
+    public static final String IFC_SCALE_TRANSFORMATION = NamespaceMapper.IFC_PREFIX + ":scale_IfcCartesianTransformationOperator";
+    public static final String IFC_X_AXIS_TRANSFORMATION = NamespaceMapper.IFC_PREFIX + ":axis1_IfcCartesianTransformationOperator";
+    public static final String IFC_Y_AXIS_TRANSFORMATION = NamespaceMapper.IFC_PREFIX + ":axis2_IfcCartesianTransformationOperator";
     // IfcOwl Classes
     public static final String IFCPROJECT = NamespaceMapper.IFC_PREFIX + ":IfcProject";
     public static final String IFCSITE = NamespaceMapper.IFC_PREFIX + ":IfcSite";

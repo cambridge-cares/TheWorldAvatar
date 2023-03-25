@@ -5,6 +5,7 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.CartesianPoint;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.CartesianTransformationOperator;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.DirectionVector;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.LocalPlacement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.CommonQuery;
@@ -31,6 +32,7 @@ public class ModellingOperatorFacade {
         execDirectionQuery(owlModel);
         mappings.replaceDuplicates();
         execLocalPlacementQuery(owlModel);
+        execCartesianTransformationOperatorQuery(owlModel);
     }
 
     /**
@@ -176,6 +178,61 @@ public class ModellingOperatorFacade {
             String relPlacementIri = QueryHandler.retrieveIri(soln, CommonQuery.REL_PLACEMENT_VAR);
             LocalPlacement placement = new LocalPlacement(iri, cartPointIri, refDirIri, axisDirIri, relPlacementIri);
             mappings.add(placement);
+        }
+    }
+
+    /**
+     * Creates the SPARQL SELECT query statements for CartesianTransformationOperator.
+     *
+     * @return A string containing the SPARQL query to execute.
+     */
+    private static String createCartesianTransformationOperatorSelectQuery() {
+        SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
+        selectBuilder.addVar(CommonQuery.CART_TRANSFORMER_VAR)
+                .addVar(CommonQuery.CART_POINT_VAR)
+                .addVar(CommonQuery.SCALE_VAR)
+                .addVar(CommonQuery.X_AXIS_DIR_VECTOR_VAR)
+                .addVar(CommonQuery.Y_AXIS_DIR_VECTOR_VAR);
+        selectBuilder.addWhere(CommonQuery.CART_TRANSFORMER_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_CART_TRANSFORMATION_OPERATOR)
+                .addWhere(CommonQuery.CART_TRANSFORMER_VAR, CommonQuery.IFC_ORIGIN_TRANSFORMATION, CommonQuery.CART_POINT_VAR)
+                .addWhere(CommonQuery.CART_POINT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_CART_POINT)
+                .addOptional(CommonQuery.CART_TRANSFORMER_VAR, CommonQuery.IFC_SCALE_TRANSFORMATION + CommonQuery.EXPRESS_HASDOUBLE, CommonQuery.SCALE_VAR)
+                .addOptional(CommonQuery.CART_TRANSFORMER_VAR, CommonQuery.IFC_X_AXIS_TRANSFORMATION, CommonQuery.X_AXIS_DIR_VECTOR_VAR)
+                .addOptional(CommonQuery.CART_TRANSFORMER_VAR, CommonQuery.IFC_Y_AXIS_TRANSFORMATION, CommonQuery.Y_AXIS_DIR_VECTOR_VAR);
+        return selectBuilder.buildString();
+    }
+
+    /**
+     * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for CartesianTransformationOperator.
+     *
+     * @param owlModel The IfcOwl model containing the triples to query from.
+     */
+    private static void execCartesianTransformationOperatorQuery(Model owlModel) {
+        String query = createCartesianTransformationOperatorSelectQuery();
+        ResultSet results = QueryHandler.execSelectQuery(query, owlModel);
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            String iri = soln.get(CommonQuery.CART_TRANSFORMER_VAR).toString();
+            String scaleFactor = QueryHandler.retrieveLiteral(soln, CommonQuery.SCALE_VAR);
+            String originIri = QueryHandler.retrieveIri(soln, CommonQuery.CART_POINT_VAR);
+            // If the retrieved IRI is not null, retrieve the point and update the IRI
+            // Else, keep it as null for the placement object
+            if (originIri!= null){
+                CartesianPoint point = mappings.getPoint(originIri);
+                originIri = point.getIri();
+            }
+            String xDirIri = QueryHandler.retrieveIri(soln, CommonQuery.X_AXIS_DIR_VECTOR_VAR);
+            if (xDirIri!= null){
+                DirectionVector xAxisDirection = mappings.getDirectionVector(xDirIri);
+                xDirIri = xAxisDirection.getIri();
+            }
+            String yDirIri = QueryHandler.retrieveIri(soln, CommonQuery.Y_AXIS_DIR_VECTOR_VAR);
+            if (yDirIri!= null){
+                DirectionVector yAxisDirection = mappings.getDirectionVector(yDirIri);
+                yDirIri = yAxisDirection.getIri();
+            }
+            CartesianTransformationOperator operator = new CartesianTransformationOperator(iri, originIri, scaleFactor, xDirIri, yDirIri);
+            mappings.add(operator);
         }
     }
 }

@@ -47,6 +47,9 @@ class ModellingOperatorFacadeTest {
     private static final Double IFC_SEC_DIR_VECTOR_X_RATIO = 5.11;
     private static final Double IFC_SEC_DIR_VECTOR_Y_RATIO = 4.02;
     private static final Double IFC_SEC_DIR_VECTOR_Z_RATIO = 0.41;
+    private static final String IFC_TRANSFORMATION_OPERATOR_IRI = TEST_BASE_URI + JunitTestUtils.IFC_TRANSFORMATION_OPERATOR_CLASS + "_67547";
+    private static final String BIM_TRANSFORMATION_OPERATOR_IRI = TEST_BASE_URI + JunitTestUtils.BIM_TRANSFORMATION_OPERATOR_CLASS + "_67547";
+    private static final Double TRANSFORMATION_OPERATOR_SCALE = 0.291;
 
     @BeforeAll
     static void setUp() {
@@ -172,7 +175,7 @@ class ModellingOperatorFacadeTest {
     }
 
     @Test
-    void testRetrieveOperatorInstancesNoPlacement() {
+    void testRetrieveOperatorInstancesForOnlyPointsAndDirection() {
         // Set up
         addPointOrDirectionTriples(IFC_FIRST_CART_POINT_INST, IFC_CART_POINT, "coordinates_IfcCartesianPoint", IFC_CART_POINT_X_COORD, IFC_CART_POINT_Y_COORD, IFC_CART_POINT_Z_COORD);
         addPointOrDirectionTriples(IFC_FIRST_DIR_VECTOR_INST, IFC_DIRECTION, "directionRatios_IfcDirection", IFC_DIR_VECTOR_X_RATIO, IFC_DIR_VECTOR_Y_RATIO, IFC_DIR_VECTOR_Z_RATIO);
@@ -184,6 +187,46 @@ class ModellingOperatorFacadeTest {
         operatorMappings.constructAllStatements(sampleSet);
         // Verify that no point and direction vector statements exist when there is no local placement
         assertEquals(0, sampleSet.size());
+    }
+
+    @Test
+    void testRetrieveOperatorInstancesForIfcCartesianTransformationOperator() {
+        // Set up
+        addPointOrDirectionTriples(IFC_FIRST_CART_POINT_INST, IFC_CART_POINT, "coordinates_IfcCartesianPoint", IFC_CART_POINT_X_COORD, IFC_CART_POINT_Y_COORD, IFC_CART_POINT_Z_COORD);
+        addPointOrDirectionTriples(IFC_FIRST_DIR_VECTOR_INST, IFC_DIRECTION, "directionRatios_IfcDirection", IFC_DIR_VECTOR_X_RATIO, IFC_DIR_VECTOR_Y_RATIO, IFC_DIR_VECTOR_Z_RATIO);
+        addPointOrDirectionTriples(IFC_SEC_DIR_VECTOR_INST, IFC_DIRECTION, "directionRatios_IfcDirection", IFC_SEC_DIR_VECTOR_X_RATIO, IFC_SEC_DIR_VECTOR_Y_RATIO, IFC_SEC_DIR_VECTOR_Z_RATIO);
+        addTransformationOperatorTriples(IFC_TRANSFORMATION_OPERATOR_IRI, IFC_FIRST_CART_POINT_INST, IFC_FIRST_DIR_VECTOR_INST, IFC_SEC_DIR_VECTOR_INST, TRANSFORMATION_OPERATOR_SCALE);
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Execute method
+        ModellingOperatorFacade.retrieveOperatorInstances(sampleModel);
+        // Clean up results as one string
+        operatorMappings.constructAllStatements(sampleSet);
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generate expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_CART_POINT_X_COORD.toString(), IFC_CART_POINT_Y_COORD.toString(), IFC_CART_POINT_Z_COORD.toString()), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_DIR_VECTOR_X_RATIO.toString(), IFC_DIR_VECTOR_Y_RATIO.toString(), IFC_DIR_VECTOR_Z_RATIO.toString()), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_SEC_DIR_VECTOR_X_RATIO.toString(), IFC_SEC_DIR_VECTOR_Y_RATIO.toString(), IFC_SEC_DIR_VECTOR_Z_RATIO.toString()), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedTransformationOperatorStatements(BIM_TRANSFORMATION_OPERATOR_IRI, true), result);
+    }
+
+    @Test
+    void testRetrieveOperatorInstancesForIfcCartesianTransformationOperatorWithOptionalValues() {
+        // Set up
+        addPointOrDirectionTriples(IFC_FIRST_CART_POINT_INST, IFC_CART_POINT, "coordinates_IfcCartesianPoint", IFC_CART_POINT_X_COORD, IFC_CART_POINT_Y_COORD, IFC_CART_POINT_Z_COORD);
+        addPointOrDirectionTriples(IFC_FIRST_DIR_VECTOR_INST, IFC_DIRECTION, "directionRatios_IfcDirection", IFC_DIR_VECTOR_X_RATIO, IFC_DIR_VECTOR_Y_RATIO, IFC_DIR_VECTOR_Z_RATIO);
+        addPointOrDirectionTriples(IFC_SEC_DIR_VECTOR_INST, IFC_DIRECTION, "directionRatios_IfcDirection", IFC_SEC_DIR_VECTOR_X_RATIO, IFC_SEC_DIR_VECTOR_Y_RATIO, IFC_SEC_DIR_VECTOR_Z_RATIO);
+        addTransformationOperatorTriples(IFC_TRANSFORMATION_OPERATOR_IRI, IFC_FIRST_CART_POINT_INST, null, null, null);
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Execute method
+        ModellingOperatorFacade.retrieveOperatorInstances(sampleModel);
+        // Clean up results as one string
+        operatorMappings.constructAllStatements(sampleSet);
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generate expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_CART_POINT_X_COORD.toString(), IFC_CART_POINT_Y_COORD.toString(), IFC_CART_POINT_Z_COORD.toString()), result);
+        JunitTestUtils.doesExpectedListNotExist(genExpectedDirectionStatements(IFC_DIR_VECTOR_X_RATIO.toString(), IFC_DIR_VECTOR_Y_RATIO.toString(), IFC_DIR_VECTOR_Z_RATIO.toString()), result);
+        JunitTestUtils.doesExpectedListNotExist(genExpectedDirectionStatements(IFC_SEC_DIR_VECTOR_X_RATIO.toString(), IFC_SEC_DIR_VECTOR_Y_RATIO.toString(), IFC_SEC_DIR_VECTOR_Z_RATIO.toString()), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedTransformationOperatorStatements(BIM_TRANSFORMATION_OPERATOR_IRI, false), result);
     }
 
     private void addPointOrDirectionTriples(String iri, Resource ifcClass, String property, Double xVal, Double yVal, Double zVal) {
@@ -228,6 +271,19 @@ class ModellingOperatorFacadeTest {
         }
     }
 
+    private void addTransformationOperatorTriples(String iri, String pointIri, String xDirectionIri, String yDirectionIri, Double scale) {
+        sampleModel.createResource(iri)
+                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCartesianTransformationOperator3D"))
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "localOrigin_IfcCartesianTransformationOperator"), sampleModel.getResource(pointIri));
+        if (xDirectionIri!=null){
+            sampleModel.createResource(iri)
+                    .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "axis1_IfcCartesianTransformationOperator"), sampleModel.getResource(xDirectionIri))
+                    .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "axis2_IfcCartesianTransformationOperator"), sampleModel.getResource(yDirectionIri))
+                    .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "scale_IfcCartesianTransformationOperator"),
+                            sampleModel.createResource().addProperty(hasDouble, sampleModel.createTypedLiteral(scale))
+                    );
+        }
+    }
 
     private List<String> genExpectedPointStatements(String xCoord, String yCoord, String zCoord) {
         List<String> expected = new ArrayList<>();
@@ -260,6 +316,20 @@ class ModellingOperatorFacadeTest {
         }
         if (hasAxisDir) {
             expected.add(placementInst + ", http://www.theworldavatar.com/kg/ontobim/hasAxisDirection, " + TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+            expected.add(TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/DirectionVector");
+        }
+        return expected;
+    }
+
+    private List<String> genExpectedTransformationOperatorStatements(String inst, boolean hasOptional) {
+        List<String> expected = new ArrayList<>();
+        expected.add(inst + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/CartesianTransformationOperator");
+        expected.add(inst + ", http://www.theworldavatar.com/kg/ontobim/hasLocalOrigin, " + TEST_BASE_URI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/CartesianPoint");
+        if (hasOptional) {
+            expected.add(inst + ", http://www.theworldavatar.com/kg/ontobim/hasScale, \"" + TRANSFORMATION_OPERATOR_SCALE);
+            expected.add(inst + ", http://www.theworldavatar.com/kg/ontobim/hasDerivedXAxis, " + TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+            expected.add(inst + ", http://www.theworldavatar.com/kg/ontobim/hasDerivedYAxis, " + TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
             expected.add(TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/DirectionVector");
         }
         return expected;

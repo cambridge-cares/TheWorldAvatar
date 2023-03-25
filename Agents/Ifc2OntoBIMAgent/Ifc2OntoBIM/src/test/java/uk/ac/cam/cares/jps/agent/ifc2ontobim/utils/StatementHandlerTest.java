@@ -38,7 +38,7 @@ class StatementHandlerTest {
         // Test that when IRI is optional ie null, it returns null
         assertNull(StatementHandler.createInstanceFromOptionalIRI(null, testBIMClass));
     }
-    
+
     @Test
     void testAddStatementForThreeNodes() {
         // Set up

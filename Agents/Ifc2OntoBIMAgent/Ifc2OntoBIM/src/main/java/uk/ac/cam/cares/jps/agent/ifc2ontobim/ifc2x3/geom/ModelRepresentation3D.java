@@ -46,7 +46,7 @@ public class ModelRepresentation3D {
         // Optional fields: if the argument is null, the field will still be null
         this.repType = repType;
         this.sourcePlacementIri = StatementHandler.createInstanceFromOptionalIRI(sourcePlacementIri, OntoBimConstant.LOCAL_PLACEMENT_CLASS);
-        this.targetPlacementIri = cartesianTransformerIri;
+        this.targetPlacementIri = StatementHandler.createInstanceFromOptionalIRI(cartesianTransformerIri, OntoBimConstant.CART_TRANS_OPERATOR_CLASS);
     }
 
     public String getBimIri() { return this.bimIri;}

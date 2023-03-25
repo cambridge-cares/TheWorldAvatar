@@ -23,7 +23,8 @@ class ModelRepresentation3DTest {
     private static final String testPlacementValIRI = "2517";
     private static final String testPlacementIri = testBaseUri + "IfcLocalPlacement_" + testPlacementValIRI;
     private static final String testBIMPlacementIRI = testBaseUri + "LocalPlacement_" + testPlacementValIRI;
-    private static final String testTransformOperatorIri = testBaseUri + "CartesianTransformationOperator_515";
+    private static final String testTransformOperatorIri = testBaseUri + "IfcCartesianTransformationOperator_515";
+    private static final String testBimTransformOperatorIri = testBaseUri + "CartesianTransformationOperator_515";
     private static final String testGeomClass = JunitTestUtils.bimUri + "FacetedBrep";
     private static final String testAdditionalGeomIri = testBaseUri + "ExtrudedAreaSolid_37216";
     private static final String testAdditionalGeomIri2 = testBaseUri + "PolygonalBoundedHalfSpace_59158";
@@ -121,7 +122,7 @@ class ModelRepresentation3DTest {
         List<String> expected = new ArrayList<>();
         expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"Brep");
         expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSourcePlacement, " + testBIMPlacementIRI);
-        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTargetPlacement, " + testTransformOperatorIri);
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTargetPlacement, " + testBimTransformOperatorIri);
         return expected;
     }
 

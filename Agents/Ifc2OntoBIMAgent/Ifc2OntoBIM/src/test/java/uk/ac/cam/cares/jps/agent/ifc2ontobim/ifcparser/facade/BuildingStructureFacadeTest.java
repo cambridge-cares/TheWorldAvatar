@@ -91,6 +91,7 @@ class BuildingStructureFacadeTest {
     private static final String IFC_SOURCE_PLACEMENT_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_571261";
     private static final String IFC_SOURCE_PLACEMENT_BIM_INST = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS +  "_571261";
     private static final String IFC_TARGET_TRANSFORMATION_OPERATOR_INST = TEST_BASE_URI + "IfcCartesianTransformationOperator3D_3098157";
+    private static final String BIM_TARGET_TRANSFORMATION_OPERATOR_INST = TEST_BASE_URI + "CartesianTransformationOperator_3098157";
     private static final String IFC_MAPPED_ITEM_INST = TEST_BASE_URI + "IfcMappedItem_185218";
     private static final String IFC_REP_MAP_INST = TEST_BASE_URI + "IfcRepresentationMap_3213";
     // Stair geometry properties
@@ -893,7 +894,7 @@ class BuildingStructureFacadeTest {
     private List<String> genExpectedOptionalGeomStatements() {
         List<String> expected = new ArrayList<>();
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSourcePlacement, " + IFC_SOURCE_PLACEMENT_BIM_INST);
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTargetPlacement, " + IFC_TARGET_TRANSFORMATION_OPERATOR_INST);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTargetPlacement, " + BIM_TARGET_TRANSFORMATION_OPERATOR_INST);
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + IFC_MAPPED_REP_TYPE_VAL);
         return expected;
     }

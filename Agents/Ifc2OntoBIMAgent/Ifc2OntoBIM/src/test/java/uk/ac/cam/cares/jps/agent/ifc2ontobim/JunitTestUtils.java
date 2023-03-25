@@ -27,6 +27,8 @@ public class JunitTestUtils {
     public static final String IFC2X3_CONTAIN_ELEMENT_PROPERTY = ifc2x3Uri + "relatedElements_IfcRelContainedInSpatialStructure";
     public static final String BIM_PLACEMENT_CLASS = "LocalPlacement";
     public static final String IFC_PLACEMENT_CLASS = "IfcLocalPlacement";
+    public static final String BIM_TRANSFORMATION_OPERATOR_CLASS = "CartesianTransformationOperator";
+    public static final String IFC_TRANSFORMATION_OPERATOR_CLASS = "IfcCartesianTransformationOperator";
 
     public static void addPrefix(ConstructBuilder builder) {
         Map<String, String> nsMapping = new HashMap<>();

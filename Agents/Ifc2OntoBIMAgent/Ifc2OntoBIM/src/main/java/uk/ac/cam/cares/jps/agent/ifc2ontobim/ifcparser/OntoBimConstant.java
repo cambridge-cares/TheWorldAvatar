@@ -65,6 +65,11 @@ public class OntoBimConstant {
     public static final String BIM_HAS_X_DIR_RATIO = NamespaceMapper.BIM_NAMESPACE + "hasXDirectionRatio";
     public static final String BIM_HAS_Y_DIR_RATIO = NamespaceMapper.BIM_NAMESPACE + "hasYDirectionRatio";
     public static final String BIM_HAS_Z_DIR_RATIO = NamespaceMapper.BIM_NAMESPACE + "hasZDirectionRatio";
+    public static final String BIM_HAS_LOCAL_ORIGIN = NamespaceMapper.BIM_NAMESPACE + "hasLocalOrigin";
+    public static final String BIM_HAS_SCALE = NamespaceMapper.BIM_NAMESPACE + "hasScale";
+    public static final String BIM_HAS_DERIVED_X_AXIS = NamespaceMapper.BIM_NAMESPACE + "hasDerivedXAxis";
+    public static final String BIM_HAS_DERIVED_Y_AXIS = NamespaceMapper.BIM_NAMESPACE + "hasDerivedYAxis";
+
     // OntoBim classes
     public static final String PROJECT_CLASS = "IfcProjectRepresentation";
     public static final String BIM_PROJECT_CLASS = NamespaceMapper.BIM_NAMESPACE + PROJECT_CLASS;

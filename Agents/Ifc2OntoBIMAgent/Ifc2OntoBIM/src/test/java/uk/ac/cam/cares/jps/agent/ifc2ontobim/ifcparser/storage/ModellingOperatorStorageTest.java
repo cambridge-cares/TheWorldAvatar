@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.CartesianPoint;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.CartesianTransformationOperator;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.DirectionVector;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.LocalPlacement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
@@ -45,6 +46,8 @@ class ModellingOperatorStorageTest {
     private static final Double TEST_Z_DIR_RATIO2 = 2.32;
     private static final String TEST_PLACEMENT_IRI = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_93492";
     private static final String TEST_PLACEMENT_BIM_IRI = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS + "_93492";
+    private static final String TEST_TRANSFORMATION_OPERATOR_IRI = TEST_BASE_URI + JunitTestUtils.IFC_TRANSFORMATION_OPERATOR_CLASS + "_67547";
+    private static final String TEST_TRANSFORMATION_OPERATOR_BIM_IRI = TEST_BASE_URI + JunitTestUtils.BIM_TRANSFORMATION_OPERATOR_CLASS + "_67547";
     private static final String NON_EXISTENT_IRI = TEST_BASE_URI + "DOES/NOT/EXIST_1223";
     private static final String NON_EXISTING_ERROR = NON_EXISTENT_IRI + " does not exist in mappings!";
 
@@ -130,6 +133,24 @@ class ModellingOperatorStorageTest {
         // Assert if they are equals
         assertTrue(result.contains(TEST_PLACEMENT_BIM_IRI + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement"));
         assertTrue(result.contains(TEST_PLACEMENT_BIM_IRI + ", http://www.theworldavatar.com/kg/ontobim/hasRefPoint, " + TEST_FIRST_POINT_IRI));
+    }
+
+    @Test
+    void testAddCartesianTransformationOperatorAndStatement() {
+        // Create a new sample
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        CartesianTransformationOperator samplePlacement = new CartesianTransformationOperator(TEST_TRANSFORMATION_OPERATOR_IRI, TEST_FIRST_POINT_IRI, null, null, null);
+        // Verify that no statements have been generated
+        testMappings.constructAllStatements(sampleSet);
+        assertEquals(0, sampleSet.size());
+        // Execute method
+        testMappings.add(samplePlacement);
+        testMappings.constructAllStatements(sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Assert if they are equals
+        assertTrue(result.contains(TEST_TRANSFORMATION_OPERATOR_BIM_IRI + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/CartesianTransformationOperator"));
+        assertTrue(result.contains(TEST_TRANSFORMATION_OPERATOR_BIM_IRI + ", http://www.theworldavatar.com/kg/ontobim/hasLocalOrigin, " + TEST_FIRST_POINT_IRI));
     }
 
     @Test
