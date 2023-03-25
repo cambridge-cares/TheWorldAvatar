@@ -2,27 +2,29 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone;
 
 import org.apache.jena.base.Sys;
 import org.apache.jena.rdf.model.Statement;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class IfcSiteRepresentationTest {
-    private static final String testBaseUri1 = "http://www.example.org/";
-    private static final String testIri1 = testBaseUri1 + "IfcSiteRepresentation_142";
-    private static final String testBaseUri2 = "http://www.example.org/test#";
-    private static final String testIri2 = testBaseUri2 + "IfcSiteRepresentation_1322";
+    private static final String testBaseUri = "http://www.example.org/";
+    private static final String testIri1 = testBaseUri + "IfcSiteRepresentation_142";
+    private static final String testIri2 = testBaseUri + "IfcSiteRepresentation_1322";
     private static final String testClassName = "IfcSiteRepresentation";
     private static final String testName = "Free land";
     private static final String testUID = "zh163";
     private static final String testPlacementIriVal = "541";
-    private static final String testPlacementIri = testBaseUri1 + "IfcLocalPlacement_" + testPlacementIriVal;
-    private static final String testBimPlacementIri = testBaseUri1 + "LocalPlacement_" + testPlacementIriVal;
-    private static final String testBimPlacementIri2 = testBaseUri2 + "LocalPlacement_" + testPlacementIriVal;
-    private static final String testProjectIri = testBaseUri1 + "IfcProjectRepresentation_091383";
+    private static final String testPlacementIri = testBaseUri + "IfcLocalPlacement_" + testPlacementIriVal;
+    private static final String testBimPlacementIri = testBaseUri + "LocalPlacement_" + testPlacementIriVal;
+    private static final String testBimPlacementIri2 = testBaseUri + "LocalPlacement_" + testPlacementIriVal;
+    private static final String testProjectIri = testBaseUri + "IfcProjectRepresentation_091383";
     private static Queue<String> testLatitude;
     private static final Double testLatDegree = 10.21;
     private static final Double testLatMinute = 10.0;
@@ -41,6 +43,9 @@ class IfcSiteRepresentationTest {
     // Error message
     private static final String INVALID_LATITUDE_PARAM_ERROR = "Invalid latitude input. There should be four values!";
     private static final String INVALID_LONGITUDE_PARAM_ERROR = "Invalid longitude input. There should be four values!";
+    @BeforeAll
+    static void createNamespace(){ NamespaceMapper.setBaseNameSpace(testBaseUri); }
+    
     @BeforeEach
     void setup(){
         testLatitude = new ArrayDeque<>();
@@ -55,25 +60,27 @@ class IfcSiteRepresentationTest {
         testLongitude.offer(testLongMilSec.toString());
     }
 
+    @AfterAll
+    static void resetNamespace(){ NamespaceMapper.setBaseNameSpace("");}
 
     @Test
     void testSuperConstructor() {
         // First constructor
-        IfcSiteRepresentation sample = new IfcSiteRepresentation(testIri1, testName, testUID, testPlacementIri, testProjectIri, null, null, testRefElev1.toString());
+        IfcSiteRepresentation sample = new IfcSiteRepresentation(testName, testUID, testPlacementIri, testProjectIri, null, null, testRefElev1.toString());
         // Test that the sample fields are correct
-        assertEquals(testBaseUri1, sample.getPrefix());
+        assertEquals(testBaseUri, sample.getPrefix());
         assertNotEquals(testIri1, sample.getIri());
-        assertTrue(sample.getIri().contains(testBaseUri1 + testClassName + "_"));
+        assertTrue(sample.getIri().contains(testBaseUri + testClassName + "_"));
         assertEquals(testName, sample.getName());
         assertEquals(testUID, sample.getUid());
         assertEquals(testBimPlacementIri, sample.getPlacementIri());
         assertEquals(testRefElev1, sample.getRefElevation());
         // Second constructor
-        IfcSiteRepresentation sample2 = new IfcSiteRepresentation(testIri2, testName, testUID, testPlacementIri, null, null, null, null);
+        IfcSiteRepresentation sample2 = new IfcSiteRepresentation(testName, testUID, testPlacementIri, null, null, null, null);
         // Test that the sample fields are correct
-        assertEquals(testBaseUri2, sample2.getPrefix());
+        assertEquals(testBaseUri, sample2.getPrefix());
         assertNotEquals(testIri2, sample2.getIri());
-        assertTrue(sample2.getIri().contains(testBaseUri2 + testClassName + "_"));
+        assertTrue(sample2.getIri().contains(testBaseUri + testClassName + "_"));
         assertEquals(testName, sample2.getName());
         assertEquals(testUID, sample2.getUid());
         assertEquals(testBimPlacementIri2, sample2.getPlacementIri());
@@ -81,10 +88,10 @@ class IfcSiteRepresentationTest {
 
     @Test
     void testConstructorNoOptionalParams() {
-        IfcSiteRepresentation sample = new IfcSiteRepresentation(testIri1, testName, testUID, testPlacementIri, null, null, null,null);
+        IfcSiteRepresentation sample = new IfcSiteRepresentation(testName, testUID, testPlacementIri, null, null, null,null);
         // Test that the sample fields are correct
-        assertEquals(testBaseUri1, sample.getPrefix());
-        assertTrue(sample.getIri().contains(testBaseUri1 + testClassName + "_"));
+        assertEquals(testBaseUri, sample.getPrefix());
+        assertTrue(sample.getIri().contains(testBaseUri + testClassName + "_"));
         assertEquals(testName, sample.getName());
         assertEquals(testUID, sample.getUid());
         assertEquals(testBimPlacementIri, sample.getPlacementIri());
@@ -94,10 +101,10 @@ class IfcSiteRepresentationTest {
 
     @Test
     void testConstructorRefElevation() {
-        IfcSiteRepresentation sample1 = new IfcSiteRepresentation(testIri1, testName, testUID, testPlacementIri, null, null, null, testRefElev1.toString());
-        IfcSiteRepresentation sample2 = new IfcSiteRepresentation(testIri1, testName, testUID, testPlacementIri, null, null, null, testRefElevation1);
-        IfcSiteRepresentation sample3 = new IfcSiteRepresentation(testIri1, testName, testUID, testPlacementIri, null, null, null, testRefElev2.toString());
-        IfcSiteRepresentation sample4 = new IfcSiteRepresentation(testIri1, testName, testUID, testPlacementIri, null, null, null, testRefElevation2);
+        IfcSiteRepresentation sample1 = new IfcSiteRepresentation(testName, testUID, testPlacementIri, null, null, null, testRefElev1.toString());
+        IfcSiteRepresentation sample2 = new IfcSiteRepresentation(testName, testUID, testPlacementIri, null, null, null, testRefElevation1);
+        IfcSiteRepresentation sample3 = new IfcSiteRepresentation(testName, testUID, testPlacementIri, null, null, null, testRefElev2.toString());
+        IfcSiteRepresentation sample4 = new IfcSiteRepresentation(testName, testUID, testPlacementIri, null, null, null, testRefElevation2);
         // Test that the sample fields are correct
         assertEquals(testRefElev1, sample1.getRefElevation());
         assertEquals(testRefElev1, sample2.getRefElevation());
@@ -109,13 +116,13 @@ class IfcSiteRepresentationTest {
     void testConstructorInvalidLat() {
         // Empty latitude queue
         IllegalArgumentException thrownError = assertThrows(IllegalArgumentException.class, () ->
-                new IfcSiteRepresentation(testIri1, testName, testUID, testPlacementIri, null, new ArrayDeque<>(), testLongitude, testRefElev1.toString()));
+                new IfcSiteRepresentation(testName, testUID, testPlacementIri, null, new ArrayDeque<>(), testLongitude, testRefElev1.toString()));
         assertEquals(INVALID_LATITUDE_PARAM_ERROR, thrownError.getMessage());
         // Less than 4 values in latitude queue
         Queue<String> incompleteLatitude = new ArrayDeque<>();
         incompleteLatitude.offer(testLatDegree.toString());
         IllegalArgumentException thrownError2 = assertThrows(IllegalArgumentException.class, () ->
-                new IfcSiteRepresentation(testIri1, testName, testUID, testPlacementIri, null, incompleteLatitude, testLongitude, testRefElev1.toString()));
+                new IfcSiteRepresentation(testName, testUID, testPlacementIri, null, incompleteLatitude, testLongitude, testRefElev1.toString()));
         assertEquals(INVALID_LATITUDE_PARAM_ERROR, thrownError2.getMessage());
     }
 
@@ -124,7 +131,7 @@ class IfcSiteRepresentationTest {
         Queue<String> excessLongitude = new ArrayDeque<>(testLongitude);
         excessLongitude.offer("51");
         IllegalArgumentException thrownError = assertThrows(IllegalArgumentException.class, () ->
-                new IfcSiteRepresentation(testIri1, testName, testUID, testPlacementIri, null, testLatitude, excessLongitude, testRefElev1.toString()));
+                new IfcSiteRepresentation(testName, testUID, testPlacementIri, null, testLatitude, excessLongitude, testRefElev1.toString()));
         assertEquals(INVALID_LONGITUDE_PARAM_ERROR, thrownError.getMessage());
     }
 
@@ -132,7 +139,7 @@ class IfcSiteRepresentationTest {
     void testConstructStatementsNoRefElev() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        IfcSiteRepresentation sample = new IfcSiteRepresentation(testIri1, testName, testUID, testPlacementIri, testProjectIri, testLatitude, testLongitude,null);
+        IfcSiteRepresentation sample = new IfcSiteRepresentation(testName, testUID, testPlacementIri, testProjectIri, testLatitude, testLongitude,null);
         // Execute method
         sample.constructStatements(sampleSet);
         // Clean up results as one string
@@ -149,7 +156,7 @@ class IfcSiteRepresentationTest {
     void testConstructStatementsNoOptionalParam() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        IfcSiteRepresentation sample = new IfcSiteRepresentation(testIri1, testName, testUID, testPlacementIri, null, null, null,null);
+        IfcSiteRepresentation sample = new IfcSiteRepresentation(testName, testUID, testPlacementIri, null, null, null,null);
         // Execute method
         sample.constructStatements(sampleSet);
         // Clean up results as one string
@@ -166,7 +173,7 @@ class IfcSiteRepresentationTest {
     void testConstructStatements() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        IfcSiteRepresentation sample = new IfcSiteRepresentation(testIri1, testName, testUID, testPlacementIri, testProjectIri, testLatitude, testLongitude, testRefElev1.toString());
+        IfcSiteRepresentation sample = new IfcSiteRepresentation(testName, testUID, testPlacementIri, testProjectIri, testLatitude, testLongitude, testRefElev1.toString());
         // Execute method
         sample.constructStatements(sampleSet);
         // Clean up results as one string
@@ -181,47 +188,47 @@ class IfcSiteRepresentationTest {
 
     private List<String> genExpectedCommonStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(testBaseUri1 + "Site_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://w3id.org/bot#Site");
-        expected.add(testBaseUri1 + "Site_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + testBaseUri1 + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(testBaseUri1 + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/IfcSiteRepresentation");
-        expected.add(testBaseUri1 + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + testName);
-        expected.add(testBaseUri1 + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + testUID);
-        expected.add(testBaseUri1 + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + testBimPlacementIri);
+        expected.add(testBaseUri + "Site_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://w3id.org/bot#Site");
+        expected.add(testBaseUri + "Site_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + testBaseUri + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(testBaseUri + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/IfcSiteRepresentation");
+        expected.add(testBaseUri + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + testName);
+        expected.add(testBaseUri + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + testUID);
+        expected.add(testBaseUri + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + testBimPlacementIri);
         return expected;
     }
 
     private List<String> genExpectedProjectStatement() {
         List<String> expected = new ArrayList<>();
-        expected.add(testProjectIri + ", http://www.theworldavatar.com/kg/ontobim/hasRootZone, " + testBaseUri1 + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(testProjectIri + ", http://www.theworldavatar.com/kg/ontobim/hasRootZone, " + testBaseUri + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         return expected;
     }
 
     private List<String> genExpectedLatLongStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(testBaseUri1 + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefLatitude, " + testBaseUri1 + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(testBaseUri1 + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/CompoundPlaneAngle");
-        expected.add(testBaseUri1 + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasDegree, \"" + testLatDegree);
-        expected.add(testBaseUri1 + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasMinute, \"" + testLatMinute);
-        expected.add(testBaseUri1 + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSecond, \"" + testLatSec);
-        expected.add(testBaseUri1 + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasMillionthSecond, \"" + testLatMilSec);
-        expected.add(testBaseUri1 + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefLongitude, " + testBaseUri1 + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(testBaseUri1 + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasDegree, \"" + testLongDegree);
-        expected.add(testBaseUri1 + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasMinute, \"" + testLongMinute);
-        expected.add(testBaseUri1 + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSecond, \"" + testLongSec);
-        expected.add(testBaseUri1 + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasMillionthSecond, \"" + testLongMilSec);
+        expected.add(testBaseUri + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefLatitude, " + testBaseUri + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(testBaseUri + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/CompoundPlaneAngle");
+        expected.add(testBaseUri + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasDegree, \"" + testLatDegree);
+        expected.add(testBaseUri + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasMinute, \"" + testLatMinute);
+        expected.add(testBaseUri + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSecond, \"" + testLatSec);
+        expected.add(testBaseUri + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasMillionthSecond, \"" + testLatMilSec);
+        expected.add(testBaseUri + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefLongitude, " + testBaseUri + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(testBaseUri + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasDegree, \"" + testLongDegree);
+        expected.add(testBaseUri + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasMinute, \"" + testLongMinute);
+        expected.add(testBaseUri + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSecond, \"" + testLongSec);
+        expected.add(testBaseUri + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasMillionthSecond, \"" + testLongMilSec);
         return expected;
     }
 
     private List<String> genExpectedElevationStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(testBaseUri1 + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefElevation, " + testBaseUri1 + "Height_");
-        expected.add(testBaseUri1 + "Height_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.ontology-of-units-of-measure.org/resource/om-2/Height");
-        expected.add(testBaseUri1 + "Height_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue, " + testBaseUri1 + "Measure_");
-        expected.add(testBaseUri1 + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.ontology-of-units-of-measure.org/resource/om-2/Measure");
-        expected.add(testBaseUri1 + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue, \"" + testRefElev1);
-        expected.add(testBaseUri1 + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit, " + testBaseUri1 + "Length_");
-        expected.add(testBaseUri1 + "Length_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.ontology-of-units-of-measure.org/resource/om-2/Length");
-        expected.add(testBaseUri1 + "Length_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2004/02/skos/core#notation, \"m\"");
+        expected.add(testBaseUri + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefElevation, " + testBaseUri + "Height_");
+        expected.add(testBaseUri + "Height_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.ontology-of-units-of-measure.org/resource/om-2/Height");
+        expected.add(testBaseUri + "Height_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue, " + testBaseUri + "Measure_");
+        expected.add(testBaseUri + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.ontology-of-units-of-measure.org/resource/om-2/Measure");
+        expected.add(testBaseUri + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue, \"" + testRefElev1);
+        expected.add(testBaseUri + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit, " + testBaseUri + "Length_");
+        expected.add(testBaseUri + "Length_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.ontology-of-units-of-measure.org/resource/om-2/Length");
+        expected.add(testBaseUri + "Length_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2004/02/skos/core#notation, \"m\"");
         return expected;
     }
 }

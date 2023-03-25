@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone;
 
 import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
@@ -24,20 +25,18 @@ public class IfcAbstractRepresentation {
     /**
      * Standard Constructor initialising the common inputs.
      *
-     * @param iri          The instance IRI to be created.
      * @param className    The name of the OntoBIM class.
      * @param name         The name of this IFC object.
      * @param uid          The IFC uid generated for this object.
      * @param placementIri The local placement IRI for the zone's position.
      */
-    public IfcAbstractRepresentation(String iri, String className, String name, String uid, String placementIri) {
-        this.prefix = iri.contains(OntoBimConstant.HASH) ? StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.HASH) + OntoBimConstant.HASH :
-                StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.BACKSLASH) + OntoBimConstant.BACKSLASH;
+    public IfcAbstractRepresentation(String className, String name, String uid, String placementIri) {
+        this.prefix = NamespaceMapper.getBaseNameSpace();
         this.iri = this.prefix + className + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.name = name;
         this.uid = uid;
         String instVal = StringUtils.getStringAfterLastCharacterOccurrence(placementIri, StringUtils.UNDERSCORE);
-        this.placementIri = prefix + OntoBimConstant.LOCAL_PLACEMENT_CLASS + OntoBimConstant.UNDERSCORE + instVal;
+        this.placementIri = this.prefix + OntoBimConstant.LOCAL_PLACEMENT_CLASS + OntoBimConstant.UNDERSCORE + instVal;
     }
 
     protected String getIri() { return this.iri;}

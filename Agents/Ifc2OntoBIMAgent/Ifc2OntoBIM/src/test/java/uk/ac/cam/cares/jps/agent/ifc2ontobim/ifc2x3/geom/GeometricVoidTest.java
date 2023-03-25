@@ -1,8 +1,11 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom;
 
 import org.apache.jena.rdf.model.Statement;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -20,6 +23,16 @@ class GeometricVoidTest {
     private static final String testPlacementValIRI = "1517";
     private static final String testPlacementIRI = testBaseUri1 + "IfcLocalPlacement_" + testPlacementValIRI;
     private static final String testBIMPlacementIRI = testBaseUri1 + "LocalPlacement_" + testPlacementValIRI;
+
+    @BeforeEach
+    void createNamespace(){
+        NamespaceMapper.setBaseNameSpace(testBaseUri1);
+    }
+
+    @AfterAll
+    static void resetNamespace(){
+        NamespaceMapper.setBaseNameSpace("");
+    }
 
     @Test
     void testConstructor() {

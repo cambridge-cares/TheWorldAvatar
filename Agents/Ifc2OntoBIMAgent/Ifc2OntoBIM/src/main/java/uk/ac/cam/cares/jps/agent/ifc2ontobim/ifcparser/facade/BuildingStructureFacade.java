@@ -75,7 +75,7 @@ public class BuildingStructureFacade {
                 // Add the object into the mappings for its IRI
                 this.modelRepMappings.add(iri, geomModel);
                 // Construct the element's instance and its statements
-                Ceiling ceiling = new Ceiling(iri, name, uid, placement, hostZone, geomModel.getBimIri());
+                Ceiling ceiling = new Ceiling( name, uid, placement, hostZone, geomModel.getBimIri());
                 ceiling.constructStatements(statementSet);
             }
         }
@@ -121,7 +121,7 @@ public class BuildingStructureFacade {
                 // Add the object into the mappings for its IRI
                 this.modelRepMappings.add(iri, geomModel);
                 // Construct the element's instance and its statements
-                Column column = new Column(iri, name, uid, placement, hostZone, geomModel.getBimIri());
+                Column column = new Column(name, uid, placement, hostZone, geomModel.getBimIri());
                 column.constructStatements(statementSet);
             }
         }
@@ -180,7 +180,7 @@ public class BuildingStructureFacade {
                 // Retrieve the wall object hosting this window
                 Wall assembly = this.modelRepMappings.getWall(assemblyIri);
                 // Construct the element's instance and its statements
-                Door door = new Door(iri, name, uid, placement, hostZone, assembly.getElementIri(), geomModel.getBimIri());
+                Door door = new Door(name, uid, placement, hostZone, assembly.getElementIri(), geomModel.getBimIri());
                 door.constructStatements(statementSet);
             }
         }
@@ -242,7 +242,7 @@ public class BuildingStructureFacade {
                 // If it is not yet created, first generate a new Model Representation 3D object
                 geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
                 // Construct the element's instance and its statements
-                Floor floor = new Floor(iri, name, uid, placement, hostZone, geomModel.getBimIri());
+                Floor floor = new Floor(name, uid, placement, hostZone, geomModel.getBimIri());
                 // Generate the void geometry statements and add void model representation into the mappings
                 QueryHandler.addVoidGeometryStatements(soln, floor.getIfcRepIri(), statementSet, this.modelRepMappings);
                 floor.constructStatements(statementSet);
@@ -316,7 +316,7 @@ public class BuildingStructureFacade {
                 // If it is not yet created, first generate a new Model Representation 3D object
                 geomModel = QueryHandler.retrieveModelRepresentation3D(soln);
                 // Construct the element's instance and its statements
-                Roof roof = new Roof(iri, name, uid, placement, hostZone, geomModel.getBimIri());
+                Roof roof = new Roof(name, uid, placement, hostZone, geomModel.getBimIri());
                 // Generate the void geometry statements and add void model representation into the mappings
                 QueryHandler.addVoidGeometryStatements(soln, roof.getIfcRepIri(), statementSet, this.modelRepMappings);
                 roof.constructStatements(statementSet);
@@ -361,7 +361,7 @@ public class BuildingStructureFacade {
                     CommonQuery.STAIR_LANDING_SUB_CONTEXT_VAR, CommonQuery.STAIR_LANDING_GEOM_VAR, CommonQuery.STAIR_LANDING_REP_TYPE_VAR);
             // If landing variable doesn't exist, create a new one
             if (!this.modelRepMappings.containsStairSubComponentIri(subComponentIri)) {
-                StairLanding landing = new StairLanding(subComponentIri, subComponentName, subComponentUid,
+                StairLanding landing = new StairLanding(subComponentName, subComponentUid,
                         subComponentPlacement, stair.getBIMIri(), geomModel.getBimIri());
                 landing.constructStatements(statementSet);
                 // Add the subcomponent to the mappings to keep track 
@@ -385,7 +385,7 @@ public class BuildingStructureFacade {
                     CommonQuery.STAIR_RAILING_SUB_CONTEXT_VAR, CommonQuery.STAIR_RAILING_GEOM_VAR, CommonQuery.STAIR_RAILING_REP_TYPE_VAR);
             // If landing variable doesn't exist, create a new one
             if (!this.modelRepMappings.containsStairSubComponentIri(subComponentIri)) {
-                StairRailing railing = new StairRailing(subComponentIri, subComponentName, subComponentUid,
+                StairRailing railing = new StairRailing(subComponentName, subComponentUid,
                         subComponentPlacement, stair.getBIMIri(), geomModel.getBimIri());
                 railing.constructStatements(statementSet);
                 // Add the subcomponent to the mappings to keep track 
@@ -409,7 +409,7 @@ public class BuildingStructureFacade {
                     CommonQuery.STAIR_STRUCT_COMP_SUB_CONTEXT_VAR, CommonQuery.STAIR_STRUCT_COMP_GEOM_VAR, CommonQuery.STAIR_STRUCT_COMP_REP_TYPE_VAR);
             // If landing variable doesn't exist, create a new one
             if (!this.modelRepMappings.containsStairSubComponentIri(subComponentIri)) {
-                StairStructuralComponent structuralComponent = new StairStructuralComponent(subComponentIri, subComponentName, subComponentUid,
+                StairStructuralComponent structuralComponent = new StairStructuralComponent(subComponentName, subComponentUid,
                         subComponentPlacement, stair.getBIMIri(), geomModel.getBimIri());
                 structuralComponent.constructStatements(statementSet);
                 // Add the subcomponent to the mappings to keep track 
@@ -437,7 +437,7 @@ public class BuildingStructureFacade {
                     CommonQuery.STAIR_FLIGHT_SUB_CONTEXT_VAR, CommonQuery.STAIR_FLIGHT_GEOM_VAR, CommonQuery.STAIR_FLIGHT_REP_TYPE_VAR);
             // If landing variable doesn't exist, create a new one
             if (!this.modelRepMappings.containsStairSubComponentIri(subComponentIri)) {
-                StairFlight stairFlight = new StairFlight(subComponentIri, subComponentName, subComponentUid,
+                StairFlight stairFlight = new StairFlight(subComponentName, subComponentUid,
                         subComponentPlacement, stair.getBIMIri(), geomModel.getBimIri(), stairRiserNo, stairTreadNo, stairRiserHeight, stairTreadLength);
                 stairFlight.constructStatements(statementSet);
                 // Add the subcomponent to the mappings to keep track 
@@ -468,7 +468,7 @@ public class BuildingStructureFacade {
             stair = this.modelRepMappings.getStair(iri);
         } else {
             // If it is not yet created, generate a new stair object and construct its statements
-            stair = new Stair(iri, name, uid, placement, hostZone);
+            stair = new Stair(name, uid, placement, hostZone);
             stair.constructStatements(statementSet);
             // Add the object to the mappings
             this.modelRepMappings.add(iri, stair);
@@ -496,7 +496,7 @@ public class BuildingStructureFacade {
             geomModel.appendGeometry(geomIri);
         } else {
             // If it is not yet created, first generate a new Model Representation 3D object
-            geomModel = QueryHandler.retrieveModelRepresentation3D(soln, shapeRepVar, subContextVar, geomVar, repTypeVar);
+            geomModel = QueryHandler.retrieveModelRepresentation3D(soln, subContextVar, geomVar, repTypeVar);
             // Add the object into the mappings for its IRI
             this.modelRepMappings.add(subComponentIri, geomModel);
         }
@@ -568,16 +568,16 @@ public class BuildingStructureFacade {
                 // If there is a second geometry representation for the wall
                 if (soln.contains(CommonQuery.INST_SHAPE_REP_SEC_VAR)) {
                     // Generate a second geom model
-                    ModelRepresentation3D secGeomModel = QueryHandler.retrieveModelRepresentation3D(soln, CommonQuery.INST_SHAPE_REP_SEC_VAR,
-                            CommonQuery.REP_SEC_SUBCONTEXT_VAR, CommonQuery.GEOM_SEC_VAR, CommonQuery.INST_SHAPE_REP_TYPE_SEC_VAR);
+                    ModelRepresentation3D secGeomModel = QueryHandler.retrieveModelRepresentation3D(soln, CommonQuery.REP_SEC_SUBCONTEXT_VAR,
+                            CommonQuery.GEOM_SEC_VAR, CommonQuery.INST_SHAPE_REP_TYPE_SEC_VAR);
                     // Add the IRI with a suffix to add geom model into the mappings so that its statements can be constructed
                     // Note that when there is two different geometric representation, they only have one geometric representation each
                     this.modelRepMappings.add(iri + "second", secGeomModel);
                     // Construct the element's instance
-                    wall = new Wall(iri, name, uid, placement, hostZone, geomModel.getBimIri(), secGeomModel.getBimIri());
+                    wall = new Wall(name, uid, placement, hostZone, geomModel.getBimIri(), secGeomModel.getBimIri());
                 } else {
                     // Construct the element's instance
-                    wall = new Wall(iri, name, uid, placement, hostZone, geomModel.getBimIri(), null);
+                    wall = new Wall(name, uid, placement, hostZone, geomModel.getBimIri(), null);
                 }
                 // Always construct the statement regardless of which constructor initialised
                 wall.constructStatements(statementSet);
@@ -639,7 +639,7 @@ public class BuildingStructureFacade {
                 // Retrieve the wall object hosting this window
                 Wall assembly = this.modelRepMappings.getWall(assemblyIri);
                 // Construct the element's instance and its statements
-                Window window = new Window(iri, name, uid, placement, hostZone, assembly.getElementIri(), geomModel.getBimIri());
+                Window window = new Window(name, uid, placement, hostZone, assembly.getElementIri(), geomModel.getBimIri());
                 window.constructStatements(statementSet);
             }
         }

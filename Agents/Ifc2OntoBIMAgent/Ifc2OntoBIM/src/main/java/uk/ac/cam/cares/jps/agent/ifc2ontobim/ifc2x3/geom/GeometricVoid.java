@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom;
 
 import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
@@ -29,8 +30,7 @@ public class GeometricVoid {
      * @param voidModelRepIri The model representation IRI of this void.
      */
     public GeometricVoid(String elementIri, String voidModelRepIri, String voidType, String placementIri) {
-        String prefix = elementIri.contains(OntoBimConstant.HASH) ? StringUtils.getStringBeforeLastCharacterOccurrence(elementIri, OntoBimConstant.HASH) + OntoBimConstant.HASH :
-                StringUtils.getStringBeforeLastCharacterOccurrence(elementIri, OntoBimConstant.BACKSLASH) + OntoBimConstant.BACKSLASH;
+        String prefix = NamespaceMapper.getBaseNameSpace();
         this.bimIRI = prefix + OntoBimConstant.GEOM_VOID_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.elementIRI = elementIri;
         this.voidModelRepIRI = voidModelRepIri;

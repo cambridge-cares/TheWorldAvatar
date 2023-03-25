@@ -26,7 +26,6 @@ public class StairFlight extends IfcModelRepresentation {
     /**
      * Standard Constructor initialising the common inputs.
      *
-     * @param iri          The instance IRI to be created.
      * @param name         The name of this IFC object.
      * @param uid          The IFC uid generated for this object.
      * @param placementIri The local placement IRI for the element's position.
@@ -37,9 +36,9 @@ public class StairFlight extends IfcModelRepresentation {
      * @param riserHeight  The height of each riser.
      * @param treadLength  The length of each tread.
      */
-    public StairFlight(String iri, String name, String uid, String placementIri, String stairIri, String geomRepIri,
+    public StairFlight(String name, String uid, String placementIri, String stairIri, String geomRepIri,
                        String riserNum, String treadNum, String riserHeight, String treadLength) {
-        super(iri, name, uid, placementIri);
+        super(name, uid, placementIri);
         this.elementIRI = this.getPrefix() + OntoBimConstant.STAIR_FLIGHT_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.stairIRI = stairIri;
         this.geomRepIRI = geomRepIri;

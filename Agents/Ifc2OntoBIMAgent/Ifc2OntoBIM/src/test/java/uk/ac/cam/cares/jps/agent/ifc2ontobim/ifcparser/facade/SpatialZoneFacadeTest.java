@@ -2,10 +2,11 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade;
 
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.RDF;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.SpatialZoneFacade;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -91,6 +92,7 @@ class SpatialZoneFacadeTest {
 
     @BeforeEach
     void genSampleStatements() {
+        NamespaceMapper.setBaseNameSpace(TEST_BASE_URI);
         sampleModel = ModelFactory.createDefaultModel();
         // Generate the IfcOwl statements in the model
         localPlacement = sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcLocalPlacement");
@@ -155,6 +157,9 @@ class SpatialZoneFacadeTest {
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "relatedObjects_IfcRelDecomposes"),
                         sampleModel.getResource(BUILDING_INST));
     }
+
+    @AfterAll
+    static void resetNamespace(){ NamespaceMapper.setBaseNameSpace("");}
 
     @Test
     void testGenZoneTriplesSimpleModel() {

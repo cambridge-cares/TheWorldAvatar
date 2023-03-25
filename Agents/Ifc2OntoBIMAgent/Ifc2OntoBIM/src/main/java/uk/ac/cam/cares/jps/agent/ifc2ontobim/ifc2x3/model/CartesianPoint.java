@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model;
 
 import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
@@ -20,14 +21,12 @@ public class CartesianPoint {
     /**
      * Standard Constructor initialising the necessary and optional inputs.
      *
-     * @param iri         The instance IRI in IfcOwl.
      * @param xCoordinate A field for the x-coordinate.
      * @param yCoordinate A field for the y-coordinate.
      * @param zCoordinate An optional field for the z-coordinate.
      */
-    public CartesianPoint(String iri, String xCoordinate, String yCoordinate, String zCoordinate) {
-        String prefix = iri.contains(OntoBimConstant.HASH) ? StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.HASH) + OntoBimConstant.HASH :
-                StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.BACKSLASH) + OntoBimConstant.BACKSLASH;
+    public CartesianPoint(String xCoordinate, String yCoordinate, String zCoordinate) {
+        String prefix = NamespaceMapper.getBaseNameSpace();
         this.iri = prefix + OntoBimConstant.CARTESIAN_POINT_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         // Initialise the array and add coordinates
         this.coordinates = new Double[3];

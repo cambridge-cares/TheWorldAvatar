@@ -23,7 +23,6 @@ public class Wall extends IfcModelRepresentation {
     /**
      * Standard Constructor initialising the common inputs.
      *
-     * @param iri           The instance IRI to be created.
      * @param name          The name of this IFC object.
      * @param uid           The IFC uid generated for this object.
      * @param placementIri  The local placement IRI for the element's position.
@@ -31,8 +30,8 @@ public class Wall extends IfcModelRepresentation {
      * @param geomRepIri    The IRI of the element's geometry representation.
      * @param secGeomRepIri An optional field for the IRI of the element's second geometry representation.
      */
-    public Wall(String iri, String name, String uid, String placementIri, String hostZoneIri, String geomRepIri, String secGeomRepIri) {
-        super(iri, name, uid, placementIri);
+    public Wall(String name, String uid, String placementIri, String hostZoneIri, String geomRepIri, String secGeomRepIri) {
+        super(name, uid, placementIri);
         this.elementIRI = this.getPrefix() + OntoBimConstant.WALL_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.hostZoneIRI = hostZoneIri;
         this.geomRepIRI = geomRepIri;

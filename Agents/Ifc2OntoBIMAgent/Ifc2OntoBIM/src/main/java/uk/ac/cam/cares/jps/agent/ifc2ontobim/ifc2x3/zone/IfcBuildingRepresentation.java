@@ -23,7 +23,6 @@ public class IfcBuildingRepresentation extends IfcAbstractRepresentation {
     /**
      * Standard Constructor initialising the necessary and optional inputs.
      *
-     * @param iri          The instance IRI to be created.
      * @param name         The name of this IFC object.
      * @param uid          The IFC uid generated for this object.
      * @param placementIri The local placement IRI for the zone's position.
@@ -32,9 +31,9 @@ public class IfcBuildingRepresentation extends IfcAbstractRepresentation {
      * @param refElevation An optional field containing the reference elevation values stored in IFC.
      * @param terElevation An optional field containing the terrain elevation values stored in IFC.
      */
-    public IfcBuildingRepresentation(String iri, String name, String uid, String placementIri, String projectIri, String siteIri, String refElevation, String terElevation) {
+    public IfcBuildingRepresentation(String name, String uid, String placementIri, String projectIri, String siteIri, String refElevation, String terElevation) {
         // Initialise the super class
-        super(iri, OntoBimConstant.BUILDING_REP_CLASS,  name, uid, placementIri);
+        super(OntoBimConstant.BUILDING_REP_CLASS,  name, uid, placementIri);
         this.siteIRI = siteIri;
         // Generate a new bot Building IRI
         this.botBuildingIRI = this.getPrefix() + OntoBimConstant.BUILDING_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();

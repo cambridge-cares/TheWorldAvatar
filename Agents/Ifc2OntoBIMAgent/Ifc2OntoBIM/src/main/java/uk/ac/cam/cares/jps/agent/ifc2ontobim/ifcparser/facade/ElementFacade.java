@@ -67,7 +67,7 @@ public class ElementFacade {
                 // Add the object into the mappings for its IRI
                 modelRepMappings.add(iri, geomModel);
                 // Construct the element's instance and its statements
-                Element element = new Element(iri, name, uid, placement, hostZone, geomModel.getBimIri());
+                Element element = new Element(name, uid, placement, hostZone, geomModel.getBimIri());
                 element.constructStatements(statementSet);
             }
         }

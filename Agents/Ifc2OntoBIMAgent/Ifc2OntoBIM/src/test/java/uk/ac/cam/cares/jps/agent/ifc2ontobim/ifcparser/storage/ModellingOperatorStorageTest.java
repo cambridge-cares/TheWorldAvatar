@@ -9,6 +9,7 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.CartesianPoint;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.DirectionVector;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.LocalPlacement;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.ArrayList;
@@ -49,8 +50,9 @@ class ModellingOperatorStorageTest {
 
 
     @BeforeAll
-    static void genSingleton() {
+    static void setUp() {
         testMappings = ModellingOperatorStorage.Singleton();
+        NamespaceMapper.setBaseNameSpace(TEST_BASE_URI);
     }
 
     @BeforeEach
@@ -61,6 +63,7 @@ class ModellingOperatorStorageTest {
     @AfterAll
     static void reset() {
         ModellingOperatorStorage.resetSingleton();
+        NamespaceMapper.setBaseNameSpace("");
     }
 
     @Test
@@ -78,11 +81,11 @@ class ModellingOperatorStorageTest {
     @Test
     void testResetSingleton() {
         // Add a sample point and verify if it is added
-        CartesianPoint samplePoint = new CartesianPoint(TEST_FIRST_POINT_IRI, TEST_X_COORD.toString(), TEST_Y_COORD.toString(), null);
+        CartesianPoint samplePoint = new CartesianPoint(TEST_X_COORD.toString(), TEST_Y_COORD.toString(), null);
         testMappings.add(TEST_FIRST_POINT_IRI, samplePoint);
         assertTrue(testMappings.containsIri(TEST_FIRST_POINT_IRI));
         // Add a sample direction vector and verify if it is added
-        DirectionVector sampleDirection = new DirectionVector(TEST_FIRST_DIR_VECTOR_IRI, TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), null);
+        DirectionVector sampleDirection = new DirectionVector(TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), null);
         testMappings.add(TEST_FIRST_DIR_VECTOR_IRI, sampleDirection);
         assertTrue(testMappings.containsIri(TEST_FIRST_DIR_VECTOR_IRI));
         // Execute method
@@ -95,7 +98,7 @@ class ModellingOperatorStorageTest {
     @Test
     void testAddAndGetPoint() {
         // Create a new sample
-        CartesianPoint samplePoint = new CartesianPoint(TEST_FIRST_POINT_IRI, TEST_X_COORD.toString(), TEST_Y_COORD.toString(), null);
+        CartesianPoint samplePoint = new CartesianPoint(TEST_X_COORD.toString(), TEST_Y_COORD.toString(), null);
         // Execute method
         testMappings.add(TEST_FIRST_POINT_IRI, samplePoint);
         // Assert if they are equals
@@ -106,7 +109,7 @@ class ModellingOperatorStorageTest {
     @Test
     void testAddAndGetDirectionVector() {
         // Create a new sample
-        DirectionVector sampleDirection = new DirectionVector(TEST_FIRST_DIR_VECTOR_IRI, TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), null);
+        DirectionVector sampleDirection = new DirectionVector(TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), null);
         // Execute method
         testMappings.add(TEST_FIRST_DIR_VECTOR_IRI, sampleDirection);
         // Assert if they are equals
@@ -132,18 +135,18 @@ class ModellingOperatorStorageTest {
     @Test
     void testReplaceDuplicates() {
         // Create new samples and add them into the mappings
-        CartesianPoint samplePoint = new CartesianPoint(TEST_FIRST_POINT_IRI, TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
-        CartesianPoint samplePoint2 = new CartesianPoint(TEST_SECOND_POINT_IRI, TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
-        CartesianPoint samplePoint3 = new CartesianPoint(TEST_THIRD_POINT_IRI, TEST_X_COORD2.toString(), TEST_Y_COORD2.toString(), TEST_Z_COORD2.toString());
-        CartesianPoint samplePoint4 = new CartesianPoint(TEST_FOURTH_POINT_IRI, TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
+        CartesianPoint samplePoint = new CartesianPoint(TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
+        CartesianPoint samplePoint2 = new CartesianPoint(TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
+        CartesianPoint samplePoint3 = new CartesianPoint(TEST_X_COORD2.toString(), TEST_Y_COORD2.toString(), TEST_Z_COORD2.toString());
+        CartesianPoint samplePoint4 = new CartesianPoint(TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
         testMappings.add(TEST_FIRST_POINT_IRI, samplePoint);
         testMappings.add(TEST_SECOND_POINT_IRI, samplePoint2);
         testMappings.add(TEST_THIRD_POINT_IRI, samplePoint3);
         testMappings.add(TEST_FOURTH_POINT_IRI, samplePoint4);
-        DirectionVector sampleDirVector = new DirectionVector(TEST_FIRST_DIR_VECTOR_IRI, TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), TEST_Z_DIR_RATIO.toString());
-        DirectionVector sampleDirVector2 = new DirectionVector(TEST_SECOND_DIR_VECTOR_IRI, TEST_X_DIR_RATIO2.toString(), TEST_Y_DIR_RATIO2.toString(), TEST_Z_DIR_RATIO2.toString());
-        DirectionVector sampleDirVector3 = new DirectionVector(TEST_THIRD_DIR_VECTOR_IRI, TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), TEST_Z_DIR_RATIO.toString());
-        DirectionVector sampleDirVector4 = new DirectionVector(TEST_FOURTH_DIR_VECTOR_IRI, TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), TEST_Z_DIR_RATIO.toString());
+        DirectionVector sampleDirVector = new DirectionVector(TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), TEST_Z_DIR_RATIO.toString());
+        DirectionVector sampleDirVector2 = new DirectionVector(TEST_X_DIR_RATIO2.toString(), TEST_Y_DIR_RATIO2.toString(), TEST_Z_DIR_RATIO2.toString());
+        DirectionVector sampleDirVector3 = new DirectionVector(TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), TEST_Z_DIR_RATIO.toString());
+        DirectionVector sampleDirVector4 = new DirectionVector(TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), TEST_Z_DIR_RATIO.toString());
         testMappings.add(TEST_FIRST_DIR_VECTOR_IRI, sampleDirVector);
         testMappings.add(TEST_SECOND_DIR_VECTOR_IRI, sampleDirVector2);
         testMappings.add(TEST_THIRD_DIR_VECTOR_IRI, sampleDirVector3);
@@ -164,10 +167,10 @@ class ModellingOperatorStorageTest {
     @Test
     void testReplaceDuplicatesForPoint() {
         // Create a new sample and add them into the mappings
-        CartesianPoint samplePoint = new CartesianPoint(TEST_FIRST_POINT_IRI, TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
-        CartesianPoint samplePoint2 = new CartesianPoint(TEST_SECOND_POINT_IRI, TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
-        CartesianPoint samplePoint3 = new CartesianPoint(TEST_THIRD_POINT_IRI, TEST_X_COORD2.toString(), TEST_Y_COORD2.toString(), TEST_Z_COORD2.toString());
-        CartesianPoint samplePoint4 = new CartesianPoint(TEST_FOURTH_POINT_IRI, TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
+        CartesianPoint samplePoint = new CartesianPoint(TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
+        CartesianPoint samplePoint2 = new CartesianPoint(TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
+        CartesianPoint samplePoint3 = new CartesianPoint(TEST_X_COORD2.toString(), TEST_Y_COORD2.toString(), TEST_Z_COORD2.toString());
+        CartesianPoint samplePoint4 = new CartesianPoint(TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
         testMappings.add(TEST_FIRST_POINT_IRI, samplePoint);
         testMappings.add(TEST_SECOND_POINT_IRI, samplePoint2);
         testMappings.add(TEST_THIRD_POINT_IRI, samplePoint3);
@@ -184,9 +187,9 @@ class ModellingOperatorStorageTest {
     @Test
     void testReplaceDuplicatesForNoDuplicatePoints() {
         // Create a new sample and add them into the mappings
-        CartesianPoint samplePoint = new CartesianPoint(TEST_FIRST_POINT_IRI, TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
-        CartesianPoint samplePoint2 = new CartesianPoint(TEST_SECOND_POINT_IRI, TEST_X_COORD2.toString(), TEST_Y_COORD2.toString(), TEST_Z_COORD2.toString());
-        CartesianPoint samplePoint3 = new CartesianPoint(TEST_THIRD_POINT_IRI, TEST_X_COORD2.toString(), TEST_Y_COORD2.toString(), null);
+        CartesianPoint samplePoint = new CartesianPoint(TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
+        CartesianPoint samplePoint2 = new CartesianPoint(TEST_X_COORD2.toString(), TEST_Y_COORD2.toString(), TEST_Z_COORD2.toString());
+        CartesianPoint samplePoint3 = new CartesianPoint(TEST_X_COORD2.toString(), TEST_Y_COORD2.toString(), null);
         testMappings.add(TEST_FIRST_POINT_IRI, samplePoint);
         testMappings.add(TEST_SECOND_POINT_IRI, samplePoint2);
         testMappings.add(TEST_THIRD_POINT_IRI, samplePoint3);
@@ -200,9 +203,9 @@ class ModellingOperatorStorageTest {
 
     @Test
     void testReplaceDuplicatesForNoDuplicateDirections() {
-        DirectionVector sampleDirVector = new DirectionVector(TEST_FIRST_DIR_VECTOR_IRI, TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), TEST_Z_DIR_RATIO.toString());
-        DirectionVector sampleDirVector2 = new DirectionVector(TEST_SECOND_DIR_VECTOR_IRI, TEST_X_DIR_RATIO2.toString(), TEST_Y_DIR_RATIO2.toString(), TEST_Z_DIR_RATIO2.toString());
-        DirectionVector sampleDirVector3 = new DirectionVector(TEST_THIRD_DIR_VECTOR_IRI, TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), null);
+        DirectionVector sampleDirVector = new DirectionVector(TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), TEST_Z_DIR_RATIO.toString());
+        DirectionVector sampleDirVector2 = new DirectionVector(TEST_X_DIR_RATIO2.toString(), TEST_Y_DIR_RATIO2.toString(), TEST_Z_DIR_RATIO2.toString());
+        DirectionVector sampleDirVector3 = new DirectionVector(TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), null);
         testMappings.add(TEST_FIRST_DIR_VECTOR_IRI, sampleDirVector);
         testMappings.add(TEST_SECOND_DIR_VECTOR_IRI, sampleDirVector2);
         testMappings.add(TEST_THIRD_DIR_VECTOR_IRI, sampleDirVector3);
@@ -218,8 +221,8 @@ class ModellingOperatorStorageTest {
         // Set up sample set
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         // Create a new sample and add them into the mappings
-        CartesianPoint samplePoint = new CartesianPoint(TEST_FIRST_POINT_IRI, TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
-        CartesianPoint samplePoint2 = new CartesianPoint(TEST_SECOND_POINT_IRI, TEST_X_COORD2.toString(), TEST_Y_COORD2.toString(), TEST_Z_COORD2.toString());
+        CartesianPoint samplePoint = new CartesianPoint(TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
+        CartesianPoint samplePoint2 = new CartesianPoint(TEST_X_COORD2.toString(), TEST_Y_COORD2.toString(), TEST_Z_COORD2.toString());
         testMappings.add(TEST_FIRST_POINT_IRI, samplePoint);
         testMappings.add(TEST_SECOND_POINT_IRI, samplePoint2);
         // Retrieve the points if you wish to generate their statement
@@ -241,8 +244,8 @@ class ModellingOperatorStorageTest {
         // Set up sample set
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         // Create a new sample and add them into the mappings
-        DirectionVector sampleDirection = new DirectionVector(TEST_FIRST_DIR_VECTOR_IRI, TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), TEST_Z_DIR_RATIO.toString());
-        DirectionVector sampleDirection2 = new DirectionVector(TEST_SECOND_DIR_VECTOR_IRI, TEST_X_DIR_RATIO2.toString(), TEST_Y_DIR_RATIO2.toString(), TEST_Z_DIR_RATIO2.toString());
+        DirectionVector sampleDirection = new DirectionVector(TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), TEST_Z_DIR_RATIO.toString());
+        DirectionVector sampleDirection2 = new DirectionVector(TEST_X_DIR_RATIO2.toString(), TEST_Y_DIR_RATIO2.toString(), TEST_Z_DIR_RATIO2.toString());
         testMappings.add(TEST_FIRST_DIR_VECTOR_IRI, sampleDirection);
         testMappings.add(TEST_SECOND_DIR_VECTOR_IRI, sampleDirection2);
         // Retrieve the direction if you wish to generate their statement
@@ -263,12 +266,12 @@ class ModellingOperatorStorageTest {
         // Set up sample set
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         // Create a new sample and add them into the mappings
-        CartesianPoint samplePoint = new CartesianPoint(TEST_FIRST_POINT_IRI, TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
-        CartesianPoint samplePoint2 = new CartesianPoint(TEST_SECOND_POINT_IRI, TEST_X_COORD2.toString(), TEST_Y_COORD2.toString(), TEST_Z_COORD2.toString());
+        CartesianPoint samplePoint = new CartesianPoint(TEST_X_COORD.toString(), TEST_Y_COORD.toString(), TEST_Z_COORD.toString());
+        CartesianPoint samplePoint2 = new CartesianPoint(TEST_X_COORD2.toString(), TEST_Y_COORD2.toString(), TEST_Z_COORD2.toString());
         testMappings.add(TEST_FIRST_POINT_IRI, samplePoint);
         testMappings.add(TEST_SECOND_POINT_IRI, samplePoint2);
-        DirectionVector sampleDirection = new DirectionVector(TEST_FIRST_DIR_VECTOR_IRI, TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), TEST_Z_DIR_RATIO.toString());
-        DirectionVector sampleDirection2 = new DirectionVector(TEST_SECOND_DIR_VECTOR_IRI, TEST_X_DIR_RATIO2.toString(), TEST_Y_DIR_RATIO2.toString(), TEST_Z_DIR_RATIO2.toString());
+        DirectionVector sampleDirection = new DirectionVector(TEST_X_DIR_RATIO.toString(), TEST_Y_DIR_RATIO.toString(), TEST_Z_DIR_RATIO.toString());
+        DirectionVector sampleDirection2 = new DirectionVector(TEST_X_DIR_RATIO2.toString(), TEST_Y_DIR_RATIO2.toString(), TEST_Z_DIR_RATIO2.toString());
         testMappings.add(TEST_FIRST_DIR_VECTOR_IRI, sampleDirection);
         testMappings.add(TEST_SECOND_DIR_VECTOR_IRI, sampleDirection2);
         // Retrieve the modelling operator if you wish to generate their statement

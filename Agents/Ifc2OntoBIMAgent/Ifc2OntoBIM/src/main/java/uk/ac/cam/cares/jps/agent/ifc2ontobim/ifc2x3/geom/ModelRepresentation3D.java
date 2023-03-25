@@ -29,16 +29,14 @@ public class ModelRepresentation3D {
     /**
      * Standard Constructor initialising the common inputs.
      *
-     * @param iri                     The element IRI from IfcOwl.
      * @param subContextIri           The sub context IRI for this object.
      * @param geomIri                 The element's geometry representation IRI.
      * @param repType                 An optional field for the geometry representation type as text.
      * @param sourcePlacementIri      An optional field for the local placement IRI of the original geometry position.
      * @param cartesianTransformerIri An optional field for the transformation operator's IRI to translate the source to target placement.
      */
-    public ModelRepresentation3D(String iri, String subContextIri, String geomIri, String repType, String sourcePlacementIri, String cartesianTransformerIri) {
-        this.prefix = iri.contains(OntoBimConstant.HASH) ? StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.HASH) + OntoBimConstant.HASH :
-                StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.BACKSLASH) + OntoBimConstant.BACKSLASH;
+    public ModelRepresentation3D(String subContextIri, String geomIri, String repType, String sourcePlacementIri, String cartesianTransformerIri) {
+        this.prefix = NamespaceMapper.getBaseNameSpace();
         this.bimIri = this.prefix + OntoBimConstant.GEOM_MODEL_REP_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.subContext = subContextIri;
         // Initialise the queue and append the geometries

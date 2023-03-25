@@ -45,7 +45,12 @@ public class NamespaceMapper {
     private static final String basePrefix = "inst";
 
     /**
-     * Sets the base namespace
+     * Get the base namespace.
+     */
+    public static String getBaseNameSpace() { return baseNamespace; }
+
+    /**
+     * Sets the base namespace.
      */
     public static void setBaseNameSpace(String baseIri) {
         baseNamespace = baseIri;

@@ -116,13 +116,12 @@ public class QueryHandler {
      * @param soln The row of the query response.
      */
     public static ModelRepresentation3D retrieveModelRepresentation3D(QuerySolution soln) {
-        String shapeRepIri = soln.get(CommonQuery.INST_SHAPE_REP_VAR).toString();
         String subContextIri = soln.get(CommonQuery.REP_SUBCONTEXT_VAR).toString();
         String geomIri = retrieveIri(soln, CommonQuery.GEOM_VAR);
         String shapeRepType = retrieveLiteral(soln, CommonQuery.INST_SHAPE_REP_TYPE_VAR);
         String sourcePlacementIri = retrieveIri(soln, CommonQuery.GEOM_AXIS_PLACEMENT_VAR);
         String cartesianTransformerIri = retrieveIri(soln, CommonQuery.CART_TRANSFORMER_VAR);
-        return new ModelRepresentation3D(shapeRepIri, subContextIri, geomIri,
+        return new ModelRepresentation3D(subContextIri, geomIri,
                 shapeRepType, sourcePlacementIri, cartesianTransformerIri);
     }
 
@@ -132,13 +131,12 @@ public class QueryHandler {
      *
      * @param soln The row of the query response.
      */
-    public static ModelRepresentation3D retrieveModelRepresentation3D(QuerySolution soln, String shapeRepVar,
-                                                                      String subContextVar, String geomVar, String shapeRepTypeVar) {
-        String shapeRepIri = retrieveIri(soln, shapeRepVar);
+    public static ModelRepresentation3D retrieveModelRepresentation3D(QuerySolution soln, String subContextVar,
+                                                                      String geomVar, String shapeRepTypeVar) {
         String subContextIri = retrieveIri(soln, subContextVar);
         String geomIri = retrieveIri(soln, geomVar);
         String shapeRepType = retrieveLiteral(soln, shapeRepTypeVar);
-        return new ModelRepresentation3D(shapeRepIri, subContextIri, geomIri,
+        return new ModelRepresentation3D(subContextIri, geomIri,
                 shapeRepType, null, null);
     }
 
@@ -157,8 +155,8 @@ public class QueryHandler {
             String voidPlacementIRI = retrieveIri(soln, CommonQuery.VOID_PLACEMENT_VAR);
             String voidType = retrieveLiteral(soln, CommonQuery.VOID_TYPE_VAR);
             // Retrieve the Model Representation 3D parameters for the void
-            ModelRepresentation3D voidRep = retrieveModelRepresentation3D(soln, CommonQuery.VOID_SHAPE_REP_VAR,
-                    CommonQuery.VOID_SUB_CONTEXT_VAR, CommonQuery.VOID_GEOM_VAR, CommonQuery.VOID_REP_TYPE_VAR);
+            ModelRepresentation3D voidRep = retrieveModelRepresentation3D(soln, CommonQuery.VOID_SUB_CONTEXT_VAR,
+                    CommonQuery.VOID_GEOM_VAR, CommonQuery.VOID_REP_TYPE_VAR);
             // Add the void's shape representation IRI to the mappings to
             // distinguish their model representation if there are multiple voids
             // as well as prevent us from creating a duplicate geometric void

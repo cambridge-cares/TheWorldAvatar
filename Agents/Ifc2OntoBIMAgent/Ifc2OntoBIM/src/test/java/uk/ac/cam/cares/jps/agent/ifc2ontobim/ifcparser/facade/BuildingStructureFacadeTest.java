@@ -11,6 +11,7 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Wa
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcStoreyRepresentation;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ElementStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.SpatialZoneStorage;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -144,9 +145,11 @@ class BuildingStructureFacadeTest {
 
     @BeforeAll
     static void addTestZoneMappings() {
+        // Set base name space
+        NamespaceMapper.setBaseNameSpace(TEST_BASE_URI);
         // Create a new storey instance, which does not require any values except for the IRI
         // This IRI is necessary to generate the Storey IRI within the element class
-        IfcStoreyRepresentation storey = new IfcStoreyRepresentation(STOREY_INST, null, null, TEST_ZONE_PLACEMENT_IRI, null, null);
+        IfcStoreyRepresentation storey = new IfcStoreyRepresentation(null, null, TEST_ZONE_PLACEMENT_IRI, null, null);
         // Add the storey to the singleton
         SpatialZoneStorage zoneMappings = SpatialZoneStorage.Singleton();
         zoneMappings.add(STOREY_INST, storey);
@@ -161,6 +164,8 @@ class BuildingStructureFacadeTest {
     static void resetMappingsForOtherTests() {
         SpatialZoneStorage.resetSingleton();
         ElementStorage.resetSingleton();
+        // Reset base name space
+        NamespaceMapper.setBaseNameSpace("");
     }
 
     @Test
@@ -265,7 +270,7 @@ class BuildingStructureFacadeTest {
         addWallAssemblyTriples(DOOR_INST);
         // Get the singleton to add the assembly inst
         ElementStorage elementMappings = ElementStorage.Singleton();
-        Wall wall = new Wall(WALL_INST, WALL_NAME, null, ELEMENT_POSITION_INST, null, null, null);
+        Wall wall = new Wall(WALL_NAME, null, ELEMENT_POSITION_INST, null, null, null);
         elementMappings.add(WALL_INST, wall);
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
         addGeometryTriples(sampleModel.getResource(DOOR_INST));
@@ -292,7 +297,7 @@ class BuildingStructureFacadeTest {
         addWallAssemblyTriples(DOOR_INST);
         // Get the singleton to add the assembly inst
         ElementStorage elementMappings = ElementStorage.Singleton();
-        Wall wall = new Wall(WALL_INST, WALL_NAME, null, ELEMENT_POSITION_INST, null, null, null);
+        Wall wall = new Wall(WALL_NAME, null, ELEMENT_POSITION_INST, null, null, null);
         elementMappings.add(WALL_INST, wall);
         // Generate the alternate mapped geometry representation triples
         addMappedGeometryTriples(sampleModel.getResource(DOOR_INST));
@@ -565,7 +570,7 @@ class BuildingStructureFacadeTest {
         addWallAssemblyTriples(WINDOW_INST);
         // Get the singleton to add the assembly inst
         ElementStorage elementMappings = ElementStorage.Singleton();
-        Wall wall = new Wall(WALL_INST, WALL_NAME, null, ELEMENT_POSITION_INST, null, null, null);
+        Wall wall = new Wall(WALL_NAME, null, ELEMENT_POSITION_INST, null, null, null);
         elementMappings.add(WALL_INST, wall);
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
         addGeometryTriples(sampleModel.getResource(WINDOW_INST));
@@ -592,7 +597,7 @@ class BuildingStructureFacadeTest {
         addWallAssemblyTriples(WINDOW_INST);
         // Get the singleton to add the assembly inst
         ElementStorage elementMappings = ElementStorage.Singleton();
-        Wall wall = new Wall(WALL_INST, WALL_NAME, null, ELEMENT_POSITION_INST, null, null, null);
+        Wall wall = new Wall(WALL_NAME, null, ELEMENT_POSITION_INST, null, null, null);
         elementMappings.add(WALL_INST, wall);
         // Generate the alternate mapped geometry representation triples
         addMappedGeometryTriples(sampleModel.getResource(WINDOW_INST));

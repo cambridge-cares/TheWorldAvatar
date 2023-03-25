@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ModellingOperatorStorage;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -50,6 +51,7 @@ class ModellingOperatorFacadeTest {
     @BeforeAll
     static void setUp() {
         operatorMappings = ModellingOperatorStorage.Singleton();
+        NamespaceMapper.setBaseNameSpace(TEST_BASE_URI);
     }
 
     @BeforeEach
@@ -59,8 +61,9 @@ class ModellingOperatorFacadeTest {
     }
 
     @AfterAll
-    static void resetMappingsForOtherTests() {
+    static void resetParametersForOtherTests() {
         ModellingOperatorStorage.resetSingleton();
+        NamespaceMapper.setBaseNameSpace("");
     }
 
     @Test

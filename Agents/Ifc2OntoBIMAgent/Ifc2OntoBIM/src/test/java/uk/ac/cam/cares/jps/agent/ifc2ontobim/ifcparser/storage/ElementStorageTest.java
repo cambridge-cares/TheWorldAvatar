@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage;
 
 import org.apache.jena.rdf.model.Statement;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,7 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Ro
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Stair;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Wall;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.ArrayList;
@@ -38,12 +40,15 @@ class ElementStorageTest {
     @BeforeAll
     static void init() {
         testMappings = ElementStorage.Singleton();
+        NamespaceMapper.setBaseNameSpace(TEST_BASE_URI);
     }
 
     @BeforeEach
     void resetSingleton() {
         ElementStorage.resetSingleton();
     }
+    @AfterAll
+    static void resetNamespace(){ NamespaceMapper.setBaseNameSpace("");}
 
     @Test
     void testGetModelRepFail() {
@@ -78,7 +83,7 @@ class ElementStorageTest {
     @Test
     void testAddAndGetModelRep() {
         // Create a new sample representation
-        ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SHAPE_REP_IRI, TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
+        ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
         // Execute method
         testMappings.add(TEST_ELEMENT_IRI, sampleModelRep);
         // Assert if they are equals
@@ -88,7 +93,7 @@ class ElementStorageTest {
     @Test
     void testAddAndGetWall() {
         // Create a new sample representation
-        Wall sampleWall = new Wall(TEST_ELEMENT_IRI, null, null, TEST_ELEMENT_PLACEMENT_IRI, null, null, null);
+        Wall sampleWall = new Wall(null, null, TEST_ELEMENT_PLACEMENT_IRI, null, null, null);
         // Execute method
         testMappings.add(TEST_ELEMENT_IRI, sampleWall);
         // Assert if they are equals
@@ -98,7 +103,7 @@ class ElementStorageTest {
     @Test
     void testAddAndGetFloor() {
         // Create a new sample representation
-        Floor sampleFloor = new Floor(TEST_ELEMENT_IRI, null, null, TEST_ELEMENT_PLACEMENT_IRI, null, null);
+        Floor sampleFloor = new Floor(null, null, TEST_ELEMENT_PLACEMENT_IRI, null, null);
         // Execute method
         testMappings.add(TEST_ELEMENT_IRI, sampleFloor);
         // Assert if they are equals
@@ -108,7 +113,7 @@ class ElementStorageTest {
     @Test
     void testAddAndGetRoof() {
         // Create a new sample representation
-        Roof sampleRoof = new Roof(TEST_ELEMENT_IRI, null, null, TEST_ELEMENT_PLACEMENT_IRI, null, null);
+        Roof sampleRoof = new Roof(null, null, TEST_ELEMENT_PLACEMENT_IRI, null, null);
         // Execute method
         testMappings.add(TEST_ELEMENT_IRI, sampleRoof);
         // Assert if they are equals
@@ -118,7 +123,7 @@ class ElementStorageTest {
     @Test
     void testAddAndGetStair() {
         // Create a new sample representation
-        Stair sampleStair = new Stair(TEST_ELEMENT_IRI, null, null, TEST_ELEMENT_PLACEMENT_IRI, null);
+        Stair sampleStair = new Stair(null, null, TEST_ELEMENT_PLACEMENT_IRI, null);
         // Execute method
         testMappings.add(TEST_ELEMENT_IRI, sampleStair);
         // Assert if they are equals
@@ -138,7 +143,7 @@ class ElementStorageTest {
     @Test
     void testClear() {
         // Create a new sample representation
-        ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SHAPE_REP_IRI, TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
+        ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
         // Execute method
         testMappings.add(TEST_ELEMENT_IRI, sampleModelRep);
         // Assert if they are equals
@@ -153,7 +158,7 @@ class ElementStorageTest {
         assertFalse(testMappings.containsModelRepIri(TEST_ELEMENT_IRI));
         assertFalse(testMappings.containsModelRepIri(NON_EXISTENT_IRI));
         // Create a new sample representation
-        ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SHAPE_REP_IRI, TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
+        ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
         // Execute method
         testMappings.add(TEST_ELEMENT_IRI, sampleModelRep);
         // Assert that non-existing IRIs return false and existing IRIs return true
@@ -167,7 +172,7 @@ class ElementStorageTest {
         assertFalse(testMappings.containsStairAssemblyIri(TEST_ELEMENT_IRI));
         assertFalse(testMappings.containsStairAssemblyIri(NON_EXISTENT_IRI));
         // Create a new sample representation
-        Stair sampleStair = new Stair(TEST_ELEMENT_IRI, null, null, TEST_ELEMENT_PLACEMENT_IRI, null);
+        Stair sampleStair = new Stair(null, null, TEST_ELEMENT_PLACEMENT_IRI, null);
         // Execute method
         testMappings.add(TEST_ELEMENT_IRI, sampleStair);
         // Assert that non-existing IRIs return false and existing IRIs return true
@@ -189,7 +194,7 @@ class ElementStorageTest {
     void testConstructModelRepStatements() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SHAPE_REP_IRI, TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
+        ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
         testMappings.add(TEST_ELEMENT_IRI, sampleModelRep);
         // Execute method
         testMappings.constructModelRepStatements(sampleSet);
@@ -205,7 +210,7 @@ class ElementStorageTest {
     void testConstructModelRepStatementsMultipleGeom() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SHAPE_REP_IRI, TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
+        ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
         sampleModelRep.appendGeometry(TEST_SEC_GEOM_IRI);
         testMappings.add(TEST_ELEMENT_IRI, sampleModelRep);
         // Execute method
@@ -221,9 +226,9 @@ class ElementStorageTest {
     void testConstructModelRepStatementsMultipleModelRep() {
         // Set up
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SHAPE_REP_IRI, TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
+        ModelRepresentation3D sampleModelRep = new ModelRepresentation3D(TEST_SUB_CONTEXT_IRI, TEST_GEOM_IRI, null, null, null);
         testMappings.add(TEST_ELEMENT_IRI, sampleModelRep);
-        ModelRepresentation3D sampleModelRep2 = new ModelRepresentation3D(TEST_SHAPE_REP_IRI, TEST_SEC_SUB_CONTEXT_IRI, TEST_SEC_GEOM_IRI, null, null, null);
+        ModelRepresentation3D sampleModelRep2 = new ModelRepresentation3D(TEST_SEC_SUB_CONTEXT_IRI, TEST_SEC_GEOM_IRI, null, null, null);
         testMappings.add(TEST_SEC_ELEMENT_IRI, sampleModelRep2);
         // Execute method
         testMappings.constructModelRepStatements(sampleSet);

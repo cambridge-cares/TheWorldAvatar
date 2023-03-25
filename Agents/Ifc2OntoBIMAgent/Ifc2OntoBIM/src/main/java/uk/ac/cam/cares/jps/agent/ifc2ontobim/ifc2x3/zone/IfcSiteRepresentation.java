@@ -40,9 +40,9 @@ public class IfcSiteRepresentation extends IfcAbstractRepresentation {
      * @param longitude    A queue of the longitude's degree, minute, second, and millionth-second values.
      * @param refElevation An optional field containing the reference elevation values stored in IFC.
      */
-    public IfcSiteRepresentation(String iri, String name, String uid, String placementIri, String projectIri, Queue<String> latitude, Queue<String> longitude, String refElevation) {
+    public IfcSiteRepresentation(String name, String uid, String placementIri, String projectIri, Queue<String> latitude, Queue<String> longitude, String refElevation) {
         // Initialise the super class
-        super(iri, OntoBimConstant.SITE_REP_CLASS, name, uid, placementIri);
+        super(OntoBimConstant.SITE_REP_CLASS, name, uid, placementIri);
         // Generate new site IRIs
         this.botSiteIRI = this.getPrefix() + OntoBimConstant.SITE_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         // Parse the latitude and longitude

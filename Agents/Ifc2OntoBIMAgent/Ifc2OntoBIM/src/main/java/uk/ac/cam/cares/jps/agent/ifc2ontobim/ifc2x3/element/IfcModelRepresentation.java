@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element;
 
 import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
@@ -23,14 +24,12 @@ public class IfcModelRepresentation {
     /**
      * Standard Constructor initialising the common inputs.
      *
-     * @param iri          The element IRI from IfcOwl.
      * @param name         The name of this IFC object.
      * @param uid          The IFC uid generated for this object.
      * @param placementIri The local placement IRI for the zone's position.
      */
-    public IfcModelRepresentation(String iri, String name, String uid, String placementIri) {
-        this.prefix = iri.contains(OntoBimConstant.HASH) ? StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.HASH) + OntoBimConstant.HASH :
-                StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.BACKSLASH) + OntoBimConstant.BACKSLASH;
+    public IfcModelRepresentation(String name, String uid, String placementIri) {
+        this.prefix = NamespaceMapper.getBaseNameSpace();
         this.ifcRepIri = this.prefix + OntoBimConstant.ASSET_MODEL_REP_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.name = name;
         this.uid = uid;

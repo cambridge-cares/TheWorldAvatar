@@ -21,15 +21,14 @@ public class StairStructuralComponent extends IfcModelRepresentation {
     /**
      * Standard Constructor initialising the common inputs.
      *
-     * @param iri          The instance IRI to be created.
      * @param name         The name of this IFC object.
      * @param uid          The IFC uid generated for this object.
      * @param placementIri The local placement IRI for the element's position.
      * @param stairIri     The IRI of the stair assembly containing this element .
      * @param geomRepIri   The IRI of the element's geometry representation.
      */
-    public StairStructuralComponent(String iri, String name, String uid, String placementIri, String stairIri, String geomRepIri) {
-        super(iri, name, uid, placementIri);
+    public StairStructuralComponent(String name, String uid, String placementIri, String stairIri, String geomRepIri) {
+        super(name, uid, placementIri);
         this.elementIRI = this.getPrefix() + OntoBimConstant.STAIR_STRUCT_COMP_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.stairIRI = stairIri;
         this.geomRepIRI = geomRepIri;

@@ -1,8 +1,11 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model;
 
 import org.apache.jena.rdf.model.Statement;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -21,6 +24,16 @@ class GeometricRepresentationContextTest {
     private static final Double testDim = 2.0;
     private static final Double testPrecision = 10.3;
 
+    @BeforeEach
+    void createNamespace(){
+        NamespaceMapper.setBaseNameSpace(testBaseUri1);
+    }
+
+    @AfterAll
+    static void resetNamespace(){
+        NamespaceMapper.setBaseNameSpace("");
+    }
+
     @Test
     void testConstructor() {
         // First constructor
@@ -28,6 +41,7 @@ class GeometricRepresentationContextTest {
         // Test that the sample fields are correct
         assertTrue(sample.getIri().contains(testBaseUri1 + testClassName + "_"));
         // Second constructor
+        NamespaceMapper.setBaseNameSpace(testBaseUri2);
         GeometricRepresentationContext sample2 = new GeometricRepresentationContext(testIri2, testDim.toString(), testPrecision.toString(), testWCSIri, testTrueNorthIri);        // Test that the sample fields are correct
         assertTrue(sample2.getIri().contains(testBaseUri2 + testClassName + "_"));
     }

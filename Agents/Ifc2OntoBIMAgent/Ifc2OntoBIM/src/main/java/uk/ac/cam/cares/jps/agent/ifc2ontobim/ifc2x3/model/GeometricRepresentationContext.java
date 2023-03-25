@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model;
 
 import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
@@ -25,8 +26,7 @@ public class GeometricRepresentationContext {
      * @param trueNorthDirectionIRI An optional field for indicating the IRI of the True North direction vector.
      */
     public GeometricRepresentationContext(String iri, String spaceDimension, String precision, String worldCoordinateSysIri, String trueNorthDirectionIRI) {
-        String prefix = iri.contains(OntoBimConstant.HASH) ? StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.HASH) + OntoBimConstant.HASH :
-                StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.BACKSLASH) + OntoBimConstant.BACKSLASH;
+        String prefix = NamespaceMapper.getBaseNameSpace();
         // Generate new geometric representation context IRI
         this.iri = prefix + OntoBimConstant.GEOM_CONTEXT_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.dimension = Double.valueOf(spaceDimension);

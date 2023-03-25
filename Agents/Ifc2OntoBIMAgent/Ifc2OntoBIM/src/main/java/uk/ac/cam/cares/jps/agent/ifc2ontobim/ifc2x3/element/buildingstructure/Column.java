@@ -21,15 +21,14 @@ public class Column extends IfcModelRepresentation {
     /**
      * Standard Constructor initialising the common inputs.
      *
-     * @param iri          The instance IRI to be created.
      * @param name         The name of this IFC object.
      * @param uid          The IFC uid generated for this object.
      * @param placementIri The local placement IRI for the element's position.
      * @param hostZoneIri  The IRI of the zone containing this element .
      * @param geomRepIri   The IRI of the element's geometry representation.
      */
-    public Column(String iri, String name, String uid, String placementIri, String hostZoneIri, String geomRepIri) {
-        super(iri, name, uid, placementIri);
+    public Column(String name, String uid, String placementIri, String hostZoneIri, String geomRepIri) {
+        super(name, uid, placementIri);
         this.elementIRI = this.getPrefix() + OntoBimConstant.COLUMN_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.hostZoneIRI = hostZoneIri;
         this.geomRepIRI = geomRepIri;

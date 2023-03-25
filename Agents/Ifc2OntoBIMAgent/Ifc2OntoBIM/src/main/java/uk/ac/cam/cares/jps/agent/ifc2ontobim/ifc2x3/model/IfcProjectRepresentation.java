@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model;
 
 import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
@@ -17,14 +18,12 @@ public class IfcProjectRepresentation {
     /**
      * Standard Constructor initialising the necessary and optional inputs.
      *
-     * @param iri   The instance IRI of IfcProject in IfcOwl.
      * @param name  An optional field for the name of this IFC project.
      * @param phase An optional field for the phase of the project in String.
      * @param context The context for all geometric representation in the project.
      */
-    public IfcProjectRepresentation(String iri, String name, String phase, GeometricRepresentationContext context) {
-        String prefix = iri.contains(OntoBimConstant.HASH) ? StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.HASH) + OntoBimConstant.HASH :
-                StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.BACKSLASH) + OntoBimConstant.BACKSLASH;
+    public IfcProjectRepresentation(String name, String phase, GeometricRepresentationContext context) {
+        String prefix = NamespaceMapper.getBaseNameSpace();
         // Generate new project IRI
         this.iri = prefix + OntoBimConstant.PROJECT_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.context = context;

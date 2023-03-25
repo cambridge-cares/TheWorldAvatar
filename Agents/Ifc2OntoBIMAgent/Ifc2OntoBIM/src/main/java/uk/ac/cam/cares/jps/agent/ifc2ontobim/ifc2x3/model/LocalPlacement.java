@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model;
 
 import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
@@ -29,8 +30,7 @@ public class LocalPlacement {
      * @param relPlacementIri  An optional field for this element's relative position to the parent zone/element. IfcSite usually does not have this field.
      */
     public LocalPlacement(String iri, String refPointIri, String refDirectionIri, String axisDirectionIri, String relPlacementIri) {
-        String prefix = iri.contains(OntoBimConstant.HASH) ? StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.HASH) + OntoBimConstant.HASH :
-                StringUtils.getStringBeforeLastCharacterOccurrence(iri, OntoBimConstant.BACKSLASH) + OntoBimConstant.BACKSLASH;
+        String prefix = NamespaceMapper.getBaseNameSpace();
         String instVal = StringUtils.getStringAfterLastCharacterOccurrence(iri, StringUtils.UNDERSCORE);
         this.iri = prefix + OntoBimConstant.LOCAL_PLACEMENT_CLASS + OntoBimConstant.UNDERSCORE + instVal;
         this.refPointIRI = refPointIri;

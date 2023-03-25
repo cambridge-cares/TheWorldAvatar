@@ -11,6 +11,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 import org.apache.jena.vocabulary.RDF;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
@@ -70,7 +71,6 @@ class QueryHandlerTest {
     private static final String testSecShapeRepTypeVar = "secshapereptype";
     private static final String testSecShapeRepType = "Curve2D";
     // For testing Void shape rep
-    private static final String testFloorIRI = testBaseUri + "Floor_501238";
     private static final String testVoidShapeRepVar = "voidshaperep";
     private static final String testVoidShapeRepIri = testBaseUri + "IfcShapeRepresentation_11532";
     private static final String testVoidPlacementVar = "voidplacement";
@@ -90,14 +90,19 @@ class QueryHandlerTest {
 
     @BeforeAll
     static void addTestZoneMappings() {
+        NamespaceMapper.setBaseNameSpace(testBaseUri);
         // Create a new storey and room instance, which does not require any values except for the IRI
         // This IRI is necessary to generate the respective zone IRI within the class
-        storey = new IfcStoreyRepresentation(testParentStoreyIri, null, null, testPlacementIri, null, null);
-        room = new IfcRoomRepresentation(testParentRoomIri, null, null, testPlacementIri, null);
+        storey = new IfcStoreyRepresentation(null, null, testPlacementIri, null, null);
+        room = new IfcRoomRepresentation(null, null, testPlacementIri, null);
         // Add the storey and room to the singleton
         zoneMappings = SpatialZoneStorage.Singleton();
         zoneMappings.add(testParentStoreyIri, storey);
         zoneMappings.add(testParentRoomIri, room);
+    }
+    @AfterAll
+    static void resetNamespace(){
+        NamespaceMapper.setBaseNameSpace("");
     }
 
     @Test
@@ -230,7 +235,7 @@ class QueryHandlerTest {
         solution.add(testSecGeomVar, ResourceFactory.createResource(testSecGeomIri));
         solution.add(testSecShapeRepTypeVar, ResourceFactory.createPlainLiteral(testSecShapeRepType));
         // Execute the method and extract the result statements into a string
-        ModelRepresentation3D resultModel = QueryHandler.retrieveModelRepresentation3D(solution, testSecShapeRepVar, testSecSubContextVar, testSecGeomVar, testSecShapeRepTypeVar);
+        ModelRepresentation3D resultModel = QueryHandler.retrieveModelRepresentation3D(solution, testSecSubContextVar, testSecGeomVar, testSecShapeRepTypeVar);
         resultModel.addModelRepresentation3DStatements(sampleSet);
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
@@ -241,7 +246,7 @@ class QueryHandlerTest {
     void testAddVoidGeometryStatements() {
         // Set up required objects
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
-        Floor sampleFloor = new Floor(testFloorIRI, null, null, testPlacementIri, null, null);
+        Floor sampleFloor = new Floor(null, null, testPlacementIri, null, null);
         ElementStorage sampleElementMappings = ElementStorage.Singleton();
         // Create a sample query solution for testing
         QuerySolutionMap solution = new QuerySolutionMap();

@@ -68,7 +68,7 @@ public class ModellingOperatorFacade {
             String xCoord = QueryHandler.retrieveLiteral(soln, CommonQuery.X_VALUE_VAR);
             String yCoord = QueryHandler.retrieveLiteral(soln, CommonQuery.Y_VALUE_VAR);
             String zCoord = QueryHandler.retrieveLiteral(soln, CommonQuery.Z_VALUE_VAR);
-            CartesianPoint point = new CartesianPoint(iri, xCoord, yCoord, zCoord);
+            CartesianPoint point = new CartesianPoint(xCoord, yCoord, zCoord);
             mappings.add(iri, point);
         }
     }
@@ -108,7 +108,7 @@ public class ModellingOperatorFacade {
             String xDirRatio = QueryHandler.retrieveLiteral(soln, CommonQuery.X_VALUE_VAR);
             String yDirRatio = QueryHandler.retrieveLiteral(soln, CommonQuery.Y_VALUE_VAR);
             String zDirRatio = QueryHandler.retrieveLiteral(soln, CommonQuery.Z_VALUE_VAR);
-            DirectionVector direction = new DirectionVector(iri, xDirRatio, yDirRatio, zDirRatio);
+            DirectionVector direction = new DirectionVector(xDirRatio, yDirRatio, zDirRatio);
             mappings.add(iri, direction);
         }
     }

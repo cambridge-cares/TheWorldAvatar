@@ -11,6 +11,7 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.Element;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.IfcRoomRepresentation;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ElementStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.SpatialZoneStorage;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -62,9 +63,11 @@ class ElementFacadeTest {
 
     @BeforeAll
     static void addTestZoneMappings() {
+        // Set base name space
+        NamespaceMapper.setBaseNameSpace(TEST_BASE_URI);
         // Create a new storey instance, which does not require any values except for the IRI
         // This IRI is necessary to generate the Storey IRI within the element class
-        IfcRoomRepresentation room = new IfcRoomRepresentation(ROOM_INST, null, null, TEST_ZONE_PLACEMENT_IRI, null);
+        IfcRoomRepresentation room = new IfcRoomRepresentation(null, null, TEST_ZONE_PLACEMENT_IRI, null);
         // Add the storey to the singleton
         SpatialZoneStorage zoneMappings = SpatialZoneStorage.Singleton();
         zoneMappings.add(ROOM_INST, room);
@@ -79,6 +82,8 @@ class ElementFacadeTest {
     static void resetMappingsForOtherTests() {
         SpatialZoneStorage.resetSingleton();
         ElementStorage.resetSingleton();
+        // Reset base name space
+        NamespaceMapper.setBaseNameSpace("");
     }
 
     @Test
