@@ -54,10 +54,10 @@ Wall,Class,ConstructionComponent,IS-A,,,,Key construction characteristics of the
 Roof,Class,ConstructionComponent,IS-A,,,,Key construction characteristics of the property's roof.,https://www.theworldavatar.com/kg/ontobuiltenv/,Roof
 Window,Class,ConstructionComponent,IS-A,,,,Key construction characteristics of the property's windows.,https://www.theworldavatar.com/kg/ontobuiltenv/,Window
 Floor,Class,ConstructionComponent,IS-A,,,,Key construction characteristics of the property's floor.,https://www.theworldavatar.com/kg/ontobuiltenv/,Floor
-hasConstructionDate,Object Property,,,Property,https://www.w3.org/2006/time#Interval,,A relationship between a property and its construction dates.,https://www.theworldavatar.com/kg/ontobuiltenv/,has construction date
-https://www.w3.org/2006/time#hasBeginning,Object Property,,,https://www.w3.org/2006/time#Interval,https://www.w3.org/2006/time#Instant,,,https://www.w3.org/2006/time,has beginning
-https://www.w3.org/2006/time#hasEnd,Object Property,,,https://www.w3.org/2006/time#Interval,https://www.w3.org/2006/time#Instant,,,https://www.w3.org/2006/time,has end
-https://www.w3.org/2006/time#inXSDDateTimeStamp,Data Property,,,https://www.w3.org/2006/time#Instant,dateTimeStamp,,,https://www.w3.org/2006/time,in XSD dateTimeStamp
+hasConstructionDate,Object Property,,,Property,http://www.w3.org/2006/time#Interval,,A relationship between a property and its construction dates.,https://www.theworldavatar.com/kg/ontobuiltenv/,has construction date
+http://www.w3.org/2006/time#hasBeginning,Object Property,,,http://www.w3.org/2006/time#Interval,http://www.w3.org/2006/time#Instant,,,http://www.w3.org/2006/time,has beginning
+http://www.w3.org/2006/time#hasEnd,Object Property,,,http://www.w3.org/2006/time#Interval,http://www.w3.org/2006/time#Instant,,,http://www.w3.org/2006/time,has end
+http://www.w3.org/2006/time#inXSDDateTimeStamp,Data Property,,,http://www.w3.org/2006/time#Instant,dateTimeStamp,,,http://www.w3.org/2006/time,in XSD dateTimeStamp
 hasEnergyRating,Data Property,,,Property,string,,A relationship between a property and its overall energy efficiency rating (e.g. linear 'A to G' rating (where A is the most energy efficient and G is the least energy efficient)),https://www.theworldavatar.com/kg/ontobuiltenv/,has energy rating
 hasNumberOfHabitableRooms,Data Property,,,Property,integer,,A relationship between a property and its total number of habitable rooms.,https://www.theworldavatar.com/kg/ontobuiltenv/,has number of habitable rooms
 BuiltForm,Class,,,,,,The built form of the property.,https://www.theworldavatar.com/kg/ontobuiltenv/,Built form
