@@ -17,7 +17,7 @@ ONS2 = 'http://statistics.data.gov.uk/def/hierarchy/best-fit#'
 OWL = 'http://www.w3.org/2002/07/owl#'
 RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
-TIME = 'https://www.w3.org/2006/time#'
+TIME = 'http://www.w3.org/2006/time#'
 XSD = 'http://www.w3.org/2001/XMLSchema#'
 # CoMo / CARES ontologies
 OBE = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
