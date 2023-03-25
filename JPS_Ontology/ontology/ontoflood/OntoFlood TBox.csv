@@ -57,7 +57,7 @@ http://www.w3.org/2006/time#hasEnd,Object Property,,,http://www.w3.org/2006/time
 http://www.w3.org/2006/time#hasXSDDuration,Data Property,,,http://www.w3.org/2006/time#Interval,duration,,,https://www.w3.org/2006/time,has duration
 http://www.w3.org/2006/time#inXSDDateTimeStamp,Data Property,,,http://www.w3.org/2006/time#Instant,dateTimeStamp,,,https://www.w3.org/2006/time,has time stamp
 Location,Class,,,,,,The location associated with an event.,https://www.theworldavatar.com/kg/ontoflood/,Location
-ArealExtentPolygon,Class,,,,,,Polygon describing the footprint of an event.,https://www.theworldavatar.com/kg/ontoflood/,Areal extent polygon
+ArealExtentPolygon,Class,http://www.opengis.net/ont/geosparql#Feature,IS-A,,,,Polygon describing the footprint of an event.,https://www.theworldavatar.com/kg/ontoflood/,Areal extent polygon
 AdministrativeDistrict,Class,,,,,,"An area defined for administrative purposes, e.g. a county or postal code district.",https://www.theworldavatar.com/kg/ontoflood/,Administrative district
 hasAdministrativeDistrict,Object Property,,,Location,AdministrativeDistrict,,A relationship between a location and an encompassing administrative district.,https://www.theworldavatar.com/kg/ontoflood/,has administrative district
 hasArealExtent,Object Property,,,Location,ArealExtentPolygon,,Geospatial extent of an event's footprint.,https://www.theworldavatar.com/kg/ontoflood/,has areal extent
