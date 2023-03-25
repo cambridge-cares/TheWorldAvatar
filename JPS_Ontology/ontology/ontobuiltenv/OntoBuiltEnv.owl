@@ -677,17 +677,17 @@
     
 
 
-    <!-- http://theworldavatar.com/resource/ontouom/AmountOfMoneyPerArea -->
+    <!-- https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerArea -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/AmountOfMoneyPerArea"/>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerArea"/>
     
 
 
-    <!-- http://theworldavatar.com/resource/ontouom/pound_sterling_per_sqm -->
+    <!-- https://www.theworldavatar.com/kg/ontouom/pound_sterling_per_sqm -->
 
 
-    <owl:Class rdf:about="http://theworldavatar.com/resource/ontouom/pound_sterling_per_sqm">
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontouom/pound_sterling_per_sqm">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Pound sterling per square metre.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
@@ -825,7 +825,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuiltenv/AveragePricePerSqm">
-        <rdfs:subClassOf rdf:resource="http://theworldavatar.com/resource/ontouom/AmountOfMoneyPerArea"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontouom/AmountOfMoneyPerArea"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobuiltenv/representativeFor"/>
