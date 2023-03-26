@@ -23,6 +23,7 @@ class ModellingOperatorFacadeTest {
     private static final Property hasContents = ResourceFactory.createProperty(JunitTestUtils.listUri + "hasContents");
     private static final Property hasNext = ResourceFactory.createProperty(JunitTestUtils.listUri + "hasNext");
     private static final Property hasDouble = ResourceFactory.createProperty(JunitTestUtils.expressUri + "hasDouble");
+    private static final Property hasString = ResourceFactory.createProperty(JunitTestUtils.expressUri + "hasString");
     private static final Resource IFC_CART_POINT = ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcCartesianPoint");
     private static final Resource IFC_DIRECTION = ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcDirection");
     private static final String IFC_FIRST_PLACEMENT_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_14823";
@@ -50,6 +51,12 @@ class ModellingOperatorFacadeTest {
     private static final String IFC_TRANSFORMATION_OPERATOR_IRI = TEST_BASE_URI + JunitTestUtils.IFC_TRANSFORMATION_OPERATOR_CLASS + "_67547";
     private static final String BIM_TRANSFORMATION_OPERATOR_IRI = TEST_BASE_URI + JunitTestUtils.BIM_TRANSFORMATION_OPERATOR_CLASS + "_67547";
     private static final Double TRANSFORMATION_OPERATOR_SCALE = 0.291;
+    private static final String TEST_SUB_CONTEXT_IRI = TEST_BASE_URI + "IfcGeometricRepresentationSubContext_4";
+    private static final String TEST_SUB_CONTEXT_BIM_IRI = TEST_BASE_URI + "GeometricRepresentationSubContext_4";
+    private static final String TEST_PARENT_CONTEXT_IRI = TEST_BASE_URI + "GeometricRepresentationContext_1";
+    private static final String TEST_TARGET_VIEW = JunitTestUtils.ifc2x3Uri + "MODEL_VIEW";
+    private static final String TEST_CONTEXT_TYPE = "Axis";
+    private static final String TEST_CONTEXT_IDENTIFIER = "Model";
 
     @BeforeAll
     static void setUp() {
@@ -229,6 +236,20 @@ class ModellingOperatorFacadeTest {
         JunitTestUtils.doesExpectedListExist(genExpectedTransformationOperatorStatements(BIM_TRANSFORMATION_OPERATOR_IRI, false), result);
     }
 
+    @Test
+    void testRetrieveOperatorInstancesForSubContext() {
+        // Set up
+        addSubContextTriples(TEST_SUB_CONTEXT_IRI);
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Execute method
+        ModellingOperatorFacade.retrieveOperatorInstances(sampleModel);
+        // Clean up results as one string
+        operatorMappings.constructAllStatements(sampleSet);
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generate expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedSubContextStatements(), result);
+    }
+
     private void addPointOrDirectionTriples(String iri, Resource ifcClass, String property, Double xVal, Double yVal, Double zVal) {
         sampleModel.createResource(iri)
                 .addProperty(RDF.type, ifcClass)
@@ -285,6 +306,19 @@ class ModellingOperatorFacadeTest {
         }
     }
 
+    private void addSubContextTriples(String iri) {
+        sampleModel.createResource(iri)
+                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcGeometricRepresentationSubContext"))
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "parentContext_IfcGeometricRepresentationSubContext"),
+                        sampleModel.createResource(TEST_PARENT_CONTEXT_IRI).addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcGeometricRepresentationContext"))
+                )
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "contextType_IfcRepresentationContext"),
+                        sampleModel.createResource().addProperty(hasString, sampleModel.createLiteral(TEST_CONTEXT_TYPE)))
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "contextIdentifier_IfcRepresentationContext"),
+                        sampleModel.createResource().addProperty(hasString, sampleModel.createLiteral(TEST_CONTEXT_IDENTIFIER)))
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "targetView_IfcGeometricRepresentationSubContext"),  sampleModel.createResource(TEST_TARGET_VIEW));
+    }
+
     private List<String> genExpectedPointStatements(String xCoord, String yCoord, String zCoord) {
         List<String> expected = new ArrayList<>();
         expected.add(TEST_BASE_URI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasXCoordinate, \"" + xCoord);
@@ -332,6 +366,16 @@ class ModellingOperatorFacadeTest {
             expected.add(inst + ", http://www.theworldavatar.com/kg/ontobim/hasDerivedYAxis, " + TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
             expected.add(TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/DirectionVector");
         }
+        return expected;
+    }
+
+    private List<String> genExpectedSubContextStatements() {
+        List<String> expected = new ArrayList<>();
+        expected.add(TEST_SUB_CONTEXT_BIM_IRI + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");
+        expected.add(TEST_SUB_CONTEXT_BIM_IRI + ", http://www.theworldavatar.com/kg/ontobim/hasParentContext, " + TEST_PARENT_CONTEXT_IRI);
+        expected.add(TEST_SUB_CONTEXT_BIM_IRI + ", http://www.theworldavatar.com/kg/ontobim/hasContextType, \"" + TEST_CONTEXT_TYPE);
+        expected.add(TEST_SUB_CONTEXT_BIM_IRI + ", http://www.theworldavatar.com/kg/ontobim/hasContextIdentifier, \"" + TEST_CONTEXT_IDENTIFIER);
+        expected.add(TEST_SUB_CONTEXT_BIM_IRI + ", http://www.theworldavatar.com/kg/ontobim/hasTargetView, " + TEST_TARGET_VIEW);
         return expected;
     }
 }

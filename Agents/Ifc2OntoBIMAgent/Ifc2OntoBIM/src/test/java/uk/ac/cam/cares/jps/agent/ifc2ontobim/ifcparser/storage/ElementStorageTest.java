@@ -202,8 +202,8 @@ class ElementStorageTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedCommonStatements(), result);
-        // Assert 5 sample statements are generated
-        assertEquals(5, sampleSet.size());
+        // Assert 4 sample statements are generated
+        assertEquals(4, sampleSet.size());
     }
 
     @Test
@@ -237,15 +237,14 @@ class ElementStorageTest {
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedCommonStatements(), result);
         JunitTestUtils.doesExpectedListExist(genExpectedAdditionalGeomRepStatements(), result);
-        // Assert 10 sample statements are generated, which is double that of 1 model rep object
-        assertEquals(10, sampleSet.size());
+        // Assert 8 sample statements are generated, which is double that of 1 model rep object
+        assertEquals(8, sampleSet.size());
     }
 
     private List<String> genExpectedCommonStatements() {
         List<String> expected = new ArrayList<>();
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D");
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSubContext, " + TEST_SUB_CONTEXT_IRI);
-        expected.add(TEST_SUB_CONTEXT_IRI + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + TEST_GEOM_IRI);
         expected.add(TEST_GEOM_IRI + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/" + TEST_GEOM_CLASS);
         return expected;

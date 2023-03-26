@@ -25,9 +25,8 @@ public class GeometricRepresentationContext {
      * @param trueNorthDirectionIRI An optional field for indicating the IRI of the True North direction vector.
      */
     public GeometricRepresentationContext(String iri, String spaceDimension, String precision, String worldCoordinateSysIri, String trueNorthDirectionIRI) {
-        String prefix = NamespaceMapper.getBaseNameSpace();
         // Generate new geometric representation context IRI
-        this.iri = prefix + OntoBimConstant.GEOM_CONTEXT_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
+        this.iri = StatementHandler.createInstanceFromIRI(iri,OntoBimConstant.GEOM_CONTEXT_CLASS);
         this.dimension = Double.valueOf(spaceDimension);
         this.wcsIri = StatementHandler.createInstanceFromIRI(worldCoordinateSysIri, OntoBimConstant.LOCAL_PLACEMENT_CLASS);
         // Parse the optional values

@@ -6,10 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.CartesianPoint;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.CartesianTransformationOperator;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.DirectionVector;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.LocalPlacement;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -48,6 +45,12 @@ class ModellingOperatorStorageTest {
     private static final String TEST_PLACEMENT_BIM_IRI = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS + "_93492";
     private static final String TEST_TRANSFORMATION_OPERATOR_IRI = TEST_BASE_URI + JunitTestUtils.IFC_TRANSFORMATION_OPERATOR_CLASS + "_67547";
     private static final String TEST_TRANSFORMATION_OPERATOR_BIM_IRI = TEST_BASE_URI + JunitTestUtils.BIM_TRANSFORMATION_OPERATOR_CLASS + "_67547";
+    private static final String TEST_SUB_CONTEXT_IRI = TEST_BASE_URI + "IfcGeometricRepresentationSubContext_3";
+    private static final String TEST_SUB_CONTEXT_BIM_IRI = TEST_BASE_URI + "GeometricRepresentationSubContext_3";
+    private static final String TEST_PARENT_CONTEXT_IRI = TEST_BASE_URI + "GeometricRepresentationContext_2";
+    private static final String TEST_TARGET_VIEW = JunitTestUtils.ifc2x3Uri + "MODEL_VIEW";
+    private static final String TEST_CONTEXT_TYPE = "Axis";
+    private static final String TEST_CONTEXT_IDENTIFIER = "Model";
     private static final String NON_EXISTENT_IRI = TEST_BASE_URI + "DOES/NOT/EXIST_1223";
     private static final String NON_EXISTING_ERROR = NON_EXISTENT_IRI + " does not exist in mappings!";
 
@@ -151,6 +154,24 @@ class ModellingOperatorStorageTest {
         // Assert if they are equals
         assertTrue(result.contains(TEST_TRANSFORMATION_OPERATOR_BIM_IRI + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/CartesianTransformationOperator"));
         assertTrue(result.contains(TEST_TRANSFORMATION_OPERATOR_BIM_IRI + ", http://www.theworldavatar.com/kg/ontobim/hasLocalOrigin, " + TEST_FIRST_POINT_IRI));
+    }
+
+    @Test
+    void testAddSubContextAndStatement() {
+        // Create a new sample
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        GeometricRepresentationSubContext sample = new GeometricRepresentationSubContext(TEST_SUB_CONTEXT_IRI, TEST_PARENT_CONTEXT_IRI,
+                TEST_CONTEXT_TYPE, TEST_CONTEXT_IDENTIFIER, TEST_TARGET_VIEW);
+        // Verify that no statements have been generated
+        testMappings.constructAllStatements(sampleSet);
+        assertEquals(0, sampleSet.size());
+        // Execute method
+        testMappings.add(sample);
+        testMappings.constructAllStatements(sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Generated expected statement lists and verify their existence
+        JunitTestUtils.doesExpectedListExist(genExpectedSubContextStatements(), result);
     }
 
     @Test
@@ -338,6 +359,16 @@ class ModellingOperatorStorageTest {
         expected.add(TEST_BASE_URI + TEST_DIR_VECTOR_CLASS + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasXDirectionRatio, \"" + xRatio);
         expected.add(TEST_BASE_URI + TEST_DIR_VECTOR_CLASS + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasYDirectionRatio, \"" + yRatio);
         expected.add(TEST_BASE_URI + TEST_DIR_VECTOR_CLASS + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasZDirectionRatio, \"" + zRatio);
+        return expected;
+    }
+
+    private List<String> genExpectedSubContextStatements() {
+        List<String> expected = new ArrayList<>();
+        expected.add(TEST_SUB_CONTEXT_BIM_IRI + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");
+        expected.add(TEST_SUB_CONTEXT_BIM_IRI + ", http://www.theworldavatar.com/kg/ontobim/hasParentContext, " + TEST_PARENT_CONTEXT_IRI);
+        expected.add(TEST_SUB_CONTEXT_BIM_IRI + ", http://www.theworldavatar.com/kg/ontobim/hasContextType, \"" + TEST_CONTEXT_TYPE);
+        expected.add(TEST_SUB_CONTEXT_BIM_IRI + ", http://www.theworldavatar.com/kg/ontobim/hasContextIdentifier, \"" + TEST_CONTEXT_IDENTIFIER);
+        expected.add(TEST_SUB_CONTEXT_BIM_IRI + ", http://www.theworldavatar.com/kg/ontobim/hasTargetView, " + TEST_TARGET_VIEW);
         return expected;
     }
 }

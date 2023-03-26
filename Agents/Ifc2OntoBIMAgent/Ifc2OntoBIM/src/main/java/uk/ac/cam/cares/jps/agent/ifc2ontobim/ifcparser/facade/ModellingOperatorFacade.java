@@ -4,10 +4,7 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.CartesianPoint;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.CartesianTransformationOperator;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.DirectionVector;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.LocalPlacement;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.CommonQuery;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ModellingOperatorStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.QueryHandler;
@@ -33,6 +30,7 @@ public class ModellingOperatorFacade {
         mappings.replaceDuplicates();
         execLocalPlacementQuery(owlModel);
         execCartesianTransformationOperatorQuery(owlModel);
+        execGeometricRepresentationSubContextQuery(owlModel);
     }
 
     /**
@@ -232,6 +230,47 @@ public class ModellingOperatorFacade {
                 yDirIri = yAxisDirection.getIri();
             }
             CartesianTransformationOperator operator = new CartesianTransformationOperator(iri, originIri, scaleFactor, xDirIri, yDirIri);
+            mappings.add(operator);
+        }
+    }
+
+    /**
+     * Creates the SPARQL SELECT query statements for GeometricRepresentationSubContext.
+     *
+     * @return A string containing the SPARQL query to execute.
+     */
+    private static String createGeometricRepresentationSubContextSelectQuery() {
+        SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
+        selectBuilder.addVar(CommonQuery.REP_SUBCONTEXT_VAR)
+                .addVar(CommonQuery.REP_CONTEXT_VAR)
+                .addVar(CommonQuery.CONTEXT_TYPE_VAR)
+                .addVar(CommonQuery.CONTEXT_IDENTIFIER_VAR)
+                .addVar(CommonQuery.CONTEXT_VIEW_VAR);
+        selectBuilder.addWhere(CommonQuery.REP_SUBCONTEXT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCGEOM_REP_SUBCONTEXT)
+                .addWhere(CommonQuery.REP_SUBCONTEXT_VAR, CommonQuery.IFC_PARENT_CONTEXT, CommonQuery.REP_CONTEXT_VAR)
+                .addWhere(CommonQuery.REP_CONTEXT_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFCGEOM_REP_CONTEXT)
+                .addOptional(CommonQuery.REP_SUBCONTEXT_VAR, CommonQuery.IFC_CONTEXT_TYPE + CommonQuery.EXPRESS_HASSTRING, CommonQuery.CONTEXT_TYPE_VAR)
+                .addOptional(CommonQuery.REP_SUBCONTEXT_VAR, CommonQuery.IFC_CONTEXT_IDENTIFIER + CommonQuery.EXPRESS_HASSTRING, CommonQuery.CONTEXT_IDENTIFIER_VAR)
+                .addOptional(CommonQuery.REP_SUBCONTEXT_VAR, CommonQuery.IFC_TARGET_VIEW, CommonQuery.CONTEXT_VIEW_VAR);
+        return selectBuilder.buildString();
+    }
+
+    /**
+     * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for GeometricRepresentationSubContext.
+     *
+     * @param owlModel The IfcOwl model containing the triples to query from.
+     */
+    private static void execGeometricRepresentationSubContextQuery(Model owlModel) {
+        String query = createGeometricRepresentationSubContextSelectQuery();
+        ResultSet results = QueryHandler.execSelectQuery(query, owlModel);
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            String iri = soln.get(CommonQuery.REP_SUBCONTEXT_VAR).toString();
+            String parentContextIri = QueryHandler.retrieveIri(soln, CommonQuery.REP_CONTEXT_VAR);
+            String type = QueryHandler.retrieveLiteral(soln, CommonQuery.CONTEXT_TYPE_VAR);
+            String identifier = QueryHandler.retrieveLiteral(soln, CommonQuery.CONTEXT_IDENTIFIER_VAR);
+            String view = QueryHandler.retrieveIri(soln, CommonQuery.CONTEXT_VIEW_VAR);
+            GeometricRepresentationSubContext operator = new GeometricRepresentationSubContext(iri, parentContextIri, type, identifier, view);
             mappings.add(operator);
         }
     }

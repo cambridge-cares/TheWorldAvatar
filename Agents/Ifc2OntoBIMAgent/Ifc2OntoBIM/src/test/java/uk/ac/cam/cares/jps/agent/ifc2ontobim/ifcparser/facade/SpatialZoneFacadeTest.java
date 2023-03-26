@@ -20,6 +20,7 @@ class SpatialZoneFacadeTest {
     private static final String PROJECT_NAME = "New Project";
     private static final String PROJECT_PHASE = "Construction";
     private static final String REP_CONTEXT_INST = TEST_BASE_URI + "IfcGeometricRepresentationContext_352";
+    private static final String BIM_REP_CONTEXT_INST = TEST_BASE_URI + "GeometricRepresentationContext_352";
     private static final String WCS_INST = TEST_BASE_URI + "LocalPlacement_2531";
     private static final String TRUE_NORTH_INST = TEST_BASE_URI + "DirectionVector_5513";
     // Spatial zones
@@ -430,11 +431,11 @@ class SpatialZoneFacadeTest {
         expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/IfcProjectRepresentation");
         expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + PROJECT_NAME);
         expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasPhase, \"" + PROJECT_PHASE);
-        expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasContext, " + TEST_BASE_URI + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationContext");
-        expected.add(TEST_BASE_URI + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSpaceDimensions, \"" + TEST_PROJECT_DIMENSIONS);
-        expected.add(TEST_BASE_URI + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasPrecision, \"" + TEST_PROJECT_PRECISION);
-        expected.add(TEST_BASE_URI + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasWorldCoordinateSystem, " + WCS_INST);
+        expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasContext, " + BIM_REP_CONTEXT_INST);
+        expected.add(BIM_REP_CONTEXT_INST + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationContext");
+        expected.add(BIM_REP_CONTEXT_INST + ", http://www.theworldavatar.com/kg/ontobim/hasSpaceDimensions, \"" + TEST_PROJECT_DIMENSIONS);
+        expected.add(BIM_REP_CONTEXT_INST + ", http://www.theworldavatar.com/kg/ontobim/hasPrecision, \"" + TEST_PROJECT_PRECISION);
+        expected.add(BIM_REP_CONTEXT_INST + ", http://www.theworldavatar.com/kg/ontobim/hasWorldCoordinateSystem, " + WCS_INST);
         expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefElevation, " + TEST_BASE_URI + "Height_");
         expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + SITE_NAME);
         expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + SITE_ID);
@@ -487,7 +488,7 @@ class SpatialZoneFacadeTest {
 
     private List<String> genExpectedComplexModelStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTrueNorth, " + TRUE_NORTH_INST);
+        expected.add(BIM_REP_CONTEXT_INST + ", http://www.theworldavatar.com/kg/ontobim/hasTrueNorth, " + TRUE_NORTH_INST);
         expected.add(TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTerrainElevation, " + TEST_BASE_URI + "Height_");
         expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue, \"" + TEST_BUILDING_TER_ELEV_DOUBLE);
         expected.add(TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefElevation, " + TEST_BASE_URI + "Height_");

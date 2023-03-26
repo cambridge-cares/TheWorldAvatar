@@ -4,10 +4,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.Ifc2OntoBIMAgent;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.CartesianPoint;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.CartesianTransformationOperator;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.DirectionVector;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.LocalPlacement;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.*;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.util.*;
@@ -28,6 +25,7 @@ public class ModellingOperatorStorage {
     private static Queue<DirectionVector> directions;
     private static Queue<LocalPlacement> placements;
     private static Queue<CartesianTransformationOperator> operators;
+    private static Queue<GeometricRepresentationSubContext> subContexts;
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
     private static final String NON_EXISTING_ERROR = " does not exist in mappings!";
 
@@ -41,6 +39,7 @@ public class ModellingOperatorStorage {
         directions = new ArrayDeque<>();
         placements = new ArrayDeque<>();
         operators = new ArrayDeque<>();
+        subContexts = new ArrayDeque<>();
     }
 
     /**
@@ -98,6 +97,15 @@ public class ModellingOperatorStorage {
      */
     public void add(CartesianTransformationOperator operator) {
         operators.offer(operator);
+    }
+
+    /**
+     * A method to store the modelling parameter's IRI and its associated Java object as mappings.
+     *
+     * @param subContext The GeometricRepresentationSubContext object generated from the iri.
+     */
+    public void add(GeometricRepresentationSubContext subContext) {
+        subContexts.offer(subContext);
     }
 
     /**
@@ -190,6 +198,9 @@ public class ModellingOperatorStorage {
         }
         while (!operators.isEmpty()) {
             operators.poll().constructStatements(statementSet);
+        }
+        while (!subContexts.isEmpty()) {
+            subContexts.poll().constructStatements(statementSet);
         }
     }
 }

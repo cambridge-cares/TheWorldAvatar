@@ -69,7 +69,10 @@ public class OntoBimConstant {
     public static final String BIM_HAS_SCALE = NamespaceMapper.BIM_NAMESPACE + "hasScale";
     public static final String BIM_HAS_DERIVED_X_AXIS = NamespaceMapper.BIM_NAMESPACE + "hasDerivedXAxis";
     public static final String BIM_HAS_DERIVED_Y_AXIS = NamespaceMapper.BIM_NAMESPACE + "hasDerivedYAxis";
-
+    public static final String BIM_HAS_PARENT_CONTEXT = NamespaceMapper.BIM_NAMESPACE + "hasParentContext";
+    public static final String BIM_HAS_CONTEXT_TYPE = NamespaceMapper.BIM_NAMESPACE + "hasContextType";
+    public static final String BIM_HAS_CONTEXT_IDENTIFIER = NamespaceMapper.BIM_NAMESPACE + "hasContextIdentifier";
+    public static final String BIM_HAS_TARGET_VIEW = NamespaceMapper.BIM_NAMESPACE + "hasTargetView";
     // OntoBim classes
     public static final String PROJECT_CLASS = "IfcProjectRepresentation";
     public static final String BIM_PROJECT_CLASS = NamespaceMapper.BIM_NAMESPACE + PROJECT_CLASS;

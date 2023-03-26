@@ -135,6 +135,9 @@ public class CommonQuery {
     public static final String X_AXIS_DIR_VECTOR_VAR = "?xaxisdirection";
     public static final String Y_AXIS_DIR_VECTOR_VAR = "?yaxisdirection";
     public static final String SCALE_VAR = "?scale";
+    public static final String CONTEXT_TYPE_VAR = "?contexttype";
+    public static final String CONTEXT_IDENTIFIER_VAR = "?contextidentifier";
+    public static final String CONTEXT_VIEW_VAR = "?contextview";
     // IfcOwl Properties
     public static final String EXPRESS_HASDOUBLE = "/express:hasDouble";
     public static final String EXPRESS_HASINTEGER = "/express:hasInteger";
@@ -198,6 +201,10 @@ public class CommonQuery {
     public static final String IFC_SCALE_TRANSFORMATION = NamespaceMapper.IFC_PREFIX + ":scale_IfcCartesianTransformationOperator";
     public static final String IFC_X_AXIS_TRANSFORMATION = NamespaceMapper.IFC_PREFIX + ":axis1_IfcCartesianTransformationOperator";
     public static final String IFC_Y_AXIS_TRANSFORMATION = NamespaceMapper.IFC_PREFIX + ":axis2_IfcCartesianTransformationOperator";
+    public static final String IFC_PARENT_CONTEXT = NamespaceMapper.IFC_PREFIX + ":parentContext_IfcGeometricRepresentationSubContext";
+    public static final String IFC_CONTEXT_TYPE = NamespaceMapper.IFC_PREFIX + ":contextType_IfcRepresentationContext";
+    public static final String IFC_CONTEXT_IDENTIFIER = NamespaceMapper.IFC_PREFIX + ":contextIdentifier_IfcRepresentationContext";
+    public static final String IFC_TARGET_VIEW = NamespaceMapper.IFC_PREFIX + ":targetView_IfcGeometricRepresentationSubContext";
     // IfcOwl Classes
     public static final String IFCPROJECT = NamespaceMapper.IFC_PREFIX + ":IfcProject";
     public static final String IFCSITE = NamespaceMapper.IFC_PREFIX + ":IfcSite";

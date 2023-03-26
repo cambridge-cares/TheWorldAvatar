@@ -16,8 +16,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class GeometricRepresentationContextTest {
     private static final String testBaseUri1 = "http://www.example.org/";
     private static final String testIri1 = testBaseUri1 + "IfcGeometricRepresentationContext_142";
+    private static final String testBIMIri1 = testBaseUri1 + "GeometricRepresentationContext_142";
     private static final String testBaseUri2 = "http://www.example.org/test#";
     private static final String testIri2 = testBaseUri2 + "IfcGeometricRepresentationContext_1322";
+    private static final String testBIMIri2 = testBaseUri2 + "GeometricRepresentationContext_1322";
     private static final String testClassName = "GeometricRepresentationContext";
     private static final String testWCSIri = testBaseUri1 + "LocalPlacement_2531";
     private static final String testTrueNorthIri = testBaseUri1 + "DirectionVector_5513";
@@ -39,11 +41,12 @@ class GeometricRepresentationContextTest {
         // First constructor
         GeometricRepresentationContext sample = new GeometricRepresentationContext(testIri1, testDim.toString(), testPrecision.toString(), testWCSIri, testTrueNorthIri);
         // Test that the sample fields are correct
-        assertTrue(sample.getIri().contains(testBaseUri1 + testClassName + "_"));
+        assertEquals(testBIMIri1, sample.getIri());
         // Second constructor
         NamespaceMapper.setBaseNameSpace(testBaseUri2);
-        GeometricRepresentationContext sample2 = new GeometricRepresentationContext(testIri2, testDim.toString(), testPrecision.toString(), testWCSIri, testTrueNorthIri);        // Test that the sample fields are correct
-        assertTrue(sample2.getIri().contains(testBaseUri2 + testClassName + "_"));
+        GeometricRepresentationContext sample2 = new GeometricRepresentationContext(testIri2, testDim.toString(), testPrecision.toString(), testWCSIri, testTrueNorthIri);
+        // Test that the sample fields are correct
+        assertEquals(testBIMIri2, sample2.getIri());
     }
 
     @Test
@@ -77,16 +80,16 @@ class GeometricRepresentationContextTest {
 
     private List<String> genExpectedStatements() {
         java.util.List<java.lang.String> expected = new ArrayList<>();
-        expected.add(testBaseUri1 + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationContext");
-        expected.add(testBaseUri1 + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSpaceDimensions, \"" + testDim);
-        expected.add(testBaseUri1 + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasWorldCoordinateSystem, " + testWCSIri);
+        expected.add(testBIMIri1 + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationContext");
+        expected.add(testBIMIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasSpaceDimensions, \"" + testDim);
+        expected.add(testBIMIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasWorldCoordinateSystem, " + testWCSIri);
         return expected;
     }
 
     private List<String> genExpectedOptionalStatements() {
         java.util.List<java.lang.String> expected = new ArrayList<>();
-        expected.add(testBaseUri1 + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasPrecision, \"" + testPrecision);
-        expected.add(testBaseUri1 + "GeometricRepresentationContext_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTrueNorth, " + testTrueNorthIri);
+        expected.add(testBIMIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasPrecision, \"" + testPrecision);
+        expected.add(testBIMIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasTrueNorth, " + testTrueNorthIri);
         return expected;
     }
 }

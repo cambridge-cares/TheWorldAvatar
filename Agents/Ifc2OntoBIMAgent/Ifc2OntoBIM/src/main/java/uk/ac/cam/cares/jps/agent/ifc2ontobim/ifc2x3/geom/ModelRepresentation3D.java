@@ -38,7 +38,7 @@ public class ModelRepresentation3D {
     public ModelRepresentation3D(String subContextIri, String geomIri, String repType, String sourcePlacementIri, String cartesianTransformerIri) {
         this.prefix = NamespaceMapper.getBaseNameSpace();
         this.bimIri = this.prefix + OntoBimConstant.GEOM_MODEL_REP_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
-        this.subContext = subContextIri;
+        this.subContext = StatementHandler.createInstanceFromIRI(subContextIri,OntoBimConstant.GEOM_SUB_CONTEXT_CLASS);
         // Initialise the queue and append the geometries
         this.geomIris = new ArrayDeque<>();
         this.geomTypes = new ArrayDeque<>();
@@ -74,7 +74,6 @@ public class ModelRepresentation3D {
     public void addModelRepresentation3DStatements(LinkedHashSet<Statement> statementSet) {
         StatementHandler.addStatement(statementSet, this.getBimIri(), OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_GEOM_MODEL_REP_CLASS);
         StatementHandler.addStatement(statementSet, this.getBimIri(), OntoBimConstant.BIM_HAS_SUBCONTEXT, this.subContext);
-        StatementHandler.addStatement(statementSet, this.subContext, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_GEOM_SUB_CONTEXT_CLASS);
         // While the queue is not empty, generate statements from the values
         while (!this.geomIris.isEmpty()){
             String geomIri = this.geomIris.poll();
