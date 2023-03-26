@@ -11,6 +11,10 @@ import java.util.List;
  * @author qhouyee
  */
 public class GeomConstructBuilderMediator {
+    protected static final String DIRECTION_VAR = "?direction";
+    protected static final String DIRECTION_AXIS_VAR = "?axisdirection";
+    protected static final String DIRECTION_REF_VAR = "?refdirection";
+    protected static final String CARTPOINT_VAR = "?cartesianpoint";
     private ConstructBuilder builder;
 
     /**
@@ -48,16 +52,6 @@ public class GeomConstructBuilderMediator {
                 IfcGeometryConstructBuilder.constructPolygonalBoundedHalfSpaceRepresentationTriples(iriList, this.builder);
             } else if (sampleIri.contains("IfcPolyline")) {
                 IfcGeometryConstructBuilder.constructPolylineRepresentationTriples(iriList, this.builder);
-            } else if (sampleIri.contains("GeometricRepresentationSubContext")) {
-                IfcGeospatialOperatorConstructBuilder.constructGeometricRepresentationSubContextTriples(iriList, this.builder);
-            } else if (sampleIri.contains("LocalPlacement")) {
-                IfcGeospatialOperatorConstructBuilder.constructLocalPlacementTriples(iriList, this.builder);
-            } else if (sampleIri.contains("CartesianTransformationOperator")) {
-                IfcGeospatialOperatorConstructBuilder.constructCartesianTransformationOperatorTriples(iriList, this.builder);
-            } else if (sampleIri.contains("Direction")) {
-                IfcGeospatialOperatorConstructBuilder.constructDirectionVectorTriples(iriList, this.builder);
-            } else if (sampleIri.contains("CartesianPoint")) {
-                IfcGeospatialOperatorConstructBuilder.constructCartesianPointTriples(iriList, this.builder);
             }
         }
     }

@@ -88,13 +88,13 @@ class IfcGeometryConstructBuilder {
                 .addConstruct(POLYLOOP_VAR, "bim:hasStartingVertex", FIRSTPOINT_LIST_VAR)
                 .addConstruct(CARTPOINT_LIST_VAR, "?p", "?o")
                 .addConstruct(CARTPOINT_LIST_VAR, QueryHandler.RDF_TYPE, "bim:LineVertex")
-                .addConstruct(IfcGeospatialOperatorConstructBuilder.CARTPOINT_VAR, QueryHandler.RDF_TYPE, "bim:CartesianPoint");
+                .addConstruct(GeomConstructBuilderMediator.CARTPOINT_VAR, QueryHandler.RDF_TYPE, "bim:CartesianPoint");
         // IfcPolyLoop is defined through a sequence of cartesian points of undefined length
         // Each point is stored in an individual list (this holds only one point). The list is linked to other lists through the "list:hasNext" property
         builder.addWhere(POLYLOOP_VAR, QueryHandler.RDF_TYPE, "ifc:IfcPolyLoop")
                 .addWhere(POLYLOOP_VAR, "ifc:polygon_IfcPolyLoop ", FIRSTPOINT_LIST_VAR) // Retrieve the starting list
                 .addWhere(FIRSTPOINT_LIST_VAR, "list:hasNext*", CARTPOINT_LIST_VAR) // Retrieve all lists (including first) associated with the polygon
-                .addWhere(CARTPOINT_LIST_VAR, "list:hasContents", IfcGeospatialOperatorConstructBuilder.CARTPOINT_VAR) // Retrieve the cartesian point to change their rdf:type to bim
+                .addWhere(CARTPOINT_LIST_VAR, "list:hasContents", GeomConstructBuilderMediator.CARTPOINT_VAR) // Retrieve the cartesian point to change their rdf:type to bim
                 .addWhere(CARTPOINT_LIST_VAR, "?p", "?o"); // Retrieve all the related triples connect to a list
     }
 
@@ -107,16 +107,16 @@ class IfcGeometryConstructBuilder {
     protected static void constructExtrudedAreaSolidRepresentationTriples(List<RDFNode> iriList, ConstructBuilder builder) {
         // Extruded Area Solid geometry sub-graph
         builder.addConstruct(EXTRUDED_AREA_SOLID_VAR, QueryHandler.RDF_TYPE, "bim:ExtrudedAreaSolid")
-                .addConstruct(EXTRUDED_AREA_SOLID_VAR, "bim:hasRefPoint", IfcGeospatialOperatorConstructBuilder.CARTPOINT_VAR)
-                .addConstruct(EXTRUDED_AREA_SOLID_VAR, "bim:hasExtrusionDirection", IfcGeospatialOperatorConstructBuilder.DIRECTION_VAR)
+                .addConstruct(EXTRUDED_AREA_SOLID_VAR, "bim:hasRefPoint", GeomConstructBuilderMediator.CARTPOINT_VAR)
+                .addConstruct(EXTRUDED_AREA_SOLID_VAR, "bim:hasExtrusionDirection", GeomConstructBuilderMediator.DIRECTION_VAR)
                 .addConstruct(EXTRUDED_AREA_SOLID_VAR, "bim:hasExtrusionDepth", DEPTHVALUE_VAR);
         // Query for extruded area solid geometries and their relationships
         Map<String, List<RDFNode>> varMap = new HashMap<>();// Add VALUES statement for all IRIs
         varMap.put(EXTRUDED_AREA_SOLID_VAR, iriList);
         builder.addWhereValueVars(varMap)
                 .addWhere(EXTRUDED_AREA_SOLID_VAR, QueryHandler.RDF_TYPE, "ifc:IfcExtrudedAreaSolid")
-                .addWhere(EXTRUDED_AREA_SOLID_VAR, "ifc:position_IfcSweptAreaSolid/ifc:location_IfcPlacement", IfcGeospatialOperatorConstructBuilder.CARTPOINT_VAR)
-                .addWhere(EXTRUDED_AREA_SOLID_VAR, "ifc:extrudedDirection_IfcExtrudedAreaSolid", IfcGeospatialOperatorConstructBuilder.DIRECTION_VAR)
+                .addWhere(EXTRUDED_AREA_SOLID_VAR, "ifc:position_IfcSweptAreaSolid/ifc:location_IfcPlacement", GeomConstructBuilderMediator.CARTPOINT_VAR)
+                .addWhere(EXTRUDED_AREA_SOLID_VAR, "ifc:extrudedDirection_IfcExtrudedAreaSolid", GeomConstructBuilderMediator.DIRECTION_VAR)
                 .addWhere(EXTRUDED_AREA_SOLID_VAR, "ifc:depth_IfcExtrudedAreaSolid/express:hasDouble", DEPTHVALUE_VAR);
 
         // Rectangle Profile Definition sub-graph
@@ -148,8 +148,8 @@ class IfcGeometryConstructBuilder {
         builder.addConstruct(POLYSPACE_VAR, QueryHandler.RDF_TYPE, "bim:PolygonalBoundedHalfSpace")
                 .addConstruct(POLYSPACE_VAR, "bim:hasAgreementFlag", BOOLEAN_VAR)
                 .addConstruct(POLYSPACE_VAR, "bim:hasRefPoint", SPACE_CARTPOINT_VAR)
-                .addConstruct(POLYSPACE_VAR, "bim:hasAxisDirection", IfcGeospatialOperatorConstructBuilder.DIRECTION_AXIS_VAR)
-                .addConstruct(POLYSPACE_VAR, "bim:hasRefDirection", IfcGeospatialOperatorConstructBuilder.DIRECTION_REF_VAR);
+                .addConstruct(POLYSPACE_VAR, "bim:hasAxisDirection", GeomConstructBuilderMediator.DIRECTION_AXIS_VAR)
+                .addConstruct(POLYSPACE_VAR, "bim:hasRefDirection", GeomConstructBuilderMediator.DIRECTION_REF_VAR);
         // Query for properties
         Map<String, List<RDFNode>> varMap = new HashMap<>();// Add VALUES statement for all IRIs
         varMap.put(POLYSPACE_VAR, iriList);
@@ -157,8 +157,8 @@ class IfcGeometryConstructBuilder {
                 .addWhere(POLYSPACE_VAR, QueryHandler.RDF_TYPE, "ifc:IfcPolygonalBoundedHalfSpace")
                 .addWhere(POLYSPACE_VAR, "ifc:agreementFlag_IfcHalfSpaceSolid/express:hasBoolean", BOOLEAN_VAR)
                 .addWhere(POLYSPACE_VAR, "ifc:position_IfcPolygonalBoundedHalfSpace/ifc:location_IfcPlacement", SPACE_CARTPOINT_VAR)
-                .addOptional(POLYSPACE_VAR, "ifc:position_IfcPolygonalBoundedHalfSpace/ifc:axis_IfcAxis2Placement3D", IfcGeospatialOperatorConstructBuilder.DIRECTION_AXIS_VAR)
-                .addOptional(POLYSPACE_VAR, "ifc:position_IfcPolygonalBoundedHalfSpace/ifc:refDirection_IfcAxis2Placement3D", IfcGeospatialOperatorConstructBuilder.DIRECTION_REF_VAR);
+                .addOptional(POLYSPACE_VAR, "ifc:position_IfcPolygonalBoundedHalfSpace/ifc:axis_IfcAxis2Placement3D", GeomConstructBuilderMediator.DIRECTION_AXIS_VAR)
+                .addOptional(POLYSPACE_VAR, "ifc:position_IfcPolygonalBoundedHalfSpace/ifc:refDirection_IfcAxis2Placement3D", GeomConstructBuilderMediator.DIRECTION_REF_VAR);
 
         // Sub-graph construction for base surface plane
         builder.addConstruct(POLYSPACE_VAR, "bim:hasBaseSurface", PLANE_VAR)
@@ -191,7 +191,7 @@ class IfcGeometryConstructBuilder {
                 .addConstruct(POLYLINE_VAR, "bim:hasStartingVertex", FIRSTPOINT_LIST_VAR)
                 .addConstruct(CARTPOINT_LIST_VAR, "?p", "?o")
                 .addConstruct(CARTPOINT_LIST_VAR, QueryHandler.RDF_TYPE, "bim:LineVertex")
-                .addConstruct(IfcGeospatialOperatorConstructBuilder.CARTPOINT_VAR, QueryHandler.RDF_TYPE, "bim:CartesianPoint");
+                .addConstruct(GeomConstructBuilderMediator.CARTPOINT_VAR, QueryHandler.RDF_TYPE, "bim:CartesianPoint");
         // Query for polyline that holds a sequence of cartesian points of undefined length
         Map<String, List<RDFNode>> varMap = new HashMap<>();// Add VALUES statement for all IRIs
         varMap.put(POLYLINE_VAR, iriList);
@@ -199,7 +199,7 @@ class IfcGeometryConstructBuilder {
                 .addWhere(POLYLINE_VAR, QueryHandler.RDF_TYPE, "ifc:IfcPolyline")
                 .addWhere(POLYLINE_VAR, "ifc:points_IfcPolyline ", FIRSTPOINT_LIST_VAR)  // Retrieve the starting list
                 .addWhere(FIRSTPOINT_LIST_VAR, "list:hasNext*", CARTPOINT_LIST_VAR) // Retrieve all lists (including first) associated with the polygon
-                .addWhere(CARTPOINT_LIST_VAR, "list:hasContents", IfcGeospatialOperatorConstructBuilder.CARTPOINT_VAR) // Retrieve the cartesian point to change their rdf:type to bim
+                .addWhere(CARTPOINT_LIST_VAR, "list:hasContents", GeomConstructBuilderMediator.CARTPOINT_VAR) // Retrieve the cartesian point to change their rdf:type to bim
                 .addWhere(CARTPOINT_LIST_VAR, "?p", "?o"); // Retrieve all the related triples connect to a list
     }
 
