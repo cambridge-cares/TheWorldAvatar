@@ -425,10 +425,9 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * @param relation
 	 * @param domain
 	 * @param range
-	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	public void createOWLDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException {
+	public void createOWLDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range) throws JPSRuntimeException {
 		checkPropertyName(propertyName);
 			OWLDataProperty dataProperty = createDataProperty(propertyName);
 			
@@ -506,7 +505,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			}
 		}
 
-		addDomain(objectProperty, domain);
+		addDomain(objectProperty, domain, quantifier);
 		addRange(objectProperty, range, quantifier);
 		OWLObjectProperty parentProperty = null;
 		if (targetName != null && !targetName.isEmpty() && relation!=null && !relation.isEmpty()) {
@@ -548,9 +547,10 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param domain
+	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addDomain(OWLObjectProperty objectProperty, String domain) throws JPSRuntimeException {
+	private void addDomain(OWLObjectProperty objectProperty, String domain, String quantifier) throws JPSRuntimeException {
 		if(domain==null || domain.isEmpty()){
 			return;
 		}
@@ -558,7 +558,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			addUnionOfDomain(objectProperty, domain.split("UNION"));
 		} else if(domain.contains("INTERSECTION")){
 			addIntersectionOfDomain(objectProperty, domain.split("INTERSECTION"));
-		} else if(domain!=null || !domain.isEmpty()){
+		} else if(quantifier==null || quantifier.isEmpty()){
 			addSingleClassDomain(objectProperty, domain);
 		}
 	}
@@ -598,7 +598,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			addUnionOfRange(objectProperty, range.split("UNION"));
 		} else if(range.contains("INTERSECTION") && (quantifier==null || quantifier.isEmpty())){
 			addIntersectionOfRange(objectProperty, range.split("INTERSECTION"));
-		}else if(range!=null || !range.isEmpty()){
+		} else if(quantifier==null || quantifier.isEmpty()){
 			addSingleClassRange(objectProperty, range);
 		}
 	}
@@ -918,8 +918,13 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 				if (classLabel.trim().startsWith(HTTP_PROTOCOL)||classLabel.trim().startsWith(HTTPS_PROTOCOL)) {
 					classInOwl = dataFactory.getOWLClass(classLabel.replace(" ", ""));
 				} else {
-					classInOwl = dataFactory.getOWLClass(
+					if(tBoxConfig.gettBoxIri().endsWith(SLASH)) {
+						classInOwl = dataFactory.getOWLClass(
+								tBoxConfig.gettBoxIri().concat(classLabel.replace(" ", "")));						
+					} else{
+						classInOwl = dataFactory.getOWLClass(
 							tBoxConfig.gettBoxIri().concat("#").concat(classLabel.replace(" ", "")));
+					}
 				}
 			}
 		}
@@ -946,8 +951,13 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		if(propertyLabel.trim().startsWith(HTTP_PROTOCOL)||propertyLabel.trim().startsWith(HTTPS_PROTOCOL)){
 			return dataFactory.getOWLDataProperty(propertyLabel.replace(" ", ""));
 		}
-		return dataFactory.getOWLDataProperty(
+		if(tBoxConfig.gettBoxIri().endsWith(SLASH)) {
+			return dataFactory.getOWLDataProperty(
+					tBoxConfig.gettBoxIri().concat(propertyLabel.replace(" ", "")));
+		} else {
+			return dataFactory.getOWLDataProperty(
 				tBoxConfig.gettBoxIri().concat("#").concat(propertyLabel.replace(" ", "")));
+		}
 	}
 	
 	/**
@@ -970,8 +980,13 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		if(propertyLabel.trim().startsWith(HTTP_PROTOCOL)||propertyLabel.trim().startsWith(HTTPS_PROTOCOL)){
 			return dataFactory.getOWLObjectProperty(propertyLabel.replace(" ", ""));
 		}
-		return dataFactory.getOWLObjectProperty(
+		if(tBoxConfig.gettBoxIri().endsWith(SLASH)) {
+			return dataFactory.getOWLObjectProperty(
+					tBoxConfig.gettBoxIri().concat(propertyLabel.replace(" ", "")));			
+		} else {
+			return dataFactory.getOWLObjectProperty(
 				tBoxConfig.gettBoxIri().concat("#").concat(propertyLabel.replace(" ", "")));
+		}
 	}
 	
 	/**
@@ -1102,8 +1117,14 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 */
 	private void addDataProperty(OWLDataProperty identifierProperty, String propertyValue, String individialName) throws JPSRuntimeException {
 		OWLLiteral literal = createOWLLiteral(dataFactory, propertyValue);
-		OWLIndividual individual = dataFactory
+		OWLIndividual individual;
+		if(ontologyIRI.toString().endsWith(SLASH)) {
+			individual = dataFactory
+					.getOWLNamedIndividual(ontologyIRI.toString().concat(individialName));
+		} else {
+			individual = dataFactory
 				.getOWLNamedIndividual(ontologyIRI.toString().concat("#").concat(individialName));
+		}
 		manager.applyChange(new AddAxiom(ontology,
 				dataFactory.getOWLDataPropertyAssertionAxiom(identifierProperty, individual, literal)));
 	}
@@ -1149,8 +1170,14 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		String commitHash = tBoxConfig.getGitCommitHashValue();
 		if (commitHash != null && !commitHash.isEmpty()) {
 			OWLLiteral commitHashValue = dataFactory.getOWLLiteral(commitHash);
-			OWLAnnotationProperty commit = dataFactory.getOWLAnnotationProperty(IRI.create(tBoxConfig
+			OWLAnnotationProperty commit;
+			if(tBoxConfig.gettBoxIri().endsWith(SLASH)) {
+				commit = dataFactory.getOWLAnnotationProperty(IRI.create(tBoxConfig
+					.gettBoxIri().concat(tBoxConfig.getCompChemGitCommitHash())));
+			} else {
+				commit = dataFactory.getOWLAnnotationProperty(IRI.create(tBoxConfig
 					.gettBoxIri().concat("#").concat(tBoxConfig.getCompChemGitCommitHash())));
+			}
 			OWLAnnotation commitAttributeWithValue = dataFactory.getOWLAnnotation(commit, commitHashValue);
 			manager.applyChange(new AddOntologyAnnotation(ontology, commitAttributeWithValue));
 		}
@@ -1199,20 +1226,16 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	}
 	
 	/**
-	 * Extracts the OWL or RDF file name from the IRI of the file.
+	 * Extracts the name of the OWL file being created from the IRI of TBox.
 	 * 
 	 * @param iri
 	 * @return
 	 */
 	private String getOntologyFileNameFromIri(String iri){
-		if (!(iri.contains(FILE_EXT_OWL) || iri.contains(FILE_EXT_RDF))){
-			return null; 
-		}
-		if(iri.contains(SLASH)){
-			String tokens[] = iri.split(SLASH);
-			return tokens[tokens.length-1];
-		} else if(iri.contains(BACKSLASH)){
-			String tokens[] = iri.split(BACKSLASH);
+		String tokens[] = iri.split(SLASH);
+		if(iri.endsWith(SLASH)){
+			return tokens[tokens.length-2];
+		} else if(iri.contains(SLASH)){
 			return tokens[tokens.length-1];
 		} else{
 			return null;

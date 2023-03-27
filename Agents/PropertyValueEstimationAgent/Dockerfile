@@ -1,6 +1,9 @@
 # Install the Property Market Value Estimation Agent in Docker container
 #==================================================================================================
 
+# Reference published Docker image for Stack-Client resources to use
+FROM docker.cmclinnovations.com/stack-client:1.6.2 as stackclients
+
 #------------------------------------------------------
 # Base image to be reused
 #------------------------------------------------------
@@ -17,14 +20,17 @@ ENV PYTHONUNBUFFERED=1
 # Install required software: git and openjdk-11
 RUN apt update && apt install -y openjdk-11-jdk-headless git
 
-# Copy stack-clients resource to be wrapped by py4jps
-COPY ./tmp_stack ./tmp_stack
+# Copy Stack-Client resource from published Docker image
+RUN mkdir -p ./tmp_stack
+COPY --from=stackclients /app ./tmp_stack
 
 # Set the default working directory & copy files to install Python
 WORKDIR /app
 COPY ./README.md .
 COPY ./setup.py .
 COPY ./requirements.txt .
+# Add JDBC driver to allow for retrieval of JDBC connection properties from PostGIS client
+ADD https://jdbc.postgresql.org/download/postgresql-42.5.0.jar ./resources/
 
 # Access build arguments from docker-compose.yml
 # (Use ENV instead of ARG for variable to be available in ENTRYPOINT command)
@@ -64,7 +70,7 @@ ENTRYPOINT python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask ru
 #------------------------------------------------------
 FROM base as prod
 # Install additional dependencies
-RUN pip install gunicorn
+RUN pip install gunicorn==20.0.4
 
 # Copy required source code (as code is not attached as volume)
 WORKDIR /app
@@ -125,43 +131,10 @@ RUN sed -i "s|False|True|g" ./tests/mockutils/env_configs_mock.py
 # Overwrite/Mock all stack interactions with pre-defined settings from testing Docker stack
 RUN cp ./tests/mockutils/env_configs_mock.py ./$AGENTDIR/utils/env_configs.py
 RUN cp ./tests/mockutils/stack_configs_mock.py ./$AGENTDIR/utils/stack_configs.py
+RUN cp ./tests/mockutils/stackclients_mock.py ./$AGENTDIR/utils/stackclients.py
 # Adjust relative import statement
 RUN sed -i "s|env_configs_mock|env_configs |g" ./$AGENTDIR/utils/stack_configs.py
 
 # Start dockerised agent app as well as pytest
 # (combining commands using & ensures they are started in parallel in background)
 CMD gunicorn --bind 0.0.0.0:5000 "${AGENTDIR}:create_app()" & pytest
-
-
-#==================================================================================================
-
-# TODO - delete this image when doing KL properly
-#------------------------------------------------------
-# Derivation mvp image reusing the base
-#------------------------------------------------------
-FROM base as derivation_mvp
-# Install additional dependencies
-RUN pip install gunicorn
-
-# Copy required source code (as code is not attached as volume)
-WORKDIR /app
-COPY ./$AGENTDIR ./$AGENTDIR
-
-# Adjust logging level
-RUN sed -i "s|logger_name='prod'|logger_name='dev' |g" ./$AGENTDIR/entry_point.py
-
-# NOTE Workaround for unstable Java-python connection when handling sync HTTP request and monitoring async derivation at the same time
-# Disable async derivation handling by shutdown the scheduler
-RUN sed -i "/agent.start_all_periodical_job()/a \ \ \ \ agent.scheduler.shutdown()" ./$AGENTDIR/entry_point.py
-
-# Overwrite/Mock all stack interactions with pre-defined settings from testing Docker stack
-COPY ./_derivation_mvp_mock/env_configs_mock.py ./$AGENTDIR/utils/env_configs.py
-COPY ./_derivation_mvp_mock/stack_configs_mock.py ./$AGENTDIR/utils/stack_configs.py
-# Adjust relative import statement
-RUN sed -i "s|env_configs_mock|env_configs |g" ./$AGENTDIR/utils/stack_configs.py
-
-# Set the entrypoint
-# --preload flag is added to provide more information in the container to help with debugging
-ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "${AGENTDIR}:create_app()" --preload
-
-#==================================================================================================

@@ -8,6 +8,8 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import it.geosolutions.geoserver.rest.encoder.metadata.virtualtable.GSVirtualTableEncoder;
+
 public class Vector extends GeoServerDataSubset {
 
     @JsonProperty
@@ -24,6 +26,11 @@ public class Vector extends GeoServerDataSubset {
 
     @Override
     public void createLayer(String workspaceName, String database) {
+        GSVirtualTableEncoder virtualTable = geoServerSettings.getVirtualTable();
+        if (null != virtualTable) {
+            virtualTable.setSql(handleFileValues(virtualTable.getSql()));
+        }
+
         GeoServerClient.getInstance()
                 .createPostGISLayer(workspaceName, database, getName(), geoServerSettings);
     }

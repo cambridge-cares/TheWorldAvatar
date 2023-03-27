@@ -380,9 +380,8 @@ class DerivationAgent(ABC):
                         # If "Finished", do all the clean-up steps
                         elif statusType == 'FINISHED':
                             self.derivation_client.derivation_client.cleanUpFinishedDerivationUpdate(derivation)
-                            self.logger.info("Asynchronous derivation <%s> is now cleand up." % (derivation))
-                            # set flag to false as this cleaning up process is fast and no need to query again
-                            query_again = False
+                            # set flag to true as the cleaning up process can take some time when there are a lot of triples
+                            query_again = True
                             # send email to indicate the derivation is now finished and cleaned up, i.e. up-to-date
                             self.send_email_when_async_derivation_up_to_date(derivation)
 

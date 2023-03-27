@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   floodassessment_agent:
-    image: ghcr.io/cambridge-cares/floodassessment_agent_debug:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/floodassessment_agent_debug:1.1.0
     build:
       context: .
       target: debug
