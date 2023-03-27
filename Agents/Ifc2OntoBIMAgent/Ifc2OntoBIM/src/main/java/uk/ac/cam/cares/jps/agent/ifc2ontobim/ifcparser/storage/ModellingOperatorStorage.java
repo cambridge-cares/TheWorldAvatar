@@ -23,9 +23,6 @@ public class ModellingOperatorStorage {
     private static Queue<CartesianPoint> points;
     private static Map<String, DirectionVector> dirMappings;
     private static Queue<DirectionVector> directions;
-    private static Queue<LocalPlacement> placements;
-    private static Queue<CartesianTransformationOperator> operators;
-    private static Queue<GeometricRepresentationSubContext> subContexts;
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
     private static final String NON_EXISTING_ERROR = " does not exist in mappings!";
 
@@ -37,9 +34,6 @@ public class ModellingOperatorStorage {
         points = new ArrayDeque<>();
         dirMappings = new HashMap<>();
         directions = new ArrayDeque<>();
-        placements = new ArrayDeque<>();
-        operators = new ArrayDeque<>();
-        subContexts = new ArrayDeque<>();
     }
 
     /**
@@ -79,33 +73,6 @@ public class ModellingOperatorStorage {
      */
     public void add(String iri, DirectionVector direction) {
         dirMappings.put(iri, direction);
-    }
-
-    /**
-     * A method to store the modelling parameter's IRI and its associated Java object as mappings.
-     *
-     * @param placement The LocalPlacement object generated from the iri.
-     */
-    public void add(LocalPlacement placement) {
-        placements.offer(placement);
-    }
-
-    /**
-     * A method to store the modelling parameter's IRI and its associated Java object as mappings.
-     *
-     * @param operator The CartesianTransformationOperator object generated from the iri.
-     */
-    public void add(CartesianTransformationOperator operator) {
-        operators.offer(operator);
-    }
-
-    /**
-     * A method to store the modelling parameter's IRI and its associated Java object as mappings.
-     *
-     * @param subContext The GeometricRepresentationSubContext object generated from the iri.
-     */
-    public void add(GeometricRepresentationSubContext subContext) {
-        subContexts.offer(subContext);
     }
 
     /**
@@ -192,15 +159,6 @@ public class ModellingOperatorStorage {
         }
         while (!directions.isEmpty()) {
             directions.poll().constructStatements(statementSet);
-        }
-        while (!placements.isEmpty()) {
-            placements.poll().constructStatements(statementSet);
-        }
-        while (!operators.isEmpty()) {
-            operators.poll().constructStatements(statementSet);
-        }
-        while (!subContexts.isEmpty()) {
-            subContexts.poll().constructStatements(statementSet);
         }
     }
 }

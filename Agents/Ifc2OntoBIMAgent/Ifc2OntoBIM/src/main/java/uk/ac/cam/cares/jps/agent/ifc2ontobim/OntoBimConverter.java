@@ -120,10 +120,20 @@ public class OntoBimConverter {
      */
     private void genGeometryContentStatements(LinkedHashSet<Statement> statementSet) {
         ModellingOperatorStorage operatorMappings = ModellingOperatorStorage.Singleton();
-        LOGGER.info("Retrieving and generating statements related to local placement, direction, and cartesian points...");
-        ModellingOperatorFacade.retrieveOperatorInstances(this.owlModel);
+        ModellingOperatorFacade modellingOperatorHelper = new ModellingOperatorFacade(this.owlModel);
+        LOGGER.info("Retrieving and generating statements related to the sub context...");
+        modellingOperatorHelper.addGeometricRepresentationSubContextStatements(this.owlModel, statementSet);
+        LOGGER.info("Retrieving and generating statements related to cartesian transformation operators...");
+        modellingOperatorHelper.addCartesianTransformationOperatorStatements(this.owlModel, statementSet);
+        LOGGER.info("Storing sub context and cartesian transformation operator statements into a temp file...");
+        this.storeInTempFiles(statementSet);
+        LOGGER.info("Retrieving and generating statements related to local placement...");
+        modellingOperatorHelper.addLocalPlacementStatements(this.owlModel, statementSet);
+        LOGGER.info("Storing local placement statements into a temp file...");
+        this.storeInTempFiles(statementSet);
+        LOGGER.info("Retrieving and generating statements related to direction and cartesian points...");
         operatorMappings.constructAllStatements(statementSet);
-        LOGGER.info("Storing modelling operator statements into a temp file...");
+        LOGGER.info("Storing direction and cartesian points statements into a temp file...");
         this.storeInTempFiles(statementSet);
     }
 

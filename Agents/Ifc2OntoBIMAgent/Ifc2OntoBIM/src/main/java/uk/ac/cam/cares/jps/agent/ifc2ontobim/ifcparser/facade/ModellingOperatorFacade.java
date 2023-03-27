@@ -4,10 +4,15 @@ import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.CommonQuery;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ElementStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ModellingOperatorStorage;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.SpatialZoneStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.QueryHandler;
+
+import java.util.LinkedHashSet;
 
 /**
  * Provides functions to generate the modelling operators' triples.
@@ -15,30 +20,31 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.QueryHandler;
  * @author qhouyee
  */
 public class ModellingOperatorFacade {
-    private static ModellingOperatorStorage mappings;
+    private final ModellingOperatorStorage mappings;
 
 
     /**
-     * Generate the modelling operators' triples.
+     * Standard Constructor setting up the mappings.
      *
      * @param owlModel The IfcOwl model containing the triples to query from.
      */
-    public static void retrieveOperatorInstances(Model owlModel) {
-        mappings = ModellingOperatorStorage.Singleton();
+    public ModellingOperatorFacade(Model owlModel) {
+        // Create the mappings
+        this.mappings = ModellingOperatorStorage.Singleton();
+        // Query and store all points and directions in the mappings
         execPointQuery(owlModel);
         execDirectionQuery(owlModel);
+        // Replace all duplicates
         mappings.replaceDuplicates();
-        execLocalPlacementQuery(owlModel);
-        execCartesianTransformationOperatorQuery(owlModel);
-        execGeometricRepresentationSubContextQuery(owlModel);
     }
+
 
     /**
      * Creates the SPARQL SELECT query statements for CartesianPoint.
      *
      * @return A string containing the SPARQL query to execute.
      */
-    private static String createCartesianPointSelectQuery() {
+    private String createCartesianPointSelectQuery() {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         selectBuilder.addVar(CommonQuery.CART_POINT_VAR)
                 .addVar(CommonQuery.X_VALUE_VAR)
@@ -59,7 +65,7 @@ public class ModellingOperatorFacade {
      *
      * @param owlModel The IfcOwl model containing the triples to query from.
      */
-    private static void execPointQuery(Model owlModel) {
+    private void execPointQuery(Model owlModel) {
         String query = createCartesianPointSelectQuery();
         ResultSet results = QueryHandler.execSelectQuery(query, owlModel);
         while (results.hasNext()) {
@@ -69,7 +75,7 @@ public class ModellingOperatorFacade {
             String yCoord = QueryHandler.retrieveLiteral(soln, CommonQuery.Y_VALUE_VAR);
             String zCoord = QueryHandler.retrieveLiteral(soln, CommonQuery.Z_VALUE_VAR);
             CartesianPoint point = new CartesianPoint(xCoord, yCoord, zCoord);
-            mappings.add(iri, point);
+            this.mappings.add(iri, point);
         }
     }
 
@@ -78,7 +84,7 @@ public class ModellingOperatorFacade {
      *
      * @return A string containing the SPARQL query to execute.
      */
-    private static String createDirectionVectorSelectQuery() {
+    private String createDirectionVectorSelectQuery() {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         selectBuilder.addVar(CommonQuery.DIR_VECTOR_VAR)
                 .addVar(CommonQuery.X_VALUE_VAR)
@@ -99,7 +105,7 @@ public class ModellingOperatorFacade {
      *
      * @param owlModel The IfcOwl model containing the triples to query from.
      */
-    private static void execDirectionQuery(Model owlModel) {
+    private void execDirectionQuery(Model owlModel) {
         String query = createDirectionVectorSelectQuery();
         ResultSet results = QueryHandler.execSelectQuery(query, owlModel);
         while (results.hasNext()) {
@@ -109,7 +115,7 @@ public class ModellingOperatorFacade {
             String yDirRatio = QueryHandler.retrieveLiteral(soln, CommonQuery.Y_VALUE_VAR);
             String zDirRatio = QueryHandler.retrieveLiteral(soln, CommonQuery.Z_VALUE_VAR);
             DirectionVector direction = new DirectionVector(xDirRatio, yDirRatio, zDirRatio);
-            mappings.add(iri, direction);
+            this.mappings.add(iri, direction);
         }
     }
 
@@ -118,7 +124,7 @@ public class ModellingOperatorFacade {
      *
      * @return A string containing the SPARQL query to execute.
      */
-    private static String createLocalPlacementSelectQuery() {
+    private String createLocalPlacementSelectQuery() {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         SelectBuilder unionBuilder = selectBuilder.clone();
         SelectBuilder subgroupBuilder = selectBuilder.clone();
@@ -146,11 +152,12 @@ public class ModellingOperatorFacade {
     }
 
     /**
-     * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for LocalPlacement.
+     * Retrieve the OntoBIM statements for LocalPlacement.
      *
-     * @param owlModel The IfcOwl model containing the triples to query from.
+     * @param owlModel     The IfcOwl model containing the triples to query from.
+     * @param statementSet A list containing the new OntoBIM triples.
      */
-    private static void execLocalPlacementQuery(Model owlModel) {
+    public void addLocalPlacementStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
         String query = createLocalPlacementSelectQuery();
         ResultSet results = QueryHandler.execSelectQuery(query, owlModel);
         while (results.hasNext()) {
@@ -159,23 +166,23 @@ public class ModellingOperatorFacade {
             String cartPointIri = QueryHandler.retrieveIri(soln, CommonQuery.CART_POINT_VAR);
             // If the retrieved IRI is not null, retrieve the point and update the IRI
             // Else, keep it as null for the placement object
-            if (cartPointIri!= null){
-                CartesianPoint point = mappings.getPoint(cartPointIri);
+            if (cartPointIri != null) {
+                CartesianPoint point = this.mappings.getPoint(cartPointIri);
                 cartPointIri = point.getIri();
             }
             String refDirIri = QueryHandler.retrieveIri(soln, CommonQuery.REF_DIR_VECTOR_VAR);
-            if (refDirIri!= null){
-                DirectionVector refDir = mappings.getDirectionVector(refDirIri);
+            if (refDirIri != null) {
+                DirectionVector refDir = this.mappings.getDirectionVector(refDirIri);
                 refDirIri = refDir.getIri();
             }
             String axisDirIri = QueryHandler.retrieveIri(soln, CommonQuery.AXIS_DIR_VECTOR_VAR);
-            if (axisDirIri!= null){
-                DirectionVector axisDir = mappings.getDirectionVector(axisDirIri);
+            if (axisDirIri != null) {
+                DirectionVector axisDir = this.mappings.getDirectionVector(axisDirIri);
                 axisDirIri = axisDir.getIri();
             }
             String relPlacementIri = QueryHandler.retrieveIri(soln, CommonQuery.REL_PLACEMENT_VAR);
             LocalPlacement placement = new LocalPlacement(iri, cartPointIri, refDirIri, axisDirIri, relPlacementIri);
-            mappings.add(placement);
+            placement.constructStatements(statementSet);
         }
     }
 
@@ -184,7 +191,7 @@ public class ModellingOperatorFacade {
      *
      * @return A string containing the SPARQL query to execute.
      */
-    private static String createCartesianTransformationOperatorSelectQuery() {
+    private String createCartesianTransformationOperatorSelectQuery() {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         selectBuilder.addVar(CommonQuery.CART_TRANSFORMER_VAR)
                 .addVar(CommonQuery.CART_POINT_VAR)
@@ -201,11 +208,12 @@ public class ModellingOperatorFacade {
     }
 
     /**
-     * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for CartesianTransformationOperator.
+     * Executes the OntoBIM statements for CartesianTransformationOperator.
      *
-     * @param owlModel The IfcOwl model containing the triples to query from.
+     * @param owlModel     The IfcOwl model containing the triples to query from.
+     * @param statementSet A list containing the new OntoBIM triples.
      */
-    private static void execCartesianTransformationOperatorQuery(Model owlModel) {
+    public void addCartesianTransformationOperatorStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
         String query = createCartesianTransformationOperatorSelectQuery();
         ResultSet results = QueryHandler.execSelectQuery(query, owlModel);
         while (results.hasNext()) {
@@ -215,22 +223,22 @@ public class ModellingOperatorFacade {
             String originIri = QueryHandler.retrieveIri(soln, CommonQuery.CART_POINT_VAR);
             // If the retrieved IRI is not null, retrieve the point and update the IRI
             // Else, keep it as null for the placement object
-            if (originIri!= null){
-                CartesianPoint point = mappings.getPoint(originIri);
+            if (originIri != null) {
+                CartesianPoint point = this.mappings.getPoint(originIri);
                 originIri = point.getIri();
             }
             String xDirIri = QueryHandler.retrieveIri(soln, CommonQuery.X_AXIS_DIR_VECTOR_VAR);
-            if (xDirIri!= null){
-                DirectionVector xAxisDirection = mappings.getDirectionVector(xDirIri);
+            if (xDirIri != null) {
+                DirectionVector xAxisDirection = this.mappings.getDirectionVector(xDirIri);
                 xDirIri = xAxisDirection.getIri();
             }
             String yDirIri = QueryHandler.retrieveIri(soln, CommonQuery.Y_AXIS_DIR_VECTOR_VAR);
-            if (yDirIri!= null){
-                DirectionVector yAxisDirection = mappings.getDirectionVector(yDirIri);
+            if (yDirIri != null) {
+                DirectionVector yAxisDirection = this.mappings.getDirectionVector(yDirIri);
                 yDirIri = yAxisDirection.getIri();
             }
             CartesianTransformationOperator operator = new CartesianTransformationOperator(iri, originIri, scaleFactor, xDirIri, yDirIri);
-            mappings.add(operator);
+            operator.constructStatements(statementSet);
         }
     }
 
@@ -256,11 +264,12 @@ public class ModellingOperatorFacade {
     }
 
     /**
-     * Executes the SPARQL SELECT query and convert the results into OntoBIM statements for GeometricRepresentationSubContext.
+     * Executes the OntoBIM statements for GeometricRepresentationSubContext.
      *
-     * @param owlModel The IfcOwl model containing the triples to query from.
+     * @param owlModel     The IfcOwl model containing the triples to query from.
+     * @param statementSet A list containing the new OntoBIM triples.
      */
-    private static void execGeometricRepresentationSubContextQuery(Model owlModel) {
+    public void addGeometricRepresentationSubContextStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
         String query = createGeometricRepresentationSubContextSelectQuery();
         ResultSet results = QueryHandler.execSelectQuery(query, owlModel);
         while (results.hasNext()) {
@@ -270,8 +279,8 @@ public class ModellingOperatorFacade {
             String type = QueryHandler.retrieveLiteral(soln, CommonQuery.CONTEXT_TYPE_VAR);
             String identifier = QueryHandler.retrieveLiteral(soln, CommonQuery.CONTEXT_IDENTIFIER_VAR);
             String view = QueryHandler.retrieveIri(soln, CommonQuery.CONTEXT_VIEW_VAR);
-            GeometricRepresentationSubContext operator = new GeometricRepresentationSubContext(iri, parentContextIri, type, identifier, view);
-            mappings.add(operator);
+            GeometricRepresentationSubContext subcontext = new GeometricRepresentationSubContext(iri, parentContextIri, type, identifier, view);
+            subcontext.constructStatements(statementSet);
         }
     }
 }
