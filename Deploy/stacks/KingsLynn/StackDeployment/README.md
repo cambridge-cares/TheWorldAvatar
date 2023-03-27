@@ -26,7 +26,7 @@ $ <github_personal_access_token>
 This section explains how to spin up the core stack and upload initial data sets, i.e. high-resolution population raster data and pre-instantiated OntoCityGml building triples.
 If using VSCode, all required VSCode extensions shall be installed (on the remote machine if applicable) for all convenience scripts to work properly, i.e. *augustocdias.tasks-shell-input*.
 
-> The functionality has been tested using the Stack Manager `docker.cmclinnovations.com/stack-manager:1.10.1` based on commit `bb5829369d706531f26010c5016a563ba4844ac3` on branch `main` of the World Avatar repository.
+> The functionality has been tested using the Stack Manager `docker.cmclinnovations.com/stack-manager:1.10.2` based on commit `0c05f624bde1ee57cf353244e637f2f83740c758` on branch `main` of the World Avatar repository.
 
 &nbsp;
 ## Spinning up the core Stack
@@ -77,12 +77,9 @@ chmod -R +rwx <REPO NAME>
 &nbsp;
 ## Uploading initial data
 
-```diff
-- verify/update
-```
-> The functionality has been tested using the Stack Data Uploader `docker.cmclinnovations.com/stack-data-uploader:1.7.2` based on commit `2825c4c69c6543d88c687917c50bf965d3221da6` on branch `main` of the World Avatar repository.
+> The functionality has been tested using the Stack Data Uploader `docker.cmclinnovations.com/stack-data-uploader:1.10.2`
 
-A few datasets and files which shall initially be uploaded to the stack are provided in the `inputs` folder of this repository. Uploading pre-instantiated OntoCityGml quads is optional but highly recommended to skip steps 1 - 4.2 (depending on the exact quads file provided) of the building instantiation workflow below.
+A few datasets and files which shall initially be uploaded to the stack are provided in the `inputs` folder of this repository. Uploading pre-instantiated OntoCityGml quads is optional but highly recommended to skip steps 1.0 - 1.4 (depending on the exact quads file provided) of the building instantiation workflow below.
 
 The following steps explain how to upload the data to the stack using the [Stack data uploader] (please see the referenced README for more details):
 
