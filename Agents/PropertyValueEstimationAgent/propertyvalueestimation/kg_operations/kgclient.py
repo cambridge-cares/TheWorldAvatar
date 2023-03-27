@@ -25,9 +25,8 @@ class KGClient(PySparqlClient):
     # SPARQL QUERIES
     #
     def get_property_iri(self, tx_iri: str = None, floor_area_iri: str = None) -> dict:
-        # Retrieve total floor area and property price index (representative for 
-        # associated property) of given floor area IRI
-        # Returns dictionary with keys: floor_area, avg_price, property_iri
+        # Retrieve property IRI associated with given transaction IRI and/or floor area IRI
+        # Returns dictionary with key: property_iri
 
         triple1 = "" if not tx_iri else f"?property_iri <{OBE_HAS_LATEST_TRANSACTION}> <{tx_iri}>"
         triple2 = "" if not floor_area_iri else f"?property_iri <{OBE_HAS_TOTAL_FLOOR_AREA}> <{floor_area_iri}>"

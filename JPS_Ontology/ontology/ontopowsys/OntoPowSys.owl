@@ -78,7 +78,13 @@
         <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isComposedOf"/>
     </owl:ObjectProperty>
     
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#hasBusNode -->
 
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#hasBusNode">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.purl.org/oema/infrastructure/Building"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#BusNode"/>
+    </owl:ObjectProperty>
 
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerAbsorbed -->
 

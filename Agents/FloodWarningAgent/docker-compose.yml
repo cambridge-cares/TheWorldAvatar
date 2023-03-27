@@ -16,6 +16,9 @@ services:
       - ONTOP_FILE=/app/resources/ontop.obda
       # PostGIS table with building footprints
       - BUILDINGS_TABLE=buildings
+      # Derivation Agent configuration
+      # (value needs to match counterpart specified in the docker-compose.yml file of FloodAssessmentAgent)
+      - FLOOD_ASSESSMENT_AGENT_IRI=https://www.theworldavatar.com/resource/agents/Service__KL_FloodAssessment/Service
     ports:
       - "5009:5000"
     volumes:
