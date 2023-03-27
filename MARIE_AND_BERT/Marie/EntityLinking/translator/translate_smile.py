@@ -1,3 +1,6 @@
+import sys
+sys.path.append("C:/Users/Shaocong/Documents/GitHub/TheWorldAvatar/MARIE_AND_BERT")
+
 from STOUT import translate_forward, translate_reverse
 import re
 import transformers
@@ -10,7 +13,7 @@ class Translator():
     def __init__(self, modelpath=None):
         if modelpath:
             modelconfig = {
-                'tokenizer': BertTokenizerFast.from_pretrained('bert-base-uncased'),
+                'tokenizer': BertTokenizerFast.from_pretrained('bert-base-cased'),
                 'device': 'cuda' if torch.cuda.is_available() else 'cpu',
                 'model_path': modelpath
             }
@@ -47,6 +50,11 @@ class Translator():
                             pass
                             # entry['text'] = entry['text'].replace(c, t_c)
         return raw_data, smiles_string
+
+    def extract_ner(self,raw_data):
+        sentences = [entry['text'] for entry in raw_data]
+        names, types = self.ner.extractSMILE(sentences)
+        return names
 
     def regexSMILESlist(self, text_list):
         out = []
@@ -87,7 +95,7 @@ if __name__ == "__main__":
     # dummy = loadjsonl("C:/Users\Shaocong\Documents\GitHub\TheWorldAvatar\MARIE_AND_BERT\DATA\EntityLinking\smile_test.jsonl")
 
     dummy = [{
-                 'text': 'what is the chemical formula of What sort of molecule is CC=CCCC(=CCCC(=CCCC(=CCCC(=CCCC(=CCCC(=CCCC(=CCC1=C(C(=CC=C1)OC)O)C)C)C)C)C)C)C'}]
-    t = Translator(modelpath="D:\work\Marie\MARIE_AND_BERT\DATA\EntityLinking\SMILES_NER.bin")
-    out = t.translate(dummy)
-    print([i['text'] for i in out])
+                 'text': 'How do I separate C4H8O1-3 from C7H15COCHO'}]
+    t = Translator(modelpath="C:/Users\Shaocong\Documents\GitHub\TheWorldAvatar\MARIE_AND_BERT\DATA\EntityLinking\SMILES_NER_V8_combined_cased_smiles.bin")
+    out = t.extract_ner(dummy)
+    print(out)
