@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoVapourtec,TBox,https://www.theworldavatar.com/kg/ontovapourtec/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoVapourtec,TBox,1.7,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoVapourtec,TBox,1.8,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoVapourtec,TBox,OntoVapourtec is an ontology developed for expressing a Vapourtec experiment module.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoVapourtec,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 VapourtecRS400,Class,https://www.theworldavatar.com/kg/ontolab/LabEquipment,IS-A,,,,"The RS-400 is a complex system, with some room for customisation. It is still completely modular, compatible with simpler and older systems. It includes fully automated control, an autosampler/collector, 4 pumps and a number of reactors. It is ideal for library synthesis and catalysis screening. [https://www.vapourtec.com/products/r-series-flow-chemistry-system/reactions-and-reagents-automated-rs-400-features/]",https://www.theworldavatar.com/kg/ontovapourtec/,

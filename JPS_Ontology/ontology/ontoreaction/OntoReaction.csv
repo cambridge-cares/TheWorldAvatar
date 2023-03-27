@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoReaction,TBox,https://www.theworldavatar.com/kg/ontoreaction/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoReaction,TBox,1.7,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoReaction,TBox,1.8,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoReaction,TBox,An ontology developed for describing reaction experiment.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoReaction,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 ReactionExperiment,Class,,,,,,A reaction experiment is a concrete realisation of a chemical reaction at a set of reaction conditions. ,https://www.theworldavatar.com/kg/ontoreaction/,

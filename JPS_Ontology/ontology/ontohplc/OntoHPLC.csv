@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoHPLC,TBox,https://www.theworldavatar.com/kg/ontohplc/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoHPLC,TBox,1.6,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoHPLC,TBox,1.7,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoHPLC,TBox,OntoHPLC is an ontology developed for expressing a high performance liquid chromatography.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoHPLC,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 HighPerformanceLiquidChromatography,Class,https://www.theworldavatar.com/kg/ontolab/LabEquipment,IS-A,,,,"A separation technique in which the mobile phase is a liquid. Liquid chromatography can be carried out either in a column or on a plane. Present-day liquid chromatography generally utilizing very small particles and a relatively high inlet pressure is often characterized by the term high-performance (or high-pressure) liquid chromatography, and the acronym HPLC. [https://doi.org/10.1351/goldbook.L03578]",https://www.theworldavatar.com/kg/ontohplc/,

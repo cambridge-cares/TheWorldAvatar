@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoGoal,TBox,https://www.theworldavatar.com/kg/ontogoal/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoGoal,TBox,1.1,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoGoal,TBox,1.2,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoGoal,TBox,An ontology developed for goal-based agent operation.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoGoal,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 Goal,Class,,,,,,A goal is a desire (as defined in BDI architecture) that is assigned for active pursuit by one agent.,https://www.theworldavatar.com/kg/ontogoal/,

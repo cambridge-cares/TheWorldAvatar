@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoLab,TBox,https://www.theworldavatar.com/kg/ontolab/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoLab,TBox,1.7,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoLab,TBox,1.8,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoLab,TBox,OntoLab is an ontology developed for expressing facilities in a research lab.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoLab,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 Laboratory,Class,,,,,,"Facility that provides controlled conditions in which scientific or technological research, experiments, and measurement may be performed. [https://www.wikidata.org/wiki/Q483242]",https://www.theworldavatar.com/kg/ontolab/,

@@ -1,6 +1,6 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoDoE,TBox,https://www.theworldavatar.com/kg/ontodoe/,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoDoE,TBox,1.7,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoDoE,TBox,1.8,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
 OntoDoE,TBox,An ontology developed for design of experiment.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
 OntoDoE,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 DesignOfExperiment,Class,,,,,,A procedure to plan and define the conditions for performing controlled experimental trials. [doi:10.1016/j.compchemeng.2017.05.010],https://www.theworldavatar.com/kg/ontodoe/,

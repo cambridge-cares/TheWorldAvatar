@@ -9,9 +9,9 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoreaction/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">06 February 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">27 March 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for describing reaction experiment.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.7</owl:versionInfo>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.8</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -44,24 +44,10 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontocape/material/material.owl#representsThermodynamicBehaviorOf -->
-
-
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#representsThermodynamicBehaviorOf">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Chemical"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation links a phase system to a material. [OntoCAPE]</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/material.owl</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
     <!-- http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehavior -->
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#thermodynamicBehavior">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Chemical"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation designates the aspect system which represents the thermodynamic behavior of some material. [OntoCAPE]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/material.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -72,8 +58,6 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#hasStateOfAggregation">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#StateOfAggregation"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasStateOfAggregation indicates the state of aggregation of a single phase. [OntoCAPE]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -84,8 +68,6 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_composition">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Composition"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a phase system and its composition. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -96,8 +78,6 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#has_physical_context">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhysicalContext"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a phase system and its physical context. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -108,8 +88,6 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#representsOccurenceOf">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation representsOccurenceOf establishes the relationship between a phase component and the corresponding chemical component, or between a phase reaction and the corresponding chemical reaction. [OntoCAPE]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -120,8 +98,6 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasCatalyst">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Catalyst"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasCatalyst denotes the catalysts of a ChemicalReaction. A catalyst is a MolecularEntity or a ChemicalSpecies that is used to accelerate a ChemicalReaction.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -132,21 +108,7 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#comprisesDirectly">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#Composition"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentConcentration"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation comprisesDirectly indicates the direct members of a property set. [OntoCAPE]</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty -->
-
-
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponentConcentration"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasProperty indicates the properties of a system. [OntoCAPE]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -156,8 +118,6 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isComposedOfSubsystem">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#SinglePhase"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation isComposedOfSubsystem indicates the non-sharable, direct subsystem of a supersystem. [OntoCAPE]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -169,8 +129,6 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasConversion">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Conversion"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its conversion performance indicator.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -182,8 +140,6 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasEcoScore">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/EcoScore"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its eco score performance indicator.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -195,8 +151,6 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasEnvironmentalFactor">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/EnvironmentalFactor"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its environmental factor performance indicator.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -207,8 +161,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasEquipmentSettings">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/EquipmentSettings"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation indicates the equipment settings which were generated for the reaction experiment.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -219,8 +171,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasInputChemical">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/InputChemical"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its input chemicals. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -231,8 +181,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasOutputChemical">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/OutputChemical"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its output chemicals. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -243,8 +191,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/PerformanceIndicator"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and the performance indicator calculated from the measured analytical data of its output chemical. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -255,8 +201,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasReactionCondition">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionCondition"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and all its reaction conditions.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -268,8 +212,6 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasResTime">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasReactionCondition"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ResidenceTime"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its residence time condition. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -281,8 +223,6 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasRunMaterialCost">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/RunMaterialCost"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its run material cost performance indicator.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -294,8 +234,6 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasRunMaterialCostPerKilogramProduct">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/RunMaterialCostPerKilogramProduct"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its run material cost per kilogram of product produced performance indicator.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -307,8 +245,6 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasRxnPressure">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasReactionCondition"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionPressure"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its reaction pressure condition. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -320,8 +256,6 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasRxnScale">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasReactionCondition"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionScale"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its reaction scale specified to an input chemical. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -333,8 +267,6 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasRxnTemperature">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasReactionCondition"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionTemperature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its reaction temperature condition. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -345,8 +277,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasRxnType">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
-        <rdfs:range rdf:resource="http://purl.obolibrary.org/obo/MOP_0000543"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a ChemicalReaction and a named reaction class it belongs to. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -357,8 +287,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasSolvent">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Solvent"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasSolvent denotes the solvents of a ChemicalReaction. A solvent is a MolecularEntity or a ChemicalSpecies that is used to host a ChemicalReaction.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -370,8 +298,6 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasSpaceTimeYield">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/SpaceTimeYield"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its space time yield performance indicator.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -383,8 +309,6 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasStoichiometryRatio">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasReactionCondition"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/StoichiometryRatio"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and the stoichiometry ratio it applies to each input chemical. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -395,8 +319,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasVariation">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionVariation"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its variation. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -408,8 +330,6 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasYield">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Yield"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and its yield performance indicator.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -420,8 +340,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/indicatesMultiplicityOf">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/StoichiometryRatio"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/InputChemical"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation indicates the multiplicity of the input chemical participating in a reaction experiment. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -432,8 +350,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/indicatesUsageOf">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionScale"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/InputChemical"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation indicates the reaction scale in form of usage of an input chemical. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -444,8 +360,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/isAssignedTo">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4Reactor"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation indicates the vapourtec R4 reactor where a reaction experiment happened. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -456,8 +370,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/isOccurenceOf">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a reaction experiment and the chemical reaction it represents. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -468,8 +380,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/isRealisedAs">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a chemical reaction and its concrete reaction experiment realisation. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -480,8 +390,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/isVariationOf">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionVariation"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation links a variation to its parent reaction experiment. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -500,7 +408,6 @@
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between yield or conversion of a reaction experiment and the yield limiting species based on which the performance indicator was computed. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -862,7 +769,7 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#ChemicalSpecies">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ChemicalSpecies represents pure Substances at the macroscopic scale. It consists of an �ensemble of chemically identical molecular entities [�]. The term is applied equally to a set of chemically identical atomic or molecular structural units in a solid array. [�] The wording of the definition [�] is intended to embrace both cases such as graphite, sodium chloride or a surface oxide, where the basic structural units may not be capable of isolated existence, as well as those cases where they are.� (McNaught &amp; Wilkinson, 1997). [OntoCAPE]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ChemicalSpecies represents pure Substances at the macroscopic scale. It consists of an ï¿½ensemble of chemically identical molecular entities [ï¿½]. The term is applied equally to a set of chemically identical atomic or molecular structural units in a solid array. [ï¿½] The wording of the definition [ï¿½] is intended to embrace both cases such as graphite, sodium chloride or a surface oxide, where the basic structural units may not be capable of isolated existence, as well as those cases where they are.ï¿½ (McNaught &amp; Wilkinson, 1997). [OntoCAPE]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -1320,7 +1227,7 @@
                 <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ratio expressing the efficiency of a mass conversion process.�[doi:10.1351/goldbook.Y06724]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ratio expressing the efficiency of a mass conversion process.ï¿½[doi:10.1351/goldbook.Y06724]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -1330,6 +1237,26 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4Reactor"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotations
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/material.owl#representsThermodynamicBehaviorOf">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation links a phase system to a material. [OntoCAPE]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/material.owl</rdfs:isDefinedBy>
+    </rdf:Description>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasProperty indicates the properties of a system. [OntoCAPE]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl</rdfs:isDefinedBy>
+    </rdf:Description>
 </rdf:RDF>
 
 

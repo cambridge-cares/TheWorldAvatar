@@ -9,9 +9,9 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontogoal/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">06 February 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">27 March 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for goal-based agent operation.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.1</owl:versionInfo>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.2</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -33,8 +33,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontogoal/canBePerformedBy">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Step"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a step and the agent that capable of performing it.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontogoal/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -58,8 +56,6 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontogoal/desiresGreaterThan">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontogoal/desires"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Goal"/>
-        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a goal and the target value it desires to be greater than.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontogoal/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -71,8 +67,6 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontogoal/desiresLessThan">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontogoal/desires"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Goal"/>
-        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a goal and the target value it desires to be less than.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontogoal/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -83,8 +77,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontogoal/hasGoal">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogoal/GoalSet"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Goal"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a goal set and individual goal it consists of.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontogoal/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -97,10 +89,8 @@
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontogoal/hasNextStep">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogoal/DesignOfExperiment"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogoal/RxnExpExecution"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Step"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontogoal/PostProcessing"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontogoal/RxnExpExecution"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Step"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between two sequential steps within a plan.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontogoal/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -111,8 +101,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontogoal/hasPlan">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Goal"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Plan"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a goal and the plan that can be adopted to achieve it.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontogoal/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -123,8 +111,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontogoal/hasRestriction">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogoal/GoalSet"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Restriction"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a goal set and the restriction posed for the pursuit process.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontogoal/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -147,9 +133,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontogoal/hasStep">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Plan"/>
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogoal/RxnOptPlan"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Step"/>
         <rdfs:range>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -169,8 +153,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontogoal/refersTo">
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontogoal/Result"/>
-        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a result and the actual value it refers to.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontogoal/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
