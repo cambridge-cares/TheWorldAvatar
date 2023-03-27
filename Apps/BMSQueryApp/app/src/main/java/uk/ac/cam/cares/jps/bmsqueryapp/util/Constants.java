@@ -20,7 +20,7 @@ public class Constants {
             "http://www.theworldavatar.com/BMS/CaresLab#V_DamperStateOfVAV-E/7-12"};
 
     public static HttpUrl.Builder constructUrlBuilder(String path) {
-        HttpUrl.Builder builder = new HttpUrl.Builder().scheme("http").host(HOST).port(3838);
+        HttpUrl.Builder builder = new HttpUrl.Builder().scheme("http").host(HOST_TEST).port(3838);
         return builder.addPathSegments(path);
     }
 
@@ -29,6 +29,7 @@ public class Constants {
     private static Map<String, String> getEquipmentTypes() {
         Map<String, String> equipmentTypes = new HashMap<>();
         equipmentTypes.put("WalkIn-FumeHood", "https://www.theworldavatar.com/kg/ontobms/WalkInFumeHood");
+        equipmentTypes.put("Cooling Fan", "");  // TODO: placeholder
         return equipmentTypes;
     }
 

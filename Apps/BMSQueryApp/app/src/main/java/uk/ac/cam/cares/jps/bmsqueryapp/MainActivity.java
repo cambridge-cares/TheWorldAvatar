@@ -104,7 +104,14 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 String selectedLabel = ((TextView) view).getText().toString();
                 LOGGER.info(selectedLabel + " is selected");
-                if (i > 0) {
+               if (selectedLabel.equals("Cooling Fan")) {
+                   // TODO: temporary way to start the activity for fan edit
+                    List<String> equipmentInstsList = new ArrayList<>();
+                    equipmentInstsList.add("Cooling Fan #01");
+                    equipmentInsts.clear();
+                    equipmentInsts.put("Cooling Fan #01", "https://www.theworldavatar.com/kg/ontodevice/CoolingFan-01");
+                    equipmentAdapter.updateEquipments(equipmentInstsList);
+                } else if (i > 0) {
                     getListOfEquipInstances(Constants.EQUIPMENT_TYPES.get(selectedLabel));
                 } else {
                     ((TextView) view).setTextColor(Color.GRAY);
