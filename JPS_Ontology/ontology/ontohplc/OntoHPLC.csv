@@ -47,3 +47,4 @@ localFilePath,Data Property,,,HPLCMethod,string,only,,https://www.theworldavatar
 remoteFilePath,Data Property,,,HPLCMethod,anyURI,only,,https://www.theworldavatar.com/kg/ontohplc/,
 localReportDirectory,Data Property,,,HighPerformanceLiquidChromatography,string,only,,https://www.theworldavatar.com/kg/ontohplc/,
 unidentified,Data Property,,,ChromatogramPoint,boolean,only,,https://www.theworldavatar.com/kg/ontohplc/,
+retentionTimeMatchThreshold,Data Property,,,HPLCMethod,float,only,,https://www.theworldavatar.com/kg/ontohplc/,
