@@ -43,6 +43,11 @@ public class EmailAgentConfiguration {
      */
     public static final String KEY_SSL_ENABLE = "smtp.ssl.enable";
 
+    /*
+     * Key for StartTLS setting.
+     */
+    public static final String KEY_STARTTLS_ENABLE = "smtp.starttls.enable";
+
     /**
      * Key for SMTP auth setting.
      */

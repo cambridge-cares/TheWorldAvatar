@@ -6,6 +6,7 @@ import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_H
 import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_PASS;
 import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_PORT;
 import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SSL_ENABLE;
+import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_STARTTLS_ENABLE;
 import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SUBJECT_PREFIX;
 import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_TO_ADDRESS;
 import java.util.Properties;
@@ -53,6 +54,7 @@ public class EmailHandler {
         Properties mailProps = new Properties();
         mailProps.put("mail.smtp.host", EmailAgentConfiguration.getProperty(KEY_SMTP_HOST));
         mailProps.put("mail.smtp.port", EmailAgentConfiguration.getProperty(KEY_SMTP_PORT));
+        mailProps.put("mail.smtp.starttls.enable", EmailAgentConfiguration.getProperty(KEY_STARTTLS_ENABLE));
         mailProps.put("mail.smtp.ssl.enable", EmailAgentConfiguration.getProperty(KEY_SSL_ENABLE));
         mailProps.put("mail.smtp.auth", EmailAgentConfiguration.getProperty(KEY_SMTP_AUTH));
 
