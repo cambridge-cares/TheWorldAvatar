@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim;
 
 import org.apache.jena.arq.querybuilder.ConstructBuilder;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 
 import java.util.HashMap;
@@ -29,6 +31,7 @@ public class JunitTestUtils {
     public static final String IFC_PLACEMENT_CLASS = "IfcLocalPlacement";
     public static final String BIM_TRANSFORMATION_OPERATOR_CLASS = "CartesianTransformationOperator";
     public static final String IFC_TRANSFORMATION_OPERATOR_CLASS = "IfcCartesianTransformationOperator";
+    public static final Property hasDouble = ResourceFactory.createProperty(JunitTestUtils.expressUri + "hasDouble");
 
     public static void addPrefix(ConstructBuilder builder) {
         Map<String, String> nsMapping = new HashMap<>();

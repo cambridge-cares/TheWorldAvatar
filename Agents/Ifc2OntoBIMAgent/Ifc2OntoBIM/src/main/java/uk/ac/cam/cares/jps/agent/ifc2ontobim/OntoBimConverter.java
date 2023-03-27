@@ -4,10 +4,7 @@ import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.RDFParser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.BuildingStructureFacade;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.ElementFacade;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.ModellingOperatorFacade;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.SpatialZoneFacade;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ElementStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ModellingOperatorStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.SpatialZoneStorage;
@@ -121,6 +118,7 @@ public class OntoBimConverter {
     private void genGeometryContentStatements(LinkedHashSet<Statement> statementSet) {
         ModellingOperatorStorage operatorMappings = ModellingOperatorStorage.Singleton();
         ModellingOperatorFacade modellingOperatorHelper = new ModellingOperatorFacade(this.owlModel);
+        GeometryFacade geometryHelper = new GeometryFacade();
         LOGGER.info("Retrieving and generating statements related to the sub context...");
         modellingOperatorHelper.addGeometricRepresentationSubContextStatements(this.owlModel, statementSet);
         LOGGER.info("Retrieving and generating statements related to cartesian transformation operators...");
@@ -131,6 +129,12 @@ public class OntoBimConverter {
         modellingOperatorHelper.addLocalPlacementStatements(this.owlModel, statementSet);
         LOGGER.info("Storing local placement statements into a temp file...");
         this.storeInTempFiles(statementSet);
+        // For geometry statements
+        LOGGER.info("Retrieving and generating statements related to extruded area solid...");
+        geometryHelper.addExtrudedAreaSolidStatements(this.owlModel, statementSet);
+        LOGGER.info("Storing extruded area solid statements into a temp file...");
+        this.storeInTempFiles(statementSet);
+        // Final steps
         LOGGER.info("Retrieving and generating statements related to direction and cartesian points...");
         operatorMappings.constructAllStatements(statementSet);
         LOGGER.info("Storing direction and cartesian points statements into a temp file...");

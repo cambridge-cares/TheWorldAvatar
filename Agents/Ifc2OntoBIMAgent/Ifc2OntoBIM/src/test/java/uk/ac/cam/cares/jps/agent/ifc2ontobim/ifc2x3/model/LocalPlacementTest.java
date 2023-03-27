@@ -17,8 +17,10 @@ import static org.junit.jupiter.api.Assertions.*;
 class LocalPlacementTest {
     private static final String testBaseUri1 = "http://www.example.org/";
     private static final String testIri1 = testBaseUri1 + "IfcLocalPlacement_512";
+    private static final String testBimIri1 = testBaseUri1 + "LocalPlacement_512";
     private static final String testBaseUri2 = "http://www.example.org/test#";
     private static final String testIri2 = testBaseUri2 + "IfcLocalPlacement_1322";
+    private static final String testBimIri2 = testBaseUri2 + "LocalPlacement_1322";
     private static final String testClassName = "LocalPlacement";
     private static final String testRefPoint = testBaseUri1 + "CartesianPoint_18232";
     private static final String testRefDirection = testBaseUri1 + "DirectionVector_1922";
@@ -37,11 +39,18 @@ class LocalPlacementTest {
         // First constructor
         LocalPlacement sample = new LocalPlacement(testIri1, testRefPoint, testRefDirection, testAxisDirection, testRelPosition);
         // Test that the sample fields are correct
-        assertTrue(sample.getIri().contains(testBaseUri1 + testClassName + "_"));
+        assertEquals(testBimIri1, sample.getIri());
         // Second constructor
         NamespaceMapper.setBaseNameSpace(testBaseUri2);
         LocalPlacement sample2 = new LocalPlacement(testIri2, testRefPoint, testRefDirection, testAxisDirection, null);
-        assertTrue(sample2.getIri().contains(testBaseUri2 + testClassName + "_"));
+        assertEquals(testBimIri2, sample2.getIri());
+    }
+
+    @Test
+    void testAlternateConstructor() {
+        LocalPlacement sample = new LocalPlacement(testRefPoint, testRefDirection, testAxisDirection);
+        // Test that the sample fields are correct
+        assertTrue(sample.getIri().contains(testBaseUri1 + testClassName + "_"));
     }
 
     @Test

@@ -2,9 +2,11 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model;
 
 import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
 
 import java.util.LinkedHashSet;
+import java.util.UUID;
 
 /**
  * A class representing the LocalPlacement concept in OntoBIM.
@@ -17,6 +19,21 @@ public class LocalPlacement {
     private final String refDirIRI;
     private final String axisDirIRI;
     private final String relPlacementIRI;
+
+    /**
+     * Alternate Constructor for geometries when there is no existing IRI.
+     *
+     * @param refPointIri      The reference point's cartesian point IRI.
+     * @param refDirectionIri  An optional field for this element's reference direction IRI.
+     * @param axisDirectionIri An optional field for this element's axis direction IRI.
+     */
+    public LocalPlacement(String refPointIri, String refDirectionIri, String axisDirectionIri) {
+        this.iri = NamespaceMapper.getBaseNameSpace() + OntoBimConstant.LOCAL_PLACEMENT_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
+        this.refPointIRI = refPointIri;
+        this.refDirIRI = refDirectionIri;
+        this.axisDirIRI = axisDirectionIri;
+        this.relPlacementIRI = null;
+    }
 
     /**
      * Standard Constructor initialising the necessary and optional inputs.

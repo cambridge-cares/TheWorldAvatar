@@ -48,6 +48,13 @@ public class OntoBimConstant {
     public static final String BIM_HAS_VOID = NamespaceMapper.BIM_NAMESPACE + "hasVoid";
     public static final String BIM_HAS_VOID_TYPE = NamespaceMapper.BIM_NAMESPACE + "hasVoidType";
     public static final String BUILDING_STRUCTURE_CONSISTS_OF = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + "consistsOf";
+    public static final String BIM_HAS_EXTRUSION_POSITION = NamespaceMapper.BIM_NAMESPACE + "hasExtrusionStartPosition";
+    public static final String BIM_HAS_EXTRUSION_DIRECTION = NamespaceMapper.BIM_NAMESPACE + "hasExtrusionDirection";
+    public static final String BIM_HAS_EXTRUSION_DEPTH = NamespaceMapper.BIM_NAMESPACE + "hasExtrusionDepth";
+    public static final String BIM_HAS_EXTRUSION_PROFILE = NamespaceMapper.BIM_NAMESPACE + "hasExtrusionProfile";
+    public static final String BIM_HAS_PROFILE_TYPE = NamespaceMapper.BIM_NAMESPACE + "hasProfileType";
+    public static final String BIM_HAS_RECTANGLE_PROFILE_X_EXTENT = NamespaceMapper.BIM_NAMESPACE + "hasXDimensionExtent";
+    public static final String BIM_HAS_RECTANGLE_PROFILE_Y_EXTENT = NamespaceMapper.BIM_NAMESPACE + "hasYDimensionExtent";
     // OntoBuildingStructure stair properties
     public static final String BUILDING_STRUCTURE_HAS_RISER_NUM = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + "hasNumOfRiser";
     public static final String BUILDING_STRUCTURE_HAS_TREAD_NUM = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + "hasNumOfTread";
@@ -137,6 +144,10 @@ public class OntoBimConstant {
     public static final String BIM_LOCAL_PLACEMENT_CLASS = NamespaceMapper.BIM_NAMESPACE + LOCAL_PLACEMENT_CLASS;
     public static final String CARTESIAN_POINT_CLASS = "CartesianPoint";
     public static final String BIM_CARTESIAN_POINT_CLASS = NamespaceMapper.BIM_NAMESPACE + CARTESIAN_POINT_CLASS;
+    public static final String EXTRUDED_AREA_SOLID_CLASS = "ExtrudedAreaSolid";
+    public static final String BIM_EXTRUDED_AREA_SOLID_CLASS = NamespaceMapper.BIM_NAMESPACE + EXTRUDED_AREA_SOLID_CLASS;
+    public static final String RECTANGLE_PROFILE_DEFINITION_CLASS = "RectangleProfileDefinition";
+    public static final String BIM_RECTANGLE_PROFILE_DEFINITION_CLASS = NamespaceMapper.BIM_NAMESPACE + RECTANGLE_PROFILE_DEFINITION_CLASS;
     // OM classes
     public static final String HEIGHT_CLASS = NamespaceMapper.OM_NAMESPACE + "Height";
     public static final String MEASURE_CLASS = NamespaceMapper.OM_NAMESPACE + "Measure";
