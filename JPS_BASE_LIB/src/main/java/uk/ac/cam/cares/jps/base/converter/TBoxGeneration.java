@@ -477,7 +477,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 */
 	private void callPropertyGenerateor(int propertyType, String...strings) throws IOException, JPSRuntimeException {
 		if(propertyType==1){
-			generateDataProperty(strings[0], strings[1], strings[2], strings[3], strings[4], strings[5], strings[6]);
+			generateDataProperty(strings[0], strings[1], strings[2], strings[3], strings[4], strings[5]);
 		}
 		if(propertyType==2){
 			generateObjectProperty(strings[0], strings[1], strings[2], strings[3], strings[4], strings[5], strings[6]);
@@ -616,8 +616,8 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 * @param domain
 	 * @param range
 	 */
-	public void generateDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range, String quantifier) throws IOException, JPSRuntimeException{
-		iTBoxManagement.createOWLDataProperty(propertyName, type, targetName, relation, domain, range, quantifier);
+	public void generateDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range) throws IOException, JPSRuntimeException{
+		iTBoxManagement.createOWLDataProperty(propertyName, type, targetName, relation, domain, range);
 	}
 	
 	/**
