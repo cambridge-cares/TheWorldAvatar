@@ -301,6 +301,10 @@ The [RiverLevelsAgent] (also referred to as *Flood Agent*) instantiates river le
 
 The [resources] folder contains an `instantiated_buildings.sparql` file which contains several SPARQL queries to track the instantiation process. It primarily helps to identify how many buildings are instantiated at all, how many buildings possess EPC information, and how many buildings have previous sales transaction information.
 
+&nbsp;
+# Current Watch Outs
+
+- The current versions of the ontologies as well as agents refer to several custom units using the `ontouom` ontology. Those are likely to be incorporated into (our fork of) the ontology of units of measure, see [issue #576](https://github.com/cambridge-cares/TheWorldAvatar/issues/576). Any respective changes would need to be reflected in both the ontologies (i.e. OntoEMS, OntoBuiltEnv, OntoFlood) and agents!
 
 <!-- Links -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
