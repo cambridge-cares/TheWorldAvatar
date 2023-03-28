@@ -129,25 +129,6 @@ def assert_asset_geometries():
 # (i.e. the fixture is destroyed during teardown of the last test in the module)
 # ----------------------------------------------------------------------------------
 
-@pytest.fixture(scope='module')
-def tileset_content():
-    """
-    A test function to read the contents of a tileset.json
-
-    Argument:
-    json_filepath - File path to the tileset.json
-    Returns:
-    The tileset's contents as a Python dictionary
-    """
-
-    def _retrieve_tileset_contents(json_filepath: str):
-        # Read the results
-        with open(json_filepath, "r", encoding="utf-8") as f:
-            tileset_content = json.load(f)
-        return tileset_content
-
-    return _retrieve_tileset_contents
-
 
 # ----------------------------------------------------------------------------------
 # Function-scoped test fixtures

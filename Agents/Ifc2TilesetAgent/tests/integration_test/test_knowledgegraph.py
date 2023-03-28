@@ -6,15 +6,15 @@ An integration test suite for the knowledge graph interactions.
 # Standard import
 import os
 
+# Third-party import
 import pandas as pd
-from pandas.testing import assert_frame_equal
 import pytest
 
 # Self import
 from . import testconsts as C
 from agent.ifc2gltf.kghelper import retrieve_metadata, get_building_iri
 from agent.ifc2gltf import conv2gltf
-from .testutils import init_kg_client
+from .testutils import init_kg_client, assert_df_equal
 
 
 @pytest.mark.parametrize(
@@ -33,10 +33,6 @@ def test_execute_query(select_query, update_query, expected, kg_client):
 
     # Assert if triples have been updated and queried properly
     assert actual == expected
-
-
-def sort_and_reset_index(df: pd.DataFrame):
-    return df.sort_values(by=df.columns.tolist()).reset_index(drop=True)
 
 
 @pytest.mark.parametrize(
@@ -76,7 +72,7 @@ def test_retrieve_metadata(init_assets, expected, kg_client):
     actual = retrieve_metadata(C.KG_ENDPOINT, C.KG_ENDPOINT)
 
     # assert
-    assert_frame_equal(sort_and_reset_index(actual), sort_and_reset_index(expected), check_dtype=False)
+    assert_df_equal(actual, expected)
 
 
 def test_get_building_iri(endpoint, kg_client):
@@ -133,7 +129,7 @@ def test_conv2gltf(init_assets, expected_gltf, expected_asset_data, expected_bui
     actual_asset_data, actual_building_iri = conv2gltf(ifcpath, endpoint, endpoint)
 
     try:
-        assert_frame_equal(sort_and_reset_index(actual_asset_data), sort_and_reset_index(expected_asset_data))
+        assert_df_equal(actual_asset_data, expected_asset_data)
 
         # Assert that the geometry files are generated
         assert_asset_geometries(expected_gltf)

@@ -11,7 +11,7 @@ import pytest
 
 # Self import
 from . import testconsts as C
-from .testutils import init_kg_client
+from .testutils import init_kg_client, read_json_file
 
 
 @pytest.mark.parametrize("expected_response", [C.DEFAULT_RESPONSE])
@@ -40,7 +40,7 @@ def assert_root_tile_compulsory_fields(tile: dict):
     [(["building", "wall"], ["building"], C.SUCCESSFUL_API_RESPONSE)]
 )
 def test_api_simple(init_assets, expected_assets, expected_response, kg_client, flaskapp, gen_sample_ifc_file,
-                    sample_properties, tileset_content, assert_asset_geometries):
+                    sample_properties, assert_asset_geometries):
     """
     Tests the POST request for the api route on a simple IFC model
     """
@@ -69,7 +69,7 @@ def test_api_simple(init_assets, expected_assets, expected_response, kg_client, 
         assert_asset_geometries(expected_assets)
 
         # Assert tileset content contains the assetUrl passed and gltf files
-        content = tileset_content(tileset)
+        content = read_json_file(tileset)
         assert "root" in content
 
         root = content["root"]
@@ -91,7 +91,7 @@ def test_api_simple(init_assets, expected_assets, expected_response, kg_client, 
     )]
 )
 def test_api_complex(init_assets, expected_assets, expected_response, kg_client, flaskapp, gen_sample_ifc_file,
-                     sample_properties, tileset_content, assert_asset_geometries):
+                     sample_properties, assert_asset_geometries):
     """
     Tests the POST request for the api route on a complex IFC model
     """
@@ -123,7 +123,7 @@ def test_api_complex(init_assets, expected_assets, expected_response, kg_client,
         assert_asset_geometries(expected_assets)
 
         # Assert bim tileset content contains the assetUrl passed and gltf files
-        content = tileset_content(tileset)
+        content = read_json_file(tileset)
         assert "root" in content
 
         root = content["root"]
@@ -133,7 +133,7 @@ def test_api_complex(init_assets, expected_assets, expected_response, kg_client,
         assert root["children"][0]["contents"][0]["uri"] == "./gltf/asset1.gltf"
 
         # Assert solar tileset content contains the assetUrl passed and gltf files
-        solar_content = tileset_content(tileset_solar)
+        solar_content = read_json_file(tileset_solar)
         assert "root" in solar_content
 
         solar_root = solar_content["root"]
