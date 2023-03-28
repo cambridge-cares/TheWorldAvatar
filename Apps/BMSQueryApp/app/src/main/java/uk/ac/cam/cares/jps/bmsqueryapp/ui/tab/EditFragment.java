@@ -29,7 +29,7 @@ import uk.ac.cam.cares.jps.bmsqueryapp.util.SingletonConnection;
 public class EditFragment extends Fragment {
     private FragmentEditBinding binding;
 
-    private final HttpUrl.Builder ESPHOME_CONTROL_URL = Constants.constructUrlBuilder("esphome-control-agent/set");
+    private final HttpUrl.Builder ESPHOME_CONTROL_URL = Constants.constructUrlBuilder("bms-update-agent/set");
 
     public EditFragment() {
         super();
@@ -52,7 +52,7 @@ public class EditFragment extends Fragment {
                 Double temperatureDouble = Double.parseDouble(temperature);
                 JSONObject params = new JSONObject();
                 params.put("dataIRI", "https://www.theworldavatar.com/kg/ontodevice/V_Setpoint-01-Temperature");
-                params.put("temperature", temperatureDouble); // TODO: change the type to double in backend?
+                params.put("temperature", temperatureDouble);
                 params.put("clientProperties", "CLIENT_PROPERTIES");
 
                 JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, ESPHOME_CONTROL_URL.build().toString(), params, response -> {
