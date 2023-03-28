@@ -27,7 +27,7 @@ import java.util.Properties;
 import java.util.regex.Pattern;
 
 @Controller
-@WebServlet(urlPatterns = {"/retrieve/ts", "/status", "/retrieve/equipment"})
+@WebServlet(urlPatterns = {"/status", "/retrieve/equipment"})
 public class BMSQueryAgentLauncher extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(BMSQueryAgentLauncher.class);
 
@@ -81,13 +81,7 @@ public class BMSQueryAgentLauncher extends JPSAgent {
 
             BMSQueryAgent agent = initializeAgent();
 
-            if (url.contains("ts")) {
-                // handle the case "retrieve/ts", return the timeseries data and time only
-                JSONObject queryResult = agent.queryTimeSeriesWithinBound(dataIRI);
-
-                response.setStatus(HttpServletResponse.SC_OK);
-                response.getWriter().write(queryResult.toString());
-            } else if (url.contains("equipment")) {
+            if (url.contains("equipment")) {
                 // handle the case "retrieve/equipment", return the list of equipment of the selected type
                 JSONObject queryResult = agent.queryEquipmentInstance(dataIRI);
 
@@ -131,12 +125,12 @@ public class BMSQueryAgentLauncher extends JPSAgent {
     public BMSQueryAgent initializeAgent() {
         EndpointConfig endpointConfig = new EndpointConfig();
 
-        RemoteStoreClient rsClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
-        TimeSeriesClient<OffsetDateTime> tsClient = new TimeSeriesClient<>(rsClient, OffsetDateTime.class, endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
-
         BMSQueryAgent agent = createBMSQueryAgent();
-        agent.setRSClient(rsClient);
-        agent.setTSClient(tsClient);
+
+        RemoteStoreClient rsClient = new RemoteStoreClient();
+        rsClient.setUser(endpointConfig.getKguser());
+        rsClient.setPassword(endpointConfig.getKgpassword());
+        agent.setRSClient(rsClient, endpointConfig.getKgurls());
 
         LOGGER.info("Input agent object initialized.");
         return agent;

@@ -4,7 +4,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
-import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
@@ -14,14 +13,9 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
@@ -29,35 +23,13 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 public class BMSQueryAgent {
 
     private static final Logger LOGGER = LogManager.getLogger(BMSQueryAgent.class);
-    TimeSeriesClient<OffsetDateTime> tsClient;
     RemoteStoreClient rsClient;
+    List<String> kgUrls;
 
-    private static final String BMS_STRING = "http://www.theworldavatar.com/BMS/CaresLab#";
-    private static final Prefix P_BMS = SparqlBuilder.prefix("bms",iri(BMS_STRING));
 
-    public void setTSClient(TimeSeriesClient<OffsetDateTime> tsClient) {
-        this.tsClient = tsClient;
-    }
-
-    public void setRSClient(RemoteStoreClient rsClient) {
+    public void setRSClient(RemoteStoreClient rsClient, List<String> kgUrls) {
         this.rsClient = rsClient;
-    }
-
-    public JSONObject queryTimeSeriesWithinBound(String dataIRI) {
-        List<String> dataIRIs = Collections.singletonList(dataIRI);
-        OffsetDateTime currentTime = OffsetDateTime.parse("2023-03-02T09:05:56Z");
-        OffsetDateTime oneHourAgo = currentTime.minusHours(1);
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
-        LOGGER.info("Querying the time series data from " + oneHourAgo.format(formatter) + " to " + currentTime.format(formatter));
-
-        TimeSeries<OffsetDateTime> result = tsClient.getTimeSeriesWithinBounds(dataIRIs, oneHourAgo, currentTime);
-        LOGGER.info(result.getValues(dataIRI).size() + " data values are received");
-
-        JSONObject jsonResult = new JSONObject();
-        jsonResult.put("times", result.getTimes());
-        jsonResult.put("values", result.getValuesAsDouble(dataIRI));
-        return jsonResult;
+        this.kgUrls = kgUrls;
     }
 
     public JSONObject queryEquipmentInstance(String classIRIStr) {
@@ -69,13 +41,41 @@ public class BMSQueryAgent {
 
         TriplePattern findInstanceOfAClass = GraphPatterns.tp(instance, RDF.TYPE, classIRI);
         TriplePattern findLabelForInstance = GraphPatterns.tp(instance, RDFS.LABEL, label);
-        query.prefix(P_BMS).select(instance, label).where(findInstanceOfAClass, findLabelForInstance);
-        JSONArray jsonResult = rsClient.executeQuery(query.getQueryString());
+        query.select(instance, label).where(findInstanceOfAClass, findLabelForInstance);
+
+        JSONArray jsonResult;
+        try {
+            LOGGER.info("Sending federated request...");
+            jsonResult = rsClient.executeFederatedQuery(kgUrls, query.getQueryString());
+        } catch (Exception e) {
+            LOGGER.error("Fail to run federated query to get equipment instances of type: " + classIRIStr);
+            throw new JPSRuntimeException("Unable to get equipment instances of type: " + classIRIStr);
+        }
+
         JSONObject result = new JSONObject();
-        result.put("Equipments", jsonResult);
+        result.put("Equipments", parseLabel(jsonResult));
         LOGGER.info("Getting result:" + result);
 
         return result;
+    }
+
+    // CAUTION: the method assume @ is only for language specification in label
+    private JSONArray parseLabel(JSONArray response) {
+        for (int i = 0; i < response.length(); i++) {
+            JSONObject jo = response.getJSONObject(i);
+            String label = jo.getString("label");
+            if (label.contains("@")) {
+                label = label.split("@")[0];
+            }
+            if (label.charAt(0) == '"') {
+                label = label.substring(1);
+            }
+            if (label.charAt(label.length()-1) == '"') {
+                label = label.substring(0, label.length()-1);
+            }
+            jo.put("label", label);
+        }
+        return response;
     }
 
 }
