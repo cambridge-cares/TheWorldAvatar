@@ -42,5 +42,10 @@ There are currently two routes available
 
 1. `<base>/status` route:
    - Returns the current status of the agent through an HTTP `GET` request.
-2. `<base>/transfer` route:
-    - Execute the agent's task through an HTTP `POST` request. This is under construction
+2. `<base>/sparql` route:
+    - Execute the agent's task through an HTTP `GET` request. This route will transfer data between the specified origin and destination endpoints
+    - Before sending the request, please update the origin and destination SPARQL endpoint in the `<root>/config/endpoint.properties`.
+    - A sample `GET` request is as follows:
+```
+curl -X GET localhost:3055/data-bridge-agent/sparql
+```
