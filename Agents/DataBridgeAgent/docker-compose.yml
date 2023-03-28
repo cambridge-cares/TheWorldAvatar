@@ -7,5 +7,7 @@ services:
     build:
       context: .
       target: agent
+    volumes:
+      - ./config:/usr/local/tomcat/config
     ports:
       - "3055:8080"

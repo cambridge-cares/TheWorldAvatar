@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author qhouyee
  */
-@WebServlet(urlPatterns = {"/transfer", "/status"})
+@WebServlet(urlPatterns = {"/sparql", "/status"})
 public class DataBridgeAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(DataBridgeAgent.class);
     // Agent starts off in valid state, and will be invalid when running into exceptions
@@ -67,9 +67,14 @@ public class DataBridgeAgent extends JPSAgent {
         LOGGER.info("Passing request to the DataBridge Agent...");
         // Run logic based on request path
         switch (route) {
-            case "transfer":
-                LOGGER.fatal("Route is under construction.");
-                jsonMessage.put("Result", "Route is under construction.");
+            case "sparql":
+                if (requestType.equals("GET")) {
+                    String[] config = ConfigStore.retrieveSPARQLConfig();
+                    jsonMessage = sparqlRoute(config);
+                } else {
+                    LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                    jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                }
                 break;
             case "status":
                 if (requestType.equals("GET")) {
@@ -104,8 +109,22 @@ public class DataBridgeAgent extends JPSAgent {
         if (DataBridgeAgent.VALID) {
             response.put("Result", "Agent is ready to receive requests.");
         } else {
-            response.put("Result", "Agent could not be initialise!");
+            response.put("Result", "Agent could not be initialised!");
         }
+        return response;
+    }
+
+    /**
+     * Run logic for the "/sparql" route to transfer data between SPARQL endpoints.
+     *
+     * @return A response to the request called as a JSON Object.
+     */
+    protected JSONObject sparqlRoute(String[] config) {
+        JSONObject response = new JSONObject();
+        LOGGER.info("Detected request to get agent status...");
+        SparqlBridge connector = new SparqlBridge(config[0], config[1]);
+        connector.transfer();
+        response.put("Result", "Triples have been transferred from " + config[0] + " to " + config[1]);
         return response;
     }
 }
