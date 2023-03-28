@@ -15,7 +15,7 @@ services:
       # Specify PostGIS/PostgreSQL database name
       # (default name "postgres" required for Ontop to work)
       - DATABASE=postgres
-      - GEOSERVER_WORKSPACE=buildings
+      - GEOSERVER_WORKSPACE=kingslynn
       - ONTOP_FILE=/app/resources/ontop.obda
       - OCGML_ENDPOINT=http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql
     ports:

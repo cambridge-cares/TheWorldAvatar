@@ -79,7 +79,7 @@ chmod -R +rwx <REPO NAME>
 
 > The functionality has been tested using the Stack Data Uploader `docker.cmclinnovations.com/stack-data-uploader:1.10.2`
 
-A few datasets and files which shall initially be uploaded to the stack are provided in the `inputs` folder of this repository. Uploading pre-instantiated OntoCityGml quads is optional but highly recommended to skip steps 1.0 - 1.4 (depending on the exact quads file provided) of the building instantiation workflow below.
+A few datasets and files which shall initially be uploaded to the stack are provided in the `inputs` folder of this repository. Uploading pre-instantiated OntoCityGml quads is optional but highly recommended to skip steps 1.0 - 1.6 (depending on the exact quads file provided) of the building instantiation workflow below.
 
 The following steps explain how to upload the data to the stack using the [Stack data uploader] (please see the referenced README for more details):
 
@@ -201,17 +201,18 @@ Some of the agents have (data) interdependencies and, hence, require matching na
 
 &nbsp;
 ## 2.1) Energy Performance Certificate (EPC) Agent
-```diff
--update
-```
-> The following steps refer to commit `???` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main` using the published Docker image `ghcr.io/cambridge-cares/epc_agent:1.0.0`
 
-(Build and) deploy the EPC Agent as described in the [EPC Agent README], i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack. Follow the described instantiation workflow by sending the respective HTTP requests to the agent. The subsequent recurring updating of instantiated data occurs automatically.
+> The following steps refer to the published Docker image `ghcr.io/cambridge-cares/epc_agent:1.2.0` as of commit `93c2844a1d4074ca38e86074d7003332fed0673d` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main` 
 
-0) New namespace (i.e. `kingslynn`) to host all building related data created automatically upon agent startup (incl. upload of ontology and all required unit symbols)
+(Build and) Deploy the EPC Agent as described in the [EPC Agent README], i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack. The required Base64-encoded authentication token can be created using `echo -n '<email address>:<provided API key>' | base64` on the command line (Windows) with `<email address>` being the email address used to register for the API and `<provided API key>` being the API key sent to you via email after registration. In case `bash ./stack.sh start KINGS-LYNN` does not successfully start the agent, simply re-run the command (this is a know issue and mentioned in the [EPC Agent README]). 
+
+After agent startup, follow the described instantiation workflow by sending the respective HTTP requests to the agent. The subsequent recurring updating of instantiated data occurs automatically.
+
+
+0) New namespace (i.e. `kingslynn`) to host all building related data will be created automatically upon agent startup (incl. upload of ontology and all required unit symbols)
 1) Instantiate all postcodes in King's Lynn local authority:
     ```
-    POST http://165.232.172.16:5001/epcagent/instantiate/postcodes
+    POST http://165.232.172.16:5007/epcagent/instantiate/postcodes
     Content-Type: application/json
 
     { "query": {
@@ -221,7 +222,7 @@ Some of the agents have (data) interdependencies and, hence, require matching na
     ```
 2) Instantiate all EPC building data (for all buildings and from all 3 APIs):
     ```
-    POST http://165.232.172.16:5001/epcagent/instantiate/certificates/all
+    POST http://165.232.172.16:5007/epcagent/instantiate/certificates/all
     Content-Type: application/json
 
     { "query": {
