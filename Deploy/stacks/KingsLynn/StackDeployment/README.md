@@ -307,6 +307,14 @@ The [resources] folder contains an `instantiated_buildings.sparql` file which co
 
 - The current versions of the ontologies as well as agents refer to several custom units using the `ontouom` ontology. Those are likely to be incorporated into (our fork of) the ontology of units of measure, see [issue #576](https://github.com/cambridge-cares/TheWorldAvatar/issues/576). Any respective changes would need to be reflected in both the ontologies (i.e. OntoEMS, OntoBuiltEnv, OntoFlood) and agents!
 
+&nbsp;
+# Potential refinements/next steps
+
+EPC Agent
+- HTTP requests to `/epcagent/instantiate/certificates/all` does not seem to provide the correct number of instantiated and updated properties. Instead of providing the sum of all instantiated/updated properties from all API endpoints, it only seems to provide the number from the last endpoint and shall be revisited
+- There seem to be a few properties (very minor fraction) which are classified as Flat and Building/Property at the same time.
+
+
 <!-- Links -->
 [allows you to publish and install packages]: https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages
 [CMCL Docker Registry]: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
