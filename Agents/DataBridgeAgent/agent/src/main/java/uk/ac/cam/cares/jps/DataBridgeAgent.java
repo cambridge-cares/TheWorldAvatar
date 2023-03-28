@@ -121,10 +121,12 @@ public class DataBridgeAgent extends JPSAgent {
      */
     protected JSONObject sparqlRoute(String[] config) {
         JSONObject response = new JSONObject();
-        LOGGER.info("Detected request to get agent status...");
+        LOGGER.debug("Creating the SPARQL connector..");
         SparqlBridge connector = new SparqlBridge(config[0], config[1]);
+        LOGGER.debug("Transfer data from origin to destination...");
         connector.transfer();
-        response.put("Result", "Triples have been transferred from " + config[0] + " to " + config[1]);
+        LOGGER.info("Triples have been successfully transferred from " + config[0] + " to " + config[1]);
+        response.put("Result", "Triples have been successfully transferred from " + config[0] + " to " + config[1]);
         return response;
     }
 }
