@@ -62,6 +62,7 @@ sample_wall = Element(
     label="Wall Standard"
 )
 
+# OTHER ASSETS
 sample_water_meter = Element(
     iri="Meter_1",
     type="ifc2x3:IfcBuildingElementProxy",
@@ -74,8 +75,8 @@ sample_fridge = Element(
     ifc_id="c12746",
     label="Lab Fridge"
 )
-sample_assets = [sample_water_meter, sample_fridge]
 
+# SOLAR PANEL
 sample_solar_panel = Element(
     iri="SolarPanel_51",
     type="ifc2x3:IfcBuildingElementProxy",
@@ -83,6 +84,7 @@ sample_solar_panel = Element(
     label="Solar Panel"
 )
 
+# FURNITURE
 sample_chair = Element(
     iri="Chair_4",
     type="bot:Element",
@@ -95,48 +97,50 @@ sample_table = Element(
     ifc_id="e9411",
     label="Table"
 )
-sample_furniture = [sample_chair, sample_table]
 
+SAMPLE_ONTOBIM_ELEMENT_STORE = dict(
+    wall=sample_wall,
+    water_meter=sample_water_meter,
+    fridge=sample_fridge,
+    solar_panel=sample_solar_panel,
+    chair=sample_chair,
+    table=sample_table
+)
 
 counter = itertools.count()
 
 
-def make_insert_query(elements: List[Element]):
-    def _element_to_triple(element: Element):
-        ifc_model_rep_num = str(next(counter)).zfill(3)
-        return f"""base:{element.iri} rdf:type {element.type};
-                                      ontobim:hasIfcRepresentation base:IfcModelRepresentation_{ifc_model_rep_num}.
-                   base:IfcModelRepresentation_{ifc_model_rep_num} rdf:type ontobim:IfcModelRepresentation;
-                                                                   ontobim:hasIfcId '{element.ifc_id}'^^xsd:string;
-                                                                   rdfs:label '{element.label}'^^xsd:string.
-                """
-
-    triples = "".join([_element_to_triple(e) for e in elements])
-    return f"""{prefix}
-        INSERT DATA {{
-            {triples}
-        }}
-    """
-
-
-insert_wall_query = make_insert_query([sample_wall])
-insert_assets_query = make_insert_query(sample_assets)
-insert_solar_panel_query = make_insert_query([sample_solar_panel])
-insert_furniture_query = make_insert_query(sample_furniture)
+def _elem_to_tripe(e: Element):
+    ifc_model_rep_num = str(next(counter)).zfill(3)
+    return f"""\
+base:{e.iri} rdf:type {e.type};
+             ontobim:hasIfcRepresentation base:IfcModelRepresentation_{ifc_model_rep_num}.
+base:IfcModelRepresentation_{ifc_model_rep_num} rdf:type ontobim:IfcModelRepresentation;
+                                                ontobim:hasIfcId '{e.ifc_id}'^^xsd:string;
+                                                rdfs:label '{e.label}'^^xsd:string.
+"""
 
 
 sample_building_inst = "Building_1"
 sample_building_iri = base_namespace + sample_building_inst
-insert_building_query = f"""{prefix} 
-INSERT DATA {{
-    base:{sample_building_inst} bot:hasStorey base:Storey_5a9f7642-2d12-11b2-8040-cdbcaabc8e65;
+building_triple = f"""\
+base:{sample_building_inst} bot:hasStorey base:Storey_5a9f7642-2d12-11b2-8040-cdbcaabc8e65;
                                 rdf:type bot:Building;
                                 ontobim:hasIfcRepresentation base:IfcBuildingRepresentation_130.
-    base:IfcBuildingRepresentation_130 rdf:type ontobim:IfcModelRepresentation;
-                                        ontobim:hasIfcId "0jvyVdjY901wSsMTGJsL4G";
-                                        rdfs:label "TestBuilding";
-}}
+base:IfcBuildingRepresentation_130 rdf:type ontobim:IfcModelRepresentation;
+                                   ontobim:hasIfcId '0jvyVdjY901wSsMTGJsL4G'^^xsd:string;
+                                   rdfs:label 'TestBuilding'^^xsd:string.
 """
+
+SAMPLE_ONTOBIM_TRIPLESTORE = dict(
+    building=building_triple,
+    wall=_elem_to_tripe(sample_wall),
+    water_meter=_elem_to_tripe(sample_water_meter),
+    fridge=_elem_to_tripe(sample_fridge),
+    solar_panel=_elem_to_tripe(sample_solar_panel),
+    chair=_elem_to_tripe(sample_chair),
+    table=_elem_to_tripe(sample_table)
+)
 
 invalid_asseturl1 = "./"
 invalid_asseturl2 = "dir"

@@ -6,7 +6,7 @@ A module that provides all pytest fixtures and utility functions for all integra
 # Standard import
 import os
 import json
-from typing import List
+from typing import Iterable
 
 # Third party import
 import pytest
@@ -17,8 +17,7 @@ import yaml
 # Self import
 from agent import create_app
 from agent.kgutils import KGClient
-from . import testconsts
-from .testconsts import Element
+from . import testconsts as C
 
 
 # ----------------------------------------------------------------------------------
@@ -27,7 +26,7 @@ from .testconsts import Element
 # ----------------------------------------------------------------------------------
 @pytest.fixture(scope="session")
 def endpoint():
-    return testconsts.KG_ENDPOINT
+    return C.KG_ENDPOINT
 
 
 @pytest.fixture(scope="session")
@@ -41,8 +40,7 @@ def gen_sample_ifc_file():
         or a simple model consisting of only one Wall
     """
 
-    def _gen_ifc_file(ifc_path: str, ifc_building_element_proxies: List[Element],
-                      ifc_furnishing_elements: List[Element]):
+    def _gen_ifc_file(ifc_path: str, assets: Iterable[str] = []):
         # Create a blank model
         model = ifcopenshell.file()
         # All projects must have one IFC Project element
@@ -79,12 +77,16 @@ def gen_sample_ifc_file():
         run("spatial.assign_container", model, relating_structure=storey, product=wall)
 
         ifc_building_element_proxy_products = [
-            model.create_entity("IfcBuildingElementProxy", GlobalId=e.ifc_id, Name=e.label)
-            for e in ifc_building_element_proxies
+            model.create_entity("IfcBuildingElementProxy", GlobalId=C.SAMPLE_ONTOBIM_ELEMENT_STORE[asset].ifc_id,
+                                Name=C.SAMPLE_ONTOBIM_ELEMENT_STORE[asset].label)
+            for asset in assets
+            if asset in ("water_meter", "fridge", "solar_panel")
         ]
         ifc_furnishing_element_products = [
-            model.create_entity("IfcFurnishingElement", GlobalId=e.ifc_id, Name=e.label)
-            for e in ifc_furnishing_elements
+            model.create_entity("IfcFurnishingElement", GlobalId=C.SAMPLE_ONTOBIM_ELEMENT_STORE[asset].ifc_id,
+                                Name=C.SAMPLE_ONTOBIM_ELEMENT_STORE[asset].label)
+            for asset in assets
+            if asset in ("chair", "table")
         ]
 
         # Assign geometries to each element
@@ -107,7 +109,7 @@ def assert_asset_geometries():
     asset_list - A list containing the expected asset names
     """
 
-    def _setup_geom_assertions(asset_list: List[str]):
+    def _setup_geom_assertions(asset_list: Iterable[str]):
         for asset in asset_list:
             glbpath = "./data/glb/" + asset + ".glb"
             gltfpath = "./data/gltf/" + asset + ".gltf"
@@ -152,12 +154,12 @@ def tileset_content():
 # (i.e. the fixture is destroyed at the end of each test)
 # -----
 @pytest.fixture(scope="function")
-def initialise_client():
+def kg_client():
     """
     Retrieves all the exposed endpoints for dockerised testing services
     """
     # Create KG Client for testing
-    kg_client = KGClient(testconsts.KG_ENDPOINT, testconsts.KG_ENDPOINT)
+    kg_client = KGClient(C.KG_ENDPOINT, C.KG_ENDPOINT)
     # Returns client for the test to continue running
     yield kg_client
 
@@ -182,8 +184,8 @@ def sample_properties():
     """
     yaml_path = "./config/properties.yaml"
     data = dict(
-        query_endpoint=testconsts.KG_ENDPOINT,
-        update_endpoint=testconsts.KG_ENDPOINT
+        query_endpoint=C.KG_ENDPOINT,
+        update_endpoint=C.KG_ENDPOINT
     )
     # Generate the file
     with open(yaml_path, 'w') as outfile:

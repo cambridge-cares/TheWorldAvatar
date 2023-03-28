@@ -11,6 +11,7 @@ import pytest
 
 # Self import
 from . import testconsts as C
+from .testutils import init_kg_client
 
 
 @pytest.mark.parametrize("expected_response", [C.DEFAULT_RESPONSE])
@@ -35,10 +36,10 @@ def assert_root_tile_compulsory_fields(tile: dict):
 
 
 @pytest.mark.parametrize(
-    "init_queries, expected_assets, expected_response",
-    [([C.insert_building_query, C.insert_wall_query], ["building"], C.SUCCESSFUL_API_RESPONSE)]
+    "init_assets, expected_assets, expected_response",
+    [(["building", "wall"], ["building"], C.SUCCESSFUL_API_RESPONSE)]
 )
-def test_api_simple(init_queries, expected_assets, expected_response, initialise_client, flaskapp, gen_sample_ifc_file,
+def test_api_simple(init_assets, expected_assets, expected_response, kg_client, flaskapp, gen_sample_ifc_file,
                     sample_properties, tileset_content, assert_asset_geometries):
     """
     Tests the POST request for the api route on a simple IFC model
@@ -47,13 +48,10 @@ def test_api_simple(init_queries, expected_assets, expected_response, initialise
     route = "/api"
     tileset = os.path.join("data", "tileset_bim.json")
 
-    # Generate the test IFC triples
-    kg_client = initialise_client
-    for query in init_queries:
-        kg_client.execute_update(query)
+    init_kg_client(kg_client, init_assets)
 
     # Generate sample ifc file
-    ifcpath = gen_sample_ifc_file("./data/ifc/sample.ifc", ifc_building_element_proxies=[], ifc_furnishing_elements=[])
+    ifcpath = gen_sample_ifc_file("./data/ifc/sample.ifc")
 
     # Generate sample properties.config
     properties_path = sample_properties
@@ -85,18 +83,15 @@ def test_api_simple(init_queries, expected_assets, expected_response, initialise
 
 
 @pytest.mark.parametrize(
-    "init_queries, ifc_building_element_proxies, ifc_furnishing_elements, expected_assets, expected_response",
+    "init_assets, expected_assets, expected_response",
     [(
-        [C.insert_building_query, C.insert_assets_query, C.insert_furniture_query, C.insert_solar_panel_query],
-        C.sample_assets + [C.sample_solar_panel],
-        C.sample_furniture,
+        ["building", "water_meter", "fridge", "chair", "table", "solar_panel"],
         ["building", "asset1", "asset2", "furniture", "solarpanel"],
         C.SUCCESSFUL_API_RESPONSE
     )]
 )
-def test_api_complex(init_queries, ifc_building_element_proxies, ifc_furnishing_elements,  expected_assets,
-                     expected_response, initialise_client, flaskapp, gen_sample_ifc_file, sample_properties,
-                     tileset_content, assert_asset_geometries):
+def test_api_complex(init_assets, expected_assets, expected_response, kg_client, flaskapp, gen_sample_ifc_file,
+                     sample_properties, tileset_content, assert_asset_geometries):
     """
     Tests the POST request for the api route on a complex IFC model
     """
@@ -106,13 +101,10 @@ def test_api_complex(init_queries, ifc_building_element_proxies, ifc_furnishing_
     tileset_solar = os.path.join("data", "tileset_solarpanel.json")
 
     # Generate the test IFC triples
-    kg_client = initialise_client
-    for query in init_queries:
-        kg_client.execute_update(query)
+    init_kg_client(kg_client, init_assets)
 
     # Generate sample ifc file
-    ifcpath = gen_sample_ifc_file("./data/ifc/sample.ifc", ifc_building_element_proxies=ifc_building_element_proxies,
-                                  ifc_furnishing_elements=ifc_furnishing_elements)
+    ifcpath = gen_sample_ifc_file("./data/ifc/sample.ifc", assets=init_assets)
 
     # Generate sample properties.config
     properties_path = sample_properties
