@@ -1,11 +1,13 @@
 import os
-
+import sys
+sys.path.append("")
 import nltk
 from nltk import Tree
 from nltk.corpus import stopwords
 from nltk.draw import TreeWidget
 from nltk.draw.util import CanvasFrame
 from nltk.stem import *
+from Marie.Util.CommonTools.playground.LdfRequest import LdfRequest
 
 # stop_words = set(stopwords.words('english'))
 stop_words = ["what", "is", "the", "list", "of", "are", "with", "a", "one", "does", "do", "species", "after", ","]
@@ -53,7 +55,7 @@ def token_and_tag(text):
     text = text.replace(" == ", " split ")
     text = text.replace(" -> ", " split ")
     text = text.replace("reactants", "reactant")
-    print("question after", text)
+    # print("question after", text)
     text = text.split()
     text = [w for w in text if not w.lower() in stop_words]
     filtered_text = []
@@ -63,7 +65,7 @@ def token_and_tag(text):
         else:
             filtered_text.append(stemmer.stem(plural))
     tokens_tag = tagger.tag(filtered_text)
-    print(tokens_tag)
+    # print(tokens_tag)
     return tokens_tag
 
 
@@ -90,6 +92,10 @@ def parsing(pattern, sentence, original_question, index):
     print("Reactants:", reactants)
     print("Products:", products)
 
+    request = LdfRequest(reactants, products)
+    equations = request.get_equations()
+
+    print(equations)
 
     cf = CanvasFrame(bg="blue", height=100, width=100)
     t = Tree.fromstring(str(result))
@@ -110,7 +116,7 @@ def parsing(pattern, sentence, original_question, index):
     # img.save("img.png")
     cf.destroy()
     # print(result)
-    result.draw()
+    # result.draw()
 
 
 numerical_questions = """Find all aromatic hydrocarbons with molecular weight more than 100 
