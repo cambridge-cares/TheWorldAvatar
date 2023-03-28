@@ -108,7 +108,6 @@ public class HeatNetworkInputAgent {
     public static String WaermemengeMHKW="";
     public static String GaspreisKessel="";
     public static String Aussentemperatur="";
-    public static String Waermeeinspeisung="";
     public static String MHKWTempRuecklauf="";
     public static String GasverbrauchGT="";
     public static String GasbezugKessel4="";
@@ -209,7 +208,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "VolumetricFlowRate"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_VFR));
         UpdateRequest HeatingNetwork_ur = HeatingNetwork_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, HeatingNetwork_ur.toString());
-        omHasValueNonTS("VolumetricFlowRate", "CubicMeterPerHour", Value_VolumetricFlowRate);
+        omHasValueNonTS("VolumetricFlowRate", "cubicMeterPerHour", Value_VolumetricFlowRate);
 
 
         // For GridConnection part
@@ -309,9 +308,9 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "CoGenElectricityAmount" + "HeatGeneratorGT"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CoGenElectricityAmount"));
         UpdateRequest GasTurbine_ur = GasTurbine_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, GasTurbine_ur.toString());
-        omHasValueNonTS("ElectricalPower" + "HeatGeneratorGT", "MegaWatt", Value_RatedElectricalPower);
-        omHasValueNonTS("ThermalLoad" + "HeatGeneratorGT", "MegaWatt", Value_MinimumThermalLoad);
-        omHasValueNonTS("IdleTime" + "HeatGeneratorGT", "Hour", Value_MinimumIdleTime);
+        omHasValueNonTS("ElectricalPower" + "HeatGeneratorGT", "megawatt", Value_RatedElectricalPower);
+        omHasValueNonTS("MinThermalLoad" + "HeatGeneratorGT", "megawatt", Value_MinimumThermalLoad);
+        omHasValueNonTS("IdleTime" + "HeatGeneratorGT", "hour-Sidereal", Value_MinimumIdleTime);
 
 
         // For Contract part
@@ -340,12 +339,12 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "CumulativeEnergyCap_2"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_Energy));
         UpdateRequest Contract_ur = Contract_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, Contract_ur.toString());
-        omHasValueNonTS("CumulativeEnergyCap_1", "GigaWattHourPerYear", Value_TierOneCap);
-        omHasValueNonTS("CumulativeEnergyCap_2", "GigaWattHourPerYear", Value_TierTwoCap);
-        omHasValueNonTS("UnitPrice_1", "EuroPerMegaWattHour", Value_TierOneUnitPrice);
-        omHasValueNonTS("UnitPrice_2", "EuroPerMegaWattHour", Value_TierTwoUnitPrice);
-        omHasValueNonTS("MinPurchase" + "IncinerationPlant", "MegaWattHourPerYear", Value_MinPurchase);
-        omHasValueNonTS("MaxPurchase" + "IncinerationPlant", "MegaWattHourPerYear", Value_MaxPurchase);
+        omHasValueNonTS("CumulativeEnergyCap_1", "megawattHour", Value_TierOneCap);
+        omHasValueNonTS("CumulativeEnergyCap_2", "megawattHour", Value_TierTwoCap);
+        omHasValueNonTS("UnitPrice_1", "euroPerMegawattHour", Value_TierOneUnitPrice);
+        omHasValueNonTS("UnitPrice_2", "euroPerMegawattHour", Value_TierTwoUnitPrice);
+        omHasValueNonTS("MinPurchase" + "IncinerationPlant", "megawattHour", Value_MinPurchase);
+        omHasValueNonTS("MaxPurchase" + "IncinerationPlant", "megawattHour", Value_MaxPurchase);
 
 
         // For the UnitRate part
@@ -380,7 +379,6 @@ public class HeatNetworkInputAgent {
         		WaermemengeMHKW=mapping.getIRI("WaermemengeMHKW");		
         		GaspreisKessel=mapping.getIRI("GaspreisKessel");	
         		Aussentemperatur=mapping.getIRI("Aussentemperatur");			
-        		Waermeeinspeisung=mapping.getIRI("Waermeeinspeisung");			
         		MHKWTempRuecklauf=mapping.getIRI("MHKWTempRuecklauf");
         		GasverbrauchGT=mapping.getIRI("GasverbrauchGT");
         		GasbezugKessel4=mapping.getIRI("GasbezugKessel4");
@@ -430,7 +428,6 @@ public class HeatNetworkInputAgent {
         		.addInsert(NodeFactory.createURI(KB + "ProvidedHeatAmount"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(WaermemengeMHKW))
         		.addInsert(NodeFactory.createURI(KB + "GasUnitCostKessel"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(GaspreisKessel))
         		.addInsert(NodeFactory.createURI(KB + "AirTemperature"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(Aussentemperatur))
-        		.addInsert(NodeFactory.createURI(KB + "SumofEnergy"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(Waermeeinspeisung))
         		.addInsert(NodeFactory.createURI(KB + "UPEfW" + "Temperature"), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(MHKWTempRuecklauf))
         		.addInsert(NodeFactory.createURI(KB + "EnergyInTimeIntervalGA" + "HeatGeneratorGT"),NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(GasverbrauchGT))
                 .addInsert(NodeFactory.createURI(KB + "EnergyInTimeIntervalGA" + "HeatGeneratorBoil4"),NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(GasbezugKessel4))
@@ -477,45 +474,44 @@ public class HeatNetworkInputAgent {
         AccessAgentCaller.updateStore(sparqlendpoint, TSIRI_ur.toString());
         
         
-        omHasValueTS("MegaWattHour", WaermeleistungKessel4);
-        omHasValueTS("MegaWattHour", WaermeleistungKessel5);
-        omHasValueTS("MegaWattHour", WaermeleistungKessel6);
-        omHasValueTS("EuroPerTon", CO2Preis);
-        omHasValueTS("MegaWattHour", GTWaermeleistung);
-        omHasValueTS("EuroPerMegaWattHour", GaspreisGT);
-        omHasValueTS("MegaWattHour",WaermemengeInnenstadt);
-        omHasValueTS("DegreeCelsius", TempRuecklauf);
-        omHasValueTS("DegreeCelsius", MHKWTempVorlauf);
-        omHasValueTS("DegreeCelsius", TempVorlauf);
-        omHasValueTS("EuroPerMegaWattHour", Spotpreis);
-        omHasValueTS("MegaWattHour", WaermemengeMHKW);
-        omHasValueTS("EuroPerMegaWattHour", GaspreisKessel); 
-        omHasValueTS("DegreeCelsius", Aussentemperatur);
-        omHasValueTS("MegaWatt", Waermeeinspeisung);
-        omHasValueTS("DegreeCelsius", MHKWTempRuecklauf);    
-        omHasValueTS("MegaWattHour", GasverbrauchGT); 
-        omHasValueTS("MegaWattHour", GasbezugKessel4);   
-        omHasValueTS("MegaWattHour", GasbezugKessel5);   
-        omHasValueTS("MegaWattHour", GasbezugKessel6);   
-        omHasValueTS("MegaWattHour", CHPBonus);
-        omHasValueTS("MegaWattHour", Gridcharges);
-        omHasValueTS("MegaWattHour", HourlyLabourCostBoiler);
-        omHasValueTS("MegaWattHour", HourlyLabourCostGT);
-        omHasValueTS("MegaWattHour", HourlyWearCostBoiler);
-        omHasValueTS("MegaWattHour", HourlyWearCostGT);
-        omHasValueTS("MegaWattHour", DemandDrivenWearCostBoiler);
-        omHasValueTS("MegaWattHour", DemandDrivenWearCostGT);
-        omHasValueTS("MegaWattHour", PressureRuecklauf);
-        omHasValueTS("MegaWattHour", MHKWPressureV);
-        omHasValueTS("MegaWattHour", PressureVorlauf);
-        omHasValueTS("MegaWattHour", MHKWPressureRuecklauf);
-        omHasValueTS("MegaWattHour", MinHourlySupply);
-        omHasValueTS("MegaWattHour", MaxHourlySupply);
-        omHasValueTS("MegaWattHour", GTWirkleistung);
-        omHasValueTS("HourSidereal", GTActive); 
-        omHasValueTS("HourSidereal", Kessel4Active);
-        omHasValueTS("HourSidereal", Kessel5Active);
-        omHasValueTS("HourSidereal", Kessel6Active);	
+        omHasValueTS("megawattHour", WaermeleistungKessel4);
+        omHasValueTS("megawattHour", WaermeleistungKessel5);
+        omHasValueTS("megawattHour", WaermeleistungKessel6);
+        omHasValueTS("euroPerTonne", CO2Preis);
+        omHasValueTS("megawattHour", GTWaermeleistung);
+        omHasValueTS("euroPerMegawattHour", GaspreisGT);
+        omHasValueTS("megawattHour",WaermemengeInnenstadt);
+        omHasValueTS("degreeCelsius", TempRuecklauf);
+        omHasValueTS("degreeCelsius", MHKWTempVorlauf);
+        omHasValueTS("degreeCelsius", TempVorlauf);
+        omHasValueTS("euroPerMegawattHour", Spotpreis);
+        omHasValueTS("megawattHour", WaermemengeMHKW);
+        omHasValueTS("euroPerMegawattHour", GaspreisKessel); 
+        omHasValueTS("degreeCelsius", Aussentemperatur);
+        omHasValueTS("degreeCelsius", MHKWTempRuecklauf);    
+        omHasValueTS("megawattHour", GasverbrauchGT); 
+        omHasValueTS("megawattHour", GasbezugKessel4);   
+        omHasValueTS("megawattHour", GasbezugKessel5);   
+        omHasValueTS("megawattHour", GasbezugKessel6);   
+        omHasValueTS("euroPerMegawattHour", CHPBonus);
+        omHasValueTS("euroPerMegawattHour", Gridcharges);
+        omHasValueTS("euroPerHour", HourlyLabourCostBoiler);
+        omHasValueTS("euroPerHour", HourlyLabourCostGT);
+        omHasValueTS("euroPerHour", HourlyWearCostBoiler);
+        omHasValueTS("euroPerHour", HourlyWearCostGT);
+        omHasValueTS("euroPerMegawattHour", DemandDrivenWearCostBoiler);
+        omHasValueTS("euroPerMegawattHour", DemandDrivenWearCostGT);
+        omHasValueTS("bar", PressureRuecklauf);
+        omHasValueTS("bar", MHKWPressureV);
+        omHasValueTS("bar", PressureVorlauf);
+        omHasValueTS("bar", MHKWPressureRuecklauf);
+        omHasValueTS("megawatt", MinHourlySupply);
+        omHasValueTS("megawatt", MaxHourlySupply);
+        omHasValueTS("megawattHour", GTWirkleistung);
+        omHasValueTS("hour-Sidereal", GTActive); 
+        omHasValueTS("hour-Sidereal", Kessel4Active);
+        omHasValueTS("hour-Sidereal", Kessel5Active);
+        omHasValueTS("hour-Sidereal", Kessel6Active);	
         
         
         // For the CalendarEffect part
@@ -556,10 +552,10 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "NaturalGasCO2Factor"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OHN + "CO2Factor"));
         UpdateRequest HeatGenerator_instance_ur = HeatGenerator_instance_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, HeatGenerator_instance_ur.toString());
-        omHasValueNonTS("ThermalLoad" + HeatGenerator_instance, "MegaWatt", Value_ThermalLoad);
-        omHasValueNonTS("HigherCalorificValue", "KiloWattHourPerCubicMeter", Value_HCV);
-        omHasValueNonTS("LowerCalorificValue", "KiloWattHourPerCubicMeter", Value_LCV);
-        omHasValueNonTS("NaturalGasCO2Factor", "TonPerMegaWattHour", Value_CO2Factor);
+        omHasValueNonTS("ThermalLoad" + HeatGenerator_instance, "megawatt", Value_ThermalLoad);
+        omHasValueNonTS("HigherCalorificValue", "kilowattHourPerCubicMetre", Value_HCV);
+        omHasValueNonTS("LowerCalorificValue", "kilowattHourPerCubicMetre", Value_LCV);
+        omHasValueNonTS("NaturalGasCO2Factor", "tonnePerMegawattHour", Value_CO2Factor);
     }
 
 
@@ -569,7 +565,7 @@ public class HeatNetworkInputAgent {
                 new UpdateBuilder()
                         .addInsert(NodeFactory.createURI(KB + Instance), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(KB + "Measure" + Instance))
                         .addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_MEASURE))
-                        .addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(OM_HAS_UNIT), NodeFactory.createURI(KB + Unit))
+                        .addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(OM_HAS_UNIT), NodeFactory.createURI(OM + Unit))
     //                  .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_UNIT))
                         .addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(OM_Has_NUMERICAL_VALUE), NumericalValue);
         UpdateRequest omHasValueNonTS_ur = omHasValueNonTS_ub.buildRequest();
@@ -582,7 +578,7 @@ public class HeatNetworkInputAgent {
         UpdateBuilder omHasValueTS_ub =
                 new UpdateBuilder()
                         .addInsert(NodeFactory.createURI(TSIRI), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_MEASURE))
-                        .addInsert(NodeFactory.createURI(TSIRI), NodeFactory.createURI(OM_HAS_UNIT), NodeFactory.createURI(KB + Unit));
+                        .addInsert(NodeFactory.createURI(TSIRI), NodeFactory.createURI(OM_HAS_UNIT), NodeFactory.createURI(OM + Unit));
     //                    .addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_UNIT))
         UpdateRequest omHasValueTS_ur = omHasValueTS_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, omHasValueTS_ur.toString());
