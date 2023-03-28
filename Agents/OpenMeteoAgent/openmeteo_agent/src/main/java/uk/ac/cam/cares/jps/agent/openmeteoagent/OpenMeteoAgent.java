@@ -73,10 +73,12 @@ public class OpenMeteoAgent extends JPSAgent {
     private static final String API_PARAMETER_WINDDIRECTION = "winddirection_10m";
     private static final String ONTOEMS_WINDDIRECTION = "WindDirection";
     private static final String API_WINDSPEED_UNIT = "windspeed_unit=ms";
+    private static final String API_ELEVATION = "elevation";
 
     private String ontoemsURI;
     private String omURI;
     private String rdfURI;
+    private String geospatialLiterals;
     private static final String STATION = "ReportingStation";
     private static final String OM_C = "om:degreeCelsius";
     private static final String OM_PA = "om:pascal";
@@ -92,6 +94,7 @@ public class OpenMeteoAgent extends JPSAgent {
     private Map<String, TimeSeriesClient.Type> api_timeseries = new HashMap<>();
     private Double latitude;
     private Double longitude;
+    private Double elevation;
     private RemoteRDBStoreClient rdbStoreClient;
     private RemoteStoreClient storeClient;
     private TimeSeriesClient tsClient;
@@ -121,10 +124,12 @@ public class OpenMeteoAgent extends JPSAgent {
             JSONObject weatherData = response.getJSONObject(API_HOURLY);
             JSONObject weatherUnit = response.getJSONObject(API_HOURLY_UNITS);
 
+            elevation = response.getDouble(API_ELEVATION);
+
             List<LocalDateTime> timesList = getTimesList(weatherData, API_TIME);
             Map<String, List<Object>> parsedData = parseWeatherData(weatherData, weatherUnit);
 
-            String stationIRI = createStation(latitude, longitude);
+            String stationIRI = createStation(latitude, longitude, elevation);
 
             WhereBuilder wb = new WhereBuilder()
                     .addPrefix("ontoems", ontoemsURI)
@@ -196,11 +201,12 @@ public class OpenMeteoAgent extends JPSAgent {
     /**
      * Gets variables from config.properties
      */
-    private void readConfig(){
+    private void readConfig() {
         ResourceBundle config = ResourceBundle.getBundle("config");
         ontoemsURI = config.getString("uri.ontology.ontoems");
         omURI = config.getString("uri.ontology.om");
         rdfURI = config.getString("uri.ontology.rdf");
+        geospatialLiterals = config.getString("uri.geospatial.literals");
         route = config.getString("route.uri");
         rdbStoreClient = new RemoteRDBStoreClient(config.getString("db.url"), config.getString("db.user"), config.getString("db.password"));
     }
@@ -250,7 +256,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param date The date as a string
      * @return Validity of the format of date
      */
-    public boolean validateDate(String date){
+    public boolean validateDate(String date) {
         try {
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             Date dateCheck = df.parse(date);
@@ -305,7 +311,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param weatherUnit JSONObject containing the units of the weather data retrieved by the API
      * @return a Map object with the key being the API weather parameters, and the values being the corresponding units ontology and the corresponding data parsed to a list
      */
-    public  Map<String, List<Object>> parseWeatherData(JSONObject weatherData, JSONObject weatherUnit){
+    public  Map<String, List<Object>> parseWeatherData(JSONObject weatherData, JSONObject weatherUnit) {
         Map<String, List<Object>> data = new HashMap<>();
         List<Object> temp;
         JSONArray tempJSONArray;
@@ -327,7 +333,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param unit unit text string
      * @return unit ontology concept name
      */
-    public String getUnitOntology(String unit){
+    public String getUnitOntology(String unit) {
         if (unit.contains("°C")){return OM_C;}
         if (unit.contains("°")){return OM_DEGREE;}
 
@@ -351,10 +357,29 @@ public class OpenMeteoAgent extends JPSAgent {
      * Creates OntoEMS:ReportingStation instance with location being lat, lon
      * @param lat latitude of OntoEMS:ReportingStation instance
      * @param lon longitude of OntoEMS:ReportingStation instance
+     * @param ele observation elevation of OntoEMS:ReportingStation instance
      * @return OntoEMS:ReportingStation instance IRI
      */
-    public String createStation(double lat, double lon){
+    public String createStation(double lat, double lon, double ele) {
         String stationIRI = ontoemsURI + STATION + "_" + UUID.randomUUID();
+
+        String coordinate = lat + "placeHolder" + lon;
+
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("ontoems", ontoemsURI)
+                .addPrefix("rdf", rdfURI);
+
+        wb.addWhere(NodeFactory.createURI(stationIRI), "rdf:type", "ontoems:ReportingStation")
+                .addWhere(NodeFactory.createURI(stationIRI), "ontoems:hasObservationLocation", coordinate)
+                .addWhere(NodeFactory.createURI(stationIRI), "ontoems:hasObservationElevation",  ele);
+
+        UpdateBuilder ub = new UpdateBuilder()
+                .addInsert(wb);
+
+        String queryString = ub.buildRequest().toString().replace("placeHolder", "#");
+        queryString = queryString.replace(lon + "\"", lon + "\"^^<" + geospatialLiterals + ">");
+
+        this.updateStore(route, queryString);
 
         return stationIRI;
     }
@@ -368,7 +393,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param measure measure iri
      * @param unit unit of quantity
      */
-    public void createUpdate(WhereBuilder builder, String station, String quantity, String type, String measure, String unit){
+    public void createUpdate(WhereBuilder builder, String station, String quantity, String type, String measure, String unit) {
         builder.addWhere(NodeFactory.createURI(station),  "ontoems:reports", NodeFactory.createURI(quantity))
                 .addWhere(NodeFactory.createURI(quantity), "rdf:type", type)
                 .addWhere(NodeFactory.createURI(quantity), "om:hasValue", NodeFactory.createURI(measure))
@@ -385,7 +410,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param durations numeric duration of the averaging period for time series of TimeSeriesClient.Type.AVERAGE
      * @param units temporal unit of the averaging period for time series of TimeSeriesClient.Type.AVERAGE
      */
-    private void createTimeSeries(List<List<String>> dataIRI, List<List<Class<?>>> dataClass, List<String> timeUnit, List<TimeSeriesClient.Type> type, List<Duration> durations, List<ChronoUnit> units){
+    private void createTimeSeries(List<List<String>> dataIRI, List<List<Class<?>>> dataClass, List<String> timeUnit, List<TimeSeriesClient.Type> type, List<Duration> durations, List<ChronoUnit> units) {
         tsClient = new TimeSeriesClient<>(storeClient, LocalDateTime.class);
 
         try(Connection conn = rdbStoreClient.getConnection()){
@@ -400,7 +425,7 @@ public class OpenMeteoAgent extends JPSAgent {
     /**
      * Sets the time series types for each of the weather parameter
      */
-    private void setTimeSeriesTypes(){
+    private void setTimeSeriesTypes() {
         api_timeseries.put(API_PARAMETER_TEMP, TimeSeriesClient.Type.INSTANTANEOUS);
         api_timeseries.put(API_PARAMETER_HUMIDITY, TimeSeriesClient.Type.INSTANTANEOUS);
         api_timeseries.put(API_PARAMETER_DEWPOINT, TimeSeriesClient.Type.INSTANTANEOUS);
@@ -418,7 +443,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * Sets store client to the query and update endpoint of route
      * @param route access agent route
      */
-    private void setStoreClient(String route){
+    private void setStoreClient(String route) {
         JSONObject queryResult = this.getEndpoints(route);
 
         String queryEndpoint = queryResult.getString(JPSConstants.QUERY_ENDPOINT);
@@ -436,7 +461,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * Check if the agent is running in Docker
      * @return true if running in Docker, false otherwise
      */
-    private boolean isDockerized(){
+    private boolean isDockerized() {
         File f = new File("/.dockerenv");
         return f.exists();
     }
@@ -447,7 +472,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param key key to getting the times
      * @return the times parsed into a list of LocalDateTime
      */
-    private List<LocalDateTime> getTimesList(JSONObject data, String key){
+    private List<LocalDateTime> getTimesList(JSONObject data, String key) {
         JSONArray array = data.getJSONArray(key);
         List<LocalDateTime> timesList = new ArrayList<>();
 
