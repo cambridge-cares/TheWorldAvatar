@@ -3,9 +3,25 @@
     "Name": "bms-query-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "bms-query-agent:1.0.0-SANPSHOT",
-        "ENV": [
+        "Image": "docker.io/library/bms-query-agent:1.0.0-SNAPSHOT",
+        "Env": [
           "CLIENT_PROPERTIES=/root/client.properties"
+        ],
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          },
+          {
+            "ConfigName": "ontop"
+          },
+          {
+            "ConfigName": "postgis"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "postgis_password"
+          }
         ]
       }
     }
