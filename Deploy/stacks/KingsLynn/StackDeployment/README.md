@@ -252,9 +252,9 @@ Content-Type: application/json
 }
 ```
 
-After the Building instances are matched, step 4) from the EPC Agent can be performed.
+After the Building instances are matched, step 3.4) from the EPC Agent can be performed.
 
-- A KG export of successfully instantiated and linked EPC data is provided in `../../Data/99 KG snapshots/5_epc_data_after_matching` (i.e. this also includes step 4 from the EPC agent)
+- A KG export of successfully instantiated and linked EPC data is provided in `../../Data/99 KG snapshots/5_epc_data_after_matching` (i.e. this also includes step 3.5 from the EPC agent)
 
 ## 2.3) Property Sales Instantiation Agent
 
