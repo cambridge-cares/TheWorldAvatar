@@ -10,7 +10,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobms/">
         <owl:imports rdf:resource="https://saref.etsi.org/saref4bldg/"/>
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">27 March 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">28 March 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoBMS is an ontology for Building Management Systems.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -48,8 +48,14 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobms/extractsAirFrom">
         <rdfs:domain rdf:resource="https://saref.etsi.org/core/HVAC"/>
-        <rdfs:range rdf:resource="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
-        <rdfs:range rdf:resource="https://saref.etsi.org/saref4bldg/FlowTreatmentDevice"/>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
+                    <rdf:Description rdf:about="https://saref.etsi.org/saref4bldg/FlowTreatmentDevice"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that describes a HVAC device removing air from a flow moving device or a flow treatment device.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">extracts air from</rdfs:label>
