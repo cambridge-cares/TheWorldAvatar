@@ -691,9 +691,7 @@ public class Buildings {
 
         try {
             Process process = Runtime.getRuntime().exec(new String[]{EnvConfig.AERMAP_EXE, "aermap.inp"}, null, aermapDirectory.toFile());
-            if (process.waitFor() != 0) {
-                return 1;
-            }
+             
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
             BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
@@ -710,6 +708,11 @@ public class Buildings {
             while ((s = stdError.readLine()) != null) {
                 LOGGER.info(s);
             }
+
+            if (process.waitFor() != 0) {
+                return 1;
+            }
+            
         } catch (IOException e) {
             LOGGER.error("Error executing aermap");
             LOGGER.error(e.getMessage());
