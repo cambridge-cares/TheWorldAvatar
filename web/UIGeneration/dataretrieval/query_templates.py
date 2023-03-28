@@ -236,3 +236,24 @@ def get_unit_query(ontological_class: str) -> str:
     ''' % ontological_class
     return query
 
+def get_label_query(ontological_element: str) -> str:
+    """
+    Generates a SPARQL query to retrieve the label of an
+    ontological class or property.
+
+    Parameters:
+    ontological_element (str): The IRI of the ontological class or property.
+
+    Returns:
+    str: A SPARQL query to retrieve the label linked to the ontological class
+    of property via the rdfs:label property.
+    """
+    query = '''
+    PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+
+    SELECT ?label
+    WHERE {
+        %s rdfs:label ?label .
+    }
+    ''' % ontological_element
+    return query

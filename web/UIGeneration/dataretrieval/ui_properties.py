@@ -19,13 +19,13 @@
 from SPARQLWrapper import SPARQLWrapper, JSON, POST, BASIC
 import requests, json as js
 import os
-from query_templates import get_property_query, get_subclass_query, get_instance_query, get_unit_query
+from query_templates import get_property_query, get_subclass_query, get_instance_query, get_unit_query, get_label_query
 from json_templates import get_json_object, get_json_object_with_enum, get_json_object_with_properties
 
 OWL_DATATYPE_PROPERTY = "http://www.w3.org/2002/07/owl#DatatypeProperty"
 OWL_OBJECT_PROPERTY = "http://www.w3.org/2002/07/owl#ObjectProperty"
 
-COMO_ENDPOINT = ""
+ENDPOINT = ""
 
 data = {}
 
@@ -95,6 +95,26 @@ def get_ontologically_encoded_unit(endpoint: str, ontological_class: str):
     
     results = perform_query(endpoint, get_unit_query(ontological_class))
     return results
+
+def get_ontological_label(endpoint: str, ontological_element: str):
+    """
+    Retrieves the label of an ontological class or property.
+
+    Parameters:
+    endpoint (str): The endpoint of a triple store expressed as a URL.
+    ontological_element (str): The IRI of the ontological class or property.
+
+    Returns:
+    str: The label of the ontological class or property.
+    """
+    
+    results = perform_query(endpoint, get_label_query(ontological_element))
+    print(results)
+    label = ""
+    for result in results["results"]["bindings"]:
+        label = result['label']['value']
+
+    return label
 
 
 def perform_query(endpoint: str, query: str):
@@ -224,13 +244,13 @@ def traverse_through_object_property(results, property_value_processed, property
                 property_value_processed.append(label.lower().replace(" ", "_"))
                 if type == OWL_OBJECT_PROPERTY:
                     if "<"+range+">" not in parsed_classes:
-                        results = get_ontological_properties(COMO_ENDPOINT, "<"+range+">")
+                        results = get_ontological_properties(ENDPOINT, "<"+range+">")
                         if is_property_result_empty(results):
-                            results = get_ontological_subclasses(COMO_ENDPOINT, "<"+range+">")
+                            results = get_ontological_subclasses(ENDPOINT, "<"+range+">")
                             if is_property_result_empty(results):
-                                results = get_ontological_instances(COMO_ENDPOINT, "<"+range+">")
+                                results = get_ontological_instances(ENDPOINT, "<"+range+">")
                                 if is_property_result_empty(results):
-                                   results = get_ontologically_encoded_unit(COMO_ENDPOINT, "<"+range+">") 
+                                   results = get_ontologically_encoded_unit(ENDPOINT, "<"+range+">") 
                                    if is_unit_result_empty(results):
                                         continue
                                 else:
@@ -247,18 +267,37 @@ def traverse_through_object_property(results, property_value_processed, property
                             traverse_through_object_property(results, property_value_processed, property_values_formated, json_string, parsed_classes, label)
     return json_string
 
-def generate_json_string():
-    try:
-         global COMO_ENDPOINT
-         COMO_ENDPOINT = os.environ.get('COMO_ENDPOINT')
-    except KeyError:
-        print("Error: COMO_ENDPOINT environment variable is not set.")
+def generate_identification_properties(endpoint_name:str, query_classes):
+    """
+    Retrieves all datatype properties and object properties directly
+    connected to the ontological class.
+
+    Parameters:
+    endpoint (str): The endpoint of a triple store expressed as a URL.
+    ontological_class (str): The IRI of the ontological class.
+
+    Returns:
+    str: The IRI, label, position and type of properties modelled as
+    classes.
+
+        endpoint_name = "COMO_ENDPOINT"
     product = "<http://www.theworldavatar.com/kg/ontomatpassport#Product>"
     component = "<http://www.theworldavatar.com/kg/ontomatpassport#Component>"
-    root_classes = []
-    root_classes.append(product)
-    root_classes.append(component)
-    results = get_ontological_properties(COMO_ENDPOINT, root_classes[0])
+    query_classes = []
+    query_classes.append(product)
+    query_classes.append(component)
+
+    """
+    if endpoint_name != None or endpoint_name != "":
+        set_endpoint(endpoint_name)
+    else:
+        print("Endpoint name is None or empty. Provide a valid endpoint name.")
+        return
+    
+    if query_classes == None or len(query_classes) < 1:
+        print("Query classes list is None or empty. Provide a list of one or more class IRIs.")
+        return
+    results = get_ontological_properties(ENDPOINT, query_classes[0])
     property_values_formated = format_property_values(results)
     # formats enum values
 
@@ -266,16 +305,41 @@ def generate_json_string():
     json_string = []
     label = "Type"
     range_label = "string"
-    enumerated_list_provided = "Product" + ", " + "Component"
+    
+    enumerated_list_provided = ""
 
+    for item in query_classes:
+        name = get_ontological_label(ENDPOINT, item)
+        if name != None or label != "":
+            if enumerated_list_provided == "":
+                enumerated_list_provided = name
+            else:
+                enumerated_list_provided = enumerated_list_provided + ", " + name
+    
     json_string.append((label.lower().replace(" ", "_"), get_json_object_with_enum(label, "TODO", range_label, format_enumerated_list(enumerated_list_provided))))
 
-    parsed_classes = root_classes
+    parsed_classes = query_classes
     json_string = traverse_through_object_property(results, property_value_processed, property_values_formated, json_string, parsed_classes)
     json_string = combined_json_dict = dict(json_string)
     return js.dumps(combined_json_dict).replace("[\"\\", "[").replace("\\\"","\"").replace("\"]","]")
 
 
-if __name__== '__main__':
+def set_endpoint(endpoint_name:str):
+    try:
+         global ENDPOINT
+         ENDPOINT = os.environ.get(endpoint_name)
+    except KeyError:
+        print("Error: ", endpoint_name, " environment variable is not set.")
 
-    print(generate_json_string())
+if __name__== '__main__':
+    endpoint_name = "COMO_ENDPOINT"
+    query_classes = []
+    class_1 = "<http://www.theworldavatar.com/kg/ontomatpassport#Product>"
+    query_classes.append(class_1)
+    class_2 = "<http://www.theworldavatar.com/kg/ontomatpassport#Component>"
+    query_classes.append(class_2)
+
+    # class_1 = "<https://w3id.org/mdo/core/PhysicalProperty>"
+    # query_classes.append(class_1)
+
+    print(generate_identification_properties(endpoint_name, query_classes))
