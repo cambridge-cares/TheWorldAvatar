@@ -20,25 +20,18 @@
                     "id": "obe_buildings",  
                     "type": "vector",
                     "tiles": [
-                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=buildings:buildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:buildings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
-                    "id": "test_buildings",  
+                    "id": "building_sales",  
                     "type": "vector",
                     "tiles": [
-                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=test:test&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:transactions&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                     ]
                 },
                 {
-                    "id": "test_building_sales",  
-                    "type": "vector",
-                    "tiles": [
-                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=test:building_sales&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
-                    ]
-                },
-                {
-                    "id": "test_building_values",  
+                    "id": "building_values",  
                     "type": "vector",
                     "tiles": [
                         "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:marketvalues&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
@@ -47,43 +40,13 @@
             ], 
             "layers": [
                 {
-                    "id": "test_buildings-layer-sales",
-                    "name": "Test Buildings (prices)",
-                    "source": "test_building_sales",
-                    "source-layer": "building_sales",
-                    "type": "fill-extrusion",
-                    "minzoom": 8, 
-                    "order": 5,
-                    "layout": {
-                        "visibility": "visible"
-                    },
-                    "paint": {
-                        "fill-extrusion-color": [
-                            "case", 
-                            ["==", ["get", "price"], null], "#000000", [
-                            "interpolate", ["linear"],
-                            ["number", ["get", "price"]],
-                            100000, "#3887BE",
-                            1100000, "#DB1F1F"
-                        ]],
-                        "fill-extrusion-opacity": 0.8,
-                        "fill-extrusion-base": 0,
-                        "fill-extrusion-height": [
-                            "case",
-                            ["has", "building height"],
-                            ["*", 1.4, ["to-number", ["get", "building height"]]],
-                            8
-                        ]
-                    }
-                },
-                {
-                    "id": "test_buildings-layer-value",
-                    "name": "Test Buildings (values)",
-                    "source": "test_building_values",
+                    "id": "buildings-layer-value",
+                    "name": "Property Value Estimates",
+                    "source": "building_values",
                     "source-layer": "marketvalues",
                     "type": "fill-extrusion",
                     "minzoom": 8, 
-                    "order": 5.5,
+                    "order": 23,
                     "layout": {
                         "visibility": "visible"
                     },
@@ -107,21 +70,33 @@
                     }
                 },
                 {
-                    "id": "aoi-layer",
-                    "name": "This layer is the area of interest, i.e. greater King's Lynn area", 
-                    "source": "area-of-interest",
-                    "type": "circle",
-                    "treeable": false,
-                    "maxzoom": 10,
-                    "order": 0,
+                    "id": "buildings-layer-sales",
+                    "name": "Actual Property Sales",
+                    "source": "building_sales",
+                    "source-layer": "transactions",
+                    "type": "fill-extrusion",
+                    "minzoom": 8, 
+                    "order": 22,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
-                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 25, 8, 100],
-                        "circle-opacity": 0.15,
-                        "circle-color": "#000000",
-                        "circle-stroke-width": 0
+                        "fill-extrusion-color": [
+                            "case", 
+                            ["==", ["get", "price"], null], "#000000", [
+                            "interpolate", ["linear"],
+                            ["number", ["get", "price"]],
+                            100000, "#3887BE",
+                            1100000, "#DB1F1F"
+                        ]],
+                        "fill-extrusion-opacity": 0.8,
+                        "fill-extrusion-base": 0,
+                        "fill-extrusion-height": [
+                            "case",
+                            ["has", "building height"],
+                            ["*", 1.4, ["to-number", ["get", "building height"]]],
+                            8
+                        ]
                     }
                 },
                 {
@@ -131,7 +106,7 @@
                     "source-layer": "buildings",
                     "type": "fill-extrusion",
                     "minzoom": 8, 
-                    "order": 5,
+                    "order": 21,
                     "layout": {
                         "visibility": "visible"
                     },
@@ -157,42 +132,12 @@
                     }
                 },
                 {
-                    "id": "obe_buildings-layer-value",
-                    "name": "Buildings with value estimations",
-                    "source": "obe_buildings",
-                    "source-layer": "buildings",
-                    "type": "fill-extrusion",
-                    "minzoom": 8, 
-                    "order": 5,
-                    "layout": {
-                        "visibility": "none"
-                    },
-                    "paint": {
-                        "fill-extrusion-color": [
-                            "case", 
-                            ["==", ["get", "value estimation"], null], "#000000", [
-                            "interpolate", ["linear"],
-                            ["number", ["get", "value estimation"]],
-                            100000, "#3887BE",
-                            1100000, "#DB1F1F"
-                        ]],
-                        "fill-extrusion-opacity": 0.8,
-                        "fill-extrusion-base": 0,
-                        "fill-extrusion-height": [
-                            "case",
-                            ["has", "building height"],
-                            ["*", 1.4, ["to-number", ["get", "building height"]]],
-                            8
-                        ]
-                    }
-                },
-                {
                     "id": "ocgml_buildings-layer",
                     "name": "OS BHA Buildings (i.e. buildings without EPC information)",
                     "source": "ocgml_buildings",
                     "type": "fill-extrusion",
                     "minzoom": 8, 
-                    "order": 4,
+                    "order": 20,
                     "layout": {
                         "visibility": "none"
                     },
@@ -206,6 +151,24 @@
                             ["to-number", ["get", "fill-extrusion-height"]],
                             8
                         ]
+                    }
+                },
+                {
+                    "id": "aoi-layer",
+                    "name": "This layer is the area of interest, i.e. greater King's Lynn area", 
+                    "source": "area-of-interest",
+                    "type": "circle",
+                    "treeable": false,
+                    "maxzoom": 10,
+                    "order": 0,
+                    "layout": {
+                        "visibility": "visible"
+                    },
+                    "paint": {
+                        "circle-radius": ["interpolate", ["linear"], ["zoom"], 4, 25, 8, 100],
+                        "circle-opacity": 0.15,
+                        "circle-color": "#000000",
+                        "circle-stroke-width": 0
                     }
                 }
             ]
@@ -239,7 +202,7 @@
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
                     "minzoom": 8,
-                    "order": 6,
+                    "order": 31,
                     "layout": {
                         "visibility": "visible",
                         "icon-image": [
@@ -282,7 +245,7 @@
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
                     "minzoom": 8,
-                    "order": 7,
+                    "order": 30,
                     "layout": {
                         "visibility": "visible",
                         "icon-image": [
@@ -349,7 +312,7 @@
                     "source": "floodwarnings_active",
                     "source-layer": "floodwarnings",
                     "type": "fill",
-                    "order": 3,
+                    "order": 11,
                     "layout": {
                         "visibility": "visible"
                     },
@@ -374,7 +337,7 @@
                     "source": "floodwarnings_inactive",
                     "source-layer": "floodwarnings",
                     "type": "fill",
-                    "order": 2,
+                    "order": 10,
                     "layout": {
                         "visibility": "none"
                     },
