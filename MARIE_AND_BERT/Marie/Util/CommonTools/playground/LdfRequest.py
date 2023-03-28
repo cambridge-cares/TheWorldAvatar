@@ -1,7 +1,6 @@
 import requests
 import json
 
-# define the base URL and parameters
 class LdfRequest:
 
     def __init__(self, reactants, products):    
