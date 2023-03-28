@@ -238,36 +238,20 @@ public class Buildings {
     public void getProperties() {
 
         // Populate a list of chemical plant items (StackIRIString) for which geometric properties will be queried
-        // from OCGML using two different methods. Also determine the pollutant emissions rate in tons/yr for each plant item.
+        // from OCGML. Also determine the pollutant emissions rate in tons/yr for each plant item.
 
         // Query Individual CO2 Emissions of plant items
-        // JSONArray StackIRIQueryResult = QueryClient.StackQuery(StackQueryIRI);
-        // List<String> StackIRIString = IntStream
-        //         .range(0,StackIRIQueryResult.length())
-        //         .mapToObj(i -> StackIRIQueryResult.getJSONObject(i).getString("IRI"))
-        //         .collect(Collectors.toList());
+        JSONArray StackIRIQueryResult = QueryClient.StackQuery(StackQueryIRI);
+        List<String> StackIRIString = IntStream
+                .range(0,StackIRIQueryResult.length())
+                .mapToObj(i -> StackIRIQueryResult.getJSONObject(i).getString("IRI"))
+                .collect(Collectors.toList());
 
-        // List<String> emissionsOfEveryStack = IntStream
-        //         .range(0,StackIRIQueryResult.length())
-        //         .mapToObj(i -> StackIRIQueryResult.getJSONObject(i).getDouble("emission"))
-        //         .collect(Collectors.toList());
+        List<Double> emissionsOfEveryStack = IntStream
+                .range(0,StackIRIQueryResult.length())
+                .mapToObj(i -> StackIRIQueryResult.getJSONObject(i).getDouble("emission"))
+                .collect(Collectors.toList());
 
-        // Query Plant CO2 Emissions
-        JSONArray StackIRIQueryResult = QueryClient.PlantsQuery(StackQueryIRI);
-        String plantIRIPrev = StackIRIQueryResult.getJSONObject(0).getString("chemPlant");
-        List<String> StackIRIString = new ArrayList<>();
-        StackIRIString.add(StackIRIQueryResult.getJSONObject(0).getString("IRI")) ;
-        List<Double> emissionsOfEveryStack = new ArrayList<>();
-        emissionsOfEveryStack.add(StackIRIQueryResult.getJSONObject(0).getDouble("emission"));
-
-        for (int i = 0; i < StackIRIQueryResult.length(); i++) {
-            String plantIRI = StackIRIQueryResult.getJSONObject(i).getString("chemPlant");
-            if (!plantIRI.equals(plantIRIPrev)) {
-                StackIRIString.add(StackIRIQueryResult.getJSONObject(i).getString("IRI"));
-                emissionsOfEveryStack.add(StackIRIQueryResult.getJSONObject(i).getDouble("emission"));
-            }
-            plantIRIPrev = plantIRI; 
-        }
 
         // StackIRIString and emissionsOfEveryStack populated
     

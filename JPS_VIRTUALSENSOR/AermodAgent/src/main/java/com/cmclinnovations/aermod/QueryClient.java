@@ -129,7 +129,6 @@ public class QueryClient {
     private static final Iri REPORTS = P_EMS.iri("reports");
     private static final Iri CONTAINS = P_GEO.iri("ehContains");
     private static final Iri OCGML_REP = P_BUILD.iri("hasOntoCityGMLRepresentation");
-    private static final Iri HAS_PLANTCO2Emission = P_CHEM.iri("hasPlantCO2Emission");
     private static final Iri HAS_INDIVIDUALCO2Emission = P_CHEM.iri("hasIndividualCO2Emission");
     private static final Iri OCGML_GEOM = P_OCGML.iri("GeometryType");
     private static final Iri OCGML_CITYOBJECT = P_OCGML.iri("cityObjectId");
@@ -482,27 +481,7 @@ public class QueryClient {
         return StackIRIQueryResult;
     }
 
-    public static JSONArray PlantsQuery (String StackQueryIRI) {
-
-        SelectQuery query = Queries.SELECT().prefix(P_GEO,P_BUILD,P_OM,P_CHEM);
-        Variable IRI = SparqlBuilder.var("IRI");
-        Variable emission = SparqlBuilder.var("emission");
-        Variable chemPlant = SparqlBuilder.var("chemPlant");
-        Variable plantItem = SparqlBuilder.var("plantItem");
-        Variable CO2 = SparqlBuilder.var("CO2");
-
-        GraphPattern gp = GraphPatterns.and(chemPlant.has(RDF.TYPE,CHEMICALPLANT).andHas(CONTAINS,plantItem)
-        .andHas(HAS_PLANTCO2Emission, CO2), CO2.has(HAS_NUMERICALVALUE,emission),
-                plantItem.has(RDF.TYPE,PLANTITEM).andHas(OCGML_REP,IRI));
-        query.select(chemPlant,IRI,emission).where(gp).limit(Integer.parseInt(EnvConfig.NUMBER_SOURCES));
-
-        JSONArray StackIRIQueryResult = AccessAgentCaller.queryStore(StackQueryIRI, query.getQueryString());
-        return StackIRIQueryResult;
-    }
-
-
-
-
+    
     public static JSONArray BuildingQuery (String StackQueryIRI) {
 
         SelectQuery query = Queries.SELECT().prefix(P_GEO,P_BUILD,P_OM,P_CHEM);
