@@ -22,7 +22,7 @@ model = {'reaction': 'TARGET', 'mechanism': 'TARGET', 'products': 'PRODUCT_INDIC
          'product': 'PRODUCT_INDICATOR', 'reactants': 'REACTANT_INDICATOR', 'reactant': 'REACTANT_INDICATOR',
          'form': 'PRD', 'forms': 'PRD', 'formed': 'PRD', 'give': 'PRD', 'gives': 'PRD',
          'produce': 'PRD', 'produces': 'PRD', 'ADD': 'ADD', 'reaction_rate': 'REL', 'reversible': 'REL',
-         'contains': 'REL', 'react': 'ADD', 'combin': 'ADD', 'compris':'PRD', 'produc': 'PRD'}
+         'contains': 'REL', 'react': 'ADD', 'combin': 'ADD', 'compris':'PRD', 'produc': 'PRD', 'split': 'SPLIT'}
 tagger = nltk.tag.UnigramTagger(model=model, backoff=default_tagger)
 # reaction_pattern = """NP: {<NNP><NN>|<NN><NNP>|<NN>*<NNP>*}
 #     PRD: {<PRD>}
@@ -37,7 +37,7 @@ reaction_pattern = """
 SPECIES: {<NNP>}
 SPECIES_SET: {<SPECIES><ADD><SPECIES>|<SPECIES>}
 AS_INDICATOR: {<SPECIES_SET><IN>|<SPECIES><IN>}
-ALL_PRODUCTS: {<AS_INDICATOR><PRODUCT_INDICATOR>|<PRD><SPECIES_SET>|<SPECIES_SET><PRD>}
+ALL_PRODUCTS: {<AS_INDICATOR><PRODUCT_INDICATOR>|<PRD><SPECIES_SET>|<SPECIES_SET><PRD>|<SPLIT><SPECIES_SET>}
 ALL_REACTANTS: {<AS_INDICATOR><REACTANT_INDICATOR>|<SPECIES_SET>}
 """
 
@@ -50,8 +50,8 @@ def token_and_tag(text):
     text = text.replace("reaction rate ", "reaction rate ")
     text = text.replace(" and ", " ADD ")
     text = text.replace(" + ", " ADD ")
-    text = text.replace(" == ", " produce ")
-    text = text.replace(" -> ", " produce ")
+    text = text.replace(" == ", " split ")
+    text = text.replace(" -> ", " split ")
     text = text.replace("reactants", "reactant")
     print("question after", text)
     text = text.split()
@@ -91,7 +91,7 @@ def parsing(pattern, sentence, original_question, index):
     # img.save("img.png")
     cf.destroy()
     # print(result)
-    # result.draw()
+    result.draw()
 
 
 numerical_questions = """Find all aromatic hydrocarbons with molecular weight more than 100 
@@ -138,7 +138,7 @@ Which components undergo change to produce H2 and OH
 What does a combination of H2 and OH produce"""
 
 # breaking_questions = """When H2 and OH are formed, what are the initial components involved"""
-breaking_questions = breaking_questions +  reaction_questions
+breaking_questions =  reaction_questions + breaking_questions
 counter = 0
 for sentence in breaking_questions.split('\n'):
     print(sentence)
