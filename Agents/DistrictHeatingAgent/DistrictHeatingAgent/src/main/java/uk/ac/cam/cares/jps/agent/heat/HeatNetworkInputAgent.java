@@ -208,7 +208,7 @@ public class HeatNetworkInputAgent {
                         .addInsert(NodeFactory.createURI(KB + "VolumetricFlowRate"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_VFR));
         UpdateRequest HeatingNetwork_ur = HeatingNetwork_ub.buildRequest();
         AccessAgentCaller.updateStore(sparqlendpoint, HeatingNetwork_ur.toString());
-        omHasValueNonTS("VolumetricFlowRate", "cubicMeterPerHour", Value_VolumetricFlowRate);
+        omHasValueNonTS("VolumetricFlowRate", "cubicMetrePerHour", Value_VolumetricFlowRate);
 
 
         // For GridConnection part
