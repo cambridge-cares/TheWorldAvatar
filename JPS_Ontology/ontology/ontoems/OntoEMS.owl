@@ -387,10 +387,10 @@
     
 
 
-    <!-- https://www.w3.org/2000/01/rdf-schema#label -->
+    <!-- http://www.w3.org/2000/01/rdf-schema#label -->
 
 
-    <owl:DatatypeProperty rdf:about="https://www.w3.org/2000/01/rdf-schema#label">
+    <owl:DatatypeProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#label">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -650,10 +650,10 @@
     
 
 
-    <!-- https://semanticscience.org/resource/SIO_000638 -->
+    <!-- http://semanticscience.org/resource/SIO_000638 -->
 
 
-    <owl:Class rdf:about="https://semanticscience.org/resource/SIO_000638"/>
+    <owl:Class rdf:about="http://semanticscience.org/resource/SIO_000638"/>
     
 
 
@@ -1017,7 +1017,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoems/PrecipitationProbability">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Number"/>
-        <rdfs:subClassOf rdf:resource="https://semanticscience.org/resource/SIO_000638"/>
+        <rdfs:subClassOf rdf:resource="http://semanticscience.org/resource/SIO_000638"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The likelihood of occurrence of precipitation.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoems/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Precipitation probability</rdfs:label>
