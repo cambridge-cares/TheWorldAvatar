@@ -10,7 +10,7 @@ from torch.nn.functional import normalize
 from torch.utils.data.dataset import Dataset as TorchDataset
 from tqdm import tqdm
 from transformers import BertModel, BertTokenizer, AdamW
-
+from Marie.Util.CommonTools.NLPTools import NLPTools
 from Marie.Util.location import TRAINING_DIR, DEPLOYMENT_DIR, DATA_DIR
 
 # TODO: a Dataset class that provides question examples and their relation
@@ -21,15 +21,29 @@ max_len = 12
 
 class TransERelPredictionModel(nn.Module):
 
-    def __init__(self, device=torch.device("cpu"), for_training=False, dataset_dir="CrossGraph/pubchem", dim=20):
+    def __init__(self, device=torch.device("cpu"), for_training=False, dataset_dir="CrossGraph/pubchem", dim=20,
+                 mode="general"):
         super(TransERelPredictionModel, self).__init__()
+        self.mode = mode
         self.dim = dim
         self.dataset_dir = dataset_dir
         self.device = device
         self.bert = BertModel.from_pretrained('bert-base-cased')
         self.dropout = nn.Dropout(0)
-        self.linear = nn.Linear(768, self.dim)  # keep this model ...
-        self.mid_2 = nn.Linear(512, self.dim)
+
+        if mode == "agent":
+            self.agent_linear = nn.Linear(768, self.dim)
+            self.mid_1 = nn.Linear(self.dim, self.dim)
+            self.mid_2 = nn.Linear(self.dim, self.dim)
+            self.mid_3 = nn.Linear(self.dim, self.dim)
+            self.mid_4 = nn.Linear(self.dim, self.dim)
+            self.mid_5 = nn.Linear(self.dim, self.dim)
+            self.mid_6 = nn.Linear(self.dim, self.dim)
+            self.output_linear = nn.Linear(768, self.dim)
+        else:
+            self.linear = nn.Linear(768, self.dim)  # keep this model ...
+            self.mid_2 = nn.Linear(512, self.dim)
+
         self.criterion = torch.nn.CosineEmbeddingLoss()
         self.for_training = for_training
         if self.for_training:
@@ -62,10 +76,18 @@ class TransERelPredictionModel(nn.Module):
                                       attention_mask=attention_mask,
                                       return_dict=False)[1].to(self.device)
             dropout_output = self.dropout(pooled_output.to(self.device)).to(self.device)
-            linear_output = self.linear(dropout_output.to(self.device)).to(self.device)
-            return linear_output
 
-    def forward(self, question, y):
+            if self.mode == "agent":
+                linear_agent = self.agent_linear(dropout_output.to(self.device)).to(self.device)
+                linear_agent = self.mid_1(linear_agent)
+                linear_output = self.output_linear(dropout_output.to(self.device)).to(self.device)
+                linear_output = self.mid_4(linear_output)
+                return linear_agent, linear_output
+            else:
+                linear_output = self.linear(dropout_output.to(self.device)).to(self.device)
+                return linear_output
+
+    def forward(self, question, true_linear_output, true_linear_agent=None):
         input_ids = torch.reshape(question['input_ids'], (-1, max_len))
         attention_mask = torch.reshape(question['attention_mask'], (-1, max_len))
         pooled_output = self.bert(input_ids=input_ids.to(self.device),
@@ -73,11 +95,39 @@ class TransERelPredictionModel(nn.Module):
                                   return_dict=False)[1]
 
         dropout_output = self.dropout(pooled_output)
-        linear_output = self.linear(dropout_output)
-        distance = self.distance(linear_output, y)
-        '''
-        Update the loss function to do a calculation eh + r = et, where r is the output of linear_output ... 
-        If the fine-tuning of the current thing fails 
-        '''
+        if self.mode == "agent":
 
-        return distance, normalize(linear_output)
+            linear_agent = self.agent_linear(dropout_output)
+            linear_agent = self.mid_1(linear_agent)
+            # linear_agent = self.mid_2(linear_agent)
+            # linear_agent = self.mid_3(linear_agent)
+            linear_output = self.output_linear(dropout_output)
+            linear_output = self.mid_4(linear_output)
+            # linear_output = self.mid_5(linear_output)
+            # linear_output = self.mid_6(linear_output)
+
+            distance_agent = self.distance(linear_agent, true_linear_agent)
+            distance_output = self.distance(linear_output, true_linear_output)
+            return distance_agent + distance_output, linear_output, linear_agent
+        else:
+            linear_output = self.linear(dropout_output)
+            distance = self.distance(linear_output, true_linear_output)
+            '''
+            Update the loss function to do a calculation eh + r = et, where r is the output of linear_output ... 
+            If the fine-tuning of the current thing fails 
+            '''
+            return distance, normalize(linear_output)
+
+
+if __name__ == "__main__":
+    my_model = TransERelPredictionModel(device=torch.device("cpu"),
+                                        dataset_dir=os.path.join(DATA_DIR, "CrossGraph/agents"), dim=80,
+                                        mode="agent")
+
+    my_model.load_model("bert_ontoagent")
+
+    nlp_tool = NLPTools()
+    _, tokenzied_question = nlp_tool.tokenize_question("what is the power conversion efficiency of benzene",
+                                                       repeat_num=0)
+    agent_emb, output_emb = my_model.predict(question=tokenzied_question)
+
