@@ -1,11 +1,13 @@
 import os
-
+import sys
+sys.path.append("")
 import nltk
 from nltk import Tree
 from nltk.corpus import stopwords
 from nltk.draw import TreeWidget
 from nltk.draw.util import CanvasFrame
 from nltk.stem import *
+from Marie.Util.CommonTools.playground.LdfRequest import LdfRequest
 
 # stop_words = set(stopwords.words('english'))
 stop_words = ["what", "is", "the", "list", "of", "are", "with", "a", "one", "does", "do", "species", "after", ","]
@@ -53,7 +55,7 @@ def token_and_tag(text):
     text = text.replace(" == ", " split ")
     text = text.replace(" -> ", " split ")
     text = text.replace("reactants", "reactant")
-    print("question after", text)
+    # print("question after", text)
     text = text.split()
     text = [w for w in text if not w.lower() in stop_words]
     filtered_text = []
@@ -63,7 +65,7 @@ def token_and_tag(text):
         else:
             filtered_text.append(stemmer.stem(plural))
     tokens_tag = tagger.tag(filtered_text)
-    print(tokens_tag)
+    # print(tokens_tag)
     return tokens_tag
 
 
@@ -72,6 +74,29 @@ def parsing(pattern, sentence, original_question, index):
     # NPChunker = nltk.RegexpParser(pattern)
     result = NPChunker.parse(sentence)
     result.set_label(original_question.replace(" ", "_"))
+
+    reactants = []
+    products = []
+    for subtree in result.subtrees(filter=lambda t: t.label() == "ALL_REACTANTS" or t.label() == "ALL_PRODUCTS"):
+        species = []
+        for leaf in subtree.leaves():
+            if leaf[1] == "NNP":
+                species.append(leaf[0])
+        if "ALL_REACTANTS" in subtree.label():
+            for sp in species:
+                reactants.append(sp)
+        elif "ALL_PRODUCTS" in subtree.label():
+            for sp in species:
+                products.append(sp)
+
+    print("Reactants:", reactants)
+    print("Products:", products)
+
+    request = LdfRequest(reactants, products)
+    equations = request.get_equations()
+
+    print(equations)
+
     cf = CanvasFrame(bg="blue", height=100, width=100)
     t = Tree.fromstring(str(result))
     tc = TreeWidget(cf.canvas(), t)
@@ -91,7 +116,7 @@ def parsing(pattern, sentence, original_question, index):
     # img.save("img.png")
     cf.destroy()
     # print(result)
-    result.draw()
+    # result.draw()
 
 
 numerical_questions = """Find all aromatic hydrocarbons with molecular weight more than 100 
@@ -105,8 +130,7 @@ What reaction has CH4 as reactant
 What mechanism contains CH4 + OH
 What reaction has CH4 + H2 as product
 What mechanism contains CH4 + OH == H2 + H2
-Reaction rate of H + O2 -> O + OH"""
-breaking_questions = """
+Reaction rate of H + O2 -> O + OH
 What is the result of a reaction between C and O2
 What are the reactants of a reaction with H2 and OH as products
 What are the products of a reaction with H2 and OH as reactants
@@ -117,12 +141,10 @@ What does a reaction between H and O2 result in
 What does H and O2 react to produce
 What is the result of a reaction between C and O2
 How does CO2 and H2O react
-What does the combination of H2 and OH give
 Which species combine to give H2 and OH
 List all reactions with H2 and OH as the product
 In which reactions does H2 and O2 combine to give OH as one of the products
 Which reactions comprise of H2 and OH
-Which reactions give OH after combining O2 and H2
 What is the rate of a reaction which combines CH4 and OH to give H2 and H2
 What species are involved in the reaction between H2 and OH
 Which elements are combined to give H2 and OH
@@ -137,8 +159,13 @@ In the reaction that gives H2 and OH, what are the substances that react
 Which components undergo change to produce H2 and OH
 What does a combination of H2 and OH produce"""
 
+breaking_questions = """
+Which reactions give OH after combining O2 and H2
+What does a combination of H2 and OH produce
+What does the combination of H2 and OH give
+"""
 # breaking_questions = """When H2 and OH are formed, what are the initial components involved"""
-breaking_questions =  reaction_questions + breaking_questions
+breaking_questions =  breaking_questions + reaction_questions
 counter = 0
 for sentence in breaking_questions.split('\n'):
     print(sentence)
