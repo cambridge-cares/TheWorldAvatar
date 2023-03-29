@@ -1,7 +1,7 @@
 {
     "datasetDirectory": "triples",
     "namespace": {
-        "name": "triples",
+        "name": "kingslynn",
         "propertiesFile": "rdfonly.properties",
         "properties": {
             "com.bigdata.rdf.store.AbstractTripleStore.quadsMode": false
@@ -10,7 +10,7 @@
     "dataSubsets": [
         {
             "type": "rdf",
-            "skip": true
+            "skip": false
         }
     ]
 }

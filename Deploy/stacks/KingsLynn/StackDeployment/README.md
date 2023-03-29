@@ -238,7 +238,11 @@ After agent startup, follow the described instantiation workflow by sending the 
     Content-Type: application/json
     ```
 
-- A KG export of successfully instantiated EPC data (steps 1 & 2) is provided in `../../Data/99 KG snapshots/4_epc_data_before_matching`
+- There are KG exports of successfully instantiated EPC data provided in 
+    - steps 1 & 2: `../../Data/99 KG snapshots/4_epc_data_before_matching`
+    - steps 1, 2 & 3: `../../Data/99 KG snapshots/5_epc_data_after_matching`
+- There is no KG export after step 4, as this also requires the footprints to be uploaded to PostGIS (for visualisation); hence, step 4 shall be run as part of the instantiation workflow
+
 
 ## 2.2) Building Matching Agent
 
@@ -259,7 +263,7 @@ Content-Type: application/json
 
 After the Building instances are matched, step 3.4) from the EPC Agent can be performed.
 
-- A KG export of successfully instantiated and linked EPC data is provided in `../../Data/99 KG snapshots/5_epc_data_after_matching` (i.e. this also includes step 3.5 from the EPC agent)
+- A KG export of successfully instantiated and linked EPC data is provided in `../../Data/99 KG snapshots/5_epc_data_after_matching` (i.e. this does NOT include step 3.5 from the EPC agent README, but only the matching of buildings)
 
 ## 2.3) Property Sales Instantiation Agent
 
