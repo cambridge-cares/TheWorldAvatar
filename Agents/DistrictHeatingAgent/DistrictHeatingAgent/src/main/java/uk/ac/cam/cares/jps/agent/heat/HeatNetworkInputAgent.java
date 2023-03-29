@@ -343,8 +343,8 @@ public class HeatNetworkInputAgent {
         omHasValueNonTS("CumulativeEnergyCap_2", "megawattHour", Value_TierTwoCap);
         omHasValueNonTS("UnitPrice_1", "euroPerMegawattHour", Value_TierOneUnitPrice);
         omHasValueNonTS("UnitPrice_2", "euroPerMegawattHour", Value_TierTwoUnitPrice);
-        omHasValueNonTS("MinPurchase" + "IncinerationPlant", "megawattHour", Value_MinPurchase);
-        omHasValueNonTS("MaxPurchase" + "IncinerationPlant", "megawattHour", Value_MaxPurchase);
+        omHasValueNonTS("MinPurchase", "megawattHour", Value_MinPurchase);
+        omHasValueNonTS("MaxPurchase", "megawattHour", Value_MaxPurchase);
 
 
         // For the UnitRate part
