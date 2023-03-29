@@ -143,6 +143,15 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
         #      for pre-existing, and hence updated, transactions
         time_stamps_to_update.extend([t['tx_iri'] for t in matched_tx if t.get('tx_iri')])
     derivation_client.updateTimestamps(time_stamps_to_update)
+
+    if add_avgsqm_derivation_markup or add_propvalue_derivation_markup:
+        # Delete potential sales transaction duplicates per property
+        # NOTE: This should actually not be required, but is a safeguard in case
+        #       Potentially to be removed in future version, once issue with multiple
+        #       address details for some properties is resolved
+        logger.info('Deleting potential transaction duplicates ...')
+        update_query = delete_potential_transaction_duplicates()
+        kg_client_obe.performUpdate(update_query)
     
     if add_avgsqm_derivation_markup:
         # 6) Add derivation markup for Average Square Metre Price per Postal Code
@@ -297,6 +306,14 @@ def update_all_transaction_records(min_conf_score=90,
                             add_propvalue_derivation_markup=False)
         instantiated_tx += tx_new
         updated_tx += tx_upd
+
+        # Delete potential sales transaction duplicates per property
+        # NOTE: This should actually not be required, but kept for reference in case
+        #       Potentially to be removed in future version, once issue with multiple
+        #       address details for some properties is resolved
+        #logger.info('Deleting potential transaction duplicates ...')
+        #update_query = delete_potential_transaction_duplicates()
+        #kg_client_obe.performUpdate(update_query)
 
         # 6) Add derivation markup for Average Square Metre Price per Postal Code
         # Retrieve relevant postal code info
