@@ -346,8 +346,12 @@ The [resources] folder contains an `instantiated_buildings.sparql` file which co
 # Potential refinements/next steps
 
 EPC Agent
-- HTTP requests to `/epcagent/instantiate/certificates/all` does not seem to provide the correct number of instantiated and updated properties. Instead of providing the sum of all instantiated/updated properties from all API endpoints, it only seems to provide the number from the last endpoint and shall be revisited
-- There seem to be a few properties (very minor fraction) which are classified as Flat and Building/Property at the same time.
+- HTTP response to `/epcagent/instantiate/certificates/all` does not seem to provide the correct number of instantiated and updated properties. Instead of providing the sum of all instantiated/updated properties from all API endpoints, it only seems to provide the number from the last endpoint and shall be revisited
+- There seems to be a very minor fraction of properties which are classified as Flat and Building/Property at the same time.
+- There is a very minor fraction of properties (less than 10 in total of ~13300), which do have multiple address details instantiated, e.g. 2 associated street names. This can cause issues with the HM Land Registry Agent when instantiating sales transactions, as the applicable property is determined by address matching and the instantiation of multiple possible addresses adds ambiguity here. This is currently handled by dropping duplicated addresses for the same property inside the Landregistry Agent, but should ideally be fixed on the instantaition side. The issue seems to affect mainly parent buildings with only one child property/flat.
+
+Property Value Estimation Agent
+- There can be occasions where there are "too recent" actual property sales transactions with a date beyond the scope of the Property Price Index (PPI) are instantiated (as the PPI is always releassed with some lead time of ~2 months). In such a case the Property Value Estimation Agent will raise a KeyError (e.g. KeyError: '2023-02') and instantiate the property value as non-computable. As this only affects a very minor fraction of properties, it is not considered a major issue at the moment, but could be solved by simply using the latest available PPI value instead of raising an error.
 
 
 <!-- Links -->
