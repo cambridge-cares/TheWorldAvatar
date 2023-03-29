@@ -175,6 +175,34 @@ def format_property_values(results: str, previous_property_values: str = None):
         previous_range_label = range_label
     return property_values
 
+def format_subclasses(results: str, previous_property_values: str = None):
+    """
+    When multiple concepts are available in the range of an object property or
+    multiple values are available in the range of a data property, this
+    function combines them in a comma-separated string to make it suitable for
+    representing it as an enumerated list.
+    """
+    property_values = dict()
+    if previous_property_values is not None:
+         property_values = previous_property_values
+    previous_range_label = ""
+    for result in results["results"]["bindings"]:
+        label = result['label']['value']
+        range_label = result['rangeLabel']['value']
+        if label.lower().replace(" ", "_") in property_values.keys():
+            if previous_range_label == 'int':
+                del property_values[label.lower().replace(" ", "_")]
+                property_values[label.lower().replace(" ", "_")] = ""
+            if property_values[label.lower().replace(" ", "_")] == "":
+                property_values[label.lower().replace(" ", "_")] = range_label
+            else:
+                property_values[label.lower().replace(" ", "_")] = property_values[label.lower().replace(" ", "_")] + ", " + range_label
+        else:
+            property_values[label.lower().replace(" ", "_")] = range_label
+        previous_range_label = range_label
+    return property_values
+
+
 def format_instances(class_label:str, results: str, previous_property_values: str = None):
     instances = dict()
     for result in results["results"]["bindings"]:
@@ -274,13 +302,13 @@ def generate_identification_properties(endpoint_name:str, query_classes):
 
     Parameters:
     endpoint (str): The endpoint of a triple store expressed as a URL.
-    ontological_class (str): The IRI of the ontological class.
+    query_classes: The IRI of the ontological classes that need to be
+    queried for retrieving identification properties.
 
     Returns:
-    str: The IRI, label, position and type of properties modelled as
-    classes.
+    str: A valid JSON string.
 
-        endpoint_name = "COMO_ENDPOINT"
+    
     product = "<http://www.theworldavatar.com/kg/ontomatpassport#Product>"
     component = "<http://www.theworldavatar.com/kg/ontomatpassport#Component>"
     query_classes = []
@@ -324,6 +352,57 @@ def generate_identification_properties(endpoint_name:str, query_classes):
     return js.dumps(combined_json_dict).replace("[\"\\", "[").replace("\\\"","\"").replace("\"]","]")
 
 
+def generate_physical_properties(endpoint_name:str, query_classes):
+    """
+    Retrieves all datatype properties and object properties directly
+    connected to the ontological class.
+
+    Parameters:
+    endpoint (str): The endpoint of a triple store expressed as a URL.
+    query_classes: The IRI of the ontological classes that need to be
+    queried for retrieving identification properties.
+
+    Returns:
+    str: A valid JSON string.
+    """
+
+    if endpoint_name != None or endpoint_name != "":
+        set_endpoint(endpoint_name)
+    else:
+        print("Endpoint name is None or empty. Provide a valid endpoint name.")
+        return
+    
+    if query_classes == None or len(query_classes) < 1:
+        print("Query classes list is None or empty. Provide a list of one or more class IRIs.")
+        return
+    results = get_ontological_subclasses(ENDPOINT, query_classes[0])
+    print(results)
+    property_values_formated = format_property_values(results)
+    # formats enum values
+
+    property_value_processed = []
+    json_string = []
+    label = "Type"
+    range_label = "string"
+    
+    enumerated_list_provided = ""
+
+    for item in query_classes:
+        name = get_ontological_label(ENDPOINT, item)
+        if name != None or label != "":
+            if enumerated_list_provided == "":
+                enumerated_list_provided = name
+            else:
+                enumerated_list_provided = enumerated_list_provided + ", " + name
+    
+    json_string.append((label.lower().replace(" ", "_"), get_json_object_with_enum(label, "TODO", range_label, format_enumerated_list(enumerated_list_provided))))
+
+    parsed_classes = query_classes
+    json_string = traverse_through_object_property(results, property_value_processed, property_values_formated, json_string, parsed_classes)
+    json_string = combined_json_dict = dict(json_string)
+    return js.dumps(combined_json_dict).replace("[\"\\", "[").replace("\\\"","\"").replace("\"]","]")
+
+
 def set_endpoint(endpoint_name:str):
     try:
          global ENDPOINT
@@ -332,14 +411,15 @@ def set_endpoint(endpoint_name:str):
         print("Error: ", endpoint_name, " environment variable is not set.")
 
 if __name__== '__main__':
-    endpoint_name = "COMO_ENDPOINT"
+    endpoint_name = "JIDEP_ENDPOINT"
     query_classes = []
-    class_1 = "<http://www.theworldavatar.com/kg/ontomatpassport#Product>"
-    query_classes.append(class_1)
-    class_2 = "<http://www.theworldavatar.com/kg/ontomatpassport#Component>"
-    query_classes.append(class_2)
-
-    # class_1 = "<https://w3id.org/mdo/core/PhysicalProperty>"
+    # class_1 = "<http://www.theworldavatar.com/kg/ontomatpassport#Product>"
     # query_classes.append(class_1)
+    # class_2 = "<http://www.theworldavatar.com/kg/ontomatpassport#Component>"
+    # query_classes.append(class_2)
+    # print(generate_identification_properties(endpoint_name, query_classes))
 
-    print(generate_identification_properties(endpoint_name, query_classes))
+    class_1 = "<https://w3id.org/mdo/core/PhysicalProperty>"
+    query_classes.append(class_1)
+    print(generate_physical_properties(endpoint_name, query_classes))
+
