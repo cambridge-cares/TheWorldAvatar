@@ -92,6 +92,7 @@ public class OpenMeteoAgent extends JPSAgent {
     private static final String OM_CM = "om:centimetre";
     private static final String OM_MS = "om:metrePerSecond-Time";
     private static final String OM_DEGREE = "om:degree";
+    private static final String OM_WM = "om:wattPerMetreSquare";
     private List<String> API_PARAMETERS = Arrays.asList(API_PARAMETER_TEMP, API_PARAMETER_HUMIDITY, API_PARAMETER_DEWPOINT, API_PARAMETER_PRESSURE, API_PARAMETER_RAIN, API_PARAMETER_SNOW, API_PARAMETER_CLOUD, API_PARAMETER_DNI, API_PARAMETER_DHI, API_PARAMETER_WINDSPEED, API_PARAMETER_WINDDIRECTION);
     private List<String> ontoems_conecpts = Arrays.asList(ONTOEMS_TEMP, ONTOEMS_HUMIDITY, ONTOEMS_DEWPOINT, ONTOEMS_PRESSURE, ONTOEMS_RAIN, ONTOEMS_SNOW, ONTOEMS_CLOUD, ONTOEMS_DNI, ONTOEMS_DHI, ONTOEMS_WINDSPEED, ONTOEMS_WINDDIRECTION);
     private Map<String, String> api_ontoems = IntStream.range(0, API_PARAMETERS.size()).boxed()
@@ -215,6 +216,8 @@ public class OpenMeteoAgent extends JPSAgent {
                         .addWhere(wb);
 
                 JSONArray queryResults = this.queryStore(route, sb.build().toString());
+
+                tsClient = new TimeSeriesClient<>(storeClient, LocalDateTime.class);
 
                 try (Connection conn = rdbStoreClient.getConnection()) {
                     for (int i = 0; i < queryResults.length(); i++){
@@ -373,6 +376,7 @@ public class OpenMeteoAgent extends JPSAgent {
     public String getUnitOntology(String unit) {
         if (unit.contains("°C")){return OM_C;}
         if (unit.contains("°")){return OM_DEGREE;}
+        if (unit.contains("W/m")){return OM_WM;}
 
         switch (unit){
             case("%"):
@@ -469,6 +473,7 @@ public class OpenMeteoAgent extends JPSAgent {
         SelectBuilder sb = new SelectBuilder()
                 .addVar("?station")
                 .addWhere(wb);
+        
         String queryString = sb.build().toString().replace("placeHolder", "#");
         queryString = queryString.replace(lon + "\"", lon + "\"^^<" + geospatialLiterals + ">");
 
