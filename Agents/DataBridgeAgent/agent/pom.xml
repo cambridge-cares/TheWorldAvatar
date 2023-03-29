@@ -77,6 +77,12 @@
             <artifactId>jena-rdfconnection</artifactId>
             <version>4.7.0</version>
         </dependency>
+        <!-- JDBC driver -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.5</version>
+        </dependency>
         <!--  Testing  -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>

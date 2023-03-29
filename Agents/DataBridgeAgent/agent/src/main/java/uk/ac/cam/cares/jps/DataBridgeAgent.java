@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author qhouyee
  */
-@WebServlet(urlPatterns = {"/sparql", "/status"})
+@WebServlet(urlPatterns = {"/sql", "/sparql", "/status"})
 public class DataBridgeAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(DataBridgeAgent.class);
     // Agent starts off in valid state, and will be invalid when running into exceptions
@@ -76,6 +76,15 @@ public class DataBridgeAgent extends JPSAgent {
                     jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
                 }
                 break;
+            case "sql":
+                if (requestType.equals("GET")) {
+                    String[] config = ConfigStore.retrieveSQLConfig();
+                    jsonMessage = sqlRoute(config);
+                } else {
+                    LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                    jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
+                }
+                break;
             case "status":
                 if (requestType.equals("GET")) {
                     jsonMessage = statusRoute();
@@ -127,6 +136,22 @@ public class DataBridgeAgent extends JPSAgent {
         connector.transfer();
         LOGGER.info("Triples have been successfully transferred from " + config[0] + " to " + config[1]);
         response.put("Result", "Triples have been successfully transferred from " + config[0] + " to " + config[1]);
+        return response;
+    }
+
+    /**
+     * Run logic for the "/sql" route to transfer data between SPARQL endpoints.
+     *
+     * @return A response to the request called as a JSON Object.
+     */
+    protected JSONObject sqlRoute(String[] config) {
+        JSONObject response = new JSONObject();
+        LOGGER.debug("Creating the SQL connector..");
+        SqlBridge connector = new SqlBridge(config[0], config[1], config[2], config[3], config[4], config[5]);
+        LOGGER.debug("Transfer data from origin to destination...");
+        connector.transfer();
+        LOGGER.info("Data have been successfully transferred from " + config[0] + " to " + config[3]);
+        response.put("Result", "Data have been successfully transferred from " + config[0] + " to " + config[3]);
         return response;
     }
 }
