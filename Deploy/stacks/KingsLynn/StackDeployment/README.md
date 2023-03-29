@@ -193,10 +193,10 @@ Some of the agents have (data) interdependencies and, hence, require matching na
 | Property Sales Instantiation | kingslynn | transactions<br>(buildings) | transactions | kingslynn |
 | Flood Warnings Instantiation Agent | kingslynn | floodwarnings<br>(buildings) | floodwarnings | kingslynn |
 | Average Square Metre Price Agent | kingslynn |  |  |  |
-| Property Value Estimation Agent | kingslynn | market_values<br>(buildings) | market_values | kingslynn |
+| Property Value Estimation Agent | kingslynn | marketvalues<br>(buildings) | marketvalues | kingslynn |
 | Flood Assessment Agent | kingslynn | floodwarnings<br>population |  |  |
 | MetOffice Agent | metoffice | metoffice | metoffice | stations |
-| Riverlevel Agent | river_stations | river_stations | river_stations | stations |
+| Riverlevel Agent | riverstations | riverstations | riverstations | stations |
 | Airquality Agent | airquality | airquality | airquality | stations |
 
 &nbsp;
@@ -204,10 +204,11 @@ Some of the agents have (data) interdependencies and, hence, require matching na
 
 > The following steps refer to the published Docker image `ghcr.io/cambridge-cares/epc_agent:1.2.0` as of commit `93c2844a1d4074ca38e86074d7003332fed0673d` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main` 
 
-(Build and) Deploy the EPC Agent as described in the [EPC Agent README], i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack. The required Base64-encoded authentication token can be created using `echo -n '<email address>:<provided API key>' | base64` on the command line (Windows) with `<email address>` being the email address used to register for the API and `<provided API key>` being the API key sent to you via email after registration. In case `bash ./stack.sh start KINGS-LYNN` does not successfully start the agent, simply re-run the command (this is a know issue and mentioned in the [EPC Agent README]). 
+Deploy the agent as described in the [EPC Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_epcs.yml` in the [Agent docker-compose file folder] for the actually used compose file.
 
-After agent startup, follow the described instantiation workflow by sending the respective HTTP requests to the agent. The subsequent recurring updating of instantiated data occurs automatically.
+The required Base64-encoded authentication token can be created using `echo -n '<email address>:<provided API key>' | base64` on the command line (Windows) with `<email address>` being the email address used to register for the API and `<provided API key>` being the API key sent to you via email after registration. In case `bash ./stack.sh start KINGS-LYNN` does not successfully start the agent, simply re-run the command (this is a known issue and mentioned in the [EPC Agent] README). 
 
+After agent startup, follow the described instantiation workflow by sending the respective HTTP requests to the agent. The subsequent recurring updated of instantiated data occurs automatically. The EPC Agent represents the first step/agent to instantiate non-OntoCityGml buildings data in the overall workflow.
 
 0) New namespace (i.e. `kingslynn`) to host all building related data will be created automatically upon agent startup (incl. upload of ontology and all required unit symbols)
 1) Instantiate all postcodes in King's Lynn local authority:
@@ -231,7 +232,11 @@ After agent startup, follow the described instantiation workflow by sending the 
     }
     ```
 3) Run Building Matching Agent (details see below)
-4) Update geospatial representation of buildings and insert additional OntoCityGml information in OntoBuiltEnv namespace (required for DTVF and Geoserver styling)
+4) Update geospatial representation of buildings and insert additional OntoCityGml information in OntoBuiltEnv namespace (i.e. `kingslynn`), required for DTVF and Geoserver styling:
+    ```
+    POST http://165.232.172.16:5007/epcagent/add/ocgml_info
+    Content-Type: application/json
+    ```
 
 - A KG export of successfully instantiated EPC data (steps 1 & 2) is provided in `../../Data/99 KG snapshots/4_epc_data_before_matching`
 
@@ -239,7 +244,7 @@ After agent startup, follow the described instantiation workflow by sending the 
 
 > The following description refers to commit `8cb656055ea74410ef3c4c0764a6c0a80efc38ff` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
 
-The Building Matching Agent links buildings instantiated according to OntoBuiltEnv using the EPC Agent with their OntoCityGml representations. General details on how to use the agent can be found in the [Building Matching Readme]; however, all relevant steps are also described in section 3.4. in the [EPC Agent README]. The following request shall match buildings in the `ocgml` and `kingslynn` namespace:
+The Building Matching Agent links buildings instantiated according to OntoBuiltEnv using the EPC Agent with their OntoCityGml representations. General details on how to use the agent can be found in the [Building Matching Readme]; however, all relevant steps are also described in section 3.4. in the [EPC Agent] README. The following request shall match buildings in the `ocgml` and `kingslynn` namespace:
 
 ```
 PUT http://localhost:58085/BuildingMatchingAgent/match
@@ -258,12 +263,42 @@ After the Building instances are matched, step 3.4) from the EPC Agent can be pe
 
 ## 2.3) Property Sales Instantiation Agent
 
+> The following description refers to the published Docker image `ghcr.io/cambridge-cares/avgsqmprice_agent:1.1.0` as of commit `???` on branch `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
+
+To avoid potential issues with unregistered and unavailable derivation agents, both the `Average Square Metre Price Agent` and the `Property Value Estimation Agent` should be deployed (and hence registered in the KG) **before** instantiating property transaction data. Otherwise, the `createSyncDerivationForNewInfo` method will cause an exception, as it cannot instantiate the requested derivation outputs.
+
+Deploy the agent as described in the [Property Sales Instantiation Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_landregistry.yml` in the [Agent docker-compose file folder] for the actually used compose file.
+
+After agent startup, the following request shall instantiate the latest property sales transactions for all instantiated buildings (if available, matched by address). The agent also instantiates the derivation markup for the Average Square Metre Price per Postcode as well as the Property Value Estimate per Building and triggers the first assessment of both quantities. The request requires the EPC Agent to be run first in the same namespace to instantiate the buildings.
+
+```
+POST http://165.232.172.16:5008/landregistry/update_all
+Content-Type: application/json
+
+{ "query": {
+      "min_confidence": 95
+    }
+}
+```
+
 &nbsp;
 ## 3) Flood assessment (derivation agents)
 
 ## 3.1) Average Square Metre Price Agent
 
+> The following description refers to the published Docker image `ghcr.io/cambridge-cares/avgsqmprice_agent:1.1.0` as of commit `???` on branch `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
+
+Deploy the agent as described in the [Average Square Metre Price Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_avg_sqm_price.yml` in the [Agent docker-compose file folder] for the actually used compose file.
+
+After agent startup, the agent starts monitoring the specified namespace for outdated information in the specified frequency (i.e. asynchronous mode) or triggers a re-assessment upon request (i.e. synchronous mode).
+
 ## 3.2) Property Value Estimation Agent
+
+> The following description refers to the published Docker image `ghcr.io/cambridge-cares/propertyvalue_agent:1.2.0` as of commit `???` on branch `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
+
+Deploy the agent as described in the [Property Sales Instantiation Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_value_estimation.yml` in the [Agent docker-compose file folder] for the actually used compose file.
+
+After agent startup, the agent starts monitoring the specified namespace for outdated information in the specified frequency (i.e. asynchronous mode) or triggers a re-assessment upon request (i.e. synchronous mode).
 
 ## 3.3) Flood Assessment Agent
 
@@ -326,14 +361,18 @@ The [resources] folder contains an `instantiated_buildings.sparql` file which co
 
 <!-- Agents -->
 [AccessAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/JPS_ACCESS_AGENT#readme
-[Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BuildingMatchingAgent/README.md
 [CityImportAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
-[EPC Agent README]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/EnergyPerformanceCertificateAgent/README.md
+[TSDAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
+[UPRN Agent]: https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent
+[Building Matching Readme]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/BuildingMatchingAgent/README.md
+[EPC Agent]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/EnergyPerformanceCertificateAgent/README.md
+[Average Square Metre Price Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AverageSquareMetrePriceAgent/README.md
+[Property Value Estimation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent/README.md
+[Property Sales Instantiation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HMLandRegistryAgent/README.md
 [MetOffice Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/MetOfficeAgent
 [MetOffice docker-compose file]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/MetOfficeAgent/docker-compose.yml
 [RiverLevelsAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAgent
-[TSDAgent]: https://github.com/cambridge-cares/CitiesKG/tree/develop/agents
-[UPRN Agent]: https://github.com/cambridge-cares/CitiesKG/tree/uprn-agent
+
 
 <!-- Repositories -->
 [Agent docker-compose file folder]: /StackDeployment/inputs/docker_compose_files
