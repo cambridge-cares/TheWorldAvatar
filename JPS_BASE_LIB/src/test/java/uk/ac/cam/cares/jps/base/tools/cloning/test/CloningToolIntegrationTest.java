@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -20,12 +21,12 @@ import uk.ac.cam.cares.jps.base.tools.cloning.CloningTool;
 @Testcontainers
 class CloningToolIntegrationTest {
  
-	static final int N_TEST_TRIPLES = 2000;
+	static final int N_TEST_TRIPLES = 4000;
 	
 	static final String BLAZEGRAPH_IMAGE = "docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"; 
 	static final int BLAZEGRAPH_INTERNAL_PORT = 9999;
 	
-	String testData;
+	static String testData;
 	
 	@Container
 	GenericContainer<?> sourceContainer = new GenericContainer<>(DockerImageName.parse(BLAZEGRAPH_IMAGE))
@@ -37,6 +38,10 @@ class CloningToolIntegrationTest {
 	RemoteStoreClient sourceStoreClient;
 	RemoteStoreClient targetStoreClient;	
 	
+	@BeforeAll
+	static void createTestData() {
+		testData = CloningToolTestHelper.createTriples(N_TEST_TRIPLES);	
+	}
 	
 	@BeforeEach
 	void setup() {
@@ -52,18 +57,13 @@ class CloningToolIntegrationTest {
 		+ "/blazegraph/namespace/kb/sparql";
 		
 		sourceStoreClient = new RemoteStoreClient(sourceEndpoint,sourceEndpoint);
+		sourceStoreClient.executeUpdate(CloningToolTestHelper.createInsertData(testData));
+		assertEquals(N_TEST_TRIPLES,sourceStoreClient.getTotalNumberOfTriples());
 		
 		String targetEndpoint = "http://" + targetContainer.getHost() 
-		+ ":" + targetContainer.getFirstMappedPort()
-		+ "/blazegraph/namespace/kb/sparql";
-		
+			+ ":" + targetContainer.getFirstMappedPort()
+			+ "/blazegraph/namespace/kb/sparql";
 		targetStoreClient = new RemoteStoreClient(targetEndpoint,targetEndpoint);
-		
-		//Load test data 		
-		testData = CloningToolTestHelper.createTriples(N_TEST_TRIPLES);		
-		sourceStoreClient.executeUpdate(CloningToolTestHelper.createInsertData(testData));
-		//check test data loaded
-		assertEquals(N_TEST_TRIPLES,sourceStoreClient.getTotalNumberOfTriples()); 
 	}
 			
 	@AfterEach
@@ -79,7 +79,7 @@ class CloningToolIntegrationTest {
 	@Test
 	void testClone() {
 		
-		CloningTool cloningTool = new CloningTool(800,80);
+		CloningTool cloningTool = new CloningTool(1500,150);
 		cloningTool.clone(sourceStoreClient, targetStoreClient);
 		
 		assertEquals(N_TEST_TRIPLES,targetStoreClient.getTotalNumberOfTriples());
@@ -103,7 +103,7 @@ class CloningToolIntegrationTest {
 				.addWhere("_:b2", "<pblank2>", "<oblank2>")
 				.addWhere("<sblank3>", "<pblank3>", "_:b3");
 				
-		CloningTool cloningTool = new CloningTool(800,80);
+		CloningTool cloningTool = new CloningTool(1500,150);
 		cloningTool.clone(sourceStoreClient, targetStoreClient);
 		
 		assertEquals(N_TEST_TRIPLES+nBlankTriples,targetStoreClient.getTotalNumberOfTriples());
@@ -121,8 +121,8 @@ class CloningToolIntegrationTest {
 		
 		sourceStoreClient.cloneTo(targetStoreClient);
 		
+		// Just check the number of triples. testCloneWithBlanks and testClone check all triples 
 		assertEquals(N_TEST_TRIPLES,targetStoreClient.getTotalNumberOfTriples());
-		assertTrue(CloningToolTestHelper.checkTriples(N_TEST_TRIPLES, targetStoreClient));
 	}
 
 	@Test
@@ -134,8 +134,9 @@ class CloningToolIntegrationTest {
 	void testStoreClientCloneFrom() {
 		
 		targetStoreClient.cloneFrom(sourceStoreClient);	
-		
+
+		//Just check the number of triples. testCloneWithBlanks and testClone check all triples
 		assertEquals(N_TEST_TRIPLES,targetStoreClient.getTotalNumberOfTriples());
-		assertTrue(CloningToolTestHelper.checkTriples(N_TEST_TRIPLES, targetStoreClient));
 	}
+	
 }
