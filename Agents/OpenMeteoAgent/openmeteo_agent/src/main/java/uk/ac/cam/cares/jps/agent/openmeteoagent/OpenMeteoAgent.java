@@ -6,6 +6,7 @@ import javax.ws.rs.BadRequestException;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
 import org.apache.jena.graph.NodeFactory;
@@ -41,6 +42,9 @@ import java.util.stream.IntStream;
                 OpenMeteoAgent.URI_DELETE
         })
 public class OpenMeteoAgent extends JPSAgent {
+    public static final String URI_INSTANTIATE = "/instantiate";
+    public static final String URI_DELETE = "/delete";
+
     private static final String KEY_LAT = "latitude";
     private static final String KEY_LONG = "longitude";
     private static final String KEY_START = "start_date";
@@ -76,6 +80,7 @@ public class OpenMeteoAgent extends JPSAgent {
     private static final String API_ELEVATION = "elevation";
 
     private String ontoemsURI;
+    private String ontotimeseriesURI;
     private String omURI;
     private String rdfURI;
     private String geospatialLiterals;
@@ -100,9 +105,6 @@ public class OpenMeteoAgent extends JPSAgent {
     private TimeSeriesClient tsClient;
     private String route;
 
-    public static final String URI_INSTANTIATE = "/instantiate";
-    public static final String URI_DELETE = "/delete";
-
     public OpenMeteoAgent() {
         readConfig();
         setTimeSeriesTypes();
@@ -117,83 +119,117 @@ public class OpenMeteoAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         if (validateInput(requestParams)) {
-            latitude = requestParams.getDouble(KEY_LAT);
-            longitude = requestParams.getDouble(KEY_LONG);
-            JSONObject response = getWeatherData(latitude, longitude, requestParams.getString(KEY_START), requestParams.getString(KEY_END));
+            if (requestParams.getString("requestUrl").contains(URI_INSTANTIATE)) {
+                latitude = requestParams.getDouble(KEY_LAT);
+                longitude = requestParams.getDouble(KEY_LONG);
+                JSONObject response = getWeatherData(latitude, longitude, requestParams.getString(KEY_START), requestParams.getString(KEY_END));
 
-            JSONObject weatherData = response.getJSONObject(API_HOURLY);
-            JSONObject weatherUnit = response.getJSONObject(API_HOURLY_UNITS);
+                JSONObject weatherData = response.getJSONObject(API_HOURLY);
+                JSONObject weatherUnit = response.getJSONObject(API_HOURLY_UNITS);
 
-            elevation = response.getDouble(API_ELEVATION);
+                elevation = response.getDouble(API_ELEVATION);
 
-            List<LocalDateTime> timesList = getTimesList(weatherData, API_TIME);
-            Map<String, List<Object>> parsedData = parseWeatherData(weatherData, weatherUnit);
+                List<LocalDateTime> timesList = getTimesList(weatherData, API_TIME);
+                Map<String, List<Object>> parsedData = parseWeatherData(weatherData, weatherUnit);
 
-            String stationIRI = createStation(latitude, longitude, elevation);
+                String stationIRI = createStation(latitude, longitude, elevation);
 
-            WhereBuilder wb = new WhereBuilder()
-                    .addPrefix("ontoems", ontoemsURI)
-                    .addPrefix("om", omURI)
-                    .addPrefix("rdf", rdfURI);
+                WhereBuilder wb = new WhereBuilder()
+                        .addPrefix("ontoems", ontoemsURI)
+                        .addPrefix("om", omURI)
+                        .addPrefix("rdf", rdfURI);
 
-            wb.addWhere(NodeFactory.createURI(stationIRI), "rdf:type", "ontoems:"+STATION);
+                wb.addWhere(NodeFactory.createURI(stationIRI), "rdf:type", "ontoems:" + STATION);
 
-            String apiParam;
-            String ontoemsClass;
-            String quantityIRI;
-            String measureIRI;
+                String apiParam;
+                String ontoemsClass;
+                String quantityIRI;
+                String measureIRI;
 
-            List<List<String>> dataIRIs = new ArrayList<>();
-            List<String> dataIRI;
-            List<TimeSeriesClient.Type> tsTypes = new ArrayList<>();
-            List<Duration> durations = new ArrayList<>();
-            List<ChronoUnit> units = new ArrayList<>();
-            List<TimeSeries<LocalDateTime>> tsList = new ArrayList<>();
-            List<Double> value;
+                List<List<String>> dataIRIs = new ArrayList<>();
+                List<String> dataIRI;
+                List<TimeSeriesClient.Type> tsTypes = new ArrayList<>();
+                List<Duration> durations = new ArrayList<>();
+                List<ChronoUnit> units = new ArrayList<>();
+                List<TimeSeries<LocalDateTime>> tsList = new ArrayList<>();
+                List<Double> value;
 
-            for (var entry: api_ontoems.entrySet()){
-                apiParam = entry.getKey();
+                for (var entry : api_ontoems.entrySet()) {
+                    apiParam = entry.getKey();
 
-                if (parsedData.containsKey(apiParam)){
-                    List<Object> data = parsedData.get(apiParam);
-                    ontoemsClass = entry.getValue();
-                    quantityIRI = ontoemsURI + ontoemsClass + "Quantity_" + UUID.randomUUID();
-                    measureIRI = ontoemsURI + ontoemsClass + "_" + UUID.randomUUID();
-                    createUpdate(wb, stationIRI, quantityIRI, "ontoems:"+ontoemsClass, measureIRI, (String) data.get(0));
-                    dataIRI = Arrays.asList(measureIRI);
-                    dataIRIs.add(dataIRI);
-                    value = (List<Double>) data.get(1);
-                    tsList.add(new TimeSeries<>(timesList, dataIRI, List.of(value)));
-                    tsTypes.add(api_timeseries.get(apiParam));
-                    if (api_timeseries.get(apiParam) == TimeSeriesClient.Type.AVERAGE){
-                        durations.add(Duration.ofHours(1));
-                        units.add(ChronoUnit.HOURS);
-                    }
-                    else{
-                        durations.add(null);
-                        units.add(null);
+                    if (parsedData.containsKey(apiParam)) {
+                        List<Object> data = parsedData.get(apiParam);
+                        ontoemsClass = entry.getValue();
+                        quantityIRI = ontoemsURI + ontoemsClass + "Quantity_" + UUID.randomUUID();
+                        measureIRI = ontoemsURI + ontoemsClass + "_" + UUID.randomUUID();
+                        createUpdate(wb, stationIRI, quantityIRI, "ontoems:" + ontoemsClass, measureIRI, (String) data.get(0));
+                        dataIRI = Arrays.asList(measureIRI);
+                        dataIRIs.add(dataIRI);
+                        value = (List<Double>) data.get(1);
+                        tsList.add(new TimeSeries<>(timesList, dataIRI, List.of(value)));
+                        tsTypes.add(api_timeseries.get(apiParam));
+                        if (api_timeseries.get(apiParam) == TimeSeriesClient.Type.AVERAGE) {
+                            durations.add(Duration.ofHours(1));
+                            units.add(ChronoUnit.HOURS);
+                        } else {
+                            durations.add(null);
+                            units.add(null);
+                        }
                     }
                 }
+
+                List<List<Class<?>>> dataClass = Collections.nCopies(dataIRIs.size(), Arrays.asList(Double.class));
+                List<String> timeUnit = Collections.nCopies(dataIRIs.size(), LocalDateTime.class.getSimpleName());
+
+                UpdateBuilder ub = new UpdateBuilder()
+                        .addInsert(wb);
+
+                this.updateStore(route, ub.buildRequest().toString());
+
+                createTimeSeries(dataIRIs, dataClass, timeUnit, tsTypes, durations, units);
+
+                try (Connection conn = rdbStoreClient.getConnection()) {
+                    tsClient.bulkaddTimeSeriesData(tsList, conn);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    throw new JPSRuntimeException(e);
+                }
             }
+            else if (requestParams.getString("requestUrl").contains(URI_DELETE)) {
+                latitude = requestParams.getDouble(KEY_LAT);
+                longitude = requestParams.getDouble(KEY_LONG);
 
-            List<List<Class<?>>> dataClass = Collections.nCopies(dataIRIs.size(), Arrays.asList(Double.class));
-            List<String> timeUnit = Collections.nCopies(dataIRIs.size(), LocalDateTime.class.getSimpleName());
+                String stationIRI = getStation(latitude, longitude);
 
-            UpdateBuilder ub = new UpdateBuilder()
-                    .addInsert(wb);
+                WhereBuilder wb = new WhereBuilder()
+                        .addPrefix("ontoems", ontoemsURI)
+                        .addPrefix("ontotimeseries", ontotimeseriesURI)
+                        .addPrefix("om", omURI);
 
-            this.updateStore(route, ub.buildRequest().toString());
+                addTimeSeriesWhere(wb, stationIRI);
 
-            createTimeSeries(dataIRIs, dataClass, timeUnit, tsTypes, durations, units);
+                SelectBuilder sb = new SelectBuilder()
+                        .addVar("timeseries")
+                        .addVar("quantity")
+                        .addVar("measure")
+                        .addWhere(wb);
 
-            try(Connection conn = rdbStoreClient.getConnection()){
-                tsClient.bulkaddTimeSeriesData(tsList, conn);
+                JSONArray queryResults = this.queryStore(route, sb.build().toString());
+
+                try (Connection conn = rdbStoreClient.getConnection()) {
+                    for (int i = 0; i < queryResults.length(); i++){
+                        tsClient.deleteTimeSeries(queryResults.getJSONObject(i).getString("timeseries"), conn);
+                        deleteIRI(queryResults.getJSONObject(i).getString("measure"));
+                        deleteIRI(queryResults.getJSONObject(i).getString("quantity"));
+                    }
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                    throw new JPSRuntimeException(e);
+                }
+
+                deleteIRI(stationIRI);
             }
-            catch (Exception e){
-                e.printStackTrace();
-                throw new JPSRuntimeException(e);
-            }
-
         }
         return requestParams;
     }
@@ -204,6 +240,7 @@ public class OpenMeteoAgent extends JPSAgent {
     private void readConfig() {
         ResourceBundle config = ResourceBundle.getBundle("config");
         ontoemsURI = config.getString("uri.ontology.ontoems");
+        ontotimeseriesURI = config.getString("uri.ontology.ontotimeseries");
         omURI = config.getString("uri.ontology.om");
         rdfURI = config.getString("uri.ontology.rdf");
         geospatialLiterals = config.getString("uri.geospatial.literals");
@@ -360,7 +397,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param ele observation elevation of OntoEMS:ReportingStation instance
      * @return OntoEMS:ReportingStation instance IRI
      */
-    public String createStation(double lat, double lon, double ele) {
+    public String createStation(Double lat, Double lon, Double ele) {
         String stationIRI = ontoemsURI + STATION + "_" + UUID.randomUUID();
 
         String coordinate = lat + "placeHolder" + lon;
@@ -399,6 +436,68 @@ public class OpenMeteoAgent extends JPSAgent {
                 .addWhere(NodeFactory.createURI(quantity), "om:hasValue", NodeFactory.createURI(measure))
                 .addWhere(NodeFactory.createURI(measure), "rdf:type", "om:Measure")
                 .addWhere(NodeFactory.createURI(measure), "om:hasUnit", unit);
+    }
+
+    /**
+     * Creates query for getting the quantity, measure, and time series iri related to the reporting station iri
+     * @param builder where builder
+     * @param station reporting station iri
+     */
+    public void addTimeSeriesWhere(WhereBuilder builder, String station) {
+        builder.addWhere(NodeFactory.createURI(station), "ontoems:reports", "?quantity")
+                .addWhere("?quantity", "om:hasValue", "?measure")
+                .addWhere("?measure", "ontotimeseries:hasTimeSeries", "?timeseries");
+    }
+
+    /**
+     * Queries for the OntoEMS:ReportingStation iri with the given lat, lon coordinate
+     * @param lat latitude of the reporting station
+     * @param lon longitude of the reporting station
+     * @return reporting station iri at the given coordinate if it exists
+     */
+    public String getStation(Double lat, Double lon) {
+        String coordinate = lat + "placeHolder" + lon;
+
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("ontoems", ontoemsURI)
+                .addPrefix("rdf", rdfURI);
+
+
+        wb.addWhere("?station", "rdf:type", "ontoems:ReportingStation")
+                .addWhere("?station", "ontoems:hasObservationLocation", coordinate);
+
+        SelectBuilder sb = new SelectBuilder()
+                .addVar("?station")
+                .addWhere(wb);
+        String queryString = sb.build().toString().replace("placeHolder", "#");
+        queryString = queryString.replace(lon + "\"", lon + "\"^^<" + geospatialLiterals + ">");
+
+        JSONArray queryResult = this.queryStore(route, queryString);
+
+        if (queryResult.isEmpty()){
+            throw new JPSRuntimeException("No reporting station found at the given coordinate.");
+        }
+        else{
+            return queryResult.getJSONObject(0).getString("station");
+        }
+    }
+
+    /**
+     * Deletes all triples related to the given iri
+     * @param iri iri to delete
+     */
+    public void deleteIRI(String iri){
+        UpdateBuilder db = new UpdateBuilder()
+                .addWhere(NodeFactory.createURI(iri), "?p", "?o");
+
+        UpdateBuilder db1 = new UpdateBuilder()
+                .addWhere("?s", "?p1", NodeFactory.createURI(iri));
+
+        db.addDeleteQuads(db.buildDeleteWhere().getQuads());
+        db1.addDeleteQuads(db1.buildDeleteWhere().getQuads());
+
+        this.updateStore(route, db.buildRequest().toString());
+        this.updateStore(route, db1.buildRequest().toString());
     }
 
     /**
