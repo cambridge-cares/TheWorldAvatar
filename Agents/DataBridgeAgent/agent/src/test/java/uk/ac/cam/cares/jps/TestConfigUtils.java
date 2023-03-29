@@ -5,8 +5,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 public class TestConfigUtils {
-    private static final String originSparqlKey = "sparql.origin.endpoint";
-    private static final String destinationSparqlKey = "sparql.destination.endpoint";
+    private static final String srcSparqlKey = "sparql.src.endpoint";
+    private static final String targetSparqlKey = "sparql.target.endpoint";
     private static final String srcDBUrl = "src.db.url";
     private static final String srcDBUser = "src.db.user";
     private static final String srcDBPass = "src.db.password";
@@ -15,7 +15,7 @@ public class TestConfigUtils {
     private static final String targetDBPass = "target.db.password";
 
 
-    public static File genSampleSPARQLConfigFile(boolean isComplete, String originSparql, String destinationSparql) throws IOException {
+    public static File genSampleSPARQLConfigFile(boolean isComplete, String srcSparql, String tgtSparql) throws IOException {
         File file = new File(System.getProperty("user.dir") + "/config/endpoint.properties");
         // Check if the directory exists, create it if it doesn't
         if (!file.getParentFile().exists()) {
@@ -23,9 +23,9 @@ public class TestConfigUtils {
         }
         file.createNewFile();
         PrintWriter writer = new PrintWriter(file);
-        writer.println(originSparqlKey + "=" + originSparql);
+        writer.println(srcSparqlKey + "=" + srcSparql);
         if (isComplete) {
-            writer.println(destinationSparqlKey + "=" + destinationSparql);
+            writer.println(targetSparqlKey + "=" + tgtSparql);
         }
         writer.close();
         return file;

@@ -132,7 +132,7 @@ public class DataBridgeAgent extends JPSAgent {
         JSONObject response = new JSONObject();
         LOGGER.debug("Creating the SPARQL connector..");
         SparqlBridge connector = new SparqlBridge(config[0], config[1]);
-        LOGGER.debug("Transfer data from origin to destination...");
+        LOGGER.debug("Transfer data from source to target endpoint...");
         connector.transfer();
         LOGGER.info("Triples have been successfully transferred from " + config[0] + " to " + config[1]);
         response.put("Result", "Triples have been successfully transferred from " + config[0] + " to " + config[1]);
@@ -148,7 +148,7 @@ public class DataBridgeAgent extends JPSAgent {
         JSONObject response = new JSONObject();
         LOGGER.debug("Creating the SQL connector..");
         SqlBridge connector = new SqlBridge(config[0], config[1], config[2], config[3], config[4], config[5]);
-        LOGGER.debug("Transfer data from origin to destination...");
+        LOGGER.debug("Transfer data from source to target database...");
         connector.transfer();
         LOGGER.info("Data have been successfully transferred from " + config[0] + " to " + config[3]);
         response.put("Result", "Data have been successfully transferred from " + config[0] + " to " + config[3]);

@@ -22,8 +22,8 @@ class DataBridgeAgentTest {
     private static final String STATUS_ROUTE = BASE_ROUTE + "status";
     private static final String SPARQL_ROUTE = BASE_ROUTE + "sparql";
     private static final String SQL_ROUTE = BASE_ROUTE + "sql";
-    private static final String originSparql = "http://www.example.org/blazegraph/namespace/test/sparql";
-    private static final String destinationSparql = "http://www.target.org:9999/blazegraph/namespace/target/sparql";
+    private static final String sparqlSrc = "http://www.example.org/blazegraph/namespace/test/sparql";
+    private static final String sparqlTarget = "http://www.target.org:9999/blazegraph/namespace/target/sparql";
     private static final String srcDb = "jdbc:postgresql://localhost:5432/db";
     private static final String srcUser = "postgres";
     private static final String srcPass = "pass1";
@@ -65,7 +65,7 @@ class DataBridgeAgentTest {
     @Test
     void testProcessRequestParametersForSparqlRouteViaGETIncompleteProperties() throws IOException {
         // Generate sample config file
-        File config = TestConfigUtils.genSampleSPARQLConfigFile(false, originSparql, destinationSparql);
+        File config = TestConfigUtils.genSampleSPARQLConfigFile(false, sparqlSrc, sparqlTarget);
         // Set up request parameters
         JSONObject requestParams = new JSONObject();
         requestParams.put(KEY_METHOD, GET_METHOD);
@@ -74,7 +74,7 @@ class DataBridgeAgentTest {
             // Execute method should throw right error and response
             JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, ()-> agent.processRequestParameters(requestParams));
             assertEquals("Missing Properties:\n" +
-                    "sparql.destination.endpoint is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
+                    "sparql.target.endpoint is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
         } finally {
             // Always delete generated config file
             config.delete();
@@ -84,7 +84,7 @@ class DataBridgeAgentTest {
     @Test
     void testProcessRequestParametersForSparqlRouteViaGET() throws IOException {
         // Generate sample config file
-        File config = TestConfigUtils.genSampleSPARQLConfigFile(true, originSparql, destinationSparql);
+        File config = TestConfigUtils.genSampleSPARQLConfigFile(true, sparqlSrc, sparqlTarget);
         // Set up request parameters
         JSONObject requestParams = new JSONObject();
         requestParams.put(KEY_METHOD, GET_METHOD);
@@ -94,7 +94,7 @@ class DataBridgeAgentTest {
             // Execute method
             JSONObject response = agent.processRequestParameters(requestParams);
             // Verify response
-            assertEquals("Triples have been successfully transferred from " + originSparql + " to " + destinationSparql, response.getString("Result"));
+            assertEquals("Triples have been successfully transferred from " + sparqlSrc + " to " + sparqlTarget, response.getString("Result"));
         } finally {
             // Always delete generated config file
             config.delete();

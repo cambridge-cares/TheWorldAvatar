@@ -9,8 +9,8 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ConfigStoreTest {
-    private static final String originSparql = "http://localhost:9999/blazegraph/namespace/test/sparql";
-    private static final String destinationSparql = "http://host.docker.internal:9999/blazegraph/namespace/target/sparql";
+    private static final String srcSparql = "http://localhost:9999/blazegraph/namespace/test/sparql";
+    private static final String targetSparql = "http://host.docker.internal:9999/blazegraph/namespace/target/sparql";
     private static final String srcDb = "jdbc:postgresql://localhost:5432/db";
     private static final String srcUser = "postgres";
     private static final String srcPass = "pass1";
@@ -27,12 +27,12 @@ class ConfigStoreTest {
 
     @Test
     void testRetrieveSPARQLConfigMissingInputs() throws IOException {
-        File config = TestConfigUtils.genSampleSPARQLConfigFile(false, originSparql, destinationSparql);
+        File config = TestConfigUtils.genSampleSPARQLConfigFile(false, srcSparql, targetSparql);
         try {
             // Execute method and ensure right error is thrown
             JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, ConfigStore::retrieveSPARQLConfig);
             assertEquals("Missing Properties:\n" +
-                    "sparql.destination.endpoint is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
+                    "sparql.target.endpoint is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
         } finally {
             // Always delete generated config file
             config.delete();
@@ -41,13 +41,13 @@ class ConfigStoreTest {
 
     @Test
     void testRetrieveSPARQLConfig() throws IOException {
-        File config = TestConfigUtils.genSampleSPARQLConfigFile(true, originSparql, destinationSparql);
+        File config = TestConfigUtils.genSampleSPARQLConfigFile(true, srcSparql, targetSparql);
         try {
             // Execute method
             String[] result = ConfigStore.retrieveSPARQLConfig();
             // Verify results are expected
-            assertEquals(originSparql, result[0]);
-            assertEquals(destinationSparql, result[1]);
+            assertEquals(srcSparql, result[0]);
+            assertEquals(targetSparql, result[1]);
         } finally {
             // Always delete generated config file
             config.delete();

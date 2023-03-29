@@ -20,11 +20,11 @@ public class ConfigStore {
     private static final String NO_PROPERTIES_MSG = "No endpoint.properties file detected! Please place the file in the config directory.";
     private static final String INACCESSIBLE_CLIENT_PROPERTIES_MSG = "File could not be accessed! See error message for more details: ";
     private static final String PROPERTIES_FILEPATH = System.getProperty("user.dir") + "/config/endpoint.properties";
-    private static final String ORIGIN_SPARQL_ENDPOINT = "sparql.origin.endpoint";
+    private static final String SRC_SPARQL_ENDPOINT = "sparql.src.endpoint";
     private static final String SRC_DB_URL = "src.db.url";
     private static final String SRC_DB_USER = "src.db.user";
     private static final String SRC_DB_PASSWORD = "src.db.password";
-    private static final String DESTINATION_SPARQL_ENDPOINT = "sparql.destination.endpoint";
+    private static final String TARGET_SPARQL_ENDPOINT = "sparql.target.endpoint";
     private static final String TARGET_DB_URL = "target.db.url";
     private static final String TARGET_DB_USER = "target.db.user";
     private static final String TARGET_DB_PASSWORD = "target.db.password";
@@ -75,8 +75,8 @@ public class ConfigStore {
             String[] config = new String[2];
             LOGGER.debug("Retrieving configuration from " + PROPERTIES_FILEPATH + "...");
             prop.load(input);
-            config[0] = validateProperties(prop, ORIGIN_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
-            config[1] = validateProperties(prop, DESTINATION_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
+            config[0] = validateProperties(prop, SRC_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
+            config[1] = validateProperties(prop, TARGET_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
             String missingMessage = missingPropertiesErrorMessage.toString();
             if (!missingMessage.isEmpty()) {
                 LOGGER.error("Missing Properties:\n" + missingMessage);
