@@ -304,17 +304,17 @@ def update_all_transaction_records(min_conf_score=90,
                                                                      postcodes=pc)
         print(f'Adding derivation markup for {len(postal_code_info_lst)} postcodes ...')
         # Add derivation markup for each postal code
-        for i in range(len(postal_code_info_lst)):
-            logger.info(f"Processing postal code {i+1}/{len(postal_code_info_lst)}")
+        for j in range(len(postal_code_info_lst)):
+            logger.info(f"Processing postal code {j+1}/{len(postal_code_info_lst)}")
             avg_sqm_price_derivation_markup(
                 derivation_client=derivation_client,
                 sparql_client=kg_client_obe,
-                postal_code_iri=postal_code_info_lst[i]['postal_code'],
-                transaction_record_iri_lst=postal_code_info_lst[i]['tx'],
-                property_price_index_iri=postal_code_info_lst[i]['ppi'],
-                existing_avg_sqm_price_iri=postal_code_info_lst[i].get('asp'),
-                existing_asp_derivation_iri=postal_code_info_lst[i].get('derivation'),
-                existing_asp_derivation_tx_iri_lst=postal_code_info_lst[i].get('deriv_tx'),
+                postal_code_iri=postal_code_info_lst[j]['postal_code'],
+                transaction_record_iri_lst=postal_code_info_lst[j]['tx'],
+                property_price_index_iri=postal_code_info_lst[j]['ppi'],
+                existing_avg_sqm_price_iri=postal_code_info_lst[j].get('asp'),
+                existing_asp_derivation_iri=postal_code_info_lst[j].get('derivation'),
+                existing_asp_derivation_tx_iri_lst=postal_code_info_lst[j].get('deriv_tx'),
             )
         # Allow for some time to update derivations in KG (10s is arbitrary)
         logger.info(f"Derivation markup for postcodes completed. Waiting shortly before continuing with properties ...")
@@ -326,8 +326,8 @@ def update_all_transaction_records(min_conf_score=90,
                                                                property_iris=prop_iris)
         print(f'Adding derivation markup for {len(property_info_dct)} properties ...')
         # Add derivation markup for each property
-        for i, (iri, info) in enumerate(property_info_dct.items()):
-            logger.info(f"Processing property {i+1}/{len(property_info_dct)}")
+        for k, (iri, info) in enumerate(property_info_dct.items()):
+            logger.info(f"Processing property {k+1}/{len(property_info_dct)}")
             property_value_estimation_derivation_markup(
                 derivation_client=derivation_client,
                 sparql_client=kg_client_obe,
