@@ -34,6 +34,8 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
         self.node_value_dict_path = os.path.join(self.full_dataset_dir, "node_value_dict.json")
         if os.path.exists(self.node_value_dict_path):
             self.node_value_dict = json.loads(open(self.node_value_dict_path).read())
+        else:
+            self.node_value_dict = {}
 
         self.p_stop_list = ["hasLogP", "hasDensity", "hasBoilingPoint",
                             "hasSolubility", "hasLogP", "hasLogS", "hasMolecularWeight",
@@ -203,7 +205,12 @@ class TransRInferenceDataset(torch.utils.data.Dataset):
                     candidates = range(0, self.ent_num)
                     padding_num = self.ent_num
                 else:
-                    candidates = list(set(self.my_extractor.extract_neighbour_from_idx(str(s))))
+                    try:
+                        candidates = list(set(self.my_extractor.extract_neighbour_from_idx(str(s))))
+                    except TypeError:
+                        print("Label that causes the problem", row[0])
+                        print("Index that causes the problem", s)
+                        print("candidates selected ")
                     padding_num = self.ent_num
 
                 fake_triples_list = []
