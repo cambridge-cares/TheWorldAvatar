@@ -42,7 +42,7 @@ __pycache__/
 # Ignore Data directory
 Data/*
 Outdated_Algorithms/*
-
+myenv/*
 # Ignore Excel files
 *.xlsx
 *.xlsb
