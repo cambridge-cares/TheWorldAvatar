@@ -38,14 +38,21 @@ docker-compose up -d
 
 ### 3. Endpoint
 When successfully built, the agent will be running at `port 3055`. The base url will be `http://localhost:3055/data-bridge-agent`.
-There are currently two routes available
+There are currently three routes available:
 
 1. `<base>/status` route:
    - Returns the current status of the agent through an HTTP `GET` request.
 2. `<base>/sparql` route:
-    - Execute the agent's task through an HTTP `GET` request. This route will transfer data between the specified origin and destination endpoints
+    - Execute the agent's task through an HTTP `GET` request. This route will transfer data between the specified origin and destination endpoints.
     - Before sending the request, please update the origin and destination SPARQL endpoint in the `<root>/config/endpoint.properties`.
     - A sample `GET` request is as follows:
 ```
 curl -X GET localhost:3055/data-bridge-agent/sparql
+```
+3. `<base>/sql` route:
+   - Execute the agent's task through an HTTP `GET` request. This route will transfer data between the specified source and target databases.
+   - Before sending the request, please update the source and target database urls, user, and password, in the `<root>/config/endpoint.properties`.
+   - A sample `GET` request is as follows:
+```
+curl -X GET localhost:3055/data-bridge-agent/sql
 ```
