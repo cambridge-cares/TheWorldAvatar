@@ -9,6 +9,8 @@ services:
       target: agent
     environment:
       - "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+    volumes:
+      - ../config:/usr/local/tomcat/config
     ports:
       - "5005:5005"
       - "3055:8080"
