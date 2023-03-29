@@ -349,6 +349,32 @@ EPC Agent
 - HTTP response to `/epcagent/instantiate/certificates/all` does not seem to provide the correct number of instantiated and updated properties. Instead of providing the sum of all instantiated/updated properties from all API endpoints, it only seems to provide the number from the last endpoint and shall be revisited
 - There seems to be a very minor fraction of properties which are classified as Flat and Building/Property at the same time.
 - There is a very minor fraction of properties (less than 10 in total of ~13300), which do have multiple address details instantiated, e.g. 2 associated street names. This can cause issues with the HM Land Registry Agent when instantiating sales transactions, as the applicable property is determined by address matching and the instantiation of multiple possible addresses adds ambiguity here. This is currently handled by dropping duplicated addresses for the same property inside the Landregistry Agent, but should ideally be fixed on the instantaition side. The issue seems to affect mainly parent buildings with only one child property/flat.
+To identify potentially affected properties, the following SPARQL queries can be used:
+```
+prefix obe:<https://www.theworldavatar.com/kg/ontobuiltenv/>
+prefix icontact:<http://ontology.eil.utoronto.ca/icontact.owl#>
+
+SELECT ?property (count(?tx) as ?count)
+WHERE {
+  ?property rdf:type/rdfs:subClassOf* obe:Property ;
+            obe:hasLatestTransactionRecord ?tx .
+}
+GROUP BY ?property
+HAVING(?count > 1)
+```
+```
+prefix obe:<https://www.theworldavatar.com/kg/ontobuiltenv/>
+prefix icontact:<http://ontology.eil.utoronto.ca/icontact.owl#>
+
+SELECT distinct ?address (count(distinct ?prop) as ?properties) (count(distinct ?street) as ?streets)
+WHERE {
+  ?prop obe:hasAddress ?address .
+  ?address a icontact:Address ;
+           icontact:hasStreet ?street
+}
+GROUP BY ?address
+HAVING(?streets > 1)
+```
 
 Property Value Estimation Agent
 - There can be occasions where there are "too recent" actual property sales transactions with a date beyond the scope of the Property Price Index (PPI) are instantiated (as the PPI is always releassed with some lead time of ~2 months). In such a case the Property Value Estimation Agent will raise a KeyError (e.g. KeyError: '2023-02') and instantiate the property value as non-computable. As this only affects a very minor fraction of properties, it is not considered a major issue at the moment, but could be solved by simply using the latest available PPI value instead of raising an error.
