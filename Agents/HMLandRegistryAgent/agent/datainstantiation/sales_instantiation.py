@@ -321,7 +321,8 @@ def update_all_transaction_records(min_conf_score=90,
         time.sleep(10)
     
         # 7) Add derivation markup for Market Value Estimate per Property
-        #    (optional as more efficient in update_all_transaction_records considering all postcodes)        # Retrieve relevant property info
+        #    (optional as more efficient in update_all_transaction_records considering all postcodes)        
+        # Retrieve relevant property info
         property_info_dct = retrieve_marketvalue_property_info(sparql_client=kg_client_obe,
                                                                property_iris=prop_iris)
         print(f'Adding derivation markup for {len(property_info_dct)} properties ...')
@@ -385,6 +386,17 @@ def create_conditioned_dataframe_obe(sparql_results:list) -> pd.DataFrame:
                                                       df['bldg_name'], df['unit_name'])]
         # Remove unnecessary whitespaces
         df['epc_address'] = df['epc_address'].apply(lambda x: ' '.join(x.split()))
+
+        # Remove potentially duplicated properties, i.e.
+        # NOTE: It has been observed that a minor fraction of properties (<10 in 
+        #       set >13000 properties) gets assigned multiple address details (e.g. 
+        #       2 street names). To avoid instantiation of multiple transaction 
+        #       records for property (which is based on address matching), 
+        #       remove duplicated IRIs
+        # TODO: Understand why multiple address details get instantiated in the 
+        #       first place in EPC Agent (likely some issue with instantiation of
+        #       parent building when only containing one other property/flat)
+        df.drop_duplicates(subset=['property_iri'], keep='first', inplace=True)
 
         return df
 
