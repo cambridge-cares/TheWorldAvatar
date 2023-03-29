@@ -8,12 +8,15 @@
 
 import glob
 import jaydebeapi
+import json
 
-from agent.errorhandling.exceptions import StackException
-from agent.kgutils.javagateway import stackClientsGw, jpsBaseLibGW
-from agent.utils.env_configs import DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, \
-                                    BUILDINGS_TABLE
-from agent.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT
+from propertyvalueestimation.errorhandling.exceptions import StackException
+from propertyvalueestimation.kg_operations.javagateway import stackClientsGw, jpsBaseLibGW
+from propertyvalueestimation.utils.env_configs import DATABASE, LAYERNAME, \
+                                                      GEOSERVER_WORKSPACE, \
+                                                      BUILDINGS_TABLE
+from propertyvalueestimation.utils.stack_configs import DB_URL, DB_USER, DB_PASSWORD, \
+                                                        QUERY_ENDPOINT
 
 # Initialise logger
 from py4jps import agentlogging
@@ -132,13 +135,13 @@ class PostGISClient(StackClient):
             raise StackException('Unsuccessful JDBC interaction.') from ex
         
     
-    def upload_property_price(self, building_iri:str, table=LAYERNAME,
-                              tx_price:str=None,
+    def upload_property_value(self, building_iri:str, table=LAYERNAME,
+                              value_estimate:str=None,
                               kg_endpoint:str=QUERY_ENDPOINT):
         """
-        This function uploads the latest market transaction price of a property to 
-        PostGIS (appends new row if 'building_iri' is not yet in the table, 
-        otherwise  'price' field gets updated/overwritten)
+        This function uploads the latest market value of a property to PostGIS
+        (appends new row if 'building_iri' is not yet in the table, otherwise 
+         'price' field gets updated/overwritten)
         
         Initially, "name", "iri", and "endpoint" were required for the FeatureInfoAgent
         to work (i.e. be able to retrieve data from PostGIS). Strictly, those are no 
@@ -147,7 +150,7 @@ class PostGISClient(StackClient):
 
         Arguments:
             building_iri {str} -- IRI of building/property to be uploaded to PostGIS
-            tx_price {str} -- Latest actual transaction price of building (in GBP)
+            value_estimate {str} -- Market value estimate of building (in GBP)
         """
         
         if building_iri:
@@ -164,7 +167,7 @@ class PostGISClient(StackClient):
                 pass
             # Property value estimate (upload required for styling purposes)
             try:
-                props['price'] = float(tx_price)
+                props['price'] = float(value_estimate)
             except Exception:
                 pass
             
@@ -207,7 +210,7 @@ class GeoserverClient(StackClient):
                  geom_name='wkb_geometry', geom_type='MultiPolygon', geom_srid='4326'):
         """
         Initialise Geoserver client with default settings (i.e. settings required to
-        create virtual table with building footprints and latest transaction prices)
+        created virtual table with building footprints and market value estimates)
         For details, please see:
         https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-data-uploader/README.md#geoserver-options
         Example for virtual table, please see:

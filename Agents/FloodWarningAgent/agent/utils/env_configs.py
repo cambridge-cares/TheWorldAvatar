@@ -22,7 +22,7 @@ def retrieve_env_vars():
 
     # Define global scope for global variables
     global NAMESPACE, DATABASE, LAYERNAME, GEOSERVER_WORKSPACE, \
-           ONTOP_FILE, BUILDINGS_TABLE
+           ONTOP_FILE, BUILDINGS_TABLE, FLOOD_ASSESSMENT_AGENT_IRI
 
     # Create error message
     def _error_msg(variable):
@@ -74,6 +74,12 @@ def retrieve_env_vars():
     if not BUILDINGS_TABLE:
         logger.error(_error_msg('BUILDINGS_TABLE'))
         raise ValueError(_error_msg('BUILDINGS_TABLE'))
+    
+    # Retrieve derivation agent settings
+    FLOOD_ASSESSMENT_AGENT_IRI = os.getenv('FLOOD_ASSESSMENT_AGENT_IRI')
+    if FLOOD_ASSESSMENT_AGENT_IRI is None or FLOOD_ASSESSMENT_AGENT_IRI == '':
+        logger.error('No "FLOOD_ASSESSMENT_AGENT_IRI" could be retrieved from environment variables.')
+        raise ValueError('No "FLOOD_ASSESSMENT_AGENT_IRI" could be retrieved from environment variables.')
 
 
 # Run when module is imported

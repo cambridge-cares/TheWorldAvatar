@@ -34,7 +34,7 @@ class KGClient(PySparqlClient):
         # Retrieve postcodes within same Super Output Area (SOA, middle layer) as given postcode
         # including their easting and northing coordinates    
         query = f"""
-            SELECT ?pc ?easting ?northing
+            SELECT distinct ?pc ?easting ?northing
             WHERE {{
                 ?s <{RDF_TYPE}> <{ONS_POSTCODE}> ; 
                 <{RDFS_LABEL}> \"{postcode_str}\" ; 
@@ -97,7 +97,7 @@ class KGClient(PySparqlClient):
         # Retrieve string(s)/label(s) of postcode IRI(s)
         values_statement = self.format_iris_values_statement(postcode_iris)
         query = f"""
-            SELECT ?pc
+            SELECT distinct ?pc
             WHERE {{    
             VALUES ?pc_iri {{ {values_statement} }}    
             ?pc_iri <{RDF_TYPE}> <{OBE_POSTALCODE}> ; 

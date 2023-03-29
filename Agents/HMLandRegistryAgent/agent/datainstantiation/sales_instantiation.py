@@ -7,7 +7,7 @@
 # the HM Land Registry Open Data SPARQL endpoint according to OntoBuiltEnv
 
 import re
-import json
+import time
 import uuid
 import numpy as np
 import pandas as pd
@@ -16,12 +16,18 @@ from fuzzywuzzy import fuzz, process, utils
 from agent.datamodel.iris import *
 from agent.datamodel.data_mapping import TIME_FORMAT, DATACLASS, PPD_PROPERTY_TYPES
 from agent.errorhandling.exceptions import TSException
-from agent.kgutils.kgclient import KGClient
 from agent.kgutils.tsclient import TSClient
 from agent.kgutils.querytemplates import *
 from agent.utils.api_endpoints import HM_SPARQL_ENDPOINT
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from agent.kgutils.stackclients import PostGISClient, GeoserverClient
+from agent.datainstantiation.derivation_markup import retrieve_avgsqmprice_postal_code_info, \
+                                                      avg_sqm_price_derivation_markup, \
+                                                      retrieve_marketvalue_property_info, \
+                                                      property_value_estimation_derivation_markup
+
+from pyderivationagent import PySparqlClient
+from pyderivationagent import PyDerivationClient
 
 # Initialise logger
 from py4jps import agentlogging
@@ -32,7 +38,10 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
                                api_endpoint=HM_SPARQL_ENDPOINT,
                                query_endpoint=QUERY_ENDPOINT, 
                                update_endpoint=UPDATE_ENDPOINT, 
-                               kg_client_obe=None, kg_client_hm=None):
+                               kg_client_obe=None, kg_client_hm=None,
+                               derivation_client=None,
+                               add_avgsqm_derivation_markup=True,
+                               add_propvalue_derivation_markup=True):
     """
     Retrieves HM Land Registry's Price Paid data for provided properties from
     given endpoint and instantiates them in the KG according to OntoBuiltEnv
@@ -41,6 +50,10 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
         property_iris - list of property IRIs for which to retrieve sales data
                         (i.e. retrieval of sales data done via address matching)
         min_conf_score - minimum confidence score for address matching [0-100]
+        add_avgsqm_derivation_markup - boolean flag whether to add derivation markup for 
+                                       Average Square Metre Price per Postal Code
+        add_propvalue_derivation_markup - boolean flag whether to add derivation markup for 
+                                          Market Value Estimate per Property
         api_endpoint - SPARQL endpoint for HM Land Registry Open Data
         query_endpoint/update_endpoint - SPARQL endpoint with instantiated OntoCityGml buildings
     Returns:
@@ -52,11 +65,16 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
     instantiated_tx = 0
     updated_tx = 0
 
-    # Initialise KG clients
+    # Initialise PySparqlClients instances
     if not kg_client_obe:
-        kg_client_obe = KGClient(query_endpoint, update_endpoint)
+        kg_client_obe = PySparqlClient(query_endpoint, update_endpoint)
     if not kg_client_hm:
-        kg_client_hm = KGClient(api_endpoint, api_endpoint)
+        kg_client_hm = PySparqlClient(api_endpoint, api_endpoint)
+    # Initialise PyDerivationClient instance
+    if not derivation_client:
+        derivation_client = PyDerivationClient(
+            derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
+            query_endpoint=query_endpoint, update_endpoint=update_endpoint)
 
     # Initialise relevant Stack Clients and parameters
     postgis_client = PostGISClient()
@@ -73,7 +91,9 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
 
     # Query Price Paid Data postcode by postcode (trade-off between query speed and number of queries)
     logger.info('Querying HM Land Registry Price Paid Data in batches of individual postcodes ...')
-    for pc in obe['postcode'].unique():
+    time_stamps_to_update = []
+    postcodes = list(obe['postcode'].unique())
+    for pc in postcodes:
         pc_data = obe[obe['postcode'] == pc].copy()
         pc_data.drop_duplicates(inplace=True)
 
@@ -112,11 +132,61 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
                 geoserver_client.create_workspace()
                 geoserver_client.create_postgis_layer()
 
-            # Upload latest market value estimate to PostGIS
+            # Upload property sales price to PostGIS
             # (overwrites previous value if available, otherwise creates new row)
-            logger.info('Uploading property values to PostGIS ...')
-            postgis_client.upload_property_value(building_iri=tx.get('property_iri'),
-                                                 value_estimate=tx.get('price'))
+            logger.info('Uploading property price to PostGIS ...')
+            postgis_client.upload_property_price(building_iri=tx.get('property_iri'),
+                                                 tx_price=tx.get('price'))
+            
+        # 5) Update timestamps of updated pure inputs (only takes effect if instantiated)
+        # NOTE 'tx_iri' is None for newly instantiated transactions and only available
+        #      for pre-existing, and hence updated, transactions
+        time_stamps_to_update.extend([t['tx_iri'] for t in matched_tx if t.get('tx_iri')])
+    derivation_client.updateTimestamps(time_stamps_to_update)
+    
+    if add_avgsqm_derivation_markup:
+        # 6) Add derivation markup for Average Square Metre Price per Postal Code
+        #    (optional as more efficient in update_all_transaction_records considering all postcodes)
+        # Retrieve relevant postal code info
+        postal_code_info_lst = retrieve_avgsqmprice_postal_code_info(sparql_client=kg_client_obe,
+                                                                     postcodes=postcodes)
+        print(f'Adding derivation markup for {len(postal_code_info_lst)} postcodes ...')
+        # Add derivation markup for each postal code
+        for i in range(len(postal_code_info_lst)):
+            logger.info(f"Processing postal code {i+1}/{len(postal_code_info_lst)}")
+            avg_sqm_price_derivation_markup(
+                derivation_client=derivation_client,
+                sparql_client=kg_client_obe,
+                postal_code_iri=postal_code_info_lst[i]['postal_code'],
+                transaction_record_iri_lst=postal_code_info_lst[i]['tx'],
+                property_price_index_iri=postal_code_info_lst[i]['ppi'],
+                existing_avg_sqm_price_iri=postal_code_info_lst[i].get('asp'),
+                existing_asp_derivation_iri=postal_code_info_lst[i].get('derivation'),
+                existing_asp_derivation_tx_iri_lst=postal_code_info_lst[i].get('deriv_tx'),
+            )
+    
+    if add_propvalue_derivation_markup:
+        # 7) Add derivation markup for Market Value Estimate per Property
+        #    (optional as more efficient in update_all_transaction_records considering all postcodes)
+        # Retrieve relevant property info
+        property_info_dct = retrieve_marketvalue_property_info(sparql_client=kg_client_obe,
+                                                               property_iris=property_iris)
+        print(f'Adding derivation markup for {len(property_info_dct)} properties ...')
+        # Add derivation markup for each property
+        for i, (iri, info) in enumerate(property_info_dct.items()):
+            logger.info(f"Processing property {i+1}/{len(property_info_dct)}")
+            property_value_estimation_derivation_markup(
+                derivation_client=derivation_client,
+                sparql_client=kg_client_obe,
+                property_iri=iri,
+                property_price_index_iri=info['ppi'],
+                floor_area_iri=info['area'],
+                transaction_record_iri=info['tx'],
+                avg_sqm_price_iri=info['asp'],
+                market_value_iri=info['mv'],
+                market_value_derivation_iri=info['derivation'],
+                market_value_derivation_tx_iri=info['deriv_tx']
+            )
     
     return instantiated_tx, updated_tx
 
@@ -144,41 +214,16 @@ def update_all_transaction_records(min_conf_score=90,
     updated_ukhpi = 0
 
     # Initialise KG clients
-    kg_client_obe = KGClient(query_endpoint, update_endpoint)
-    kg_client_hm = KGClient(api_endpoint, api_endpoint)
+    kg_client_obe = PySparqlClient(query_endpoint, update_endpoint)
+    kg_client_hm = PySparqlClient(api_endpoint, api_endpoint)
     # Initialise TimeSeriesClient with default settings
     ts_client = TSClient(kg_client=kg_client_obe)
+    # Create PyDerivationClient instance
+    derivation_client = PyDerivationClient(
+        derivation_instance_base_url=DERIVATION_INSTANCE_BASE_URL,
+        query_endpoint=query_endpoint, update_endpoint=update_endpoint)
 
-    # 1) Retrieve all instantiated properties with associated postcodes
-    print('Retrieving instantiated properties with attached postcodes ...')
-    #logger.info('Retrieving instantiated properties with attached postcodes ...')
-    query = get_all_properties_with_postcode()
-    res = kg_client_obe.performQuery(query)
-
-    # 2) Update transaction records in KG in postcode batches
-    batch_size = 100
-    df = pd.DataFrame(res)
-    pcs = df['postcode'].unique().tolist()
-    pcs.sort()
-    postcodes = [pcs[i:i + batch_size] for i in range(0, len(pcs), batch_size)]
-
-    print('Updating transaction records (in postcode batches) ...')
-    #logger.info('Updating transaction records (for batch of postcodes) ...')
-    i = 0
-    for pc in postcodes:
-        i += 1
-        print(f'Updating batch {i:>4}/{len(postcodes):>4}')
-
-        prop_iris = df[df['postcode'].isin(pc)]['property_iri'].tolist()
-
-        # Update transaction records for list of property IRIs
-        tx_new, tx_upd = update_transaction_records(property_iris=prop_iris, 
-                            min_conf_score=min_conf_score, api_endpoint=api_endpoint,
-                            kg_client_obe=kg_client_obe, kg_client_hm=kg_client_hm)
-        instantiated_tx += tx_new
-        updated_tx += tx_upd
-
-    # 3) Retrieve instantiated Admin Districts + potentially already instantiated
+    # 1) Retrieve instantiated Admin Districts + potentially already instantiated
     #    Property Price Indices in OntoBuiltEnv
     print('Updating UK House Price Index ...')
     #logger.info('Updating UK House Price Index ...')
@@ -204,21 +249,98 @@ def update_all_transaction_records(min_conf_score=90,
                 raise TSException('Error initialising time series') from ex
             instantiated_ukhpi += 1
         else:
+            # Update timestamp of updated pure input (only takes effect if instantiated)
+            derivation_client.updateTimestamp(d['ukhpi'])
             updated_ukhpi += 1
 
-        # 4) Retrieve Property Price Index from HM Land Registry
+        # 2) Retrieve Property Price Index from HM Land Registry
         logger.info('Update UK House Price Index data.')
         ts = create_ukhpi_timeseries(local_authority_iri=d['ons_district'], 
                                      ppi_iri=d['ukhpi'], kg_client_hm=kg_client_hm)
 
-        # 5) Update Property Price Index time series data in KG
+        # 3) Update Property Price Index time series data in KG
         try:
             with ts_client.connect() as conn:
                 ts_client.tsclient.addTimeSeriesData(ts, conn)
         except Exception as ex:
             logger.error('Error adding time series data: {}'.format(ex))
             raise TSException('Error adding time series data') from ex
+
+    # 4) Retrieve all instantiated properties with associated postcodes
+    print('Retrieving instantiated properties with attached postcodes ...')
+    #logger.info('Retrieving instantiated properties with attached postcodes ...')
+    query = get_all_properties_with_postcode()
+    res = kg_client_obe.performQuery(query)
+
+    # 5) Update transaction records in KG in postcode batches
+    batch_size = 100
+    df = pd.DataFrame(res)
+    pcs = df['postcode'].unique().tolist()
+    pcs.sort()
+    postcodes = [pcs[i:i + batch_size] for i in range(0, len(pcs), batch_size)]
+
+    print('Updating transaction records (in postcode batches) ...')
+    #logger.info('Updating transaction records (for batch of postcodes) ...')
+    i = 0
+    for pc in postcodes:
+        i += 1
+        print(f'Updating batch {i:>4}/{len(postcodes):>4}')
+
+        prop_iris = df[df['postcode'].isin(pc)]['property_iri'].tolist()
+
+        # Update transaction records for list of property IRIs
+        tx_new, tx_upd = update_transaction_records(property_iris=prop_iris, 
+                            min_conf_score=min_conf_score, api_endpoint=api_endpoint,
+                            kg_client_obe=kg_client_obe, kg_client_hm=kg_client_hm,
+                            derivation_client = derivation_client,
+                            add_avgsqm_derivation_markup=False,
+                            add_propvalue_derivation_markup=False)
+        instantiated_tx += tx_new
+        updated_tx += tx_upd
+
+        # 6) Add derivation markup for Average Square Metre Price per Postal Code
+        # Retrieve relevant postal code info
+        postal_code_info_lst = retrieve_avgsqmprice_postal_code_info(sparql_client=kg_client_obe,
+                                                                     postcodes=pc)
+        print(f'Adding derivation markup for {len(postal_code_info_lst)} postcodes ...')
+        # Add derivation markup for each postal code
+        for i in range(len(postal_code_info_lst)):
+            logger.info(f"Processing postal code {i+1}/{len(postal_code_info_lst)}")
+            avg_sqm_price_derivation_markup(
+                derivation_client=derivation_client,
+                sparql_client=kg_client_obe,
+                postal_code_iri=postal_code_info_lst[i]['postal_code'],
+                transaction_record_iri_lst=postal_code_info_lst[i]['tx'],
+                property_price_index_iri=postal_code_info_lst[i]['ppi'],
+                existing_avg_sqm_price_iri=postal_code_info_lst[i].get('asp'),
+                existing_asp_derivation_iri=postal_code_info_lst[i].get('derivation'),
+                existing_asp_derivation_tx_iri_lst=postal_code_info_lst[i].get('deriv_tx'),
+            )
+        # Allow for some time to update derivations in KG (10s is arbitrary)
+        logger.info(f"Derivation markup for postcodes completed. Waiting shortly before continuing with properties ...")
+        time.sleep(10)
     
+        # 7) Add derivation markup for Market Value Estimate per Property
+        #    (optional as more efficient in update_all_transaction_records considering all postcodes)        # Retrieve relevant property info
+        property_info_dct = retrieve_marketvalue_property_info(sparql_client=kg_client_obe,
+                                                               property_iris=prop_iris)
+        print(f'Adding derivation markup for {len(property_info_dct)} properties ...')
+        # Add derivation markup for each property
+        for i, (iri, info) in enumerate(property_info_dct.items()):
+            logger.info(f"Processing property {i+1}/{len(property_info_dct)}")
+            property_value_estimation_derivation_markup(
+                derivation_client=derivation_client,
+                sparql_client=kg_client_obe,
+                property_iri=iri,
+                property_price_index_iri=info['ppi'],
+                floor_area_iri=info['area'],
+                transaction_record_iri=info['tx'],
+                avg_sqm_price_iri=info['asp'],
+                market_value_iri=info['mv'],
+                market_value_derivation_iri=info['derivation'],
+                market_value_derivation_tx_iri=info['deriv_tx']
+            )
+
     return (instantiated_tx, updated_tx, instantiated_ukhpi, updated_ukhpi)
 
 
@@ -444,7 +566,7 @@ def get_admin_district_index_dict(kglient) -> list:
     return dict_list
 
 
-def create_ukhpi_timeseries(local_authority_iri, ppi_iri, months=240,
+def create_ukhpi_timeseries(local_authority_iri, ppi_iri, months=480,
                             api_endpoint=HM_SPARQL_ENDPOINT, kg_client_hm=None):
     """
     Retrieve UKHPI data for a given local authority ONS IRI 
@@ -460,7 +582,7 @@ def create_ukhpi_timeseries(local_authority_iri, ppi_iri, months=240,
 
     # Initialise KG client
     if not kg_client_hm:
-        kg_client_hm = KGClient(api_endpoint, api_endpoint)
+        kg_client_hm = PySparqlClient(api_endpoint, api_endpoint)
 
     query = get_ukhpi_monthly_data_for_district(ons_local_authority_iri=local_authority_iri, 
                                                 months=months)

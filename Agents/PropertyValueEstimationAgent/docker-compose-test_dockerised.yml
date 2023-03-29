@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   propertyvalue_agent:
-    image: ghcr.io/cambridge-cares/propertyvalue_agent_test:1.1.0
+    image: ghcr.io/cambridge-cares/propertyvalue_agent_test:1.2.0
     build:
       context: .
       target: test
