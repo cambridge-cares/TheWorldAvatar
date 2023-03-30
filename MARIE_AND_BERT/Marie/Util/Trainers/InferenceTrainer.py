@@ -5,7 +5,7 @@ from torch import no_grad, nn
 from torch.optim.lr_scheduler import ExponentialLR
 from tqdm import tqdm
 
-sys.path.append("../../..")
+sys.path.append("")
 
 import os
 
@@ -121,23 +121,25 @@ class InferenceTrainer:
             print("Singular node training set exists", value_node_path)
             # df_value_node = pd.read_csv(value_node_path, sep="\t", header=None)
             df_value_node = self.df_train
+            self.value_node_exists = True
         else:
             print("Singular node trianing set not exists", value_node_path)
             df_value_node = self.df_train
+            self.value_node_exists = False
 
 
-
-        value_node_eval_set = TransRInferenceDataset(df=df_train_small, full_dataset_dir=self.full_dataset_dir,
-                                                         ontology=self.ontology,
-                                                         mode="value_node_eval")
-        value_node_set = TransRInferenceDataset(df=df_value_node, full_dataset_dir=self.full_dataset_dir,
-                                                ontology=self.ontology,
-                                                mode="value_node")
-        self.dataloader_value_node = torch.utils.data.DataLoader(value_node_set, batch_size=self.batch_size,
-                                                                 shuffle=True)
-        self.dataloader_value_node_eval = torch.utils.data.DataLoader(value_node_eval_set,
-                                                                      batch_size=value_node_eval_set.ent_num,
-                                                                      shuffle=False)
+        if self.value_node_exists:
+            value_node_eval_set = TransRInferenceDataset(df=df_train_small, full_dataset_dir=self.full_dataset_dir,
+                                                            ontology=self.ontology,
+                                                            mode="value_node_eval")
+            value_node_set = TransRInferenceDataset(df=df_value_node, full_dataset_dir=self.full_dataset_dir,
+                                                    ontology=self.ontology,
+                                                    mode="value_node")
+            self.dataloader_value_node = torch.utils.data.DataLoader(value_node_set, batch_size=self.batch_size,
+                                                                    shuffle=True)
+            self.dataloader_value_node_eval = torch.utils.data.DataLoader(value_node_eval_set,
+                                                                        batch_size=value_node_eval_set.ent_num,
+                                                                        shuffle=False)
         # ============================================================================================================
 
 
@@ -335,14 +337,16 @@ class InferenceTrainer:
             if epoch % 5 == 0:
                 self.scheduler.step()
                 self.evaluate()
-                self.calculate_value_node_embedding()
-                self.evaluate_value_node_embedding()
+                if self.value_node_exists:
+                    self.calculate_value_node_embedding()
+                    self.evaluate_value_node_embedding()
                 self.export_embeddings()
                 print(f"Current learning rate: {self.scheduler.get_lr()}")
 
         # if self.inference:
-        self.calculate_value_node_embedding()
-        self.evaluate_value_node_embedding()
+        if self.value_node_exists:
+            self.calculate_value_node_embedding()
+            self.evaluate_value_node_embedding()
         self.export_embeddings()
 
     def calculate_value_node_embedding(self):
