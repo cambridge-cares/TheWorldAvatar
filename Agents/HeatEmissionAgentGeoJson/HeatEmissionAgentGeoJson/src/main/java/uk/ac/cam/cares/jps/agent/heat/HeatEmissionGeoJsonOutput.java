@@ -40,8 +40,6 @@ public class HeatEmissionGeoJsonOutput extends JPSAgent {
         		"\"type\": \"FeatureCollection\",\r\n" + 
         		"\"features\": [\n");
 		
-
-		
 		double heat_data = 0;
 		JSONObject sample = new JSONObject();
 		sample.put("lower_bounds", "8464.256074442204#23588.08319044689#0");
@@ -103,10 +101,7 @@ public class HeatEmissionGeoJsonOutput extends JPSAgent {
         String y_coordi = Double.toString(yt);
         
         String[] xyz_coordi = heatcoordi.split("#"); 	
-		//String x_coordi =  xyz_coordi[0];
-		//String y_coordi =  xyz_coordi[1];
 		String z_coordi =  xyz_coordi[2];
-		
 		
                     
         StringBuffer heatemission = new StringBuffer("{\n\"type\": \"Feature\",\n");
@@ -149,7 +144,6 @@ public class HeatEmissionGeoJsonOutput extends JPSAgent {
 	        pw.close(); 
 	        jsonMessage.accumulate("Result", "GeoJson heat data outputted.");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         
