@@ -1,5 +1,7 @@
 from pprint import pprint
 
+import sys
+sys.path.append("")
 import numpy as np
 import torch
 import transformers
@@ -12,6 +14,7 @@ from tqdm import tqdm
 from transformers import BertModel, BertTokenizer, AdamW
 from Marie.Util.CommonTools.NLPTools import NLPTools
 from Marie.Util.location import TRAINING_DIR, DEPLOYMENT_DIR, DATA_DIR
+from Utils.playground.question_agent_matcher import QuestionAgentMatcher
 
 # TODO: a Dataset class that provides question examples and their relation
 # TODO: also provides a rel embedding
@@ -127,4 +130,8 @@ if __name__ == "__main__":
     nlp_tool = NLPTools()
     _, tokenzied_question = nlp_tool.tokenize_question("what is the power conversion efficiency of benzene",
                                                        repeat_num=0)
-    agent_emb, output_emb = my_model.predict(question=tokenzied_question)
+    output_emb = my_model.predict(question=tokenzied_question)
+    input = 'Species'
+    agents = ['ontothermoagent', 'ontopceagent', 'chem1agent', 'chem2agent', 'chem3agent']
+    rel_embedding = output_emb.view(-1).tolist()
+    my_matcher = QuestionAgentMatcher(agent_input=input, rel_embedding=rel_embedding, agents=agents)
