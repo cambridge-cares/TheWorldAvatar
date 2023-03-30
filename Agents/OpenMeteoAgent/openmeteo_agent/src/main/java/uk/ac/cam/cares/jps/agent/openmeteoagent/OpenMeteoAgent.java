@@ -38,11 +38,11 @@ import java.util.stream.IntStream;
 
 @WebServlet(
         urlPatterns = {
-                OpenMeteoAgent.URI_INSTANTIATE,
+                OpenMeteoAgent.URI_RUN,
                 OpenMeteoAgent.URI_DELETE
         })
 public class OpenMeteoAgent extends JPSAgent {
-    public static final String URI_INSTANTIATE = "/instantiate";
+    public static final String URI_RUN = "/run";
     public static final String URI_DELETE = "/delete";
 
     private static final String KEY_LAT = "latitude";
@@ -60,7 +60,7 @@ public class OpenMeteoAgent extends JPSAgent {
     private static final String ONTOEMS_HUMIDITY = "RelativeHumidity";
     private static final String API_PARAMETER_DEWPOINT = "dewpoint_2m";
     private static final String ONTOEMS_DEWPOINT = "DewPoint";
-    private static final String API_PARAMETER_PRESSURE = "surface_pressure";
+    private static final String API_PARAMETER_PRESSURE = "pressure_msl";
     private static final String ONTOEMS_PRESSURE = "AtmosphericPressure";
     private static final String API_PARAMETER_RAIN = "rain";
     private static final String ONTOEMS_RAIN = "Rainfall";
@@ -120,7 +120,7 @@ public class OpenMeteoAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         if (validateInput(requestParams)) {
-            if (requestParams.getString("requestUrl").contains(URI_INSTANTIATE)) {
+            if (requestParams.getString("requestUrl").contains(URI_RUN)) {
                 latitude = requestParams.getDouble(KEY_LAT);
                 longitude = requestParams.getDouble(KEY_LONG);
                 JSONObject response = getWeatherData(latitude, longitude, requestParams.getString(KEY_START), requestParams.getString(KEY_END));
@@ -265,7 +265,7 @@ public class OpenMeteoAgent extends JPSAgent {
             validate = !requestParams.get(KEY_LAT).equals(null) && ! requestParams.get(KEY_LONG).equals(null)
                     && !(requestParams.get(KEY_LAT) instanceof String) && !(requestParams.get(KEY_LONG) instanceof String);
 
-            if (requestParams.getString("requestUrl").contains(URI_INSTANTIATE)){
+            if (requestParams.getString("requestUrl").contains(URI_RUN)){
                 validate = !requestParams.getString(KEY_START).isEmpty() && !requestParams.getString(KEY_END).isEmpty()
                         && validateDate(requestParams.getString(KEY_START))
                         && validateDate(requestParams.getString(KEY_END));

@@ -49,14 +49,14 @@ public class OpenMeteoAgentTest {
 
             verify(agentHTTP, times(1)).processRequestParameters(any(JSONObject.class));
 
-            // Test processRequestParameters(JSONObject.class) with URI_INSTANTIATE endpoint
+            // Test processRequestParameters(JSONObject.class) with URI_RUN endpoint
             OpenMeteoAgent agent = spy(new OpenMeteoAgent());
             Method processRequestParameters = agent.getClass().getDeclaredMethod("processRequestParameters", JSONObject.class);
             assertNotNull(processRequestParameters);
 
-            Field uri_instantiate = agent.getClass().getDeclaredField("URI_INSTANTIATE");
-            assertNotNull(uri_instantiate);
-            uri_instantiate.setAccessible(true);
+            Field uri_run = agent.getClass().getDeclaredField("URI_RUN");
+            assertNotNull(uri_run);
+            uri_run.setAccessible(true);
             Field key_lat = agent.getClass().getDeclaredField("KEY_LAT");
             assertNotNull(key_lat);
             key_lat.setAccessible(true);
@@ -100,7 +100,7 @@ public class OpenMeteoAgentTest {
             doReturn(mockConn).when(mockRDBStoreClient).getConnection();
 
             JSONObject testRequestParams = new JSONObject()
-                    .put("requestUrl", uri_instantiate.get(agent).toString())
+                    .put("requestUrl", uri_run.get(agent).toString())
                     .put(key_lat.get(agent).toString(), 1.00)
                     .put(key_long.get(agent).toString(), 2.00)
                     .put(key_start.get(agent).toString(), "2021-01-01")
@@ -195,8 +195,8 @@ public class OpenMeteoAgentTest {
             key_start.setAccessible(true);
             Field key_end = agent.getClass().getDeclaredField("KEY_END");
             key_end.setAccessible(true);
-            Field uri_instantiate = agent.getClass().getDeclaredField("URI_INSTANTIATE");
-            uri_instantiate.setAccessible(true);
+            Field uri_run = agent.getClass().getDeclaredField("URI_RUN");
+            uri_run.setAccessible(true);
 
             JSONObject testJSON = new JSONObject();
 
@@ -207,7 +207,7 @@ public class OpenMeteoAgentTest {
                 assertEquals(((InvocationTargetException) e).getTargetException().getClass(), BadRequestException.class);
             }
 
-            testJSON.put("requestUrl", uri_instantiate.get(agent).toString());
+            testJSON.put("requestUrl", uri_run.get(agent).toString());
             testJSON.put(key_lat.get(agent).toString(), 1.0);
             testJSON.put(key_long.get(agent).toString(), 1.0);
             testJSON.put(key_start.get(agent).toString(), "2021-01-02");
