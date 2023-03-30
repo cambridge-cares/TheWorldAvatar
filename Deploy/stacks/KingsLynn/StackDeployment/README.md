@@ -202,7 +202,7 @@ Some of the agents have (data) interdependencies and, hence, require matching na
 &nbsp;
 ## 2.1) Energy Performance Certificate (EPC) Agent
 
-> The following steps refer to the published Docker image `ghcr.io/cambridge-cares/epc_agent:1.2.0` as of commit `93c2844a1d4074ca38e86074d7003332fed0673d` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main` 
+> The following steps refer to the published Docker image `ghcr.io/cambridge-cares/epc_agent:1.2.0` as of commit `93c2844a1d4074ca38e86074d7003332fed0673d` 
 
 Deploy the agent as described in the [EPC Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_epcs.yml` in the [Agent docker-compose file folder] for the actually used compose file.
 
@@ -267,7 +267,7 @@ After the Building instances are matched, step 3.4) from the EPC Agent can be pe
 
 ## 2.3) Property Sales Instantiation Agent
 
-> The following description refers to the published Docker image `ghcr.io/cambridge-cares/avgsqmprice_agent:1.1.0` as of commit `???` on branch `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
+> The following description refers to the published Docker image `ghcr.io/cambridge-cares/landregistry_agent:1.1.0` as of commit `d0ba68a0bcb97d85551b90d0ccf4bcb059e0d886`
 
 To avoid potential issues with unregistered and unavailable derivation agents, both the `Average Square Metre Price Agent` and the `Property Value Estimation Agent` should be deployed (and hence registered in the KG) **before** instantiating property transaction data. Otherwise, the `createSyncDerivationForNewInfo` method will cause an exception, as it cannot instantiate the requested derivation outputs.
 
@@ -290,7 +290,7 @@ Content-Type: application/json
 
 ## 3.1) Average Square Metre Price Agent
 
-> The following description refers to the published Docker image `ghcr.io/cambridge-cares/avgsqmprice_agent:1.1.0` as of commit `???` on branch `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
+> The following description refers to the published Docker image `ghcr.io/cambridge-cares/avgsqmprice_agent:1.1.0` as of commit `d55b63ffa93bd388fb6c0957db150c0d2f1adb71`
 
 Deploy the agent as described in the [Average Square Metre Price Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_avg_sqm_price.yml` in the [Agent docker-compose file folder] for the actually used compose file.
 
@@ -298,7 +298,7 @@ After agent startup, the agent starts monitoring the specified namespace for out
 
 ## 3.2) Property Value Estimation Agent
 
-> The following description refers to the published Docker image `ghcr.io/cambridge-cares/propertyvalue_agent:1.2.0` as of commit `???` on branch `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
+> The following description refers to the published Docker image `ghcr.io/cambridge-cares/propertyvalue_agent:1.2.0` as of commit `d55b63ffa93bd388fb6c0957db150c0d2f1adb71`
 
 Deploy the agent as described in the [Property Sales Instantiation Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_value_estimation.yml` in the [Agent docker-compose file folder] for the actually used compose file.
 
