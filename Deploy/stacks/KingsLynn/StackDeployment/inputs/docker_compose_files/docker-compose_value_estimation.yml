@@ -37,6 +37,10 @@ services:
     entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "propertyvalueestimation:create_app()", "--preload", "--limit-request-line", "0"]
     ports:
       - "5012:5000"
+    extra_hosts:
+      # To allow connecting to 'host.docker.internal' on Linux
+      # details: https://github.com/moby/libnetwork/pull/2348#issuecomment-1177610499
+      - "host.docker.internal:host-gateway"
     volumes:
       - logs:/root/.jps
     configs:
