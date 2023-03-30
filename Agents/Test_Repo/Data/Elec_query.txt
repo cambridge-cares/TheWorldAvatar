@@ -1,0 +1,9 @@
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT DISTINCT ?s ?usage ?meter WHERE {?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography>;<http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasConsumed> ?elec;
+                    <http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl#hasElecMeters> ?meteriri.
+    ?meteriri <http://www.theworldavatar.com/ontology/ontogasgrid/ontogasgrid.owl#hasConsumingElecMeters> ?meter;
+              <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasStartUTC>  "2020-01-01T12:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+    ?energy <http://www.ontology-of-units-of-measure.org/resource/om-2/hasPhenomenon> ?elec;
+            <http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue> ?usageiri.
+    ?usageiri <http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue> ?usage.
+    ?elec <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasStartUTC>  "2020-01-01T12:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>.
+    }

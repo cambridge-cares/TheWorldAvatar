@@ -1,0 +1,14 @@
+ 
+    <meas_uuid> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>  <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#ClimateMeasurement> .
+            <http://statistics.data.gov.uk/id/statistical-geography/E1000001> <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#hasClimateMeasurement>  <meas_uuid> .
+            <tas> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>  <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#ClimateVariable> .
+            <meas_uuid>  <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasStartUTC> "2020-01-01T12:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+                        <http://www.theworldavatar.com/ontology/ontogasgrid/gas_network_components.owl#hasEndUTC>  "2020-01-31T12:00:00Z"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+                        <http://www.theworldavatar.com/ontology/ontogasgrid/ontoclimate.owl#hasClimateVariable>   "tas"^^<http://www.w3.org/2001/XMLSchema#string> .
+            <temp_uuid>  <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>  <http://www.ontology-of-units-of-measure.org/resource/om-2/Temperature> ;
+                           <http://www.ontology-of-units-of-measure.org/resource/om-2/hasPhenomenon>  <meas_uuid> ;
+                           <http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue>  <val_uuid> .
+            <val_uuid> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>  <http://www.ontology-of-units-of-measure.org/resource/om-2/Measure> ;
+                         <http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit>  <http://www.ontology-of-units-of-measure.org/resource/om-2/degreeCelsius> ;
+                         <http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue> 10 .
+        

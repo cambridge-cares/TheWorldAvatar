@@ -1,0 +1,5 @@
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#> SELECT DISTINCT ?s (xsd:float(?a)/xsd:float(?num) AS ?result) ?num WHERE {?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://statistics.data.gov.uk/def/statistical-geography#Statistical-Geography>;  <http://www.theworldavatar.com/ontology/ontofuelpoverty/ontofuelpoverty.owl#hasHouseholds> ?housesiri.
+     ?housesiri <http://www.theworldavatar.com/ontology/ontofuelpoverty/ontofuelpoverty.owl#fuelpoorhouseholds> ?a;
+             <http://www.theworldavatar.com/ontology/ontofuelpoverty/ontofuelpoverty.owl#validFrom> "2020-01-01 12:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>;
+             <http://www.theworldavatar.com/ontology/ontofuelpoverty/ontofuelpoverty.owl#numberofhouseholds> ?num.
+        }
