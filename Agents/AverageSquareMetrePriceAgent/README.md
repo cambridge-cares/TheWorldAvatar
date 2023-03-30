@@ -33,6 +33,7 @@ DERIVATION_PERIODIC_TIMESCALE # Interval in which to check for updated KG inform
 REGISTER_AGENT                # Boolean flag whether to register agent in KG (`true` required to detect derivations)
 ```
 
+To allow for large derivation input sets, the `"--limit-request-line", "0"` flag should be included in the `entrypoint` command list. The required line is provided in the [Docker compose file] and can be uncommented if needed. If not, requests for synchronous derivation update via HTTP GET which exceed the default line limit of the gunicorn server will result in `Request Line is too large` exceptions.
 
 ### **2) Accessing Github's Container registry**
 
