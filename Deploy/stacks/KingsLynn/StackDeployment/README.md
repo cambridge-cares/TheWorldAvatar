@@ -306,7 +306,19 @@ After agent startup, the agent starts monitoring the specified namespace for out
 
 ## 3.3) Flood Assessment Agent
 
+> The following description refers to the published Docker image `ghcr.io/cambridge-cares/floodassessment_agent:1.1.0` as of commit `fb70ef49e18374adc5b7acd2e3499b74bbb42302`
+
+Deploy the agent as described in the [Flood Assessment Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_flood_assessment.yml` in the [Agent docker-compose file folder] for the actually used compose file.
+
+After agent startup, the agent starts monitoring the specified namespace for changes in instantiated OntoFlood and OntoBuiltEnv properties and automatically updates the associated potential Impacts of a flood (i.e. using the asychronous mode of the Derivation Framework).
+
 ## 3.4) Flood Warning Instantiation Agent
+
+> The following description refers to the published Docker image `ghcr.io/cambridge-cares/floodwarnings_agent:1.1.0` as of commit `bd4c53f473aea533c8f80a6c3c6570ec2d07818a`
+
+Deploy the agent as described in the [Flood Warning Instantiation Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_flood_warnings.yml` in the [Agent docker-compose file folder] for the actually used compose file.
+
+Agent start-up will automatically register a recurring task to assimilate latest flood alerts and warning on an hourly basis in the background. Newly instantiated or updated flood alerts/warning shall trigger a new derivation cascade to update the associated impacts of a flood.
 
 &nbsp;
 ## 4) Additional data incorporation
@@ -335,9 +347,11 @@ The [RiverLevelsAgent] (also referred to as *Flood Agent*) instantiates river le
     ```bash
     bash ./stack.sh start KINGS-LYNN
     ```
-* **Please note**: The Blazegraph namespace specified in the docker-compose file (i.e. `river_stations`) needs to be created beforehand in order for the agent to start up successfully.
+* **Please note**: The Blazegraph namespace specified in the docker-compose file (i.e. `riverstations`) needs to be created beforehand in order for the agent to start up successfully.
 
 ## 4.3) AirQuality Agent
+
+tbd
 
 &nbsp;
 # Tracking instantiated building information
@@ -414,7 +428,9 @@ Property Value Estimation Agent
 [EPC Agent]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/EnergyPerformanceCertificateAgent/README.md
 [Average Square Metre Price Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AverageSquareMetrePriceAgent/README.md
 [Property Value Estimation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent/README.md
+[Flood Assessment Agent]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/FloodAssessmentAgent/README.md
 [Property Sales Instantiation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HMLandRegistryAgent/README.md
+[Flood Warning Instantiation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodWarningAgent/README.md
 [MetOffice Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/MetOfficeAgent
 [RiverLevelsAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAgent
 
