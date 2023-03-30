@@ -1,0 +1,47 @@
+import sys
+sys.path.append("")
+import json
+import os
+import pandas as pd
+import numpy as np
+from Marie.Util.location import DATA_DIR
+from Marie.Util.CommonTools.FileLoader import FileLoader
+
+class AgentMatrixGenerator():
+
+    def __init__(self, agent):
+        self.agent = agent
+        self.full_dataset_dir = os.path.join(DATA_DIR, "CrossGraph", self.agent)
+        self.ent_embedding = pd.read_csv(os.path.join(self.full_dataset_dir, 'ent_embedding.tsv'), sep='\t',
+                                         header=None)
+        self.file_loader = FileLoader(full_dataset_dir=self.full_dataset_dir)
+        self.entity2idx, self.idx2entity, self.rel2idx, self.idx2rel = self.file_loader.load_index_files()
+        self.pce = False
+        if self.agent == 'ontopceagent':
+            self.pce = True
+            ontothermoagent_dataset_dir = os.path.join(DATA_DIR, "CrossGraph", "ontothermoagent")
+            ontothermoagent_file_loader = FileLoader(full_dataset_dir=ontothermoagent_dataset_dir)
+            self.thermo_entity2idx, self.thermo_idx2entity, self.thermo_rel2idx, self.thermo_idx2rel = ontothermoagent_file_loader.load_index_files()
+            self.thermo_ent_embedding = pd.read_csv(os.path.join(ontothermoagent_dataset_dir, 'ent_embedding.tsv'), sep='\t',
+                                         header=None)
+        self.agent_info_path = os.path.join(self.full_dataset_dir, 'info_dict.json')
+
+    def create_agent_matrices(self):
+        with open(self.agent_info_path, 'r') as f:
+            data = json.load(f)
+
+        inputs = data['input']
+        outputs = data['output']
+        agent_matrices = []
+        for input in inputs:
+            for output in outputs:
+                # print(input)
+                if self.pce:
+                    agent_matrices.append(np.array([list(self.thermo_ent_embedding.iloc[self.thermo_entity2idx[input]]), list(self.ent_embedding.iloc[self.entity2idx[output]]) ]))
+                else:
+                    agent_matrices.append(np.array([list(self.ent_embedding.iloc[self.entity2idx[input]]), list(self.ent_embedding.iloc[self.entity2idx[output]]) ]))   
+        return agent_matrices
+
+if __name__ == '__main__':
+    my_matcher = AgentMatrixGenerator(agent='chem3agent')
+    print(my_matcher.create_agent_matrices())
