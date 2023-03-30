@@ -267,7 +267,7 @@ After the Building instances are matched, step 3.4) from the EPC Agent can be pe
 
 ## 2.3) Property Sales Instantiation Agent
 
-> The following description refers to the published Docker image `ghcr.io/cambridge-cares/landregistry_agent:1.1.0` as of commit `d0ba68a0bcb97d85551b90d0ccf4bcb059e0d886`
+> The following description refers to the published Docker image `ghcr.io/cambridge-cares/landregistry_agent:1.1.0` as of commit `1a856a052a7f4cd6bd3edd22352b78e35d9d34d1`
 
 To avoid potential issues with unregistered and unavailable derivation agents, both the `Average Square Metre Price Agent` and the `Property Value Estimation Agent` should be deployed (and hence registered in the KG) **before** instantiating property transaction data. Otherwise, the `createSyncDerivationForNewInfo` method will cause an exception, as it cannot instantiate the requested derivation outputs.
 
@@ -314,7 +314,7 @@ After agent startup, the agent starts monitoring the specified namespace for cha
 
 ## 3.4) Flood Warning Instantiation Agent
 
-> The following description refers to the published Docker image `ghcr.io/cambridge-cares/floodwarnings_agent:1.1.0` as of commit `bd4c53f473aea533c8f80a6c3c6570ec2d07818a`
+> The following description refers to the published Docker image `ghcr.io/cambridge-cares/floodwarnings_agent:1.1.0` as of commit `fd51f7bd8b8ea1dda20d556c6b6ab2453a5a220a`
 
 Deploy the agent as described in the [Flood Warning Instantiation Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_flood_warnings.yml` in the [Agent docker-compose file folder] for the actually used compose file.
 
@@ -359,12 +359,47 @@ tbd
 The [resources] folder contains an `instantiated_buildings.sparql` file which contains several SPARQL queries to track the instantiation process. It primarily helps to identify how many buildings are instantiated at all, how many buildings possess EPC information, and how many buildings have previous sales transaction information.
 
 &nbsp;
-# Current Watch Outs
+# Triggering new derivation cascades
 
-- The current versions of the ontologies as well as agents refer to several custom units using the `ontouom` ontology. Those are likely to be incorporated into (our fork of) the ontology of units of measure, see [issue #576](https://github.com/cambridge-cares/TheWorldAvatar/issues/576). Any respective changes would need to be reflected in both the ontologies (i.e. OntoEMS, OntoBuiltEnv, OntoFlood) and agents!
+There are two ways to trigger new derivation cascades (e.g. for visualisation purposes) on demand. **Please note** that the respective updates in the property value and flood impact estimates only become available after the asynchronous `Flood Assessment Agent` has processed them (update frequency set in respective docker-compose file).
+
+## 1) Instantiate/update mocked flood alerts/warnings in the vicinity of King's Lynn
+
+There are a few mocked API responses for the Environment Agency flood-monitoring API which instantiate/update flood warnings for different areas and varying severities. The alerts/warnings can be instantiated using the HTTP request to the agent below, with more details to be found in the [Flood Warning Agent resources folder].
+
+```
+POST http://165.232.172.16:5009/floodwarnings/update/all
+Content-Type: application/json
+
+{ "query": {
+      "file_path": "/app/mock_api_responses/west_warning1.json"
+    }
+}
+```
+
+## 2) Update the instantiated Property Price Index by scaling it with a predefined value
+
+The `Property Sales Instantiation Agent` provides an HTTP endpoint to manipulate the instantiated Property Price Index (PPI), which will in turn trigger an updated assessment of propert value estimates. The below request can be used to scale the instantiated data, with more details to be found in the [Property Sales Instantiation Agent resources folder].
+
+```
+POST http://165.232.172.16:5008/landregistry/scale_ppi
+Content-Type: application/json
+
+{ "query": {
+      "ppi_iri": "<placeholder>",
+      "months": 1,
+      "scaler": 2.0,
+      "request_update": true
+    }
+}
+```
+
 
 &nbsp;
 # Potential refinements/next steps
+
+General Watch Outs
+- The current versions of the ontologies as well as agents refer to several custom units using the `ontouom` ontology. Those are likely to be incorporated into (our fork of) the ontology of units of measure, see [issue #576](https://github.com/cambridge-cares/TheWorldAvatar/issues/576). Any respective changes would need to be reflected in both the ontologies (i.e. OntoEMS, OntoBuiltEnv, OntoFlood) and agents!
 
 EPC Agent
 - HTTP response to `/epcagent/instantiate/certificates/all` does not seem to provide the correct number of instantiated and updated properties. Instead of providing the sum of all instantiated/updated properties from all API endpoints, it only seems to provide the number from the last endpoint and shall be revisited
@@ -430,7 +465,9 @@ Property Value Estimation Agent
 [Property Value Estimation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent/README.md
 [Flood Assessment Agent]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/FloodAssessmentAgent/README.md
 [Property Sales Instantiation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HMLandRegistryAgent/README.md
+[Property Sales Instantiation Agent resources folder]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HMLandRegistryAgent/resources
 [Flood Warning Instantiation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodWarningAgent/README.md
+[Flood Warning Agent resources folder]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodWarningAgent/resources
 [MetOffice Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/MetOfficeAgent
 [RiverLevelsAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAgent
 

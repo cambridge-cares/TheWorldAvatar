@@ -20,7 +20,7 @@ services:
       - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5013/FloodAssessment
       - DERIVATION_INSTANCE_BASE_URL=https://www.theworldavatar.com/kg/derivation/
       # Check derivations every 12h
-      - DERIVATION_PERIODIC_TIMESCALE=43200
+      - DERIVATION_PERIODIC_TIMESCALE=600
       - REGISTER_AGENT=true
       # Required inputs, although values retrieved from Stack clients actually used when initialising DerivationAgent
       - SPARQL_QUERY_ENDPOINT=''
