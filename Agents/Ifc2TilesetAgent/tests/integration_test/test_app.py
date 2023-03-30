@@ -28,25 +28,23 @@ def test_default(expected_response, flaskapp):
 
 
 def assert_root_tile_compulsory_fields(tile: dict):
-    expected_fields = {
-        "geometricError": 512,
-        "refine": "ADD"
-    }
-    assert expected_fields.items() <= tile.items()
+    assert "geometricError" in tile and tile["geometricError"] == 512
+    assert "refine" in tile and tile["refine"] == "ADD"
+    assert "boundingVolume" in tile and "box" in tile["boundingVolume"] and len(tile["boundingVolume"]["box"]) == 12
 
 
 @pytest.mark.parametrize(
-    "init_assets, expected_assets, expected_response",
-    [(["building", "wall"], ["building"], C.SUCCESSFUL_API_RESPONSE)]
+    "init_assets, expected_assets",
+    [(["building", "wall"], ["building"])]
 )
-def test_api_simple(init_assets, expected_assets, expected_response, kg_client, flaskapp, gen_sample_ifc_file,
+def test_api_simple(init_assets, expected_assets, kg_client, flaskapp, gen_sample_ifc_file,
                     sample_properties, assert_asset_geometries):
     """
     Tests the POST request for the api route on a simple IFC model
     """
     # Inputs
     route = "/api"
-    tileset = os.path.join("data", "tileset_bim.json")
+    tileset_bim_file = os.path.join("data", "tileset_bim.json")
 
     init_kg_client(kg_client, init_assets)
 
@@ -62,43 +60,42 @@ def test_api_simple(init_assets, expected_assets, expected_response, kg_client, 
     try:
         # Assert that request has successfully occurred
         assert response.status_code == 200
-        assert response.json["result"] == expected_response
+        assert response.json["result"] == C.SUCCESSFUL_API_RESPONSE
 
         # Assert that the tileset and geometry files are generated
-        assert os.path.isfile(tileset)
+        assert os.path.isfile(tileset_bim_file)
         assert_asset_geometries(expected_assets)
 
         # Assert tileset content contains the assetUrl passed and gltf files
-        content = read_json_file(tileset)
-        assert "root" in content
+        tileset_content = read_json_file(tileset_bim_file)
+        assert "root" in tileset_content
 
-        root = content["root"]
+        root = tileset_content["root"]
         assert_root_tile_compulsory_fields(root)
         assert root["content"]["uri"] == "./gltf/building.gltf"
         assert "children" not in root
     finally:
         os.remove(ifcpath)
         os.remove(properties_path)
-        os.remove(tileset)
+        os.remove(tileset_bim_file)
 
 
 @pytest.mark.parametrize(
-    "init_assets, expected_assets, expected_response",
+    "init_assets, expected_assets",
     [(
         ["building", "water_meter", "fridge", "chair", "table", "solar_panel"],
         ["building", "asset1", "asset2", "furniture", "solarpanel"],
-        C.SUCCESSFUL_API_RESPONSE
     )]
 )
-def test_api_complex(init_assets, expected_assets, expected_response, kg_client, flaskapp, gen_sample_ifc_file,
+def test_api_complex(init_assets, expected_assets, kg_client, flaskapp, gen_sample_ifc_file,
                      sample_properties, assert_asset_geometries):
     """
     Tests the POST request for the api route on a complex IFC model
     """
     # Inputs
     route = "/api"
-    tileset = os.path.join("data", "tileset_bim.json")
-    tileset_solar = os.path.join("data", "tileset_solarpanel.json")
+    tileset_bim_file = os.path.join("data", "tileset_bim.json")
+    tileset_solar_file = os.path.join("data", "tileset_solarpanel.json")
 
     # Generate the test IFC triples
     init_kg_client(kg_client, init_assets)
@@ -115,25 +112,25 @@ def test_api_complex(init_assets, expected_assets, expected_response, kg_client,
     try:
         # Assert that request has successfully occurred
         assert response.status_code == 200
-        assert response.json["result"] == expected_response
+        assert response.json["result"] == C.SUCCESSFUL_API_RESPONSE
 
         # Assert that the tilesets and geometry files are generated
-        assert os.path.isfile(tileset)
-        assert os.path.isfile(tileset_solar)
+        assert os.path.isfile(tileset_bim_file)
+        assert os.path.isfile(tileset_solar_file)
         assert_asset_geometries(expected_assets)
 
         # Assert bim tileset content contains the assetUrl passed and gltf files
-        content = read_json_file(tileset)
+        content = read_json_file(tileset_bim_file)
         assert "root" in content
 
-        root = content["root"]
-        assert_root_tile_compulsory_fields(root)
-        assert root["contents"][0]["uri"] == "./gltf/furniture.gltf"
-        assert root["contents"][1]["uri"] == "./gltf/building.gltf"
-        assert root["children"][0]["contents"][0]["uri"] == "./gltf/asset1.gltf"
+        bim_root = content["root"]
+        assert_root_tile_compulsory_fields(bim_root)
+        assert bim_root["contents"][0]["uri"] == "./gltf/furniture.gltf"
+        assert bim_root["contents"][1]["uri"] == "./gltf/building.gltf"
+        assert bim_root["children"][0]["contents"][0]["uri"] == "./gltf/asset1.gltf"
 
         # Assert solar tileset content contains the assetUrl passed and gltf files
-        solar_content = read_json_file(tileset_solar)
+        solar_content = read_json_file(tileset_solar_file)
         assert "root" in solar_content
 
         solar_root = solar_content["root"]
@@ -142,8 +139,8 @@ def test_api_complex(init_assets, expected_assets, expected_response, kg_client,
     finally:
         os.remove(ifcpath)
         os.remove(properties_path)
-        os.remove(tileset)
-        os.remove(tileset_solar)
+        os.remove(tileset_bim_file)
+        os.remove(tileset_solar_file)
 
 
 def test_api_wrong_request_type(flaskapp):
