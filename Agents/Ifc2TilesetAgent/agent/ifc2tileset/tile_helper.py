@@ -7,7 +7,7 @@ This module provides helper methods to generate separate tilesets and write to a
 # Standard library imports
 import json
 from pathlib import Path
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Iterable
 import os
 
 # Third party imports
@@ -52,13 +52,22 @@ def make_tileset(root_tile: Tile):
     )
 
 
+def y_up_to_z_up(x_min: float, y_min: float, z_min: float, x_max: float, y_max: float, z_max: float):
+    """
+    Transforms a bounding box's extreme coordinates in the y-up system to the z-up system.
+    """
+    return x_min, -z_max, y_min, x_max, -z_min, y_max
+
+
 PathLike = Union[str, bytes, os.PathLike]
 
 
-def compute_bbox(gltf: Union[PathLike, List[PathLike]]):
+def compute_bbox(gltf: Union[PathLike, Iterable[PathLike]]):
     """
-    Computes bbox for a given glTF/GLB file(s)
+    Computes Next tileset bbox for a given glTF/GLB file(s).
+    The y-up coordinate system of glTF will be transformed to the z-up system of Next tileset
     """
+    print(gltf)
     if not isinstance(gltf, list):
         gltf = [gltf]
 
@@ -67,14 +76,15 @@ def compute_bbox(gltf: Union[PathLike, List[PathLike]]):
 
     mins = vertices.min(axis=0)
     maxs = vertices.max(axis=0)
-    center = (mins + maxs) / 2
-    diffs = maxs - mins
+
+    # Converts the y-up coordinate system of glTF to the z-up coordinate of Next tileset
+    x_min, y_min, z_min, x_max, y_max, z_max = y_up_to_z_up(*mins, *maxs)
 
     return [
-        center[0], center[1], center[2],
-        diffs[0] / 2, 0, 0,
-        0, diffs[1] / 2, 0,
-        0, 0, diffs[2] / 2
+        (x_min + x_max) / 2, (y_min + y_max) / 2, (z_min + z_max) / 2,
+        (x_max - x_min) / 2, 0, 0,
+        0, (y_max - y_min) / 2, 0,
+        0, 0, (z_max - z_min) / 2
     ]
 
 

@@ -7,6 +7,10 @@ from agent.ifc2tileset.root_tile import append_tileset_schema_and_metadata
 from agent.ifc2tileset.tile_helper import make_root_tile, make_tileset
 
 
+def z_up_to_y_up(x_min: float, y_min: float, z_min: float, x_max: float, y_max: float, z_max: float):
+    return x_min, z_min, -y_max, x_max, z_max, -y_min
+
+
 def read_json(json_filepath: str):
     """
     A test function to read the contents of a tileset.json

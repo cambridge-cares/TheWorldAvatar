@@ -15,9 +15,10 @@ import trimesh
 from agent.ifc2tileset.asset_tiles import append_asset_metadata_schema, append_tileset_assets, append_assets, \
     append_assets_to_tile_node
 from agent.ifc2tileset.root_tile import make_tileset, append_tileset_schema_and_metadata
-from agent.ifc2tileset.schema import Tile, Content
+from agent.ifc2tileset.schema import Tile
 from agent.ifc2tileset.tile_helper import make_root_tile
-from tests.unit_test.ifc2tileset.testutils import gen_sample_asset_df, gen_sample_tileset, gen_sample_asset_contents
+from tests.unit_test.ifc2tileset.testutils import gen_sample_asset_df, gen_sample_tileset, gen_sample_asset_contents, \
+    z_up_to_y_up
 
 
 def test_append_asset_metadata_schema():
@@ -65,7 +66,9 @@ def test_append_assets_to_tile_node():
 
     glb_files = [os.path.join("data", "glb", f"asset{i}.glb") for i in range(test_range)]
     for i, file in enumerate(glb_files):
-        m = trimesh.creation.box(bounds=[[-10, -10, i], [10, 10, i + 1]])
+        z_up_coords = -10, -10, i, 10, 10, i + 1
+        y_up_coords = z_up_to_y_up(*z_up_coords)
+        m = trimesh.creation.box(bounds=[y_up_coords[:3], y_up_coords[3:]])
         m.export(file)
 
     expected_child_node = {
@@ -165,7 +168,9 @@ def test_append_assets_less_than_six_assets():
 
     glb_files = [os.path.join("data", "glb", f"asset{i}.glb") for i in range(test_range)]
     for i, file in enumerate(glb_files):
-        m = trimesh.creation.box(bounds=[[-10, -10, i], [10, 10, i + 1]])
+        z_up_coords = -10, -10, i, 10, 10, i + 1
+        y_up_coords = z_up_to_y_up(*z_up_coords)
+        m = trimesh.creation.box(bounds=[y_up_coords[:3], y_up_coords[3:]])
         m.export(file)
 
     expected_child_node = {
@@ -204,7 +209,9 @@ def test_append_assets_more_than_six_assets():
 
     glb_files = [os.path.join("data", "glb", f"asset{i}.glb") for i in range(test_range)]
     for i, file in enumerate(glb_files):
-        m = trimesh.creation.box(bounds=[[-10, -10, i], [10, 10, i + 1]])
+        z_up_coords = -10, -10, i, 10, 10, i + 1
+        y_up_coords = z_up_to_y_up(*z_up_coords)
+        m = trimesh.creation.box(bounds=[y_up_coords[:3], y_up_coords[3:]])
         m.export(file)
 
     asset_contents = gen_sample_asset_contents(test_range)
@@ -256,7 +263,9 @@ def test_append_tileset_assets():
 
     glb_files = [os.path.join("data", "glb", f"asset{i}.glb") for i in range(test_range)]
     for i, file in enumerate(glb_files):
-        m = trimesh.creation.box(bounds=[[-10, -10, i], [10, 10, i + 1]])
+        z_up_coords = -10, -10, i, 10, 10, i + 1
+        y_up_coords = z_up_to_y_up(*z_up_coords)
+        m = trimesh.creation.box(bounds=[y_up_coords[:3], y_up_coords[3:]])
         m.export(file)
 
     asset_contents = gen_sample_asset_contents(test_range)

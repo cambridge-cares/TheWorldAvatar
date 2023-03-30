@@ -1,12 +1,25 @@
 import trimesh
+import numpy as np
+
+from tests.unit_test.ifc2tileset.testutils import z_up_to_y_up
 
 
 def sample_box_gen():
-    return trimesh.creation.box(bounds=[[-4, -6, -10], [6, 4, 10]])
+    z_up_coordinates = -4, -6, -10, 6, 4, 10
+    y_up_coordinates = z_up_to_y_up(*z_up_coordinates)
+    return trimesh.creation.box(bounds=[y_up_coordinates[:3], y_up_coordinates[3:]])
+
+
+y_up_to_z_up_transform = np.array([
+    [1, 0, 0, 0],
+    [0, 0, 1, 0],
+    [0, -1, 0, 0],
+    [0, 0, 0, 1]
+])
 
 
 def sample_cone_gen():
-    return trimesh.creation.cone(radius=5, height=20)
+    return trimesh.creation.cone(radius=5, height=20, transform=y_up_to_z_up_transform)
 
 
 sample_box_bbox = [

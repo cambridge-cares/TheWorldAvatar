@@ -13,7 +13,7 @@ import pytest
 
 # Self import
 from agent.ifc2tileset.tile_helper import gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter, compute_bbox, \
-    make_tileset, make_root_tile
+    make_tileset, make_root_tile, y_up_to_z_up
 from . import testconsts as C
 from .testutils import read_json
 
@@ -67,6 +67,21 @@ def test_make_tileset():
 
     # assert
     assert expected == actual
+
+
+@pytest.mark.parametrize(
+    "gltf_extreme_coordinates, expected",
+    [((0, 0, -1, 1, 2, 0), (0, 0, 0, 1, 1, 2)),
+     ((0, 0, -2, 1, 1, 0), (0, 0, 0, 1, 2, 1)),
+     ((0, 0, -1, 2, 1, 0), (0, 0, 0, 2, 1, 1)),
+     ((0, 2, -1, 1, 4, 0), (0, 0, 2, 1, 1, 4)),
+     ((0, 0, -4, 1, 1, -2), (0, 2, 0, 1, 4, 1)),
+     ((2, 0, -1, 4, 1, 0), (2, 0, 0, 4, 1, 1))]
+)
+def test_y_up_to_z_up(gltf_extreme_coordinates, expected):
+    actual = y_up_to_z_up(*gltf_extreme_coordinates)
+
+    assert actual == expected
 
 
 @pytest.mark.parametrize(

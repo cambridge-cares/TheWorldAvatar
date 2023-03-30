@@ -8,6 +8,7 @@ import os
 
 # Third party import
 import pytest
+import numpy as np
 
 # Self import
 from . import testconsts as C
@@ -33,11 +34,16 @@ def assert_root_tile_compulsory_fields(tile: dict):
     assert "boundingVolume" in tile and "box" in tile["boundingVolume"] and len(tile["boundingVolume"]["box"]) == 12
 
 
+def assert_child_tile_compulsory_fields(tile: dict):
+    assert "geometricError" in tile and tile["geometricError"] == 50
+    assert "boundingVolume" in tile and "box" in tile["boundingVolume"] and len(tile["boundingVolume"]["box"]) == 12
+
+
 @pytest.mark.parametrize(
-    "init_assets, expected_assets",
-    [(["building", "wall"], ["building"])]
+    "init_assets, expected_assets, expected_bim_bbox",
+    [(["building", "wall"], ["building"], [2.5, 0.1, 1.5, 2.5, 0, 0, 0, 0.1, 0, 0, 0, 1.5])]
 )
-def test_api_simple(init_assets, expected_assets, kg_client, flaskapp, gen_sample_ifc_file,
+def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, flaskapp, gen_sample_ifc_file,
                     sample_properties, assert_asset_geometries):
     """
     Tests the POST request for the api route on a simple IFC model
@@ -72,7 +78,8 @@ def test_api_simple(init_assets, expected_assets, kg_client, flaskapp, gen_sampl
 
         root = tileset_content["root"]
         assert_root_tile_compulsory_fields(root)
-        assert root["content"]["uri"] == "./gltf/building.gltf"
+        assert np.allclose(root["boundingVolume"]["box"], expected_bim_bbox)
+        assert root["content"] == {"uri": "./gltf/building.gltf"}
         assert "children" not in root
     finally:
         os.remove(ifcpath)
@@ -81,13 +88,34 @@ def test_api_simple(init_assets, expected_assets, kg_client, flaskapp, gen_sampl
 
 
 @pytest.mark.parametrize(
-    "init_assets, expected_assets",
+    "init_assets, expected_assets, expected_root_content, expected_child_contents, expected_bim_bbox, "
+    "expected_asset_bbox, expected_solar_panel_bbox",
     [(
-        ["building", "water_meter", "fridge", "chair", "table", "solar_panel"],
+        ["building", "wall", "water_meter", "solar_panel"],
+        ["building", "asset1", "solarpanel"],
+        {"uri": "./gltf/building.gltf"},
+        [dict(uri="./gltf/asset1.gltf",
+              metadata={"class": "AssetMetaData",
+                        "properties": {"name": C.sample_water_meter.label, "uid": C.sample_water_meter.ifc_id,
+                                       "iri": C.base_namespace + C.sample_water_meter.iri}})],
+        [2.5, 0.1, 1.5, 2.5, 0, 0, 0, 0.1, 0, 0, 0, 1.5],
+        [0.5, 2.5, 0.5, 0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5],
+        [1.5, 1.5, 6.25, 1.5, 0, 0, 0, 1.5, 0, 0, 0, 0.25]
+    ), (
+        ["building", "wall", "water_meter", "fridge", "chair", "table", "solar_panel"],
         ["building", "asset1", "asset2", "furniture", "solarpanel"],
+        [{"uri": "./gltf/furniture.gltf"}, {"uri": "./gltf/building.gltf"}],
+        [dict(uri=f"./gltf/asset{i + 1}.gltf",
+              metadata={"class": "AssetMetaData",
+                        "properties": {"name": e.label, "uid": e.ifc_id, "iri": C.base_namespace + e.iri}})
+         for i, e in enumerate((C.sample_water_meter, C.sample_fridge))],
+        [2.5, 1, 1.75, 2.5, 0, 0, 0, 1, 0, 0, 0, 1.75],
+        [2.5, 1.5, 2.5, 2.5, 0, 0, 0, 1.5, 0, 0, 0, 2.5],
+        [1.5, 1.5, 6.25, 1.5, 0, 0, 0, 1.5, 0, 0, 0, 0.25]
     )]
 )
-def test_api_complex(init_assets, expected_assets, kg_client, flaskapp, gen_sample_ifc_file,
+def test_api_complex(init_assets, expected_assets, expected_root_content, expected_child_contents, expected_bim_bbox,
+                     expected_asset_bbox, expected_solar_panel_bbox, kg_client, flaskapp, gen_sample_ifc_file,
                      sample_properties, assert_asset_geometries):
     """
     Tests the POST request for the api route on a complex IFC model
@@ -125,9 +153,17 @@ def test_api_complex(init_assets, expected_assets, kg_client, flaskapp, gen_samp
 
         bim_root = content["root"]
         assert_root_tile_compulsory_fields(bim_root)
-        assert bim_root["contents"][0]["uri"] == "./gltf/furniture.gltf"
-        assert bim_root["contents"][1]["uri"] == "./gltf/building.gltf"
-        assert bim_root["children"][0]["contents"][0]["uri"] == "./gltf/asset1.gltf"
+        assert np.allclose(bim_root["boundingVolume"]["box"], expected_bim_bbox)
+        if isinstance(expected_root_content, list):
+            assert bim_root["contents"] == expected_root_content
+        else:
+            assert bim_root["content"] == expected_root_content
+        assert "children" in bim_root and isinstance(bim_root["children"], list) and len(bim_root["children"]) == 1
+
+        child_tile = bim_root["children"][0]
+        assert_child_tile_compulsory_fields(child_tile)
+        assert np.allclose(child_tile["boundingVolume"]["box"], expected_asset_bbox)
+        assert child_tile["contents"] == expected_child_contents
 
         # Assert solar tileset content contains the assetUrl passed and gltf files
         solar_content = read_json_file(tileset_solar_file)
@@ -135,7 +171,8 @@ def test_api_complex(init_assets, expected_assets, kg_client, flaskapp, gen_samp
 
         solar_root = solar_content["root"]
         assert_root_tile_compulsory_fields(solar_root)
-        assert solar_root["content"]["uri"] == "./gltf/solarpanel.gltf"
+        assert np.allclose(solar_root["boundingVolume"]["box"], expected_solar_panel_bbox)
+        assert solar_root["content"] == {"uri": "./gltf/solarpanel.gltf"}
     finally:
         os.remove(ifcpath)
         os.remove(properties_path)

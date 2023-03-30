@@ -15,7 +15,7 @@ import trimesh
 # Self import
 from agent.ifc2tileset import gen_tilesets
 from . import testconsts as C
-from .testutils import read_json, gen_sample_asset_df, gen_sample_asset_contents
+from .testutils import read_json, gen_sample_asset_df, gen_sample_asset_contents, z_up_to_y_up
 
 
 def test_gen_tilesets_solarpanel():
@@ -174,7 +174,9 @@ def test_gen_tilesets_asset():
 
     glb_files = [os.path.join("data", "glb", f"asset{i}.glb") for i in range(test_range)]
     for i, file in enumerate(glb_files):
-        m = trimesh.creation.box(bounds=[[-10, -10, i], [10, 10, i + 1]])
+        z_up_coords = -10, -10, i, 10, 10, i + 1
+        y_up_coords = z_up_to_y_up(*z_up_coords)
+        m = trimesh.creation.box(bounds=[y_up_coords[:3], y_up_coords[3:]])
         m.export(file)
 
     # JSON output path

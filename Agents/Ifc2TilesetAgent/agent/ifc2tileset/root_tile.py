@@ -87,10 +87,10 @@ def gen_root_content(building_iri: str, asset_data: pd.DataFrame):
             root_tile = make_root_tile(bbox=bbox, content=building_content)
     else:
         if asset_data.empty:
-            # No bim tileset should be generated if there is no builidng, no furniture, and no assets
+            # No bim tileset should be generated if there is no builidng and no assets
             return None
 
-        # In the scenario where there is no building and no furniture, the root bbox should enclose all assets
+        # In the scenario where there is no building, the root bbox should enclose all assets
         bbox = compute_bbox([f"./data/glb/{file}.glb" for file in asset_data["file"]])
         root_tile = make_root_tile(bbox=bbox)
 

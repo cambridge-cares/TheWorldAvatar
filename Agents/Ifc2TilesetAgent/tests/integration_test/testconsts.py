@@ -5,7 +5,6 @@ A module that provides all configurations, inputs, and expected results for test
 """
 import itertools
 from dataclasses import dataclass
-from typing import List
 
 # ----------------------------------------------------------------------------------
 # Configuration
@@ -140,6 +139,14 @@ SAMPLE_ONTOBIM_TRIPLESTORE = dict(
     solar_panel=_elem_to_tripe(sample_solar_panel),
     chair=_elem_to_tripe(sample_chair),
     table=_elem_to_tripe(sample_table)
+)
+
+SAMPLE_ONTOBIM_GEOM_STORE = dict(
+    water_meter=((0., 2., 0.), (1., 3., 1.)),   # (1 x 1 x 1) box on ground floor
+    fridge=((4., 0., 3.), (5., 1., 5.)),        # (1 x 1 x 2) box on second floor
+    solar_panel=((0., 0., 6.), (3., 3., 6.5)),  # (3 x 3 x 0.5) box on third floor
+    chair=((3., 0., 0.), (3.5, 0.5, 1.)),       # (0.5, 0.5, 1) box on ground floor
+    table=((0., 1., 3.), (1., 2., 3.5))         # (1 x 1 x 0.5) box on second floor
 )
 
 invalid_asseturl1 = "./"

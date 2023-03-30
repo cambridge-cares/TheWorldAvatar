@@ -16,7 +16,7 @@ import trimesh
 from agent.ifc2tileset.root_tile import append_tileset_schema_and_metadata, gen_root_content
 from agent.ifc2tileset.tile_helper import make_tileset, make_root_tile
 from . import testconsts as C
-from .testutils import gen_sample_asset_df
+from .testutils import gen_sample_asset_df, z_up_to_y_up
 
 ENDPOINT = "http://www.example.org/sparql"
 
@@ -97,7 +97,9 @@ def test_gen_root_content_no_building_no_furniture_with_assets():
 
     glb_files = [os.path.join("data", "glb", f"asset{i}.glb") for i in range(test_range)]
     for i, file in enumerate(glb_files):
-        m = trimesh.creation.box(bounds=[[-10, -10, i], [10, 10, i + 1]])
+        z_up_coords = -10, -10, i, 10, 10, i + 1
+        y_up_coords = z_up_to_y_up(*z_up_coords)
+        m = trimesh.creation.box(bounds=[y_up_coords[:3], y_up_coords[3:]])
         m.export(file)
 
     expected = make_bim_tileset([0, 0, 3,  10, 0, 0, 0, 10, 0, 0, 0, 3], building_iri)

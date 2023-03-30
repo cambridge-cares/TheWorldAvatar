@@ -5,8 +5,7 @@ A module that provides all pytest fixtures and utility functions for all integra
 """
 # Standard import
 import os
-import json
-from typing import Iterable
+from typing import Iterable, Tuple
 
 # Third party import
 import pytest
@@ -36,36 +35,32 @@ def gen_sample_ifc_file():
 
     Argument:
     ifc_path - File path to the IFC file
-    is_complex - A boolean whether to create a complex IFC model with multiple element,\
-        or a simple model consisting of only one Wall
+    assets - An iterable of strings denoting assets to include in the ifc file, such as fridge, chair, solar panel etc.
     """
 
-    def _gen_ifc_file(ifc_path: str, assets: Iterable[str] = []):
+    def _gen_ifc_file(ifc_path: str, assets: Iterable[str] = ()):
         # Create a blank model
         model = ifcopenshell.file()
         # All projects must have one IFC Project element
-        project = run("root.create_entity", model,
-                      ifc_class="IfcProject", name="My Project")
+        project = run("root.create_entity", model, ifc_class="IfcProject", name="My Project")
+
         # To generate geometry, must assign units, defaults to metric units without args
         run("unit.assign_unit", model)
+
         # Create a geometry modelling context for storing 3D geometries
         context = run("context.add_context", model, context_type="Model")
-        body = run(
-            "context.add_context", model,
-            context_type="Model", context_identifier="Body", target_view="MODEL_VIEW", parent=context
-        )
+        body = run("context.add_context", model, context_type="Model", context_identifier="Body",
+                   target_view="MODEL_VIEW", parent=context)
+
         # Create a site, building, and storey
-        site = run("root.create_entity", model,
-                   ifc_class="IfcSite", name="My Site")
-        building = run("root.create_entity", model,
-                       ifc_class="IfcBuilding", name="Building A")
-        storey = run("root.create_entity", model,
-                     ifc_class="IfcBuildingStorey", name="Ground Floor")
+        site = run("root.create_entity", model, ifc_class="IfcSite", name="My Site")
+        building = run("root.create_entity", model, ifc_class="IfcBuilding", name="Building A")
+        storey = run("root.create_entity", model, ifc_class="IfcBuildingStorey", name="Ground Floor")
+
         # Assign their relations
         run("aggregate.assign_object", model, relating_object=project, product=site)
         run("aggregate.assign_object", model, relating_object=site, product=building)
-        run("aggregate.assign_object", model,
-            relating_object=building, product=storey)
+        run("aggregate.assign_object", model, relating_object=building, product=storey)
 
         # Create a wall
         wall = run("root.create_entity", model, ifc_class="IfcWall")
@@ -76,22 +71,41 @@ def gen_sample_ifc_file():
         # Place the wall on ground floor
         run("spatial.assign_container", model, relating_structure=storey, product=wall)
 
-        ifc_building_element_proxy_products = [
-            model.create_entity("IfcBuildingElementProxy", GlobalId=C.SAMPLE_ONTOBIM_ELEMENT_STORE[asset].ifc_id,
-                                Name=C.SAMPLE_ONTOBIM_ELEMENT_STORE[asset].label)
-            for asset in assets
-            if asset in ("water_meter", "fridge", "solar_panel")
-        ]
-        ifc_furnishing_element_products = [
-            model.create_entity("IfcFurnishingElement", GlobalId=C.SAMPLE_ONTOBIM_ELEMENT_STORE[asset].ifc_id,
-                                Name=C.SAMPLE_ONTOBIM_ELEMENT_STORE[asset].label)
-            for asset in assets
-            if asset in ("chair", "table")
-        ]
+        ifc_building_elements = []
+        ifc_furnishing_elements = []
+
+        ifc_building_base_permissible_values = ("building", "wall")
+        ifc_building_element_permissible_values = ("water_meter", "fridge", "solar_panel")
+        ifc_furnishing_element_permissible_values = ("chair", "table")
+
+        for asset in assets:
+            if asset in ifc_building_base_permissible_values:
+                pass
+            elif asset in ifc_building_element_permissible_values:
+                ifc_building_elements.append(asset)
+            elif asset in ifc_furnishing_element_permissible_values:
+                ifc_furnishing_elements.append(asset)
+            else:
+                permissible_values = ifc_building_base_permissible_values + ifc_building_element_permissible_values \
+                                    + ifc_furnishing_element_permissible_values
+                raise ValueError(f"Unexpected argument `{asset}` for an asset value; must be either "
+                                 f"{permissible_values}.")
+
+        ifc_building_element_proxy_products = {
+            asset: model.create_entity("IfcBuildingElementProxy", GlobalId=C.SAMPLE_ONTOBIM_ELEMENT_STORE[asset].ifc_id,
+                                       Name=C.SAMPLE_ONTOBIM_ELEMENT_STORE[asset].label)
+            for asset in ifc_building_elements
+        }
+        ifc_furnishing_element_products = {
+            asset: model.create_entity("IfcFurnishingElement", GlobalId=C.SAMPLE_ONTOBIM_ELEMENT_STORE[asset].ifc_id,
+                                       Name=C.SAMPLE_ONTOBIM_ELEMENT_STORE[asset].label)
+            for asset in ifc_furnishing_elements
+        }
 
         # Assign geometries to each element
-        for product in ifc_building_element_proxy_products + ifc_furnishing_element_products:
-            run("geometry.assign_representation", model, product=product, representation=representation)
+        for asset, product in {**ifc_building_element_proxy_products, **ifc_furnishing_element_products}.items():
+            _representation = _create_box(model, context, C.SAMPLE_ONTOBIM_GEOM_STORE[asset])
+            run("geometry.assign_representation", model, product=product, representation=_representation)
 
         # Write out to a file
         model.write(ifc_path)
@@ -197,39 +211,63 @@ def clear_triplestore(kg_client: KGClient):
     kg_client.execute_update(query_delete)
 
 
-def create_ifcaxis2placement(ifcfile, point, dir1, dir2):
+Point = Tuple[float, float, float]
+
+
+def _create_box(ifcfile: ifcopenshell.file, context, extreme_coordinates: Tuple[Point, Point]):
+    unit_scale = ifcopenshell.util.unit.calculate_unit_scale(ifcfile)
+    lower, upper = (tuple(x / unit_scale for x in p) for p in extreme_coordinates)
+
+    point1 = lower
+    point2 = (upper[0], lower[1], lower[2])
+    point3 = (upper[0], upper[1], lower[2])
+    point4 = (lower[0], upper[1], lower[2])
+    points = [point1, point2, point3, point4]
+
+    ifc_axis2placement3d = _create_ifc_axis2placement3d(ifcfile)
+    extrusion_direction = (0., 0., 1.)
+    extrusion_length = upper[2] - lower[2]
+
+    extrusion = _create_ifc_extruded_area_solid(ifcfile, points, ifc_axis2placement3d, extrusion_direction,
+                                                extrusion_length)
+    return ifcfile.createIfcShapeRepresentation(
+        context,
+        context.ContextIdentifier,
+        "SweptSolid",
+        [extrusion]
+    )
+
+
+# https://academy.ifcopenshell.org/posts/creating-a-simple-wall-with-property-set-and-quantity-information/
+def _create_ifc_axis2placement3d(
+        ifcfile: ifcopenshell.file,
+        point: Point = (0., 0., 0.),
+        direction1: Point = (0., 0., 1.),
+        direction2: Point = (1., 0., 0.)
+):
     """Creates an IfcAxis2Placement3D from Location, Axis and RefDirection specified as Python tuples"""
     point = ifcfile.createIfcCartesianPoint(point)
-    dir1 = ifcfile.createIfcDirection(dir1)
-    dir2 = ifcfile.createIfcDirection(dir2)
-    axis2placement = ifcfile.createIfcAxis2Placement3D(point, dir1, dir2)
+    direction1 = ifcfile.createIfcDirection(direction1)
+    direction2 = ifcfile.createIfcDirection(direction2)
+    axis2placement = ifcfile.createIfcAxis2Placement3D(point, direction1, direction2)
     return axis2placement
 
 
-def create_ifclocalplacement(ifcfile, point, dir1, dir2, relative_to=None):
-    """
-    Creates an IfcLocalPlacement from Location, Axis and RefDirection, 
-    specified as Python tuples, and relative placement
-    """
-    axis2placement = create_ifcaxis2placement(ifcfile, point, dir1, dir2)
-    ifclocalplacement2 = ifcfile.createIfcLocalPlacement(relative_to, axis2placement)
-    return ifclocalplacement2
-
-
-def create_ifcpolyline(ifcfile, point_list):
-    """Creates an IfcPolyLine from a list of points, specified as Python tuples"""
-    ifcpts = []
-    for point in point_list:
-        point = ifcfile.createIfcCartesianPoint(point)
-        ifcpts.append(point)
-    polyline = ifcfile.createIfcPolyLine(ifcpts)
-    return polyline
-
-
-def create_ifcextrudedareasolid(ifcfile, point_list, ifcaxis2placement, extrude_dir, extrusion):
+def _create_ifc_extruded_area_solid(
+        ifcfile: ifcopenshell.file,
+        points: Iterable[Point],
+        ifc_axis2placement3d,
+        extrusion_direction: Point,
+        extrusion_length: float,
+):
     """Creates an IfcExtrudedAreaSolid from a list of points, specified as Python tuples"""
-    polyline = create_ifcpolyline(ifcfile, point_list)
-    ifcclosedprofile = ifcfile.createIfcArbitraryClosedProfileDef("AREA", None, polyline)
-    ifcdir = ifcfile.createIfcDirection(extrude_dir)
-    ifcextrudedareasolid = ifcfile.createIfcExtrudedAreaSolid(ifcclosedprofile, ifcaxis2placement, ifcdir, extrusion)
-    return ifcextrudedareasolid
+    curve = ifcfile.createIfcPolyLine([ifcfile.createIfcCartesianPoint(p) for p in points])
+    ifc_closed_profile = ifcfile.createIfcArbitraryClosedProfileDef("AREA", None, curve)
+    ifc_extrusion_direction = ifcfile.createIfcDirection(extrusion_direction)
+
+    return ifcfile.createIfcExtrudedAreaSolid(
+        ifc_closed_profile,
+        ifc_axis2placement3d,
+        ifc_extrusion_direction,
+        extrusion_length
+    )
