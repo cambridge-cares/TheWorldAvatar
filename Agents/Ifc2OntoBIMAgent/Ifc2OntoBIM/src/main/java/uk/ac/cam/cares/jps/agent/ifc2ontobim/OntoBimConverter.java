@@ -46,7 +46,7 @@ public class OntoBimConverter {
                 .toModel();
         // Create a new Set to ensure statements are kept in one object and not duplicated
         LinkedHashSet<Statement> statementSet = new LinkedHashSet<>();
-        genZoneAndElementStatements(statementSet);
+        statementSet = genZoneAndElementStatements(statementSet);
         genGeometryContentStatements(statementSet);
         return this.tempFilePaths;
     }
@@ -57,49 +57,49 @@ public class OntoBimConverter {
      *
      * @param statementSet Stores the relevant queried statements into this set.
      */
-    private void genZoneAndElementStatements(LinkedHashSet<Statement> statementSet) {
+    private LinkedHashSet<Statement> genZoneAndElementStatements(LinkedHashSet<Statement> statementSet) {
         LOGGER.info("Retrieving and generating spatial zones statements...");
         SpatialZoneFacade.genZoneTriples(this.owlModel, statementSet);
         LOGGER.info("Storing spatial zones statements into a temp file...");
-        this.storeInTempFiles(statementSet);
+        statementSet = this.storeInTempFiles(statementSet);
         // Create a new helper object
         BuildingStructureFacade buildingStructureHelper = new BuildingStructureFacade();
         LOGGER.info("Retrieving and generating statements related to ceiling elements...");
         buildingStructureHelper.addCeilingStatements(this.owlModel, statementSet);
         LOGGER.info("Storing ceiling statements into a temp file...");
-        this.storeInTempFiles(statementSet);
+        statementSet = this.storeInTempFiles(statementSet);
         LOGGER.info("Retrieving and generating statements related to column elements...");
         buildingStructureHelper.addColumnStatements(this.owlModel, statementSet);
         LOGGER.info("Storing column statements into a temp file...");
-        this.storeInTempFiles(statementSet);
+        statementSet = this.storeInTempFiles(statementSet);
         LOGGER.info("Retrieving and generating statements related to floor elements...");
         buildingStructureHelper.addFloorStatements(this.owlModel, statementSet);
         LOGGER.info("Storing floor statements into a temp file...");
-        this.storeInTempFiles(statementSet);
+        statementSet = this.storeInTempFiles(statementSet);
         LOGGER.info("Retrieving and generating statements related to roof elements...");
         buildingStructureHelper.addRoofStatements(this.owlModel, statementSet);
         LOGGER.info("Storing roof statements into a temp file...");
-        this.storeInTempFiles(statementSet);
+        statementSet = this.storeInTempFiles(statementSet);
         LOGGER.info("Retrieving and generating statements related to wall elements...");
         buildingStructureHelper.addWallStatements(this.owlModel, statementSet);
         LOGGER.info("Storing wall statements into a temp file...");
-        this.storeInTempFiles(statementSet);
+        statementSet = this.storeInTempFiles(statementSet);
         LOGGER.info("Retrieving and generating statements related to door elements...");
         buildingStructureHelper.addDoorStatements(this.owlModel, statementSet);
         LOGGER.info("Storing door statements into a temp file...");
-        this.storeInTempFiles(statementSet);
+        statementSet = this.storeInTempFiles(statementSet);
         LOGGER.info("Retrieving and generating statements related to window elements...");
         buildingStructureHelper.addWindowStatements(this.owlModel, statementSet);
         LOGGER.info("Storing windows statements into a temp file...");
-        this.storeInTempFiles(statementSet);
+        statementSet = this.storeInTempFiles(statementSet);
         LOGGER.info("Retrieving and generating statements related to stair elements...");
         buildingStructureHelper.addStairStatements(this.owlModel, statementSet);
         LOGGER.info("Storing stair elements' statements into a temp file...");
-        this.storeInTempFiles(statementSet);
+        statementSet = this.storeInTempFiles(statementSet);
         LOGGER.info("Retrieving and generating statements related to all remaining elements...");
         ElementFacade.addElementStatements(this.owlModel, statementSet);
         LOGGER.info("Storing remaining elements' statements into a temp file...");
-        this.storeInTempFiles(statementSet);
+        return this.storeInTempFiles(statementSet);
     }
 
     /**
@@ -124,16 +124,16 @@ public class OntoBimConverter {
         LOGGER.info("Retrieving and generating statements related to cartesian transformation operators...");
         modellingOperatorHelper.addCartesianTransformationOperatorStatements(this.owlModel, statementSet);
         LOGGER.info("Storing sub context and cartesian transformation operator statements into a temp file...");
-        this.storeInTempFiles(statementSet);
+        statementSet = this.storeInTempFiles(statementSet);
         LOGGER.info("Retrieving and generating statements related to local placement...");
         modellingOperatorHelper.addLocalPlacementStatements(this.owlModel, statementSet);
         LOGGER.info("Storing local placement statements into a temp file...");
-        this.storeInTempFiles(statementSet);
+        statementSet = this.storeInTempFiles(statementSet);
         // For geometry statements
         LOGGER.info("Retrieving and generating statements related to extruded area solid...");
         geometryHelper.addExtrudedAreaSolidStatements(this.owlModel, statementSet);
         LOGGER.info("Storing extruded area solid statements into a temp file...");
-        this.storeInTempFiles(statementSet);
+        statementSet = this.storeInTempFiles(statementSet);
         // Final steps
         LOGGER.info("Retrieving and generating statements related to direction and cartesian points...");
         operatorMappings.constructAllStatements(statementSet);
@@ -146,13 +146,16 @@ public class OntoBimConverter {
      * This help to prevent heap overflow, especially for larger, more complex IFC files.
      *
      * @param statementSet An ordered set holding the required statements.
+     * @return An empty statement set to reduce duplicates.
      */
-    private void storeInTempFiles(LinkedHashSet<Statement> statementSet) {
+    private LinkedHashSet<Statement>  storeInTempFiles(LinkedHashSet<Statement> statementSet) {
         // Generate a temp file only if there are statements
         if (statementSet.size()>0){
             Path tempFilePath;
             tempFilePath = IOHelper.writeIntermediateTempFile(statementSet);
             this.tempFilePaths.add(tempFilePath);
         }
+        // Resets the stored statements each time to reduce memory use
+        return new LinkedHashSet<>();
     }
 }
