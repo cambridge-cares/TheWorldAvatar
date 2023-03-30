@@ -59,7 +59,8 @@ class Ifc2OntoBIMAgentTest {
         requestParams.put(KEY_METHOD, GET_METHOD);
         requestParams.put(KEY_ROUTE, BASE_ROUTE);
         JSONObject response = agent.processRequestParameters(requestParams);
-        assertTrue(response.isEmpty());
+        assertTrue(response.keySet().contains("Runtime"));
+        assertFalse(response.keySet().contains("Result"));
     }
 
     @Test
