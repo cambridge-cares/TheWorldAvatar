@@ -3,8 +3,8 @@
   <groupId>uk.ac.cam.cares.jps</groupId>
   <artifactId>JPS</artifactId>
   <version>1.0.0</version>
-  <packaging>war</packaging>
-  <build>
+  <packaging>pom</packaging>
+    <build>
     <sourceDirectory>src</sourceDirectory>
     <testSourceDirectory>test</testSourceDirectory>
 	<resources>
