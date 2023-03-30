@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.base.tools;
+package uk.ac.cam.cares.jps.base.tools.cloning;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -25,32 +25,30 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 
 /**
- * Cloning Tool
+ * This class implements a cloning method which splits a large cloning operation into multiple smaller ones
+ * by tagging groups of triples in the source store.   
+ * <p>
+ * This method should be used with caution since it modifies triples in the source store during the cloning process.
+ * <p>
+ * Two methods: {@link SourceTaggingCloningTool#checkNoTags checkNoTags} and {@link SourceTaggingCloningTool#checkCount checkCount} 
+ * are provided and can be called to check that no tags remain after cloning and that the total count remains unchanged.
+ * <p>
+ * NOTE: If the sourceKB is a remote quad store then "isQuads" should be set to true in the constructor. 
  * 
- * Two cloning methods are implemented: a single step cloning method suitable for cloning small 
- * stores and a method which splits a large cloning operation into multiple smaller ones
- * by tagging groups of triples in the source store. 
- * The single step clone can be used by first calling "setSingleStepClone" followed by a "clone" 
- * method, or alternatively by calling the method "singleStepClone" directly.
- * The split method is used be default, unless the total number of triples (or quads) in the store
- * is below the step size, set using "setCloneSize".  
- * Two methods: "checkNoTags" and "checkCount" are provided and can be called to check that no tags 
- * remain after cloning and that the total count remains unchanged.
- * NOTE: If the sourceKB is a remote triple store (rather than quad store) then "setTripleStore()" 
- * must be set for the tool to function.
  * 
  * @author csl37
  *
  */
-public class TaggingCloningTool {
+public class SourceTaggingCloningTool {
 
 	String strTag = "_Tag";	//Tag ending
-	boolean splitUpdate;
-	int stepSize;
-	int countTotal;			//Total number of triple to clone
-	boolean quads = true;	//Is the source KBClient a quads store?
 	
-	//// SPARQL variables
+	int countTotal;		//Total number of triple to clone
+	boolean quads;		//Is the source KBClient a quad store?
+	int stepSize;
+	
+	/////////////////////////
+	// SPARQL variables
 	
 	static ExprFactory exprFactory = new ExprFactory();
 		
@@ -72,59 +70,48 @@ public class TaggingCloningTool {
 	// STR(?s)
 	static Expr exprStrS = exprFactory.str(exprS);
 	
-	///////////////////////// Constructors
+	/////////////////////////
 	
 	/**
-	 * Default constructor. Cloning split over multiple operations of 1 million triples
+	 * Default constructor for triple store
 	 */
-	public TaggingCloningTool(){
-		//set defaults
-		splitUpdate = true;
-		stepSize = 1000000;
+	public SourceTaggingCloningTool(){
+		this.stepSize = 1000000; //set default step size value to 1000000
+		this.quads = false;
+		createTag();
 	}
 	
 	/**
-	 * Constructor to set number of triples cloned per step. Cloning is split over multiple operations. 
+	 * Instantiate cloning tool 
+	 * @param isQuads
+	 */
+	public SourceTaggingCloningTool(boolean isQuads){
+		this.stepSize = 1000000; //set default step size value to 1000000
+		this.quads = isQuads;
+		createTag();
+	}
+	
+	/**
+	 * Instantiate cloning tool with step size and whether data is quads. 
 	 * @param stepSize
+	 * @param isQuads
 	 */
-	public TaggingCloningTool(int stepSize){
-		//set defaults
-		splitUpdate = true;
+	public SourceTaggingCloningTool(int stepSize, boolean isQuads){
 		this.stepSize = stepSize;
-	}
-	
-	///////////////////////// Set variables
-	
-	/**
-	 * Set number of triples cloned per step
-	 * @param stepSize
-	 */
-	public void setCloneSize(int stepSize) {
-		this.stepSize = stepSize;
-	}
-	
-	/**
-	 * Perform clone as a single operation
-	 */
-	public void setSingleStepClone() {
-		this.splitUpdate = false;
+		this.quads = isQuads;
+		createTag();
 	}
 
 	/**
-	 * Set source KBClient is a triple store 
+	 * Creates a tag by hashing the current date and time.
 	 */
-	public void setTripleStore() {
-		this.quads = false;
+	private void createTag() {
+		LocalDateTime dateTime = LocalDateTime.now();
+		int hash = dateTime.toString().hashCode();
+		if(hash < 0) {hash *= -1;};
+		strTag += String.valueOf(hash);
 	}
-	
-	/**
-	 * Set source KBClient is a quad store
-	 */
-	public void setQuadsStore() {
-		this.quads = true;
-	}
-	///////////////////////// Clone methods
-	
+
 	/**
 	 * Clone all triples/quads from source repository to target repository.
 	 * WARNING: any context will be lost in the target.
@@ -135,56 +122,8 @@ public class TaggingCloningTool {
 		clone(sourceKB, null, targetKB, null);
 	}
 	
-	/**
-	 * Clone a named graph from the source knowledge base to a named graph in the target knowledge base.
-	 * @param sourceKB
-	 * @param targetKB
-	 * @param graph
-	 */
-	public void clone(TripleStoreClientInterface sourceKB, TripleStoreClientInterface targetKB, String graph) {
-		clone(sourceKB, graph, targetKB, graph); 
-	}
-	
-	/**
-	 * Clone a named graph from the source knowledge base to a different named graph in the target knowledge base.
-	 * @param sourceKB
-	 * @param sourceGraph
-	 * @param targetKB
-	 * @param targetGraph
-	 */
 	public void clone(TripleStoreClientInterface sourceKB, String sourceGraph, TripleStoreClientInterface targetKB, String targetGraph) {
-		
-		WhereBuilder whereCountAll = new WhereBuilder()
-				.addWhere(varS, varP, varO);		    
-	    countTotal = countTriples(sourceKB, sourceGraph, whereCountAll);
-	    
-		if(splitUpdate == false) {
-			singleStepClone(sourceKB, sourceGraph, targetKB, targetGraph);
-		}else {
-			//perform using single step process if count <= stepsize    
-		    if(countTotal <= stepSize) {
-		    	singleStepClone(sourceKB, sourceGraph, targetKB, targetGraph);
-		    }else {
-		    	performClone(sourceKB, sourceGraph, targetKB, targetGraph);
-		    }
-		}
-	}
-	
-	/**
-	 * Clone graph from source knowledge base to target knowledge base in a single step.
-	 * @param sourceKB
-	 * @param targetKB
-	 * @param graph
-	 */
-	public void singleStepClone(TripleStoreClientInterface sourceKB, String sourceGraph, TripleStoreClientInterface targetKB, String targetGraph) {
-		
-		//Get model using construct query
-		Query construct = buildSparqlConstruct(sourceGraph);
-		Model results = sourceKB.executeConstruct(construct);
-		
-		//Update target
-		UpdateRequest update = buildSparqlUpdate(targetGraph, results);
-		targetKB.executeUpdate(update);
+		performClone(sourceKB, sourceGraph, targetKB, targetGraph);
 	}
 	
 	/**
@@ -198,10 +137,13 @@ public class TaggingCloningTool {
 	 * @param targetKB
 	 * @param target graph
 	 */
-	private void performClone(TripleStoreClientInterface sourceKB, String sourceGraph, TripleStoreClientInterface targetKB, String targetGraph) {
+	protected void performClone(TripleStoreClientInterface sourceKB, String sourceGraph, TripleStoreClientInterface targetKB, String targetGraph) {
 		
-		createTag(sourceKB);
-
+		// Count all triples
+		WhereBuilder whereCountAll = new WhereBuilder()
+				.addWhere(varS, varP, varO);		    
+	    countTotal = countTriples(sourceKB, sourceGraph, whereCountAll);
+		
 		// Count triples excluding blank nodes
 		WhereBuilder whereCount = new WhereBuilder()
 				.addWhere(varS, varP, varO)
@@ -209,7 +151,63 @@ public class TaggingCloningTool {
 	    int count = countTriples(sourceKB, sourceGraph, whereCount);
 		int steps = count/stepSize;
 		if(count%stepSize > 0) {steps++;}
-				 
+		
+		cloneLoop(sourceKB, sourceGraph, targetKB, targetGraph, steps, stepSize);
+		
+		// Clone everything that is not tagged i.e. blank nodes
+		cloneUntaggedTriples(sourceKB, sourceGraph, targetKB, targetGraph);
+		
+		untagSource(sourceKB, sourceGraph, steps, stepSize);
+		
+		// Perform checks
+		if(!checkCount(sourceKB,sourceGraph)) {
+			throw new JPSRuntimeException("Source count does not match initial count!");
+		}
+		if(!checkNoTags(sourceKB,sourceGraph)) {
+			throw new JPSRuntimeException("Source store still contains tags!");
+		}
+		if(!checkCount(targetKB,targetGraph)) {
+			throw new JPSRuntimeException("Target count does not match initial count!");
+		}
+		if(!checkNoTags(targetKB,targetGraph)) {
+			throw new JPSRuntimeException("Target store still contains tags!");
+		}			
+				
+	}
+	
+	/**
+	 * Remove tags from source store.
+	 * @param sourceKB
+	 * @param sourceGraph
+	 * @param steps
+	 * @param stepSize
+	 */
+	protected void untagSource(TripleStoreClientInterface sourceKB, String sourceGraph, int steps, int stepSize) {
+		for(int i = 0; i<steps; i++) {
+			Expr exprTagN = buildExprTagN(i);
+			WhereBuilder whereTagged = new WhereBuilder()
+					.addWhere(varS, varP, varO)
+					.addFilter(exprFactory.strends(exprStrS, exprTagN))
+					.addBind(exprBindIriRemoveTag(exprTagN), newS);
+			UpdateRequest tagUpdate = buildTagUpdate(sourceGraph, whereTagged, stepSize, quads);
+			sourceKB.executeUpdate(tagUpdate);
+		}
+	}
+	
+	/**
+	 * Clone triples from source to target stepwise.
+	 * Cloned triples in the source store remain tagged. 
+	 * Tags are removed from triples in the target store.
+	 * Blank nodes are not cloned. 
+	 * @param sourceKB
+	 * @param sourceGraph
+	 * @param targetKB
+	 * @param targetGraph
+	 * @param steps
+	 * @param stepSize
+	 */
+	protected void cloneLoop(TripleStoreClientInterface sourceKB, String sourceGraph, TripleStoreClientInterface targetKB, String targetGraph, int steps, int stepSize) {
+		
 		for(int i = 0; i<steps; i++) {
 			// Iterate tag
 			Expr exprTagN = buildExprTagN(i);
@@ -251,8 +249,17 @@ public class TaggingCloningTool {
 			UpdateRequest update = buildInsert(targetGraph, dataset.getDefaultModel());
 			targetKB.executeUpdate(update);
 		}
-		
-		// Clone everything that is not tagged i.e. blank nodes
+	}
+	
+	/**
+	 * Clone all triples that do not carry a tag or subject is blank
+	 * @param sourceKB
+	 * @param sourceGraph
+	 * @param targetKB
+	 * @param targetGraph
+	 */
+	protected void cloneUntaggedTriples(TripleStoreClientInterface sourceKB, String sourceGraph, TripleStoreClientInterface targetKB, String targetGraph) {
+
 		Expr filterTag = exprFactory.or(
 				exprNotTagged(),
 				exprFactory.isBlank(exprS));
@@ -262,33 +269,48 @@ public class TaggingCloningTool {
 		Query constructQuery = buildConstruct(sourceGraph, whereConstruct);
 		Model triples = sourceKB.executeConstruct(constructQuery);
 		UpdateRequest update = buildInsert(targetGraph, triples);
-		targetKB.executeUpdate(update);
-		
-		// Remove tags from source
-		for(int i = 0; i<steps; i++) {
-			Expr exprTagN = buildExprTagN(i);
-			WhereBuilder whereTagged = new WhereBuilder()
-					.addWhere(varS, varP, varO)
-					.addFilter(exprFactory.strends(exprStrS, exprTagN))
-					.addBind(exprBindIriRemoveTag(exprTagN), newS);
-			UpdateRequest tagUpdate = buildTagUpdate(sourceGraph, whereTagged, stepSize, quads);
-			sourceKB.executeUpdate(tagUpdate);
-		}
+		targetKB.executeUpdate(update);	
 	}
 	
 	/**
-	 * Creates a tag by hashing the source KB endpoint and current date and time.
-	 * @param sourceKB
+	 * Count triples in knowledge base client matching the where statement.
+	 * @param source knowledge base client
+	 * @param graph (can be null)
+	 * @param where statement
+	 * @return
 	 */
-	private void createTag(TripleStoreClientInterface kbClient) {
-		LocalDateTime dateTime = LocalDateTime.now();
-		String name = kbClient.getQueryEndpoint() + dateTime.toString();
-		int hash = name.hashCode();
-		if(hash < 0) {hash *= -1;};
-		strTag += String.valueOf(hash);
+	protected int countTriples(TripleStoreClientInterface kbClient, String graph, WhereBuilder where) {
+		String query = countQuery(graph, where);
+		JSONArray result = kbClient.executeQuery(query);
+	    JSONObject jsonobject = result.getJSONObject(0);
+	    return jsonobject.getInt(varCount);
 	}
 	
-	//// Checks
+	/**
+	 * Build count query.
+	 * @param graph
+	 * @param whereFilter
+	 * @return
+	 */
+	private String countQuery(String graph, WhereBuilder whereFilter){
+		
+		WhereBuilder where = null;
+
+		if (graph != null) {	
+			where = new WhereBuilder();
+			// Graph
+			String graphURI = "<" + graph + ">";
+			where.addGraph(graphURI, whereFilter);
+		}else {
+			where = whereFilter;
+		}
+		
+		String query = "SELECT (COUNT(*) AS ?"+varCount+") ";
+		query += where.toString();
+		return query;
+	}
+	
+	////Checks
 	
 	/**
 	 * Check the number of triples matches the total number of triples 
@@ -321,46 +343,6 @@ public class TaggingCloningTool {
 	    }else {
 	    	return false;
 	    }
-	}
-	
-	//// Count
-	
-	/**
-	 * Count triples in knowledge base client matching the where statement.
-	 * @param source knowledge base client
-	 * @param graph (can be null)
-	 * @param where statement
-	 * @return
-	 */
-	private int countTriples(TripleStoreClientInterface kbClient, String graph, WhereBuilder where) {
-		String query = countQuery(graph, where);
-		JSONArray result = kbClient.executeQuery(query);
-	    JSONObject jsonobject = result.getJSONObject(0);
-	    return jsonobject.getInt(varCount);
-	}
-	
-	/**
-	 * Build count query.
-	 * @param graph
-	 * @param whereFilter
-	 * @return
-	 */
-	private String countQuery(String graph, WhereBuilder whereFilter){
-		
-		WhereBuilder where = null;
-
-		if (graph != null) {	
-			where = new WhereBuilder();
-			// Graph
-			String graphURI = "<" + graph + ">";
-			where.addGraph(graphURI, whereFilter);
-		}else {
-			where = whereFilter;
-		}
-		
-		String query = "SELECT (COUNT(*) AS ?"+varCount+") ";
-		query += where.toString();
-		return query;
 	}
 
 	//// Sparql query/update builder	
@@ -474,7 +456,7 @@ public class TaggingCloningTool {
 	 * Expression to filer out triples with blank nodes.
 	 * @return
 	 */
-	private Expr exprFilterOutBlanks() {
+	protected Expr exprFilterOutBlanks() {
 		// (!isblank(?s) && (!isblank(?p) && !isblank(?o))) 
 		return exprFactory.and(exprFactory.not(exprFactory.isBlank(exprS)),
 				exprFactory.and(exprFactory.not(exprFactory.isBlank(exprP)),
@@ -506,52 +488,4 @@ public class TaggingCloningTool {
 		return exprFactory.iri(exprFactory.replace(exprStrS, exprTagN, ""));
 	}
 
-	//// SPARQL query builder for single step clone
-	
-	/**
-	 * Build sparql construct query to get triples.
-	 * @param graph/context (optional)
-	 * @return construct query
-	 */
-	private static Query buildSparqlConstruct(String graph) {
-		
-		ConstructBuilder builder = new ConstructBuilder()
-				.addConstruct(varS, varP, varO);
-				
-		// Add where 
-		if (graph == null) {
-			//Default graph
-			builder.addWhere(varS, varP, varO);
-		}else {	
-			//Named graph
-			String graphURI = "<" + graph + ">";
-			builder.addGraph(graphURI, varS, varP, varO);	
-		}
-	
-		return builder.build();
-	}
-	
-	/**
-	 * Build sparql update to insert triples.
-	 * @param graph
-	 * @param results
-	 * @return updaterequest
-	 */
-	private static UpdateRequest buildSparqlUpdate(String graph, Model results) {
-		
-		// Build update
-		UpdateBuilder builder = new UpdateBuilder();
-				
-		// Add insert
-		if (graph == null) {
-			//Default graph
-			builder.addInsert(results);
-		}else {	
-			//Named graph
-			String graphURI = "<" + graph + ">";
-			builder.addInsert(graphURI, results);	
-		}
-	
-		return builder.buildRequest();
-	}
 }
