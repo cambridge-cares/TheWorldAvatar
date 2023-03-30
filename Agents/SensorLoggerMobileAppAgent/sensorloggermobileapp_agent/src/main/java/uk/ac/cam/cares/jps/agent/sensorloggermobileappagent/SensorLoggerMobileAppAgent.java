@@ -29,14 +29,11 @@ import java.util.concurrent.locks.*;
 public class SensorLoggerMobileAppAgent extends JPSAgent {
     private KGQueryClient KGQueryClient;
     private RemoteStoreClient storeClient;
-    private LinkedList<HttpServletRequest> requestQueue;
 
     public void init() {
         EndpointConfig endpointConfig = new EndpointConfig();
         storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
         KGQueryClient = new KGQueryClient(storeClient);
-        requestQueue = new LinkedList<>();
-
     }
 
 
@@ -45,20 +42,14 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
     private static HashMap smartphoneHashmap = new HashMap();
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)  throws ServletException, IOException {
-
-        // Add incoming request to queue
-        requestQueue.add(request);
-
         // Process queue if necessary
         synchronized(this){
-        processRequestQueue(response);
+        processRequestQueue(request, response);
         }
     }
 
-    private void processRequestQueue(HttpServletResponse response) throws IOException {
+    private void processRequestQueue(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // Process requests in queue until empty
-        while (!requestQueue.isEmpty()) {
-            HttpServletRequest request = requestQueue.remove();
 
             //Declare variables
             String DEVICEID = null;
@@ -243,6 +234,6 @@ public class SensorLoggerMobileAppAgent extends JPSAgent {
             out.print(responseString);
             out.flush();
     
-        }
+
     }
 }
