@@ -56,8 +56,8 @@
                             ["==", ["get", "price"], null], "#000000", [
                             "interpolate", ["linear"],
                             ["number", ["get", "price"]],
-                            100000, "#3887BE",
-                            1100000, "#DB1F1F"
+                            50000, "#0769AD",
+                            1200000, "#AD0202"
                         ]],
                         "fill-extrusion-opacity": 0.8,
                         "fill-extrusion-base": 0,
@@ -86,8 +86,8 @@
                             ["==", ["get", "price"], null], "#000000", [
                             "interpolate", ["linear"],
                             ["number", ["get", "price"]],
-                            100000, "#3887BE",
-                            1100000, "#DB1F1F"
+                            50000, "#0769AD",
+                            1200000, "#AD0202"
                         ]],
                         "fill-extrusion-opacity": 0.8,
                         "fill-extrusion-base": 0,

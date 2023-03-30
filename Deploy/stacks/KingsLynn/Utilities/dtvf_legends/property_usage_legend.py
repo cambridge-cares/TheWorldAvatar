@@ -7,7 +7,7 @@ from PIL import Image, ImageDraw, ImageFont
 #NOTE: Align values and colors with data.json
 building_usages = {
     "Domestic": "#808080",
-    "Emergency Services": "#D62728",
+    "Emergency\nServices": "#D62728",
     "Medical Care": "#FF7F0E",
     "Education": "#2CA02C",
     "Non-Domestic": "#1F77B4"
@@ -20,8 +20,8 @@ f = 'usage_colorbar.png'
 fp = os.path.join(Path(__file__).parent.parent.parent, 'DTVF', 'data', 'icons', f)
 
 # Set image size and font size
-size = 100
-font_size = 20
+size = 60
+font_size = 18
 cols = 3
 
 # Calculate number of rows and columns
@@ -36,7 +36,7 @@ draw = ImageDraw.Draw(legend_img)
 font = ImageFont.truetype('arial.ttf', font_size)
 
 # Set label padding
-label_padding = 35
+label_padding = 10
 
 # Loop through the building usages and draw each one on the legend
 for i, (usage, color) in enumerate(building_usages.items()):
