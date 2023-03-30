@@ -60,7 +60,7 @@ public class OpenMeteoAgent extends JPSAgent {
     private static final String ONTOEMS_HUMIDITY = "RelativeHumidity";
     private static final String API_PARAMETER_DEWPOINT = "dewpoint_2m";
     private static final String ONTOEMS_DEWPOINT = "DewPoint";
-    private static final String API_PARAMETER_PRESSURE = "pressure_msl";
+    private static final String API_PARAMETER_PRESSURE = "surface_pressure";
     private static final String ONTOEMS_PRESSURE = "AtmosphericPressure";
     private static final String API_PARAMETER_RAIN = "rain";
     private static final String ONTOEMS_RAIN = "Rainfall";
