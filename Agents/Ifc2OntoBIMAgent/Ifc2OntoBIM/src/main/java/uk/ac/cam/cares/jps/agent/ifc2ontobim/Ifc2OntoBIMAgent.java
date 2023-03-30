@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class acts as the entry point of the compiled war, and coordinates the two components (IfcOwlConverterAgent and
@@ -76,6 +77,7 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
         String route = requestParams.get("requestUrl").toString();
         route = StringUtils.getStringAfterLastCharacterOccurrence(route, StringUtils.SLASH);
         LOGGER.info("Passing request to Ifc2OntoBIM Agent...");
+        long startTime = System.nanoTime(); // Start timing agent runtime
         // Run logic based on request path
         switch (route) {
             case "convert":
@@ -100,6 +102,15 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
                     jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
                 }
                 break;
+        }
+        // Total agent run time in nanoseconds
+        long duration = System.nanoTime() - startTime;
+        // If it can be converted to second, return run time in seconds
+        if (TimeUnit.NANOSECONDS.toSeconds(duration)>0){
+            jsonMessage.accumulate("Runtime", TimeUnit.NANOSECONDS.toSeconds(duration) + "s");
+        } else {
+            // Else return as nanoseconds
+            jsonMessage.accumulate("Runtime", duration + "ns");
         }
         return jsonMessage;
     }
