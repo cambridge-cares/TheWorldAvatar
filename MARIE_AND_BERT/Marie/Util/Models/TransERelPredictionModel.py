@@ -32,14 +32,12 @@ class TransERelPredictionModel(nn.Module):
         self.dropout = nn.Dropout(0)
 
         if mode == "agent":
-            self.agent_linear = nn.Linear(768, self.dim)
-            self.mid_1 = nn.Linear(self.dim, self.dim)
-            self.mid_2 = nn.Linear(self.dim, self.dim)
-            self.mid_3 = nn.Linear(self.dim, self.dim)
-            self.mid_4 = nn.Linear(self.dim, self.dim)
-            self.mid_5 = nn.Linear(self.dim, self.dim)
-            self.mid_6 = nn.Linear(self.dim, self.dim)
-            self.output_linear = nn.Linear(768, self.dim)
+            self.mid_1 = nn.Linear(768, 512)
+            self.mid_2 = nn.Linear(512, 256)
+            self.mid_3 = nn.Linear(256, 128)
+            self.output_linear = nn.Linear(128, self.dim)
+
+
         else:
             self.linear = nn.Linear(768, self.dim)  # keep this model ...
             self.mid_2 = nn.Linear(512, self.dim)
@@ -78,11 +76,13 @@ class TransERelPredictionModel(nn.Module):
             dropout_output = self.dropout(pooled_output.to(self.device)).to(self.device)
 
             if self.mode == "agent":
-                linear_agent = self.agent_linear(dropout_output.to(self.device)).to(self.device)
-                linear_agent = self.mid_1(linear_agent)
-                linear_output = self.output_linear(dropout_output.to(self.device)).to(self.device)
-                linear_output = self.mid_4(linear_output)
-                return linear_agent, linear_output
+                linear_output = self.mid_1(dropout_output.to(self.device))
+                linear_output = self.mid_2(linear_output)
+                linear_output = self.mid_3(linear_output)
+                # linear_output = self.output_linear(dropout_output.to(self.device)).to(self.device)
+                linear_output = self.output_linear(linear_output).to(self.device)
+
+                return linear_output
             else:
                 linear_output = self.linear(dropout_output.to(self.device)).to(self.device)
                 return linear_output
@@ -97,18 +97,16 @@ class TransERelPredictionModel(nn.Module):
         dropout_output = self.dropout(pooled_output)
         if self.mode == "agent":
 
-            linear_agent = self.agent_linear(dropout_output)
-            linear_agent = self.mid_1(linear_agent)
-            # linear_agent = self.mid_2(linear_agent)
-            # linear_agent = self.mid_3(linear_agent)
-            linear_output = self.output_linear(dropout_output)
-            linear_output = self.mid_4(linear_output)
-            # linear_output = self.mid_5(linear_output)
-            # linear_output = self.mid_6(linear_output)
+            linear_output = self.mid_1(dropout_output)
+            linear_output = self.mid_2(linear_output)
+            linear_output = self.mid_3(linear_output)
+            linear_output = self.output_linear(linear_output)
+            # linear_output = self.output_linear(dropout_output)
 
-            distance_agent = self.distance(linear_agent, true_linear_agent)
+            # distance_agent = self.distance(linear_agent, true_linear_agent)
             distance_output = self.distance(linear_output, true_linear_output)
-            return distance_agent + distance_output, linear_output, linear_agent
+            # return distance_agent + distance_output, linear_output, linear_agent
+            return distance_output, distance_output, linear_output, linear_output
         else:
             linear_output = self.linear(dropout_output)
             distance = self.distance(linear_output, true_linear_output)
@@ -121,7 +119,7 @@ class TransERelPredictionModel(nn.Module):
 
 if __name__ == "__main__":
     my_model = TransERelPredictionModel(device=torch.device("cpu"),
-                                        dataset_dir=os.path.join(DATA_DIR, "CrossGraph/agents"), dim=80,
+                                        dataset_dir=os.path.join(DATA_DIR, "CrossGraph/agents"), dim=40,
                                         mode="agent")
 
     my_model.load_model("bert_ontoagent")
@@ -130,4 +128,3 @@ if __name__ == "__main__":
     _, tokenzied_question = nlp_tool.tokenize_question("what is the power conversion efficiency of benzene",
                                                        repeat_num=0)
     agent_emb, output_emb = my_model.predict(question=tokenzied_question)
-
