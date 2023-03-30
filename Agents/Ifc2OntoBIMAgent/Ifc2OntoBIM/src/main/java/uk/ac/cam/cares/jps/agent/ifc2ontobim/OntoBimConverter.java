@@ -134,6 +134,10 @@ public class OntoBimConverter {
         geometryHelper.addExtrudedAreaSolidStatements(this.owlModel, statementSet);
         LOGGER.info("Storing extruded area solid statements into a temp file...");
         statementSet = this.storeInTempFiles(statementSet);
+        LOGGER.info("Retrieving and generating statements related to polyline...");
+        geometryHelper.addPolylineStatements(this.owlModel, statementSet);
+        LOGGER.info("Storing polyline statements into a temp file...");
+        statementSet = this.storeInTempFiles(statementSet);
         // Final steps
         LOGGER.info("Retrieving and generating statements related to direction and cartesian points...");
         operatorMappings.constructAllStatements(statementSet);

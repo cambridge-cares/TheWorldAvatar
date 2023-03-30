@@ -1,12 +1,12 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade;
 
-import org.apache.jena.base.Sys;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestGeometryUtils;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.CartesianPoint;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.DirectionVector;
@@ -27,44 +27,53 @@ class GeometryFacadeTest {
     private static final String IFC_EXTRUDED_AREA_SOLID_INST = TEST_BASE_URI + "IfcExtrudedAreaSolid_14823";
     private static final String BIM_EXTRUDED_AREA_SOLID_INST = TEST_BASE_URI + "ExtrudedAreaSolid_14823";
     private static final String IFC_GEOM_PROFILE_TYPE = JunitTestUtils.ifc2x3Uri + "AREA";
-    private static final String IFC_REF_DIR_VECTOR_INST = TEST_BASE_URI + "IfcDirection_7645";
-    private static final String IFC_AXIS_DIR_VECTOR_INST = TEST_BASE_URI + "IfcDirection_6246";
-    private static final String IFC_GEOM_POSITION_POINT_INST = TEST_BASE_URI + "IfcCartesianPoint_7628";
-    private static final String IFC_PROFILE_POSITION_POINT_INST = TEST_BASE_URI + "IfcCartesianPoint_6827";
-    private static final String IFC_PROFILE_DIR_VECTOR_INST = TEST_BASE_URI + "IfcDirection_7347";
-    private static final Double IFC_GEOM_POSITION_CART_POINT_X_COORD = 5.12;
-    private static final Double IFC_GEOM_POSITION_CART_POINT_Y_COORD = 2.13;
-    private static final Double IFC_GEOM_POSITION_CART_POINT_Z_COORD = 7.42;
-    private static final Double IFC_PROFILE_POSITION_CART_POINT_X_COORD = 3.28;
-    private static final Double IFC_PROFILE_POSITION_CART_POINT_Y_COORD = 3.45;
-    private static final Double IFC_PROFILE_POSITION_CART_POINT_Z_COORD = 0.2;
-    private static final Double IFC_REF_DIR_VECTOR_X_RATIO = 1.0;
-    private static final Double IFC_REF_DIR_VECTOR_Y_RATIO = 2.0;
-    private static final Double IFC_REF_DIR_VECTOR_Z_RATIO = 3.0;
-    private static final Double IFC_AXIS_DIR_VECTOR_X_RATIO = 1.3;
-    private static final Double IFC_AXIS_DIR_VECTOR_Y_RATIO = 2.3;
-    private static final Double IFC_AXIS_DIR_VECTOR_Z_RATIO = 3.3;
     private static final Double IFC_PROFILE_DIR_VECTOR_X_RATIO = 1.2;
     private static final Double IFC_PROFILE_DIR_VECTOR_Y_RATIO = 2.2;
     private static final Double IFC_PROFILE_DIR_VECTOR_Z_RATIO = 3.2;
     private static final Double EXTRUDED_DEPTH = 5.16;
     private static final Double REC_PROFILE_X_EXTENT = 1.23;
     private static final Double REC_PROFILE_Y_EXTENT = 1.43;
+    // Generic direction and cartesian points fields
+    private static final String IFC_REF_DIR_VECTOR_INST = TEST_BASE_URI + "IfcDirection_7645";
+    private static final String IFC_AXIS_DIR_VECTOR_INST = TEST_BASE_URI + "IfcDirection_6246";
+    private static final String IFC_PROFILE_DIR_VECTOR_INST = TEST_BASE_URI + "IfcDirection_7347";
+    private static final String IFC_GEOM_POSITION_INST = TEST_BASE_URI + "IfcCartesianPoint_7628";
+    private static final String IFC_GEOM_SEC_POSITION_INST = TEST_BASE_URI + "IfcCartesianPoint_6827";
+    private static final Double IFC_GEOM_POSITION_X_COORD = 5.12;
+    private static final Double IFC_GEOM_POSITION_Y_COORD = 2.13;
+    private static final Double IFC_GEOM_POSITION_Z_COORD = 7.42;
+    private static final Double IFC_GEOM_SEC_POSITION_X_COORD = 3.28;
+    private static final Double IFC_GEOM_SEC_POSITION_Y_COORD = 3.45;
+    private static final Double IFC_GEOM_SEC_POSITION_Z_COORD = 0.2;
+    private static final Double IFC_REF_DIR_VECTOR_X_RATIO = 1.0;
+    private static final Double IFC_REF_DIR_VECTOR_Y_RATIO = 2.0;
+    private static final Double IFC_REF_DIR_VECTOR_Z_RATIO = 3.0;
+    private static final Double IFC_AXIS_DIR_VECTOR_X_RATIO = 1.3;
+    private static final Double IFC_AXIS_DIR_VECTOR_Y_RATIO = 2.3;
+    private static final Double IFC_AXIS_DIR_VECTOR_Z_RATIO = 3.3;
+    // Polyline fields
+    private static final String IFC_POLYLINE_INSTANCE = TEST_BASE_URI + "IfcPolyline_777";
+    private static final String BIM_POLYLINE_INSTANCE = TEST_BASE_URI + "Polyline_777";
+    private static final String IFC_STARTING_VERTEX = TEST_BASE_URI + "IfcCartesianPoint_List_778";
+    private static final String BIM_STARTING_VERTEX = TEST_BASE_URI + "LineVertex_778";
+    private static final String IFC_SEC_VERTEX = TEST_BASE_URI + "IfcCartesianPoint_List_779";
+    private static final String BIM_SEC_VERTEX = TEST_BASE_URI + "LineVertex_779";
+
 
     @BeforeAll
     static void setUp() {
         NamespaceMapper.setBaseNameSpace(TEST_BASE_URI);
         operatorMappings = ModellingOperatorStorage.Singleton();
         // Geometry position operators
-        CartesianPoint point = new CartesianPoint(IFC_GEOM_POSITION_CART_POINT_X_COORD.toString(), IFC_GEOM_POSITION_CART_POINT_Y_COORD.toString(), IFC_GEOM_POSITION_CART_POINT_Z_COORD.toString());
-        operatorMappings.add(IFC_GEOM_POSITION_POINT_INST, point);
+        CartesianPoint point = new CartesianPoint(IFC_GEOM_POSITION_X_COORD.toString(), IFC_GEOM_POSITION_Y_COORD.toString(), IFC_GEOM_POSITION_Z_COORD.toString());
+        operatorMappings.add(IFC_GEOM_POSITION_INST, point);
         DirectionVector direction = new DirectionVector(IFC_REF_DIR_VECTOR_X_RATIO.toString(), IFC_REF_DIR_VECTOR_Y_RATIO.toString(), IFC_REF_DIR_VECTOR_Z_RATIO.toString());
         operatorMappings.add(IFC_REF_DIR_VECTOR_INST, direction);
         direction = new DirectionVector(IFC_AXIS_DIR_VECTOR_X_RATIO.toString(), IFC_AXIS_DIR_VECTOR_Y_RATIO.toString(), IFC_AXIS_DIR_VECTOR_Z_RATIO.toString());
         operatorMappings.add(IFC_AXIS_DIR_VECTOR_INST, direction);
         // Profile position operators
-        point = new CartesianPoint(IFC_PROFILE_POSITION_CART_POINT_X_COORD.toString(), IFC_PROFILE_POSITION_CART_POINT_Y_COORD.toString(), IFC_PROFILE_POSITION_CART_POINT_Z_COORD.toString());
-        operatorMappings.add(IFC_PROFILE_POSITION_POINT_INST, point);
+        point = new CartesianPoint(IFC_GEOM_SEC_POSITION_X_COORD.toString(), IFC_GEOM_SEC_POSITION_Y_COORD.toString(), IFC_GEOM_SEC_POSITION_Z_COORD.toString());
+        operatorMappings.add(IFC_GEOM_SEC_POSITION_INST, point);
         direction = new DirectionVector(IFC_PROFILE_DIR_VECTOR_X_RATIO.toString(), IFC_PROFILE_DIR_VECTOR_Y_RATIO.toString(), IFC_PROFILE_DIR_VECTOR_Z_RATIO.toString());
         operatorMappings.add(IFC_PROFILE_DIR_VECTOR_INST, direction);
     }
@@ -97,10 +106,10 @@ class GeometryFacadeTest {
         // Verify that the right points and direction are generated
         operatorMappings.constructAllStatements(sampleSet);
         result = JunitTestUtils.appendStatementsAsString(sampleSet);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_GEOM_POSITION_CART_POINT_X_COORD, IFC_GEOM_POSITION_CART_POINT_Y_COORD, IFC_GEOM_POSITION_CART_POINT_Z_COORD), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD), result);
         JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_REF_DIR_VECTOR_X_RATIO, IFC_REF_DIR_VECTOR_Y_RATIO, IFC_REF_DIR_VECTOR_Z_RATIO), result);
         JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_AXIS_DIR_VECTOR_X_RATIO, IFC_AXIS_DIR_VECTOR_Y_RATIO, IFC_AXIS_DIR_VECTOR_Z_RATIO), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_PROFILE_POSITION_CART_POINT_X_COORD, IFC_PROFILE_POSITION_CART_POINT_Y_COORD, IFC_PROFILE_POSITION_CART_POINT_Z_COORD), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_GEOM_SEC_POSITION_X_COORD, IFC_GEOM_SEC_POSITION_Y_COORD, IFC_GEOM_SEC_POSITION_Z_COORD), result);
         JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_PROFILE_DIR_VECTOR_X_RATIO, IFC_PROFILE_DIR_VECTOR_Y_RATIO, IFC_PROFILE_DIR_VECTOR_Z_RATIO), result);
     }
 
@@ -120,8 +129,8 @@ class GeometryFacadeTest {
         // Verify that the right points are generated
         operatorMappings.constructAllStatements(sampleSet);
         result = JunitTestUtils.appendStatementsAsString(sampleSet);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_GEOM_POSITION_CART_POINT_X_COORD, IFC_GEOM_POSITION_CART_POINT_Y_COORD, IFC_GEOM_POSITION_CART_POINT_Z_COORD), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_PROFILE_POSITION_CART_POINT_X_COORD, IFC_PROFILE_POSITION_CART_POINT_Y_COORD, IFC_PROFILE_POSITION_CART_POINT_Z_COORD), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_GEOM_SEC_POSITION_X_COORD, IFC_GEOM_SEC_POSITION_Y_COORD, IFC_GEOM_SEC_POSITION_Z_COORD), result);
         // Direction for extruded direction will be generated
         JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_REF_DIR_VECTOR_X_RATIO, IFC_REF_DIR_VECTOR_Y_RATIO, IFC_REF_DIR_VECTOR_Z_RATIO), result);
         // Verify no directions are generated
@@ -129,9 +138,48 @@ class GeometryFacadeTest {
         JunitTestUtils.doesExpectedListNotExist(genExpectedDirectionStatements(IFC_PROFILE_DIR_VECTOR_X_RATIO, IFC_PROFILE_DIR_VECTOR_Y_RATIO, IFC_PROFILE_DIR_VECTOR_Z_RATIO), result);
     }
 
+    @Test
+    void testAddPolylineStatements() {
+        // Set up
+        addPolylineTriples();
+        addPolylineSecondVertexTriples();
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Execute method
+        testHelper.addPolylineStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Verify statements have been generated
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(BIM_POLYLINE_INSTANCE, BIM_STARTING_VERTEX, operatorMappings.getPoint(IFC_GEOM_POSITION_INST).getIri()), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(BIM_STARTING_VERTEX, BIM_SEC_VERTEX, operatorMappings.getPoint(IFC_GEOM_SEC_POSITION_INST).getIri()), result);
+        // Verify that the right points are generated
+        operatorMappings.constructAllStatements(sampleSet);
+        result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_GEOM_SEC_POSITION_X_COORD, IFC_GEOM_SEC_POSITION_Y_COORD, IFC_GEOM_SEC_POSITION_Z_COORD), result);
+    }
+
+    @Test
+    void testAddPolylineStatementsOneVertex() {
+        // Set up
+        addPolylineTriples();
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Execute method
+        testHelper.addPolylineStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Verify statements have been generated
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(BIM_POLYLINE_INSTANCE, BIM_STARTING_VERTEX, operatorMappings.getPoint(IFC_GEOM_POSITION_INST).getIri()), result);
+        // Verify the next vertex is not generated since it doesn't exist
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(BIM_STARTING_VERTEX, BIM_SEC_VERTEX, operatorMappings.getPoint(IFC_GEOM_SEC_POSITION_INST).getIri()), result);
+        // Verify that the right points are generated
+        operatorMappings.constructAllStatements(sampleSet);
+        result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD), result);
+    }
+
     private void addExtrudedAreaSolidTriples(String iri, boolean isComplete) {
-        Resource extrudedPosition = sampleModel.createResource().addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "location_IfcPlacement"), sampleModel.createResource(IFC_GEOM_POSITION_POINT_INST));
-        Resource profilePosition = sampleModel.createResource().addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "location_IfcPlacement"), sampleModel.createResource(IFC_PROFILE_POSITION_POINT_INST));
+        Resource extrudedPosition = sampleModel.createResource().addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "location_IfcPlacement"), sampleModel.createResource(IFC_GEOM_POSITION_INST));
+        Resource profilePosition = sampleModel.createResource().addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "location_IfcPlacement"), sampleModel.createResource(IFC_GEOM_SEC_POSITION_INST));
         if (isComplete) {
             extrudedPosition.addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "refDirection_IfcAxis2Placement3D"), sampleModel.createResource(IFC_REF_DIR_VECTOR_INST))
                     .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "axis_IfcAxis2Placement3D"), sampleModel.createResource(IFC_AXIS_DIR_VECTOR_INST));
@@ -153,6 +201,24 @@ class GeometryFacadeTest {
                                         .addProperty(JunitTestUtils.hasDouble, sampleModel.createTypedLiteral(REC_PROFILE_X_EXTENT)))
                                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "yDim_IfcRectangleProfileDef"), sampleModel.createResource()
                                         .addProperty(JunitTestUtils.hasDouble, sampleModel.createTypedLiteral(REC_PROFILE_Y_EXTENT))));
+    }
+
+
+    private void addPolylineTriples() {
+        sampleModel.createResource(IFC_POLYLINE_INSTANCE)
+                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcPolyline"))
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "points_IfcPolyline"),
+                        sampleModel.createResource(IFC_STARTING_VERTEX)
+                                .addProperty(JunitTestUtils.hasContents, sampleModel.createResource(IFC_GEOM_POSITION_INST))
+                );
+    }
+
+    private void addPolylineSecondVertexTriples() {
+        sampleModel.getResource(IFC_STARTING_VERTEX)
+                .addProperty(JunitTestUtils.hasNext,
+                        sampleModel.createResource(IFC_SEC_VERTEX)
+                                .addProperty(JunitTestUtils.hasContents, sampleModel.createResource(IFC_GEOM_SEC_POSITION_INST))
+                );
     }
 
     private List<String> genExpectedExtrudedAreaSolidStatements(String geomInst) {

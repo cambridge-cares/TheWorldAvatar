@@ -5,10 +5,14 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.Element;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ExtrudedAreaSolid;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.Polyline;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.RectangleProfileDefinition;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.CommonQuery;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.GeometryStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ModellingOperatorStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.QueryHandler;
 
@@ -20,14 +24,19 @@ import java.util.LinkedHashSet;
  * @author qhouyee
  */
 public class GeometryFacade {
-    private final ModellingOperatorStorage mappings;
+    private GeometryStorage geomMappings;
+    private final ModellingOperatorStorage operatorMappings;
+
 
 
     /**
      * Standard Constructor setting up the mappings.
      */
     public GeometryFacade() {
-        this.mappings = ModellingOperatorStorage.Singleton();
+        this.operatorMappings = ModellingOperatorStorage.Singleton();
+        this.geomMappings = GeometryStorage.Singleton();
+        // Purge any old values
+        this.geomMappings = GeometryStorage.resetSingleton();
     }
 
 
@@ -89,23 +98,23 @@ public class GeometryFacade {
             // Else, keep it as null for the placement object
             String extrudedDirIri = QueryHandler.retrieveIri(soln, CommonQuery.EXTRUDED_DIRECTION_VAR);
             if (extrudedDirIri != null) {
-                DirectionVector extrudedDir = this.mappings.getDirectionVector(extrudedDirIri);
+                DirectionVector extrudedDir = this.operatorMappings.getDirectionVector(extrudedDirIri);
                 extrudedDirIri = extrudedDir.getIri();
             }
             // Generate the extruded position from the queried points and directions and construct its statements
             String cartPointIri = QueryHandler.retrieveIri(soln, CommonQuery.CART_POINT_VAR);
             if (cartPointIri != null) {
-                CartesianPoint point = this.mappings.getPoint(cartPointIri);
+                CartesianPoint point = this.operatorMappings.getPoint(cartPointIri);
                 cartPointIri = point.getIri();
             }
             String refDirIri = QueryHandler.retrieveIri(soln, CommonQuery.REF_DIR_VECTOR_VAR);
             if (refDirIri != null) {
-                DirectionVector refDir = this.mappings.getDirectionVector(refDirIri);
+                DirectionVector refDir = this.operatorMappings.getDirectionVector(refDirIri);
                 refDirIri = refDir.getIri();
             }
             String axisDirIri = QueryHandler.retrieveIri(soln, CommonQuery.AXIS_DIR_VECTOR_VAR);
             if (axisDirIri != null) {
-                DirectionVector axisDir = this.mappings.getDirectionVector(axisDirIri);
+                DirectionVector axisDir = this.operatorMappings.getDirectionVector(axisDirIri);
                 axisDirIri = axisDir.getIri();
             }
             LocalPlacement extrudedPosition = new LocalPlacement(cartPointIri, refDirIri, axisDirIri);
@@ -120,12 +129,12 @@ public class GeometryFacade {
                 // For the profile position
                 String profilePointIri = QueryHandler.retrieveIri(soln, CommonQuery.PROFILE_DEF_CART_POINT_VAR);
                 if (profilePointIri != null) {
-                    CartesianPoint profilePoint = this.mappings.getPoint(profilePointIri);
+                    CartesianPoint profilePoint = this.operatorMappings.getPoint(profilePointIri);
                     profilePointIri = profilePoint.getIri();
                 }
                 String profileDirIri = QueryHandler.retrieveIri(soln, CommonQuery.DIR_VECTOR_VAR);
                 if (profileDirIri != null) {
-                    DirectionVector profileDir = this.mappings.getDirectionVector(profileDirIri);
+                    DirectionVector profileDir = this.operatorMappings.getDirectionVector(profileDirIri);
                     profileDirIri = profileDir.getIri();
                 }
                 LocalPlacement profilePosition = new LocalPlacement(profilePointIri, profileDirIri, null);
@@ -139,5 +148,63 @@ public class GeometryFacade {
             ExtrudedAreaSolid geometry = new ExtrudedAreaSolid(iri, extrudedPosition.getIri(), extrudedDirIri, extrusionDepth, profileIri);
             geometry.constructStatements(statementSet);
         }
+    }
+
+    /**
+     * Creates the SPARQL SELECT query statements for Polyline.
+     *
+     * @return A string containing the SPARQL query to execute.
+     */
+    private String createPolylineSelectQuery() {
+        SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
+        selectBuilder.addVar(CommonQuery.GEOM_VAR)
+                .addVar(CommonQuery.FIRST_LINE_VERTEX_VAR)
+                .addVar(CommonQuery.CART_POINT_VAR)
+                .addVar(CommonQuery.LINE_VERTEX_VAR)
+                .addVar(CommonQuery.NEXT_LINE_VERTEX_VAR);
+        selectBuilder.addWhere(CommonQuery.GEOM_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_POLYLINE)
+                .addWhere(CommonQuery.GEOM_VAR, CommonQuery.IFC_POLYLINE_POINTS, CommonQuery.FIRST_LINE_VERTEX_VAR)
+                .addWhere(CommonQuery.FIRST_LINE_VERTEX_VAR, "(" + CommonQuery.LIST_HAS_NEXT + ")*", CommonQuery.LINE_VERTEX_VAR)
+                .addWhere(CommonQuery.LINE_VERTEX_VAR, CommonQuery.LIST_HAS_CONTENT, CommonQuery.CART_POINT_VAR)
+                .addOptional(CommonQuery.LINE_VERTEX_VAR, CommonQuery.LIST_HAS_NEXT, CommonQuery.NEXT_LINE_VERTEX_VAR);
+        return selectBuilder.buildString();
+    }
+
+    /**
+     * Retrieve the OntoBIM statements for Polyline.
+     *
+     * @param owlModel     The IfcOwl model containing the triples to query from.
+     * @param statementSet A list containing the new OntoBIM triples.
+     */
+    public void addPolylineStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
+        String query = createPolylineSelectQuery();
+        ResultSet results = QueryHandler.execSelectQuery(query, owlModel);
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            String iri = soln.get(CommonQuery.GEOM_VAR).toString();
+            String startingVertex = QueryHandler.retrieveIri(soln, CommonQuery.FIRST_LINE_VERTEX_VAR);
+            String currentVertex = QueryHandler.retrieveIri(soln, CommonQuery.LINE_VERTEX_VAR);
+            // Next vertex is required to link the vertices as the queries returned are not in order
+            String nextVertex = QueryHandler.retrieveIri(soln, CommonQuery.NEXT_LINE_VERTEX_VAR);
+            // If the retrieved IRI is not null, retrieve the points and update the IRI
+            String currentPointIri = QueryHandler.retrieveIri(soln, CommonQuery.CART_POINT_VAR);
+            if (currentPointIri != null) {
+                currentPointIri = this.operatorMappings.getPoint(currentPointIri).getIri();
+            }
+            Polyline geometry;
+            // If the geometry has already been created previously
+            if (this.geomMappings.containsIri(iri)) {
+                // Retrieve the new geometry IRI and append the current vertex details
+                geometry = this.geomMappings.getPolyline(iri);
+                geometry.appendVertex(currentVertex, currentPointIri, nextVertex);
+            } else {
+                // Generate a new polyline and construct the statements
+                geometry = new Polyline(iri, startingVertex, currentVertex, currentPointIri, nextVertex);
+                // Add the object into the mappings for its IRI
+                this.geomMappings.add(iri, geometry);
+            }
+        }
+        // Construct all poly lines' statements
+        this.geomMappings.constructGeomStatements(statementSet);
     }
 }

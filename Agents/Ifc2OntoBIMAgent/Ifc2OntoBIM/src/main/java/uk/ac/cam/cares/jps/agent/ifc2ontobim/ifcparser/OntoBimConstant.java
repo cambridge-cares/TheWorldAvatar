@@ -55,6 +55,8 @@ public class OntoBimConstant {
     public static final String BIM_HAS_PROFILE_TYPE = NamespaceMapper.BIM_NAMESPACE + "hasProfileType";
     public static final String BIM_HAS_RECTANGLE_PROFILE_X_EXTENT = NamespaceMapper.BIM_NAMESPACE + "hasXDimensionExtent";
     public static final String BIM_HAS_RECTANGLE_PROFILE_Y_EXTENT = NamespaceMapper.BIM_NAMESPACE + "hasYDimensionExtent";
+    public static final String BIM_HAS_STARTING_VERTEX = NamespaceMapper.BIM_NAMESPACE + "hasStartingVertex";
+    public static final String BIM_HAS_NEXT_VERTEX = NamespaceMapper.BIM_NAMESPACE + "hasNextVertex";
     // OntoBuildingStructure stair properties
     public static final String BUILDING_STRUCTURE_HAS_RISER_NUM = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + "hasNumOfRiser";
     public static final String BUILDING_STRUCTURE_HAS_TREAD_NUM = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + "hasNumOfTread";
@@ -148,6 +150,10 @@ public class OntoBimConstant {
     public static final String BIM_EXTRUDED_AREA_SOLID_CLASS = NamespaceMapper.BIM_NAMESPACE + EXTRUDED_AREA_SOLID_CLASS;
     public static final String RECTANGLE_PROFILE_DEFINITION_CLASS = "RectangleProfileDefinition";
     public static final String BIM_RECTANGLE_PROFILE_DEFINITION_CLASS = NamespaceMapper.BIM_NAMESPACE + RECTANGLE_PROFILE_DEFINITION_CLASS;
+    public static final String POLYLINE_CLASS = "Polyline";
+    public static final String BIM_POLYLINE_CLASS = NamespaceMapper.BIM_NAMESPACE + POLYLINE_CLASS;
+    public static final String LINE_VERTEX_CLASS = "LineVertex";
+    public static final String BIM_LINE_VERTEX_CLASS = NamespaceMapper.BIM_NAMESPACE + LINE_VERTEX_CLASS;
     // OM classes
     public static final String HEIGHT_CLASS = NamespaceMapper.OM_NAMESPACE + "Height";
     public static final String MEASURE_CLASS = NamespaceMapper.OM_NAMESPACE + "Measure";
