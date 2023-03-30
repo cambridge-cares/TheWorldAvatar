@@ -313,11 +313,14 @@ After agent startup, the agent starts monitoring the specified namespace for out
 
 ## 4.1) MetOffice Agent
 
-> The following description refers to commit `6b3ff32af6df2c356e1a49f0c727ebf6db53a15a` on `https://github.com/cambridge-cares/TheWorldAvatar/tree/main` using the published Docker image `ghcr.io/cambridge-cares/metoffice_agent:1.0.0`
+> The following description refers to the published Docker image `ghcr.io/cambridge-cares/metoffice_agent:1.0.0` as of commit `6b3ff32af6df2c356e1a49f0c727ebf6db53a15a`
 
-The [MetOffice Agent] continuously (i.e. once per day) queries data from the MetOffice API and instantiates it according to the OntoEMS ontology. To deploy the agent to the spun up `KINGS-LYNN` stack, please provide the target Blazegraph namespace, PostGIS/PostgreSQL database name, etc. in the [MetOffice docker-compose file]. Afterwards, simply run the following command from the [MetOffice Agent] repository (i.e. where the [MetOffice docker-compose file] is located) to deploy the agent using its published Docker image from the [Container registry on Github]:
-```bash
-bash ./stack.sh start KINGS-LYNN
+The [MetOffice Agent] continuously (i.e. once per day) queries data from the MetOffice API and instantiates it according to the OntoEMS ontology. Deploy the agent as described in the [MetOffice Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_metoffice.yml` in the [Agent docker-compose file folder] for the actually used compose file. The required API key can be obtained from the [MetOffice My Account] page after successful registration.
+
+After agent startup, latest weather data will be instantiated/updated once the cronjob is triggered (i.e. currently at 03:00am UTC). An initial data instantiation can be invoked by sending the following HTTP request to the agent:
+```
+GET http://165.232.172.16:5001/api/metofficeagent/update/all
+Content-Type: application/json
 ```
 
 ## 4.2) River Levels Agent
@@ -395,6 +398,7 @@ Property Value Estimation Agent
 [personal access token]: https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token
 [VSCode via SSH]: https://code.visualstudio.com/docs/remote/ssh
 [Upload SSH key]: https://docs.digitalocean.com/products/droplets/how-to/add-ssh-keys/to-existing-droplet/
+[MetOffice My Account]: https://register.metoffice.gov.uk/MyAccountClient/account/view
 
 <!-- Stack references -->
 [common stack scripts]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/common-scripts
@@ -412,7 +416,6 @@ Property Value Estimation Agent
 [Property Value Estimation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent/README.md
 [Property Sales Instantiation Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/HMLandRegistryAgent/README.md
 [MetOffice Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/MetOfficeAgent
-[MetOffice docker-compose file]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/MetOfficeAgent/docker-compose.yml
 [RiverLevelsAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAgent
 
 

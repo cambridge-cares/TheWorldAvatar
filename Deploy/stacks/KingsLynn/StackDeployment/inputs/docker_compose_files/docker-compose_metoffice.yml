@@ -8,13 +8,13 @@ services:
       # MetOffice Data Point API key
       - API_KEY=
       # Target Blazegraph namespace
-      - NAMESPACE=stations
+      - NAMESPACE=metoffice
       # Target layer name in geoserver, also table name in PostGIS
       - LAYERNAME=metoffice
       # Target PostGIS/PostgreSQL database name
       # (default name "postgres" required for Ontop to work)
       - DATABASE=postgres
-      - GEOSERVER_WORKSPACE=metoffice
+      - GEOSERVER_WORKSPACE=stations
       - ONTOP_FILE=/app/resources/ontop.obda
     ports:
       - "5001:5000"
