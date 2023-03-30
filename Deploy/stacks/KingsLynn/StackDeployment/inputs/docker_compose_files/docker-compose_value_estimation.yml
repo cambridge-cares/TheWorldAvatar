@@ -34,6 +34,7 @@ services:
       - FILE_SERVER_PASSWORD=''
       #--- Miscellaneous ---#
       - LOG4J_FORMAT_MSG_NO_LOOKUPS=true
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "propertyvalueestimation:create_app()", "--preload", "--limit-request-line", "0"]
     ports:
       - "5012:5000"
     volumes:

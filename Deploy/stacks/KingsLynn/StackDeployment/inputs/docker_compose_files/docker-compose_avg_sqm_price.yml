@@ -34,6 +34,7 @@ services:
       - LOG4J_FORMAT_MSG_NO_LOOKUPS=true
     ports:
       - "5011:5000"
+    entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "avgsqmpriceagent:create_app()", "--preload", "--limit-request-line", "0"]
     volumes:
       - logs:/root/.jps
     configs:
