@@ -5,14 +5,13 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestGeometryUtils;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -213,12 +212,10 @@ class ModellingOperatorStorageTest {
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatement(), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointCoordinateStatements(TEST_X_COORD, TEST_Y_COORD, TEST_Z_COORD), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, TEST_X_COORD, TEST_Y_COORD, TEST_Z_COORD, true), result);
         // Second point will not be generated as it was not retrieve and used
-        JunitTestUtils.doesExpectedListNotExist(genExpectedPointCoordinateStatements(TEST_X_COORD2, TEST_Y_COORD2, TEST_Z_COORD2), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, TEST_X_COORD2, TEST_Y_COORD2, TEST_Z_COORD2), result);
     }
-
 
     @Test
     void testConstructStatementsPartialRetrieveForDirectionVector() {
@@ -236,10 +233,9 @@ class ModellingOperatorStorageTest {
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
-        JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatement(), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedDirectionRatioStatements(TEST_X_DIR_RATIO, TEST_Y_DIR_RATIO, TEST_Z_DIR_RATIO), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, TEST_X_DIR_RATIO, TEST_Y_DIR_RATIO, TEST_Z_DIR_RATIO, true), result);
         // Second point will not be generated as it was not retrieve and used
-        JunitTestUtils.doesExpectedListNotExist(genExpectedDirectionRatioStatements(TEST_X_DIR_RATIO2, TEST_Y_DIR_RATIO2, TEST_Z_DIR_RATIO2), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, TEST_X_DIR_RATIO2, TEST_Y_DIR_RATIO2, TEST_Z_DIR_RATIO2), result);
     }
 
     @Test
@@ -265,39 +261,9 @@ class ModellingOperatorStorageTest {
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatement(), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointCoordinateStatements(TEST_X_COORD, TEST_Y_COORD, TEST_Z_COORD), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointCoordinateStatements(TEST_X_COORD2, TEST_Y_COORD2, TEST_Z_COORD2), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatement(), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedDirectionRatioStatements(TEST_X_DIR_RATIO, TEST_Y_DIR_RATIO, TEST_Z_DIR_RATIO), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedDirectionRatioStatements(TEST_X_DIR_RATIO2, TEST_Y_DIR_RATIO2, TEST_Z_DIR_RATIO2), result);
-    }
-
-    private List<String> genExpectedPointStatement() {
-        List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + TEST_POINT_CLASS + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/" + TEST_POINT_CLASS);
-        return expected;
-    }
-
-    private List<String> genExpectedPointCoordinateStatements(Double xCoord, Double yCoord, Double zCoord) {
-        List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + TEST_POINT_CLASS + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasXCoordinate, \"" + xCoord);
-        expected.add(TEST_BASE_URI + TEST_POINT_CLASS + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasYCoordinate, \"" + yCoord);
-        expected.add(TEST_BASE_URI + TEST_POINT_CLASS + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasZCoordinate, \"" + zCoord);
-        return expected;
-    }
-
-    private List<String> genExpectedDirectionStatement() {
-        List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + TEST_DIR_VECTOR_CLASS + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/" + TEST_DIR_VECTOR_CLASS);
-        return expected;
-    }
-
-    private List<String> genExpectedDirectionRatioStatements(Double xRatio, Double yRatio, Double zRatio) {
-        List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + TEST_DIR_VECTOR_CLASS + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasXDirectionRatio, \"" + xRatio);
-        expected.add(TEST_BASE_URI + TEST_DIR_VECTOR_CLASS + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasYDirectionRatio, \"" + yRatio);
-        expected.add(TEST_BASE_URI + TEST_DIR_VECTOR_CLASS + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasZDirectionRatio, \"" + zRatio);
-        return expected;
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, TEST_X_COORD, TEST_Y_COORD, TEST_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, TEST_X_COORD2, TEST_Y_COORD2, TEST_Z_COORD2, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, TEST_X_DIR_RATIO, TEST_Y_DIR_RATIO, TEST_Z_DIR_RATIO, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, TEST_X_DIR_RATIO2, TEST_Y_DIR_RATIO2, TEST_Z_DIR_RATIO2, true), result);
     }
 }

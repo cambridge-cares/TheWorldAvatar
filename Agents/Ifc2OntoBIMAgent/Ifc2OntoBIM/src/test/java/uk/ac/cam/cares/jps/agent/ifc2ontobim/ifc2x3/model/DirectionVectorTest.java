@@ -4,6 +4,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestGeometryUtils;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 
@@ -58,8 +59,7 @@ class DirectionVectorTest {
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
-        JunitTestUtils.doesExpectedListExist(genExpectedStatements(testBaseUri, testXDirRatio1, testYDirRatio1), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedOptionalStatements(testBaseUri, testZDirRatio1), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(testBaseUri, testXDirRatio1, testYDirRatio1, testZDirRatio1, true), result);
     }
 
     @Test
@@ -72,17 +72,9 @@ class DirectionVectorTest {
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
-        JunitTestUtils.doesExpectedListExist(genExpectedStatements(testBaseUri, testXDirRatio1, testYDirRatio1), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(testBaseUri, testXDirRatio1, testYDirRatio1, null, true), result);
         // Verify the z coordinate statement is not generated
         JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalStatements(testBaseUri, testZDirRatio1), result);
-    }
-
-    private List<String> genExpectedStatements(String baseURI, Double xCoord, Double yCoord) {
-        List<String> expected = new ArrayList<>();
-        expected.add(baseURI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/DirectionVector");
-        expected.add(baseURI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasXDirectionRatio, \"" + xCoord);
-        expected.add(baseURI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasYDirectionRatio, \"" + yCoord);
-        return expected;
     }
 
     private List<String> genExpectedOptionalStatements(String baseURI, Double zCoord) {

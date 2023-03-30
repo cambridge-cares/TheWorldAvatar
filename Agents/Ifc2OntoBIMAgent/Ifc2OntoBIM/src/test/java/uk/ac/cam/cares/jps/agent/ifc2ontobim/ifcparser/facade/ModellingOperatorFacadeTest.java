@@ -6,6 +6,7 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestGeometryUtils;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.JunitTestUtils;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ModellingOperatorStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
@@ -93,13 +94,13 @@ class ModellingOperatorFacadeTest {
         operatorMappings.constructAllStatements(sampleSet);
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generate expected statement lists and verify their existence
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_CART_POINT_X_COORD.toString(), IFC_CART_POINT_Y_COORD.toString(), IFC_CART_POINT_Z_COORD.toString()), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_DIR_VECTOR_X_RATIO.toString(), IFC_DIR_VECTOR_Y_RATIO.toString(), IFC_DIR_VECTOR_Z_RATIO.toString()), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_CART_POINT_X_COORD, IFC_CART_POINT_Y_COORD, IFC_CART_POINT_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_DIR_VECTOR_X_RATIO, IFC_DIR_VECTOR_Y_RATIO, IFC_DIR_VECTOR_Z_RATIO, true), result);
         JunitTestUtils.doesExpectedListExist(genExpectedPlacementStatements(BIM_FIRST_PLACEMENT_INST, false, false), result);
         JunitTestUtils.doesExpectedListExist(genExpectedPlacementStatements(BIM_SEC_PLACEMENT_INST, false, false), result);
         // Verify the duplicate statements are not generated
-        JunitTestUtils.doesExpectedListNotExist(genExpectedPointStatements(IFC_SEC_CART_POINT_X_COORD.toString(), IFC_SEC_CART_POINT_Y_COORD.toString(), IFC_SEC_CART_POINT_Z_COORD.toString()), result);
-        JunitTestUtils.doesExpectedListNotExist(genExpectedDirectionStatements(IFC_SEC_DIR_VECTOR_X_RATIO.toString(), IFC_SEC_DIR_VECTOR_Y_RATIO.toString(), IFC_SEC_DIR_VECTOR_Z_RATIO.toString()), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_SEC_CART_POINT_X_COORD, IFC_SEC_CART_POINT_Y_COORD, IFC_SEC_CART_POINT_Z_COORD), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_SEC_DIR_VECTOR_X_RATIO, IFC_SEC_DIR_VECTOR_Y_RATIO, IFC_SEC_DIR_VECTOR_Z_RATIO), result);
     }
 
     @Test
@@ -132,11 +133,11 @@ class ModellingOperatorFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Verify placement statements have been generated and point statements are not generated
         JunitTestUtils.doesExpectedListExist(genExpectedPlacementStatements(BIM_FIRST_PLACEMENT_INST, false, false), result);
-        JunitTestUtils.doesExpectedListNotExist(genExpectedPointStatements(IFC_CART_POINT_X_COORD.toString(), IFC_CART_POINT_Y_COORD.toString(), IFC_CART_POINT_Z_COORD.toString()), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_CART_POINT_X_COORD, IFC_CART_POINT_Y_COORD, IFC_CART_POINT_Z_COORD, true), result);
         // Generate point and direction statements and check they have been generated
         operatorMappings.constructAllStatements(sampleSet);
         result = JunitTestUtils.appendStatementsAsString(sampleSet);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_CART_POINT_X_COORD.toString(), IFC_CART_POINT_Y_COORD.toString(), IFC_CART_POINT_Z_COORD.toString()), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_CART_POINT_X_COORD, IFC_CART_POINT_Y_COORD, IFC_CART_POINT_Z_COORD, true), result);
     }
 
     @Test
@@ -153,13 +154,14 @@ class ModellingOperatorFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Verify placement statements have been generated but other statements are not generated yet
         JunitTestUtils.doesExpectedListExist(genExpectedPlacementStatements(BIM_SEC_PLACEMENT_INST, true, false), result);
-        JunitTestUtils.doesExpectedListNotExist(genExpectedPointStatements(IFC_SEC_CART_POINT_X_COORD.toString(), IFC_SEC_CART_POINT_Y_COORD.toString(), IFC_SEC_CART_POINT_Z_COORD.toString()), result);
-        JunitTestUtils.doesExpectedListNotExist(genExpectedDirectionStatements(IFC_SEC_DIR_VECTOR_X_RATIO.toString(), IFC_SEC_DIR_VECTOR_Y_RATIO.toString(), IFC_SEC_DIR_VECTOR_Z_RATIO.toString()), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_SEC_CART_POINT_X_COORD, IFC_SEC_CART_POINT_Y_COORD, IFC_SEC_CART_POINT_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_SEC_DIR_VECTOR_X_RATIO, IFC_SEC_DIR_VECTOR_Y_RATIO, IFC_SEC_DIR_VECTOR_Z_RATIO, true), result);
         // Generate point and direction statements and check they have been generated
         operatorMappings.constructAllStatements(sampleSet);
         result = JunitTestUtils.appendStatementsAsString(sampleSet);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_SEC_CART_POINT_X_COORD.toString(), IFC_SEC_CART_POINT_Y_COORD.toString(), IFC_SEC_CART_POINT_Z_COORD.toString()), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_SEC_DIR_VECTOR_X_RATIO.toString(), IFC_SEC_DIR_VECTOR_Y_RATIO.toString(), IFC_SEC_DIR_VECTOR_Z_RATIO.toString()), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_SEC_CART_POINT_X_COORD, IFC_SEC_CART_POINT_Y_COORD, IFC_SEC_CART_POINT_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_SEC_DIR_VECTOR_X_RATIO, IFC_SEC_DIR_VECTOR_Y_RATIO, IFC_SEC_DIR_VECTOR_Z_RATIO, true), result);
+
     }
 
     @Test
@@ -177,15 +179,15 @@ class ModellingOperatorFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Verify placement statements have been generated but other statements are not generated yet
         JunitTestUtils.doesExpectedListExist(genExpectedPlacementStatements(BIM_SEC_PLACEMENT_INST, true, false), result);
-        JunitTestUtils.doesExpectedListNotExist(genExpectedPointStatements(IFC_CART_POINT_X_COORD.toString(), IFC_CART_POINT_Y_COORD.toString(), IFC_CART_POINT_Z_COORD.toString()), result);
-        JunitTestUtils.doesExpectedListNotExist(genExpectedDirectionStatements(IFC_DIR_VECTOR_X_RATIO.toString(), IFC_DIR_VECTOR_Y_RATIO.toString(), IFC_DIR_VECTOR_Z_RATIO.toString()), result);
-        JunitTestUtils.doesExpectedListNotExist(genExpectedDirectionStatements(IFC_SEC_DIR_VECTOR_X_RATIO.toString(), IFC_SEC_DIR_VECTOR_Y_RATIO.toString(), IFC_SEC_DIR_VECTOR_Z_RATIO.toString()), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_CART_POINT_X_COORD, IFC_CART_POINT_Y_COORD, IFC_CART_POINT_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_DIR_VECTOR_X_RATIO, IFC_DIR_VECTOR_Y_RATIO, IFC_DIR_VECTOR_Z_RATIO, true), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_SEC_DIR_VECTOR_X_RATIO, IFC_SEC_DIR_VECTOR_Y_RATIO, IFC_SEC_DIR_VECTOR_Z_RATIO, true), result);
         // Generate point and direction statements and check they have been generated
         operatorMappings.constructAllStatements(sampleSet);
         result = JunitTestUtils.appendStatementsAsString(sampleSet);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_CART_POINT_X_COORD.toString(), IFC_CART_POINT_Y_COORD.toString(), IFC_CART_POINT_Z_COORD.toString()), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_DIR_VECTOR_X_RATIO.toString(), IFC_DIR_VECTOR_Y_RATIO.toString(), IFC_DIR_VECTOR_Z_RATIO.toString()), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_SEC_DIR_VECTOR_X_RATIO.toString(), IFC_SEC_DIR_VECTOR_Y_RATIO.toString(), IFC_SEC_DIR_VECTOR_Z_RATIO.toString()), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_CART_POINT_X_COORD, IFC_CART_POINT_Y_COORD, IFC_CART_POINT_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_DIR_VECTOR_X_RATIO, IFC_DIR_VECTOR_Y_RATIO, IFC_DIR_VECTOR_Z_RATIO, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_SEC_DIR_VECTOR_X_RATIO, IFC_SEC_DIR_VECTOR_Y_RATIO, IFC_SEC_DIR_VECTOR_Z_RATIO, true), result);
     }
 
     @Test
@@ -202,13 +204,13 @@ class ModellingOperatorFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Verify placement statements have been generated but other statements are not generated yet
         JunitTestUtils.doesExpectedListExist(genExpectedPlacementStatements(BIM_THIRD_PLACEMENT_INST, true, false), result);// Clean up results as one string
-        JunitTestUtils.doesExpectedListNotExist(genExpectedPointStatements(IFC_CART_POINT_X_COORD.toString(), IFC_CART_POINT_Y_COORD.toString(), IFC_CART_POINT_Z_COORD.toString()), result);
-        JunitTestUtils.doesExpectedListNotExist(genExpectedDirectionStatements(IFC_DIR_VECTOR_X_RATIO.toString(), IFC_DIR_VECTOR_Y_RATIO.toString(), IFC_DIR_VECTOR_Z_RATIO.toString()), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_CART_POINT_X_COORD, IFC_CART_POINT_Y_COORD, IFC_CART_POINT_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_DIR_VECTOR_X_RATIO, IFC_DIR_VECTOR_Y_RATIO, IFC_DIR_VECTOR_Z_RATIO, true), result);
         // Generate point and direction statements and check they have been generated
         operatorMappings.constructAllStatements(sampleSet);
         result = JunitTestUtils.appendStatementsAsString(sampleSet);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_CART_POINT_X_COORD.toString(), IFC_CART_POINT_Y_COORD.toString(), IFC_CART_POINT_Z_COORD.toString()), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_DIR_VECTOR_X_RATIO.toString(), IFC_DIR_VECTOR_Y_RATIO.toString(), IFC_DIR_VECTOR_Z_RATIO.toString()), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_CART_POINT_X_COORD, IFC_CART_POINT_Y_COORD, IFC_CART_POINT_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_DIR_VECTOR_X_RATIO, IFC_DIR_VECTOR_Y_RATIO, IFC_DIR_VECTOR_Z_RATIO, true), result);
     }
 
     @Test
@@ -226,15 +228,15 @@ class ModellingOperatorFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Verify transformation operators statements have been generated but other statements are not generated yet
         JunitTestUtils.doesExpectedListExist(genExpectedTransformationOperatorStatements(BIM_TRANSFORMATION_OPERATOR_IRI, true), result);
-        JunitTestUtils.doesExpectedListNotExist(genExpectedPointStatements(IFC_CART_POINT_X_COORD.toString(), IFC_CART_POINT_Y_COORD.toString(), IFC_CART_POINT_Z_COORD.toString(), false), result);
-        JunitTestUtils.doesExpectedListNotExist(genExpectedDirectionStatements(IFC_DIR_VECTOR_X_RATIO.toString(), IFC_DIR_VECTOR_Y_RATIO.toString(), IFC_DIR_VECTOR_Z_RATIO.toString(), false), result);
-        JunitTestUtils.doesExpectedListNotExist(genExpectedDirectionStatements(IFC_SEC_DIR_VECTOR_X_RATIO.toString(), IFC_SEC_DIR_VECTOR_Y_RATIO.toString(), IFC_SEC_DIR_VECTOR_Z_RATIO.toString(), false), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_CART_POINT_X_COORD, IFC_CART_POINT_Y_COORD, IFC_CART_POINT_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_DIR_VECTOR_X_RATIO, IFC_DIR_VECTOR_Y_RATIO, IFC_DIR_VECTOR_Z_RATIO, true), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_SEC_DIR_VECTOR_X_RATIO, IFC_SEC_DIR_VECTOR_Y_RATIO, IFC_SEC_DIR_VECTOR_Z_RATIO, true), result);
         // Generate point and direction statements and check they have been generated
         operatorMappings.constructAllStatements(sampleSet);
         result = JunitTestUtils.appendStatementsAsString(sampleSet);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_CART_POINT_X_COORD.toString(), IFC_CART_POINT_Y_COORD.toString(), IFC_CART_POINT_Z_COORD.toString()), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_DIR_VECTOR_X_RATIO.toString(), IFC_DIR_VECTOR_Y_RATIO.toString(), IFC_DIR_VECTOR_Z_RATIO.toString()), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_SEC_DIR_VECTOR_X_RATIO.toString(), IFC_SEC_DIR_VECTOR_Y_RATIO.toString(), IFC_SEC_DIR_VECTOR_Z_RATIO.toString()), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_CART_POINT_X_COORD, IFC_CART_POINT_Y_COORD, IFC_CART_POINT_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_DIR_VECTOR_X_RATIO, IFC_DIR_VECTOR_Y_RATIO, IFC_DIR_VECTOR_Z_RATIO, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_SEC_DIR_VECTOR_X_RATIO, IFC_SEC_DIR_VECTOR_Y_RATIO, IFC_SEC_DIR_VECTOR_Z_RATIO, true), result);
     }
 
     @Test
@@ -252,15 +254,15 @@ class ModellingOperatorFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Verify transformation operators statements have been generated but other statements are not generated yet
         JunitTestUtils.doesExpectedListExist(genExpectedTransformationOperatorStatements(BIM_TRANSFORMATION_OPERATOR_IRI, false), result);
-        JunitTestUtils.doesExpectedListNotExist(genExpectedPointStatements(IFC_CART_POINT_X_COORD.toString(), IFC_CART_POINT_Y_COORD.toString(), IFC_CART_POINT_Z_COORD.toString()), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_CART_POINT_X_COORD, IFC_CART_POINT_Y_COORD, IFC_CART_POINT_Z_COORD), result);
         // Generate point and direction statements and check they have been generated
         operatorMappings.constructAllStatements(sampleSet);
         result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generate expected statement lists and verify their existence
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_CART_POINT_X_COORD.toString(), IFC_CART_POINT_Y_COORD.toString(), IFC_CART_POINT_Z_COORD.toString()), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_CART_POINT_X_COORD, IFC_CART_POINT_Y_COORD, IFC_CART_POINT_Z_COORD, true), result);
         // The null results should not be retrieved
-        JunitTestUtils.doesExpectedListNotExist(genExpectedDirectionStatements(IFC_DIR_VECTOR_X_RATIO.toString(), IFC_DIR_VECTOR_Y_RATIO.toString(), IFC_DIR_VECTOR_Z_RATIO.toString()), result);
-        JunitTestUtils.doesExpectedListNotExist(genExpectedDirectionStatements(IFC_SEC_DIR_VECTOR_X_RATIO.toString(), IFC_SEC_DIR_VECTOR_Y_RATIO.toString(), IFC_SEC_DIR_VECTOR_Z_RATIO.toString()), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_DIR_VECTOR_X_RATIO, IFC_DIR_VECTOR_Y_RATIO, IFC_DIR_VECTOR_Z_RATIO), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_SEC_DIR_VECTOR_X_RATIO, IFC_SEC_DIR_VECTOR_Y_RATIO, IFC_SEC_DIR_VECTOR_Z_RATIO), result);
     }
 
     @Test
@@ -345,38 +347,6 @@ class ModellingOperatorFacadeTest {
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "contextIdentifier_IfcRepresentationContext"),
                         sampleModel.createResource().addProperty(hasString, sampleModel.createLiteral(TEST_CONTEXT_IDENTIFIER)))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "targetView_IfcGeometricRepresentationSubContext"),  sampleModel.createResource(TEST_TARGET_VIEW));
-    }
-
-    private List<String> genExpectedPointStatements(String xCoord, String yCoord, String zCoord, boolean isTypeRequired) {
-        List<String> expected = genExpectedPointStatements(xCoord, yCoord, zCoord);
-        expected.add(TEST_BASE_URI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/CartesianPoint");
-        return expected;
-    }
-
-    private List<String> genExpectedPointStatements(String xCoord, String yCoord, String zCoord) {
-        List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasXCoordinate, \"" + xCoord);
-        expected.add(TEST_BASE_URI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasYCoordinate, \"" + yCoord);
-        if (zCoord != null) {
-            expected.add(TEST_BASE_URI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasZCoordinate, \"" + zCoord);
-        }
-        return expected;
-    }
-
-    private List<String> genExpectedDirectionStatements(String xDir, String yDir, String zDir, boolean isTypeRequired) {
-        List<String> expected = genExpectedDirectionStatements(xDir, yDir, zDir) ;
-        expected.add(TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/DirectionVector");
-        return expected;
-    }
-
-    private List<String> genExpectedDirectionStatements(String xDir, String yDir, String zDir) {
-        List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasXDirectionRatio, \"" + xDir);
-        expected.add(TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasYDirectionRatio, \"" + yDir);
-        if (zDir != null) {
-            expected.add(TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasZDirectionRatio, \"" + zDir);
-        }
-        return expected;
     }
 
     private List<String> genExpectedPlacementStatements(String placementInst, boolean hasRefDir, boolean hasAxisDir) {

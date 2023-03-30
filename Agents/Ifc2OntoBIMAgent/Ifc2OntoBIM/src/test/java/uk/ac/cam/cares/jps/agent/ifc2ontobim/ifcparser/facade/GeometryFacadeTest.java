@@ -106,11 +106,11 @@ class GeometryFacadeTest {
         // Verify that the right points and direction are generated
         operatorMappings.constructAllStatements(sampleSet);
         result = JunitTestUtils.appendStatementsAsString(sampleSet);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_REF_DIR_VECTOR_X_RATIO, IFC_REF_DIR_VECTOR_Y_RATIO, IFC_REF_DIR_VECTOR_Z_RATIO), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_AXIS_DIR_VECTOR_X_RATIO, IFC_AXIS_DIR_VECTOR_Y_RATIO, IFC_AXIS_DIR_VECTOR_Z_RATIO), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_GEOM_SEC_POSITION_X_COORD, IFC_GEOM_SEC_POSITION_Y_COORD, IFC_GEOM_SEC_POSITION_Z_COORD), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_PROFILE_DIR_VECTOR_X_RATIO, IFC_PROFILE_DIR_VECTOR_Y_RATIO, IFC_PROFILE_DIR_VECTOR_Z_RATIO), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_REF_DIR_VECTOR_X_RATIO, IFC_REF_DIR_VECTOR_Y_RATIO, IFC_REF_DIR_VECTOR_Z_RATIO, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_AXIS_DIR_VECTOR_X_RATIO, IFC_AXIS_DIR_VECTOR_Y_RATIO, IFC_AXIS_DIR_VECTOR_Z_RATIO, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_GEOM_SEC_POSITION_X_COORD, IFC_GEOM_SEC_POSITION_Y_COORD, IFC_GEOM_SEC_POSITION_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_PROFILE_DIR_VECTOR_X_RATIO, IFC_PROFILE_DIR_VECTOR_Y_RATIO, IFC_PROFILE_DIR_VECTOR_Z_RATIO, true), result);
     }
 
     @Test
@@ -129,13 +129,13 @@ class GeometryFacadeTest {
         // Verify that the right points are generated
         operatorMappings.constructAllStatements(sampleSet);
         result = JunitTestUtils.appendStatementsAsString(sampleSet);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_GEOM_SEC_POSITION_X_COORD, IFC_GEOM_SEC_POSITION_Y_COORD, IFC_GEOM_SEC_POSITION_Z_COORD), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_GEOM_SEC_POSITION_X_COORD, IFC_GEOM_SEC_POSITION_Y_COORD, IFC_GEOM_SEC_POSITION_Z_COORD, true), result);
         // Direction for extruded direction will be generated
-        JunitTestUtils.doesExpectedListExist(genExpectedDirectionStatements(IFC_REF_DIR_VECTOR_X_RATIO, IFC_REF_DIR_VECTOR_Y_RATIO, IFC_REF_DIR_VECTOR_Z_RATIO), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_REF_DIR_VECTOR_X_RATIO, IFC_REF_DIR_VECTOR_Y_RATIO, IFC_REF_DIR_VECTOR_Z_RATIO, true), result);
         // Verify no directions are generated
-        JunitTestUtils.doesExpectedListNotExist(genExpectedDirectionStatements(IFC_AXIS_DIR_VECTOR_X_RATIO, IFC_AXIS_DIR_VECTOR_Y_RATIO, IFC_AXIS_DIR_VECTOR_Z_RATIO), result);
-        JunitTestUtils.doesExpectedListNotExist(genExpectedDirectionStatements(IFC_PROFILE_DIR_VECTOR_X_RATIO, IFC_PROFILE_DIR_VECTOR_Y_RATIO, IFC_PROFILE_DIR_VECTOR_Z_RATIO), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_AXIS_DIR_VECTOR_X_RATIO, IFC_AXIS_DIR_VECTOR_Y_RATIO, IFC_AXIS_DIR_VECTOR_Z_RATIO), result);
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_PROFILE_DIR_VECTOR_X_RATIO, IFC_PROFILE_DIR_VECTOR_Y_RATIO, IFC_PROFILE_DIR_VECTOR_Z_RATIO), result);
     }
 
     @Test
@@ -154,8 +154,8 @@ class GeometryFacadeTest {
         // Verify that the right points are generated
         operatorMappings.constructAllStatements(sampleSet);
         result = JunitTestUtils.appendStatementsAsString(sampleSet);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_GEOM_SEC_POSITION_X_COORD, IFC_GEOM_SEC_POSITION_Y_COORD, IFC_GEOM_SEC_POSITION_Z_COORD), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_GEOM_SEC_POSITION_X_COORD, IFC_GEOM_SEC_POSITION_Y_COORD, IFC_GEOM_SEC_POSITION_Z_COORD, true), result);
     }
 
     @Test
@@ -174,7 +174,7 @@ class GeometryFacadeTest {
         // Verify that the right points are generated
         operatorMappings.constructAllStatements(sampleSet);
         result = JunitTestUtils.appendStatementsAsString(sampleSet);
-        JunitTestUtils.doesExpectedListExist(genExpectedPointStatements(IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD, true), result);
     }
 
     private void addExtrudedAreaSolidTriples(String iri, boolean isComplete) {
@@ -242,26 +242,6 @@ class GeometryFacadeTest {
         List<String> expected = new ArrayList<>();
         expected.add(TEST_BASE_URI + "LocalPlacement_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefDirection, " + TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         expected.add(TEST_BASE_URI + "LocalPlacement_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasAxisDirection, " + TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        return expected;
-    }
-
-    private List<String> genExpectedPointStatements(Double xCoord, Double yCoord, Double zCoord) {
-        List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasXCoordinate, \"" + xCoord);
-        expected.add(TEST_BASE_URI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasYCoordinate, \"" + yCoord);
-        if (zCoord != null) {
-            expected.add(TEST_BASE_URI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasZCoordinate, \"" + zCoord);
-        }
-        return expected;
-    }
-
-    private List<String> genExpectedDirectionStatements(Double xDir, Double yDir, Double zDir) {
-        List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasXDirectionRatio, \"" + xDir);
-        expected.add(TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasYDirectionRatio, \"" + yDir);
-        if (zDir != null) {
-            expected.add(TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasZDirectionRatio, \"" + zDir);
-        }
         return expected;
     }
 }

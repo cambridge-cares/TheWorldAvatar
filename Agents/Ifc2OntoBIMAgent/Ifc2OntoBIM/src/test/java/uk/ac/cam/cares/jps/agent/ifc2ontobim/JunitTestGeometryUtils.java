@@ -20,4 +20,41 @@ public class JunitTestGeometryUtils {
         expected.add(currentVertex + ", http://www.theworldavatar.com/kg/ontobim/hasRefPoint, " + currentPoint);
         return expected;
     }
+
+    public static List<String> genExpectedPointStatements(String baseURI, Double xCoord, Double yCoord, Double zCoord, boolean requireType) {
+        List<String> expected = new ArrayList<>();
+        if (requireType) {
+            expected.add(baseURI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/CartesianPoint");
+        }
+        genExpectedPointStatements(baseURI, xCoord, yCoord, zCoord);
+        return expected;
+    }
+
+    public static List<String> genExpectedPointStatements(String baseURI, Double xCoord, Double yCoord, Double zCoord) {
+        List<String> expected = new ArrayList<>();
+        expected.add(baseURI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasXCoordinate, \"" + xCoord);
+        expected.add(baseURI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasYCoordinate, \"" + yCoord);
+        if (zCoord != null) {
+            expected.add(baseURI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasZCoordinate, \"" + zCoord);
+        }
+        return expected;
+    }
+
+    public static List<String> genExpectedDirectionStatements(String baseURI, Double xDir, Double yDir, Double zDir, boolean requireType) {
+        List<String> expected = new ArrayList<>();
+        if (requireType) {
+            expected.add(baseURI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/DirectionVector");
+        }
+        genExpectedDirectionStatements(baseURI, xDir, yDir, zDir);
+        return expected;
+    }
+    public static List<String> genExpectedDirectionStatements(String baseURI, Double xDir, Double yDir, Double zDir) {
+        List<String> expected = new ArrayList<>();
+        expected.add(baseURI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasXDirectionRatio, \"" + xDir);
+        expected.add(baseURI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasYDirectionRatio, \"" + yDir);
+        if (zDir != null) {
+            expected.add(baseURI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasZDirectionRatio, \"" + zDir);
+        }
+        return expected;
+    }
 }
