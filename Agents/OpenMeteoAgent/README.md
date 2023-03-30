@@ -2,9 +2,9 @@
 
 ## Description
 
-The OpenMeteo agent is intended for instantiating historic weather data retrieved with the Open-Meteo API (https://open-meteo.com/).
+The OpenMeteo agent is intended for instantiating historical weather data retrieved with the Open-Meteo API (https://open-meteo.com/).
 
-The agent will instantiate historical weather data for the following weather parameters, as defined by Open-Meteo, retrieved with the Open-Meteo API. The weather parameters will be instantiated as instances of the Environmental Measurement Station Ontology (OntoEMS) concepts.
+The agent will instantiate historical weather data for the weather parameters below, as defined by Open-Meteo, retrieved with the Open-Meteo API. The weather parameters will be instantiated as instances of the Environmental Measurement Station Ontology (OntoEMS) concepts.
 
 | Open-Meteo API Weather Parameter | Corresponding OntoEMS concept |
 |:--------------------------------:|:-----------------------------:|
@@ -57,7 +57,7 @@ docker-compose up -d
 
 ## Agent Endpoints 
 
-The agent is reachable at two endpoints: run endpoint (http://localhost:10101/openmeteo_agent/run), where the agent will instantiate the weather data retrieved with the Open-Meteo API for the user specified coordinate and time; delete endpoint (http://localhost:10101/openmeteo_agent/delete), where the agent will delete the instantiated weather triples with 
+The agent is reachable at two endpoints: run endpoint (http://localhost:10101/openmeteo_agent/run), where the agent will instantiate the weather data retrieved with the Open-Meteo API for the user specified coordinate and time; delete endpoint (http://localhost:10101/openmeteo_agent/delete), where the agent will delete the instantiated weather triples at the user specified coordinate.
 
 ### 1. Run Endpoint
 Available at http://localhost:10101/openmeteo_agent/run
@@ -78,7 +78,7 @@ Example request:
 }
 ```
 
-After receiving the above request, the agent will instantiate a weather station located at (52.52, -14.41) with historic weather data, retrieved with Open-Meteo API, from 2021-01-02 to 2021-01-03.
+After receiving the above request, the agent will instantiate a weather station located at (52.52, -14.41) with historical weather data, retrieved with Open-Meteo API, from 2021-01-02 to 2021-01-03.
 
 ### 2. Delete Endpoint
 Available at http://localhost:10101/openmeteo_agent/delete
