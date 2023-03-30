@@ -294,14 +294,14 @@
                     "id": "floodwarnings_active",  
                     "type": "vector",
                     "tiles": [
-                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=floodwarnings:floodwarnings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&cql_filter=active=true"
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:floodwarnings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&cql_filter=active=true"
                     ]
                 },
                 {
                     "id": "floodwarnings_inactive",  
                     "type": "vector",
                     "tiles": [
-                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=floodwarnings:floodwarnings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&cql_filter=active=false"
+                        "http://165.232.172.16:3838/geoserver/ows?service=WMS&version=1.1.0&request=GetMap&layers=kingslynn:floodwarnings&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile&cql_filter=active=false"
                     ]
                 }
             ], 
