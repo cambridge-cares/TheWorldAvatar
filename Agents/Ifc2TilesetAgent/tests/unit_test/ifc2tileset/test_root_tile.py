@@ -14,7 +14,6 @@ import trimesh
 
 # Self import
 from agent.ifc2tileset.root_tile import append_tileset_schema_and_metadata, gen_root_content
-from agent.ifc2tileset.tile_helper import make_tileset, make_root_tile
 from . import testconsts as C
 from .testutils import gen_sample_asset_df, z_up_to_y_up
 
@@ -134,11 +133,7 @@ def test_gen_root_content_only_building():
     # expected tileset contains a single building directory
     building_iri = "test_iri"
     expected = make_bim_tileset(C.sample_box_bbox, building_iri)
-    expected["root"]["content"] = {"uri": "./gltf/building.gltf"}
-
-    # Create a building.gltf for testing
-    building = os.path.join("data", "gltf", "building.gltf")
-    open(building, "x", encoding="utf-8").close()
+    expected["root"]["content"] = {"uri": "./glb/building.glb"}
 
     # Create sample glb file
     building_glb = os.path.join("data", "glb", "building.glb")
@@ -149,7 +144,7 @@ def test_gen_root_content_only_building():
         # act
         actual = gen_root_content("test_iri", pd.DataFrame())
     finally:
-        os.remove(building)
+        os.remove(building_glb)
 
     # assert
     assert actual == expected
@@ -164,15 +159,9 @@ def test_gen_root_content_with_building_and_furniture():
     building_iri = "test_iri"
     expected = make_bim_tileset(C.combined_bbox, building_iri)
     expected["root"]["contents"] = [
-        {"uri": "./gltf/furniture.gltf"},
-        {"uri": "./gltf/building.gltf"}
+        {"uri": "./glb/furniture.glb"},
+        {"uri": "./glb/building.glb"}
     ]
-
-    # Create both glTF files for testing
-    building = os.path.join("data", "gltf", "building.gltf")
-    furniture = os.path.join("data", "gltf", "furniture.gltf")
-    open(building, "x", encoding="utf-8").close()
-    open(furniture, "x", encoding="utf-8").close()
 
     # Create GLB files for testing
     building_glb = os.path.join("data", "glb", "building.glb")
@@ -190,5 +179,5 @@ def test_gen_root_content_with_building_and_furniture():
         assert actual == expected
 
     finally:
-        os.remove(building)
-        os.remove(furniture)
+        os.remove(building_glb)
+        os.remove(furniture_glb)

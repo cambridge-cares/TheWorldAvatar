@@ -20,7 +20,7 @@ from agent.config import set_properties
 logger = agentlogging.get_logger("dev")
 
 # Shared fields
-asset_url = "./gltf/"
+asset_url = "./glb/"
 
 
 def create_app():

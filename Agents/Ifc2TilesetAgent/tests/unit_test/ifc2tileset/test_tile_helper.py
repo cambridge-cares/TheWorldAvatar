@@ -154,10 +154,6 @@ def test_gen_solarpanel_tileset():
     """
     Tests gen_solarpanel_tileset() when there is a solarpanel.gltf
     """
-    # Create a solarpanel.gltf for testing
-    solarpanel_gltf = os.path.join("data", "gltf", "solarpanel.gltf")
-    open(solarpanel_gltf, "x", encoding="utf-8").close()
-
     # Create sample glb file
     solarpanel_glb = os.path.join("data", "glb", "solarpanel.glb")
     m = C.sample_box_gen()
@@ -177,12 +173,11 @@ def test_gen_solarpanel_tileset():
         tileset_content = read_json(json_filepath)
 
         # Test that the tileset contents are equivalent to the dictionary
-        assert tileset_content["root"]["content"] == {"uri": "./gltf/solarpanel.gltf"}
+        assert tileset_content["root"]["content"] == {"uri": "./glb/solarpanel.glb"}
 
         # Test that the bbox is correctly computed
         assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_box_bbox)
     finally:
-        os.remove(solarpanel_gltf)  # Remove glTF
         os.remove(solarpanel_glb)   # Remove glb
         os.remove(json_filepath)    # Remove tileset
 
@@ -201,10 +196,6 @@ def test_gen_sewagenetwork_tileset():
     """
     Tests gen_sewagenetwork_tileset() when there is a sewagenetwork.gltf
     """
-    # Create a sewagenetwork.gltf for testing
-    sewage_gltf = os.path.join("data", "gltf", "sewagenetwork.gltf")
-    open(sewage_gltf, "x", encoding="utf-8").close()
-
     # Create sample glb file
     sewage_glb = os.path.join("data", "glb", "sewagenetwork.glb")
     m = C.sample_cone_gen()
@@ -223,11 +214,10 @@ def test_gen_sewagenetwork_tileset():
         tileset_content = read_json(json_filepath)
 
         # Test that the tileset contents are equivalent to the dictionary
-        assert tileset_content["root"]["content"] == {"uri": "./gltf/sewagenetwork.gltf"}
+        assert tileset_content["root"]["content"] == {"uri": "./glb/sewagenetwork.glb"}
 
         # Test that the bbox is correctly computed
         assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_cone_bbox)
     finally:
-        os.remove(sewage_gltf)    # Remove glTF
         os.remove(sewage_glb)     # Remove glb
         os.remove(json_filepath)  # Remove tileset

@@ -146,14 +146,14 @@ def assert_nested_node_content(nested_node_list: List[dict], test_range: int, cu
             i = -1 if i > 4 else i + 1
             if test_case == 0:
                 metadata = nested_dict["contents"][i]["metadata"]
-                assert nested_dict["contents"][i]["uri"] == "./gltf/asset" + str(asset_no) + ".gltf"
+                assert nested_dict["contents"][i]["uri"] == "./glb/asset" + str(asset_no) + ".glb"
                 assert metadata["class"] == "AssetMetaData"
                 assert metadata["properties"]["name"] == "element" + str(asset_no)
                 assert metadata["properties"]["uid"] == "uid" + str(asset_no)
                 assert metadata["properties"]["iri"] == "iri" + str(asset_no)
 
             else:
-                assert nested_dict["contents"][i]["uri"] == "./gltf/asset" + str(asset_no) + ".gltf"
+                assert nested_dict["contents"][i]["uri"] == "./glb/asset" + str(asset_no) + ".glb"
         # 6 assets should be cleared for each nested dict
         current_asset_num = current_asset_num + 6
 

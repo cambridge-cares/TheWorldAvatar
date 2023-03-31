@@ -18,6 +18,7 @@ from agent.exceptions import InvalidInputError
 # Retrieve logger
 logger = agentlogging.get_logger("dev")
 
+
 def run_shellcommand(command, require_shell=False):
     """
     Runs commands in the shell

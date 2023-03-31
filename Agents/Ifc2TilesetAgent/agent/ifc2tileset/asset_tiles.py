@@ -60,7 +60,7 @@ def append_assets_to_tile_node(tile: Tile, asset_df: pd.DataFrame):
     def _asset_data_to_tileset_content(row: pd.Series):
         # Add geometry and uid for each asset
         return {
-            "uri": state.asset_url + row["file"] + ".gltf",
+            "uri": state.asset_url + row["file"] + ".glb",
             # Add the asset name to establish a metadata skeleton
             "metadata": {
                 "class": "AssetMetaData",

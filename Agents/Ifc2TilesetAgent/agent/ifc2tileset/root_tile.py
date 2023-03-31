@@ -64,24 +64,24 @@ def gen_root_content(building_iri: str, asset_data: pd.DataFrame):
         The tileset generated as a python dictionary
     """
     # Respective filepaths
-    building_file_path = "./data/gltf/building.gltf"
+    building_file_path = "./data/glb/building.glb"
     bpath = Path(building_file_path)
 
     if bpath.is_file():
-        building_content = {"uri": state.asset_url + "building.gltf"}
+        building_content = {"uri": state.asset_url + "building.glb"}
 
-        furniture_file_path = "./data/gltf/furniture.gltf"
+        furniture_file_path = "./data/glb/furniture.glb"
         fpath = Path(furniture_file_path)
 
         # If there are furniture, use the multiple nomenclature
         if fpath.is_file():
-            bbox = compute_bbox(["./data/glb/building.glb", "./data/glb/furniture.glb"])
-            furniture_content = {"uri": state.asset_url + "furniture.gltf"}
+            bbox = compute_bbox([bpath, fpath])
+            furniture_content = {"uri": state.asset_url + "furniture.glb"}
 
             # Tileset Nomenclature for multiple geometry files = contents:[{}]
             root_tile = make_root_tile(bbox=bbox, contents=[furniture_content, building_content])
         else:
-            bbox = compute_bbox("./data/glb/building.glb")
+            bbox = compute_bbox(bpath)
 
             # Tileset Nomenclature for 1 geometry file = content:{}
             root_tile = make_root_tile(bbox=bbox, content=building_content)

@@ -39,21 +39,14 @@ def conv2gltf(input_ifc: str, query_endpoint: str, update_endpoint: str):
     for key, value_list in dict_for_split.items():
         glbpath = "./data/glb/" + key + ".glb"
         glbpath = retrieve_abs_filepath(glbpath)
-        gltfpath = "./data/gltf/" + key + ".gltf"
-        gltfpath = retrieve_abs_filepath(gltfpath)
 
         # Initialise the commands and append accordingly
         ifcconvert_command = ["./IfcConvert", "-q", input_ifc, glbpath]
-        ifcconvert_command = append_ifcconvert_command(
-            key, value_list, ifcconvert_command)
-        glb2gltf_command = "gltf-pipeline -i " + glbpath + " -o " + gltfpath
+        ifcconvert_command = append_ifcconvert_command(key, value_list, ifcconvert_command)
 
         # Convert from IFC -> glb -> glTF
         logger.info("Converting " + key + " to glTF...")
         run_shellcommand(ifcconvert_command)
-        logger.debug("IfcConvert command executed: " + " ".join(ifcconvert_command))
-        run_shellcommand(glb2gltf_command, True)
-        logger.debug("gltf-pipeline Command executed: " + " ".join(glb2gltf_command))
 
     logger.info("Conversion to gltf completed...")
 

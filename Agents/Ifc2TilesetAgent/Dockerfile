@@ -29,13 +29,6 @@ RUN curl https://s3.amazonaws.com/ifcopenshell-builds/ifcopenshell-python-39-v0.
     unzip ifcopenshell.zip -d /usr/local/lib/python3.9/site-packages &&\
     rm -f ifcopenshell.zip
 
-# Install npm
-RUN curl -fsSL https://deb.nodesource.com/setup_19.x | bash - &&\
-    apt install -y nodejs &&\
-    exit
-# Install gltf-pipeline from https://github.com/CesiumGS/gltf-pipeline
-RUN npm install -g gltf-pipeline
-
 # Set the default working directory
 WORKDIR /app
 # Copy the Python source code
@@ -54,7 +47,7 @@ RUN python -m pip install pytest
 COPY ./tests ./tests
 
 # Make the required directories for testing
-RUN mkdir -p data/ifc data/glb data/gltf config/
+RUN mkdir -p data/ifc data/glb config/
  
 # Execute unit test
 CMD pytest

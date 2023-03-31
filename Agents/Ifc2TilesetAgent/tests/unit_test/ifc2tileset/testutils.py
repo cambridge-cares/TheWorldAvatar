@@ -57,7 +57,7 @@ def gen_sample_asset_df(test_range: int):
 def gen_sample_asset_contents(test_range: int):
     return [
         {
-            "uri": f"./gltf/asset{i}.gltf",
+            "uri": f"./glb/asset{i}.glb",
             "metadata": {
                 "class": "AssetMetaData",
                 "properties": {

@@ -126,14 +126,10 @@ def assert_asset_geometries():
     def _setup_geom_assertions(asset_list: Iterable[str]):
         for asset in asset_list:
             glbpath = "./data/glb/" + asset + ".glb"
-            gltfpath = "./data/gltf/" + asset + ".gltf"
             try:
                 assert os.path.isfile(glbpath)
-                assert os.path.isfile(gltfpath)
             finally:
                 os.remove(glbpath)
-                os.remove(gltfpath)
-        return None
 
     return _setup_geom_assertions
 

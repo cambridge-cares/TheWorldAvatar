@@ -92,12 +92,12 @@ def gen_solarpanel_tileset():
     """
     Generates and write the tileset for solar panel into 3D Tiles Next format if it exists
     """
-    solarpanel_file_path = "./data/gltf/solarpanel.gltf"
+    solarpanel_file_path = "./data/glb/solarpanel.glb"
     solarpath = Path(solarpanel_file_path)
 
     if solarpath.is_file():
-        bbox = compute_bbox("./data/glb/solarpanel.glb")
-        root_tile = make_root_tile(bbox=bbox, content={"uri": state.asset_url + "solarpanel.gltf"})
+        bbox = compute_bbox(solarpath)
+        root_tile = make_root_tile(bbox=bbox, content={"uri": state.asset_url + "solarpanel.glb"})
         tileset = make_tileset(root_tile)
 
         jsonwriter(tileset, "tileset_solarpanel")
@@ -107,12 +107,12 @@ def gen_sewagenetwork_tileset():
     """
     Generates and write the tileset for sewage network into 3D Tiles Next format if it exists
     """
-    sewage_file_path = "./data/gltf/sewagenetwork.gltf"
+    sewage_file_path = "./data/glb/sewagenetwork.glb"
     sewagepath = Path(sewage_file_path)
 
     if sewagepath.is_file():
-        bbox = compute_bbox("./data/glb/sewagenetwork.glb")
-        root_tile = make_root_tile(bbox=bbox, content={"uri": state.asset_url + "sewagenetwork.gltf"})
+        bbox = compute_bbox(sewagepath)
+        root_tile = make_root_tile(bbox=bbox, content={"uri": state.asset_url + "sewagenetwork.glb"})
         tileset = make_tileset(root_tile)
 
         jsonwriter(tileset, "tileset_sewage")

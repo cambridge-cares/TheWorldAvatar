@@ -61,7 +61,7 @@ def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, 
     properties_path = sample_properties
 
     # Perform POST request
-    response = flaskapp.post(route, json={"assetUrl": "./gltf"})
+    response = flaskapp.post(route, json={"assetUrl": "./glb"})
 
     try:
         # Assert that request has successfully occurred
@@ -79,7 +79,7 @@ def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, 
         root = tileset_content["root"]
         assert_root_tile_compulsory_fields(root)
         assert np.allclose(root["boundingVolume"]["box"], expected_bim_bbox)
-        assert root["content"] == {"uri": "./gltf/building.gltf"}
+        assert root["content"] == {"uri": "./glb/building.glb"}
         assert "children" not in root
     finally:
         os.remove(ifcpath)
@@ -93,8 +93,8 @@ def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, 
     [(
         ["building", "wall", "water_meter", "solar_panel"],
         ["building", "asset1", "solarpanel"],
-        {"uri": "./gltf/building.gltf"},
-        [dict(uri="./gltf/asset1.gltf",
+        {"uri": "./glb/building.glb"},
+        [dict(uri="./glb/asset1.glb",
               metadata={"class": "AssetMetaData",
                         "properties": {"name": C.sample_water_meter.label, "uid": C.sample_water_meter.ifc_id,
                                        "iri": C.base_namespace + C.sample_water_meter.iri}})],
@@ -104,8 +104,8 @@ def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, 
     ), (
         ["building", "wall", "water_meter", "fridge", "chair", "table", "solar_panel"],
         ["building", "asset1", "asset2", "furniture", "solarpanel"],
-        [{"uri": "./gltf/furniture.gltf"}, {"uri": "./gltf/building.gltf"}],
-        [dict(uri=f"./gltf/asset{i + 1}.gltf",
+        [{"uri": "./glb/furniture.glb"}, {"uri": "./glb/building.glb"}],
+        [dict(uri=f"./glb/asset{i + 1}.glb",
               metadata={"class": "AssetMetaData",
                         "properties": {"name": e.label, "uid": e.ifc_id, "iri": C.base_namespace + e.iri}})
          for i, e in enumerate((C.sample_water_meter, C.sample_fridge))],
@@ -135,7 +135,7 @@ def test_api_complex(init_assets, expected_assets, expected_root_content, expect
     properties_path = sample_properties
 
     # Perform POST request
-    response = flaskapp.post(route, json={"assetUrl": "./gltf"})
+    response = flaskapp.post(route, json={"assetUrl": "./glb"})
 
     try:
         # Assert that request has successfully occurred
@@ -172,7 +172,7 @@ def test_api_complex(init_assets, expected_assets, expected_root_content, expect
         solar_root = solar_content["root"]
         assert_root_tile_compulsory_fields(solar_root)
         assert np.allclose(solar_root["boundingVolume"]["box"], expected_solar_panel_bbox)
-        assert solar_root["content"] == {"uri": "./gltf/solarpanel.gltf"}
+        assert solar_root["content"] == {"uri": "./glb/solarpanel.glb"}
     finally:
         os.remove(ifcpath)
         os.remove(properties_path)
@@ -199,7 +199,7 @@ def test_api_invalid_request(expected_response, flaskapp):
     route = "/api"
 
     # Send the POST request
-    response = flaskapp.post(route, json={"asset url": "./gltf"})
+    response = flaskapp.post(route, json={"asset url": "./glb"})
 
     # Assert that request has failed with the right status and response
     assert response.status_code == 400
