@@ -127,17 +127,14 @@ def test_jsonwriter():
     # JSON output path
     test_json = os.path.join("data", sample_name + ".json")
 
-    try:
-        # Execute method
-        jsonwriter(sample_tileset, sample_name)
+    # Execute method
+    jsonwriter(sample_tileset, sample_name)
 
-        # Test that the tileset.json has been created
-        assert os.path.exists(test_json)
+    # Test that the tileset.json has been created
+    assert os.path.exists(test_json)
 
-        # Test that the tileset contents are equivalent to the dictionary
-        assert read_json(test_json) == sample_tileset
-    finally:
-        os.remove(test_json)  # Remove tileset
+    # Test that the tileset contents are equivalent to the dictionary
+    assert read_json(test_json) == sample_tileset
 
 
 def test_gen_solarpanel_tileset_no_solarpanel():
@@ -159,27 +156,23 @@ def test_gen_solarpanel_tileset():
     m = C.sample_box_gen()
     m.export(solarpanel_glb)
 
-    try:
-        # Execute method
-        gen_solarpanel_tileset()
+    # Execute method
+    gen_solarpanel_tileset()
 
-        # JSON output path
-        json_filepath = os.path.join("data", "tileset_solarpanel.json")
+    # JSON output path
+    json_filepath = os.path.join("data", "tileset_solarpanel.json")
 
-        # Test that the tileset.json has been created
-        assert os.path.exists(json_filepath)
+    # Test that the tileset.json has been created
+    assert os.path.exists(json_filepath)
 
-        # Read the tileset
-        tileset_content = read_json(json_filepath)
+    # Read the tileset
+    tileset_content = read_json(json_filepath)
 
-        # Test that the tileset contents are equivalent to the dictionary
-        assert tileset_content["root"]["content"] == {"uri": "./glb/solarpanel.glb"}
+    # Test that the tileset contents are equivalent to the dictionary
+    assert tileset_content["root"]["content"] == {"uri": "./glb/solarpanel.glb"}
 
-        # Test that the bbox is correctly computed
-        assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_box_bbox)
-    finally:
-        os.remove(solarpanel_glb)   # Remove glb
-        os.remove(json_filepath)    # Remove tileset
+    # Test that the bbox is correctly computed
+    assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_box_bbox)
 
 
 def test_gen_sewagenetwork_tileset_no_sewage():
@@ -201,23 +194,19 @@ def test_gen_sewagenetwork_tileset():
     m = C.sample_cone_gen()
     m.export(sewage_glb)
 
-    try:
-        # Execute method
-        gen_sewagenetwork_tileset()
+    # Execute method
+    gen_sewagenetwork_tileset()
 
-        # JSON output path
-        json_filepath = os.path.join("data", "tileset_sewage.json")
-        # Test that the tileset.json has been created
-        assert os.path.exists(json_filepath)
+    # JSON output path
+    json_filepath = os.path.join("data", "tileset_sewage.json")
+    # Test that the tileset.json has been created
+    assert os.path.exists(json_filepath)
 
-        # Read the tileset
-        tileset_content = read_json(json_filepath)
+    # Read the tileset
+    tileset_content = read_json(json_filepath)
 
-        # Test that the tileset contents are equivalent to the dictionary
-        assert tileset_content["root"]["content"] == {"uri": "./glb/sewagenetwork.glb"}
+    # Test that the tileset contents are equivalent to the dictionary
+    assert tileset_content["root"]["content"] == {"uri": "./glb/sewagenetwork.glb"}
 
-        # Test that the bbox is correctly computed
-        assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_cone_bbox)
-    finally:
-        os.remove(sewage_glb)     # Remove glb
-        os.remove(json_filepath)  # Remove tileset
+    # Test that the bbox is correctly computed
+    assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_cone_bbox)

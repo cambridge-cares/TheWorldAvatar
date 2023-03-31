@@ -12,8 +12,8 @@ from typing import List
 import trimesh
 
 # Self import
-from agent.ifc2tileset.asset_tiles import append_asset_metadata_schema, append_tileset_assets, append_assets, \
-    append_assets_to_tile_node
+from agent.ifc2tileset.asset_tiles import append_asset_metadata_schema, append_tileset_assets, append_assets_to_tileset, \
+    append_assets_to_tile
 from agent.ifc2tileset.root_tile import make_tileset, append_tileset_schema_and_metadata
 from agent.ifc2tileset.schema import Tile
 from agent.ifc2tileset.tile_helper import make_root_tile
@@ -77,18 +77,13 @@ def test_append_assets_to_tile_node():
         "contents": gen_sample_asset_contents(test_range)
     }
 
-    try:
-        # act
-        append_assets_to_tile_node(tile, asset_df)
+    # act
+    append_assets_to_tile(tile, asset_df)
 
-        # assert
-        assert "children" in tile
-        assert len(tile["children"]) == 1
-        assert tile["children"][0] == expected_child_node
-
-    finally:
-        for file in glb_files:
-            os.remove(file)
+    # assert
+    assert "children" in tile
+    assert len(tile["children"]) == 1
+    assert tile["children"][0] == expected_child_node
 
 
 def gen_nested_dicts_for_test(sample_tileset: Tile, test_dict_list: List[Tile]):
@@ -181,21 +176,17 @@ def test_append_assets_less_than_six_assets():
 
     tileset = gen_sample_tileset()
 
-    try:
-        # Execute method
-        append_assets(tileset, sample_asset_df)
+    # Execute method
+    append_assets_to_tileset(tileset, sample_asset_df)
 
-        # Test that the root tile has one child node
-        root_tile = tileset["root"]
-        assert "children" in root_tile
-        assert len(root_tile["children"]) == 1
-        assert root_tile["children"][0] == expected_child_node
+    # Test that the root tile has one child node
+    root_tile = tileset["root"]
+    assert "children" in root_tile
+    assert len(root_tile["children"]) == 1
+    assert root_tile["children"][0] == expected_child_node
 
-        # Test that there is no nested children key
-        assert "children" not in tileset["root"]["children"][0]
-    finally:
-        for file in glb_files:
-            os.remove(file)
+    # Test that there is no nested children key
+    assert "children" not in tileset["root"]["children"][0]
 
 
 def test_append_assets_more_than_six_assets():
@@ -232,25 +223,21 @@ def test_append_assets_more_than_six_assets():
 
     tileset = gen_sample_tileset()
 
-    try:
-        # Execute method
-        append_assets(tileset, sample_asset_df)
+    # Execute method
+    append_assets_to_tileset(tileset, sample_asset_df)
 
-        # Generate list of nested dict
-        test_dict_list = []
-        gen_nested_dicts_for_test(tileset["root"], test_dict_list)
+    # Generate list of nested dict
+    test_dict_list = []
+    gen_nested_dicts_for_test(tileset["root"], test_dict_list)
 
-        # Test that there is no children in deepest layer
-        assert "children" not in test_dict_list[-1]
+    # Test that there is no children in deepest layer
+    assert "children" not in test_dict_list[-1]
 
-        # Test the nested children nodes are attached with assets
-        assert_nested_node_content(test_dict_list, test_range, 0)
+    # Test the nested children nodes are attached with assets
+    assert_nested_node_content(test_dict_list, test_range, 0)
 
-        for i, tile in enumerate(test_dict_list):
-            assert expected_fields_of_child_nodes[i].items() <= tile.items()
-    finally:
-        for file in glb_files:
-            os.remove(file)
+    for i, tile in enumerate(test_dict_list):
+        assert expected_fields_of_child_nodes[i].items() <= tile.items()
 
 
 def test_append_tileset_assets():
@@ -282,18 +269,14 @@ def test_append_tileset_assets():
 
     tileset = gen_sample_tileset()
 
-    try:
-        # Execute test method
-        append_tileset_assets(tileset, sample_df)
+    # Execute test method
+    append_tileset_assets(tileset, sample_df)
 
-        # Process result for programmatic testing
-        test_dict_list = []
-        gen_nested_dicts_for_test(tileset["root"], test_dict_list)
+    # Process result for programmatic testing
+    test_dict_list = []
+    gen_nested_dicts_for_test(tileset["root"], test_dict_list)
 
-        # Test the nested children nodes are attached with assets
-        assert_nested_node_content(test_dict_list, test_range, 0)
-        for i, tile in enumerate(test_dict_list):
-            assert expected_fields_of_child_nodes[i].items() <= tile.items()
-    finally:
-        for file in glb_files:
-            os.remove(file)
+    # Test the nested children nodes are attached with assets
+    assert_nested_node_content(test_dict_list, test_range, 0)
+    for i, tile in enumerate(test_dict_list):
+        assert expected_fields_of_child_nodes[i].items() <= tile.items()

@@ -103,15 +103,11 @@ def test_gen_root_content_no_building_no_furniture_with_assets():
 
     expected = make_bim_tileset([0, 0, 3,  10, 0, 0, 0, 10, 0, 0, 0, 3], building_iri)
 
-    try:
-        # act
-        actual = gen_root_content("test_iri", asset_df)
+    # act
+    actual = gen_root_content("test_iri", asset_df)
 
-        # assert
-        assert actual == expected
-    finally:
-        for file in glb_files:
-            os.remove(file)
+    # assert
+    assert actual == expected
 
 
 def test_gen_root_content_no_building_no_furniture_no_assets():
@@ -140,11 +136,8 @@ def test_gen_root_content_only_building():
     m = C.sample_box_gen()
     m.export(building_glb)
 
-    try:
-        # act
-        actual = gen_root_content("test_iri", pd.DataFrame())
-    finally:
-        os.remove(building_glb)
+    # act
+    actual = gen_root_content("test_iri", pd.DataFrame())
 
     # assert
     assert actual == expected
@@ -171,13 +164,8 @@ def test_gen_root_content_with_building_and_furniture():
     building_mesh.export(building_glb)
     furniture_mesh.export(furniture_glb)
 
-    try:
-        # act
-        actual = gen_root_content("test_iri", pd.DataFrame())
+    # act
+    actual = gen_root_content("test_iri", pd.DataFrame())
 
-        # Ensure that tileset contains this dictionary
-        assert actual == expected
-
-    finally:
-        os.remove(building_glb)
-        os.remove(furniture_glb)
+    # Ensure that tileset contains this dictionary
+    assert actual == expected

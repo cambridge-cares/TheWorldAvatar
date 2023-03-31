@@ -32,25 +32,20 @@ def test_gen_tilesets_solarpanel():
     solar_json_filepath = os.path.join("data", "tileset_solarpanel.json")
     sewage_json_filepath = os.path.join("data", "tileset_sewage.json")
 
-    try:
-        # Execute method
-        gen_tilesets(pd.DataFrame(), "building_iri")
+    # Execute method
+    gen_tilesets(pd.DataFrame(), "building_iri")
 
-        # Test that only relevant tileset.json are created
-        assert os.path.exists(solar_json_filepath)
-        assert not os.path.exists(bim_json_filepath)
-        assert not os.path.exists(sewage_json_filepath)
+    # Test that only relevant tileset.json are created
+    assert os.path.exists(solar_json_filepath)
+    assert not os.path.exists(bim_json_filepath)
+    assert not os.path.exists(sewage_json_filepath)
 
-        # Read the tileset
-        solar_tileset = read_json(solar_json_filepath)
-        # Test that the tileset contents are equivalent to the dictionary
-        assert solar_tileset["root"]["content"] == {"uri": "./glb/solarpanel.glb"}
-        # Test that the bbox is correctly computed
-        assert np.allclose(solar_tileset["root"]["boundingVolume"]["box"], C.sample_box_bbox)
-    finally:
-        # Remove files
-        os.remove(solarpanel_glb)
-        os.remove(solar_json_filepath)
+    # Read the tileset
+    solar_tileset = read_json(solar_json_filepath)
+    # Test that the tileset contents are equivalent to the dictionary
+    assert solar_tileset["root"]["content"] == {"uri": "./glb/solarpanel.glb"}
+    # Test that the bbox is correctly computed
+    assert np.allclose(solar_tileset["root"]["boundingVolume"]["box"], C.sample_box_bbox)
 
 
 def test_gen_tilesets_sewage():
@@ -67,25 +62,20 @@ def test_gen_tilesets_sewage():
     solar_json_filepath = os.path.join("data", "tileset_solarpanel.json")
     sewage_json_filepath = os.path.join("data", "tileset_sewage.json")
 
-    try:
-        # Execute method
-        gen_tilesets(pd.DataFrame(), "building_iri")
+    # Execute method
+    gen_tilesets(pd.DataFrame(), "building_iri")
 
-        # Test that only relevant tileset.json are created
-        assert os.path.exists(sewage_json_filepath)
-        assert not os.path.exists(bim_json_filepath)
-        assert not os.path.exists(solar_json_filepath)
+    # Test that only relevant tileset.json are created
+    assert os.path.exists(sewage_json_filepath)
+    assert not os.path.exists(bim_json_filepath)
+    assert not os.path.exists(solar_json_filepath)
 
-        # Read the tileset
-        sewage_tileset = read_json(sewage_json_filepath)
-        # Test that the tileset contents are equivalent to the dictionary
-        assert sewage_tileset["root"]["content"] == {"uri": "./glb/sewagenetwork.glb"}
-        # Test that the bbox is correctly computed
-        assert np.allclose(sewage_tileset["root"]["boundingVolume"]["box"], C.sample_cone_bbox)
-    finally:
-        # Remove files
-        os.remove(sewage_glb)
-        os.remove(sewage_json_filepath)
+    # Read the tileset
+    sewage_tileset = read_json(sewage_json_filepath)
+    # Test that the tileset contents are equivalent to the dictionary
+    assert sewage_tileset["root"]["content"] == {"uri": "./glb/sewagenetwork.glb"}
+    # Test that the bbox is correctly computed
+    assert np.allclose(sewage_tileset["root"]["boundingVolume"]["box"], C.sample_cone_bbox)
 
 
 def assert_tileset_metadata(tileset_content: dict):
@@ -126,26 +116,21 @@ def test_gen_tilesets_building():
     solar_json_filepath = os.path.join("data", "tileset_solarpanel.json")
     sewage_json_filepath = os.path.join("data", "tileset_sewage.json")
 
-    try:
-        # Execute method
-        gen_tilesets(pd.DataFrame(), "building_iri")
+    # Execute method
+    gen_tilesets(pd.DataFrame(), "building_iri")
 
-        # Test that only relevant tileset.json are created
-        assert os.path.exists(bim_json_filepath)
-        assert not os.path.exists(sewage_json_filepath)
-        assert not os.path.exists(solar_json_filepath)
+    # Test that only relevant tileset.json are created
+    assert os.path.exists(bim_json_filepath)
+    assert not os.path.exists(sewage_json_filepath)
+    assert not os.path.exists(solar_json_filepath)
 
-        # Read the tileset
-        tileset_content = read_json(bim_json_filepath)
-        # Test that the tileset contents are equivalent to the dictionary
-        assert tileset_content["root"]["content"] == {"uri": "./glb/building.glb"}
-        assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_box_bbox)
-        assert "children" not in tileset_content["root"]
-        assert_tileset_metadata(tileset_content)
-    finally:
-        # Remove files
-        os.remove(building_glb)
-        os.remove(bim_json_filepath)
+    # Read the tileset
+    tileset_content = read_json(bim_json_filepath)
+    # Test that the tileset contents are equivalent to the dictionary
+    assert tileset_content["root"]["content"] == {"uri": "./glb/building.glb"}
+    assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_box_bbox)
+    assert "children" not in tileset_content["root"]
+    assert_tileset_metadata(tileset_content)
 
 
 # TODO: add more scenarios (assets > 6) and assertions (bbox)
@@ -174,29 +159,23 @@ def test_gen_tilesets_asset():
         "contents": gen_sample_asset_contents(test_range)
     }
 
-    try:
-        # Execute method
-        gen_tilesets(sample_asset_df, "building_iri")
+    # Execute method
+    gen_tilesets(sample_asset_df, "building_iri")
 
-        # Test that only relevant tileset.json are created
-        assert os.path.exists(bim_json_filepath)
+    # Test that only relevant tileset.json are created
+    assert os.path.exists(bim_json_filepath)
 
-        # Read the tileset
-        tileset_content = read_json(bim_json_filepath)
+    # Read the tileset
+    tileset_content = read_json(bim_json_filepath)
 
-        # Test for metadata fields
-        assert_tileset_metadata(tileset_content)
+    # Test for metadata fields
+    assert_tileset_metadata(tileset_content)
 
-        # Test root tile
-        root_tile = tileset_content["root"]
-        assert "content" not in root_tile
-        assert "contents" not in root_tile
+    # Test root tile
+    root_tile = tileset_content["root"]
+    assert "content" not in root_tile
+    assert "contents" not in root_tile
 
-        assert "children" in root_tile
-        assert len(root_tile["children"]) == 1
-        assert root_tile["children"][0] == expected_child_node
-    finally:
-        # Remove files
-        os.remove(bim_json_filepath)
-        for file in glb_files:
-            os.remove(file)
+    assert "children" in root_tile
+    assert len(root_tile["children"]) == 1
+    assert root_tile["children"][0] == expected_child_node

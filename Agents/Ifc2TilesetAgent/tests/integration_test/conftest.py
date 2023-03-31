@@ -161,34 +161,9 @@ def flaskapp():
     os.remove(yaml_path)
 
 
-@pytest.fixture(scope="function", autouse=True)
-def cleanup_data_dir():
-    """Cleans up data dir and keeps only empty folders glb and ifc."""
-    yield
-
-    data_dir = "./data"
-    for filename in os.listdir(data_dir):
-        filepath = os.path.join(data_dir, filename)
-        if os.path.isfile(filepath) or os.path.islink(filepath):
-            os.remove(filepath)
-        elif os.path.isdir(filepath):
-            if filename in ("glb", "ifc"):
-                _empty_dir(filepath)
-            else:
-                shutil.rmtree(filepath)
-
-
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
-
-def _empty_dir(dir: str):
-    for filename in os.listdir(dir):
-        filepath = os.path.join(dir, filename)
-        if os.path.isfile(filepath) or os.path.islink(filepath):
-            os.remove(filepath)
-        elif os.path.isdir(filepath):
-            shutil.rmtree(filepath)
 
 
 def clear_loggers():

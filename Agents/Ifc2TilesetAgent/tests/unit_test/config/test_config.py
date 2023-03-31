@@ -39,10 +39,8 @@ def test_set_properties():
     # Set up and generate sample yaml file
     yaml_path = "sample.yml"
     gen_test_yaml_file(yaml_path)
-    try:
-        # Execute method
-        res_query_endpoint, res_update_endpoint = properties.set_properties(yaml_path)
-        assert ENDPOINT == res_query_endpoint
-        assert ENDPOINT == res_update_endpoint
-    finally:
-        os.remove(yaml_path)
+
+    # Execute method
+    res_query_endpoint, res_update_endpoint = properties.load_properties(yaml_path)
+    assert ENDPOINT == res_query_endpoint
+    assert ENDPOINT == res_update_endpoint
