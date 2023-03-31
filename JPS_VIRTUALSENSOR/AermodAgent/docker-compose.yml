@@ -40,6 +40,6 @@ services:
 
 volumes:
   logs:
-    name: "logs"
+    name: "${STACK_NAME}_logs"
   vis_data:
-    name: "vis_data"
+    name: "${STACK_NAME}_vis_data"

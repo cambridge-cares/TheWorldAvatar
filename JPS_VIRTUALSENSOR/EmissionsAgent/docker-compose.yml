@@ -26,6 +26,6 @@ services:
 
 volumes:
   logs:
-    name: "logs"
+    name: "${STACK_NAME}_logs"
   misc:
     name: "misc"
