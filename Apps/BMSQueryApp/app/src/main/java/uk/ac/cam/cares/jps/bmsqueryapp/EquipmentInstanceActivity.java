@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.bmsqueryapp;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -18,10 +17,10 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.ActivityEquipmentInstanceBinding;
-import uk.ac.cam.cares.jps.bmsqueryapp.ui.tab.TabAdapter;
-import uk.ac.cam.cares.jps.bmsqueryapp.util.Constants;
+import uk.ac.cam.cares.jps.bmsqueryapp.view.tab.TabAdapter;
+import uk.ac.cam.cares.jps.bmsqueryapp.utils.Constants;
 import okhttp3.HttpUrl.Builder;
-import uk.ac.cam.cares.jps.bmsqueryapp.util.SingletonConnection;
+import uk.ac.cam.cares.jps.bmsqueryapp.utils.SingletonConnection;
 
 public class EquipmentInstanceActivity extends AppCompatActivity {
     ActivityEquipmentInstanceBinding binding;
