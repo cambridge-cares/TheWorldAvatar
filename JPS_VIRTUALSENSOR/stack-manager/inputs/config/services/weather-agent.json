@@ -9,7 +9,7 @@
 					"DATABASE=postgres",
 					"LAYERNAME=weatherstations",
 					"GEOSERVER_WORKSPACE=weatherstations",
-					"API_KEY=21db8f6413957d7fdb6cfd98e05e03eb"
+					"API_KEY="
 				],
 				"Configs": [
 					{
