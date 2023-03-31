@@ -17,8 +17,13 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.json.JSONArray;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.postgis.Point;
 import org.apache.jena.geosparql.implementation.parsers.wkt.WKTReader;
 
@@ -48,6 +53,23 @@ import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+
+import org.apache.jena.arq.querybuilder.SelectBuilder;
+import org.apache.jena.arq.querybuilder.UpdateBuilder;
+import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.jena.arq.querybuilder.handlers.WhereHandler;
+import org.apache.jena.arq.querybuilder.Order;
+import org.apache.jena.update.UpdateRequest;
+import org.apache.jena.graph.NodeFactory;
+import org.apache.jena.query.Query;
+import org.locationtech.jts.operation.buffer.BufferOp;
+
+import java.util.Collections;
+import org.apache.jena.sparql.syntax.ElementGroup;
+import org.apache.jena.sparql.syntax.ElementService;
+
+
 
 public class QueryClient {
     private static final Logger LOGGER = LogManager.getLogger(QueryClient.class);
@@ -135,6 +157,7 @@ public class QueryClient {
     private static final Iri OCGML_CITYOBJECT = P_OCGML.iri("cityObjectId");
     private static final Iri OCGML_LOD2MULTISURFACEID = P_OCGML.iri("lod2MultiSurfaceId");
     private static final Iri OCGML_BUILDINGID = P_OCGML.iri("buildingId");
+    private static final Iri OCGML_ENVELOPETYPE = P_OCGML.iri("EnvelopeType");
 
     
     // fixed units for each measured property
@@ -485,6 +508,235 @@ public class QueryClient {
     
     public static JSONArray BuildingQuery (String StackQueryIRI) {
 
+        SelectQuery query = Queries.SELECT().prefix(P_GEO,P_BUILD,P_OM,P_CHEM);
+        Variable IRI = SparqlBuilder.var("IRI");
+        Variable chemPlant = SparqlBuilder.var("chemPlant");
+        Variable building = SparqlBuilder.var("building");
+
+
+        GraphPattern gp = GraphPatterns.and(chemPlant.has(RDF.TYPE,CHEMICALPLANT).andHas(CONTAINS,building),
+                building.has(RDF.TYPE,BUILDING).andHas(OCGML_REP,IRI));
+        query.select(IRI).where(gp).limit(Integer.parseInt(EnvConfig.NUMBER_BUILDINGS));
+
+        JSONArray BuildingIRIQueryResult = AccessAgentCaller.queryStore(StackQueryIRI, query.getQueryString());
+        return BuildingIRIQueryResult;
+    }
+
+    public static JSONArray EnvelopeQuery(String GeoSpatialQueryIRI, List<String> targetIRI) {
+        SelectQuery query = Queries.SELECT().prefix(P_OCGML);
+        Variable objectIRI = SparqlBuilder.var("objectIRI");
+        Variable envelopeData = SparqlBuilder.var("envelopeData");
+
+        GraphPattern gp = GraphPatterns.and(objectIRI.has(OCGML_ENVELOPETYPE, envelopeData));
+        ValuesPattern<Iri> vp = new ValuesPattern<>(objectIRI, targetIRI.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+        query.select(envelopeData,objectIRI).where(gp,vp);
+        JSONArray EnvelopeQueryResult = AccessAgentCaller.queryStore(GeoSpatialQueryIRI, query.getQueryString());
+        return EnvelopeQueryResult;
+    }
+
+        /**
+     * Create a polygon with the given points
+     * @param points points of the polygon as a string
+     * @return a polygon
+     */
+    private static Geometry toPolygon(String points){
+        int ind = 0;
+        GeometryFactory gF = new GeometryFactory();
+
+        String[] arr = points.split("#");
+
+        Coordinate[] coordinates = new Coordinate[(arr.length) / 3];
+
+        for (int i = 0; i < arr.length; i += 3){
+            coordinates[ind] = new Coordinate(Double.valueOf(arr[i]), Double.valueOf(arr[i+1]), Double.valueOf(arr[i+2]));
+            ind++;
+        }
+
+        return gF.createPolygon(coordinates);
+    }
+
+        /**
+     * Converts an array of coordinates into a string
+     * @param coordinates array of footprint coordinates
+     * @return coordinates as a string
+     */
+    private static String coordinatesToString(Coordinate[] coordinates){
+        String output = "";
+
+        for (int i = 0; i < coordinates.length; i++){
+            output = output + "#" + Double.toString(coordinates[i].getX()) + "#" + Double.toString(coordinates[i].getY()) + "#" + Double.toString(coordinates[i].getZ());
+        }
+
+        return output.substring(1, output.length());
+    }
+
+    /**
+     * Inflates a polygon
+     * @param geom polygon geometry
+     * @param distance buffer distance
+     * @return inflated polygon
+     */
+    private static Geometry inflatePolygon(Geometry geom, Double distance){
+        ArrayList<Double> zCoordinate = getPolygonZ(geom);
+        BufferParameters bufferParameters = new BufferParameters();
+        bufferParameters.setEndCapStyle(BufferParameters.CAP_ROUND);
+        bufferParameters.setJoinStyle(BufferParameters.JOIN_MITRE);
+        Geometry buffered = BufferOp.bufferOp(geom, distance, bufferParameters);
+        buffered.setUserData(geom.getUserData());
+        setPolygonZ(buffered, zCoordinate);
+        return buffered;
+    }
+
+        /**
+     * Extract the z coordinates of the polygon vertices
+     * @param geom polygon geometry
+     * @return the z coordinates of the polygon vertices
+     */
+    private static ArrayList<Double> getPolygonZ(Geometry geom){
+        Coordinate[] coordinates = geom.getCoordinates();
+        ArrayList<Double> output = new ArrayList<>();
+
+        for (int i = 0; i < coordinates.length; i++){
+            output.add(coordinates[i].getZ());
+        }
+
+        return output;
+    }
+
+       /**
+     * Sets a polygon's z coordinates to the values from zInput
+     * @param geom polygon geometry
+     * @param zInput ArrayList of values representing z coordinates
+     */
+    private static void setPolygonZ(Geometry geom, ArrayList<Double> zInput){
+        Double newZ = Double.NaN;
+
+        for (int i = 0; i < zInput.size(); i++){
+            if (!zInput.get(i).isNaN()){
+                newZ = zInput.get(i);
+                break;
+            }
+        }
+
+        if(newZ.isNaN()){newZ = 10.0;}
+
+        if (geom.getNumPoints() < zInput.size()) {
+            while (geom.getNumPoints() != zInput.size()) {
+                zInput.remove(zInput.size()-1);
+            }
+        }
+        else {
+            while (geom.getNumPoints() != zInput.size()) {
+                zInput.add(1, newZ);
+            }
+        }
+
+        Collections.replaceAll(zInput, Double.NaN, newZ);
+        geom.apply(new CoordinateSequenceFilter() {
+            @Override
+            public void filter(CoordinateSequence cSeq, int i) {
+                cSeq.getCoordinate(i).setZ(zInput.get(i));
+            }
+            @Override
+            public boolean isDone() {
+                return false;
+            }
+            @Override
+            public boolean isGeometryChanged() {
+                return false;
+            }
+        });
+    }
+
+       /**
+     * builds a SPARQL geospatial query for city object id of buildings whose envelope are within lowerBounds and upperBounds
+     * @param uriString city object id of the target building
+     * @param lowerBounds coordinates of customFieldsLowerBounds as a string
+     * @param upperBounds coordinates of customFieldsUpperBounds as a string
+     * @return returns a query string
+     */
+    private static Query getBuildingsWithinBoundsQuery(String uriString, String lowerBounds, String upperBounds) throws ParseException {
+        // where clause for geospatial search
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("ocgml", ocgmlUri)
+                .addPrefix("geo", geoUri)
+                .addWhere("?cityObject", "geo:predicate", "ocgml:EnvelopeType")
+                .addWhere("?cityObject", "geo:searchDatatype", customDataType)
+                .addWhere("?cityObject", "geo:customFields", customField)
+                // PLACEHOLDER because lowerBounds and upperBounds would be otherwise added as doubles, not strings
+                .addWhere("?cityObject", "geo:customFieldsLowerBounds", "PLACEHOLDER" + lowerBounds)
+                .addWhere("?cityObject", "geo:customFieldsUpperBounds", "PLACEHOLDER" + upperBounds);
+
+        // where clause to check that the city object is a building
+        WhereBuilder wb2 = new WhereBuilder()
+                .addPrefix("ocgml", ocgmlUri)
+                .addWhere("?cityObject", "ocgml:objectClassId", "?id")
+                .addFilter("?id=26");
+
+        SelectBuilder sb = new SelectBuilder()
+                .addVar("?cityObject");
+
+        Query query = sb.build();
+        // add geospatial service
+        ElementGroup body = new ElementGroup();
+        body.addElement(new ElementService(geoUri + "search", wb.build().getQueryPattern()));
+        body.addElement(wb2.build().getQueryPattern());
+        query.setQueryPattern(body);
+
+        WhereHandler wh = new WhereHandler(query.cloneQuery());
+
+        // add city object graph
+        WhereHandler wh2 = new WhereHandler(sb.build());
+        wh2.addGraph(NodeFactory.createURI(getGraph(uriString,CITY_OBJECT)), wh);
+
+        return wh2.getQuery();
+    }
+
+
+
+
+
+
+    public static JSONArray BuildingQuery2 (String GeoSpatialQueryIRI, List<String> targetIRI) {
+
+        
+        JSONArray EnvelopeQueryResult = EnvelopeQuery(GeoSpatialQueryIRI, targetIRI);
+
+        for (int i = 0; i < EnvelopeQueryResult.length(); i++) {
+            String envelopeCoordinates = EnvelopeQueryResult.getJSONObject(i).getString("envelopeData");
+            String uriString = EnvelopeQueryResult.getJSONObject(i).getString("objectIRI");
+
+            double buffer = 20.0;
+
+            Polygon envelopePolygon = (Polygon) toPolygon(envelopeCoordinates);
+
+            Geometry surroundingRing = ((Polygon) inflatePolygon(envelopePolygon, buffer)).getExteriorRing();
+
+            Coordinate[] surroundingCoordinates = surroundingRing.getCoordinates();
+
+            String boundingBox = coordinatesToString(surroundingCoordinates);
+
+            String[] points = boundingBox.split("#");
+
+            String lowerPoints= points[0] + "#" + points[1] + "#" + 0 + "#";
+
+            String lowerBounds = lowerPoints + lowerPoints + lowerPoints + lowerPoints + lowerPoints;
+            lowerBounds = lowerBounds.substring(0, lowerBounds.length() - 1 );
+
+            String upperPoints = points[6] + "#" + points[7] + "#" + String.valueOf(Double.parseDouble(points[8])+100) + "#";
+
+            String upperBounds = upperPoints + upperPoints + upperPoints + upperPoints + upperPoints;
+            upperBounds = upperBounds.substring(0, upperBounds.length() - 1);
+            Query query = getBuildingsWithinBoundsQuery(uriString, lowerBounds, upperBounds);
+
+            String queryString = query.toString().replace("PLACEHOLDER", "");
+
+            JSONArray queryResultArray = AccessAgentCaller.queryStore(GeoSpatialQueryIRI, queryString);
+
+        }
+
+
+        
         SelectQuery query = Queries.SELECT().prefix(P_GEO,P_BUILD,P_OM,P_CHEM);
         Variable IRI = SparqlBuilder.var("IRI");
         Variable chemPlant = SparqlBuilder.var("chemPlant");

@@ -387,6 +387,8 @@ public class Buildings {
 
         }
 
+        // Retrieve OCGML IRIs of buildings within 200 meters of each pollutant source
+
 
         JSONArray BuildingIRIQueryResult = QueryClient.BuildingQuery(StackQueryIRI);
         List<String> BuildingIRIString = IntStream
@@ -433,13 +435,11 @@ public class Buildings {
             double BuildingEastUTM = 0.0;
             double BuildingNorthUTM = 0.0;
             boolean includeObject = true;
-            String objectIRI = "";
-            double radius = 0.0;
             int basePolygonIndex = -1;
             for (int k = firstIndex; k < lastIndex; k++) {
                 JSONObject result = BuildingGeometricQueryResult.getJSONObject(k);
                 String polygonVertex = result.getString("polygonData");
-                objectIRI = result.getString("objectIRI");
+                result.getString("objectIRI");
                 if (!polygonVertex.contains("#")){
                     continue;
                 }
