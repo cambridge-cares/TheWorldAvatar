@@ -20,7 +20,6 @@ class LdfRequest:
         if(len(self.reactants)==0 and len(self.products)==0):
             return set()
         
-        response = requests.get(self.base_url, params=self.params)
         # send the HTTP GET request
         response = requests.get(self.base_url, params=self.params)
 
