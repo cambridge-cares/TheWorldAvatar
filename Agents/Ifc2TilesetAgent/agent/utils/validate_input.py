@@ -13,13 +13,6 @@ logger = agentlogging.get_logger("dev")
 
 
 def validate_asset_url(asset_url: str):
-    """
-    Validates the assetUrl parameter sent by the POST request.
-
-    Argument:
-        asset_url - `assetUrl` request parameter
-    Returns:
-        A boolean indicating if the url is valid
-    """
+    """Validates the assetUrl parameter sent by the POST request."""
     valid_url_prefixes = [".", "..", "http://"]
     return any(map(asset_url.startswith, valid_url_prefixes)) and not asset_url.endswith("/")

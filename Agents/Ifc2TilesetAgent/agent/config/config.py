@@ -8,17 +8,19 @@ This module gives all modules access to the properties.yml.
 import yaml
 
 
-def set_properties(path):
-    """
-    Retrieves the properties stored in the YAML file
-    and set them accordingly to requirements
+def load_properties(path: str):
+    """Retrieves properties stored in the YAML filepath.
 
-    Argument:
-    path - file path to the YAML document
+    Args:
+        path: Path to the YAML document.
+
+    Returns:
+        A tuple of SPARQL query and update endpoints.
     """
     with open(path, 'r') as ymlfile:
         properties = yaml.safe_load(ymlfile)
 
     query_endpoint = properties['query_endpoint']
     update_endpoint = properties['update_endpoint']
+
     return query_endpoint, update_endpoint

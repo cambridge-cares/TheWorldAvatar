@@ -3,6 +3,8 @@
 
 This module provides helper functions to generate glTF models from the IFC file.
 """
+# Standard imports
+from typing import Union, List
 
 # Third party imports
 import pandas as pd
@@ -16,12 +18,11 @@ logger = agentlogging.get_logger("dev")
 
 
 def append_aggregate(aggregates_df: pd.DataFrame, dictionary: dict):
-    """
-    Appends the IFC id of aggregate elements into the dictionary according to file name
+    """Appends the IFC id of aggregate elements into the dictionary according to filename.
 
-    Arguments:
-        aggregates_df - A dataframe of assets to be aggregated into furniture and others
-        dictionary - A dictionary to append their IFC id
+    Args:
+        aggregates_df: A dataframe of assets with headers 'file', 'name', 'uid', 'iri'.
+        dictionary: A dictionary to append their IFC id's.
     """
     # Initialise list containing the right assets
     furniture_elements = []
@@ -47,38 +48,30 @@ def append_aggregate(aggregates_df: pd.DataFrame, dictionary: dict):
         dictionary["sewagenetwork"] = sewage_network_elements
 
 
-def append_individual_asset(asset_df, dictionary):
-    """
-    Appends the IFC id of individual elements into the dictionary according to file name
+def append_individual_asset(asset_df: pd.DataFrame, dictionary: dict):
+    """Appends the IFC id of individual elements into the dictionary.
 
     Arguments:
-        asset_df - A dataframe of individual assets
-        dictionary - A dictionary to append their IFC id
+        asset_df: A dataframe of individual assets with headers 'file', 'name', 'uid', 'iri'.
+        dictionary: A dictionary to append their IFC id's.
     """
-    # Check for empty dataframe
-    if not asset_df.empty:
-        # Store asset in list based on which category they belong to
-        for row in range(len(asset_df.index)):
-            dictionary[asset_df['file'].iloc[row]] = asset_df[ID_VAR].iloc[row]
+    for row in range(len(asset_df.index)):
+        dictionary[asset_df["file"].iloc[row]] = asset_df[ID_VAR].iloc[row]
 
 
 def gendict4split(dataframe: pd.DataFrame):
-    """
-    Creates a dictionary {filename : ifc_id} to split
-    the IFC model into smaller IFC files
+    """Creates a dictionary {filename : ifc_id} to split the IFC model into smaller IFC files.
 
-    Arguments:
-        dataframe - A dataframe containing all assets' uid and file name
+    Args:
+        dataframe: A dataframe containing asset data, with headers 'file', 'name', 'uid', 'iri'.
+
     Returns:
-        The required dictionary for splitting the IFC model
-        A dataframe containing individual assets' metadata
+        A dict that maps filenames to IFC id's.
     """
     # Initialise a dictionary with the IFC classes to exclude from the building output model
     # Non-exhaustive. If required, add more classes in the format 'IfcFeatureType'
-    dict_elements = {"building":
-                         ["IfcBuildingElementProxy", "IfcFurnishingElement",
-                          "IfcFlowTerminal", "IfcSpace", "IfcOpeningElement",
-                          "IfcFlowSegment"]}
+    dict_elements = {"building": ["IfcBuildingElementProxy", "IfcFurnishingElement", "IfcFlowTerminal", "IfcSpace",
+                                  "IfcOpeningElement", "IfcFlowSegment"]}
 
     if not dataframe.empty:
         # Initialise a list of file names for aggregated assets
@@ -94,18 +87,17 @@ def gendict4split(dataframe: pd.DataFrame):
     return dict_elements, asset_data
 
 
-def append_ifcconvert_command(key, value, ifcconvert_command):
-    """
-    Appends the dictionary values to the commands depending on
-    their key and if they are either a list or single instance
+def append_ifcconvert_command(key: str, value: Union[List[str], str], ifcconvert_command: str):
+    """Appends the dictionary values to the commands depending on their key and if they are either a list or single
+    instance.
 
-    Arguments:
-        key - The dictionary key indicating the model output name
-        value - The dictionary values indicating either the IFC classes
-                or ID for inclusion or exclusion
-        ifcconvert_command - The initialised command in List format
+    Args:
+        key: The dictionary key indicating the model output name.
+        value: The dictionary values indicating either the IFC classes or ID for inclusion or exclusion.
+        ifcconvert_command: The initialised command in List format.
+
     Returns:
-    The command with the appended values
+        The command with the appended values.
     """
     # Add the entities arg for only building key
     if key == "building":

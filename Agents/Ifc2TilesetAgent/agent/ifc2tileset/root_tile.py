@@ -21,14 +21,12 @@ logger = agentlogging.get_logger("dev")
 
 
 def append_tileset_schema_and_metadata(tileset: Tileset, building_iri: str):
-    """
-    Append tileset schema.py class and metadata to tileset
+    """Appends tileset schema and metadata to tileset.
 
-    Arguments:
-        tileset - the root tileset generated as a python dictionary
-        building_iri - data IRI of the building
+    Args:
+        tileset: A tileset.
+        building_iri: The data IRI of the building.
     """
-    # Append definition of class and its properties to schema
     tileset["schema"] = {"classes": {
         "TilesetMetaData": {
             "name": "Tileset metadata",
@@ -42,7 +40,6 @@ def append_tileset_schema_and_metadata(tileset: Tileset, building_iri: str):
         }
     }}
 
-    # Append specific tileset values to the core metadata class
     tileset["metadata"] = {
         "class": "TilesetMetaData",
         "properties": {
@@ -52,16 +49,16 @@ def append_tileset_schema_and_metadata(tileset: Tileset, building_iri: str):
 
 
 def gen_root_content(building_iri: str, asset_data: pd.DataFrame):
-    """
-    Add the root content of building and background furniture to tileset.
+    """Generates a tileset with building and furniture data.
+
     If there are no assets, the tileset generated in this function is sufficient for visualisation.
-    If there are no building, furniture, or assets, returns None.
+    If there are no building and assets, returns None.
 
     Arguments:
-        building_iri - data IRI of the building
-        asset_data - dataframe containing mappings for asset metadata
+        building_iri: The data IRI of the building.
+        asset_data: A dataframe containing mappings for asset metadata, with headers 'file', 'name', 'uid', 'iri'.
     Returns:
-        The tileset generated as a python dictionary
+        A tileset with building and furniture data if either building or assets are present, otherwise None.
     """
     # Respective filepaths
     building_file_path = "./data/glb/building.glb"

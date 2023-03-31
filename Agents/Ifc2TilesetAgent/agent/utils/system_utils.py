@@ -8,7 +8,7 @@ such as shell command and file operations.
 # Standard library imports
 import os
 import subprocess
-from typing import List
+from typing import List, Union
 
 # Third party imports
 from py4jps import agentlogging
@@ -20,27 +20,20 @@ from agent.exceptions import InvalidInputError
 logger = agentlogging.get_logger("dev")
 
 
-def run_shellcommand(command, require_shell=False):
-    """
-    Runs commands in the shell
-    All non-error messages are suppressed
+def run_shellcommand(command: Union[str, List[str]], require_shell: bool = False):
+    """Runs commands in the shell.
 
-    Argument:
-    command - Command arguments in the form ["command","command2"] or "command command2"
-    require_shell - Boolean indicating if shell is required. Must be True for npm operations
+    All non-error messages are suppressed.
+
+    Args:
+        command: Command arguments in the form ["command","command2"] or "command command2".
+        require_shell: A bool indicating if shell is required. Must be True for npm operations.
     """
     subprocess.run(command, shell=require_shell)
 
 
-def retrieve_abs_filepath(filepath):
-    """
-    Retrieves absolute file path from a relative file path
-
-    Argument:
-    filepath - A relative file path
-    Returns:
-    Absolute file path
-    """
+def retrieve_abs_filepath(filepath: str):
+    """Retrieves the absolute filepath from a relative filepath. """
     if filepath == ".":
         return os.getcwd()
     else:
@@ -96,9 +89,7 @@ def find_ifc_file(ifc_dir: List[str]):
 
 
 def cleandir():
-    """
-    Remove previously generated files from the directory while keeping any input ifc models
-    """
+    """Removes previously generated files from the directory while keeping any input IFC models."""
     # Get a list of all files in directory
     for root_dir, subdirs, filelist in os.walk('./data/'):
         for filename in filelist:

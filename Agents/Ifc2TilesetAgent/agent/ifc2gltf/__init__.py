@@ -17,17 +17,16 @@ logger = agentlogging.get_logger("dev")
 
 
 def conv2gltf(input_ifc: str, query_endpoint: str, update_endpoint: str):
-    """
-    Invokes the related external tools to convert an IFC file
-    to the glTF format in the gltf subfolder
+    """Converts an IFC file to the glb format in the glb subfolder.
 
-    Arguments:
-        input_ifc - Local file path of ifc model
-        query_endpoint - SPARQL QUERY endpoint
-        update_endpoint - SPARQL UPDATE endpoint
+    Args:
+        input_ifc: Local file path to an IFC model.
+        query_endpoint: SPARQL QUERY endpoint.
+        update_endpoint: SPARQL UPDATE endpoint.
+
     Returns:
-        - A dataframe containing the individual assets and their metadata
-        - The data IRI of the building
+        A tuple (asset_df, building_iri), where asset_df is a dataframe containing the individual assets and their
+        metadata with headers 'file', 'name', 'uid', 'iri', and building_iri is the data IRI of the building.
     """
     logger.info("Retrieving metadata from endpoint...")
     metadata = retrieve_metadata(query_endpoint, update_endpoint)

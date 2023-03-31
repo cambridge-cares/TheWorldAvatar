@@ -18,11 +18,7 @@ logger = agentlogging.get_logger("dev")
 
 
 def create_metadata_query():
-    """
-    Creates the SPARQL query for retrieving required meta data
-
-    Returns:
-        The required sparql query
+    """Creates the SPARQL query for retrieving asset metadata.
     """
     return """\
 PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -70,14 +66,15 @@ SELECT ?iri ?uid ?name WHERE {
 
 
 def classify_file_name(dataframe: pd.DataFrame):
-    """
-    Classifies if the asset should be an asset, furniture, or other categories (solar panel).
-    File name is appended to the dataframe
+    """Classifies if assets should be an asset, furniture, or other categories (solar panel, sewage network).
 
-    Argument:
-        dataframe - dataframe containing the query results
+    Filename is appended to the dataframe.
+
+    Args:
+        dataframe: dataframe containing the query results, with headers 'name', 'uid', 'iri'.
+
     Returns:
-        Dataframe after classification
+        A dataframe with headers 'file', 'name', 'uid', 'iri'.
     """
     # Initialise a new empty column to contain file name
     dataframe["file"] = np.nan
@@ -105,14 +102,14 @@ def classify_file_name(dataframe: pd.DataFrame):
 
 
 def retrieve_metadata(query_endpoint: str, update_endpoint: str):
-    """
-    Retrieves the necessary metadata from the specified endpoint
+    """Retrieves the asset metadata from the specified endpoint.
 
-    Arguments:
-        query_endpoint - SPARQL Query endpoint
-        update_endpoint - SPARQL Update endpoint
+    Args:
+        query_endpoint: SPARQL Query endpoint.
+        update_endpoint: SPARQL Update endpoint.
+
     Returns:
-        Processed query results as a dataframe with headers ('iri', 'uid', 'name', 'file')
+        A dataframe with headers 'iri', 'uid', 'name', 'file'.
     """
     logger.debug("Initialising KG Client...")
     client = KGClient(query_endpoint, update_endpoint)
@@ -131,14 +128,14 @@ def retrieve_metadata(query_endpoint: str, update_endpoint: str):
 
 
 def get_building_iri(query_endpoint: str, update_endpoint: str) -> str:
-    """
-    Retrieves the building IRI from the specified endpoint
+    """Retrieves the building IRI from the specified endpoint.
 
-    Arguments:
-        query_endpoint - SPARQL Query endpoint
-        update_endpoint - SPARQL Update endpoint
+    Args:
+        query_endpoint: SPARQL Query endpoint.
+        update_endpoint: SPARQL Update endpoint.
+
     Returns:
-        Building IRI string
+        A string of the building IRI.
     """
     logger.debug("Initialising KG Client...")
     client = KGClient(query_endpoint, update_endpoint)

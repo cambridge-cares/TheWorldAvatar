@@ -1,1 +1,1 @@
-from agent.config.config import set_properties
+from agent.config.config import load_properties

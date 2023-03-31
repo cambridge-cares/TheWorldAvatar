@@ -15,7 +15,7 @@ from agent.exceptions import InvalidInputError
 from agent.utils import find_ifc_file, cleandir, validate_asset_url
 from agent.ifc2gltf import conv2gltf
 from agent.ifc2tileset import gen_tilesets
-from agent.config import set_properties
+from agent.config import load_properties
 
 # Initialise logger
 logger = agentlogging.get_logger("dev")
@@ -60,7 +60,8 @@ def create_app():
         asset_url = data["assetUrl"] + "/"
 
         logger.info("Retrieving properties from yaml...")
-        query_endpoint, update_endpoint = set_properties('./config/properties.yaml')
+        query_endpoint, update_endpoint = load_properties('./config/properties.yaml')
+
         logger.info("Cleaning the data directory...")
         cleandir()
 

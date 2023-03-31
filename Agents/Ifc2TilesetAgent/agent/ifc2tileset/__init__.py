@@ -18,12 +18,11 @@ logger = agentlogging.get_logger("dev")
 
 
 def gen_tilesets(asset_data: pd.DataFrame, building_iri: str):
-    """
-    Generates the tileset in json format
+    """Generates the tileset in the json format.
 
-    Argument:
-        asset_data - A dataframe containing all individual asset metadata
-        building_iri - The data IRI of the building
+    Args:
+        asset_data: A dataframe containing all individual asset metadata with headers 'file', 'name', 'uid', 'iri'.
+        building_iri: The data IRI of the building.
     """
     # Create and write separate tilesets if they exist
     gen_solarpanel_tileset()

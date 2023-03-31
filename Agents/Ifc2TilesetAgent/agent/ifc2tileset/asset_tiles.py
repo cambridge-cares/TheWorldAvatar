@@ -21,13 +21,8 @@ logger = agentlogging.get_logger("dev")
 
 
 def append_asset_metadata_schema(tileset: Tileset):
-    """
-    Initialise the tileset to receive asset information
+    """Appends the schema of asset metadata to the tileset."""
 
-    Returns:
-    The tileset generated with initialised asset metadata as a python dictionary
-    """
-    # Add new contents to the tileset
     tileset["schema"]["classes"]["AssetMetaData"] = {
         "name": "Asset metadata",
         "description": "A metadata class for all individual assets",
@@ -49,13 +44,12 @@ def append_asset_metadata_schema(tileset: Tileset):
     }
 
 
-def append_assets_to_tile_node(tile: Tile, asset_df: pd.DataFrame):
-    """
-    Appends a child node containing the given assets to the given tile
+def append_assets_to_tile(tile: Tile, asset_df: pd.DataFrame):
+    """Appends a child node containing the given assets to the given tile.
 
-    Arguments:
-        asset_df - dataframe containing mappings for asset metadata
-        tile - parent node to have assets added as a child node
+    Args:
+        tile: parent node to have assets added as a child node.
+        asset_df: dataframe containing mappings for asset metadata, with headers 'file', 'name', 'uid', 'iri'.
     """
     def _asset_data_to_tileset_content(row: pd.Series):
         # Add geometry and uid for each asset
@@ -86,19 +80,18 @@ def append_assets_to_tile_node(tile: Tile, asset_df: pd.DataFrame):
     }]
 
 
-def append_assets(tileset: Tileset, asset_df: pd.DataFrame):
-    """
-    Adds 6 assets to every nested child node, starting from the root tile.
+def append_assets_to_tileset(tileset: Tileset, asset_df: pd.DataFrame):
+    """Adds 6 assets to every nested child node, starting from the root tile.
 
-    Arguments:
-        asset_df - dataframe containing mappings for asset metadata
-        tile - parent node to have assets added as a child node
+    Args:
+        tileset: A parent node to have assets added as a child node.
+        asset_df: A dataframe containing mappings for asset metadata, with headers 'file', 'name', 'uid', 'iri'.
     """
     assets_num_per_node = 6
 
     tile_node = tileset["root"]
     for i in range(0, len(asset_df), assets_num_per_node):
-        append_assets_to_tile_node(tile_node, asset_df.iloc[i: i + assets_num_per_node])
+        append_assets_to_tile(tile_node, asset_df.iloc[i: i + assets_num_per_node])
         tile_node = tile_node["children"][0]
 
         # CAVEAT: Functionality for visualising tilesets with >10 child nodes in Cesium has yet to be tested.
@@ -108,14 +101,13 @@ def append_assets(tileset: Tileset, asset_df: pd.DataFrame):
 
 
 def append_tileset_assets(tileset: Optional[Tileset], asset_df: pd.DataFrame):
-    """
-    Add asset properties into the tileset.
+    """Adds asset properties into the tileset.
 
-    Arguments:
-        tileset - tileset for adding asset metadata
-        asset_df - dataframe containing mappings for asset metadata
-    Returns:
-    The tileset generated with asset metadata as a python dictionary
+    If tileset is None or asset_df is empty, no action will be performed.
+
+    Args:
+        tileset: A tileset to have asset metadata added.
+        asset_df: A dataframe containing mappings for asset metadata, with headers 'file', 'name', 'uid', 'iri'.
     """
     if tileset is None or asset_df.empty:
         return
@@ -123,4 +115,4 @@ def append_tileset_assets(tileset: Optional[Tileset], asset_df: pd.DataFrame):
     logger.info("Individual glTF assets detected. Attaching tileset with asset metadata...")
 
     append_asset_metadata_schema(tileset)
-    append_assets(tileset, asset_df)
+    append_assets_to_tileset(tileset, asset_df)
