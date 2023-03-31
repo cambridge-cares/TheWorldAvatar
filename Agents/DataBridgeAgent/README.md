@@ -36,6 +36,22 @@ docker compose -f "./docker/docker-compose.debug.yml" up -d --build
 docker-compose up -d
 ```
 
+#### 2.4 **STACK ENVIRONMENT**
+- Follow the following instructions to deploy the agent within a stack.
+  1) Build the image with the following tag at the `<root>` directory:
+```
+docker build -t data-bridge-agant:versionNo .
+```
+  2) Add the `<root>/docker/data-bridge-agent.json` to the [`stack-manager/inputs/config/services`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services) directory
+  3) Modify the absolute path of the agent's `config` folder to your absolute file path
+  4) Include this agent service into the stack configuration file at `stack-manager/inputs/config/<STACK-NAME>.json`
+     - Read more in the [Stack Configuration](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) section
+
+If the agent is successfully started, the endpoint at `http://localhost:3838/data-bridge-agent/status` should return the following message.
+```
+{"Result":"Agent is ready to receive requests."}
+```
+
 ### 3. Endpoint
 When successfully built, the agent will be running at `port 3055`. The base url will be `http://localhost:3055/data-bridge-agent`.
 There are currently three routes available:
