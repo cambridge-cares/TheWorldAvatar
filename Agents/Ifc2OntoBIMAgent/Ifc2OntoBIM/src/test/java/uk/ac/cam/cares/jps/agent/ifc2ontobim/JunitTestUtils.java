@@ -32,6 +32,7 @@ public class JunitTestUtils {
     public static final String BIM_TRANSFORMATION_OPERATOR_CLASS = "CartesianTransformationOperator";
     public static final String IFC_TRANSFORMATION_OPERATOR_CLASS = "IfcCartesianTransformationOperator";
     public static final Property hasDouble = ResourceFactory.createProperty(JunitTestUtils.expressUri + "hasDouble");
+    public static final Property hasBoolean = ResourceFactory.createProperty(JunitTestUtils.expressUri + "hasBoolean");
     public static final Property hasContents = ResourceFactory.createProperty(JunitTestUtils.listUri + "hasContents");
     public static final Property hasNext = ResourceFactory.createProperty(JunitTestUtils.listUri + "hasNext");
 

@@ -127,6 +127,12 @@ public class CommonQuery {
     public static final String PROFILE_DEF_CLASS_VAR = "?profiledefinitionclass";
     public static final String PROFILE_DEF_TYPE_VAR = "?profiledefinitiontype";
     public static final String PROFILE_DEF_CART_POINT_VAR = "?profilecartesianpoint";
+    public static final String SURFACE_VAR = "?surface";
+    public static final String BOOLEAN_VAR = "?boolean";
+    public static final String SEC_CART_POINT_VAR = "?secpoint";
+    public static final String SEC_REF_DIRECTION_VAR = "?secrefdirection";
+    public static final String SEC_AXIS_DIRECTION_VAR = "?secaxisdirection";
+    public static final String POLYLINE_VAR = "?polyline";
     public static final String FIRST_LINE_VERTEX_VAR = "?firstlinevertex";
     public static final String LINE_VERTEX_VAR = "?linevertex";
     public static final String NEXT_LINE_VERTEX_VAR = "?nextlinevertex";
@@ -151,6 +157,7 @@ public class CommonQuery {
     public static final String EXPRESS_HASDOUBLE = "/express:hasDouble";
     public static final String EXPRESS_HASINTEGER = "/express:hasInteger";
     public static final String EXPRESS_HASSTRING = "/express:hasString";
+    public static final String EXPRESS_HASBOOLEAN = "/express:hasBoolean";
     public static final String LIST_HAS_CONTENT = "list:hasContents";
     public static final String LIST_HAS_NEXT = "list:hasNext";
     public static final String IFC_ID = NamespaceMapper.IFC_PREFIX + ":globalId_IfcRoot";
@@ -205,6 +212,11 @@ public class CommonQuery {
     public static final String IFC_PROFILE_POSITION = NamespaceMapper.IFC_PREFIX + ":position_IfcParameterizedProfileDef";
     public static final String IFC_PROFILE_RECTANGLE_X_DIM = NamespaceMapper.IFC_PREFIX + ":xDim_IfcRectangleProfileDef";
     public static final String IFC_PROFILE_RECTANGLE_Y_DIM = NamespaceMapper.IFC_PREFIX + ":yDim_IfcRectangleProfileDef";
+    public static final String IFC_HALF_SPACE_POSITION = NamespaceMapper.IFC_PREFIX + ":position_IfcPolygonalBoundedHalfSpace";
+    public static final String IFC_HALF_SPACE_BOUNDARY = NamespaceMapper.IFC_PREFIX + ":polygonalBoundary_IfcPolygonalBoundedHalfSpace";
+    public static final String IFC_HALF_SPACE_FLAG = NamespaceMapper.IFC_PREFIX + ":agreementFlag_IfcHalfSpaceSolid";
+    public static final String IFC_HALF_SPACE_SURFACE = NamespaceMapper.IFC_PREFIX + ":baseSurface_IfcHalfSpaceSolid";
+    public static final String IFC_HALF_SPACE_SURFACE_POSITION = NamespaceMapper.IFC_PREFIX + ":position_IfcElementarySurface";
     public static final String IFC_POLYLINE_POINTS = NamespaceMapper.IFC_PREFIX + ":points_IfcPolyline";
     // IfcOwl modelling operator properties
     public static final String IFC_PLACEMENT_POSITION = NamespaceMapper.IFC_PREFIX + ":relativePlacement_IfcLocalPlacement";
@@ -244,6 +256,8 @@ public class CommonQuery {
     public static final String IFCLOCALPLACEMENT = NamespaceMapper.IFC_PREFIX + ":IfcLocalPlacement";
     public static final String IFC_CART_TRANSFORMATION_OPERATOR = NamespaceMapper.IFC_PREFIX + ":IfcCartesianTransformationOperator3D";
     public static final String IFC_EXTRUDED_AREA_SOLID = NamespaceMapper.IFC_PREFIX + ":IfcExtrudedAreaSolid";
+    public static final String IFC_POLYGONAL_HALF_SPACE = NamespaceMapper.IFC_PREFIX + ":IfcPolygonalBoundedHalfSpace";
+    public static final String IFC_SURFACE_PLANE = NamespaceMapper.IFC_PREFIX + ":IfcPlane";
     public static final String IFC_POLYLINE = NamespaceMapper.IFC_PREFIX + ":IfcPolyline";
     // IfcOwl Element Classes
     public static final String IFC_CEILING = NamespaceMapper.IFC_PREFIX + ":IfcCovering";

@@ -55,6 +55,9 @@ public class OntoBimConstant {
     public static final String BIM_HAS_PROFILE_TYPE = NamespaceMapper.BIM_NAMESPACE + "hasProfileType";
     public static final String BIM_HAS_RECTANGLE_PROFILE_X_EXTENT = NamespaceMapper.BIM_NAMESPACE + "hasXDimensionExtent";
     public static final String BIM_HAS_RECTANGLE_PROFILE_Y_EXTENT = NamespaceMapper.BIM_NAMESPACE + "hasYDimensionExtent";
+    public static final String BIM_HAS_AGREEMENT_FLAG = NamespaceMapper.BIM_NAMESPACE + "hasAgreementFlag";
+    public static final String BIM_HAS_BASE_SURFACE = NamespaceMapper.BIM_NAMESPACE + "hasBaseSurface";
+    public static final String BIM_HAS_POLYGONAL_BOUNDARY = NamespaceMapper.BIM_NAMESPACE + "hasPolygonalBoundary";
     public static final String BIM_HAS_STARTING_VERTEX = NamespaceMapper.BIM_NAMESPACE + "hasStartingVertex";
     public static final String BIM_HAS_NEXT_VERTEX = NamespaceMapper.BIM_NAMESPACE + "hasNextVertex";
     // OntoBuildingStructure stair properties
@@ -150,6 +153,10 @@ public class OntoBimConstant {
     public static final String BIM_EXTRUDED_AREA_SOLID_CLASS = NamespaceMapper.BIM_NAMESPACE + EXTRUDED_AREA_SOLID_CLASS;
     public static final String RECTANGLE_PROFILE_DEFINITION_CLASS = "RectangleProfileDefinition";
     public static final String BIM_RECTANGLE_PROFILE_DEFINITION_CLASS = NamespaceMapper.BIM_NAMESPACE + RECTANGLE_PROFILE_DEFINITION_CLASS;
+    public static final String POLYGONAL_BOUNDED_HALF_SPACE_CLASS = "PolygonalBoundedHalfSpace";
+    public static final String BIM_POLYGONAL_BOUNDED_HALF_SPACE_CLASS = NamespaceMapper.BIM_NAMESPACE + POLYGONAL_BOUNDED_HALF_SPACE_CLASS;
+    public static final String SURFACE_PLANE_CLASS = "SurfacePlane";
+    public static final String BIM_SURFACE_PLANE_CLASS = NamespaceMapper.BIM_NAMESPACE + SURFACE_PLANE_CLASS;
     public static final String POLYLINE_CLASS = "Polyline";
     public static final String BIM_POLYLINE_CLASS = NamespaceMapper.BIM_NAMESPACE + POLYLINE_CLASS;
     public static final String LINE_VERTEX_CLASS = "LineVertex";

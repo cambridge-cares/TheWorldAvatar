@@ -84,6 +84,7 @@ class QueryHandlerTest {
     private static final String testVoidGeomType = JunitTestUtils.bimUri + "ExtrudedAreaSolid";
     private static final String testVoidShapeRepTypeVar = "voidshapereptype";
     private static final String testVoidShapeRepType = "SweptSolid";
+    private static final boolean testBooleanLiteral = true;
     private static SpatialZoneStorage zoneMappings;
     private static IfcStoreyRepresentation storey;
     private static IfcRoomRepresentation room;
@@ -158,10 +159,12 @@ class QueryHandlerTest {
         solution.add(testVar, ResourceFactory.createPlainLiteral(testLiteral));
         solution.add(testInchNameVar, ResourceFactory.createPlainLiteral(testLiteralWithInch));
         solution.add(testHeightVar, ResourceFactory.createTypedLiteral(testDoubleLiteral));
+        solution.add(testIriVar, ResourceFactory.createTypedLiteral(testBooleanLiteral));
         // Execute the method and ensure results are string
         assertEquals(testLiteral, QueryHandler.retrieveLiteral(solution, testVar));
         assertEquals(testLiteralWithInchResult, QueryHandler.retrieveLiteral(solution, testInchNameVar));
         assertEquals(testDoubleLiteral, QueryHandler.retrieveLiteral(solution, testHeightVar));
+        assertEquals(testBooleanLiteral, Boolean.parseBoolean(QueryHandler.retrieveLiteral(solution, testIriVar)));
         // If the variable does not exist, ensure that null is return
         assertNull(QueryHandler.retrieveLiteral(solution, "nonExisting"));
     }

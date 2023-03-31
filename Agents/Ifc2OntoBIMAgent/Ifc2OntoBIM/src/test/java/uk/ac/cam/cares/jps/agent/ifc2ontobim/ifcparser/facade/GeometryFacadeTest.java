@@ -51,6 +51,10 @@ class GeometryFacadeTest {
     private static final Double IFC_AXIS_DIR_VECTOR_X_RATIO = 1.3;
     private static final Double IFC_AXIS_DIR_VECTOR_Y_RATIO = 2.3;
     private static final Double IFC_AXIS_DIR_VECTOR_Z_RATIO = 3.3;
+    // Bounded Half space fields
+    private static final String IFC_HALF_SPACE_INSTANCE = TEST_BASE_URI + "IfcPolygonalBoundedHalfSpace_6287";
+    private static final String BIM_HALF_SPACE_INSTANCE = TEST_BASE_URI + "PolygonalBoundedHalfSpace_6287";
+    private static final boolean HALF_SPACE_FLAG = false;
     // Polyline fields
     private static final String IFC_POLYLINE_INSTANCE = TEST_BASE_URI + "IfcPolyline_777";
     private static final String BIM_POLYLINE_INSTANCE = TEST_BASE_URI + "Polyline_777";
@@ -139,6 +143,28 @@ class GeometryFacadeTest {
     }
 
     @Test
+    void testAddHalfSpaceStatements() {
+        // Set up
+        addHalfSpaceTriples();
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Execute method
+        testHelper.addHalfSpaceStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Verify statements have been generated
+        String positions = TEST_BASE_URI + "LocalPlacement_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}";
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedHalfSpaceStatements(TEST_BASE_URI, BIM_HALF_SPACE_INSTANCE, positions, positions, BIM_POLYLINE_INSTANCE, HALF_SPACE_FLAG), result);
+        // Verify that the right points and direction are generated
+        operatorMappings.constructAllStatements(sampleSet);
+        result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_REF_DIR_VECTOR_X_RATIO, IFC_REF_DIR_VECTOR_Y_RATIO, IFC_REF_DIR_VECTOR_Z_RATIO, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_AXIS_DIR_VECTOR_X_RATIO, IFC_AXIS_DIR_VECTOR_Y_RATIO, IFC_AXIS_DIR_VECTOR_Z_RATIO, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_GEOM_SEC_POSITION_X_COORD, IFC_GEOM_SEC_POSITION_Y_COORD, IFC_GEOM_SEC_POSITION_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_PROFILE_DIR_VECTOR_X_RATIO, IFC_PROFILE_DIR_VECTOR_Y_RATIO, IFC_PROFILE_DIR_VECTOR_Z_RATIO, true), result);
+    }
+
+    @Test
     void testAddPolylineStatements() {
         // Set up
         addPolylineTriples();
@@ -203,6 +229,29 @@ class GeometryFacadeTest {
                                         .addProperty(JunitTestUtils.hasDouble, sampleModel.createTypedLiteral(REC_PROFILE_Y_EXTENT))));
     }
 
+
+    private void addHalfSpaceTriples() {
+        sampleModel.createResource(IFC_HALF_SPACE_INSTANCE)
+                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcPolygonalBoundedHalfSpace"))
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "agreementFlag_IfcHalfSpaceSolid"), sampleModel.createResource()
+                        .addProperty(JunitTestUtils.hasBoolean, sampleModel.createTypedLiteral(HALF_SPACE_FLAG))
+                )
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "polygonalBoundary_IfcPolygonalBoundedHalfSpace"), sampleModel.createResource(IFC_POLYLINE_INSTANCE)
+                        .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcPolyline")))
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "position_IfcPolygonalBoundedHalfSpace"), sampleModel.createResource()
+                        .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "location_IfcPlacement"), sampleModel.createResource(IFC_GEOM_POSITION_INST))
+                        .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "refDirection_IfcAxis2Placement3D"), sampleModel.createResource(IFC_REF_DIR_VECTOR_INST))
+                        .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "axis_IfcAxis2Placement3D"), sampleModel.createResource(IFC_AXIS_DIR_VECTOR_INST))
+                )
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "baseSurface_IfcHalfSpaceSolid"), sampleModel.createResource()
+                        .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcPlane"))
+                        .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "position_IfcElementarySurface"),
+                                sampleModel.createResource()
+                                        .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "location_IfcPlacement"), sampleModel.createResource(IFC_GEOM_SEC_POSITION_INST))
+                                        .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "refDirection_IfcAxis2Placement3D"), sampleModel.createResource(IFC_PROFILE_DIR_VECTOR_INST))
+                        )
+                );
+    }
 
     private void addPolylineTriples() {
         sampleModel.createResource(IFC_POLYLINE_INSTANCE)

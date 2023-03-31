@@ -5,9 +5,8 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.Element;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ExtrudedAreaSolid;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.PolygonalBoundedHalfSpace;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.Polyline;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.RectangleProfileDefinition;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.*;
@@ -146,6 +145,93 @@ public class GeometryFacade {
             }
             // Generate a new extruded area solid and construct the statements
             ExtrudedAreaSolid geometry = new ExtrudedAreaSolid(iri, extrudedPosition.getIri(), extrudedDirIri, extrusionDepth, profileIri);
+            geometry.constructStatements(statementSet);
+        }
+    }
+
+    /**
+     * Creates the SPARQL SELECT query statements for PolygonalBoundedHalfSpace.
+     *
+     * @return A string containing the SPARQL query to execute.
+     */
+    private String createHalfSpaceSelectQuery() {
+        SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
+        selectBuilder.addVar(CommonQuery.GEOM_VAR)
+                .addVar(CommonQuery.CART_POINT_VAR)
+                .addVar(CommonQuery.REF_DIR_VECTOR_VAR)
+                .addVar(CommonQuery.AXIS_DIR_VECTOR_VAR)
+                .addVar(CommonQuery.SEC_CART_POINT_VAR)
+                .addVar(CommonQuery.SEC_REF_DIRECTION_VAR)
+                .addVar(CommonQuery.SEC_AXIS_DIRECTION_VAR)
+                .addVar(CommonQuery.POLYLINE_VAR)
+                .addVar(CommonQuery.BOOLEAN_VAR);
+        selectBuilder.addWhere(CommonQuery.GEOM_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_POLYGONAL_HALF_SPACE)
+                .addWhere(CommonQuery.GEOM_VAR, CommonQuery.IFC_HALF_SPACE_FLAG + CommonQuery.EXPRESS_HASBOOLEAN, CommonQuery.BOOLEAN_VAR)
+                .addWhere(CommonQuery.GEOM_VAR, CommonQuery.IFC_HALF_SPACE_BOUNDARY, CommonQuery.POLYLINE_VAR)
+                .addWhere(CommonQuery.POLYLINE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_POLYLINE)
+                .addWhere(CommonQuery.GEOM_VAR, CommonQuery.IFC_HALF_SPACE_POSITION + "/" + CommonQuery.IFC_PLACEMENT_LOCATION, CommonQuery.CART_POINT_VAR)
+                .addOptional(CommonQuery.GEOM_VAR, CommonQuery.IFC_HALF_SPACE_POSITION + "/" + CommonQuery.IFC_REF_DIRECTION_3D, CommonQuery.REF_DIR_VECTOR_VAR)
+                .addOptional(CommonQuery.GEOM_VAR, CommonQuery.IFC_HALF_SPACE_POSITION + "/" + CommonQuery.IFC_AXIS_DIRECTION_3D, CommonQuery.AXIS_DIR_VECTOR_VAR)
+                .addWhere(CommonQuery.GEOM_VAR, CommonQuery.IFC_HALF_SPACE_SURFACE, CommonQuery.SURFACE_VAR)
+                .addWhere(CommonQuery.SURFACE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_SURFACE_PLANE)
+                .addWhere(CommonQuery.SURFACE_VAR, CommonQuery.IFC_HALF_SPACE_SURFACE_POSITION + "/" + CommonQuery.IFC_PLACEMENT_LOCATION, CommonQuery.SEC_CART_POINT_VAR)
+                .addOptional(CommonQuery.SURFACE_VAR, CommonQuery.IFC_HALF_SPACE_SURFACE_POSITION + "/" + CommonQuery.IFC_REF_DIRECTION_3D, CommonQuery.SEC_REF_DIRECTION_VAR)
+                .addOptional(CommonQuery.SURFACE_VAR, CommonQuery.IFC_HALF_SPACE_SURFACE_POSITION + "/" + CommonQuery.IFC_AXIS_DIRECTION_3D, CommonQuery.SEC_AXIS_DIRECTION_VAR);
+        return selectBuilder.buildString();
+    }
+
+    /**
+     * Retrieve the OntoBIM statements for PolygonalBoundedHalfSpace.
+     *
+     * @param owlModel     The IfcOwl model containing the triples to query from.
+     * @param statementSet A list containing the new OntoBIM triples.
+     */
+    public void addHalfSpaceStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
+        String query = createHalfSpaceSelectQuery();
+        ResultSet results = QueryHandler.execSelectQuery(query, owlModel);
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            // Generate the position from the queried points and directions and construct its statements
+            String cartPointIri = QueryHandler.retrieveIri(soln, CommonQuery.CART_POINT_VAR);
+            if (cartPointIri != null) {
+                CartesianPoint point = this.operatorMappings.getPoint(cartPointIri);
+                cartPointIri = point.getIri();
+            }
+            String refDirIri = QueryHandler.retrieveIri(soln, CommonQuery.REF_DIR_VECTOR_VAR);
+            if (refDirIri != null) {
+                DirectionVector refDir = this.operatorMappings.getDirectionVector(refDirIri);
+                refDirIri = refDir.getIri();
+            }
+            String axisDirIri = QueryHandler.retrieveIri(soln, CommonQuery.AXIS_DIR_VECTOR_VAR);
+            if (axisDirIri != null) {
+                DirectionVector axisDir = this.operatorMappings.getDirectionVector(axisDirIri);
+                axisDirIri = axisDir.getIri();
+            }
+            LocalPlacement position = new LocalPlacement(cartPointIri, refDirIri, axisDirIri);
+            position.constructStatements(statementSet);
+            // For surface plane
+            String planePointIri = QueryHandler.retrieveIri(soln, CommonQuery.SEC_CART_POINT_VAR);
+            if (planePointIri != null) {
+                CartesianPoint point = this.operatorMappings.getPoint(planePointIri);
+                planePointIri = point.getIri();
+            }
+            String planeRefDirIri = QueryHandler.retrieveIri(soln, CommonQuery.SEC_REF_DIRECTION_VAR);
+            if (planeRefDirIri != null) {
+                DirectionVector refDir = this.operatorMappings.getDirectionVector(planeRefDirIri);
+                planeRefDirIri = refDir.getIri();
+            }
+            String planeAxisDirIri = QueryHandler.retrieveIri(soln, CommonQuery.SEC_AXIS_DIRECTION_VAR);
+            if (planeAxisDirIri != null) {
+                DirectionVector axisDir = this.operatorMappings.getDirectionVector(planeAxisDirIri);
+                planeAxisDirIri = axisDir.getIri();
+            }
+            LocalPlacement planePosition = new LocalPlacement(planePointIri, planeRefDirIri, planeAxisDirIri);
+            planePosition.constructStatements(statementSet);
+            // Generate the main geometry
+            String iri = soln.get(CommonQuery.GEOM_VAR).toString();
+            String boundaryIri = QueryHandler.retrieveIri(soln, CommonQuery.POLYLINE_VAR);
+            boolean agreementFlag = Boolean.parseBoolean(QueryHandler.retrieveLiteral(soln, CommonQuery.BOOLEAN_VAR));
+            PolygonalBoundedHalfSpace geometry = new PolygonalBoundedHalfSpace(iri, position.getIri(), planePosition.getIri(), boundaryIri, agreementFlag);
             geometry.constructStatements(statementSet);
         }
     }
