@@ -12,21 +12,15 @@ def z_up_to_y_up(x_min: float, y_min: float, z_min: float, x_max: float, y_max: 
 
 
 def read_json(json_filepath: str):
-    """
-    A test function to read the contents of a tileset.json
-
-    Argument:
-    json_filepath - File path to the tileset.json
-    Returns:
-    The tileset's contents as a Python dictionary
-    """
-    # Read the results
     with open(json_filepath, "r", encoding="utf-8") as f:
         data = json.load(f)
     return data
 
 
-def gen_sample_tileset(bbox: List[float] = [40, 0, 15, 100, 0, 0, 0, 100, 0, 0, 0, 5], building_iri: str = "buildingIri"):
+def gen_sample_tileset(
+    bbox: List[float] = [40, 0, 15, 100, 0, 0, 0, 100, 0, 0, 0, 5], 
+    building_iri: str = "buildingIri"
+):
     root_tile = make_root_tile(bbox)
     tileset = make_tileset(root_tile)
     append_tileset_schema_and_metadata(tileset, building_iri)
@@ -34,14 +28,12 @@ def gen_sample_tileset(bbox: List[float] = [40, 0, 15, 100, 0, 0, 0, 100, 0, 0, 
 
 
 def gen_sample_asset_df(test_range: int):
-    """
-    A test function to generate sample datafarame for the
-    test of gen_tileset_assets()
+    """Generates sample datafarame for asset metadata.
 
-    Argument:
-    test_range - number of assets to generated for testing
+    Argus:
+        test_range: Number of assets to be generated.
     Returns:
-    The sample dataframe
+        A dataframe with sample data.
     """
     rows = [
         {

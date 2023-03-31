@@ -173,9 +173,13 @@ def test_append_assets_more_than_six_assets():
     # Assert
     assert "root" in tileset
     child_nodes = flatten_child_nodes(tileset["root"])
-    assert "children" not in child_nodes[-1]
-    for child_node, expected_fields in zip(child_nodes, expected_fields_of_child_nodes):
+    for i, (child_node, expected_fields) in enumerate(zip(child_nodes, expected_fields_of_child_nodes)):
         assert "geometricError" in child_node and child_node["geometricError"] == 50
+        if i < len(child_nodes) - 1:
+            assert "children" in child_node and isinstance(child_node["children"], list) \
+                and len(child_node["children"]) == 1
+        else:
+            assert "children" not in child_node
         assert expected_fields.items() <= child_node.items()
 
 
@@ -214,6 +218,11 @@ def test_append_tileset_assets():
     assert "root" in tileset
     child_nodes = flatten_child_nodes(tileset["root"])
     assert "children" not in child_nodes[-1]
-    for child_node, expected_fields in zip(child_nodes, expected_fields_of_child_nodes):
+    for i, (child_node, expected_fields) in enumerate(zip(child_nodes, expected_fields_of_child_nodes)):
         assert "geometricError" in child_node and child_node["geometricError"] == 50
+        if i < len(child_nodes) - 1:
+            assert "children" in child_node and isinstance(child_node["children"], list) \
+                and len(child_node["children"]) == 1
+        else:
+            assert "children" not in child_node
         assert expected_fields.items() <= child_node.items()

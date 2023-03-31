@@ -21,12 +21,8 @@ ENDPOINT = "http://www.example.org/sparql"
 
 
 def test_append_tileset_schema():
-    """
-    Tests append_tileset_schema()
-    """
-    # Initialise test cases and expected result
+    # Arrange
     building_iri = "http://www.theworldavatar.com/ifc/building/Building_5a9f7641-2d12-11b2-8040-cdbcaabc8e65"
-    result = {}
     expected_tileset = {
         "schema": {"classes": {
             "TilesetMetaData": {
@@ -46,10 +42,13 @@ def test_append_tileset_schema():
             }
         }
     }
-    # Execute method
-    append_tileset_schema_and_metadata(result, building_iri)
-    # Test assertion
-    assert expected_tileset == result
+
+    # Act
+    actual_tileset = {}
+    append_tileset_schema_and_metadata(actual_tileset, building_iri)
+
+    # Assert
+    assert expected_tileset == actual_tileset
 
 
 def make_bim_tileset(bbox: List[str], building_iri: str):
@@ -85,10 +84,8 @@ def make_bim_tileset(bbox: List[str], building_iri: str):
 
 
 def test_gen_root_content_no_building_no_furniture_with_assets():
-    """
-    Tests gen_root_content() when there is no building and furniture.gltf detected
-    """
-    # arrange
+    """Tests gen_root_content() when there are glTF files for assets but not building or furniture."""
+    # Arrange
     building_iri = "test_iri"
 
     test_range = 6
@@ -103,30 +100,25 @@ def test_gen_root_content_no_building_no_furniture_with_assets():
 
     expected = make_bim_tileset([0, 0, 3,  10, 0, 0, 0, 10, 0, 0, 0, 3], building_iri)
 
-    # act
+    # Act
     actual = gen_root_content("test_iri", asset_df)
 
-    # assert
+    # Assert
     assert actual == expected
 
 
 def test_gen_root_content_no_building_no_furniture_no_assets():
-    """
-    Tests gen_root_content() when there is no building and furniture.gltf detected
-    """
-    # act
+    """Tests gen_root_content() when there are no glTF files."""
+    # Act
     actual = gen_root_content("test_iri", pd.DataFrame())
 
-    # assert
+    # Assert
     assert actual is None
 
 
 def test_gen_root_content_only_building():
-    """
-    Tests gen_root_content() when there is only building.gltf
-    """
-    # arrange
-    # expected tileset contains a single building directory
+    """Tests gen_root_content() when there is only glTF file for building."""
+    # Arrange
     building_iri = "test_iri"
     expected = make_bim_tileset(C.sample_box_bbox, building_iri)
     expected["root"]["content"] = {"uri": "./glb/building.glb"}
@@ -136,19 +128,16 @@ def test_gen_root_content_only_building():
     m = C.sample_box_gen()
     m.export(building_glb)
 
-    # act
+    # Act
     actual = gen_root_content("test_iri", pd.DataFrame())
 
-    # assert
+    # Assert
     assert actual == expected
 
 
 def test_gen_root_content_with_building_and_furniture():
-    """
-    Tests gen_root_content() when there are both building and furniture.gltf available
-    """
-    # arrange
-    # expected tileset contains directories of furniture and building
+    """Tests gen_root_content() when there are glTF files for building and furniture."""
+    # Arrange
     building_iri = "test_iri"
     expected = make_bim_tileset(C.combined_bbox, building_iri)
     expected["root"]["contents"] = [
@@ -159,13 +148,12 @@ def test_gen_root_content_with_building_and_furniture():
     # Create GLB files for testing
     building_glb = os.path.join("data", "glb", "building.glb")
     furniture_glb = os.path.join("data", "glb", "furniture.glb")
-    building_mesh = C.sample_box_gen()
-    furniture_mesh = C.sample_cone_gen()
-    building_mesh.export(building_glb)
-    furniture_mesh.export(furniture_glb)
 
-    # act
+    C.sample_box_gen().export(building_glb)
+    C.sample_cone_gen().export(furniture_glb)
+
+    # Act
     actual = gen_root_content("test_iri", pd.DataFrame())
 
-    # Ensure that tileset contains this dictionary
+    # Assert
     assert actual == expected

@@ -28,7 +28,7 @@ from .testutils import read_json
     ]
 )
 def test_make_root_tile(bbox, kwargs):
-    # arrange
+    # Arrange
     expected = {
         **{
             "boundingVolume": {"box": bbox} if bbox is not None else {},
@@ -38,15 +38,15 @@ def test_make_root_tile(bbox, kwargs):
         **kwargs
     }
 
-    # act
+    # Act
     actual = make_root_tile(bbox, **kwargs)
 
-    # assert
+    # Assert
     assert actual == expected
 
 
 def test_make_tileset():
-    # arrange
+    # Arrange
     root_tile = {
         "boundingVolume": {"box": []},
         "geometricError": 512,
@@ -62,10 +62,10 @@ def test_make_tileset():
         }
     }
 
-    # act
+    # Act
     actual = make_tileset(root_tile)
 
-    # assert
+    # Assert
     assert expected == actual
 
 
@@ -79,8 +79,10 @@ def test_make_tileset():
      ((2, 0, -1, 4, 1, 0), (2, 0, 0, 4, 1, 1))]
 )
 def test_y_up_to_z_up(gltf_extreme_coordinates, expected):
+    # Act
     actual = y_up_to_z_up(*gltf_extreme_coordinates)
 
+    # Assert
     assert actual == expected
 
 
@@ -90,20 +92,20 @@ def test_y_up_to_z_up(gltf_extreme_coordinates, expected):
      (C.sample_cone_gen, C.sample_cone_bbox)]
 )
 def test_compute_bbox_single_mesh(mesh_gen, expected, tmp_path):
-    # arrange
+    # Arrange
     glb_path = tmp_path / "sample.glb"
     m = mesh_gen()
     m.export(glb_path)
 
-    # act
+    # Act
     actual = compute_bbox(glb_path)
 
-    # assert
+    # Assert
     assert np.allclose(expected, actual)
 
 
 def test_compute_bbox_multi_mesh(tmp_path):
-    # arrange
+    # Arrange
     glb_path1 = tmp_path / "sample1.glb"
     glb_path2 = tmp_path / "sample2.glb"
     m1 = C.sample_box_gen()
@@ -111,68 +113,58 @@ def test_compute_bbox_multi_mesh(tmp_path):
     m1.export(glb_path1)
     m2.export(glb_path2)
 
-    # act
+    # Act
     actual = compute_bbox([glb_path1, glb_path2])
 
-    # assert
+    # Assert
     assert np.allclose(C.combined_bbox, actual)
 
 
 def test_jsonwriter():
-    """
-    Tests jsonwriter()
-    """
+    # Arrange
     sample_tileset = {"testkey": "testvalue"}
     sample_name = "jsontest"
-    # JSON output path
-    test_json = os.path.join("data", sample_name + ".json")
-
-    # Execute method
+    
+    # Act
     jsonwriter(sample_tileset, sample_name)
 
-    # Test that the tileset.json has been created
-    assert os.path.exists(test_json)
-
-    # Test that the tileset contents are equivalent to the dictionary
-    assert read_json(test_json) == sample_tileset
+    # Assert
+    expected_filepath = os.path.join("data", sample_name + ".json")
+    assert os.path.exists(expected_filepath)
+    assert read_json(expected_filepath) == sample_tileset
 
 
 def test_gen_solarpanel_tileset_no_solarpanel():
-    """
-    Tests gen_solarpanel_tileset() when there is no solarpanel.gltf detected
-    """
-    # Execute method
+    """Tests gen_solarpanel_tileset() when there is no solarpanel glTF detected."""
+    # Act
     gen_solarpanel_tileset()
+
+    # Assert
     json_filepath = os.path.join("data", "tileset_solarpanel.json")
     assert not os.path.exists(json_filepath)
 
 
 def test_gen_solarpanel_tileset():
-    """
-    Tests gen_solarpanel_tileset() when there is a solarpanel.gltf
-    """
-    # Create sample glb file
+    """Tests gen_solarpanel_tileset() when there is a solarpanel glTF."""
+    # Arrange
     solarpanel_glb = os.path.join("data", "glb", "solarpanel.glb")
     m = C.sample_box_gen()
     m.export(solarpanel_glb)
 
-    # Execute method
+    # Act
     gen_solarpanel_tileset()
 
-    # JSON output path
+    # Assert
     json_filepath = os.path.join("data", "tileset_solarpanel.json")
-
-    # Test that the tileset.json has been created
     assert os.path.exists(json_filepath)
 
-    # Read the tileset
-    tileset_content = read_json(json_filepath)
+    tileset = read_json(json_filepath)
+    assert "root" in tileset
 
-    # Test that the tileset contents are equivalent to the dictionary
-    assert tileset_content["root"]["content"] == {"uri": "./glb/solarpanel.glb"}
-
-    # Test that the bbox is correctly computed
-    assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_box_bbox)
+    root_tile = tileset["root"]
+    assert "content" in root_tile and root_tile["content"] == {"uri": "./glb/solarpanel.glb"}
+    assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
+        and np.allclose(root_tile["boundingVolume"]["box"], C.sample_box_bbox)
 
 
 def test_gen_sewagenetwork_tileset_no_sewage():
@@ -186,27 +178,23 @@ def test_gen_sewagenetwork_tileset_no_sewage():
 
 
 def test_gen_sewagenetwork_tileset():
-    """
-    Tests gen_sewagenetwork_tileset() when there is a sewagenetwork.gltf
-    """
-    # Create sample glb file
+    """Tests gen_sewagenetwork_tileset() when there is a sewagenetwork glTF."""
+    # Arrange
     sewage_glb = os.path.join("data", "glb", "sewagenetwork.glb")
     m = C.sample_cone_gen()
     m.export(sewage_glb)
 
-    # Execute method
+    # Act
     gen_sewagenetwork_tileset()
 
-    # JSON output path
+    # Assert
     json_filepath = os.path.join("data", "tileset_sewage.json")
-    # Test that the tileset.json has been created
     assert os.path.exists(json_filepath)
 
-    # Read the tileset
-    tileset_content = read_json(json_filepath)
+    tileset = read_json(json_filepath)
+    assert "root" in tileset
 
-    # Test that the tileset contents are equivalent to the dictionary
-    assert tileset_content["root"]["content"] == {"uri": "./glb/sewagenetwork.glb"}
-
-    # Test that the bbox is correctly computed
-    assert np.allclose(tileset_content["root"]["boundingVolume"]["box"], C.sample_cone_bbox)
+    root_tile = tileset["root"]
+    assert "content" in root_tile and root_tile["content"] == {"uri": "./glb/sewagenetwork.glb"}
+    assert "boundingVolume" in root_tile and "box" in root_tile["boundingVolume"] \
+        and np.allclose(root_tile["boundingVolume"]["box"], C.sample_cone_bbox)
