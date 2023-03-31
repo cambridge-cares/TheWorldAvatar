@@ -11,7 +11,7 @@
 					"AERMOD_AGENT_IRI=http://theworldavatar.com/kg/dispersion/AermodAgent",
 					"AERMOD_AGENT_URL=http://ship-stack-aermod-agent:8080/AermodAgent/",
 					"WEATHER_AGENT_URL=http://weatheragent:8080/WeatherAgent/CreateStation",
-					"SHIP_INPUT_AGENT=http://ship-input-agent:8080/ShipInputAgent/update"
+					"SHIP_INPUT_AGENT=http://ship-stack-ship-input-agent:8080/ShipInputAgent/update"
 				],
 				"Configs": [
 					{

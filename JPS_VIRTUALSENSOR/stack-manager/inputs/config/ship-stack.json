@@ -1,10 +1,12 @@
 {
     "services": {
         "includes": [
+			"ship-input-agent",
 			"dispersion-interactor",
 			"dispersion-vis",
 			"aermod-agent",
-			"python-service"
+			"python-service",
+			"emissions-agent"
         ]
     }
 }
