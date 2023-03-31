@@ -9,6 +9,7 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient.Type;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
+import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,6 +20,7 @@ import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.TimeZone;
+import java.sql.Connection;
 
 
 import org.apache.logging.log4j.LogManager;
@@ -41,6 +43,7 @@ public class FHAgent{
      * The time series client to interact with the knowledge graph and data storage
      */
     private TimeSeriesClient<OffsetDateTime> tsClient;
+    private TimeSeries<OffsetDateTime> occStateTS;
     /**
      * A list of mappings between JSON keys and the corresponding IRI, contains one mapping per time series
      */
@@ -61,6 +64,16 @@ public class FHAgent{
      * The Zone offset of the timestamp (https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneOffset.html)
      */
     public static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
+    /**
+     * RDB Client Object
+     */
+    private RemoteRDBStoreClient RDBClient;
+
+    /**
+     * Log messages
+     */
+    private static final String GETLATESTDATA_ERROR_MSG = "Unable to query for latest data!" ;
+    
     /*
      * Tally System variables
      */
@@ -499,9 +512,11 @@ public class FHAgent{
     }
 
 
-    private Boolean TallyDist (JSONObject readings) {
-        Boolean result = false;
+    private JSONObject TallyDist (JSONObject readings) {
+        Boolean tallyResult = false;
+        JSONObject result = new JSONObject();
         JSONArray tsAndValue = readings.getJSONArray("avgDist");
+        String latestTimeStamp = tsAndValue.getJSONObject(tsAndValue.length() - 1).getString("ts");
         //Go through the JSON objects in the array one by one
         for (int j = tsAndValue.length() - 1; j >= 0; j--) {
         // Get the value and add it to the corresponding list
@@ -522,11 +537,46 @@ public class FHAgent{
             }
             tally -= decreaseFactor;
 
-            result = tally >= tallyLim;
+            tallyResult = tally >= tallyLim;
 
         }
 
-    return result;
+        result.put("ts", latestTimeStamp);
+        result.put("value", tallyResult);
+        return result;
     }
+
+    private JSONObject getLastState (String dataIRI) {
+
+        JSONObject result = new JSONObject();
+        try (Connection conn = RDBClient.getConnection()){
+            occStateTS = tsClient.getLatestData(dataIRI, conn);
+        } catch (Exception e) {
+            throw new JPSRuntimeException(GETLATESTDATA_ERROR_MSG, e);
+        }
+
+
+        try {
+            //process timeseries object and convert to a suitable form, retrieve values only
+            List<String> dataValuesAsString = occStateTS.getValuesAsString(dataIRI);
+            Boolean latestTimeSeriesValue = Boolean.parseBoolean(dataValuesAsString.get(dataValuesAsString.size() - 1));
+            OffsetDateTime latestTimeStamp = occStateTS.getTimes().get(occStateTS.getTimes().size() - 1);
+
+            result.put("ts", latestTimeStamp);
+            result.put("value", latestTimeSeriesValue);
+            return result;
+        } catch (Exception e){
+            throw new JPSRuntimeException("Unable to retrieve latest value and timestamp from timeseries object.");
+        }
+    }
+
+
+    private void updateOccState (JSONObject latestOccState, JSONObject lastOccState) {
+        if(latestOccState.get("value") != lastOccState.get("value")) {
+            //TODO do update here
+        }
+    }
+
+
 }
 
