@@ -41,3 +41,23 @@ def get_json_object_with_properties(title, description, type):
     }
 
     return data
+
+def get_json_object_with_unit(description_of_value, description_of_unit, enum):
+   
+    data = {       
+        "value": {
+            "type": "number",
+            "title": "Value",
+            "description": description_of_value
+        },
+        "unit": {
+            "type": "string",
+            "title": "Unit",
+            "description": description_of_unit,
+            "enum": [
+                enum
+            ]       
+        }
+    }
+
+    return data

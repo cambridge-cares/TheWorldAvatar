@@ -228,10 +228,10 @@ def get_unit_query(ontological_class: str) -> str:
     PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
     PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 
-    SELECT ?unit ?symbol
+    SELECT ?property ?label
     WHERE {
-        %s rdfs:subClassOf*/owl:hasValue ?unit .
-        ?unit om:symbol ?symbol
+        %s rdfs:subClassOf*/owl:hasValue ?property .
+        ?property om:symbol ?label
     }
     ''' % ontological_class
     return query

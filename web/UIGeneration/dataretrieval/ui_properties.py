@@ -1,5 +1,5 @@
 ###############################################
-# Authors: Feroz Farazi (msff2@cam.ac.uk) #    
+# Authors: Feroz Farazi (msff2@cam.ac.uk)     #    
 # Date: 27 Feb 2023                           #
 ###############################################
 
@@ -19,13 +19,14 @@
 from SPARQLWrapper import SPARQLWrapper, JSON, POST, BASIC
 import requests, json as js
 import os
-from query_templates import get_property_query, get_subclass_query, get_instance_query, get_unit_query, get_label_query
-from json_templates import get_json_object, get_json_object_with_enum, get_json_object_with_properties
+from query_templates import get_property_query, get_subclass_query, get_instance_query, get_unit_query
+from json_templates import get_json_object, get_json_object_with_enum, get_json_object_with_properties, get_json_object_with_unit
 
 OWL_DATATYPE_PROPERTY = "http://www.w3.org/2002/07/owl#DatatypeProperty"
 OWL_OBJECT_PROPERTY = "http://www.w3.org/2002/07/owl#ObjectProperty"
+OWL_CLASS = "http://www.w3.org/2002/07/owl#Class"
 
-ENDPOINT = ""
+JIDEP_ENDPOINT = ""
 
 data = {}
 
@@ -59,7 +60,7 @@ def get_ontological_subclasses(endpoint: str, ontological_class: str):
     str: The IRI, label, position, type, range and range label of properties
       connected to the ontological class.
     """
-    
+    print(get_subclass_query(ontological_class))
     results = perform_query(endpoint, get_subclass_query(ontological_class))
     return results
 
@@ -95,26 +96,6 @@ def get_ontologically_encoded_unit(endpoint: str, ontological_class: str):
     
     results = perform_query(endpoint, get_unit_query(ontological_class))
     return results
-
-def get_ontological_label(endpoint: str, ontological_element: str):
-    """
-    Retrieves the label of an ontological class or property.
-
-    Parameters:
-    endpoint (str): The endpoint of a triple store expressed as a URL.
-    ontological_element (str): The IRI of the ontological class or property.
-
-    Returns:
-    str: The label of the ontological class or property.
-    """
-    
-    results = perform_query(endpoint, get_label_query(ontological_element))
-    print(results)
-    label = ""
-    for result in results["results"]["bindings"]:
-        label = result['label']['value']
-
-    return label
 
 
 def perform_query(endpoint: str, query: str):
@@ -185,21 +166,9 @@ def format_subclasses(results: str, previous_property_values: str = None):
     property_values = dict()
     if previous_property_values is not None:
          property_values = previous_property_values
-    previous_range_label = ""
     for result in results["results"]["bindings"]:
         label = result['label']['value']
-        range_label = result['rangeLabel']['value']
-        if label.lower().replace(" ", "_") in property_values.keys():
-            if previous_range_label == 'int':
-                del property_values[label.lower().replace(" ", "_")]
-                property_values[label.lower().replace(" ", "_")] = ""
-            if property_values[label.lower().replace(" ", "_")] == "":
-                property_values[label.lower().replace(" ", "_")] = range_label
-            else:
-                property_values[label.lower().replace(" ", "_")] = property_values[label.lower().replace(" ", "_")] + ", " + range_label
-        else:
-            property_values[label.lower().replace(" ", "_")] = range_label
-        previous_range_label = range_label
+        property_values[label.lower().replace(" ", "_")] = label
     return property_values
 
 
@@ -216,6 +185,20 @@ def format_instances(class_label:str, results: str, previous_property_values: st
                       instances[class_label.lower().replace(" ", "_")] = label
     return instances
 
+def format_unit(class_label:str, results: str):
+    instances = dict()
+    for result in results["results"]["bindings"]:
+                symbol = result['label']['value']
+                if class_label.lower().replace(" ", "_") in instances.keys():
+                    if instances[class_label.lower().replace(" ", "_")] == "":
+                        instances[class_label.lower().replace(" ", "_")] = symbol
+                    else:
+                        instances[class_label.lower().replace(" ", "_")] = instances[class_label.lower().replace(" ", "_")] + ", " + symbol
+                else:
+                      instances[class_label.lower().replace(" ", "_")] = symbol
+    return instances
+
+
 def format_enumerated_list(enumerated_list):
     string_array = enumerated_list.split(", ")
     sorted_list = sorted(string_array)
@@ -230,14 +213,14 @@ def is_property_result_empty(results):
 
 def is_unit_result_empty(results):
     for result in results["results"]["bindings"]:
-        unit = result['unit']['value']
+        unit = result['property']['value']
         if unit == "":
              return True
         else:
             return False
 
 
-def traverse_through_object_property(results, property_value_processed, property_values_formated, json_string, parsed_classes, class_of_properties: str = None, class_of_instances: str = None):
+def traverse_through_identification_property(results, property_value_processed, property_values_formated, json_string, parsed_classes, class_of_properties: str = None, class_of_instances: str = None):
     if class_of_instances != None:
         popped_item = parsed_classes.pop()
         popped_parent_item = parsed_classes.pop()
@@ -272,154 +255,186 @@ def traverse_through_object_property(results, property_value_processed, property
                 property_value_processed.append(label.lower().replace(" ", "_"))
                 if type == OWL_OBJECT_PROPERTY:
                     if "<"+range+">" not in parsed_classes:
-                        results = get_ontological_properties(ENDPOINT, "<"+range+">")
+                        results = get_ontological_properties(JIDEP_ENDPOINT, "<"+range+">")
                         if is_property_result_empty(results):
-                            results = get_ontological_subclasses(ENDPOINT, "<"+range+">")
+                            results = get_ontological_subclasses(JIDEP_ENDPOINT, "<"+range+">")
                             if is_property_result_empty(results):
-                                results = get_ontological_instances(ENDPOINT, "<"+range+">")
+                                results = get_ontological_instances(JIDEP_ENDPOINT, "<"+range+">")
                                 if is_property_result_empty(results):
-                                   results = get_ontologically_encoded_unit(ENDPOINT, "<"+range+">") 
+                                   results = get_ontologically_encoded_unit(JIDEP_ENDPOINT, "<"+range+">") 
                                    if is_unit_result_empty(results):
                                         continue
                                 else:
                                     property_values_formated = format_instances(label, results, property_values_formated)
                                     parsed_classes.append("<"+range+">")
-                                    traverse_through_object_property(results, property_value_processed, format_enumerated_list(property_values_formated[label.lower().replace(" ", "_")]), json_string, parsed_classes, None, label)
+                                    traverse_through_identification_property(results, property_value_processed, format_enumerated_list(property_values_formated[label.lower().replace(" ", "_")]), json_string, parsed_classes, None, label)
                             else:
                                 property_values_formated = format_property_values(results, property_values_formated)
                                 parsed_classes.append("<"+range+">")
-                                traverse_through_object_property(results, property_value_processed, property_values_formated, json_string, parsed_classes)
+                                traverse_through_identification_property(results, property_value_processed, property_values_formated, json_string, parsed_classes)
                         else:
                             property_values_formated = format_property_values(results, property_values_formated)
                             parsed_classes.append("<"+range+">")
-                            traverse_through_object_property(results, property_value_processed, property_values_formated, json_string, parsed_classes, label)
+                            traverse_through_identification_property(results, property_value_processed, property_values_formated, json_string, parsed_classes, label)
     return json_string
 
-def generate_identification_properties(endpoint_name:str, query_classes):
-    """
-    Retrieves all datatype properties and object properties directly
-    connected to the ontological class.
+def traverse_through_physical_property(results, property_value_processed, property_values_formated, json_string, parsed_classes, class_of_properties: str = None, class_of_instances: str = None, class_containing_unit: str = None):
+    if class_of_instances != None:
+        popped_item = parsed_classes.pop()
+        popped_parent_item = parsed_classes.pop()
+        processed_parent_item = popped_parent_item.split("#")[1].split(">")[0] if "#" in popped_parent_item else popped_parent_item.split("/")[1].split(">")[0]
+        dict(json_string)[processed_parent_item.lower().replace(" ", "_")]['properties'][class_of_instances.lower().replace(" ", "_")]['enum'] = [property_values_formated]
+        parsed_classes.append(popped_parent_item)
+        parsed_classes.append(popped_item)
+        return
 
-    Parameters:
-    endpoint (str): The endpoint of a triple store expressed as a URL.
-    query_classes: The IRI of the ontological classes that need to be
-    queried for retrieving identification properties.
+    if class_containing_unit != None:
+        popped_parent_item = parsed_classes.pop()
+        processed_parent_item = popped_parent_item.split("#")[1].split(">")[0] if "#" in popped_parent_item else popped_parent_item.split("/")[1].split(">")[0]
+        dict(json_string)[processed_parent_item.lower().replace(" ", "_")]['properties'][class_containing_unit.lower().replace(" ", "_")]['enum'] = [property_values_formated]
+        parsed_classes.append(popped_parent_item)
+        return
 
-    Returns:
-    str: A valid JSON string.
 
-    
+    for result in results["results"]["bindings"]:
+                property = ""
+                if 'property' in result:
+                    property = result['property']['value']
+                label = result['label']['value']
+                type = ""
+                if 'type' in result:
+                    type = result['type']['value']
+                range = ""
+                if 'range' in result:
+                    range = result['range']['value']
+                range_label = ""
+                if 'range_label' in result:
+                    range_label = result['rangeLabel']['value']
+                if label.lower() == "properties":
+                     continue
+                if label.lower() not in property_value_processed:
+                    if "," in property_values_formated[label.lower().replace(" ", "_")]:
+                        if type == OWL_CLASS:
+                            json_string.append((label.lower().replace(" ", "_"), get_json_object_with_unit(label, "TODO", format_enumerated_list(property_values_formated[label.lower().replace(" ", "_")])))) 
+                        else:
+                            json_string.append((label.lower().replace(" ", "_"), get_json_object_with_enum(label, "TODO", "string" if range_label=="string" else "string", format_enumerated_list(property_values_formated[label.lower().replace(" ", "_")]))))
+                    elif class_of_properties != None:
+                        dict(json_string)[class_of_properties.lower()]['properties'][label.lower().replace(" ", "_")] = get_json_object(label, "TODO", "string" if range_label=="string" else "string")
+                    elif type == OWL_OBJECT_PROPERTY:
+                        json_string.append((label.lower().replace(" ", "_"), get_json_object_with_properties(label, "TODO", "object" if property_values_formated[label.lower().replace(" ", "_")]=="object" else "object"))) 
+                    elif type == OWL_CLASS:
+                        json_string.append((label.lower().replace(" ", "_"), get_json_object_with_properties(label, "TODO", "object" if property_values_formated[label.lower().replace(" ", "_")]=="object" else "object"))) 
+                    else:
+                        json_string.append((label.lower().replace(" ", "_"), get_json_object(label, "TODO", "string" if property_values_formated[label.lower().replace(" ", "_")]=="string" else "string")))
+                property_value_processed.append(label.lower().replace(" ", "_"))
+                if type == OWL_OBJECT_PROPERTY:
+                    if "<"+range+">" not in parsed_classes:
+                        results = get_ontological_properties(JIDEP_ENDPOINT, "<"+range+">")
+                        if is_property_result_empty(results):
+                            results = get_ontological_subclasses(JIDEP_ENDPOINT, "<"+range+">")
+                            if is_property_result_empty(results):
+                                results = get_ontological_instances(JIDEP_ENDPOINT, "<"+range+">")
+                                if is_property_result_empty(results):
+                                   results = get_ontologically_encoded_unit(JIDEP_ENDPOINT, "<"+range+">") 
+                                   if is_unit_result_empty(results):
+                                        continue
+                                   else:
+                                       property_values_formated = format_unit(label, results, property_values_formated)
+                                       parsed_classes.append("<"+range+">")
+                                       traverse_through_physical_property(results, property_value_processed, format_enumerated_list(property_values_formated[label.lower().replace(" ", "_")]), json_string, parsed_classes, None, None, label)
+                                else:
+                                    property_values_formated = format_instances(label, results, property_values_formated)
+                                    parsed_classes.append("<"+range+">")
+                                    traverse_through_physical_property(results, property_value_processed, format_enumerated_list(property_values_formated[label.lower().replace(" ", "_")]), json_string, parsed_classes, None, label)
+                            else:
+                                property_values_formated = format_property_values(results, property_values_formated)
+                                parsed_classes.append("<"+range+">")
+                                traverse_through_physical_property(results, property_value_processed, property_values_formated, json_string, parsed_classes)
+                        else:
+                            property_values_formated = format_property_values(results, property_values_formated)
+                            parsed_classes.append("<"+range+">")
+                            traverse_through_physical_property(results, property_value_processed, property_values_formated, json_string, parsed_classes, label)
+                if type == OWL_CLASS:
+                    if property not in parsed_classes:
+                        results = get_ontological_properties(JIDEP_ENDPOINT, "<"+property+">")
+                        if is_property_result_empty(results):
+                            results = get_ontological_subclasses(JIDEP_ENDPOINT, "<"+property+">")
+                            if is_property_result_empty(results):
+                                results = get_ontological_instances(JIDEP_ENDPOINT, "<"+property+">")
+                                if is_property_result_empty(results):
+                                   results = get_ontologically_encoded_unit(JIDEP_ENDPOINT, "<"+property+">") 
+                                   if is_unit_result_empty(results):
+                                        continue
+                                   else:
+                                       parsed_classes.append("<"+property+">")
+                                       dict(json_string)[label.lower().replace(" ", "_")]['properties'] = get_json_object_with_unit(label, "TODO", format_enumerated_list(format_unit(label, results)[label.lower().replace(" ", "_")]))
+                                       continue
+                                else:
+                                    property_values_formated = format_instances(label, results, property_values_formated)
+                                    parsed_classes.append("<"+property+">")
+                                    traverse_through_physical_property(results, property_value_processed, format_enumerated_list(property_values_formated[label.lower().replace(" ", "_")]), json_string, parsed_classes, None, label)
+                            else:
+                                property_values_formated = format_subclasses(results, property_values_formated)
+                                parsed_classes.append("<"+property+">")
+                                traverse_through_physical_property(results, property_value_processed, property_values_formated, json_string, parsed_classes)
+                        else:
+                            property_values_formated = format_property_values(results, property_values_formated)
+                            parsed_classes.append("<"+property+">")
+                            traverse_through_physical_property(results, property_value_processed, property_values_formated, json_string, parsed_classes, label)
+
+    return json_string
+
+
+def generate_identification_properties():
+    try:
+         global JIDEP_ENDPOINT
+         JIDEP_ENDPOINT = os.environ.get('JIDEP_ENDPOINT')
+    except KeyError:
+        print("Error: JIDEP_ENDPOINT environment variable is not set.")
     product = "<http://www.theworldavatar.com/kg/ontomatpassport#Product>"
     component = "<http://www.theworldavatar.com/kg/ontomatpassport#Component>"
-    query_classes = []
-    query_classes.append(product)
-    query_classes.append(component)
-
-    """
-    if endpoint_name != None or endpoint_name != "":
-        set_endpoint(endpoint_name)
-    else:
-        print("Endpoint name is None or empty. Provide a valid endpoint name.")
-        return
-    
-    if query_classes == None or len(query_classes) < 1:
-        print("Query classes list is None or empty. Provide a list of one or more class IRIs.")
-        return
-    results = get_ontological_properties(ENDPOINT, query_classes[0])
+    root_classes = []
+    root_classes.append(product)
+    root_classes.append(component)
+    results = get_ontological_properties(JIDEP_ENDPOINT, root_classes[0])
     property_values_formated = format_property_values(results)
-    # formats enum values
-
     property_value_processed = []
     json_string = []
     label = "Type"
     range_label = "string"
-    
-    enumerated_list_provided = ""
+    enumerated_list_provided = "Product" + ", " + "Component"
 
-    for item in query_classes:
-        name = get_ontological_label(ENDPOINT, item)
-        if name != None or label != "":
-            if enumerated_list_provided == "":
-                enumerated_list_provided = name
-            else:
-                enumerated_list_provided = enumerated_list_provided + ", " + name
-    
     json_string.append((label.lower().replace(" ", "_"), get_json_object_with_enum(label, "TODO", range_label, format_enumerated_list(enumerated_list_provided))))
 
-    parsed_classes = query_classes
-    json_string = traverse_through_object_property(results, property_value_processed, property_values_formated, json_string, parsed_classes)
+    parsed_classes = root_classes
+    json_string = traverse_through_identification_property(results, property_value_processed, property_values_formated, json_string, parsed_classes)
     json_string = combined_json_dict = dict(json_string)
     return js.dumps(combined_json_dict).replace("[\"\\", "[").replace("\\\"","\"").replace("\"]","]")
 
 
-def generate_physical_properties(endpoint_name:str, query_classes):
-    """
-    Retrieves all datatype properties and object properties directly
-    connected to the ontological class.
-
-    Parameters:
-    endpoint (str): The endpoint of a triple store expressed as a URL.
-    query_classes: The IRI of the ontological classes that need to be
-    queried for retrieving identification properties.
-
-    Returns:
-    str: A valid JSON string.
-    """
-
-    if endpoint_name != None or endpoint_name != "":
-        set_endpoint(endpoint_name)
-    else:
-        print("Endpoint name is None or empty. Provide a valid endpoint name.")
-        return
-    
-    if query_classes == None or len(query_classes) < 1:
-        print("Query classes list is None or empty. Provide a list of one or more class IRIs.")
-        return
-    results = get_ontological_subclasses(ENDPOINT, query_classes[0])
-    print(results)
-    property_values_formated = format_property_values(results)
-    # formats enum values
-
-    property_value_processed = []
-    json_string = []
-    label = "Type"
-    range_label = "string"
-    
-    enumerated_list_provided = ""
-
-    for item in query_classes:
-        name = get_ontological_label(ENDPOINT, item)
-        if name != None or label != "":
-            if enumerated_list_provided == "":
-                enumerated_list_provided = name
-            else:
-                enumerated_list_provided = enumerated_list_provided + ", " + name
-    
-    json_string.append((label.lower().replace(" ", "_"), get_json_object_with_enum(label, "TODO", range_label, format_enumerated_list(enumerated_list_provided))))
-
-    parsed_classes = query_classes
-    json_string = traverse_through_object_property(results, property_value_processed, property_values_formated, json_string, parsed_classes)
-    json_string = combined_json_dict = dict(json_string)
-    return js.dumps(combined_json_dict).replace("[\"\\", "[").replace("\\\"","\"").replace("\"]","]")
-
-
-def set_endpoint(endpoint_name:str):
+def generate_physical_properties():
     try:
-         global ENDPOINT
-         ENDPOINT = os.environ.get(endpoint_name)
+         global JIDEP_ENDPOINT
+         JIDEP_ENDPOINT = os.environ.get('JIDEP_ENDPOINT')
     except KeyError:
-        print("Error: ", endpoint_name, " environment variable is not set.")
+        print("Error: COMO_ENDPOINT environment variable is not set.")
+    physical_property = "<https://w3id.org/mdo/core/PhysicalProperty>"
+    root_classes = []
+    root_classes.append(physical_property)
+    results = get_ontological_subclasses(JIDEP_ENDPOINT, root_classes[0])
+    property_values_formated = format_subclasses(results)
+    property_value_processed = []
+    json_string = []
+    # label = "Type"
+    # range_label = "string"
+    # enumerated_list_provided = "Product" + ", " + "Component"
+
+    parsed_classes = root_classes
+    json_string = traverse_through_physical_property(results, property_value_processed, property_values_formated, json_string, parsed_classes)
+    json_string = combined_json_dict = dict(json_string)
+    return js.dumps(combined_json_dict).replace("[\"\\", "[").replace("\\\"","\"").replace("\"]","]")
+
 
 if __name__== '__main__':
-    endpoint_name = "JIDEP_ENDPOINT"
-    query_classes = []
-    # class_1 = "<http://www.theworldavatar.com/kg/ontomatpassport#Product>"
-    # query_classes.append(class_1)
-    # class_2 = "<http://www.theworldavatar.com/kg/ontomatpassport#Component>"
-    # query_classes.append(class_2)
-    # print(generate_identification_properties(endpoint_name, query_classes))
 
-    class_1 = "<https://w3id.org/mdo/core/PhysicalProperty>"
-    query_classes.append(class_1)
-    print(generate_physical_properties(endpoint_name, query_classes))
-
+    print(generate_physical_properties())
