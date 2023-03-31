@@ -61,6 +61,17 @@ public class FHAgent{
      * The Zone offset of the timestamp (https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneOffset.html)
      */
     public static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
+    /*
+     * Tally System variables
+     */
+    public static float tally = 0;
+    public static final float tallyLim = 1;
+    public static final float tallyMax = 2;
+    public static final float tallyMin = 0;
+    public static final float decreaseFactor = 0.15f;
+    public static final float increaseFactor = 0.5f;
+    public static final Double Threshold = 170.; //cm
+
 
     /**
      * Standard constructor which reads in JSON key to IRI mappings from the config folder
@@ -485,6 +496,37 @@ public class FHAgent{
         	//As such there should not be any readings stored in ThingsBoard that is considered to be boolean, String or integer
         	return Double.class;
         }
+    }
+
+
+    private Boolean TallyDist (JSONObject readings) {
+        Boolean result = false;
+        JSONArray tsAndValue = readings.getJSONArray("avgDist");
+        //Go through the JSON objects in the array one by one
+        for (int j = tsAndValue.length() - 1; j >= 0; j--) {
+        // Get the value and add it to the corresponding list
+            JSONObject timeSeriesEntry = tsAndValue.getJSONObject(j);
+            Double value; 
+
+            try {
+                value = timeSeriesEntry.getDouble("value");
+                if (value >= Threshold) {
+                    tally += increaseFactor;
+                }
+                }
+            catch (NumberFormatException e) {
+                value = Double.NaN;
+            }
+            catch (NullPointerException e) {
+                value = Double.NaN;
+            }
+            tally -= decreaseFactor;
+
+            result = tally >= tallyLim;
+
+        }
+
+    return result;
     }
 }
 
