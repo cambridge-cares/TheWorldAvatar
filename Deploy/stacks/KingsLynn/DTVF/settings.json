@@ -1,9 +1,9 @@
 {
     "start": {
-        "center": [0.4, 52.8],
-        "zoom": 8,
-        "bearing": 0,
-        "pitch": 20
+        "center": [0.395, 52.740],
+        "zoom": 17,
+        "bearing": 340,
+        "pitch": 71
     },
     "search": {
         "Name": "name",

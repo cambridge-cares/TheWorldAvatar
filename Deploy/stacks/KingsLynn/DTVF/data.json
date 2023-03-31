@@ -48,7 +48,7 @@
                     "minzoom": 8, 
                     "order": 23,
                     "layout": {
-                        "visibility": "none"
+                        "visibility": "visible"
                     },
                     "paint": {
                         "fill-extrusion-color": [
@@ -108,7 +108,7 @@
                     "minzoom": 8, 
                     "order": 21,
                     "layout": {
-                        "visibility": "visible"
+                        "visibility": "none"
                     },
                     "paint": {
                         "fill-extrusion-color": [
