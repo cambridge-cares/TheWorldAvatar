@@ -45,7 +45,7 @@ public class ExtrudedAreaSolid {
         StatementHandler.addStatement(statementSet, this.iri, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_EXTRUDED_AREA_SOLID_CLASS);
         StatementHandler.addStatement(statementSet, this.iri, OntoBimConstant.BIM_HAS_EXTRUSION_POSITION, this.extrusionPositionIRI);
         StatementHandler.addStatement(statementSet, this.iri, OntoBimConstant.BIM_HAS_EXTRUSION_DIRECTION, this.extrusionDirIRI);
-        StatementHandler.addStatementWithNumberLiteral(statementSet, this.iri, OntoBimConstant.BIM_HAS_EXTRUSION_DEPTH, this.extrusionDepth);
+        StatementHandler.addStatement(statementSet, this.iri, OntoBimConstant.BIM_HAS_EXTRUSION_DEPTH, this.extrusionDepth);
         StatementHandler.addStatement(statementSet, this.iri, OntoBimConstant.BIM_HAS_EXTRUSION_PROFILE, this.profileDefIRI);
     }
 }

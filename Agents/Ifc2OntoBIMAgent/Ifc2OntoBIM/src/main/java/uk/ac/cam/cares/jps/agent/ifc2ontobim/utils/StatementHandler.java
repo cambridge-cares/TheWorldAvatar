@@ -42,18 +42,6 @@ public class StatementHandler {
     }
 
     /**
-     * An overloaded method to add a statement with subject, predicate, and object nodes to the statement set.
-     *
-     * @param statementSet Set of statements to append the newly generated statement.
-     * @param subject      The subject node with a valid URI.
-     * @param predicate    The predicate node with a valid URI.
-     * @param object       The object node with a valid URI or a string literal.
-     */
-    public static void addStatement(LinkedHashSet<Statement> statementSet, String subject, String predicate, String object) {
-        addStatement(statementSet, subject, predicate, object, true);
-    }
-
-    /**
      * Add a statement with the given subject, predicate, and object to the statement set.
      *
      * @param statementSet Set of statements to append the newly generated statement.
@@ -84,25 +72,31 @@ public class StatementHandler {
     }
 
     /**
-     * Add a statement with the given subject, predicate, and numerical literal to the statement set.
+     * An overloaded method to add a statement with subject, predicate, and object nodes or literals to the statement set.
+     * Literals can be of any valid Java classes.
      *
      * @param statementSet Set of statements to append the newly generated statement.
      * @param subject      The subject node with a valid URI.
      * @param predicate    The predicate node with a valid URI.
-     * @param object       A number literal, which can be doubles, integers, and more.
+     * @param object       The object node with a valid URI or any literal type.
      */
-    public static void addStatementWithNumberLiteral(LinkedHashSet<Statement> statementSet, String subject, String predicate, Number object) {
-        // Validates the subject and predicate URI
-        validateUri(subject);
-        validateUri(predicate);
-        // Generate the resources and properties for the statement
-        Model model = ModelFactory.createDefaultModel();
-        Resource subj = ResourceFactory.createResource(subject);
-        Property pred = ResourceFactory.createProperty(predicate);
-        // Typed literals can be generated if given the right data type
-        RDFNode obj = ResourceFactory.createTypedLiteral(object);
-        Statement newStatement = model.createStatement(subj, pred, obj);
-        statementSet.add(newStatement);
+    public static void addStatement(LinkedHashSet<Statement> statementSet, String subject, String predicate, Object object) {
+        // If the object is a string class, add it as a String literal
+        if (object.getClass().equals(String.class)){
+            addStatement(statementSet, subject, predicate, (String) object, true);
+        } else {
+            // Validates the subject and predicate URI
+            validateUri(subject);
+            validateUri(predicate);
+            // Generate the resources and properties for the statement
+            Model model = ModelFactory.createDefaultModel();
+            Resource subj = ResourceFactory.createResource(subject);
+            Property pred = ResourceFactory.createProperty(predicate);
+            // Typed literals can be generated if given the right data type
+            RDFNode obj = ResourceFactory.createTypedLiteral(object);
+            Statement newStatement = model.createStatement(subj, pred, obj);
+            statementSet.add(newStatement);
+        }
     }
 
     /**
@@ -147,7 +141,7 @@ public class StatementHandler {
      */
     public static void addOptionalStatement(LinkedHashSet<Statement> statementSet, String subject, String predicate, Number object) {
         if (object != null) {
-            addStatementWithNumberLiteral(statementSet, subject, predicate, object);
+            addStatement(statementSet, subject, predicate, object);
         }
     }
 

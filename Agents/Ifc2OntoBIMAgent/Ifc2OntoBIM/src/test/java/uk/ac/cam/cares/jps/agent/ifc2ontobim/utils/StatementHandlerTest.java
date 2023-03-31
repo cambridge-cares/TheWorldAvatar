@@ -15,10 +15,10 @@ class StatementHandlerTest {
     private static final String testObject = baseURI + "Door_12";
     private static final String testBIMClass = "Wall";
     private static final String testRenamedInstance = baseURI + "Wall_12";
-
     private static final String testStringLiteral = "Name is wall";
     private static final Double testDoubleLiteral = 1.02;
     private static final Integer testIntegerLiteral = 5;
+    private static final boolean testBooleanLiteral = true;
 
 
     @Test
@@ -72,11 +72,11 @@ class StatementHandlerTest {
     }
 
     @Test
-    void testAddStatementWithNumberLiteralForDouble() {
+    void testAddStatementForDoubleLiteral() {
         // Set up
         LinkedHashSet<Statement> testSet = new LinkedHashSet<>();
         // Execute method
-        StatementHandler.addStatementWithNumberLiteral(testSet, testSubject, testProperty, testDoubleLiteral);
+        StatementHandler.addStatement(testSet, testSubject, testProperty, testDoubleLiteral);
         // Test that only one statement is generated
         assertEquals(1, testSet.size());
         // Get the first statement
@@ -88,11 +88,11 @@ class StatementHandlerTest {
     }
 
     @Test
-    void testAddStatementWithNumberLiteralForInteger() {
+    void testAddStatementForIntegerLiteral() {
         // Set up
         LinkedHashSet<Statement> testSet = new LinkedHashSet<>();
         // Execute method
-        StatementHandler.addStatementWithNumberLiteral(testSet, testSubject, testProperty, testIntegerLiteral);
+        StatementHandler.addStatement(testSet, testSubject, testProperty, testIntegerLiteral);
         // Test that only one statement is generated
         assertEquals(testSet.size(), 1);
         // Get the first statement
@@ -101,6 +101,22 @@ class StatementHandlerTest {
         assertEquals(testSubject, result.getSubject().toString());
         assertEquals(testProperty, result.getPredicate().toString());
         assertEquals(testIntegerLiteral, result.getInt());
+    }
+
+    @Test
+    void testAddStatementForBooleanLiteral() {
+        // Set up
+        LinkedHashSet<Statement> testSet = new LinkedHashSet<>();
+        // Execute method
+        StatementHandler.addStatement(testSet, testSubject, testProperty, testBooleanLiteral);
+        // Test that only one statement is generated
+        assertEquals(testSet.size(), 1);
+        // Get the first statement
+        Statement result = testSet.iterator().next();
+        // Test that the statement values are correct
+        assertEquals(testSubject, result.getSubject().toString());
+        assertEquals(testProperty, result.getPredicate().toString());
+        assertEquals(testBooleanLiteral, result.getBoolean());
     }
 
     @Test
@@ -182,7 +198,7 @@ class StatementHandlerTest {
         LinkedHashSet<Statement> testSet = new LinkedHashSet<>();
         // Execute method
         JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () ->
-                StatementHandler.addStatementWithNumberLiteral(testSet, testStringLiteral, testProperty, testDoubleLiteral));
+                StatementHandler.addStatement(testSet, testStringLiteral, testProperty, testDoubleLiteral));
         assertEquals("Invalid node format for " + testStringLiteral + ". Valid formats should start with http:// or https://", thrownError.getMessage());
     }
 }

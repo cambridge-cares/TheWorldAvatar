@@ -2,11 +2,9 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model;
 
 import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
 
 import java.util.LinkedHashSet;
-import java.util.UUID;
 
 public class GeometricRepresentationContext {
     private Double precision = null;
@@ -47,7 +45,7 @@ public class GeometricRepresentationContext {
      */
     public void constructStatements(LinkedHashSet<Statement> statementSet) {
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_GEOM_CONTEXT_CLASS);
-        StatementHandler.addStatementWithNumberLiteral(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_SPACE_DIMENSION, this.dimension);
+        StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_SPACE_DIMENSION, this.dimension);
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_WCS, this.wcsIri);
         StatementHandler.addOptionalStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_PRECISION, this.precision);
         StatementHandler.addOptionalStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_TRUE_NORTH, this.northDirIri);

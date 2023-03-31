@@ -58,10 +58,10 @@ public class StairFlight extends IfcModelRepresentation {
         super.addIfcModelRepresentationStatements(statementSet);
         StatementHandler.addStatement(statementSet, this.stairIRI, OntoBimConstant.BUILDING_STRUCTURE_CONSISTS_OF, this.elementIRI);
         StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_STAIR_FLIGHT_CLASS);
-        StatementHandler.addStatementWithNumberLiteral(statementSet, this.elementIRI, OntoBimConstant.BUILDING_STRUCTURE_HAS_RISER_NUM, this.noOfRiser);
-        StatementHandler.addStatementWithNumberLiteral(statementSet, this.elementIRI, OntoBimConstant.BUILDING_STRUCTURE_HAS_TREAD_NUM, this.noOfTread);
-        StatementHandler.addStatementWithNumberLiteral(statementSet, this.elementIRI, OntoBimConstant.BUILDING_STRUCTURE_HAS_RISER_HEIGHT, this.riserHeight);
-        StatementHandler.addStatementWithNumberLiteral(statementSet, this.elementIRI, OntoBimConstant.BUILDING_STRUCTURE_HAS_TREAD_LENGTH, this.treadLength);
+        StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.BUILDING_STRUCTURE_HAS_RISER_NUM, this.noOfRiser);
+        StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.BUILDING_STRUCTURE_HAS_TREAD_NUM, this.noOfTread);
+        StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.BUILDING_STRUCTURE_HAS_RISER_HEIGHT, this.riserHeight);
+        StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.BUILDING_STRUCTURE_HAS_TREAD_LENGTH, this.treadLength);
         StatementHandler.addStatement(statementSet, this.elementIRI, OntoBimConstant.BIM_HAS_IFC_REPRESENTATION, this.getIfcRepIri());
         StatementHandler.addStatement(statementSet, this.getIfcRepIri(), OntoBimConstant.BIM_HAS_GEOM_REP, this.geomRepIRI);
     }

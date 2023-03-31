@@ -50,7 +50,7 @@ public class RectangleProfileDefinition {
         StatementHandler.addStatement(statementSet, this.iri, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_RECTANGLE_PROFILE_DEFINITION_CLASS);
         StatementHandler.addStatement(statementSet, this.iri, OntoBimConstant.BIM_HAS_PROFILE_TYPE, this.profileType);
         StatementHandler.addStatement(statementSet, this.iri, OntoBimConstant.BIM_HAS_LOCAL_POSITION, this.positionIRI);
-        StatementHandler.addStatementWithNumberLiteral(statementSet, this.iri, OntoBimConstant.BIM_HAS_RECTANGLE_PROFILE_X_EXTENT, this.xDimension);
-        StatementHandler.addStatementWithNumberLiteral(statementSet, this.iri, OntoBimConstant.BIM_HAS_RECTANGLE_PROFILE_Y_EXTENT, this.yDimension);
+        StatementHandler.addStatement(statementSet, this.iri, OntoBimConstant.BIM_HAS_RECTANGLE_PROFILE_X_EXTENT, this.xDimension);
+        StatementHandler.addStatement(statementSet, this.iri, OntoBimConstant.BIM_HAS_RECTANGLE_PROFILE_Y_EXTENT, this.yDimension);
     }
 }

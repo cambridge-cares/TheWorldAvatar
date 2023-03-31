@@ -4,7 +4,6 @@ import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
 import java.util.LinkedHashSet;
 import java.util.UUID;
@@ -53,8 +52,8 @@ public class CartesianPoint {
      */
     public void constructStatements(LinkedHashSet<Statement> statementSet) {
         StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_CARTESIAN_POINT_CLASS);
-        StatementHandler.addStatementWithNumberLiteral(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_X_COORDINATE, this.coordinates[0]);
-        StatementHandler.addStatementWithNumberLiteral(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_Y_COORDINATE, this.coordinates[1]);
+        StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_X_COORDINATE, this.coordinates[0]);
+        StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_Y_COORDINATE, this.coordinates[1]);
         StatementHandler.addOptionalStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_Z_COORDINATE, this.coordinates[2]);
     }
 }
