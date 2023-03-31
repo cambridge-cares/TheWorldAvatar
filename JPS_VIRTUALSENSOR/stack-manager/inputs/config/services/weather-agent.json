@@ -1,17 +1,15 @@
 {
     "ServiceSpec": {
-        "Name": "dispersion-interactor",
+        "Name": "weather-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "docker.cmclinnovations.com/dispersion-interactor:1.0.0",
+                "Image": "docker.cmclinnovations.com/weatheragent:1.1.1",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
 					"DATABASE=postgres",
-					"SCOPE_TABLE_NAME=scopes",
-					"AERMOD_AGENT_IRI=http://theworldavatar.com/kg/dispersion/AermodAgent",
-					"AERMOD_AGENT_URL=http://ship-stack-aermod-agent:8080/AermodAgent/",
-					"WEATHER_AGENT_URL=http://ship-stack-weather-agent:8080/WeatherAgent/CreateStation",
-					"SHIP_INPUT_AGENT=http://ship-stack-ship-input-agent:8080/ShipInputAgent/update"
+					"LAYERNAME=weatherstations",
+					"GEOSERVER_WORKSPACE=weatherstations",
+					"API_KEY=21db8f6413957d7fdb6cfd98e05e03eb"
 				],
 				"Configs": [
 					{
@@ -22,7 +20,10 @@
 					},
 					{
 						"ConfigName": "geoserver"
-					}
+					},
+					{
+						"ConfigName": "ontop"
+					}					
 				],
 				"Secrets": [
 					{
@@ -43,9 +44,9 @@
         }
     },
     "endpoints": {
-        "dispersion-interactor": {
-            "url": "http://localhost:8080/DispersionInteractor/",
-            "externalPath": "/dispersion-interactor/"
+        "weather-agent": {
+            "url": "http://localhost:8080/WeatherAgent/",
+            "externalPath": "/weather-agent/"
         }
     }
 }

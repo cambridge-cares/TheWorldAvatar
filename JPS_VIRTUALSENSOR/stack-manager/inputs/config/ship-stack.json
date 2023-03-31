@@ -1,6 +1,8 @@
 {
     "services": {
         "includes": [
+			"file-server",
+			"weather-agent",
 			"ship-input-agent",
 			"dispersion-interactor",
 			"dispersion-vis",
