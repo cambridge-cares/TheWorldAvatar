@@ -32,16 +32,20 @@ class AgentMatrixGenerator():
 
         inputs = data['input']
         outputs = data['output']
-        agent_matrices = []
+        agent_matrices = {}
+        # agent_matrices = []
         for input in inputs:
             for output in outputs:
                 # print(input)
                 if self.pce:
-                    agent_matrices.append(np.array([list(self.thermo_ent_embedding.iloc[self.thermo_entity2idx[input]]), list(self.ent_embedding.iloc[self.entity2idx[output]]) ]))
+                    # agent_matrices.append( np.array([list(self.thermo_ent_embedding.iloc[self.thermo_entity2idx[input]]), list(self.ent_embedding.iloc[self.entity2idx[output]]) ]))
+                    agent_matrices[output] = np.array([list(self.thermo_ent_embedding.iloc[self.thermo_entity2idx[input]]), list(self.ent_embedding.iloc[self.entity2idx[output]]) ])
                 else:
-                    agent_matrices.append(np.array([list(self.ent_embedding.iloc[self.entity2idx[input]]), list(self.ent_embedding.iloc[self.entity2idx[output]]) ]))   
+                    # agent_matrices.append(np.array([list(self.ent_embedding.iloc[self.entity2idx[input]]), list(self.ent_embedding.iloc[self.entity2idx[output]]) ]))
+                    agent_matrices[output] = np.array([list(self.ent_embedding.iloc[self.entity2idx[input]]), list(self.ent_embedding.iloc[self.entity2idx[output]]) ])
+
         return agent_matrices
 
 if __name__ == '__main__':
-    my_matcher = AgentMatrixGenerator(agent='chem3agent')
+    my_matcher = AgentMatrixGenerator(agent='ontothermoagent')
     print(my_matcher.create_agent_matrices())
