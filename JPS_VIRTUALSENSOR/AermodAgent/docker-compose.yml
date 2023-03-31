@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+  aermod-agent:
+    image: docker.cmclinnovations.com/aermod-agent:1.0.1
+    deploy:
+      mode: replicated
+      replicas: 1
+      restart_policy:
+        condition: none
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      - PYTHON_SERVICE_URL=http://python-service:5000/getAermodGeoJSON
+      - AERMET_EXE=/root/aermod/aermet # need to match Dockerfile
+      - AERMOD_EXE=/root/aermod/aermod # need to match Dockerfile
+      - WEATHER_AGENT=http://weatheragent:8080/WeatherAgent/UpdateStation
+      - DATABASE=postgres
+      - GEOSERVER_WORKSPACE=dispersion
+      - DISPERSION_LAYER=dispersion_layer
+      - SIMULATION_DIR=/root/aermod/simulations
+      - FILE_SERVER_URL=http://file-server:8080/FileServer/
+      - DISPERSION_STYLE_NAME=dispersion_style
+      - VIS_FOLDER=/vis_data
+      - GEOSERVER_URL=http://localhost:3838/geoserver # specifying here because WMS endpoint does not work with container name
+    configs:
+      - postgis
+      - blazegraph
+      - geoserver
+      - ontop
+    secrets:
+      - postgis_password
+      - geoserver_password
+    ports:
+      - "8081:8080"
+    volumes:
+      - logs:/root/.jps
+      - vis_data:/vis_data
+    networks:
+      - stack
+
+volumes:
+  logs:
+    name: "logs"
+  vis_data:
+    name: "vis_data"

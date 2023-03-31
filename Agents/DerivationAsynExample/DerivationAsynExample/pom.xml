@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.cam.cares.derivation</groupId>
     <artifactId>DerivationAsynExample</artifactId>
-    <version>1.1.0</version>
+    <version>1.3.0</version>
     <packaging>war</packaging>
     
     <!-- Project properties -->
@@ -16,7 +16,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         
         <!-- Version of the JPS Base Library to use -->
-        <jps.base.version>1.9.2-152-dev-pyderivationagent-SNAPSHOT</jps.base.version>
+        <jps.base.version>1.33.1</jps.base.version>
     </properties>
     
     <!-- Parent POM -->

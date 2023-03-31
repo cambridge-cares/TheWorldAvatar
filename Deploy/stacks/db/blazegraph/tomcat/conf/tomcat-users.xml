@@ -16,10 +16,10 @@
   limitations under the License.
 -->
 <tomcat-users xmlns="http://tomcat.apache.org/xml"
-              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-              xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd"
-              version="1.0">
-<!--
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://tomcat.apache.org/xml tomcat-users.xsd"
+  version="1.0">
+  <!--
   NOTE:  By default, no user is included in the "manager-gui" role required
   to operate the "/manager/html" web application.  If you wish to use this app,
   you must define such a user - the username and password are arbitrary. It is
@@ -27,7 +27,7 @@
   section below since they are intended for use with the examples web
   application.
 -->
-<!--
+  <!--
   NOTE:  The sample user and role entries below are intended for use with the
   examples web application. They are wrapped in a comment and thus are ignored
   when reading this file. If you wish to configure these users for use with the
@@ -35,8 +35,8 @@
   them. You will also need to set the passwords to something appropriate.
 -->
 
-<!-- Create a role for use in Blazegraph and set a username and password -->
-<role rolename="blazegraph"/>
-<user username="bg_user" password="BLAZEGRAPH_PASSWORD" roles="blazegraph"/>
+  <!-- Create a role for use in Blazegraph and set a username and password -->
+  <role rolename="blazegraph" />
+  <user username="BLAZEGRAPH_USER" password="BLAZEGRAPH_PASSWORD" roles="blazegraph" />
 
 </tomcat-users>

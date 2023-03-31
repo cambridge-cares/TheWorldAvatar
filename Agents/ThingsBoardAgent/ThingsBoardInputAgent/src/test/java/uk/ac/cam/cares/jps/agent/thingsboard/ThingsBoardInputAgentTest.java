@@ -424,7 +424,7 @@ public class ThingsBoardInputAgentTest {
         testAgent.initializeTimeSeriesIfNotExist();
         // Should have invoked the time series initialization for each mapping
         Mockito.verify(mockTSClient, Mockito.times(testAgent.getNumberOfTimeSeries()))
-                .initTimeSeries(Mockito.anyList(), Mockito.anyList(), Mockito.anyString());
+                .initTimeSeries(Mockito.anyList(), Mockito.anyList(), Mockito.anyString(), Mockito.any(), Mockito.any(), Mockito.any());
     }
 
     @Test

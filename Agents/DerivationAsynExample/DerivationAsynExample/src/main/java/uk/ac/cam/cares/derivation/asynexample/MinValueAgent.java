@@ -50,7 +50,7 @@ public class MinValueAgent extends DerivationAgent {
 	
 	@Override
 	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {
-		LOGGER.debug("MinValueAgent received derivationInputs: " + derivationInputs.toString());
+		LOGGER.debug("MinValueAgent received derivationInputs: " + derivationInputs.toString() + "for derivation: " + derivationInputs.getDerivationIRI());
 
 		// get the input from the KG
 		String listOfRandomPoints_iri = derivationInputs
@@ -87,7 +87,7 @@ public class MinValueAgent extends DerivationAgent {
 		
 		exeService.scheduleAtFixedRate(() -> {
 			try {
-				minAgent.monitorAsyncDerivations(Config.agentIriMinValue);
+				minAgent.monitorAsyncDerivations(Config.agentIriMinValue, Config.periodAgentMinValue);
 			} catch (JPSRuntimeException e) {
 				e.printStackTrace();
 			}

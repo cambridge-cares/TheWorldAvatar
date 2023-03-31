@@ -1,0 +1,101 @@
+{
+    "goals": {
+        "hpo": true,
+        "contour_plot": false,
+        "best_trial_retraining": true,
+        "transfer_learning": false,
+        "predict": false
+    },
+    "numerical_settings": {
+        "seed": 1,
+        "cudnn_deterministic": true,
+        "cudnn_benchmark": false
+    },
+    "logging_settings": {
+        "log_main_dir": "./logs/mlp",
+        "log_sub_dir_prefix": "mlp_train_aq",
+        "log_file_name": "test.log",
+        "use_date_time": false
+    },
+    "dataset": {
+        "src": "./data/processed/qsar_aquatic_toxicity.csv",
+        "transform_type": "z-transform",
+        "x_column": [
+            "TPSA(Tot)",
+            "SAacc",
+            "H-050",
+            "MLOGP",
+            "RDCHI",
+            "GATS1p",
+            "nN",
+            "C-040"
+        ],
+        "y_column": [
+            "LC50 [-LOG(mol/L)]"
+        ],
+        "split": [
+            0.7,
+            0.15,
+            0.15
+        ]
+    },
+    "model": {
+        "name": "MLP",
+        "model_specific": {
+            "mlp_layers": {
+                "type": "int",
+                "low": 1,
+                "high": 20
+            },
+            "mlp_units": {
+                "type": "int",
+                "low": 1,
+                "high": 200,
+                "length": "mlp_layers"
+            },
+            "mlp_dropouts": {
+                "type": "uniform",
+                "low": 0.0,
+                "high": 0.6,
+                "direction": "constant",
+                "length": "mlp_layers"
+            }
+        }
+    },
+    "training": {
+        "optimiser": {
+            "name": "Adam",
+            "lr": {
+                "type": "loguniform",
+                "low": 1e-8,
+                "high": 1e-2
+            },
+            "weight_decay": {
+                "type": "loguniform",
+                "low": 1e-8,
+                "high": 1e-2
+            }
+        },
+        "batch_size": 20,
+        "epochs": 100,
+        "es_patience": 0,
+        "es_min_delta": 0.0,
+        "es_monitor": "mse",
+        "es_mode": "min",
+        "chp_monitor": "mse",
+        "chp_mode": "min",
+        "metric": "mse",
+        "direction": "minimize",
+        "cross_validation": 0,
+        "trials": 20,
+        "study_name": "mlp_aq_tox",
+        "storage": "sqlite:///logs/mlp/mlp_aq_tox.db",
+        "storage_timeout": 1000,
+        "load_if_exists": true,
+        "jobs": 1
+    },
+    "post_processing": {
+        "contour_plot_alt_dir": null,
+        "regression_plot": true
+    }
+}

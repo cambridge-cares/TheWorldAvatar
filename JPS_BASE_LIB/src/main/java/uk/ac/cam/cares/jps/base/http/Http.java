@@ -52,7 +52,7 @@ public class Http {
      */
     private static final Logger LOGGER = LogManager.getLogger(Http.class);
 
-    private static final String JSON_PARAMETER_KEY = "query";
+    public static final String JSON_PARAMETER_KEY = "query";
     private static String hostPort = null;
 
     private static synchronized String getHostPort() {

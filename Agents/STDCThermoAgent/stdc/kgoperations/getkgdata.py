@@ -1,9 +1,20 @@
 from stdc.kgoperations.queryendpoints import SPARQL_ENDPOINTS
 from stdc.kgoperations.querykg import querykg
 from stdc.kgoperations.querytemplates import ontocompchem_data_query, \
-                                             ontospecies_data_query
+                                             ontospecies_data_query, \
+                                             ontocompchem_iri_query
 import stdc.unitconverter.unitconverter as unitconv
 
+def get_ontocompchem_iri(osIRI):
+    query = ontocompchem_iri_query(osIRI)
+    sparqlendpoint = SPARQL_ENDPOINTS['ontocompchem']
+    data = querykg(sparqlEndPoint=sparqlendpoint, queryStr=query)
+    if data:
+        data = data[0]
+        return data['ocIRI']
+    else:
+        raise Exception("OntoCompChem instance does not exist")
+   
 def get_ontocompchem_data(ocIRI, osIRI):
     query = ontocompchem_data_query(ocIRI, osIRI)
     sparqlendpoint = SPARQL_ENDPOINTS['ontocompchem']

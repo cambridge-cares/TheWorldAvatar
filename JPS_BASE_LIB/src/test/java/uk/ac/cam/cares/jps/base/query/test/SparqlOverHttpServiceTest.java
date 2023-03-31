@@ -16,7 +16,7 @@ import org.mockito.MockedConstruction;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService;
 
@@ -83,9 +83,9 @@ public class SparqlOverHttpServiceTest {
             // Verify output of the executePost
             Assert.assertEquals("1", testS.executePost(formInsertQuery()));
             // kbClient should now be set with a mock and the setUpdateEndpoint should have been invoked
-            Mockito.verify((StoreClientInterface) kbClientField.get(testS)).setUpdateEndpoint(updateUrl);
+            Mockito.verify((TripleStoreClientInterface) kbClientField.get(testS)).setUpdateEndpoint(updateUrl);
             // The setQuery should have been invoked as well with the provided query
-            Mockito.verify((StoreClientInterface) kbClientField.get(testS)).setQuery(formInsertQuery());
+            Mockito.verify((TripleStoreClientInterface) kbClientField.get(testS)).setQuery(formInsertQuery());
         }
 
         // Test with RDFStoreType Fuseki
@@ -151,8 +151,8 @@ public class SparqlOverHttpServiceTest {
             testS = new SparqlOverHttpService(SparqlOverHttpService.RDFStoreType.BLAZEGRAPH, queryUrl, updateUrl);
             Assert.assertNull(kbClientField.get(testS));
             Assert.assertEquals(CDL.toString(jsonArray), testS.executeGet(sparql));
-            Mockito.verify((StoreClientInterface) kbClientField.get(testS)).setQueryEndpoint(queryUrl);
-            Mockito.verify((StoreClientInterface) kbClientField.get(testS)).setQuery(sparql);
+            Mockito.verify((TripleStoreClientInterface) kbClientField.get(testS)).setQueryEndpoint(queryUrl);
+            Mockito.verify((TripleStoreClientInterface) kbClientField.get(testS)).setQuery(sparql);
         }
 
         // Test with RDFStoreType RDF4J

@@ -1,0 +1,7 @@
+jdbc.url=jdbc:postgresql://POSTGRES_HOST:POSTGRES_PORT/POSTGRES_DB
+jdbc.driver=org.postgresql.Driver
+jdbc.user=POSTGRES_USER
+jdbc.password=POSTGRES_PASSWORD
+# Set the parameters below to "true" to enable logging, including the SQL queries that actually get run
+ontop.queryLogging=false
+ontop.queryLogging.includeReformulatedQuery=false

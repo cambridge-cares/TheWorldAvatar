@@ -2,8 +2,11 @@ package uk.ac.cam.cares.jps.base.agent;
 
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.interfaces.JPSAgentInterface;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
+import uk.ac.cam.cares.jps.base.query.RDBAccessAgentCaller;
+import uk.ac.cam.cares.jps.base.router.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 import javax.servlet.http.HttpServletRequest;
@@ -60,11 +63,30 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
     }
     
     /**
+	 * Get the SPARQL endpoints for a target resource. The query and update endpoints 
+	 * can be extracted from the JSONObject using the keys
+	 * {@link uk.ac.cam.cares.jps.base.config.JPSConstants#QUERY_ENDPOINT JPSConstants.QUERY_ENDPOINT} 
+	 * and
+	 * {@link uk.ac.cam.cares.jps.base.config.JPSConstants#UPDATE_ENDPOINT JPSConstants.UPDATE_ENDPOINT}. 
+	 * <p>
+	 * This does not perform a SPARQL query/update.
+	 * 
+	 * @param targetResourceID
+	 * @return JSONObject with query and update endpoint
+	 */
+    public JSONObject getEndpoints(String targetResourceID) {
+    	return AccessAgentCaller.getEndpoints(targetResourceID);	
+    }
+    
+    /**
      * Execute a {@link <a href="https://www.w3.org/TR/sparql11-query/">SPARQL Query</a>} on the target resource 
      * in the Knowledge Graph by calling the AccessAgent. 
-     * @param targetResourceID	target namespace or IRI
-     * 							e.g. to access the Ontokin triple store
-     * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
+     * @param targetResourceID	target namespace or IRI <br>
+     * 							Note: 	If the targetResourceID is a URL/IRI (e.g. "http://localhost:8080/ontokin"), 
+	 * 									the request will be sent to the host given in the URL (i.e. localhost:8080).
+	 * 									If no host is provided (e.g. targetResourceID = "ontokin"), the request is sent
+	 * 									to the host given by the environment variable "ACCESSAGENT_HOST" 
+	 * 									or that in jps.properties, if the environment variable is not set.
      * @param sparqlQuery		SPARQL query string
      * @return the query result in the {@link <a href="https://www.w3.org/TR/sparql11-results-json/">W3C Query result JSON format</a>} 
      */
@@ -83,9 +105,12 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
     /**
      * Execute a {@link <a href="https://www.w3.org/TR/sparql11-update/">SPARQL Update</a>} on the target resource 
      * in the Knowledge Graph by calling the AccessAgent. 
-     * @param targetResourceID	the target namespace or IRI
-     * 							e.g. to access the Ontokin triple store
-     * 							both "ontokin" and "http://www.theworldavatar.com/kb/ontokin" are accepted.
+     * @param targetResourceID	the target namespace or IRI <br>
+     * 							Note: 	If the targetResourceID is a URL/IRI (e.g. "http://localhost:8080/ontokin"), 
+	 * 									the request will be sent to the host given in the URL (i.e. localhost:8080).
+	 * 									If no host is provided (e.g. targetResourceID = "ontokin"), the request is sent
+	 * 									to the host given by the environment variable "ACCESSAGENT_HOST" 
+	 * 									or that in jps.properties, if the environment variable is not set.
      * @param sparqlUpdate		SPARQL update string
      */
     public void updateStore(String targetResourceID, String sparqlUpdate) {
@@ -98,5 +123,41 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
     @Deprecated
     public void update(String targetResourceID, String sparqlUpdate) {
     	AccessAgentCaller.update(targetResourceID, sparqlUpdate);
+    }
+
+    public String getRDBUrl(String targetResourceID) {
+        return RDBAccessAgentCaller.getRDBUrl(targetResourceID);
+    }
+
+    /**
+     * Send a HTTP GET request to an agent with JSON parameters
+     * 
+     * @param agentID the name of the agent as found in the ontoagent triple store
+     * @param jsonParameters
+     */
+    public String callAgentWithGet(String agentID, JSONObject jsonParameters) {
+    	return new AgentCaller().getWithJson(agentID, jsonParameters);
+    }
+    
+    /**
+     * Send a HTTP POST request to an agent with JSON parameters in the body
+     * 
+     * @param agentID the name of the agent as found in the ontoagent triple store
+     * @param jsonParameters request body
+     */
+    public String callAgentWithPost(String agentID, JSONObject jsonParameters) {
+    	return new AgentCaller().postWithJson(agentID, jsonParameters);
+    }
+    
+    /**
+     * Send a HTTP POST request to an agent
+     * 
+     * @param agentID the name of the agent as found in the ontoagent triple store
+     * @param body
+     * @param contentType {@link uk.ac.cam.cares.jps.base.discovery.MediaType see MediaType}  
+     * @param accept {@link uk.ac.cam.cares.jps.base.discovery.MediaType see MediaType}
+     */
+    public String callAgentWithPost(String agentID, String body, String contentType, String accept) {
+    	return new AgentCaller().post(agentID, body, contentType, accept);
     }
 }

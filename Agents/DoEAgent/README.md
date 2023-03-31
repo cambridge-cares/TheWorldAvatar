@@ -47,13 +47,13 @@ If you wish to try out a previous version where DoE Agent itself is an HTTP serv
 ```json
 {
    "agent_input":{
-      "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Strategy":"https://www.example.com/triplestore/ontodoe/DoE_1/Strategy_1",
-      "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Domain":"https://www.example.com/triplestore/ontodoe/DoE_1/Domain_1",
-      "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#SystemResponse":[
+      "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Strategy":"https://www.example.com/triplestore/ontodoe/DoE_1/Strategy_1",
+      "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#Domain":"https://www.example.com/triplestore/ontodoe/DoE_1/Domain_1",
+      "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#SystemResponse":[
          "https://www.example.com/triplestore/ontodoe/DoE_1/SystemResponse_1",
          "https://www.example.com/triplestore/ontodoe/DoE_1/SystemResponse_2"
       ],
-      "https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#HistoricalData":"https://www.example.com/triplestore/ontodoe/DoE_1/HistoricalData_1"
+      "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#HistoricalData":"https://www.example.com/triplestore/ontodoe/DoE_1/HistoricalData_1"
    }
 }
 ```
@@ -62,7 +62,7 @@ and the response is the IRI of an instance of `OntoDoE:NewExperiment` indicating
 ### Asynchronous derivation operation
 In the latest iteration, DoE Agent works with the derivation framework in both asychronous and synchronous mode. However, as the intention is to provide asynchronous derivation operation, we focus on the async side in this document. Once the DoE Agent is deployed, it periodically (every 120 seconds, defined by `DERIVATION_PERIODIC_TIMESCALE`) checks the derivation that `isDerivedUsing` itself (parameter `ONTOAGENT_SERVICE_IRI` in `TheWorldAvatar/Agents/DoEAgent/agent.doe.env.example`) and acts based on the status associated with that derivation.
 
-A set of dockerised integration tests `TheWorldAvatar/Agents/DoEAgent/doeagent/tests` is provided as examples to demonstrate the operations. It operates on the triple store specified in the `TheWorldAvatar/Agents/DoEAgent/doeagent/tests/agent.doe.env.test` when the docker stack is spun up. Therefore, it can be used to test if the DoE Agent deployed is functional as expected. 
+A set of dockerised integration tests `TheWorldAvatar/Agents/DoEAgent/doeagent/tests` is provided as examples to demonstrate the operations. It operates on the triple store specified in the `TheWorldAvatar/Agents/DoEAgent/doeagent/tests/agent.doe.env.test` when the docker stack is spun up. Therefore, it can be used to test if the DoE Agent deployed is functional as expected.
 
 Once the test is executed, it first DELETES ALL TRIPLES in the specified SPARQL endpoint (as the endpoint is specifically for testing purpose, one do not need to worry about if any valuable got deleted), it then SPARQL update all triples stated in below ttl files to the same endpoint (`/path/to/chemistry_and_robots/resources/` varies depend on where the `chemistry_and_robots` package is installed):
 ```
@@ -101,7 +101,7 @@ The dockerised integration test can be invoked via below commands:
 `(Linux)`
 ```sh
 cd /your_absolute_path_to/TheWorldAvatar/Agents/DoEAgent
-pytest -s doeagent/tests/test_docker_integration.py --docker-compose=./docker-compose.test.yml --reruns 5 --reruns-delay 5
+pytest -s --docker-compose=./docker-compose.test.yml --reruns 5 --reruns-delay 5
 ```
 
 If everything is working as expected, an output on console should be expected similar to the one below (this might take a few minutes) (**Please make a note of the IRI in the response as `<createdDerivationInstance>`, you will need this for querying later**):
@@ -112,8 +112,8 @@ If everything is working as expected, an output on console should be expected si
 
 As the derivation is initialised as `Requested` with a timestamp of 0 and the inputs are marked with a timestamp of current time, the derivation is outdated and will be started automatically. The update will be taken care of by DoE Agent and the IRI of the suggested instance of `OntoRxn:ReactionVariation` will be generated and uploaded into the knowledge graph. This can be verified by querying {`?new_exp` `OntoDerivation:belongsTo` `<createdDerivationInstance>`}:
 ```
-PREFIX OntoDerivation:     <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
-PREFIX OntoDoE:            <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
+PREFIX OntoDerivation:     <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+PREFIX OntoDoE:            <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl#>
 
 SELECT ?ontorxn_rxn_exp
 WHERE {
@@ -138,10 +138,47 @@ This will also be reflected in the console as an output similar to below will be
 2022-05-22 14:05:54,427 (STDOUT) New experiment suggested successfully, suggested experiment instance: https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_35bb4494-9498-47b3-bdf7-eee8dce3edd6
 ```
 
-Another dockerised integration test is provided in the similar setting, except that the agent is instantiated in memory and the triple store is spun up with dynamic port decided at deployment. This can be executed via:
+
+## Upload docker image to GitHub
+
+Developers who add new features to the `DoEAgent` handle the distribution of the docker image on GitHub. If you want to add new features that suit your project and release the docker image independently, i.e. become a developer/maintainer, please contact the repository's administrator to indicate your interest.
+
+The release procedure is currently semi-automated and requires a few items:
+
+- Your GitHub account and password ([personal access token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token))
+- The version number x.x.x for the release
+- Clone of `TheWorldAvatar` repository on your local machine
+- Docker-desktop is installed and running on your local machine
+
+### Stable version release
+
+The release process can be started by using the commands below. (REMEMBER TO CHANGE THE CORRECT VALUES FOR `<absolute_path_to>` IN THE COMMANDS BELOW!) **NOTE: the release process is only tested in WSL2 environment.**
 
 `(Linux)`
 ```sh
-cd /your_absolute_path_to/TheWorldAvatar/Agents/DoEAgent
-pytest -s doeagent/tests/test_example_doe.py --reruns 5 --reruns-delay 5
+$ cd /<absolute_path_to>/TheWorldAvatar/Agents/DoEAgent
+$ ./upload_docker_image_to_github.sh -v x.x.x
 ```
+
+Please follow the instructions presented in the console once the process has begun. If everything goes well, the change performed automatically during the release process should be commited, i.e., in python script `Agents/DoEAgent/docker-compose.github.yml`
+```
+image: ghcr.io/cambridge-cares/doe_agent:x.x.x
+```
+
+**NOTE: the visibility of the uploaded docker image is set as private by default, developer who uploaded the image need to change the package visibility to public manually after the upload.**
+
+### Snapshot version release
+
+If you would like to release the package in SNAPSHOT version, below commands can be used intead:
+
+`(Linux)`
+```sh
+$ cd /<absolute_path_to>/TheWorldAvatar/Agents/DoEAgent
+$ ./upload_docker_image_to_github.sh -v x.x.x-SNAPSHOT
+```
+
+Please follow the instructions presented in the console once the process has begun. If everything goes well, commit the change in version number following the same procedure as in the stable version release.
+
+# Author
+
+Jiaru Bai (jb2197@cam.ac.uk)

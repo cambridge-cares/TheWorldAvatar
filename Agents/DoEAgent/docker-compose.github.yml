@@ -1,0 +1,12 @@
+# This file is provided in order to upload an image to the github Docker registry
+version: "3.8"
+
+services:
+  doe_agent:
+    image: ghcr.io/cambridge-cares/doe_agent:1.0.0-SNAPSHOT
+    container_name: doe_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    build:
+      context: .
+      dockerfile: ./Dockerfile

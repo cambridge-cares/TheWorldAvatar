@@ -1,0 +1,45 @@
+// These are two example HTTP requests to retrieve data about UK-AIR stations and create
+// the respective output files required by the Digital Twin Visualisation Framework
+
+// The GET request expects all individual query parameter to be provided in a single nested 
+// JSON object with key 'query' (to follow a convention from the JPS_BASE_LIB)
+// Required query parameters:
+//    outDir ... output directory for DTVF files
+// Optional query parameters:
+//    daysBack ... Number of previous days for which to retrieve data (default: last 14 days)
+//    observationTypes ... List of observation types for which to retrieve data (default: all)
+//                         (i.e. observation types as defined by OntoEMS, either as full IRIs or shorthands)
+//    circleCenter ... Circle center as "latitude#longitude" for geospatial search within Blazegraph
+//                     (default: No geospatial search, retrieve all data)
+//    circleRadius ... Circle radius around center in km (default: None)
+//                     (circleCenter and circleRadius are only considered to retrieve data within
+//                      a particular area of interest if both are provided)
+
+
+// Retrieve all available stations and time series data as of 14 days back
+// Output directory path depends on whether agent is deployed ...
+//    ... locally: "<path to Agents folder>/AirQualityAgent/output"
+//    ... in Docker container: "/app/output"
+GET http://localhost:5000/api/airqualityagent/retrieve/all
+Content-Type: application/json
+
+{ "query": {
+      "outDir": "/app/output",
+      "daysBack": "14"
+    }
+}
+
+
+// Retrieve only selected stations and time series data as of 14 days back
+// Please NOTE that circleCenter and circleRadius require geospatially enabled Blazegraph namespace
+# GET http://localhost:5000/api/airqualityagent/retrieve/all
+# Content-Type: application/json
+
+# { "query": {
+#       "outDir": "C:/TheWorldAvatar-git/Agents/AirQualityAgent/output",
+#       "daysBack": 7,
+#       "observationTypes": ["PM2.5Concentration", "<https://www.theworldavatar.com/kg/ontoems/PM10Concentration>"],
+#       "circleCenter": "52.75#0.4",
+#       "circleRadius": 100
+#     }
+# }

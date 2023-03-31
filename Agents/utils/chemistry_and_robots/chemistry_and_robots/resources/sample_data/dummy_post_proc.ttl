@@ -1,0 +1,188 @@
+@prefix rdfs:            <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix rdf:            <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:             <http://www.w3.org/2001/XMLSchema#> .
+@prefix saref:             <https://saref.etsi.org/core/> .
+@prefix om:             <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
+@prefix dbo:             <https://dbpedia.org/ontology/> .
+@prefix dbr:             <https://dbpedia.org/resource/> .
+@prefix ontocapecpsb:    <http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> .
+@prefix OntoCAPERxn:    <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#> .
+@prefix OntoCAPEMat:    <http://www.theworldavatar.com/ontology/ontocape/material/material.owl#> .
+@prefix OntoCAPEPha:    <http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> .
+@prefix OntoCAPEUpp:    <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> .
+@prefix ontospecies:    <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> .
+@prefix ontovapourtec:    <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl#> .
+@prefix ontohplc:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl#> .
+@prefix ontobpr:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontobpr/OntoBPR.owl#> .
+@prefix ontolab:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl#> .
+@prefix :                <http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/> .
+@prefix dummylab:       <http://example.com/blazegraph/namespace/testlab/dummy_lab/> .
+
+@prefix exp1:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/> .
+@prefix exp2:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_2/> .
+@prefix exp3:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_3/> .
+@prefix exp4:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_4/> .
+@prefix exp5:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_5/> .
+@prefix ontorxn:        <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#> .
+@prefix ChemRxn:        <https://www.example.com/triplestore/ontorxn/ChemRxn_1/> .
+@prefix SinglePhase:    <https://www.example.com/triplestore/ontorxn/SinglePhase/> .
+
+
+# NOTE: all information in this file are simplified for the test cases
+
+##########################################################################
+## Dummy declaration states that the reactions are assigned to reactors ##
+##########################################################################
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> ontorxn:isAssignedTo :VapourtecR4_1.
+<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> ontorxn:isAssignedTo :VapourtecR4_2.
+
+# ###################################################
+# ## Placeholder instances of PerformanceIndicator ##
+# ###################################################
+# :placeholder_yield_1 a ontorxn:Yield.
+# :placeholder_conversion_1 a ontorxn:Conversion.
+# :placeholder_eco_score_1 a ontorxn:EcoScore.
+# :placeholder_e_factor_1 a ontorxn:EnvironmentalFactor.
+# :placeholder_sty_1 a ontorxn:SpaceTimeYield.
+# :placeholder_cost_1 a ontorxn:RunMaterialCost.
+
+# :placeholder_yield_2 a ontorxn:Yield.
+# :placeholder_conversion_2 a ontorxn:Conversion.
+# :placeholder_eco_score_2 a ontorxn:EcoScore.
+# :placeholder_e_factor_2 a ontorxn:EnvironmentalFactor.
+# :placeholder_sty_2 a ontorxn:SpaceTimeYield.
+# :placeholder_cost_2 a ontorxn:RunMaterialCost.
+
+############################
+## First set of equipment ##
+############################
+:AutomatedRxnPlatform_1
+    a ontolab:LabEquipment;
+    saref:consistsOf :VapourtecRS400_1;
+    saref:consistsOf :HPLC_1;
+.
+
+:HPLC_1
+    a ontohplc:HighPerformanceLiquidChromatography;
+    ontohplc:localReportDirectory "/home/jb2197/CHEM32/**/"^^xsd:string; # NOTE "\**\" or "/**/" depends on whether its windows or linux machine
+    ontohplc:reportExtension <http://dbpedia.org/resource/Microsoft_Excel>;
+.
+
+:VapourtecRS400_1
+    a ontovapourtec:VapourtecRS400;
+    saref:consistsOf :VapourtecR4_1;
+    saref:consistsOf :AutoSampler_1;
+    saref:hasState ontovapourtec:RunningReaction;
+.
+
+:VapourtecR4_1
+    a ontovapourtec:VapourtecR4Reactor;
+    ontovapourtec:hasReactorVolume :VapourtecR4_1_ReactorVolume;
+    ontolab:isSpecifiedBy :ReactorSettings_1;
+.
+
+:VapourtecR4_1_ReactorVolume
+    a om:Volume;
+    om:hasValue :VapR4_1_ReactorVolume_Value;
+.
+
+:VapR4_1_ReactorVolume_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "10"^^xsd:double;
+.
+
+:ReactorSettings_1
+    a ontovapourtec:ReactorSettings;
+    ontolab:wasGeneratedFor <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70>;
+.
+
+:AutoSampler_1
+    a ontovapourtec:AutoSampler;
+    ontovapourtec:hasSite :Site_1_1;
+.
+
+:Site_1_1
+    a ontovapourtec:AutoSamplerSite;
+    ontovapourtec:locationID "1"^^xsd:string;
+    ontovapourtec:holds :Vial_1_1;
+.
+
+:Vial_1_1
+    a ontovapourtec:Vial;
+    ontovapourtec:isHeldIn :Site_1_1;
+    ontovapourtec:isFilledWith :ChemicalSolution_1_1;
+.
+
+:ChemicalSolution_1_1
+    a ontolab:ChemicalSolution;
+    ontovapourtec:fills :Vial_1_1;
+    # ontolab:containsUnidentifiedComponent is not specified for this chemical as it is not post processed yet
+.
+
+#############################
+## Second set of equipment ##
+#############################
+:AutomatedRxnPlatform_2
+    a ontolab:LabEquipment;
+    saref:consistsOf :VapourtecRS400_2;
+    saref:consistsOf :HPLC_2;
+.
+
+:HPLC_2
+    a ontohplc:HighPerformanceLiquidChromatography;
+    ontohplc:localReportDirectory "/home/jb2197/CHEM32/**/"^^xsd:string; # NOTE "\**\" or "/**/" depends on whether its windows or linux machine
+    ontohplc:reportExtension <http://dbpedia.org/resource/Text_file>;
+.
+
+:VapourtecRS400_2
+    a ontovapourtec:VapourtecRS400;
+    saref:consistsOf :VapourtecR4_2;
+    saref:consistsOf :AutoSampler_2;
+    saref:hasState ontovapourtec:RunningReaction;
+.
+
+:VapourtecR4_2
+    a ontovapourtec:VapourtecR4Reactor;
+    ontovapourtec:hasReactorVolume :VapourtecR4_2_ReactorVolume;
+    ontolab:isSpecifiedBy :ReactorSettings_2;
+.
+
+:VapourtecR4_2_ReactorVolume
+    a om:Volume;
+    om:hasValue :VapR4_2_ReactorVolume_Value;
+.
+
+:VapR4_2_ReactorVolume_Value
+    a om:Measure;
+    om:hasUnit om:millilitre;
+    om:hasNumericalValue "10"^^xsd:double;
+.
+
+:ReactorSettings_2
+    a ontovapourtec:ReactorSettings;
+    ontolab:wasGeneratedFor <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8>;
+.
+
+:AutoSampler_2
+    a ontovapourtec:AutoSampler;
+    ontovapourtec:hasSite :Site_2_1;
+.
+
+:Site_2_1
+    a ontovapourtec:AutoSamplerSite;
+    ontovapourtec:locationID "1"^^xsd:string;
+    ontovapourtec:holds :Vial_2_1;
+.
+
+:Vial_2_1
+    a ontovapourtec:Vial;
+    ontovapourtec:isHeldIn :Site_2_1;
+    ontovapourtec:isFilledWith :ChemicalSolution_2_1;
+.
+
+:ChemicalSolution_2_1
+    a ontolab:ChemicalSolution;
+    ontovapourtec:fills :Vial_2_1;
+    # ontolab:containsUnidentifiedComponent is not specified for this chemical as it is not post processed yet
+.

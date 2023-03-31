@@ -1,3 +1,4 @@
 SPARQL_ENDPOINTS = {
-    'ontocompchem': 'http://kb/ontocompchem'
+    'powerplants': 'powerplants',
+    'ukpowerplants': 'ukdigitaltwin_test2'
 }
