@@ -53,11 +53,15 @@ def read_reaction_file(bs_data, bs_file_path):
         bs1_unsorted, bs2_unsorted = bs_pair
         ocn1 = bs_data_dict.get(bs1_unsorted)
         ocn2 = bs_data_dict.get(bs2_unsorted)
-
-        if ocn1 == ocn2:
-            pairs.append([bs1_unsorted, bs2_unsorted])
-        else:
-            not_pairs.append([bs1_unsorted, bs2_unsorted])
+        
+        if ocn2 is not None:
+            if ocn1 != ocn2:
+                not_pairs.append([bs1_unsorted, bs2_unsorted])
+                #print(f"ocn1 =  {ocn1}, ocn2 =  {ocn2}, not pairs")
+            elif ocn1 == ocn2:
+                pairs.append([bs1_unsorted, bs2_unsorted])
+        if ocn2 is not None:
+            pass
 
     return pairs, not_pairs
 
@@ -105,6 +109,7 @@ def create_doubles_unpaired(values_list, precursor_file_path):
     for bs in values_list:
         bs1 = bs[0]
         bs2 = bs[1]
+        print(f'bs1 = {bs1}, bs2 = {bs2}')
         if bs1 not in doubles_unpaired:
             doubles_unpaired[bs1] = set()
         if bs2 not in doubles_unpaired:
@@ -151,7 +156,7 @@ pairs, not_pairs =  read_reaction_file(nested_dict_2, bs_file_path)
 
 bs_core_1 = create_singles_bs_core(nested_dict_1, precursors_file_path)
 bs_core_2p = create_doubles_paired(pairs, precursors_file_path)
-bs_core_2u = create_doubles_paired(not_pairs, precursors_file_path)
+bs_core_2u = create_doubles_unpaired(not_pairs, precursors_file_path)
 
 bs_cores_all = [bs_core_1, bs_core_2p, bs_core_2u]
 
