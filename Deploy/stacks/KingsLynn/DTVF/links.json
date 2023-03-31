@@ -10,16 +10,24 @@
             "url": "https://digimap.edina.ac.uk/os"
         },
         {
-            "text": "MetOffice DataPoint API",
-            "url": "https://www.metoffice.gov.uk/services/data/datapoint/api-reference"
-        },
-        {
             "text": "Energy Performance Certificate APIs",
             "url": "https://epc.opendatacommunities.org/docs/api"
         },
         {
+            "text": "His Majesty's Land Registry Open Data",
+            "url": "https://landregistry.data.gov.uk/"
+        },
+        {
             "text": "Environment Agency Real Time flood-monitoring API",
             "url": "https://environment.data.gov.uk/flood-monitoring/doc/reference"
+        },        
+        {
+            "text": "MetOffice DataPoint API",
+            "url": "https://www.metoffice.gov.uk/services/data/datapoint/api-reference"
+        },
+        {
+            "text": "UK-AIR Sensor Observation Service",
+            "url": "https://uk-air.defra.gov.uk/data/about_sos"
         }
     ]
 }
