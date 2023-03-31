@@ -6,9 +6,7 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -16,22 +14,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
-import java.time.OffsetDateTime;
 import java.util.Date;
-import java.util.Properties;
 import java.util.regex.Pattern;
 
 @Controller
-@WebServlet(urlPatterns = {"/status", "/retrieve/equipment"})
+@WebServlet(urlPatterns = {"/status", "/retrieve/equipment", "/retrieve/zones"})
 public class BMSQueryAgentLauncher extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(BMSQueryAgentLauncher.class);
 
-    private static final String KEY_DATAIRI = "dataIRI";
+    private static final String KEY_ROOMIRI = "roomIRI";
 //    private static final String KEY_CLIENT_PROPERTIES = "clientProperties";
 
     public static final String PARAMETERS_VALIDATION_ERROR_MSG = "Unable to validate request sent to the agent.";
@@ -70,20 +63,27 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         }
 
         if (url.contains("retrieve")) {
-            if (!validateInput(request)) {
-                LOGGER.error(PARAMETERS_VALIDATION_ERROR_MSG);
-                throw new JPSRuntimeException(PARAMETERS_VALIDATION_ERROR_MSG);
-            }
+            BMSQueryAgent agent = initializeAgent();
 
-            String dataIRI = request.getParameter(KEY_DATAIRI);
+            if (url.contains("zones")) {
+                // handle the case "retrieve/zones", return the list of zones (buildings, facilities, rooms)
+                JSONObject queryResult = agent.queryAllZones();
+
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write(queryResult.toString());
+            } else if (url.contains("equipment")) {
+                // handle the case "retrieve/equipment", return the list of equipments in a given room
+
+                if (!validateInput(request)) {
+                    LOGGER.error(PARAMETERS_VALIDATION_ERROR_MSG);
+                    throw new JPSRuntimeException(PARAMETERS_VALIDATION_ERROR_MSG);
+                }
+
+                String roomIRI = request.getParameter(KEY_ROOMIRI);
 //            String clientProperties = request.getParameter(KEY_CLIENT_PROPERTIES);
 //            String clientPropertiesFile = System.getenv(clientProperties);
 
-            BMSQueryAgent agent = initializeAgent();
-
-            if (url.contains("equipment")) {
-                // handle the case "retrieve/equipment", return the list of equipment of the selected type
-                JSONObject queryResult = agent.queryEquipmentInstance(dataIRI);
+                JSONObject queryResult = agent.queryEquipmentInstances(roomIRI);
 
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().write(queryResult.toString());
@@ -102,11 +102,11 @@ public class BMSQueryAgentLauncher extends JPSAgent {
             return false;
         }
 
-        if (request.getParameter(KEY_DATAIRI).isEmpty()) {
-            LOGGER.error(KEY_DATAIRI + "is missing.");
+        if (request.getParameter(KEY_ROOMIRI).isEmpty()) {
+            LOGGER.error(KEY_ROOMIRI + "is missing.");
             return false;
         }
-        LOGGER.info("Data Received: " + request.getParameter(KEY_DATAIRI));
+        LOGGER.info("Data Received: " + request.getParameter(KEY_ROOMIRI));
 
 //        if (request.getParameter(KEY_CLIENT_PROPERTIES).isEmpty()) {
 //            LOGGER.error(KEY_CLIENT_PROPERTIES + "is missing.");
@@ -122,7 +122,7 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         return true;
     }
 
-    public BMSQueryAgent initializeAgent() {
+    private BMSQueryAgent initializeAgent() {
         EndpointConfig endpointConfig = new EndpointConfig();
 
         BMSQueryAgent agent = createBMSQueryAgent();
@@ -147,7 +147,7 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         return agent;
     }
 
-    public void getStatus(HttpServletResponse response) throws IOException {
+    private void getStatus(HttpServletResponse response) throws IOException {
         LOGGER.info("Detected request to get agent status...");
 
         response.setStatus(Response.Status.OK.getStatusCode());
