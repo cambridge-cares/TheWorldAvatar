@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='stdc',
-    version='1.0.0',
+    version='1.0.1',
     author='Daniel Nurkowski',
     license='MIT',
     long_description=open('README.md').read(),
