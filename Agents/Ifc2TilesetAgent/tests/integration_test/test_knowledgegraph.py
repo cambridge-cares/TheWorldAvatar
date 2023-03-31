@@ -14,7 +14,7 @@ import pytest
 from . import testconsts as C
 from agent.ifc2gltf.kghelper import retrieve_metadata, get_building_iri
 from agent.ifc2gltf import conv2gltf
-from .testutils import init_kg_client, assert_df_equal
+from .testutils import init_kg_client, assert_df_equal, assert_assets_present
 
 
 @pytest.mark.parametrize(
@@ -115,7 +115,7 @@ def test_get_building_iri(endpoint, kg_client):
     )]
 )
 def test_conv2gltf(init_assets, expected_gltf, expected_asset_data, expected_building_iri, endpoint, kg_client,
-                   gen_sample_ifc_file, assert_asset_geometries):
+                   gen_sample_ifc_file):
     """
     Tests that the conv2gltf() in agent.ifc2gltf submodule runs and generates only one gltf file
     """
@@ -132,7 +132,7 @@ def test_conv2gltf(init_assets, expected_gltf, expected_asset_data, expected_bui
         assert_df_equal(actual_asset_data, expected_asset_data)
 
         # Assert that the geometry files are generated
-        assert_asset_geometries(expected_gltf)
+        assert_assets_present(expected_gltf)
 
         assert actual_building_iri == expected_building_iri
     finally:

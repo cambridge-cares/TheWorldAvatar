@@ -1,5 +1,6 @@
 # Standard import
 import json
+import os
 from typing import Iterable
 
 # Third-party import
@@ -10,6 +11,12 @@ from pandas.testing import assert_frame_equal
 from agent.kgutils import KGClient
 from tests.integration_test.testconsts import prefix
 from . import testconsts as C
+
+
+def assert_assets_present(assets: Iterable[str]):
+    for asset in assets:
+        asset_path = "./data/glb/" + asset + ".glb"
+        assert os.path.isfile(asset_path)
 
 
 def triples_to_insert_query(triples: Iterable[str]):

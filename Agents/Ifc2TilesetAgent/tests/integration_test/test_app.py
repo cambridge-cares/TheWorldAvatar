@@ -12,7 +12,7 @@ import numpy as np
 
 # Self import
 from . import testconsts as C
-from .testutils import init_kg_client, read_json_file
+from .testutils import init_kg_client, read_json_file, assert_assets_present
 
 
 @pytest.mark.parametrize("expected_response", [C.DEFAULT_RESPONSE])
@@ -43,8 +43,7 @@ def assert_child_tile_compulsory_fields(tile: dict):
     "init_assets, expected_assets, expected_bim_bbox",
     [(["building", "wall"], ["building"], [2.5, 0.1, 1.5, 2.5, 0, 0, 0, 0.1, 0, 0, 0, 1.5])]
 )
-def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, flaskapp, gen_sample_ifc_file,
-                    sample_properties, assert_asset_geometries):
+def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, flaskapp, gen_sample_ifc_file):
     """
     Tests the POST request for the api route on a simple IFC model
     """
@@ -55,36 +54,28 @@ def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, 
     init_kg_client(kg_client, init_assets)
 
     # Generate sample ifc file
-    ifcpath = gen_sample_ifc_file("./data/ifc/sample.ifc")
-
-    # Generate sample properties.config
-    properties_path = sample_properties
+    gen_sample_ifc_file("./data/ifc/sample.ifc")
 
     # Perform POST request
     response = flaskapp.post(route, json={"assetUrl": "./glb"})
 
-    try:
-        # Assert that request has successfully occurred
-        assert response.status_code == 200
-        assert response.json["result"] == C.SUCCESSFUL_API_RESPONSE
+    # Assert that request has successfully occurred
+    assert response.status_code == 200
+    assert response.json["result"] == C.SUCCESSFUL_API_RESPONSE
 
-        # Assert that the tileset and geometry files are generated
-        assert os.path.isfile(tileset_bim_file)
-        assert_asset_geometries(expected_assets)
+    # Assert that the tileset and geometry files are generated
+    assert os.path.isfile(tileset_bim_file)
+    assert_assets_present(expected_assets)
 
-        # Assert tileset content contains the assetUrl passed and gltf files
-        tileset_content = read_json_file(tileset_bim_file)
-        assert "root" in tileset_content
+    # Assert tileset content contains the assetUrl passed and gltf files
+    tileset_content = read_json_file(tileset_bim_file)
+    assert "root" in tileset_content
 
-        root = tileset_content["root"]
-        assert_root_tile_compulsory_fields(root)
-        assert np.allclose(root["boundingVolume"]["box"], expected_bim_bbox)
-        assert root["content"] == {"uri": "./glb/building.glb"}
-        assert "children" not in root
-    finally:
-        os.remove(ifcpath)
-        os.remove(properties_path)
-        os.remove(tileset_bim_file)
+    root = tileset_content["root"]
+    assert_root_tile_compulsory_fields(root)
+    assert np.allclose(root["boundingVolume"]["box"], expected_bim_bbox)
+    assert root["content"] == {"uri": "./glb/building.glb"}
+    assert "children" not in root
 
 
 @pytest.mark.parametrize(
@@ -115,8 +106,7 @@ def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, 
     )]
 )
 def test_api_complex(init_assets, expected_assets, expected_root_content, expected_child_contents, expected_bim_bbox,
-                     expected_asset_bbox, expected_solar_panel_bbox, kg_client, flaskapp, gen_sample_ifc_file,
-                     sample_properties, assert_asset_geometries):
+                     expected_asset_bbox, expected_solar_panel_bbox, kg_client, flaskapp, gen_sample_ifc_file):
     """
     Tests the POST request for the api route on a complex IFC model
     """
@@ -129,55 +119,46 @@ def test_api_complex(init_assets, expected_assets, expected_root_content, expect
     init_kg_client(kg_client, init_assets)
 
     # Generate sample ifc file
-    ifcpath = gen_sample_ifc_file("./data/ifc/sample.ifc", assets=init_assets)
-
-    # Generate sample properties.config
-    properties_path = sample_properties
+    gen_sample_ifc_file("./data/ifc/sample.ifc", assets=init_assets)
 
     # Perform POST request
     response = flaskapp.post(route, json={"assetUrl": "./glb"})
 
-    try:
-        # Assert that request has successfully occurred
-        assert response.status_code == 200
-        assert response.json["result"] == C.SUCCESSFUL_API_RESPONSE
+    # Assert that request has successfully occurred
+    assert response.status_code == 200
+    assert response.json["result"] == C.SUCCESSFUL_API_RESPONSE
 
-        # Assert that the tilesets and geometry files are generated
-        assert os.path.isfile(tileset_bim_file)
-        assert os.path.isfile(tileset_solar_file)
-        assert_asset_geometries(expected_assets)
+    # Assert that the tilesets and geometry files are generated
+    assert os.path.isfile(tileset_bim_file)
+    assert os.path.isfile(tileset_solar_file)
+    assert_assets_present(expected_assets)
 
-        # Assert bim tileset content contains the assetUrl passed and gltf files
-        content = read_json_file(tileset_bim_file)
-        assert "root" in content
+    # Assert bim tileset content contains the assetUrl passed and gltf files
+    content = read_json_file(tileset_bim_file)
+    assert "root" in content
 
-        bim_root = content["root"]
-        assert_root_tile_compulsory_fields(bim_root)
-        assert np.allclose(bim_root["boundingVolume"]["box"], expected_bim_bbox)
-        if isinstance(expected_root_content, list):
-            assert bim_root["contents"] == expected_root_content
-        else:
-            assert bim_root["content"] == expected_root_content
-        assert "children" in bim_root and isinstance(bim_root["children"], list) and len(bim_root["children"]) == 1
+    bim_root = content["root"]
+    assert_root_tile_compulsory_fields(bim_root)
+    assert np.allclose(bim_root["boundingVolume"]["box"], expected_bim_bbox)
+    if isinstance(expected_root_content, list):
+        assert bim_root["contents"] == expected_root_content
+    else:
+        assert bim_root["content"] == expected_root_content
+    assert "children" in bim_root and isinstance(bim_root["children"], list) and len(bim_root["children"]) == 1
 
-        child_tile = bim_root["children"][0]
-        assert_child_tile_compulsory_fields(child_tile)
-        assert np.allclose(child_tile["boundingVolume"]["box"], expected_asset_bbox)
-        assert child_tile["contents"] == expected_child_contents
+    child_tile = bim_root["children"][0]
+    assert_child_tile_compulsory_fields(child_tile)
+    assert np.allclose(child_tile["boundingVolume"]["box"], expected_asset_bbox)
+    assert child_tile["contents"] == expected_child_contents
 
-        # Assert solar tileset content contains the assetUrl passed and gltf files
-        solar_content = read_json_file(tileset_solar_file)
-        assert "root" in solar_content
+    # Assert solar tileset content contains the assetUrl passed and gltf files
+    solar_content = read_json_file(tileset_solar_file)
+    assert "root" in solar_content
 
-        solar_root = solar_content["root"]
-        assert_root_tile_compulsory_fields(solar_root)
-        assert np.allclose(solar_root["boundingVolume"]["box"], expected_solar_panel_bbox)
-        assert solar_root["content"] == {"uri": "./glb/solarpanel.glb"}
-    finally:
-        os.remove(ifcpath)
-        os.remove(properties_path)
-        os.remove(tileset_bim_file)
-        os.remove(tileset_solar_file)
+    solar_root = solar_content["root"]
+    assert_root_tile_compulsory_fields(solar_root)
+    assert np.allclose(solar_root["boundingVolume"]["box"], expected_solar_panel_bbox)
+    assert solar_root["content"] == {"uri": "./glb/solarpanel.glb"}
 
 
 def test_api_wrong_request_type(flaskapp):
@@ -227,27 +208,21 @@ def test_api_invalid_request_param(asset_url, flaskapp):
     assert response.json == expected_response
 
 
-def test_api_no_ifc(flaskapp, sample_properties):
+def test_api_no_ifc(flaskapp):
     # Arrange
     route = "/api"
 
-    # Generate sample properties.config
-    properties_path = sample_properties
-
     expected_response = {"data": "No ifc file is available at the ./data/ifc folder"}
 
-    try:
-        # Act
-        response = flaskapp.post(route, json={"assetUrl": "./glb"})
+    # Act
+    response = flaskapp.post(route, json={"assetUrl": "./glb"})
 
-        # Assert
-        assert response.status_code == 400
-        assert response.json == expected_response
-    finally:
-        os.remove(properties_path)
+    # Assert
+    assert response.status_code == 400
+    assert response.json == expected_response
 
 
-def test_api_multi_ifc(flaskapp, sample_properties):
+def test_api_multi_ifc(flaskapp):
     # Arrange
     route = "/api"
 
@@ -256,27 +231,19 @@ def test_api_multi_ifc(flaskapp, sample_properties):
     for file in ifc_files:
         open(file, "x", encoding="utf-8").close()
 
-    # Generate sample properties.config
-    properties_path = sample_properties
-
     expected_response = {
         "data": "More than one IFC file is located at the ./data/ifc folder. Please place only ONE IFC file"
     }
 
-    try:
-        # Act
-        response = flaskapp.post(route, json={"assetUrl": "./glb"})
+    # Act
+    response = flaskapp.post(route, json={"assetUrl": "./glb"})
 
-        # Assert
-        assert response.status_code == 400
-        assert response.json == expected_response
-    finally:
-        os.remove(properties_path)
-        for file in ifc_files:
-            os.remove(file)
+    # Assert
+    assert response.status_code == 400
+    assert response.json == expected_response
 
 
-def test_api_invalid_ifc(flaskapp, sample_properties):
+def test_api_invalid_ifc(flaskapp):
     # Arrange
     route = "/api"
 
@@ -284,18 +251,11 @@ def test_api_invalid_ifc(flaskapp, sample_properties):
     ifc_file = os.path.join("data", "ifc", "test.ifc")
     open(ifc_file, "x", encoding="utf-8").close()
 
-    # Generate sample properties.config
-    properties_path = sample_properties
-
     expected_response = {"data": "IFC model validation fails. Cause: Unable to parse IFC SPF header"}
 
-    try:
-        # Act
-        response = flaskapp.post(route, json={"assetUrl": "./glb"})
+    # Act
+    response = flaskapp.post(route, json={"assetUrl": "./glb"})
 
-        # Assert
-        assert response.status_code == 400
-        assert response.json == expected_response
-    finally:
-        os.remove(ifc_file)
-        os.remove(properties_path)
+    # Assert
+    assert response.status_code == 400
+    assert response.json == expected_response

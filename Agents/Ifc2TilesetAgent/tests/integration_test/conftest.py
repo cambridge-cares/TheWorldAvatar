@@ -5,6 +5,7 @@ A module that provides all pytest fixtures and utility functions for all integra
 """
 # Standard import
 import os
+import shutil
 from typing import Iterable, Tuple
 
 # Third party import
@@ -114,26 +115,6 @@ def gen_sample_ifc_file():
     return _gen_ifc_file
 
 
-@pytest.fixture(scope="session")
-def assert_asset_geometries():
-    """
-    A test function to assert and remove the expected generated geometries files
-
-    Argument:
-    asset_list - A list containing the expected asset names
-    """
-
-    def _setup_geom_assertions(asset_list: Iterable[str]):
-        for asset in asset_list:
-            glbpath = "./data/glb/" + asset + ".glb"
-            try:
-                assert os.path.isfile(glbpath)
-            finally:
-                os.remove(glbpath)
-
-    return _setup_geom_assertions
-
-
 # ----------------------------------------------------------------------------------
 # Module-scoped test fixtures
 # (i.e. the fixture is destroyed during teardown of the last test in the module)
@@ -165,28 +146,50 @@ def flaskapp():
     app.config.update({
         "TESTING": True,
     })
-    yield app.test_client()
 
-
-@pytest.fixture(scope='function')
-def sample_properties():
-    """
-    Generates a sample yaml file with required properties for retrieval
-    """
+    # Create a sample yaml file with required properties for retrieval
     yaml_path = "./config/properties.yaml"
     data = dict(
         query_endpoint=C.KG_ENDPOINT,
         update_endpoint=C.KG_ENDPOINT
     )
-    # Generate the file
     with open(yaml_path, 'w') as outfile:
         yaml.dump(data, outfile)
-    return yaml_path
+
+    yield app.test_client()
+
+    os.remove(yaml_path)
+
+
+@pytest.fixture(scope="function", autouse=True)
+def cleanup_data_dir():
+    """Cleans up data dir and keeps only empty folders glb and ifc."""
+    yield
+
+    data_dir = "./data"
+    for filename in os.listdir(data_dir):
+        filepath = os.path.join(data_dir, filename)
+        if os.path.isfile(filepath) or os.path.islink(filepath):
+            os.remove(filepath)
+        elif os.path.isdir(filepath):
+            if filename in ("glb", "ifc"):
+                _empty_dir(filepath)
+            else:
+                shutil.rmtree(filepath)
 
 
 # ----------------------------------------------------------------------------------
 # Helper functions
 # ----------------------------------------------------------------------------------
+
+def _empty_dir(dir: str):
+    for filename in os.listdir(dir):
+        filepath = os.path.join(dir, filename)
+        if os.path.isfile(filepath) or os.path.islink(filepath):
+            os.remove(filepath)
+        elif os.path.isdir(filepath):
+            shutil.rmtree(filepath)
+
 
 def clear_loggers():
     """Remove handlers from all loggers. Adopted from
