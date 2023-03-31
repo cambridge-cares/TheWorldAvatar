@@ -1,0 +1,65 @@
+{
+    "ServiceSpec": {
+        "Name": "aermod-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "docker.cmclinnovations.com/aermod-agent:1.0.1",
+				"Env": [
+					"STACK_NAME=${STACK_NAME}",
+					"PYTHON_SERVICE_URL=http://python-service:5000/getAermodGeoJSON",
+					"AERMET_EXE=/root/aermod/aermet",
+					"AERMOD_EXE=/root/aermod/aermod",
+					"WEATHER_AGENT=http://weatheragent:8080/WeatherAgent/UpdateStation",
+					"DATABASE=postgres",
+					"GEOSERVER_WORKSPACE=dispersion",
+					"DISPERSION_LAYER=dispersion_layer",
+					"SIMULATION_DIR=/root/aermod/simulations",
+					"FILE_SERVER_URL=http://file-server:8080/FileServer/",
+					"DISPERSION_STYLE_NAME=dispersion_style",
+					"VIS_FOLDER=/vis_data",
+					"GEOSERVER_URL=http://localhost:3838/geoserver"
+				],
+				"Configs": [
+					{
+						"ConfigName": "postgis"
+					},
+					{
+						"ConfigName": "blazegraph"
+					},
+					{
+						"ConfigName": "ontop"
+					},
+					{
+						"ConfigName": "geoserver"
+					}
+				],
+				"Secrets": [
+					{
+						"SecretName": "postgis_password"
+					},
+					{
+						"SecretName": "geoserver_password"
+					}
+				],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "logs",
+                        "Target": "/root/.jps"
+                    },
+					{
+                        "Type": "volume",
+                        "Source": "vis_data",
+                        "Target": "/vis_data"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "aermod-agent": {
+            "url": "http://localhost:8080/AermodAgent/",
+            "externalPath": "/aermod-agent/"
+        }
+    }
+}

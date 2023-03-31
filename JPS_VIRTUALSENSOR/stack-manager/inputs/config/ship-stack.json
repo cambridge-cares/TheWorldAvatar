@@ -1,0 +1,9 @@
+{
+    "services": {
+        "includes": [
+			"dispersion-interactor",
+			"dispersion-vis",
+			"aermod-agent"
+        ]
+    }
+}
