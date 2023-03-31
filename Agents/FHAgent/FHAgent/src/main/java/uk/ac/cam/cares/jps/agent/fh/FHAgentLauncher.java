@@ -170,28 +170,28 @@ public class FHAgentLauncher extends JPSAgent {
         connector.connect();
 
         // Retrieve readings
-        JSONObject ElectricalTemperatureHumidityReadings;
+        JSONObject Distance;
         
         try {
-            ElectricalTemperatureHumidityReadings = connector.getAllReadings();
+            Distance = connector.getAllReadings();
         }
         catch (Exception e) {
             LOGGER.error(GET_READINGS_ERROR_MSG, e);
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
         }
         LOGGER.info(String.format("Retrieved %d electrical, temperature and humdity readings.",
-                ElectricalTemperatureHumidityReadings.length()));
-        jsonMessage.accumulate("Result", "Retrieved " + ElectricalTemperatureHumidityReadings.length() +  
+                Distance.length()));
+        jsonMessage.accumulate("Result", "Retrieved " + Distance.length() +  
         		" electrical, temperature and humdity readings.");
         // If readings are not empty there is new data
-        if(!ElectricalTemperatureHumidityReadings.isEmpty()) {
+        if(!Distance.isEmpty()) {
             // Update the data
-            agent.updateData(ElectricalTemperatureHumidityReadings);
+            agent.updateData(Distance);
             LOGGER.info("Data updated with new readings from API.");
             jsonMessage.accumulate("Result", "Data updated with new readings from API.");
         }
         // If all are empty no new readings are available
-        else if(ElectricalTemperatureHumidityReadings.isEmpty()) {
+        else if(Distance.isEmpty()) {
             LOGGER.info("No new readings are available.");
             jsonMessage.accumulate("Result", "No new readings are available.");
         }

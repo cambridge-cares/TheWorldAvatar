@@ -48,7 +48,7 @@ public class FHAgent{
     /**
      * The prefix to use when no IRI exists for a JSON key originally
      */
-    public static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "thingsboard";
+    public static final String generatedIRIPrefix = TimeSeriesSparql.TIMESERIES_NAMESPACE + "fh";
     /**
      * The time unit used for all time series maintained by the ThingsBoard agent
      */
@@ -184,20 +184,20 @@ public class FHAgent{
 
     /**
      * Updates the database with new readings.
-     * @param ElectricalTemperatureHumidityReadings The readings received from the ThingsBoard API
+     * @param OccupiedState The readings received from the ThingsBoard API
      */
-    public void updateData(JSONObject ElectricalTemperatureHumidityReadings)throws IllegalArgumentException {
+    public void updateData(JSONObject OccupiedState)throws IllegalArgumentException {
         // Transform readings in hashmap containing a list of objects for each JSON key,
         // will be empty if the JSON Object is empty
-    	Map<String, List<?>> timeStampReadingsMap = jsonObjectToMapForTimeStamp(ElectricalTemperatureHumidityReadings);
-    	Map<String, List<?>> electricalTemperatureHumidityReadingsMap = jsonObjectToMap(ElectricalTemperatureHumidityReadings);
+    	Map<String, List<?>> timeStampReadingsMap = jsonObjectToMapForTimeStamp(OccupiedState);
+    	Map<String, List<?>> OccupiedStateMap = jsonObjectToMap(OccupiedState);
         
         
         // Only do something if all readings contain data
-        if(!electricalTemperatureHumidityReadingsMap.isEmpty() && !timeStampReadingsMap.isEmpty()) {
+        if(!OccupiedStateMap.isEmpty() && !timeStampReadingsMap.isEmpty()) {
             List<TimeSeries<OffsetDateTime>> timeSeries;
             try {
-                timeSeries = convertReadingsToTimeSeries(electricalTemperatureHumidityReadingsMap, timeStampReadingsMap);
+                timeSeries = convertReadingsToTimeSeries(OccupiedStateMap, timeStampReadingsMap);
             }
             // Is a problem as time series objects must be the same every time to ensure proper insert into the database
             catch (NoSuchElementException e) {
@@ -377,11 +377,11 @@ public class FHAgent{
 
     /**
      * Converts the readings in form of maps to time series' using the mappings from JSON key to IRI.
-     * @param ElectricalTemperatureHumidityReadings The readings as map.
+     * @param Distance The readings as map.
      * @param TimestampReadings The timestamps as map.
      * @return A list of time series objects (one per mapping) that can be used with the time series client.
      */
-    private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> ElectricalTemperatureHumidityReadings,
+    private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> Distance,
                                                                         Map<String, List<?>> TimestampReadings
                                                                         )
             throws  NoSuchElementException {
@@ -400,8 +400,8 @@ public class FHAgent{
             for(String key: mapping.getAllJSONKeys()) {
                 // Add IRI
                 iris.add(mapping.getIRI(key));
-                if (ElectricalTemperatureHumidityReadings.containsKey(key)) {
-                    values.add(ElectricalTemperatureHumidityReadings.get(key));
+                if (Distance.containsKey(key)) {
+                    values.add(Distance.get(key));
                 }
                 // Will create a problem as length of iris and values do not match when creating the time series.
                 // Could add an empty list, but the length of the list needs to match length of times. So what values to
