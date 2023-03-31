@@ -17,7 +17,7 @@ services:
       - GEOSERVER_WORKSPACE=dispersion
       - EMISSIONS_AGENT_URL=http://emissions-agent:8080/EmissionsAgent/
       - EMISSIONS_AGENT_IRI=http://theworldavatar.com/kg/dispersion/EmissionsAgent
-      - PYTHON_SERVICE_URL=http://${STACK_NAME}_python-service:5000
+      - PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000
       - PARALLELISE_CALCULATIONS=true
     configs:
       - postgis

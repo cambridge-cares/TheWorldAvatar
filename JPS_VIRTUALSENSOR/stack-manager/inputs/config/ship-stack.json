@@ -3,7 +3,8 @@
         "includes": [
 			"dispersion-interactor",
 			"dispersion-vis",
-			"aermod-agent"
+			"aermod-agent",
+			"python-service"
         ]
     }
 }

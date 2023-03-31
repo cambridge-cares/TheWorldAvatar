@@ -10,7 +10,7 @@ services:
         condition: none
     environment:
       - STACK_NAME=${STACK_NAME}
-      - PYTHON_SERVICE_URL=http://${STACK_NAME}_python-service:5000
+      - PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000
       - DATABASE=postgres
     configs:
       - postgis

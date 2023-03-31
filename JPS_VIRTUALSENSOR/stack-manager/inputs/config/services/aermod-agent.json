@@ -6,7 +6,7 @@
                 "Image": "docker.cmclinnovations.com/aermod-agent:1.0.1",
 				"Env": [
 					"STACK_NAME=${STACK_NAME}",
-					"PYTHON_SERVICE_URL=http://python-service:5000/getAermodGeoJSON",
+					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000/getAermodGeoJSON",
 					"AERMET_EXE=/root/aermod/aermet",
 					"AERMOD_EXE=/root/aermod/aermod",
 					"WEATHER_AGENT=http://weatheragent:8080/WeatherAgent/UpdateStation",
