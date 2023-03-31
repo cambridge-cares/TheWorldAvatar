@@ -20,8 +20,8 @@ f = 'usage_colorbar.png'
 fp = os.path.join(Path(__file__).parent.parent.parent, 'DTVF', 'data', 'icons', f)
 
 # Set image size and font size
-size = 60
-font_size = 18
+size = 150
+font_size = 50
 cols = 3
 
 # Calculate number of rows and columns
@@ -36,7 +36,7 @@ draw = ImageDraw.Draw(legend_img)
 font = ImageFont.truetype('arial.ttf', font_size)
 
 # Set label padding
-label_padding = 10
+label_padding = 25
 
 # Loop through the building usages and draw each one on the legend
 for i, (usage, color) in enumerate(building_usages.items()):
@@ -61,4 +61,4 @@ for i, (usage, color) in enumerate(building_usages.items()):
     draw.text((label_x, label_y), usage, fill='black', font=font)
 
 # Save legend image
-legend_img.save(fp)
+legend_img.save(fp, dpi=(300, 300))
