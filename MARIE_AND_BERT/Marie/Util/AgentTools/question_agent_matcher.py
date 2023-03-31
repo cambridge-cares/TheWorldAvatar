@@ -50,8 +50,10 @@ class QuestionAgentMatcher():
         agent_scores = {}
         for agent in self.agents:
             agent_matrices = self.agent_matrices[agent]
-            agent_score = []
-            for matrix in agent_matrices:
+            agent_score = {}
+            # agent_score = []
+            # for matrix in agent_matrices:
+            for output, matrix in agent_matrices.items():
                 row_score = []
                 matrix = torch.Tensor(matrix)
                 for i in range(matrix.shape[0]):
@@ -65,19 +67,24 @@ class QuestionAgentMatcher():
                         else:
                             sim_scores.append(similarity)
                     row_score.append(max(sim_scores))
-                agent_score.append(np.average(row_score))
-            agent_scores[agent] = max(agent_score)
-        
-        print(agent_scores)
-        result = max(agent_scores.items(), key=lambda x: x[1])
+                # agent_score.append(np.average(row_score))
+                agent_score[output] = np.average(row_score)
+            # agent_scores[agent] = max(agent_score)
+            agent_scores[agent] = max(agent_score.items(), key=lambda x: x[1])
 
-        print(result[0])
-        return result
+        print(agent_scores)
+        max_key = max(agent_scores, key=lambda x: agent_scores[x][1])
+        print(agent_scores[max_key][0], max_key)
+
+        # result = max(agent_scores.items(), key=lambda x: x[1])
+        # print(result[0])
+
+        # return max_key, agent_scores[max_key][0]
     
 if __name__ == '__main__':
     # agents = ['ontopceagent', 'ontothermoagent', 'chem1agent', 'chem2agent', 'chem3agent']
     # entity_domain = 'ontospecies'
     # input = 'Species'
     # rel_embedding = [-0.0279401578009128, -0.0229824669659137, 0.2679637968540191, -0.1346896737813949, -0.078743889927864, -0.2619713246822357, 0.2464446872472763, 0.0643166303634643, -0.1888458281755447, 0.0859422758221626, 0.0403431616723537, -0.277249664068222, -0.1264708042144775, 0.072978638112545, 0.0415104962885379, 0.163387268781662, 0.2007157504558563, -0.2151760756969452, -0.2424642890691757, 0.1162319034337997, -0.0781556814908981, -0.1324226558208465, -0.030205700546503, 0.0272158700972795, -0.2757452726364136, -0.0948667675256729, 0.0298788473010063, -0.0635488927364349, 0.0718482732772827, 0.0287968646734952, -0.214311271905899, -0.159093752503395, -0.1585248559713363, -0.2487790584564209, 0.2782934308052063, 0.0718457624316215, 0.2232714891433715, -0.0952865183353424, -0.0452908724546432, -0.1267632693052292]
-    question = "what is the power conversion efficiency of benzene"
+    question = "what is the entropy"
     my_matcher = QuestionAgentMatcher(question=question)
