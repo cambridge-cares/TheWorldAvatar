@@ -21,7 +21,6 @@ DEFAULT_RESPONSE += "&nbsp&nbsp [this_url]/api<BR>"
 DEFAULT_RESPONSE += "&nbsp&nbsp [this_url] is the host and port currently shown in the address bar"
 
 SUCCESSFUL_API_RESPONSE = "IFC model has successfully been converted. Please visit the 'data' directory for the outputs"
-INVALID_PARAM_API_RESPONSE = "Missing `assetUrl` parameter in request!"
 
 # ----------------------------------------------------------------------------------
 # Test inputs and expected results
@@ -149,9 +148,3 @@ SAMPLE_ONTOBIM_GEOM_STORE = dict(
     table=((0., 1., 3.), (1., 2., 3.5))         # (1 x 1 x 0.5) box on second floor
 )
 
-invalid_asseturl1 = "./"
-invalid_asseturl2 = "dir"
-invalid_asseturl3 = "/dir/"
-invalid_asseturl4 = "../../"
-invalid_asseturl5 = "www.example.org"
-invalid_asseturl6 = "http://www.example.com/ns/"

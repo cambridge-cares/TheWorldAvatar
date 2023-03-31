@@ -8,6 +8,7 @@ such as shell command and file operations.
 # Standard library imports
 import os
 import subprocess
+from typing import List
 
 # Third party imports
 from py4jps import agentlogging
@@ -46,15 +47,18 @@ def retrieve_abs_filepath(filepath):
         return os.path.abspath(filepath)
 
 
-def read_ifc_file(ifc_dir):
-    """
-    Reads IFC file located at ./data/ifc directory into required file paths
+def find_ifc_file(ifc_dir: List[str]):
+    """Retrieves the path to the IFC file located at ./data/ifc directory.
 
-    Argument:
-    ifc_dir - A list containing the nested directories to the IFC input from the root directory
-            Eg:[data, ifc]
+    Args:
+        ifc_dir: A list containing the nested directories to the IFC input from the root directory.
+                 E.g. [data, ifc]
     Returns:
-    File path to the IFC file
+        File path to the IFC file.
+
+    Raises:
+        FileNotFoundError: No IFC file is found in the provided directory.
+        InvalidInputError: More than one IFC files are found in the provided directory.
     """
     # If empty list,
     if not ifc_dir:
@@ -83,7 +87,7 @@ def read_ifc_file(ifc_dir):
     elif len(filelist) == 1:
         ifc_input = os.path.join(ifcpath, filelist[0])
         logger.debug("One IFC file detected: " + ifc_input)
-    elif len(filelist)>1:
+    elif len(filelist) > 1:
         errormsg = 'More than one IFC file is located at the ./data/ifc folder. '
         errormsg += 'Please place only ONE IFC file'
         logger.error(errormsg)
@@ -100,7 +104,7 @@ def cleandir():
         for filename in filelist:
             try:
                 filepath = os.path.join(root_dir, filename)
-                if  not (filepath.startswith("./data/ifc") or filepath.endswith('.gitignore')):
+                if not (filepath.startswith("./data/ifc") or filepath.endswith('.gitignore')):
                     os.remove(filepath)
             except OSError:
                 logger.error("Error while deleting file")

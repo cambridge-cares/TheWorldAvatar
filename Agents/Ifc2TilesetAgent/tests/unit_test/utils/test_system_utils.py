@@ -11,7 +11,7 @@ import os
 import pytest
 
 # Self import
-from agent.utils import retrieve_abs_filepath, read_ifc_file
+from agent.utils import retrieve_abs_filepath, find_ifc_file
 from agent.exceptions import InvalidInputError
 
 
@@ -38,9 +38,9 @@ def test_read_ifc_file():
     ifcfile = os.path.join("data", "ifc", "temp.ifc")
     expected_path = os.path.join(os.getcwd(), ifcfile)
     # Create a new file and execute method
-    open(ifcfile, "x", encoding="utf-8")
+    open(ifcfile, "x", encoding="utf-8").close()
     try:
-        result_path = read_ifc_file(["data", "ifc"])
+        result_path = find_ifc_file(["data", "ifc"])
         assert result_path == expected_path
     finally:
         # Remove file once code has run and before assertions
@@ -53,7 +53,7 @@ def test_read_ifc_file_empty_dir_fails():
     """
     # Raise error with Empty directory containing no IFC file
     with pytest.raises(FileNotFoundError) as exc_info:
-        read_ifc_file(["data", "ifc"])
+        find_ifc_file(["data", "ifc"])
     assert exc_info.match(
         r"^No ifc file is available at the ./data/ifc folder$")
 
@@ -65,12 +65,12 @@ def test_read_ifc_file_multiple_ifc_fails():
     # Create two empty IFC files for testing
     ifcfile = os.path.join("data", "ifc", "temp.ifc")
     ifcfile2 = os.path.join("data", "ifc", "temp2.ifc")
-    open(ifcfile, "x", encoding="utf-8")
-    open(ifcfile2, "x", encoding="utf-8")
+    open(ifcfile, "x", encoding="utf-8").close()
+    open(ifcfile2, "x", encoding="utf-8").close()
     try:
         # Raises error for directory with more than 1 IFC file
         with pytest.raises(InvalidInputError) as exc_info:
-            read_ifc_file(["data", "ifc"])
+            find_ifc_file(["data", "ifc"])
         assert exc_info.match(
             r"^More than one IFC file is located at the ./data/ifc folder. Please place only ONE IFC file$")
     finally:

@@ -190,45 +190,112 @@ def test_api_wrong_request_type(flaskapp):
     assert flaskapp.get(route).status_code == 405
 
 
-@pytest.mark.parametrize("expected_response", [C.INVALID_PARAM_API_RESPONSE])
-def test_api_invalid_request(expected_response, flaskapp):
+def test_api_invalid_request(flaskapp):
     """
     Tests that invalid requests returns the Bad request status code
     """
     # Inputs
     route = "/api"
+    expected_response = {"data": "Missing `assetUrl` parameter in request!"}
 
     # Send the POST request
     response = flaskapp.post(route, json={"asset url": "./glb"})
 
     # Assert that request has failed with the right status and response
     assert response.status_code == 400
-    assert response.json["data"] == expected_response
+    assert response.json == expected_response
 
 
 @pytest.mark.parametrize(
     "asset_url",
-    [
-        C.invalid_asseturl1,
-        C.invalid_asseturl2,
-        C.invalid_asseturl3,
-        C.invalid_asseturl4,
-        C.invalid_asseturl5,
-        C.invalid_asseturl6,
-    ]
+    ["./", "dir", "/dir/", "../../", "www.example.org", "http://www.example.com/ns/"]
 )
-def test_api_invalid_asserturl_param(asset_url, flaskapp):
+def test_api_invalid_request_param(asset_url, flaskapp):
     """
     Tests that invalid assetUrl params returns the Bad request status code
     """
     # Inputs
     route = "/api"
-    expected_response = "`assetUrl` parameter <" + asset_url
-    expected_response += "> is invalid. It must start with `.`, `..`, or `http://`, and must not end with `/`"
+    expected_response = {"data": f"`assetUrl` parameter <{asset_url}> is invalid. "
+                                 f"It must start with `.`, `..`, or `http://`, and must not end with `/`"}
 
     # Send the POST request
     response = flaskapp.post(route, json={"assetUrl": asset_url})
 
     # Assert that request has failed with the right status and response
     assert response.status_code == 400
-    assert response.json["data"] == expected_response
+    assert response.json == expected_response
+
+
+def test_api_no_ifc(flaskapp, sample_properties):
+    # Arrange
+    route = "/api"
+
+    # Generate sample properties.config
+    properties_path = sample_properties
+
+    expected_response = {"data": "No ifc file is available at the ./data/ifc folder"}
+
+    try:
+        # Act
+        response = flaskapp.post(route, json={"assetUrl": "./glb"})
+
+        # Assert
+        assert response.status_code == 400
+        assert response.json == expected_response
+    finally:
+        os.remove(properties_path)
+
+
+def test_api_multi_ifc(flaskapp, sample_properties):
+    # Arrange
+    route = "/api"
+
+    # Create multiple ifc files
+    ifc_files = [os.path.join("data", "ifc", f"test{i}.ifc") for i in range(2)]
+    for file in ifc_files:
+        open(file, "x", encoding="utf-8").close()
+
+    # Generate sample properties.config
+    properties_path = sample_properties
+
+    expected_response = {
+        "data": "More than one IFC file is located at the ./data/ifc folder. Please place only ONE IFC file"
+    }
+
+    try:
+        # Act
+        response = flaskapp.post(route, json={"assetUrl": "./glb"})
+
+        # Assert
+        assert response.status_code == 400
+        assert response.json == expected_response
+    finally:
+        os.remove(properties_path)
+        for file in ifc_files:
+            os.remove(file)
+
+
+def test_api_invalid_ifc(flaskapp, sample_properties):
+    # Arrange
+    route = "/api"
+
+    # Create an empty ifc file, which is invalid
+    ifc_file = os.path.join("data", "ifc", "test.ifc")
+    open(ifc_file, "x", encoding="utf-8").close()
+
+    # Generate sample properties.config
+    properties_path = sample_properties
+
+    expected_response = {"data": "IFC model validation fails. Cause: Unable to parse IFC SPF header"}
+
+    try:
+        # Act
+        response = flaskapp.post(route, json={"assetUrl": "./glb"})
+
+        # Assert
+        assert response.status_code == 400
+        assert response.json == expected_response
+    finally:
+        os.remove(ifc_file)
+        os.remove(properties_path)
