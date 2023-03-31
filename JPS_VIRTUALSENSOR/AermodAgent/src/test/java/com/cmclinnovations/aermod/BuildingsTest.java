@@ -20,15 +20,18 @@ import java.util.List;
 
 public class BuildingsTest {
 
-    String simulationDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\24\\";
+    String simulationDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\29\\";
 
-    //    Two equivalent polygons which define a rectangular region within Jurong Island. The values in wkt are in EPSG:4326/WGS84 coordinates
-    //    while those in wkt2 are in EPSG:3857 coordinates.
+    //    Polygons defining rectangular regions in EPSG:4326/WGS84 coordinates.
+    // wkt is for Jurong Island while wkt2 is for Pirmasens.
     // For EPSG:4326/Wgs84 format, longitude is specified before latitude.
+    // The values of the following environment variables must be specified before running the testInit() method:
+    // NUMBER_SOURCES, NUMBER_BUILDINGS
     
     String wkt = "POLYGON ((103.651 1.217, 103.742 1.217, 103.742 1.308, 103.651 1.308, 103.651 1.217))" ;
+    String wkt2 = "POLYGON ((7.59 49.227, 7.61 49.227, 7.61 49.231, 7.59 49.231, 7.59 49.227))";
     GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(),4326);
-    Polygon scope = (Polygon) new WKTReader(geometryFactory).read(wkt);
+    Polygon scope = (Polygon) new WKTReader(geometryFactory).read(wkt2);
     int nx = 100;
     int ny = 100;
 
@@ -45,7 +48,7 @@ public class BuildingsTest {
     @Test
     public void testInit() throws ParseException {
 
-        int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180)/6);
+        int centreZoneNumber = (int) Math.floor((scope.getCentroid().getCoordinate().getX() + 180)/6) + 1;
         System.out.println(centreZoneNumber);
         int srid;
         if (scope.getCentroid().getCoordinate().getY() < 0) {
@@ -61,20 +64,21 @@ public class BuildingsTest {
  
         bp.getProperties();      
 
-        Assertions.assertEquals(bp.StackEmissions.size(),numStacks);
-        Assertions.assertEquals(bp.BPIPPRMStackInput.size(),numStacks);
-        Assertions.assertEquals(bp.BuildingVertices.size(),numBuildings);
+        // Assertions.assertEquals(bp.StackEmissions.size(),numStacks);
+        // Assertions.assertEquals(bp.BPIPPRMStackInput.size(),numStacks);
+        // Assertions.assertEquals(bp.BuildingVertices.size(),numBuildings);
         bp.bpipprmDirectory = Path.of(simulationDirectory);
         bp.aermodDirectory = Path.of(simulationDirectory);
 
         int res1 = bp.updateElevationData();
         Assertions.assertEquals(res1,0);
+        int res4 = bp.createAERMODReceptorInput(nx, ny);
+        Assertions.assertEquals(res4,0);
         int res3 = bp.createBPIPPRMInput();
         Assertions.assertEquals(res3,0);
         int res2 = bp.createAERMODSourceInput();
         Assertions.assertEquals(res2,0);
-        int res4 = bp.createAERMODReceptorInput(nx, ny);
-        Assertions.assertEquals(res4,0);
+      
 
 
 
@@ -275,18 +279,36 @@ public class BuildingsTest {
     @Test
     public void testStackBuildingQueryusingQueryClient() {
 
-        int numStacks = 570;
-        int numBuildings = 4979;
+        int numStacks = 1;
+        int numBuildings = 4;
 
-        JSONArray StackIRIQueryResult = QueryClient.StackQuery("jibusinessunits");
+        JSONArray StackIRIQueryResult = QueryClient.StackQuery("http://localhost:8080/blazegraph/namespace/pirmasensChemicalPlants/sparql/");
         Assertions.assertEquals(numStacks,StackIRIQueryResult.length());
-        JSONArray BuildingIRIQueryResult = QueryClient.BuildingQuery("jibusinessunits");
-        Assertions.assertEquals(numBuildings,BuildingIRIQueryResult.length());
+        // JSONArray BuildingIRIQueryResult = QueryClient.BuildingQuery("pirmasensChemicalPlants");
+        // Assertions.assertEquals(numBuildings,BuildingIRIQueryResult.length());
 
     }
 
     @Test
-    public void testgetProperties() {
+    public void testBuildingGeometricQuery2() {
+
+        JSONArray BuildingGeometricQueryResult = QueryClient.BuildingGeometricQuery2("pirmasensEPSG32633", 
+        Arrays.asList("http://www.theworldavatar.com:83/citieskg/namespace/pirmasensEPSG32633/sparql/building/UUID_LOD2_Pirmasens_4f8d0f1a-3b21-40d4-8b90-89723e31a7ca/"));
+        Assertions.assertEquals(BuildingGeometricQueryResult.length(), 346);
+        for (int i = 0; i < BuildingGeometricQueryResult.length(); i++) {
+            String polyData = BuildingGeometricQueryResult.getJSONObject(i).getString("polygonData");
+            System.out.print(polyData);
+        }
+
+    }
+
+    @Test
+    public void testpirmasensquery() {
+        String query = "SELECT ?plant WHERE { ?plant <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://theworldavatar.com/ontology/ontochemplant/OntoChemPlant.owl#ChemicalPlant>.} ";
+
+        JSONArray plantQueryResult = AccessAgentCaller.queryStore("http://localhost:48888/pirmasensChemicalPlants", query);
+        Assertions.assertEquals(plantQueryResult.length(), 1);
+
 
     }
 

@@ -3,6 +3,7 @@ package com.cmclinnovations.aermod;
 import com.hp.hpl.jena.ontology.Individual;
 import org.eclipse.rdf4j.model.vocabulary.GEOF;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
+import org.eclipse.rdf4j.sparqlbuilder.constraint.SparqlFunction;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
@@ -526,6 +527,24 @@ public class QueryClient {
 
         GraphPattern gp = GraphPatterns.and(surfaceIRI.has(OCGML_GEOM,polygonData),
                 geometricIRI.has(OCGML_LOD2MULTISURFACEID,surfaceIRI).andHas(OCGML_BUILDINGID,objectIRI));
+        ValuesPattern<Iri> vp = new ValuesPattern<>(objectIRI, ObjectIRI.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+        query.select(polygonData,objectIRI).where(gp,vp).orderBy(objectIRI);
+        JSONArray GeometricQueryResult = AccessAgentCaller.queryStore(GeospatialQueryIRI,query.getQueryString());
+
+        return GeometricQueryResult;
+    }
+
+    public static JSONArray BuildingGeometricQuery2(String GeospatialQueryIRI, List<String> ObjectIRI) {
+
+        SelectQuery query = Queries.SELECT().prefix(P_OCGML);
+        Variable geometricIRI = SparqlBuilder.var("geometricIRI");
+        Variable polygonData = SparqlBuilder.var("polygonData");
+        Variable objectIRI = SparqlBuilder.var("objectIRI");
+        Variable surfaceIRI = SparqlBuilder.var("surfaceIRI");
+
+
+        GraphPattern gp = GraphPatterns.and(surfaceIRI.has(OCGML_GEOM,polygonData).andHas(OCGML_CITYOBJECT, geometricIRI),
+                geometricIRI.has(OCGML_BUILDINGID,objectIRI)).filter(Expressions.not(Expressions.function(SparqlFunction.IS_BLANK, polygonData)));
         ValuesPattern<Iri> vp = new ValuesPattern<>(objectIRI, ObjectIRI.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
         query.select(polygonData,objectIRI).where(gp,vp).orderBy(objectIRI);
         JSONArray GeometricQueryResult = AccessAgentCaller.queryStore(GeospatialQueryIRI,query.getQueryString());

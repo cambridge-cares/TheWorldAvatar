@@ -29,18 +29,21 @@ import com.cmclinnovations.stack.clients.geoserver.GeoServerClient;
 import com.cmclinnovations.stack.clients.geoserver.GeoServerVectorSettings;
 
 
+
 public class Buildings {
 
     private static final Logger LOGGER = LogManager.getLogger(Buildings.class);
 
     //TODO: The next 4 variables need to be updated with additional entries for locations other than Jurong Island.
-    public static String[] StackQueryEndpoint = {"jibusinessunits"} ;
-    public static String[] GeospatialQueryEndpoint = {"jriEPSG24500"} ;
-    public static String[] DatabaseCRS = {"EPSG:24500"};
+    // Use the full endpoint for the local blazegraph and only the namespace for TWA blazegraph.
+    public static String[] StackQueryEndpoint = {"jibusinessunits","http://localhost:48888/pirmasensChemicalPlants"} ;
+    public static String[] GeospatialQueryEndpoint = {"jriEPSG24500","pirmasensEPSG32633"} ;
+    public static String[] DatabaseCRS = {"EPSG:24500","EPSG:32633"};
 
     //    These values are taken from bboxfinder.com and are in EPSG:4326/WGS84 format.
     public static List<String> boundaryPolygons = new ArrayList<> (
-            Arrays.asList("POLYGON ((103.650684 1.216988, 103.743038 1.216988, 103.743038 1.308804, 103.650684 1.308804, 103.650684 1.216988))")) ;
+            Arrays.asList("POLYGON ((103.650684 1.216988, 103.743038 1.216988, 103.743038 1.308804, 103.650684 1.308804, 103.650684 1.216988))",
+            "POLYGON ((7.572091 49.220582, 7.613289 49.220582, 7.613289 49.233601, 7.572091 49.233601, 7.572091 49.220582))")) ;
 
 
     public int locindex = -1;
@@ -122,7 +125,6 @@ public class Buildings {
             "AERMOD will be run for ships only without buildings and plant items.");
         }  
         UTMCoordSys = "EPSG:" + srid;
-
 
 
 
@@ -257,6 +259,11 @@ public class Buildings {
     
         JSONArray StackGeometricQueryResult = QueryClient.StackGeometricQuery(GeospatialQueryIRI,StackIRIString);
 
+        if (StackGeometricQueryResult.length() == 0) {
+            StackIRIString = StackIRIString.stream().map(i -> i.replace("cityobject","building")).collect(Collectors.toList());
+            StackGeometricQueryResult = QueryClient.BuildingGeometricQuery2(GeospatialQueryIRI,StackIRIString);
+        }
+
         String objectIRIPrev = StackGeometricQueryResult.getJSONObject(0).getString("objectIRI");
 //        double minZ, maxZ;
         int numberStacks = 0;
@@ -287,6 +294,7 @@ public class Buildings {
             // Process results for each object;
             double minZ = 0.0;
             double maxZ = 0.0;
+            double minAveZ = 0.0;
             double StackEastUTM = 0.0;
             double StackNorthUTM = 0.0;
             boolean includeObject = true;
@@ -310,17 +318,20 @@ public class Buildings {
                 }
                 double polyMinZ = Collections.min(zcoord);
                 double polyMaxZ = Collections.max(zcoord);
+                double polyAveZ = zcoord.stream().mapToDouble(a -> a).average().orElse(0.0);
 
                 if (k == firstIndex ) {
                     minZ = polyMinZ;
                     maxZ = polyMaxZ;
+                    minAveZ = polyAveZ;
                 } else {
                     minZ = Math.min(minZ,polyMinZ);
                     maxZ = Math.max(maxZ,polyMaxZ);
+                    minAveZ = Math.min(minAveZ,polyAveZ);
                 }
 
 
-                if (polyMinZ == polyMaxZ && minZ == polyMinZ  ) {
+                if (minAveZ == polyAveZ && minZ == polyMinZ  ) {
                     double aveX = xcoord.stream().mapToDouble(d->d).average().orElse(0.0);
                     double aveY = ycoord.stream().mapToDouble(d->d).average().orElse(0.0);
 
@@ -359,11 +370,12 @@ public class Buildings {
 
             if (includeObject){
                 numberStacks++;
+                double height = maxZ - minZ;
                 String InputLine = "\'Stk" + numberStacks + "\'" + " " + "BASE_ELEVATION " +
-                        maxZ + " " + StackEastUTM + " " + StackNorthUTM + " \n" ;
+                        height + " " + StackEastUTM + " " + StackNorthUTM + " \n" ;
                 BPIPPRMStackInput.add(InputLine);
                 StringBuffer averageCoordinate = new StringBuffer();
-                averageCoordinate.append(StackEastUTM).append("#").append(StackNorthUTM).append("#").append(maxZ);
+                averageCoordinate.append(StackEastUTM).append("#").append(StackNorthUTM).append("#").append(height);
                 StackProperties.add(averageCoordinate.toString());
                 // Search for IRI in StackIRIString
                 int ind = StackIRIString.indexOf(objectIRI);
@@ -382,6 +394,11 @@ public class Buildings {
                 .mapToObj(i -> BuildingIRIQueryResult.getJSONObject(i).getString("IRI"))
                 .collect(Collectors.toList());
         JSONArray BuildingGeometricQueryResult = QueryClient.BuildingGeometricQuery(GeospatialQueryIRI,BuildingIRIString);
+
+        if (BuildingGeometricQueryResult.length() == 0) {
+            BuildingIRIString = BuildingIRIString.stream().map(i -> i.replace("cityobject","building")).collect(Collectors.toList());
+            BuildingGeometricQueryResult = QueryClient.BuildingGeometricQuery2(GeospatialQueryIRI,BuildingIRIString);
+        }
 
         objectIRIPrev = BuildingGeometricQueryResult.getJSONObject(0).getString("objectIRI");
         int numberBuildings = 0;
@@ -412,6 +429,7 @@ public class Buildings {
             // Process results for each object;
             double minZ = 0.0;
             double maxZ = 0.0;
+            double minAveZ = 0.0;
             double BuildingEastUTM = 0.0;
             double BuildingNorthUTM = 0.0;
             boolean includeObject = true;
@@ -436,17 +454,20 @@ public class Buildings {
                 }
                 double polyMinZ = Collections.min(zcoord);
                 double polyMaxZ = Collections.max(zcoord);
+                double polyAveZ = zcoord.stream().mapToDouble(x ->x).average().orElse(0.0);
 
                 if (k == firstIndex ) {
                     minZ = polyMinZ;
                     maxZ = polyMaxZ;
+                    minAveZ = polyAveZ;
                 } else {
                     minZ = Math.min(minZ,polyMinZ);
                     maxZ = Math.max(maxZ,polyMaxZ);
+                    minAveZ = Math.min(minZ,polyAveZ);
                 }
 
 
-                if (polyMinZ == polyMaxZ && minZ == polyMinZ  ) {
+                if (minAveZ == polyAveZ && minZ == polyMinZ  ) {
                     double aveX = xcoord.stream().mapToDouble(d->d).average().orElse(0.0);
                     double aveY = ycoord.stream().mapToDouble(d->d).average().orElse(0.0);
 
@@ -476,8 +497,9 @@ public class Buildings {
 
             if (includeObject){
                 numberBuildings++;
+                double height = maxZ - minZ;
                 StringBuffer averageCoordinate = new StringBuffer();
-                averageCoordinate.append(BuildingEastUTM).append("#").append(BuildingNorthUTM).append("#").append(maxZ);
+                averageCoordinate.append(BuildingEastUTM).append("#").append(BuildingNorthUTM).append("#").append(height);
                 BuildingProperties.add(averageCoordinate.toString());
 
                 List<String> buildInfo = new ArrayList<>();
@@ -488,7 +510,7 @@ public class Buildings {
 
                 String [] BaseVertices = BasePolygonVertices.split("#");
                 int numCorners = BaseVertices.length/3;
-                InputLine = numCorners + " " + maxZ + " \n" ;
+                InputLine = numCorners + " " + height + " \n" ;
                 buildInfo.add(InputLine);
                 List<List<Double>> inputcoordinates = new ArrayList<> () ;
 
