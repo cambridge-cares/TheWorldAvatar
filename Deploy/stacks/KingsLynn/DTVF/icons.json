@@ -18,5 +18,6 @@
 	"ea_rainfall": "data/icons/ea_rainfall.png",
 	"ea_temperature": "data/icons/ea_temperature.png",
 	"ea_water-level": "data/icons/ea_water-level.png",
-	"ea_wind": "data/icons/ea_wind.png"
+	"ea_wind": "data/icons/ea_wind.png",
+	"air_airquality": "data/icons/air_airquality.png"
 }

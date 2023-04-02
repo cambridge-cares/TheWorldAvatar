@@ -183,7 +183,7 @@
                     "cluster": true,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://165.232.172.16:3838/geoserver/metoffice/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=metoffice%3Ametoffice&outputFormat=application%2Fjson"
+                    "data": "http://165.232.172.16:3838/geoserver/stations/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=metoffice%3Ametoffice&outputFormat=application%2Fjson"
                 },
                 {
                     "id": "ea-stations",  
@@ -191,10 +191,55 @@
                     "cluster": true,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://165.232.172.16:3838/geoserver/river_stations/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=river_stations%3Ariver_stations&outputFormat=application%2Fjson"
+                    "data": "http://165.232.172.16:3838/geoserver/stations/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=river_stations%3Ariver_stations&outputFormat=application%2Fjson"
+                },
+                {
+                    "id": "aq-stations",  
+                    "type": "geojson",
+                    "cluster": true,
+                    "clusterMaxZoom": 14,
+                    "clusterRadius": 100,
+                    "data": "http://165.232.172.16:3838/geoserver/stations/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=airquality%3Aairquality&outputFormat=application%2Fjson"
                 }
             ], 
             "layers": [
+                {
+                    "id": "airquality",
+                    "name": "Airquality Stations", 
+                    "source": "aq-stations",
+                    "type": "symbol",
+                    "filter": ["!", ["has", "point_count"]],
+                    "minzoom": 8,
+                    "order": 32,
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "air_airquality", 
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true
+                    }
+                    
+                },
+                {
+                    "id": "airquality_cluster",
+                    "name":  "Airquality Stations",
+                    "source": "aq-stations",
+                    "type": "symbol",
+                    "filter": ["has", "point_count"],
+                    "minzoom": 4, 
+                    "layout": {
+                        "visibility": "visible",
+                        "icon-image": "ukair",
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.75],
+                        "icon-allow-overlap": true,
+                        "icon-ignore-placement": true,
+                        "text-field": "{point_count_abbreviated}",
+                        "text-font": ["Arial Unicode MS Regular"],
+                        "text-size": 15,
+                        "text-anchor": "center",
+                        "text-offset": [0, 0]
+                    }
+                },
                 {
                     "id": "metoffice",
                     "name": "Weather Stations", 
