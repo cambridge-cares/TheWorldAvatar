@@ -138,15 +138,15 @@ docker-compose -f "docker-compose_stack.yml" up -d --build
 An overview of all provided API endpoints and their functionality is provided after agent start-up at the API root [http://localhost:5002/]. All requests are to be sent as GET requests and all available endpoints are listed below:
 
 - GET request to instantiate all UK-AIR stations (only new stations will be added, already instantiated stations will not be overwritten)
-> `/api/airqualityagent/instantiate/stations` 
+> `/airqualityagent/instantiate/stations` 
 - GET request to instantiate UK-AIR readings for instantiated stations (only new station readings will be added, already instantiated readings will not be overwritten)
-> `/api/airqualityagent/instantiate/readings`
+> `/airqualityagent/instantiate/readings`
 - GET request to add latest time series readings for all instantiated time series 
-> `/api/airqualityagent/update/timeseries`
+> `/airqualityagent/update/timeseries`
 - GET request to update all UK-AIR stations and associated readings, and add latest data for all time series (i.e. instantiate missing stations and readings and append latest time series readings)
-> `/api/airqualityagent/update/all`
+> `/airqualityagent/update/all`
 - GET request to retrieve data about UK-AIR stations and create respective output files for DTVF (i.e. request expects all individual query parameter to be provided in a single nested JSON object with key 'query')
-> `/api/airqualityagent/retrieve/all`
+> `/airqualityagent/retrieve/all`
 
 Example requests are provided in the [resources] folder. The [example retrieve all request] contains further information about allowed parameters to query station and readings data from the knowledge graph and create the respective output files. It has to be noted that using the `circleCenter` and `circleRadius` parameters to retrieve only stations within a particular area (using Blazegraph's geospatial search capabilities) requires a Blazegraph namespace with geospatial capabilities enabled.
 

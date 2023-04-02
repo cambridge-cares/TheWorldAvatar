@@ -24,7 +24,7 @@ outputtasks_bp = Blueprint(
 # output files for Digital Twin Visualisation Framework
 # All query parameters are expected as SINGLE JSON object 'query' (to follow
 # the convention introduced in the JPS_BASE_LIB)
-@outputtasks_bp.route('/api/airqualityagent/retrieve/all', methods=['GET'])
+@outputtasks_bp.route('/airqualityagent/retrieve/all', methods=['GET'])
 def api_retrieve_all_stations():
     #
     # Check arguments (query parameters)
@@ -39,16 +39,16 @@ def api_retrieve_all_stations():
     # Get received 'query' JSON object which holds all parameters
     try:
         query = request.json['query']
-    except:
+    except Exception as ex:
         logger.error('No JSON "query" object could be identified.')
-        raise InvalidInput('No JSON "query" object could be identified.')
+        raise InvalidInput('No JSON "query" object could be identified.') from ex
 
     # Output directory
     try:
         inputs['outdir'] = str(query['outDir'])
-    except:
+    except Exception as ex:
         logger.error('Required output directory could not be determined.')
-        raise InvalidInput('Required output directory could not be determined.')
+        raise InvalidInput('Required output directory could not be determined.') from ex
     if not pathlib.Path.exists(pathlib.Path(inputs['outdir'])):
         logger.error('Provided output directory does not exist.')
         raise InvalidInput('Provided output directory does not exist.')
@@ -59,18 +59,18 @@ def api_retrieve_all_stations():
             obstypes = [str(i) for i in obstypes]
             # Remove potential EMS namespace if IRI is provided
             inputs['observation_types'] = [i.split('/')[-1].split('>')[0] for i in obstypes]
-        except:
+        except Exception as ex:
             logger.error('Parameter "observationTypes" not provided in expected format (list of strings).')
-            raise InvalidInput('Parameter "observationTypes" not provided in expected format (list of strings).')
+            raise InvalidInput('Parameter "observationTypes" not provided in expected format (list of strings).') from ex
 
     # Parameters for potential geospatial search
     if 'circleCenter' in query and 'circleRadius' in query:
         try:
             inputs['circle_center'] = str(query['circleCenter'])
             inputs['circle_radius'] = str(query['circleRadius'])
-        except:
+        except Exception as ex:
             logger.error('Parameter "circleCenter" and/or "circleRadius" not provided in expected format.')
-            raise InvalidInput('Parameter "circleCenter" and/or "circleRadius" not provided in expected format.')
+            raise InvalidInput('Parameter "circleCenter" and/or "circleRadius" not provided in expected format.') from ex
         if '#' not in inputs['circle_center']:
             logger.error('Parameter "circleCenter" does not follow "lat#lon" format.')
             raise InvalidInput('Parameter "circleCenter" does not follow "lat#lon" format.')           
@@ -93,8 +93,8 @@ def api_retrieve_all_stations():
         # Instantiate stations
         create_json_output_files(**inputs)
         print(f"Output files written to: {inputs['outdir']}")
-        return jsonify({"status": '200', "msg": "success"})
+        return jsonify({'msg': f"Output files written to: {inputs['outdir']}"}), 200
 
     except Exception as ex:
-        print(ex)
-        return jsonify({"status": '500', 'errormsg': 'Retrieving outputs failed'})
+        logger.error('Retrieving outputs failed: ' + str(ex))
+        return jsonify({'msg': 'Retrieving outputs failed: ' + str(ex)}), 500
