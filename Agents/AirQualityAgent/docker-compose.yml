@@ -12,7 +12,7 @@ services:
       # Target PostGIS/PostgreSQL database name
       # (default name "postgres" required for Ontop to work)
       - DATABASE=postgres
-      - GEOSERVER_WORKSPACE=airquality
+      - GEOSERVER_WORKSPACE=stations
       - ONTOP_FILE=/app/resources/ontop.obda
     ports:
       - "5002:5000"
