@@ -16,8 +16,7 @@ setup(
     install_requires= [
         'APScheduler==3.9.1',
         'Flask==2.2.2',
-        #TODO: uncomment if necessary to interact with PostGIS
-        #'JayDeBeApi==1.2.3',
+        'JayDeBeApi==1.2.3',
         'pandas~=1.4',
         'py4jps==1.0.34', 
         'requests==2.28.1',

@@ -79,7 +79,7 @@ def get_all_airquality_stations(query_endpoint: str = QUERY_ENDPOINT,
     # Execute query
     results = kg_client.performQuery(query=query_string)
     # Extract results in required format
-    res = [(r['id'], r['station']) for r in results]
+    res = [(r['stationID'], r['station']) for r in results]
     res = dict(res)
     
     return res
