@@ -75,22 +75,18 @@ def retrieve_station_data_from_api(crs: str = 'EPSG:4326') -> list:
     if crs and re.match(r"EPSG:\d+", crs):
         url = f'https://uk-air.defra.gov.uk/sos-ukair/api/v1/stations?{crs}'
         if crs != 'EPSG:4326':
-            print('Provided CRS is different from "EPSG:4326". Extraction of ' \
-                + 'latitude and longitude can be erroneous.')
-            #logger.info('Provided CRS is different from "EPSG:4326". Extraction of ' \
-            #          + 'latitude and longitude can be erroneous.')
+            logger.info('Provided CRS is different from "EPSG:4326". Extraction of ' \
+                      + 'latitude and longitude can be erroneous.')
     else:
         raise InvalidInput ("Provided CRS does not match expected 'EPSG:' format.")
 
     try:
-        print('Retrieving station data from API ...')
-        #logger.info('Retrieving station data from API ...')
+        logger.info('Retrieving station data from API ...')
         stations_raw = requests.get(url=url).json()
-        print('Station data successfully retrieved.')
-        #logger.info('Station data successfully retrieved.')
+        logger.info('Station data successfully retrieved.')
     except Exception as ex:
-        #logger.error("Error while retrieving station data from API.")
-        raise APIException("Error while retrieving station data from API.")  
+        logger.error(f"Error while retrieving station data from API: {ex}")
+        raise APIException("Error while retrieving station data from API.") from ex
 
     # Create DataFrame from json response and condition data
     # StationIDs are no unique identifiers for stations (e.g. a station with several
@@ -141,12 +137,10 @@ def instantiate_all_stations(query_endpoint: str = QUERY_ENDPOINT,
 
     # Instantiate missing stations
     print('Instantiate/update stations in KG ...')
-    #logger.info('Instantiate/update stations in KG ...')
     instantiate_stations(station_data=to_instantiate,
                          query_endpoint=query_endpoint,
                          update_endpoint=update_endpoint)
     print('Stations successfully instantiated/updated.')
-    #logger.info('Stations successfully instantiated/updated.')
     
     return len(missing_ids)
 
@@ -170,8 +164,7 @@ def _condition_airquality_data(station_data: dict) -> dict:
     try:
         id = str(list(station_data.keys())[0])
     except:
-        #logger.warning("No station data to condition for query template.")
-        print("No station data to condition for query template.")
+        logger.warning("No station data to condition for query template.")
         return conditioned
 
     conditioned['id'] = id
@@ -185,8 +178,7 @@ def _condition_airquality_data(station_data: dict) -> dict:
     if ('latitude' in station_data[id].keys()) and ('longitude' in station_data[id].keys()):
         conditioned['location'] = str(station_data[id]['latitude']) + '#' + str(station_data[id]['longitude'])
     else:
-        #logger.warning(f"Station {station_data['id']} does not have location data.")
-        print(f"Station {station_data[id]['station']} does not have location data.")
+        logger.warning(f"Station {station_data['id']} does not have location data.")
     
     return conditioned
 

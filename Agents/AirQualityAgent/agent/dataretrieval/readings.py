@@ -125,7 +125,7 @@ def get_time_series_data(station_iris: list = None,
             rec = re.compile(r'Z$')
             if not bool(rec.match(time_string)):
                 time_string += 'Z'
-                #logger.info('Provided time string assumed in UTC.')
+                logger.info('Provided time string assumed in UTC.')
             rec = re.compile(r'\d{4}-\d{1,2}-\d{1,2}T\d{1,2}:\d{1,2}Z')
             if bool(rec.match(time_string)):
                 t = dt.datetime.strptime(time_string, '%Y-%m-%dT%H:%MZ')
@@ -144,15 +144,15 @@ def get_time_series_data(station_iris: list = None,
     if tmin:
         try:
             tmin = _validate_time_format(tmin)
-        except:
-            #logger.info(f'Provided format of tmin could not be derived. Expected format: {TIME_FORMAT}')
-            raise InvalidInput(f'Provided format of tmin could not be derived. Expected format: {TIME_FORMAT}')
+        except Exception as ex:
+            logger.error(f'Provided format of tmin could not be derived. Expected format: {TIME_FORMAT}')
+            raise InvalidInput(f'Provided format of tmin could not be derived. Expected format: {TIME_FORMAT}') from ex
     if tmax:
         try:
             tmax = _validate_time_format(tmax)
-        except:
-            #logger.info(f'Provided format of tmax could not be derived. Expected format: {TIME_FORMAT}')
-            raise InvalidInput(f'Provided format of tmax could not be derived. Expected format: {TIME_FORMAT}')
+        except Exception as ex:
+            logger.error(f'Provided format of tmax could not be derived. Expected format: {TIME_FORMAT}')
+            raise InvalidInput(f'Provided format of tmax could not be derived. Expected format: {TIME_FORMAT}') from ex
 
     # Create DataFrame from instantiated observation time series
     # ['station', 'stationID', 'quantityType', 'dataIRI', 'comment', 'tsIRI', 'unit', 'reading']
@@ -170,19 +170,20 @@ def get_time_series_data(station_iris: list = None,
     ts_names = []
     ts_units = []
     
-    # Initialise TimeSeriesClient
-    # ts_client = TSClient.tsclient_with_default_settings()
-    ts_client = TSClient(kg_client=kgclient, rdb_url=DB_URL, rdb_user=DB_USER, 
+    # Initialise KG and TimeSeries Clients
+    kg_client = KGClient(query_endpoint, update_endpoint)
+    ts_client = TSClient(kg_client=kg_client, rdb_url=DB_URL, rdb_user=DB_USER, 
                          rdb_password=DB_PASSWORD)
 
     for dataIRIs in dataIRIs_list:
 
         # Get time series within desired bounds
         try:
-            ts_data.append(ts_client.getTimeSeriesWithinBounds(dataIRIs, tmin, tmax))
-        except:
-            #logger.error(f'Error while retrieving time series data for dataIRIs: {dataIRIs}')
-            raise TSException(f'Error while retrieving time series data for dataIRIs: {dataIRIs}')
+            with ts_client.connect() as conn:
+                ts_data.append(ts_client.tsclient.getTimeSeriesWithinBounds(dataIRIs, tmin, tmax, conn))
+        except Exception as ex:
+            logger.error(f'Error while retrieving time series data for dataIRIs: {dataIRIs}')
+            raise TSException(f'Error while retrieving time series data for dataIRIs: {dataIRIs}') from ex
         
         # Get time series names and units (as dict with dataIRIs as key)
         df_sub = df.loc[df['dataIRI'].isin(dataIRIs), ['dataIRI','unit', 'comment']]
