@@ -32,9 +32,9 @@ READINGS_MAPPING = {
 
 # Mapping of units to OM units and symbols
 UNITS_MAPPING = {
-    'mg.m-3': (OM_MILLIG_M3, 'mg/m3'),
-    'ug.m-3': (OM_MICROG_M3, 'μg/m3'), 
-    'ng.m-3': (OM_NANOG_M3, 'ng/m3'),
+    'mg.m-3': OM_MILLIG_M3,
+    'ug.m-3': OM_MICROG_M3, 
+    'ng.m-3': OM_NANOG_M3
 }
 
 # Times are reported in ISO 8601 dateTime (UTC)

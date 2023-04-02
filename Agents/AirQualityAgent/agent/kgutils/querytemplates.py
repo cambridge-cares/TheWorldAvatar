@@ -7,12 +7,13 @@
 # required SPARQL queries
 
 from agent.datamodel import *
+from agent.kgutils.stackclients import PostGISClient
 
 
 def all_airquality_station_ids() -> str:
     # Returns query to retrieve all identifiers of instantiated stations
     query = f"""
-        SELECT ?id
+        SELECT distinct ?id
         WHERE {{
             ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
                      <{EMS_DATA_SOURCE}> "UK-AIR Sensor Observation Service" ;
@@ -22,36 +23,41 @@ def all_airquality_station_ids() -> str:
     return query
 
 
+def filter_stations_in_circle(circle_center: str, circle_radius: str):
+    # Retrieve stationIRIs for stations of interest
+    lat, lon = circle_center.split('#')
+    lat = float(lat)
+    lon = float(lon)
+    circle_radius = float(circle_radius)
+    postgis_client = PostGISClient()
+    iris = postgis_client.get_feature_iris_in_circle(lat, lon, circle_radius)
+    iris = ', '.join(f'<{iri}>' for iri in iris)
+    filter_expression = f'FILTER ( ?station IN ({iris}) )'
+    
+    return filter_expression
+
+
 def instantiated_airquality_stations(circle_center: str = None,
                                      circle_radius: str = None) -> str:
     # Returns query to retrieve identifiers and IRIs of instantiated stations
-    if not circle_center and not circle_radius:
-        # Retrieve all stations
-        query = f"""
-            SELECT ?id ?station
-            WHERE {{
-            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                     <{EMS_DATA_SOURCE}> "UK-AIR Sensor Observation Service" ;
-                     <{EMS_HAS_IDENTIFIER}> ?id 
-                }}
-        """
-    else:
+
+    if circle_center and circle_radius:
         # Retrieve only stations in provided circle (radius in km)
-        query = f"""
-            SELECT ?id ?station
-            WHERE {{
-                  SERVICE geo:search {{
-                    ?station geo:search "inCircle" .
-                    ?station geo:predicate <{EMS_HAS_OBSERVATION_LOCATION}> .
-                    ?station geo:searchDatatype <{GEOLIT_LAT_LON}> .
-                    ?station geo:spatialCircleCenter "{circle_center}" .
-                    ?station geo:spatialCircleRadius "{circle_radius}" . 
-                }}
-                ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                         <{EMS_DATA_SOURCE}> "UK-AIR Sensor Observation Service" ;
-                         <{EMS_HAS_IDENTIFIER}> ?id 
-                }}
-        """
+        filter_expression = filter_stations_in_circle(circle_center, circle_radius)
+    else:
+        # Returns query to retrieve all instantiated station details
+        filter_expression = ''
+
+    # Construct query
+    query = f"""
+        SELECT ?stationID ?station
+        WHERE {{
+        {filter_expression}
+        ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                 <{EMS_DATA_SOURCE}> "UK-AIR Sensor Observation Service" ;
+                 <{EMS_HAS_IDENTIFIER}> ?stationID .
+            }}
+    """
     
     return query
 
@@ -59,55 +65,40 @@ def instantiated_airquality_stations(circle_center: str = None,
 def instantiated_airquality_stations_with_details(circle_center: str = None,
                                                   circle_radius: str = None) -> str:
     # Returns query to retrieve all instantiated station details
-    if not circle_center and not circle_radius:
-        # Retrieve all stations
-        query = f"""
-            SELECT ?stationID ?station ?label ?latlon ?elevation ?dataIRI
-            WHERE {{
-            ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                     <{EMS_DATA_SOURCE}> "UK-AIR Sensor Observation Service" ;
-                     <{EMS_HAS_IDENTIFIER}> ?stationID .
-            OPTIONAL {{ ?station <{RDFS_LABEL}> ?label }}
-            OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_LOCATION}> ?latlon }}
-            OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
-            OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI }}
-            }}
-        """
-    else:
+
+    if circle_center and circle_radius:
         # Retrieve only stations in provided circle (radius in km)
-        query = f"""
-            SELECT ?stationID ?station ?label ?latlon ?elevation ?dataIRI
-            WHERE {{
-                  SERVICE geo:search {{
-                    ?station geo:search "inCircle" .
-                    ?station geo:predicate <{EMS_HAS_OBSERVATION_LOCATION}> .
-                    ?station geo:searchDatatype <{GEOLIT_LAT_LON}> .
-                    ?station geo:spatialCircleCenter "{circle_center}" .
-                    ?station geo:spatialCircleRadius "{circle_radius}" . 
-                }}
-                ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
-                         <{EMS_DATA_SOURCE}> "UK-AIR Sensor Observation Service" ;
-                         <{EMS_HAS_IDENTIFIER}> ?stationID .
-                OPTIONAL {{ ?station <{RDFS_LABEL}> ?label }}
-                OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_LOCATION}> ?latlon }}
-                OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
-                OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI }}
-                }}
-        """
+        filter_expression = filter_stations_in_circle(circle_center, circle_radius)
+    else:
+        # Returns query to retrieve all instantiated station details
+        filter_expression = ''
+
+    # Construct query
+    query = f"""
+        SELECT ?stationID ?station ?label ?latlon ?elevation ?dataIRI
+        WHERE {{
+        {filter_expression}
+        ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
+                 <{EMS_DATA_SOURCE}> "UK-AIR Sensor Observation Service" ;
+                 <{EMS_HAS_IDENTIFIER}> ?stationID .
+        OPTIONAL {{ ?station <{RDFS_LABEL}> ?label }}
+        OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_LOCATION}> ?latlon }}
+        OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
+        OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI }}
+        }}
+    """
     
     return query
 
 
 def add_station_data(station_iri: str = None, dataSource: str = None, 
-                     label: str = None, id: str = None, location: str = None,
-                     elevation: float = None) -> str:
+                     label: str = None, id: str = None, elevation: float = None) -> str:
     if station_iri:
         # Returns triples to instantiate a measurement station according to OntoEMS
         triples = f"<{station_iri}> <{RDF_TYPE}> <{EMS_REPORTING_STATION}> . "
         if dataSource: triples += f"<{station_iri}> <{EMS_DATA_SOURCE}> \"{dataSource}\"^^<{XSD_STRING}> . "
         if label: triples += f"<{station_iri}> <{RDFS_LABEL}> \"{label}\"^^<{XSD_STRING}> . "
         if id: triples += f"<{station_iri}> <{EMS_HAS_IDENTIFIER}> \"{id}\"^^<{XSD_STRING}> . "
-        if location: triples += f"<{station_iri}> <{EMS_HAS_OBSERVATION_LOCATION}> \"{location}\"^^<{GEOLIT_LAT_LON}> . "
         if elevation: triples += f"<{station_iri}> <{EMS_HAS_OBSERVATION_ELEVATION}> \"{elevation}\"^^<{XSD_FLOAT}> . "
     else:
         triples = None
@@ -116,7 +107,7 @@ def add_station_data(station_iri: str = None, dataSource: str = None,
 
 
 def add_om_quantity(station_iri, quantity_iri, quantity_type, data_iri,
-                    data_iri_type, unit, symbol, comment, sameas=None):
+                    data_iri_type, unit, comment, sameas=None):
     """
         Create triples to instantiate station measurements according to OntoEMS
     """
@@ -129,14 +120,11 @@ def add_om_quantity(station_iri, quantity_iri, quantity_type, data_iri,
         <{data_iri}> <{RDF_TYPE}> <{data_iri_type}> . 
     """
     if unit: 
-        triples += f"""<{data_iri}> <{OM_HAS_UNIT}> <{unit}> . 
-                       <{unit}> <{RDF_TYPE}> <{OM_UNIT}> . """
-        if symbol:
-            triples += f"""<{unit}> <{OM_SYMBOL}> "{symbol}"^^<{XSD_STRING}> . """
+        triples += f"<{data_iri}> <{OM_HAS_UNIT}> <{unit}> . "
 
     # Create optional sameAs for quantity
     if sameas:
-        triples += f"""<{quantity_iri}> <{SAMEAS}> <{sameas}> . """
+        triples += f"<{quantity_iri}> <{SAMEAS}> <{sameas}> . "
 
     return triples
 

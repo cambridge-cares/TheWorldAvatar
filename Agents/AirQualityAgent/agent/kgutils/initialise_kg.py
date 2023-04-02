@@ -77,14 +77,23 @@ def instantiate_all_units():
 
     query = f"""
         INSERT DATA {{
+            <{OM_DEGREE_C}> <{RDF_TYPE}> <{OM_UNIT}> . 
             <{OM_DEGREE_C}> <{OM_SYMBOL}> \"{DEG_C}\"^^<{XSD_STRING}> . 
+            <{OM_HECTO_PASCAL}> <{RDF_TYPE}> <{OM_UNIT}> . 
             <{OM_HECTO_PASCAL}> <{OM_SYMBOL}> \"{HEC_PA}\"^^<{XSD_STRING}> . 
+            <{OM_PERCENT}> <{RDF_TYPE}> <{OM_UNIT}> . 
             <{OM_PERCENT}> <{OM_SYMBOL}> \"{PERCENT}\"^^<{XSD_STRING}> . 
+            <{OM_MPH}> <{RDF_TYPE}> <{OM_UNIT}> . 
             <{OM_MPH}> <{OM_SYMBOL}> \"{MI_PH}\"^^<{XSD_STRING}> . 
+            <{OM_DEGREE}> <{RDF_TYPE}> <{OM_UNIT}> . 
             <{OM_DEGREE}> <{OM_SYMBOL}> \"{DEG}\"^^<{XSD_STRING}> . 
+            <{OM_MILLIG_M3}> <{RDF_TYPE}> <{OM_UNIT}> . 
             <{OM_MILLIG_M3}> <{OM_SYMBOL}> \"{MILLIG_M3}\"^^<{XSD_STRING}> . 
+            <{OM_MICROG_M3}> <{RDF_TYPE}> <{OM_UNIT}> . 
             <{OM_MICROG_M3}> <{OM_SYMBOL}> \"{MICROG_M3}\"^^<{XSD_STRING}> . 
+            <{OM_NANOG_M3}> <{RDF_TYPE}> <{OM_UNIT}> . 
             <{OM_NANOG_M3}> <{OM_SYMBOL}> \"{NANOG_M3}\"^^<{XSD_STRING}> .
+            
     }}"""
 
     return query

@@ -315,17 +315,13 @@ def add_readings_for_station(station_iri: str, readings: dict):
         # Create Measure IRI and assign unit
         data_iri = KB + 'Measure_' + str(uuid.uuid4())
         data_iri_type = OM_MEASURE
-        unit = UNITS_MAPPING.get(u)
-        if unit:
-            om_unit = unit[0]
-            om_symbol = unit[1]
-        else: 
-            om_unit, om_symbol = None, None
+        # Get mapped unit type (None if not defined)
+        om_unit = UNITS_MAPPING.get(u)
 
         # Add triples to instantiate
         triples += add_om_quantity(station_iri, quantity_iri, quantity_type,
-                                   data_iri, data_iri_type, om_unit, om_symbol,
-                                   comment=p, sameas=eionet)
+                                   data_iri, data_iri_type, om_unit, comment=p,
+                                   sameas=eionet)
 
         # Get data to bulkInit time series
         dataIRIs.append(data_iri)
