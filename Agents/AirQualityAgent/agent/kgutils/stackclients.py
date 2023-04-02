@@ -230,10 +230,11 @@ class GeoserverClient(StackClient):
 
 
 def create_geojson_for_postgis(station_iri: str, station_name: str, station_type: str,
-                               station_subtype: str, lat: float, long: float, kg_endpoint: str):
+                               lat: float, long: float, kg_endpoint: str):
     """
     Create GeoJSON object for upload to PostGIS database
-    Needs to contain at least the following properties for FeatureInfoAgent to work:
+    Initially needed to contain at least the following properties for FeatureInfoAgent 
+    to work (this is subject to change, but kept for reference):
         "name" - human readable name of the feature 
         "iri" - full IRI of the feature as represented in the knowledge graph
         "endpoint" - URL of the Blazegraph namespace containing data on the feature,
@@ -250,7 +251,6 @@ def create_geojson_for_postgis(station_iri: str, station_name: str, station_type
         'endpoint': kg_endpoint,
         'geom_iri': station_iri + '/geometry',
         'type': station_type,
-        'subtype': station_subtype,
     }
 
     # Define geometry

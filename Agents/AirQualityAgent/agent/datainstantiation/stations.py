@@ -15,11 +15,14 @@ import requests
 import pandas as pd
 
 from agent.kgutils.querytemplates import *
-from agent.dataretrieval.stations import get_all_airquality_station_ids
 from agent.kgutils.kgclient import KGClient
+from agent.kgutils.stackclients import (GdalClient, GeoserverClient,
+                                        OntopClient, PostGISClient,
+                                        create_geojson_for_postgis)
+from agent.dataretrieval.stations import get_all_airquality_station_ids
 from agent.errorhandling.exceptions import APIException, InvalidInput
-from agent.datamodel.utils import PREFIXES
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
+
 
 # Initialise logger
 from py4jps import agentlogging
@@ -37,6 +40,12 @@ def instantiate_stations(station_data: list,
                            provided by UK AIR API (already cleaned)
     """
     
+    # Initialise relevant Stack Clients and parameters
+    postgis_client = PostGISClient()
+    gdal_client = GdalClient()
+    geoserver_client = GeoserverClient()
+    station_type = 'UK-AIR Reporting station'
+
     # Initialise update query
     query_string = f"""
         INSERT DATA {{
@@ -48,7 +57,37 @@ def instantiate_stations(station_data: list,
         # Extract station information from API result
         to_instantiate = _condition_airquality_data(data)
         to_instantiate['station_iri'] = station_IRI
+        # Remove location and subtype info to be handled separately
+        lat, lon = to_instantiate.pop('location').split('#')
+
+        # Create SPARQL update for Blazegraph
         query_string += add_station_data(**to_instantiate)
+
+        # Create GeoJSON file for upload to PostGIS
+        lat = float(lat)
+        lon = float(lon)
+        station_name = station_type + f' at {lat},{lon}' if not \
+                       to_instantiate.get('label') else to_instantiate.get('label')        
+        geojson = create_geojson_for_postgis(station_iri=station_IRI, station_name=station_name,
+                                             station_type=station_type, lat=lat, long=lon, 
+                                             kg_endpoint=query_endpoint)
+        
+        # Upload OBDA mapping and create Geoserver layer when first geospatial
+        # data is uploaded to PostGIS
+        if not postgis_client.check_table_exists():
+            logger.info('Uploading OBDA mapping ...')
+            OntopClient.upload_ontop_mapping()
+            # Initial data upload required to create postGIS table and Geoserver layer            
+            logger.info('Uploading GeoJSON to PostGIS ...')
+            gdal_client.uploadGeoJSON(geojson)
+            logger.info('Creating layer in Geoserver ...')
+            geoserver_client.create_workspace()
+            geoserver_client.create_postgis_layer()
+        else:        
+            # Upload new geospatial information
+            if not postgis_client.check_point_feature_exists(lat, lon, station_type):
+                logger.info('Uploading GeoJSON to PostGIS ...')
+                gdal_client.uploadGeoJSON(geojson)
 
     # Close query
     query_string += f"}}"
