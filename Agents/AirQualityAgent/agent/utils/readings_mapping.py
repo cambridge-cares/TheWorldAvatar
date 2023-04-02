@@ -7,10 +7,8 @@
 # observation variables from UK-AIR Sensor Observation Service to corresponding
 # concepts and units as defined in OntoEMS
 
-from math import nan
-
-from agent.datamodel.observation_types import *
 from agent.datamodel.iris import *
+from agent.datamodel.observation_types import *
 from agent.kgutils.javagateway import jpsBaseLibGW
 
 # Create Java classes for all time series data

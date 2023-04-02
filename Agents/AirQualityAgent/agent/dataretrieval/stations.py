@@ -14,7 +14,6 @@ import pathlib
 import pandas as pd
 from agent.kgutils import kgclient
 
-#import agentlogging
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.timeseries import TSClient
 from agent.kgutils.querytemplates import *
@@ -24,7 +23,8 @@ from agent.dataretrieval.readings import get_time_series_data
 from agent.utils.output_formatting import create_geojson_output, create_metadata_output
 
 # Initialise logger
-#logger = agentlogging.get_logger("prod")
+from py4jps import agentlogging
+logger = agentlogging.get_logger("prod")
 
 
 def get_all_airquality_station_ids(query_endpoint: str = QUERY_ENDPOINT,

@@ -6,12 +6,11 @@
 # The purpose of this module is to retrieve relevant properties and settings 
 # (e.g. for the Time Series Client) from Stack clients
 
-from py4jps import agentlogging
-
 from agent.kgutils.javagateway import stackClientsGw
 from agent.utils.env_configs import DATABASE, NAMESPACE
 
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
@@ -21,8 +20,7 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DB_URL, DB_USER, DB_PASSWORD, \
-           QUERY_ENDPOINT, UPDATE_ENDPOINT, ONTOP_URL, NAMESPACE
+    global DB_URL, DB_USER, DB_PASSWORD, QUERY_ENDPOINT, UPDATE_ENDPOINT, ONTOP_URL
     
     # Create module views to relevant Stack clients
     stackClientsView = stackClientsGw.createModuleView()

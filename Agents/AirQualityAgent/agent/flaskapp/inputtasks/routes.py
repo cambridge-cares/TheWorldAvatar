@@ -5,7 +5,6 @@
 
 from flask import Blueprint, request, jsonify
 
-#import agentlogging
 from agent.datainstantiation.stations import instantiate_all_stations
 from agent.datainstantiation.readings import instantiate_all_station_readings
 from agent.datainstantiation.readings import add_all_readings_timeseries
@@ -13,7 +12,8 @@ from agent.datainstantiation.readings import update_all_stations
 
 
 # Initialise logger
-#logger = agentlogging.get_logger("prod")
+from py4jps import agentlogging
+logger = agentlogging.get_logger("prod")
 
 inputtasks_bp = Blueprint(
     'inputtasks_bp', __name__

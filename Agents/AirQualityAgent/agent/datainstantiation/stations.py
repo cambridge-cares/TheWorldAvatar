@@ -14,7 +14,6 @@ import re
 import requests
 import pandas as pd
 
-#import agentlogging
 from agent.kgutils.querytemplates import *
 from agent.dataretrieval.stations import get_all_airquality_station_ids
 from agent.kgutils.kgclient import KGClient
@@ -23,7 +22,8 @@ from agent.datamodel.utils import PREFIXES
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 # Initialise logger
-#logger = agentlogging.get_logger("prod")
+from py4jps import agentlogging
+logger = agentlogging.get_logger("prod")
 
 
 def instantiate_stations(station_data: list,

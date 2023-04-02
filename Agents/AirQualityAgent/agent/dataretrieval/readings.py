@@ -11,7 +11,6 @@ import datetime as dt
 import pandas as pd
 from agent.kgutils import kgclient
 
-#import agentlogging
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.timeseries import TSClient
 from agent.kgutils.querytemplates import *
@@ -20,7 +19,8 @@ from agent.utils.stack_configs import DB_PASSWORD, DB_URL, DB_USER, QUERY_ENDPOI
 from agent.utils.readings_mapping import TIME_FORMAT
 
 # Initialise logger
-#logger = agentlogging.get_logger("prod")
+from py4jps import agentlogging
+logger = agentlogging.get_logger("prod")
 
 
 def get_instantiated_observations(stations: list = None,

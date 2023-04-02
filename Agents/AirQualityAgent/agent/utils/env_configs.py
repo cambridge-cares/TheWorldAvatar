@@ -1,29 +1,17 @@
 ################################################
 # Authors: Markus Hofmeister (mh807@cam.ac.uk) #    
-# Date: 31 Mar 2022                            #
+# Date: 08 Sep 2022                            #
 ################################################
 
-# The purpose of this module is to read the properties file with relevant
-# settings (i.e. for the Time Series Client)
+# The purpose of this module is to retrieve relevant properties and settings 
+# (e.g. for the Time Series Client) from environment variables
 
 import os
 import warnings
 
-from py4jps import agentlogging
-from pathlib import Path
-
-
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
-
-
-# Define location of properties file
-# PROPERTIES_FILE = os.path.abspath(os.path.join(Path(__file__).parent.parent.parent, 
-#                   "resources", "airquality.properties"))
-
-# Initialise global variables to be read from properties file
-# global DB_URL, DB_USER, DB_PASSWORD
-# global QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 
 def retrieve_settings():
@@ -54,7 +42,7 @@ def retrieve_settings():
     if DATABASE != 'postgres':
         logger.warning(f'Provided "DATABASE" name {DATABASE} does not match default database name "postgres".')
         warnings.warn(f'Provided "DATABASE" name {DATABASE} does not match default database name "postgres".')
-    
+
     # Retrieve target PostgreSQL/PostGIS table name for geospatial information
     # PostGIS table and Geoserver layer will have same name
     LAYERNAME = os.getenv('LAYERNAME')

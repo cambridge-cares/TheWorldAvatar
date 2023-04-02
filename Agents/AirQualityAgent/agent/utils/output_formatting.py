@@ -5,6 +5,8 @@
 
 # The purpose of this module is to provide functionality to structure
 # output information retrieved from the KG in DTVF suitable formats
+# (i.e. this is mainly deprecated due to DTVF visualisation mainly served via
+# Postgis and Geoserver; however, this functionality is kept as "backup")
 
 import math
 from math import nan

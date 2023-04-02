@@ -11,7 +11,6 @@ import datetime as dt
 import time
 from math import nan
 
-#import agentlogging
 from agent.dataretrieval.readings import *
 from agent.dataretrieval.stations import *
 from agent.datainstantiation.stations import *
@@ -25,7 +24,8 @@ from agent.utils.readings_mapping import READINGS_MAPPING, UNITS_MAPPING, \
                                               TIME_FORMAT, DATACLASS
 
 # Initialise logger
-#logger = agentlogging.get_logger("prod")
+from py4jps import agentlogging
+logger = agentlogging.get_logger("prod")
 
 
 def add_readings_timeseries(instantiated_ts_iris: list = None,
