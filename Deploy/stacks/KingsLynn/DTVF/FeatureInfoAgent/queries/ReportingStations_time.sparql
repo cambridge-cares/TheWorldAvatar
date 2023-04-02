@@ -3,17 +3,31 @@ prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix om:   <http://www.ontology-of-units-of-measure.org/resource/om-2/>
 prefix ems:  <https://www.theworldavatar.com/kg/ontoems/>
 prefix rt:   <http://environment.data.gov.uk/flood-monitoring/def/core/>
+prefix owl:  <http://www.w3.org/2002/07/owl#>
 
-SELECT ?Measurement ?Name ?Unit ?LastUpdate ?MeasurementMethod ?MeasurementPeriod_sec ?Range ?Trend
+SELECT ?Measurement ?Name ?Unit ?Eionet_equivalent ?LastUpdate ?MeasurementMethod ?MeasurementPeriod_sec ?Range ?Trend
 WHERE {
   # Observations/Measurements: account for different unit relations between MetOffice/AirQuality stations and WaterLevelStations (i.e. EA stations)
   {
-    # MetOffice/AirQuality
+    # MetOffice stations
     [IRI] ems:reports/om:hasValue ?Measurement . 
     ?Measurement ^om:hasValue/rdf:type ?type ; 
-                 om:hasUnit/om:symbol ?Unit .                
+                 om:hasUnit/om:symbol ?Unit .
+    FILTER (!REGEX(str(?type), 'AirPollutantConcentration'))
     BIND (concat(replace(str(?type), str(ems:), ''), ' observation') as ?Name)
   } UNION {
+    # AirQuality stations
+    [IRI] ems:reports ?measure .
+    ?measure om:hasValue ?Measurement  ; 
+             rdf:type ?type ; 
+             rdfs:comment ?pollutant .  
+    ?Measurement om:hasUnit/om:symbol ?Unit .
+    FILTER (REGEX(str(?type), 'AirPollutantConcentration'))
+    BIND (concat(ucase(substr(?pollutant, 1, 1)), substr(?pollutant, 2)) as ?Name)   
+    # Add additional information (if available)
+    OPTIONAL { ?measure owl:sameAs ?Eionet_equivalent }
+  } 
+  UNION {
     # EA River Level stations
     [IRI] ems:reports/om:hasValue ?Measurement . 
     ?Measurement rt:parameterName ?Name ;
