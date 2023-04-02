@@ -9,8 +9,6 @@
 import os
 import requests
 
-from py4jps import agentlogging
-
 from agent.datamodel.iris import *
 from agent.datamodel.observation_types import *
 from agent.kgutils.kgclient import KGClient
@@ -18,6 +16,7 @@ from agent.errorhandling.exceptions import KGException
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
@@ -72,8 +71,8 @@ def instantiate_all_units():
         Return SPARQL update to instantiate all required units (both ascii and non-ascii)
     """
 
-    # NOTE: There are reported issues with encoding of special characters, i.e. Blazegraph
-    #       claiming to use utf-8 encoding while actually using iso-8859-1
+    # NOTE: There are reported issues with encoding of special characters, see
+    #       https://github.com/cambridge-cares/TheWorldAvatar/issues/667
     #       --> units displayed wrongly in GUI but corrected when retrieved in code
 
     query = f"""
@@ -81,9 +80,9 @@ def instantiate_all_units():
             <{OM_DEGREE_C}> <{OM_SYMBOL}> \"{DEG_C}\"^^<{XSD_STRING}> . 
             <{OM_HECTO_PASCAL}> <{OM_SYMBOL}> \"{HEC_PA}\"^^<{XSD_STRING}> . 
             <{OM_PERCENT}> <{OM_SYMBOL}> \"{PERCENT}\"^^<{XSD_STRING}> . 
-            <{OM_MILLIG_M3}> <{OM_SYMBOL}> \"{MILLIG_M3}\"^^<{XSD_STRING}> . 
             <{OM_MPH}> <{OM_SYMBOL}> \"{MI_PH}\"^^<{XSD_STRING}> . 
             <{OM_DEGREE}> <{OM_SYMBOL}> \"{DEG}\"^^<{XSD_STRING}> . 
+            <{OM_MILLIG_M3}> <{OM_SYMBOL}> \"{MILLIG_M3}\"^^<{XSD_STRING}> . 
             <{OM_MICROG_M3}> <{OM_SYMBOL}> \"{MICROG_M3}\"^^<{XSD_STRING}> . 
             <{OM_NANOG_M3}> <{OM_SYMBOL}> \"{NANOG_M3}\"^^<{XSD_STRING}> .
     }}"""
@@ -91,15 +90,15 @@ def instantiate_all_units():
     return query
 
 
-def upload_ontology(tbox_url=TBOX, abox_url=ABOX):
+def upload_ontology(tbox_url=TBOX):
     """
-    Uploads TBox and ABox to KG namespace
+    Uploads TBox and unit symbols to KG namespace
     NOTE: Uploading .owl files seems to create blank nodes when "collections" are
     used in the .owl file. This behaviour has been observed using both the fileUpload
     method of the RemoteStoreClient and using the owlready2 Python library.
+    
     Arguments:
         tbox_url - URL to TBox
-        abox_url - URL to ABox
     """
 
     # Create KGclient to upload .owl files
@@ -114,31 +113,30 @@ def upload_ontology(tbox_url=TBOX, abox_url=ABOX):
         raise KGException("Unable to retrieve TBox version from KG.") from ex
 
     if not res:
-        # Upload TBox and ABox if not already instantiated
+        # Upload TBox if not already instantiated
         temp_fp = 'tmp.owl'
-        for i in [tbox_url, abox_url]:
+        try:
+            # Retrieve .owl file
+            logger.info(f'Retrieving TBox from TWA ...')
             try:
-                # Retrieve .owl file
-                logger.info(f'Retrieving {i} from TWA ...')
-                try:
-                    content = requests.get(i)
-                    if content.status_code != 200:
-                        raise Exception(f'HTTP error code for retrieving owl file: {content.status_code}')
-                except Exception as ex:
-                    logger.error(f"Unable to retrieve {i} from TWA server.")
-                    raise KGException(f"Unable to retrieve {i} from TWA server.") from ex
-                logger.info(f'Writing temporary {i} .owl file ...')
-                with open(temp_fp, 'w') as f:
-                    f.write(content.text)
-                # Create Java file
-                temp_f = kg_client.jpsBaseLib_view.java.io.File(temp_fp)
-                # Upload .owl file to KG
-                logger.info(f'Uploading {i} .owl file to KG ...')
-                kg_client.kg_client.uploadFile(temp_f)
-                os.remove(temp_fp)
+                content = requests.get(tbox_url)
+                if content.status_code != 200:
+                    raise Exception(f'HTTP error code for retrieving owl file: {content.status_code}')
             except Exception as ex:
-                logger.error("Unable to initialise knowledge graph with TBox and ABox.")
-                raise KGException("Unable to initialise knowledge graph with TBox and ABox.") from ex
+                logger.error(f"Unable to retrieve TBox .owl from github.")
+                raise KGException(f"Unable to retrieve TBox .owl from github.") from ex
+            logger.info(f'Writing temporary TBox .owl file ...')
+            with open(temp_fp, 'w') as f:
+                f.write(content.text)
+            # Create Java file
+            temp_f = kg_client.jpsBaseLib_view.java.io.File(temp_fp)
+            # Upload .owl file to KG
+            logger.info(f'Uploading TBox .owl file to KG ...')
+            kg_client.kg_client.uploadFile(temp_f)
+            os.remove(temp_fp)
+        except Exception as ex:
+            logger.error("Unable to initialise knowledge graph with TBox.")
+            raise KGException("Unable to initialise knowledge graph with TBox.") from ex
 
         # Upload all symbols to KG
         logger.info('Instantiating all symbols ...')

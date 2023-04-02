@@ -1,15 +1,13 @@
 from agent.datamodel.observation_types import *
 ###--- Ontology ---#
 TBOX = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoems/OntoEMS.owl'
-ABOX = 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoems/OntoEMS%20ABox.owl'
 
 ###--- Common Base URLs ---###
 # External ontologies
 RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
 XSD = 'http://www.w3.org/2001/XMLSchema#'
-GEO = 'http://www.bigdata.com/rdf/geospatial#'
-GEOLIT = 'http://www.bigdata.com/rdf/geospatial/literals/v1#'
+GEO = 'http://www.opengis.net/ont/geosparql#'
 OM = 'http://www.ontology-of-units-of-measure.org/resource/om-2/'
 OWL = 'http://www.w3.org/2002/07/owl#'
 M3L = 'http://purl.org/iot/vocab/m3-lite#'
@@ -73,6 +71,11 @@ OM_MILLIG_M3 = UOM + 'milligramPerCubicmetre'
 OM_MICROG_M3 = UOM + 'microgramPerCubicMetre'
 OM_NANOG_M3 = UOM + 'nanogramPerCubicMetre'
 
+# GeoSPARQL
+GEO_FEATURE = GEO + 'Feature'
+GEO_HAS_GEOMETRY = GEO + 'hasGeometry'
+GEO_ASWKT = GEO + 'asWKT'
+
 # Data types
 RDF_TYPE = RDF + 'type'
 RDFS_COMMENT = RDFS + 'comment'
@@ -80,7 +83,6 @@ RDFS_LABEL = RDFS + 'label'
 XSD_STRING = XSD + 'string'
 XSD_FLOAT = XSD + 'float'
 XSD_DATETIME = XSD + 'dateTime'
-GEOLIT_LAT_LON = GEOLIT + 'lat-lon'
 
 # Miscellaneous
 SAMEAS = OWL + 'sameAs'

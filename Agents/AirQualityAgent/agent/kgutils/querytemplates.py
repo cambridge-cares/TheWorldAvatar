@@ -38,7 +38,6 @@ def instantiated_airquality_stations(circle_center: str = None,
     else:
         # Retrieve only stations in provided circle (radius in km)
         query = f"""
-            {create_sparql_prefix('geo')}
             SELECT ?id ?station
             WHERE {{
                   SERVICE geo:search {{
@@ -77,7 +76,6 @@ def instantiated_airquality_stations_with_details(circle_center: str = None,
     else:
         # Retrieve only stations in provided circle (radius in km)
         query = f"""
-            {create_sparql_prefix('geo')}
             SELECT ?stationID ?station ?label ?latlon ?elevation ?dataIRI
             WHERE {{
                   SERVICE geo:search {{

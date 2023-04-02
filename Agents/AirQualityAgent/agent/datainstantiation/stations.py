@@ -16,7 +16,6 @@ import pandas as pd
 
 #import agentlogging
 from agent.kgutils.querytemplates import *
-from agent.datamodel.utils import create_sparql_prefix
 from agent.dataretrieval.stations import get_all_airquality_station_ids
 from agent.kgutils.kgclient import KGClient
 from agent.errorhandling.exceptions import APIException, InvalidInput
@@ -40,13 +39,12 @@ def instantiate_stations(station_data: list,
     
     # Initialise update query
     query_string = f"""
-        {create_sparql_prefix('kb')}
         INSERT DATA {{
     """
 
     # Add station details
     for data in station_data:
-        station_IRI = PREFIXES['kb'] + 'ReportingStation_' + str(uuid.uuid4())
+        station_IRI = KB + 'ReportingStation_' + str(uuid.uuid4())
         # Extract station information from API result
         to_instantiate = _condition_airquality_data(data)
         to_instantiate['station_iri'] = station_IRI
