@@ -425,10 +425,9 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * @param relation
 	 * @param domain
 	 * @param range
-	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	public void createOWLDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range, String quantifier) throws JPSRuntimeException {
+	public void createOWLDataProperty(String propertyName, String type, String targetName, String relation, String domain, String range) throws JPSRuntimeException {
 		checkPropertyName(propertyName);
 			OWLDataProperty dataProperty = createDataProperty(propertyName);
 			
@@ -506,7 +505,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			}
 		}
 
-		addDomain(objectProperty, domain);
+		addDomain(objectProperty, domain, quantifier);
 		addRange(objectProperty, range, quantifier);
 		OWLObjectProperty parentProperty = null;
 		if (targetName != null && !targetName.isEmpty() && relation!=null && !relation.isEmpty()) {
@@ -548,9 +547,10 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param domain
+	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addDomain(OWLObjectProperty objectProperty, String domain) throws JPSRuntimeException {
+	private void addDomain(OWLObjectProperty objectProperty, String domain, String quantifier) throws JPSRuntimeException {
 		if(domain==null || domain.isEmpty()){
 			return;
 		}
@@ -558,7 +558,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			addUnionOfDomain(objectProperty, domain.split("UNION"));
 		} else if(domain.contains("INTERSECTION")){
 			addIntersectionOfDomain(objectProperty, domain.split("INTERSECTION"));
-		} else if(domain!=null || !domain.isEmpty()){
+		} else if(quantifier==null || quantifier.isEmpty()){
 			addSingleClassDomain(objectProperty, domain);
 		}
 	}
@@ -594,11 +594,11 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		if(range==null || range.isEmpty()){
 			return;
 		}
-		if(range.contains("UNION")){
+		if(range.contains("UNION") && (quantifier==null || quantifier.isEmpty())){
 			addUnionOfRange(objectProperty, range.split("UNION"));
-		} else if(range.contains("INTERSECTION")){
+		} else if(range.contains("INTERSECTION") && (quantifier==null || quantifier.isEmpty())){
 			addIntersectionOfRange(objectProperty, range.split("INTERSECTION"));
-		}else if(range!=null || !range.isEmpty()){
+		} else if(quantifier==null || quantifier.isEmpty()){
 			addSingleClassRange(objectProperty, range);
 		}
 	}

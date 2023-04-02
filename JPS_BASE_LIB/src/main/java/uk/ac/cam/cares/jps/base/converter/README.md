@@ -190,6 +190,15 @@ Copy all tabular data from the *Filled out CSV file-based template* Section, pas
 
 Once you create the CSV file, you can convert it into OWL by running [TBoxGenerator](#https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/src/main/java/uk/ac/cam/cares/jps/base/converter/TBoxGeneration.java) developed using Java. If you run the TBoxGeneration.java file, it will show a file selection pop-up window. There, browse and select the CSV file you have just created or any other CSV file aligned with the requirements of the CSV file-based template. Following the file selection, TBox Generator will convert the CSV file into OWL and create an OWL file at the same path where the CSV file is located.
 
+## Building and running
+
+Build the base lib by means of `mvn clean install -DskipTests` in the root folder of this project.
+
+In order to run the TBox Generator from the command line, run the following command from within the `target` folder:
+```
+java -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.TBoxGeneration
+```
+
 To run TBox Generator from Python, use the following code:
 ```
 from py4jps.resources import JpsBaseLib

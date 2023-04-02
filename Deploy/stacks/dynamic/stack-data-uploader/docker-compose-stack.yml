@@ -9,6 +9,7 @@ services:
     environment:
       - "STACK_NAME=${STACK_NAME}"
       - "EXECUTABLE=${EXECUTABLE}"
+      - "API_SOCK=${API_SOCK}"
     security_opt:
       - label=disable
     volumes:
