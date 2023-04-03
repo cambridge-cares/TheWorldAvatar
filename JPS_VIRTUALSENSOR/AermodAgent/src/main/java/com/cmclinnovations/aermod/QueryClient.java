@@ -1,6 +1,8 @@
 package com.cmclinnovations.aermod;
 
 import com.hp.hpl.jena.ontology.Individual;
+
+import org.eclipse.rdf4j.model.impl.NumericLiteral;
 import org.eclipse.rdf4j.model.vocabulary.GEOF;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.Expressions;
 import org.eclipse.rdf4j.sparqlbuilder.constraint.SparqlFunction;
@@ -46,6 +48,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +71,9 @@ import org.locationtech.jts.operation.buffer.BufferOp;
 import java.util.Collections;
 import org.apache.jena.sparql.syntax.ElementGroup;
 import org.apache.jena.sparql.syntax.ElementService;
+
+import org.eclipse.rdf4j.sparqlbuilder.rdf.RdfLiteral;
+import org.eclipse.rdf4j.sparqlbuilder.constraint.Expression;
 
 
 
@@ -155,6 +161,7 @@ public class QueryClient {
     private static final Iri HAS_INDIVIDUALCO2Emission = P_CHEM.iri("hasIndividualCO2Emission");
     private static final Iri OCGML_GEOM = P_OCGML.iri("GeometryType");
     private static final Iri OCGML_CITYOBJECT = P_OCGML.iri("cityObjectId");
+    private static final Iri OCGML_OBJECTCLASSID = P_OCGML.iri("objectClassId");
     private static final Iri OCGML_LOD2MULTISURFACEID = P_OCGML.iri("lod2MultiSurfaceId");
     private static final Iri OCGML_BUILDINGID = P_OCGML.iri("buildingId");
     private static final Iri OCGML_ENVELOPETYPE = P_OCGML.iri("EnvelopeType");
@@ -793,12 +800,21 @@ public class QueryClient {
         Variable polygonData = SparqlBuilder.var("polygonData");
         Variable objectIRI = SparqlBuilder.var("objectIRI");
         Variable surfaceIRI = SparqlBuilder.var("surfaceIRI");
+        Variable datatype = SparqlBuilder.var("datatype");
+        Variable objectClassId = SparqlBuilder.var("objectClassId");
+
+        // RdfLiteral.NumericLiteral objectClassId = Rdf.literalOf(35);
+        List<Integer> objectClassIdValues = new ArrayList<>(Arrays.asList(33,35));
+
+        Expression dataType = Expressions.function(SparqlFunction.DATATYPE,polygonData);
 
 
         GraphPattern gp = GraphPatterns.and(surfaceIRI.has(OCGML_GEOM,polygonData).andHas(OCGML_CITYOBJECT, geometricIRI),
-                geometricIRI.has(OCGML_BUILDINGID,objectIRI)).filter(Expressions.not(Expressions.function(SparqlFunction.IS_BLANK, polygonData)));
+                geometricIRI.has(OCGML_OBJECTCLASSID,objectClassId).andHas(OCGML_BUILDINGID,objectIRI)).filter(Expressions.not(Expressions.function(SparqlFunction.IS_BLANK, polygonData)));
         ValuesPattern<Iri> vp = new ValuesPattern<>(objectIRI, ObjectIRI.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
-        query.select(polygonData,objectIRI).where(gp,vp).orderBy(objectIRI);
+        ValuesPattern<Integer> vp2 = new ValuesPattern<>(objectClassId, objectClassIdValues, Integer.class);
+        
+        query.select(polygonData,objectIRI,dataType.as(datatype),objectClassId).where(gp,vp,vp2).orderBy(objectIRI,objectClassId);
         JSONArray GeometricQueryResult = AccessAgentCaller.queryStore(GeospatialQueryIRI,query.getQueryString());
 
         return GeometricQueryResult;

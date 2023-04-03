@@ -6,11 +6,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.util.GeometryFixer;
+import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFilter;
+
 import org.locationtech.jts.io.WKTReader;
 import scala.Tuple2;
-import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -236,7 +245,362 @@ public class Buildings {
         return outputcoordinates;
     }
 
-    /* Get geometrical and geospatial properties of stacks and buildings */
+        /**
+     * Create a polygon with the given points
+     * @param points points of the polygon as a string
+     * @return a polygon
+     */
+    private Geometry toPolygon(String points){
+        int ind = 0;
+        GeometryFactory gF = new GeometryFactory();
+
+        String[] arr = points.split("#");
+
+        Coordinate[] coordinates = new Coordinate[(arr.length) / 3];
+
+        for (int i = 0; i < arr.length; i += 3){
+            coordinates[ind] = new Coordinate(Double.valueOf(arr[i]), Double.valueOf(arr[i+1]), Double.valueOf(arr[i+2]));
+            ind++;
+        }
+
+        return gF.createPolygon(coordinates);
+    }
+
+    /**
+     * Converts an array of coordinates into a string
+     * @param coordinates array of footprint coordinates
+     * @return coordinates as a string
+     */
+    private String coordinatesToString(Coordinate[] coordinates){
+        String output = "";
+
+        for (int i = 0; i < coordinates.length; i++){
+            output = output + "#" + Double.toString(coordinates[i].getX()) + "#" + Double.toString(coordinates[i].getY()) + "#" + Double.toString(coordinates[i].getZ());
+        }
+
+        return output.substring(1, output.length());
+    }
+
+    /**
+     * Inflates a polygon
+     * @param geom polygon geometry
+     * @param distance buffer distance
+     * @return inflated polygon
+     */
+    private Geometry inflatePolygon(Geometry geom, Double distance){
+        ArrayList<Double> zCoordinate = getPolygonZ(geom);
+        BufferParameters bufferParameters = new BufferParameters();
+        bufferParameters.setEndCapStyle(BufferParameters.CAP_ROUND);
+        bufferParameters.setJoinStyle(BufferParameters.JOIN_MITRE);
+        Geometry buffered = BufferOp.bufferOp(geom, distance, bufferParameters);
+        buffered.setUserData(geom.getUserData());
+        setPolygonZ(buffered, zCoordinate);
+        return buffered;
+    }
+
+    /**
+     * Deflates a polygon
+     * @param geom polygon geometry
+     * @param distance buffer distance
+     * @return deflated polygon
+     */
+    private Geometry deflatePolygon(Geometry geom, Double distance){
+        ArrayList<Double> zCoordinate = getPolygonZ(geom);
+        BufferParameters bufferParameters = new BufferParameters();
+        bufferParameters.setEndCapStyle(BufferParameters.CAP_ROUND);
+        bufferParameters.setJoinStyle(BufferParameters.JOIN_MITRE);
+        Geometry buffered = BufferOp.bufferOp(geom, distance * -1, bufferParameters);
+        buffered.setUserData(geom.getUserData());
+        setPolygonZ(buffered, zCoordinate);
+        return buffered;
+    }
+
+        /**
+     * Extract the z coordinates of the polygon vertices
+     * @param geom polygon geometry
+     * @return the z coordinates of the polygon vertices
+     */
+    private static ArrayList<Double> getPolygonZ(Geometry geom){
+        Coordinate[] coordinates = geom.getCoordinates();
+        ArrayList<Double> output = new ArrayList<>();
+
+        for (int i = 0; i < coordinates.length; i++){
+            output.add(coordinates[i].getZ());
+        }
+
+        return output;
+    }
+
+    /**
+     * Sets a polygon's z coordinates to the values from zInput
+     * @param geom polygon geometry
+     * @param zInput ArrayList of values representing z coordinates
+     */
+    private void setPolygonZ(Geometry geom, ArrayList<Double> zInput){
+        Double newZ = Double.NaN;
+
+        for (int i = 0; i < zInput.size(); i++){
+            if (!zInput.get(i).isNaN()){
+                newZ = zInput.get(i);
+                break;
+            }
+        }
+
+        if(newZ.isNaN()){newZ = 10.0;}
+
+        if (geom.getNumPoints() < zInput.size()) {
+            while (geom.getNumPoints() != zInput.size()) {
+                zInput.remove(zInput.size()-1);
+            }
+        }
+        else {
+            while (geom.getNumPoints() != zInput.size()) {
+                zInput.add(1, newZ);
+            }
+        }
+
+        Collections.replaceAll(zInput, Double.NaN, newZ);
+        geom.apply(new CoordinateSequenceFilter() {
+            @Override
+            public void filter(CoordinateSequence cSeq, int i) {
+                cSeq.getCoordinate(i).setZ(zInput.get(i));
+            }
+            @Override
+            public boolean isDone() {
+                return false;
+            }
+            @Override
+            public boolean isGeometryChanged() {
+                return false;
+            }
+        });
+    }
+
+    /**
+     * Returns the ground geometry's exterior ring
+     * @param geometry ground geometry
+     * @param polygonType polygon datatype, such as "<...\POLYGON-3-45-15>"
+     * @return ground geometry with no holes
+     */
+    private String ignoreHole(String geometry, String polygonType){
+        int num;
+        int ind;
+        int count = 1;
+
+        String[] split = polygonType.split("-");
+
+        if (split.length < 4){return geometry;}
+
+        num = Integer.parseInt(split[2]);
+
+        ind = geometry.indexOf("#");
+
+        while (count != num){
+            ind = geometry.indexOf("#", ind + 1);
+            count++;
+        }
+        return geometry.substring(0, ind);
+    }
+
+
+    /**
+     * Extracts the footprint of the building from its ground surface geometries
+     * @param results JSONArray of the query results for ground surface geometries
+     * @return footprint as a string
+     */
+    private String extractFootprint(JSONArray results){
+        double distance = 0.00001;
+        double increment = 0.00001;
+
+        Polygon footprintPolygon;
+        Geometry footprintRing;
+        Coordinate[] footprintCoordinates;
+        ArrayList<Geometry> geometries = new ArrayList<>();
+        GeometryFactory geoFac = new GeometryFactory();
+        GeometryCollection geoCol;
+        Geometry merged;
+        Geometry temp;
+        String geoType;
+
+        if (results.length() == 1){
+            footprintPolygon = (Polygon) toPolygon(ignoreHole(results.getJSONObject(0).get("geometry").toString(), results.getJSONObject(0).get("datatype").toString()));
+        }
+
+        else {
+            for (int i = 0; i < results.length(); i++) {
+                temp = toPolygon(ignoreHole(results.getJSONObject(i).get("geometry").toString(), results.getJSONObject(i).get("datatype").toString()));
+                if (!temp.isValid()){
+                    temp = GeometryFixer.fix(temp);
+                }
+                geometries.add(temp);
+            }
+
+            geoCol = (GeometryCollection) geoFac.buildGeometry(geometries);
+
+            merged = geoCol.union();
+
+            geoType = merged.getGeometryType();
+
+            while (geoType != "Polygon" || deflatePolygon(merged, distance).getGeometryType() != "Polygon"){
+                distance += increment;
+
+                for (int i = 0; i < geometries.size(); i++){
+                    temp = inflatePolygon(geometries.get(i), distance);
+                    if (!temp.isValid()){
+                        temp = GeometryFixer.fix(temp);
+                    }
+                    geometries.set(i, temp);
+                }
+
+                geoCol = (GeometryCollection) geoFac.buildGeometry(geometries);
+                merged = geoCol.union();
+                geoType = merged.getGeometryType();
+            }
+
+            footprintPolygon = (Polygon) deflatePolygon(merged, distance);
+
+            if (!footprintPolygon.isValid()){
+                footprintPolygon = (Polygon) GeometryFixer.fix(footprintPolygon);
+            }
+        }
+
+        footprintRing = footprintPolygon.getExteriorRing();
+
+        footprintCoordinates = footprintRing.getCoordinates();
+
+        return coordinatesToString(footprintCoordinates);
+    }
+
+    public void getProperties2() {
+
+        // Populate a list of chemical plant items (StackIRIString) for which geometric properties will be queried
+        // from OCGML. Also determine the pollutant emissions rate in tons/yr for each plant item.
+
+        // Query Individual CO2 Emissions of plant items
+        JSONArray StackIRIQueryResult = QueryClient.StackQuery(StackQueryIRI);
+        List<String> StackIRIString = IntStream
+                .range(0,StackIRIQueryResult.length())
+                .mapToObj(i -> StackIRIQueryResult.getJSONObject(i).getString("IRI"))
+                .collect(Collectors.toList());
+
+        List<Double> emissionsOfEveryStack = IntStream
+                .range(0,StackIRIQueryResult.length())
+                .mapToObj(i -> StackIRIQueryResult.getJSONObject(i).getDouble("emission"))
+                .collect(Collectors.toList());
+
+
+        // StackIRIString and emissionsOfEveryStack populated
+
+        StackIRIString = StackIRIString.stream().map(i -> i.replace("cityobject","building")).collect(Collectors.toList());
+        JSONArray StackGeometricQueryResult = QueryClient.BuildingGeometricQuery2(GeospatialQueryIRI,StackIRIString);
+
+        String objectIRIPrev = StackGeometricQueryResult.getJSONObject(0).getString("objectIRI");
+        int numberStacks = 0;
+        // Determine indices at which data for a new object starts
+        List<Integer> resultIndices = new ArrayList<>();
+        resultIndices.add(0);
+
+        for (int i = 0; i < StackGeometricQueryResult.length(); i++) {
+            String objectIRI = StackGeometricQueryResult.getJSONObject(i).getString("objectIRI");
+            if (!objectIRI.equals(objectIRIPrev) ) {
+                resultIndices.add(i);
+                objectIRIPrev = objectIRI;
+            }
+        }
+
+        for (int i = 0; i < resultIndices.size(); i++){
+            // Determine range of indices for each object
+            int firstIndex = resultIndices.get(i);
+            int lastIndex;
+            if (i == resultIndices.size()-1){
+                lastIndex = StackGeometricQueryResult.length();
+            } else {
+                lastIndex = resultIndices.get(i+1);
+            }
+
+            // Process results for each object.
+
+            JSONArray groundSurfaces = new JSONArray();
+
+
+
+
+            double minZ = 0.0;
+            double maxZ = 0.0;
+            double minAveZ = 0.0;
+            double StackEastUTM = 0.0;
+            double StackNorthUTM = 0.0;
+            boolean includeObject = true;
+            String objectIRI = "";
+            double radius = 0.0;
+            double aveRoofz = 0.0;
+            double aveGroundz = 0.0;
+            int numberRoofSurfaces = 0;
+            int numberGroundSurfaces = 0;
+            for (int k = firstIndex; k < lastIndex; k++) {
+                JSONObject result = StackGeometricQueryResult.getJSONObject(k);
+                int objectClassId = result.getInt("objectClassId");
+                String polygonVertex = result.getString("polygonData");
+                if (!polygonVertex.contains("#")){
+                    continue;
+                }
+                String[] vertexCoordinates = polygonVertex.split("#");
+                List<Double> xcoord = new ArrayList<>();
+                List<Double> ycoord = new ArrayList<>();
+                List<Double> zcoord = new ArrayList<>();
+                for (int j = 0; j < vertexCoordinates.length; j+=3){
+                    xcoord.add(Double.parseDouble(vertexCoordinates[j]));
+                    ycoord.add(Double.parseDouble(vertexCoordinates[j+1]));
+                    zcoord.add(Double.parseDouble(vertexCoordinates[j+2]));
+                }
+                double polyMinZ = Collections.min(zcoord);
+                double polyMaxZ = Collections.max(zcoord);
+                double polyAveZ = zcoord.stream().mapToDouble(a -> a).average().orElse(0.0);
+
+                if (objectClassId == 33) {
+                    aveRoofz += polyAveZ;
+                    numberRoofSurfaces++;
+                }  else if (objectClassId == 35) {
+                    aveGroundz += polyAveZ;
+                    groundSurfaces.put(result);
+                    numberGroundSurfaces++;
+                }
+            }
+
+            aveRoofz /= numberRoofSurfaces;
+            aveGroundz /= numberGroundSurfaces;
+            String exteriorGroundVertices = extractFootprint(groundSurfaces);
+
+            if (includeObject){
+                numberStacks++;
+                double height = maxZ - minZ;
+                String InputLine = "\'Stk" + numberStacks + "\'" + " " + "BASE_ELEVATION " +
+                        height + " " + StackEastUTM + " " + StackNorthUTM + " \n" ;
+                BPIPPRMStackInput.add(InputLine);
+                StringBuffer averageCoordinate = new StringBuffer();
+                averageCoordinate.append(StackEastUTM).append("#").append(StackNorthUTM).append("#").append(height);
+                StackProperties.add(averageCoordinate.toString());
+                // Search for IRI in StackIRIString
+                int ind = StackIRIString.indexOf(objectIRI);
+                Double emission = emissionsOfEveryStack.get(ind);
+                StackIRIQueryResult.getJSONObject(ind).getDouble("emission");
+                StackEmissions.add(emission);
+                StackDiameter.add(2*radius);
+            }
+
+        }
+
+
+
+
+
+    }
+
+
+
+
+
+    /* Get geometrical and geospatial properties of stacks and buildings. This method queries all the surfaces of each stack and building. */
     public void getProperties() {
 
         // Populate a list of chemical plant items (StackIRIString) for which geometric properties will be queried
@@ -260,6 +624,8 @@ public class Buildings {
         JSONArray StackGeometricQueryResult = QueryClient.StackGeometricQuery(GeospatialQueryIRI,StackIRIString);
 
         if (StackGeometricQueryResult.length() == 0) {
+            getProperties2(StackIRIString);
+            return;
             StackIRIString = StackIRIString.stream().map(i -> i.replace("cityobject","building")).collect(Collectors.toList());
             StackGeometricQueryResult = QueryClient.BuildingGeometricQuery2(GeospatialQueryIRI,StackIRIString);
         }
