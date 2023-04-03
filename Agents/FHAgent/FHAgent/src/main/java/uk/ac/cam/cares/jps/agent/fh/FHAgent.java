@@ -570,10 +570,17 @@ public class FHAgent{
         }
     }
 
+    private void toggleFH (Boolean latestOccState) {
+        //TODO Toggle fumehood here
+    }
 
-    private void updateOccState (JSONObject latestOccState, JSONObject lastOccState) {
-        if(latestOccState.get("value") != lastOccState.get("value")) {
-            //TODO do update here
+    private void updateOccState (JSONObject latestOccState, String dataIRI) {
+        JSONObject lastOccState = getLastState (dataIRI);
+
+        if(latestOccState.getBoolean("value") != lastOccState.getBoolean("value")) {
+            toggleFH(latestOccState.getBoolean("value"));
+
+            updateData(latestOccState);
         }
     }
 
