@@ -210,11 +210,13 @@ public class FHAgent{
      * Updates the database with new readings.
      * @param OccupiedState The readings received from the ThingsBoard API
      */
-    public void updateData(JSONObject OccupiedState)throws IllegalArgumentException {
+    public void updateData(JSONObject Distance)throws IllegalArgumentException {
         // Transform readings in hashmap containing a list of objects for each JSON key,
         // will be empty if the JSON Object is empty
-    	Map<String, List<?>> timeStampReadingsMap = jsonObjectToMapForTimeStamp(OccupiedState);
-    	Map<String, List<?>> OccupiedStateMap = jsonObjectToMap(OccupiedState);
+        JSONObject latestOccState = TallyDist(Distance);
+
+    	Map<String, List<?>> timeStampReadingsMap = jsonObjectToMapForTimeStamp(latestOccState);
+    	Map<String, List<?>> OccupiedStateMap = jsonObjectToMap(latestOccState);
         
         
         // Only do something if all readings contain data
@@ -247,8 +249,13 @@ public class FHAgent{
                 // Only update if there actually is data
                 if (!ts.getTimes().isEmpty()) {
                 	try {
-                    tsClient.addTimeSeriesData(ts);
-                    LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
+                        JSONObject lastOccState = getLastState (ts.getDataIRIs().get(0));
+                        if (latestOccState.getBoolean("value") != lastOccState.getBoolean("value")) {
+                            toggleFH(latestOccState.getBoolean("value"));
+                            tsClient.addTimeSeriesData(ts);
+                            LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
+                        }
+                    
                 } catch (Exception e) {
                 	throw new JPSRuntimeException("Could not add timeseries data!");
                 }
@@ -574,8 +581,10 @@ public class FHAgent{
         //TODO Toggle fumehood here
     }
 
-    private void updateOccState (JSONObject latestOccState, String dataIRI) {
+    private void updateOccState (JSONObject distanceReadings, String dataIRI) {
         JSONObject lastOccState = getLastState (dataIRI);
+
+        JSONObject latestOccState = TallyDist(distanceReadings);
 
         if(latestOccState.getBoolean("value") != lastOccState.getBoolean("value")) {
             toggleFH(latestOccState.getBoolean("value"));
