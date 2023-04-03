@@ -581,18 +581,5 @@ public class FHAgent{
         //TODO Toggle fumehood here
     }
 
-    private void updateOccState (JSONObject distanceReadings, String dataIRI) {
-        JSONObject lastOccState = getLastState (dataIRI);
-
-        JSONObject latestOccState = TallyDist(distanceReadings);
-
-        if(latestOccState.getBoolean("value") != lastOccState.getBoolean("value")) {
-            toggleFH(latestOccState.getBoolean("value"));
-
-            updateData(latestOccState);
-        }
-    }
-
-
 }
 
