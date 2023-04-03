@@ -92,7 +92,7 @@ public class OpenMeteoAgent extends JPSAgent {
     private static final String OM_CM = "om:centimetre";
     private static final String OM_MS = "om:metrePerSecond-Time";
     private static final String OM_DEGREE = "om:degree";
-    private static final String OM_WM = "om:wattPerMetreSquare";
+    private static final String OM_WM = "om:wattPerSquareMetre";
     private List<String> API_PARAMETERS = Arrays.asList(API_PARAMETER_TEMP, API_PARAMETER_HUMIDITY, API_PARAMETER_DEWPOINT, API_PARAMETER_PRESSURE, API_PARAMETER_RAIN, API_PARAMETER_SNOW, API_PARAMETER_CLOUD, API_PARAMETER_DNI, API_PARAMETER_DHI, API_PARAMETER_WINDSPEED, API_PARAMETER_WINDDIRECTION);
     private List<String> ontoems_conecpts = Arrays.asList(ONTOEMS_TEMP, ONTOEMS_HUMIDITY, ONTOEMS_DEWPOINT, ONTOEMS_PRESSURE, ONTOEMS_RAIN, ONTOEMS_SNOW, ONTOEMS_CLOUD, ONTOEMS_DNI, ONTOEMS_DHI, ONTOEMS_WINDSPEED, ONTOEMS_WINDDIRECTION);
     private Map<String, String> api_ontoems = IntStream.range(0, API_PARAMETERS.size()).boxed()
