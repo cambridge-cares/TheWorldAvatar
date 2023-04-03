@@ -1,14 +1,11 @@
 from pprint import pprint
 
-import sys
-sys.path.append("")
 import numpy as np
 import torch
 import transformers
 from torch import nn, optim, FloatTensor, LongTensor, no_grad
 import os
 import pandas as pd
-from torch.nn.functional import normalize
 from torch.utils.data.dataset import Dataset as TorchDataset
 from tqdm import tqdm
 from transformers import BertModel, BertTokenizer, AdamW
@@ -30,14 +27,18 @@ class TransERelPredictionModel(nn.Module):
         self.dim = dim
         self.dataset_dir = dataset_dir
         self.device = device
-        self.bert = BertModel.from_pretrained('bert-base-cased')
-        self.dropout = nn.Dropout(0)
+        # self.bert = BertModel.from_pretrained('bert-base-cased')
+        self.bert = BertModel.from_pretrained('bert-base-uncased')
+        self.dropout = nn.Dropout(0.1)
 
         if mode == "agent":
             self.mid_1 = nn.Linear(768, 512)
-            self.mid_2 = nn.Linear(512, 256)
-            self.mid_3 = nn.Linear(256, 128)
-            self.output_linear = nn.Linear(128, self.dim)
+            # self.mid_2 = nn.Linear(512, 512)
+            # self.mid_3 = nn.Linear(512, 512)
+            # self.mid_4 = nn.Linear(512, 512)
+            # self.mid_5 = nn.Linear(512, 512)
+            # self.mid_6= nn.Linear(512, 512)
+            self.output_linear = nn.Linear(512, self.dim)
 
 
         else:
@@ -75,37 +76,46 @@ class TransERelPredictionModel(nn.Module):
             pooled_output = self.bert(input_ids=input_ids,
                                       attention_mask=attention_mask,
                                       return_dict=False)[1].to(self.device)
-            dropout_output = self.dropout(pooled_output.to(self.device)).to(self.device)
+            linear_output = self.dropout(pooled_output.to(self.device)).to(self.device)
 
             if self.mode == "agent":
-                linear_output = self.mid_1(dropout_output.to(self.device))
-                linear_output = self.mid_2(linear_output)
-                linear_output = self.mid_3(linear_output)
+                linear_output = self.mid_1(linear_output.to(self.device))
+                # linear_output = self.mid_2(linear_output)
+                # linear_output = self.mid_3(linear_output)
+                # linear_output = self.mid_4(linear_output)
+                # linear_output = self.mid_5(linear_output)
+                # linear_output = self.mid_6(linear_output)
                 # linear_output = self.output_linear(dropout_output.to(self.device)).to(self.device)
                 linear_output = self.output_linear(linear_output).to(self.device)
 
                 return linear_output
             else:
-                linear_output = self.linear(dropout_output.to(self.device)).to(self.device)
+                linear_output = self.linear(linear_output.to(self.device)).to(self.device)
                 return linear_output
 
-    def forward(self, question, true_linear_output, true_linear_agent=None):
+    def forward(self, question, true_linear_output):
         input_ids = torch.reshape(question['input_ids'], (-1, max_len))
         attention_mask = torch.reshape(question['attention_mask'], (-1, max_len))
         pooled_output = self.bert(input_ids=input_ids.to(self.device),
                                   attention_mask=attention_mask.to(self.device),
                                   return_dict=False)[1]
 
-        dropout_output = self.dropout(pooled_output)
+        linear_output = self.dropout(pooled_output)
         if self.mode == "agent":
 
-            linear_output = self.mid_1(dropout_output)
-            linear_output = self.mid_2(linear_output)
-            linear_output = self.mid_3(linear_output)
+            linear_output = self.mid_1(linear_output)
+            # linear_output = self.mid_2(linear_output)
+            # linear_output = self.mid_3(linear_output)
+            # linear_output = self.mid_4(linear_output)
+            # linear_output = self.mid_5(linear_output)
+            # linear_output = self.mid_6(linear_output)
+            # linear_output = self.output_linear(linear_output)
             linear_output = self.output_linear(linear_output)
-            # linear_output = self.output_linear(dropout_output)
 
             # distance_agent = self.distance(linear_agent, true_linear_agent)
+            # distance_output = self.distance(linear_output, true_linear_output)
+            target = torch.LongTensor([1] * len(true_linear_output)).to(self.device)
+            # distance_output = self.criterion(linear_output, true_linear_output, target).to(self.device)
             distance_output = self.distance(linear_output, true_linear_output)
             # return distance_agent + distance_output, linear_output, linear_agent
             return distance_output, distance_output, linear_output, linear_output
@@ -116,7 +126,7 @@ class TransERelPredictionModel(nn.Module):
             Update the loss function to do a calculation eh + r = et, where r is the output of linear_output ... 
             If the fine-tuning of the current thing fails 
             '''
-            return distance, normalize(linear_output)
+            return distance, linear_output
 
 
 if __name__ == "__main__":
@@ -124,9 +134,10 @@ if __name__ == "__main__":
                                         dataset_dir=os.path.join(DATA_DIR, "CrossGraph/agents"), dim=40,
                                         mode="agent")
 
-    my_model.load_model("bert_ontoagent")
+    my_model.load_model("bert_ontoagent_improved")
 
     nlp_tool = NLPTools()
-    _, tokenzied_question = nlp_tool.tokenize_question("what is the power conversion efficiency of benzene",
+    _, tokenzied_question = nlp_tool.tokenize_question("heat capacity",
                                                        repeat_num=0)
-    output_emb = my_model.predict(question=tokenzied_question)
+    agent_emb, output_emb = my_model.predict(question=tokenzied_question)
+
