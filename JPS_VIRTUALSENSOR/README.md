@@ -2,6 +2,7 @@ Prerequisites
 1) Set Mapbox user and API key in ./DispersionVis/index.html
 2) Ship data needs to be present in ./ShipInputAgent/data
 3) Set openweather API key in ./stack-manager/inputs/config/services/weather-agent.json
+4) Create two files called `postgis_password` and `geoserver_password` in the `stack-manager/inputs/secrets/` directory. Populate the files with the intended passwords for PostGIS and GeoServer, respectively.
 
 Stack needs to be up and running:
 1) execute
@@ -10,6 +11,12 @@ Stack needs to be up and running:
 ```
 
 in this folder to spin up pull docker images, spin up containers (using stack manager) and copy files into container volumes.
+
+Make sure you have access to the CMCL Docker registry. You can test your access by runing 
+    ```console
+    docker login docker.cmclinnovations.com
+    ```
+If you are not already logged in then, when prompted, enter the username and password you were given.
 
 Work example:
 
