@@ -45,7 +45,6 @@ WHERE {
   # Forecasts: only relevant for MetOffice stations
   UNION {
   [IRI] ems:reports/ems:hasForecastedValue ?Measurement . 
-  #?Measurement ^om:hasValue/rdf:type <https://www.theworldavatar.com/kg/ontoems/RelativeHumidity> . 
   ?Measurement ^ems:hasForecastedValue/rdf:type ?type ; 
                 ems:createdOn ?LastUpdate ; 
                 om:hasUnit/om:symbol ?Unit .            

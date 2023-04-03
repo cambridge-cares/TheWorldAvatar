@@ -209,7 +209,7 @@
                     "source": "aq-stations",
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
-                    "minzoom": 8,
+                    "minzoom": 4,
                     "order": 32,
                     "layout": {
                         "visibility": "visible",
@@ -246,7 +246,7 @@
                     "source": "metoffice",
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
-                    "minzoom": 8,
+                    "minzoom": 4,
                     "order": 31,
                     "layout": {
                         "visibility": "visible",
@@ -289,7 +289,7 @@
                     "source": "ea-stations",
                     "type": "symbol",
                     "filter": ["!", ["has", "point_count"]],
-                    "minzoom": 8,
+                    "minzoom": 4,
                     "order": 30,
                     "layout": {
                         "visibility": "visible",
