@@ -48,6 +48,11 @@ public class OntoBimConstant {
     public static final String BIM_HAS_VOID = NamespaceMapper.BIM_NAMESPACE + "hasVoid";
     public static final String BIM_HAS_VOID_TYPE = NamespaceMapper.BIM_NAMESPACE + "hasVoidType";
     public static final String BUILDING_STRUCTURE_CONSISTS_OF = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + "consistsOf";
+    public static final String BIM_HAS_EXTERIOR_BOUNDARY = NamespaceMapper.BIM_NAMESPACE + "hasExteriorBoundary";
+    public static final String BIM_HAS_CONNECTED_FACES = NamespaceMapper.BIM_NAMESPACE + "hasConnectedFaces";
+    public static final String BIM_HAS_BOUNDS = NamespaceMapper.BIM_NAMESPACE + "hasBounds";
+    public static final String BIM_HAS_FACE_BOUNDARY = NamespaceMapper.BIM_NAMESPACE + "hasFaceBoundary";
+    public static final String BIM_IS_LOOP_NON_INVERSED_ORIENTATION = NamespaceMapper.BIM_NAMESPACE + "isLoopNonInversedOrientation";
     public static final String BIM_HAS_EXTRUSION_POSITION = NamespaceMapper.BIM_NAMESPACE + "hasExtrusionStartPosition";
     public static final String BIM_HAS_EXTRUSION_DIRECTION = NamespaceMapper.BIM_NAMESPACE + "hasExtrusionDirection";
     public static final String BIM_HAS_EXTRUSION_DEPTH = NamespaceMapper.BIM_NAMESPACE + "hasExtrusionDepth";
@@ -149,6 +154,14 @@ public class OntoBimConstant {
     public static final String BIM_LOCAL_PLACEMENT_CLASS = NamespaceMapper.BIM_NAMESPACE + LOCAL_PLACEMENT_CLASS;
     public static final String CARTESIAN_POINT_CLASS = "CartesianPoint";
     public static final String BIM_CARTESIAN_POINT_CLASS = NamespaceMapper.BIM_NAMESPACE + CARTESIAN_POINT_CLASS;
+    public static final String FACETED_BREP_CLASS = "FacetedBrep";
+    public static final String BIM_FACETED_BREP_CLASS = NamespaceMapper.BIM_NAMESPACE + FACETED_BREP_CLASS;
+    public static final String CLOSED_SHELL_CLASS = "ClosedShell";
+    public static final String BIM_CLOSED_SHELL_CLASS = NamespaceMapper.BIM_NAMESPACE + CLOSED_SHELL_CLASS;
+    public static final String FACE_CLASS = "Face";
+    public static final String BIM_FACE_CLASS = NamespaceMapper.BIM_NAMESPACE + FACE_CLASS;
+    public static final String FACE_OUTER_BOUND_CLASS = "FaceOuterBound";
+    public static final String BIM_FACE_OUTER_BOUND_CLASS = NamespaceMapper.BIM_NAMESPACE + FACE_OUTER_BOUND_CLASS;
     public static final String EXTRUDED_AREA_SOLID_CLASS = "ExtrudedAreaSolid";
     public static final String BIM_EXTRUDED_AREA_SOLID_CLASS = NamespaceMapper.BIM_NAMESPACE + EXTRUDED_AREA_SOLID_CLASS;
     public static final String RECTANGLE_PROFILE_DEFINITION_CLASS = "RectangleProfileDefinition";

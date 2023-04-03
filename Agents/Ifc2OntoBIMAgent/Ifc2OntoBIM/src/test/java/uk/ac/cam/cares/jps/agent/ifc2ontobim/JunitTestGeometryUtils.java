@@ -5,6 +5,25 @@ import java.util.List;
 
 public class JunitTestGeometryUtils {
 
+    public static List<String> genExpectedFacetedBrepStatements(String baseURI, String inst) {
+        List<String> expected = new ArrayList<>();
+        expected.add(inst + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/FacetedBrep");
+        expected.add(inst + ", http://www.theworldavatar.com/kg/ontobim/hasExteriorBoundary, " + baseURI + "ClosedShell_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(baseURI + "ClosedShell_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/ClosedShell");
+        return expected;
+    }
+
+    public static List<String> genExpectedFacetedBrepFaceStatements(String baseURI, String faceBoundaryIri, boolean isNonInversedOrientation) {
+        List<String> expected = new ArrayList<>();
+        expected.add(baseURI + "ClosedShell_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasConnectedFaces, " + baseURI + "Face_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(baseURI + "Face_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/Face");
+        expected.add(baseURI + "Face_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasBounds, " + baseURI + "FaceOuterBound_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(baseURI + "FaceOuterBound_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/FaceOuterBound");
+        expected.add(baseURI + "FaceOuterBound_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasFaceBoundary, " + faceBoundaryIri);
+        expected.add(baseURI + "FaceOuterBound_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/isLoopNonInversedOrientation, \"" + isNonInversedOrientation);
+        return expected;
+    }
+
     public static List<String> genExpectedHalfSpaceStatements(String baseURI, String inst, String positionIri, String surfacePosition, String boundaryIri, boolean agreementFlag) {
         List<String> expected = new ArrayList<>();
         expected.add(inst + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/PolygonalBoundedHalfSpace");
@@ -17,7 +36,7 @@ public class JunitTestGeometryUtils {
         return expected;
     }
 
-    public static List<String> genExpectedCommonPolylineStatements(String polylineInst, String startingVertexInst, String startingPointInst, String bimClass) {
+    public static List<String> genExpectedPolylineStatements(String polylineInst, String startingVertexInst, String startingPointInst, String bimClass) {
         List<String> expected = new ArrayList<>();
         expected.add(polylineInst + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/" + bimClass);
         expected.add(polylineInst + ", http://www.theworldavatar.com/kg/ontobim/hasStartingVertex, " + startingVertexInst);

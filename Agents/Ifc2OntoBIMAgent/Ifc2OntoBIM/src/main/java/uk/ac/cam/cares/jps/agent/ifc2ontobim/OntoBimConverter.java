@@ -130,6 +130,10 @@ public class OntoBimConverter {
         LOGGER.info("Storing local placement statements into a temp file...");
         statementSet = this.storeInTempFiles(statementSet);
         // For geometry statements
+        LOGGER.info("Retrieving and generating statements related to faceted breps...");
+        geometryHelper.addFacetedBrepStatements(this.owlModel, statementSet);
+        LOGGER.info("Storing faceted brep statements into a temp file...");
+        statementSet = this.storeInTempFiles(statementSet);
         LOGGER.info("Retrieving and generating statements related to extruded area solid...");
         geometryHelper.addExtrudedAreaSolidStatements(this.owlModel, statementSet);
         LOGGER.info("Storing extruded area solid statements into a temp file...");

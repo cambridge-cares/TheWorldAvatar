@@ -36,6 +36,59 @@ public class GeometryFacade {
     }
 
     /**
+     * Creates the SPARQL SELECT query statements for FacetedBrep.
+     *
+     * @return A string containing the SPARQL query to execute.
+     */
+    private String createFacetedBrepSelectQuery() {
+        SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
+        selectBuilder.addVar(CommonQuery.GEOM_VAR)
+                .addVar(CommonQuery.POLYLINE_VAR)
+                .addVar(CommonQuery.BOOLEAN_VAR);
+        selectBuilder.addWhere(CommonQuery.GEOM_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_FACETED_BREP)
+                .addWhere(CommonQuery.GEOM_VAR, CommonQuery.IFC_BREP_OUTER, CommonQuery.BREP_CLOSED_SHELL_VAR)
+                .addWhere(CommonQuery.BREP_CLOSED_SHELL_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_CLOSED_SHELL)
+                .addWhere(CommonQuery.BREP_CLOSED_SHELL_VAR, CommonQuery.IFC_BREP_FACES, CommonQuery.BREP_FACE_VAR)
+                .addWhere(CommonQuery.BREP_FACE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_FACE)
+                .addWhere(CommonQuery.BREP_FACE_VAR, CommonQuery.IFC_BREP_FACE_BOUNDS, CommonQuery.BREP_FACE_OUTER_BOUND_VAR)
+                .addWhere(CommonQuery.BREP_FACE_OUTER_BOUND_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_FACE_OUTER_BOUND)
+                .addWhere(CommonQuery.BREP_FACE_OUTER_BOUND_VAR, CommonQuery.IFC_BREP_FACE_BOUNDARY, CommonQuery.POLYLINE_VAR)
+                .addWhere(CommonQuery.BREP_FACE_OUTER_BOUND_VAR, CommonQuery.IFC_BREP_FACE_ORIENTATION + CommonQuery.EXPRESS_HASBOOLEAN, CommonQuery.BOOLEAN_VAR);
+        return selectBuilder.buildString();
+    }
+
+    /**
+     * Retrieve the OntoBIM statements for FacetedBrep.
+     *
+     * @param owlModel     The IfcOwl model containing the triples to query from.
+     * @param statementSet A list containing the new OntoBIM triples.
+     */
+    public void addFacetedBrepStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
+        String query = createFacetedBrepSelectQuery();
+        ResultSet results = QueryHandler.execSelectQuery(query, owlModel);
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            String iri = soln.get(CommonQuery.GEOM_VAR).toString();
+            String faceBoundaryIri = QueryHandler.retrieveIri(soln, CommonQuery.POLYLINE_VAR);
+            boolean isOrientation = Boolean.parseBoolean(QueryHandler.retrieveLiteral(soln, CommonQuery.BOOLEAN_VAR));
+            FacetedBrep geometry;
+            // If the geometry has already been created previously
+            if (this.geomMappings.containsIri(iri)) {
+                // Retrieve the new geometry IRI and append the current face details
+                geometry = this.geomMappings.getFacetedBrep(iri);
+                geometry.appendFace(faceBoundaryIri, isOrientation);
+            } else {
+                // Create a new geometry class
+                geometry = new FacetedBrep(iri, faceBoundaryIri, isOrientation);
+                // Add the object into the mappings for its IRI
+                this.geomMappings.add(iri, geometry);
+            }
+        }
+        // Construct all faceted brep' statements
+        this.geomMappings.constructFacetedBrepStatements(statementSet);
+    }
+
+    /**
      * Creates the SPARQL SELECT query statements for ExtrudedAreaSolid.
      *
      * @return A string containing the SPARQL query to execute.

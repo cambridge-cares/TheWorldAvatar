@@ -121,6 +121,9 @@ public class CommonQuery {
     public static final String REP_MAP_VAR = "?representationmap";
     public static final String GEOM_AXIS_PLACEMENT_VAR = "?geomaxisplacement";
     public static final String CART_TRANSFORMER_VAR = "?cartesiantransformer";
+    public static final String BREP_CLOSED_SHELL_VAR = "?closedshell";
+    public static final String BREP_FACE_VAR = "?face";
+    public static final String BREP_FACE_OUTER_BOUND_VAR = "?faceouterbound";
     public static final String DEPTH_VAR = "?depth";
     public static final String EXTRUDED_DIRECTION_VAR = "?extrudeddirection";
     public static final String PROFILE_DEF_VAR = "?profiledefinition";
@@ -204,6 +207,11 @@ public class CommonQuery {
     public static final String IFC_MAPPING_ORIGIN = NamespaceMapper.IFC_PREFIX + ":mappingOrigin_IfcRepresentationMap";
     public static final String IFC_MAPPED_REP = NamespaceMapper.IFC_PREFIX + ":mappedRepresentation_IfcRepresentationMap";
     public static final String IFC_OBJ_PLACEMENT = NamespaceMapper.IFC_PREFIX + ":objectPlacement_IfcProduct";
+    public static final String IFC_BREP_OUTER = NamespaceMapper.IFC_PREFIX + ":outer_IfcManifoldSolidBrep";
+    public static final String IFC_BREP_FACES = NamespaceMapper.IFC_PREFIX + ":cfsFaces_IfcConnectedFaceSet";
+    public static final String IFC_BREP_FACE_BOUNDS = NamespaceMapper.IFC_PREFIX + ":bounds_IfcFace";
+    public static final String IFC_BREP_FACE_BOUNDARY = NamespaceMapper.IFC_PREFIX + ":bound_IfcFaceBound";
+    public static final String IFC_BREP_FACE_ORIENTATION = NamespaceMapper.IFC_PREFIX + ":orientation_IfcFaceBound";
     public static final String IFC_SWEPT_AREA_POSITION = NamespaceMapper.IFC_PREFIX + ":position_IfcSweptAreaSolid";
     public static final String IFC_EXTRUDED_DIRECTION = NamespaceMapper.IFC_PREFIX + ":extrudedDirection_IfcExtrudedAreaSolid";
     public static final String IFC_EXTRUDED_DEPTH = NamespaceMapper.IFC_PREFIX + ":depth_IfcExtrudedAreaSolid";
@@ -219,7 +227,6 @@ public class CommonQuery {
     public static final String IFC_HALF_SPACE_SURFACE_POSITION = NamespaceMapper.IFC_PREFIX + ":position_IfcElementarySurface";
     public static final String IFC_POLYLINE_POINTS = NamespaceMapper.IFC_PREFIX + ":points_IfcPolyline";
     public static final String IFC_POLYLOOP_POLYGON = NamespaceMapper.IFC_PREFIX + ":polygon_IfcPolyLoop";
-
     // IfcOwl modelling operator properties
     public static final String IFC_PLACEMENT_POSITION = NamespaceMapper.IFC_PREFIX + ":relativePlacement_IfcLocalPlacement";
     public static final String IFC_PLACEMENT_LOCATION = NamespaceMapper.IFC_PREFIX + ":location_IfcPlacement";
@@ -257,12 +264,15 @@ public class CommonQuery {
     public static final String IFC_REP_MAP = NamespaceMapper.IFC_PREFIX + ":IfcRepresentationMap";
     public static final String IFCLOCALPLACEMENT = NamespaceMapper.IFC_PREFIX + ":IfcLocalPlacement";
     public static final String IFC_CART_TRANSFORMATION_OPERATOR = NamespaceMapper.IFC_PREFIX + ":IfcCartesianTransformationOperator3D";
+    public static final String IFC_FACETED_BREP = NamespaceMapper.IFC_PREFIX + ":IfcFacetedBrep";
+    public static final String IFC_CLOSED_SHELL = NamespaceMapper.IFC_PREFIX + ":IfcClosedShell";
+    public static final String IFC_FACE = NamespaceMapper.IFC_PREFIX + ":IfcFace";
+    public static final String IFC_FACE_OUTER_BOUND = NamespaceMapper.IFC_PREFIX + ":IfcFaceOuterBound";
     public static final String IFC_EXTRUDED_AREA_SOLID = NamespaceMapper.IFC_PREFIX + ":IfcExtrudedAreaSolid";
     public static final String IFC_POLYGONAL_HALF_SPACE = NamespaceMapper.IFC_PREFIX + ":IfcPolygonalBoundedHalfSpace";
     public static final String IFC_SURFACE_PLANE = NamespaceMapper.IFC_PREFIX + ":IfcPlane";
     public static final String IFC_POLYLINE = NamespaceMapper.IFC_PREFIX + ":IfcPolyline";
     public static final String IFC_POLYLOOP = NamespaceMapper.IFC_PREFIX + ":IfcPolyLoop";
-
     // IfcOwl Element Classes
     public static final String IFC_CEILING = NamespaceMapper.IFC_PREFIX + ":IfcCovering";
     public static final String IFC_COLUMN = NamespaceMapper.IFC_PREFIX + ":IfcColumn";

@@ -66,7 +66,7 @@ class PolylineTest {
         // Write statements as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generate expected statement lists and verify their existence
-        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(TEST_BIM_LINE_INSTANCE, TEST_BIM_STARTING_VERTEX, TEST_STARTING_POINT, BIM_POLYLINE), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPolylineStatements(TEST_BIM_LINE_INSTANCE, TEST_BIM_STARTING_VERTEX, TEST_STARTING_POINT, BIM_POLYLINE), result);
     }
 
     @Test
@@ -90,7 +90,7 @@ class PolylineTest {
         sample.constructStatements(sampleSet);
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generate expected statement lists and verify their existence
-        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(TEST_BIM_LINE_INSTANCE, TEST_BIM_STARTING_VERTEX, TEST_STARTING_POINT, BIM_POLYLINE), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPolylineStatements(TEST_BIM_LINE_INSTANCE, TEST_BIM_STARTING_VERTEX, TEST_STARTING_POINT, BIM_POLYLINE), result);
         JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(TEST_BIM_STARTING_VERTEX, TEST_BIM_SEC_VERTEX, TEST_SEC_POINT), result);
         // Verify that the second vertex does not have a hasNextVertex statement
         JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(TEST_BIM_SEC_VERTEX, TEST_BIM_THIRD_VERTEX, TEST_THIRD_POINT), result);
@@ -109,7 +109,7 @@ class PolylineTest {
         sample.constructStatements(sampleSet);
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generate expected statement lists and verify their existence
-        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(TEST_BIM_LINE_INSTANCE, TEST_BIM_STARTING_VERTEX, TEST_STARTING_POINT, BIM_POLYLINE), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPolylineStatements(TEST_BIM_LINE_INSTANCE, TEST_BIM_STARTING_VERTEX, TEST_STARTING_POINT, BIM_POLYLINE), result);
         JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(TEST_BIM_STARTING_VERTEX, TEST_BIM_SEC_VERTEX, TEST_SEC_POINT), result);
         JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(TEST_BIM_SEC_VERTEX, TEST_BIM_THIRD_VERTEX, TEST_THIRD_POINT), result);
         JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(TEST_BIM_THIRD_VERTEX, TEST_BIM_FORTH_VERTEX, TEST_FORTH_POINT), result);
@@ -125,7 +125,7 @@ class PolylineTest {
         // Write statements as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generate expected statement lists and verify their existence
-        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(TEST_BIM_LOOP_INSTANCE, TEST_BIM_STARTING_VERTEX, TEST_STARTING_POINT, BIM_POLYLOOP), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPolylineStatements(TEST_BIM_LOOP_INSTANCE, TEST_BIM_STARTING_VERTEX, TEST_STARTING_POINT, BIM_POLYLOOP), result);
     }
 
     @Test
@@ -151,7 +151,7 @@ class PolylineTest {
         sample.constructStatements(sampleSet);
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generate expected statement lists and verify their existence
-        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(TEST_BIM_LOOP_INSTANCE, TEST_BIM_STARTING_VERTEX, TEST_STARTING_POINT, BIM_POLYLOOP), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPolylineStatements(TEST_BIM_LOOP_INSTANCE, TEST_BIM_STARTING_VERTEX, TEST_STARTING_POINT, BIM_POLYLOOP), result);
         JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(TEST_BIM_STARTING_VERTEX, TEST_BIM_SEC_VERTEX, TEST_SEC_POINT), result);
         JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(TEST_BIM_SEC_VERTEX, TEST_BIM_THIRD_VERTEX, TEST_THIRD_POINT), result);
         JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(TEST_BIM_THIRD_VERTEX, TEST_BIM_FORTH_VERTEX, TEST_FORTH_POINT), result);

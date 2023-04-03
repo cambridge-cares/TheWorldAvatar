@@ -27,7 +27,16 @@ class GeometryFacadeTest {
     private static final String POLYLOOP_CLASS = "IfcPolyLoop";
     private static final String POLYLOOP_PROPERTY = "polygon_IfcPolyLoop";
     private static final Resource IFC_DIRECTION = ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcDirection");
-
+    // Faceted brep fields
+    private static final String IFC_FACETED_BREP_INST = TEST_BASE_URI + "IfcFacetedBrep_14827";
+    private static final String BIM_FACETED_BREP_INST = TEST_BASE_URI + "FacetedBrep_14827";
+    private static final String IFC_CLOSED_SHELL_INST = TEST_BASE_URI + "IfcClosedShell_38157";
+    private static final String IFC_BREP_FIRST_FACE_BOUNDARY_INST = TEST_BASE_URI + "IfcPolyLoop_38163";
+    private static final String BIM_BREP_FIRST_FACE_BOUNDARY_INST = TEST_BASE_URI + "PolyLoop_38163";
+    private static final boolean IFC_BREP_FIRST_FACE_BOUNDARY_ORIENTATION = true;
+    private static final String IFC_BREP_SEC_FACE_BOUNDARY_INST = TEST_BASE_URI + "IfcPolyLoop_38166";
+    private static final String BIM_BREP_SEC_FACE_BOUNDARY_INST = TEST_BASE_URI + "PolyLoop_38166";
+    private static final boolean IFC_BREP_SEC_FACE_BOUNDARY_ORIENTATION = false;
     // Extruded area solid fields
     private static final String IFC_EXTRUDED_AREA_SOLID_INST = TEST_BASE_URI + "IfcExtrudedAreaSolid_14823";
     private static final String BIM_EXTRUDED_AREA_SOLID_INST = TEST_BASE_URI + "ExtrudedAreaSolid_14823";
@@ -101,6 +110,37 @@ class GeometryFacadeTest {
         NamespaceMapper.setBaseNameSpace("");
     }
 
+    @Test
+    void testAddFacetedBrepStatements() {
+        // Set up
+        addFacetedBrepTriples();
+        addFacetedBrepFaceTriples(IFC_BREP_FIRST_FACE_BOUNDARY_INST, IFC_BREP_FIRST_FACE_BOUNDARY_ORIENTATION);
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Execute method
+        testHelper.addFacetedBrepStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Verify statements have been generated
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedFacetedBrepStatements(TEST_BASE_URI, BIM_FACETED_BREP_INST), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedFacetedBrepFaceStatements(TEST_BASE_URI, BIM_BREP_FIRST_FACE_BOUNDARY_INST, IFC_BREP_FIRST_FACE_BOUNDARY_ORIENTATION), result);
+    }
+
+    @Test
+    void testAddFacetedBrepStatementsMultipleFaces() {
+        // Set up
+        addFacetedBrepTriples();
+        addFacetedBrepFaceTriples(IFC_BREP_FIRST_FACE_BOUNDARY_INST, IFC_BREP_FIRST_FACE_BOUNDARY_ORIENTATION);
+        addFacetedBrepFaceTriples(IFC_BREP_SEC_FACE_BOUNDARY_INST, IFC_BREP_SEC_FACE_BOUNDARY_ORIENTATION);
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Execute method
+        testHelper.addFacetedBrepStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Verify statements have been generated
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedFacetedBrepStatements(TEST_BASE_URI, BIM_FACETED_BREP_INST), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedFacetedBrepFaceStatements(TEST_BASE_URI, BIM_BREP_FIRST_FACE_BOUNDARY_INST, IFC_BREP_FIRST_FACE_BOUNDARY_ORIENTATION), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedFacetedBrepFaceStatements(TEST_BASE_URI, BIM_BREP_SEC_FACE_BOUNDARY_INST, IFC_BREP_SEC_FACE_BOUNDARY_ORIENTATION), result);
+    }
 
     @Test
     void testAddExtrudedAreaSolidStatements() {
@@ -182,7 +222,7 @@ class GeometryFacadeTest {
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Verify statements have been generated
-        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(BIM_POLYLINE_INSTANCE, BIM_STARTING_VERTEX, operatorMappings.getPoint(IFC_GEOM_POSITION_INST).getIri(), "Polyline"), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPolylineStatements(BIM_POLYLINE_INSTANCE, BIM_STARTING_VERTEX, operatorMappings.getPoint(IFC_GEOM_POSITION_INST).getIri(), "Polyline"), result);
         JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(BIM_STARTING_VERTEX, BIM_SEC_VERTEX, operatorMappings.getPoint(IFC_GEOM_SEC_POSITION_INST).getIri()), result);
         // Verify that the right points are generated
         operatorMappings.constructAllStatements(sampleSet);
@@ -201,7 +241,7 @@ class GeometryFacadeTest {
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Verify statements have been generated
-        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(BIM_POLYLINE_INSTANCE, BIM_STARTING_VERTEX, operatorMappings.getPoint(IFC_GEOM_POSITION_INST).getIri(), "Polyline"), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPolylineStatements(BIM_POLYLINE_INSTANCE, BIM_STARTING_VERTEX, operatorMappings.getPoint(IFC_GEOM_POSITION_INST).getIri(), "Polyline"), result);
         // Verify the next vertex is not generated since it doesn't exist
         JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(BIM_STARTING_VERTEX, BIM_SEC_VERTEX, operatorMappings.getPoint(IFC_GEOM_SEC_POSITION_INST).getIri()), result);
         // Verify that the right points are generated
@@ -221,7 +261,7 @@ class GeometryFacadeTest {
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Verify statements have been generated
-        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(BIM_POLYLOOP_INSTANCE, BIM_STARTING_VERTEX, operatorMappings.getPoint(IFC_GEOM_POSITION_INST).getIri(), "PolyLoop"), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPolylineStatements(BIM_POLYLOOP_INSTANCE, BIM_STARTING_VERTEX, operatorMappings.getPoint(IFC_GEOM_POSITION_INST).getIri(), "PolyLoop"), result);
         JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(BIM_STARTING_VERTEX, BIM_SEC_VERTEX, operatorMappings.getPoint(IFC_GEOM_SEC_POSITION_INST).getIri()), result);
         // Verify that the right points are generated
         operatorMappings.constructAllStatements(sampleSet);
@@ -240,13 +280,35 @@ class GeometryFacadeTest {
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Verify statements have been generated
-        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(BIM_POLYLOOP_INSTANCE, BIM_STARTING_VERTEX, operatorMappings.getPoint(IFC_GEOM_POSITION_INST).getIri(), "PolyLoop"), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPolylineStatements(BIM_POLYLOOP_INSTANCE, BIM_STARTING_VERTEX, operatorMappings.getPoint(IFC_GEOM_POSITION_INST).getIri(), "PolyLoop"), result);
         // Verify the next vertex is not generated since it doesn't exist
         JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(BIM_STARTING_VERTEX, BIM_SEC_VERTEX, operatorMappings.getPoint(IFC_GEOM_SEC_POSITION_INST).getIri()), result);
         // Verify that the right points are generated
         operatorMappings.constructAllStatements(sampleSet);
         result = JunitTestUtils.appendStatementsAsString(sampleSet);
         JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD, true), result);
+    }
+
+    private void addFacetedBrepTriples() {
+        sampleModel.createResource(IFC_FACETED_BREP_INST)
+                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcFacetedBrep"))
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "outer_IfcManifoldSolidBrep"), sampleModel.createResource(IFC_CLOSED_SHELL_INST)
+                        .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcClosedShell"))
+                );
+    }
+
+    private void addFacetedBrepFaceTriples(String faceBoundaryIri, boolean indicator) {
+        sampleModel.getResource(IFC_CLOSED_SHELL_INST)
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "cfsFaces_IfcConnectedFaceSet"), sampleModel.createResource()
+                        .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcFace"))
+                        .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "bounds_IfcFace"), sampleModel.createResource()
+                                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcFaceOuterBound"))
+                                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "bound_IfcFaceBound"), sampleModel.createResource(faceBoundaryIri))
+                                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "orientation_IfcFaceBound"),
+                                        sampleModel.createResource().addProperty(JunitTestUtils.hasBoolean, sampleModel.createTypedLiteral(indicator))
+                                )
+                        )
+                );
     }
 
     private void addExtrudedAreaSolidTriples(String iri, boolean isComplete) {

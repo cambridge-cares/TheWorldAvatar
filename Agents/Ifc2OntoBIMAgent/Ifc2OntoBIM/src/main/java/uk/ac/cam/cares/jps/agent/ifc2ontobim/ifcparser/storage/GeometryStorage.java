@@ -4,6 +4,7 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.Ifc2OntoBIMAgent;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.FacetedBrep;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.Polyline;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -21,12 +22,14 @@ public class GeometryStorage {
     private static GeometryStorage single_instance = null;
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
     private static final String NON_EXISTING_ERROR = " does not exist in mappings!";
+    private final HashMap<String, FacetedBrep> breps;
     private final HashMap<String, Polyline> polylines;
 
     /**
      * Private Constructor initialising the maps.
      */
     private GeometryStorage() {
+        this.breps = new HashMap<>();
         this.polylines = new HashMap<>();
     }
 
@@ -54,6 +57,16 @@ public class GeometryStorage {
      * A method to store the data IRI and its associated geometry's Java object as mappings.
      *
      * @param iri      The data IRI generated from IfcOwl.
+     * @param brep The FacetedBrep object generated from the iri.
+     */
+    public void add(String iri, FacetedBrep brep) {
+        this.breps.put(iri, brep);
+    }
+
+    /**
+     * A method to store the data IRI and its associated geometry's Java object as mappings.
+     *
+     * @param iri      The data IRI generated from IfcOwl.
      * @param polyline The Polyline object generated from the iri.
      */
     public void add(String iri, Polyline polyline) {
@@ -66,7 +79,21 @@ public class GeometryStorage {
      * @param iri The IRI generated from IfcOwl.
      */
     public boolean containsIri(String iri) {
-        return this.polylines.containsKey(iri);
+        return this.breps.containsKey(iri) || this.polylines.containsKey(iri);
+    }
+
+    /**
+     * Retrieve the site's Java object associated with the IRI input.
+     *
+     * @param iri The data IRI generated from IfcOwl.
+     */
+    public FacetedBrep getFacetedBrep(String iri) {
+        if (this.breps.containsKey(iri)) {
+            return this.breps.get(iri);
+        } else {
+            LOGGER.error(iri + NON_EXISTING_ERROR);
+            throw new JPSRuntimeException(iri + NON_EXISTING_ERROR);
+        }
     }
 
     /**
@@ -84,11 +111,22 @@ public class GeometryStorage {
     }
 
     /**
-     * Iterate through all the available geometries and construct their statements.
+     * Iterate through all the available breps and construct their statements.
      *
      * @param statementSet A list containing the new OntoBIM triples.
      */
-    public void constructGeomStatements(LinkedHashSet<Statement> statementSet) {
+    public void constructFacetedBrepStatements(LinkedHashSet<Statement> statementSet) {
+        for (FacetedBrep rep : this.breps.values()) {
+            rep.constructStatements(statementSet);
+        }
+    }
+
+    /**
+     * Iterate through all the available polylines and construct their statements.
+     *
+     * @param statementSet A list containing the new OntoBIM triples.
+     */
+    public void constructPolyLineStatements(LinkedHashSet<Statement> statementSet) {
         for (Polyline line : this.polylines.values()) {
             line.constructStatements(statementSet);
         }
