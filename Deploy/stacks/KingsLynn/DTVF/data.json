@@ -183,7 +183,7 @@
                     "cluster": true,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://165.232.172.16:3838/geoserver/stations/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=metoffice%3Ametoffice&outputFormat=application%2Fjson"
+                    "data": "http://165.232.172.16:3838/geoserver/stations/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=stations%3Ametoffice&outputFormat=application%2Fjson"
                 },
                 {
                     "id": "ea-stations",  
@@ -191,7 +191,7 @@
                     "cluster": true,
                     "clusterMaxZoom": 14,
                     "clusterRadius": 100,
-                    "data": "http://165.232.172.16:3838/geoserver/stations/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=river_stations%3Ariver_stations&outputFormat=application%2Fjson"
+                    "data": "http://165.232.172.16:3838/geoserver/stations/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=stations%3Ariverstations&outputFormat=application%2Fjson"
                 },
                 {
                     "id": "aq-stations",  

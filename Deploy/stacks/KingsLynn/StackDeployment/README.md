@@ -343,7 +343,7 @@ The [RiverLevelsAgent] (also referred to as *Flood Agent*) instantiates river le
 
 * Building the agent requires two single-word text files `repo_username.txt` and `repo_password.txt` to be provided in the `docker/credentials` sub-repository of the agent (in order to be able to download TWA packages from Github)
 * Both the `datum.json` and `river_stations.csv` files provided in the [river_level_agent input folder] here shall be copied over to the root directory of the agent (i.e. the location where the agent's `docker-compose.yml` file is located)
-* To deploy the agent (using the pulled image) to the spun up stack, simply run the following command to initialise the stations and start a scheduled update that downloads data from the API daily:
+* To deploy the agent (using the pulled image) to the spun up stack, simply run the following command to initialise the stations and start a scheduled update that downloads data from the API daily. See the `docker-compose_riverstations.yml` in the [Agent docker-compose file folder] for the actually used compose file:
     ```bash
     bash ./stack.sh start KINGS-LYNN
     ```
