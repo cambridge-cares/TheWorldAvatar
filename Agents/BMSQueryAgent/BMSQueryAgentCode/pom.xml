@@ -74,7 +74,7 @@
     <dependency>
       <groupId>org.eclipse.rdf4j</groupId>
       <artifactId>rdf4j-sparqlbuilder</artifactId>
-      <version>3.4.3</version>
+      <version>4.2.3</version>
     </dependency>
 
     <!-- used to access containers running in the same stack network -->

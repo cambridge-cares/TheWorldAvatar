@@ -4,6 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.RDFS;
+import org.eclipse.rdf4j.sparqlbuilder.constraint.propertypath.PropertyPath;
+import org.eclipse.rdf4j.sparqlbuilder.constraint.propertypath.builder.PropertyPathBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
@@ -40,13 +42,13 @@ public class BMSQueryAgent {
     }
 
     public JSONObject queryAllZones() {
-        SelectQuery query = Queries.SELECT();
         Variable building = SparqlBuilder.var("building");
         Variable facility = SparqlBuilder.var("facility");
         Variable buildingLabel = SparqlBuilder.var("buildingLabel");
         TriplePattern getAllBuildings = GraphPatterns.tp(building, RDF.TYPE, P_BOT.iri("Building"));
         TriplePattern getAllFacilitiesInBuildings = GraphPatterns.tp(building, P_BIM.iri("hasFacility"), facility);
-        TriplePattern getBuildingsNames = GraphPatterns.tp(building, RDFS.LABEL, buildingLabel);
+        PropertyPath ifcLabel = PropertyPathBuilder.of(P_BIM.iri("hasIfcRepresentation")).then(RDFS.LABEL).build();
+        TriplePattern getBuildingsNames = GraphPatterns.tp(building, ifcLabel, buildingLabel);
 
         Variable facilityType = SparqlBuilder.var("facilityType");
         Variable room = SparqlBuilder.var("room");
@@ -56,9 +58,9 @@ public class BMSQueryAgent {
         TriplePattern getAllRoomsInFacilities = GraphPatterns.tp(facility, P_BIM.iri("hasRoom"), room);
 
         Variable roomLabel = SparqlBuilder.var("roomLabel");
-        TriplePattern getRoomsNames = GraphPatterns.tp(room, RDFS.LABEL, roomLabel);
+        TriplePattern getRoomsNames = GraphPatterns.tp(room, ifcLabel, roomLabel);
 
-
+        SelectQuery query = Queries.SELECT();
         query.prefix(P_BIM, P_BOT)
                 .distinct()
                 .select(building,
@@ -86,10 +88,10 @@ public class BMSQueryAgent {
             throw new JPSRuntimeException("Unable to get everything in buildings");
         }
 
-        return restoreHierarchy(jsonResult);
+        return parseTableToJSONObj(jsonResult);
     }
 
-    JSONObject restoreHierarchy(JSONArray ja) {
+    JSONObject parseTableToJSONObj(JSONArray ja) {
         JSONObject result = new JSONObject();
         result.put("buildings", new HashMap<>());
         for (int i = 0; i < ja.length(); i++) {
