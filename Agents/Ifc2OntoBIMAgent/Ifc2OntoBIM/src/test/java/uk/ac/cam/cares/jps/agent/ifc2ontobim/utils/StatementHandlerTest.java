@@ -10,6 +10,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StatementHandlerTest {
     private static final String baseURI = "http://www.example.org/";
+    private static final String testFirstGeomInstance = baseURI + "IfcExtrudedAreaSolid_4";
+    private static final String testSecGeomInstance = baseURI + "IfcBooleanClippingResult_5";
+    private static final String testThirdGeomInstance = baseURI + "IfcPolyline_6";
+    private static final String testExpectedFirstGeomInstance = baseURI + "ExtrudedAreaSolid_4";
+    private static final String testExpectedSecGeomInstance = baseURI + "BooleanClippingResult_5";
+    private static final String testExpectedThirdGeomInstance = baseURI + "Polyline_6";
     private static final String testSubject = baseURI + "IfcWall_12";
     private static final String testProperty = baseURI + "has";
     private static final String testObject = baseURI + "Door_12";
@@ -20,6 +26,14 @@ class StatementHandlerTest {
     private static final Integer testIntegerLiteral = 5;
     private static final boolean testBooleanLiteral = true;
 
+    @Test
+    void testCreateGeometryInstanceFromIRI() {
+        NamespaceMapper.setBaseNameSpace(baseURI);
+        // Test that the generated instance is correct
+        assertEquals(testExpectedFirstGeomInstance, StatementHandler.createGeometryInstanceFromIRI(testFirstGeomInstance));
+        assertEquals(testExpectedSecGeomInstance, StatementHandler.createGeometryInstanceFromIRI(testSecGeomInstance));
+        assertEquals(testExpectedThirdGeomInstance, StatementHandler.createGeometryInstanceFromIRI(testThirdGeomInstance));
+    }
 
     @Test
     void testCreateInstanceFromIRI() {

@@ -139,6 +139,9 @@ public class CommonQuery {
     public static final String FIRST_LINE_VERTEX_VAR = "?firstlinevertex";
     public static final String LINE_VERTEX_VAR = "?linevertex";
     public static final String NEXT_LINE_VERTEX_VAR = "?nextlinevertex";
+    public static final String OPERATOR_VAR = "?operator";
+    public static final String FIRST_OPERAND_VAR = "?firstoperand";
+    public static final String SEC_OPERAND_VAR = "?secoperand";
     // Modelling operator variables
     public static final String REL_PLACEMENT_VAR = "?relativeplacement";
     public static final String REF_DIR_VECTOR_VAR = "?refdirection";
@@ -227,6 +230,9 @@ public class CommonQuery {
     public static final String IFC_HALF_SPACE_SURFACE_POSITION = NamespaceMapper.IFC_PREFIX + ":position_IfcElementarySurface";
     public static final String IFC_POLYLINE_POINTS = NamespaceMapper.IFC_PREFIX + ":points_IfcPolyline";
     public static final String IFC_POLYLOOP_POLYGON = NamespaceMapper.IFC_PREFIX + ":polygon_IfcPolyLoop";
+    public static final String IFC_CLIPPING_RESULT_OPERATOR = NamespaceMapper.IFC_PREFIX + ":operator_IfcBooleanResult";
+    public static final String IFC_CLIPPING_RESULT_FIRST_OPERAND = NamespaceMapper.IFC_PREFIX + ":firstOperand_IfcBooleanResult";
+    public static final String IFC_CLIPPING_RESULT_SEC_OPERAND = NamespaceMapper.IFC_PREFIX + ":secondOperand_IfcBooleanResult";
     // IfcOwl modelling operator properties
     public static final String IFC_PLACEMENT_POSITION = NamespaceMapper.IFC_PREFIX + ":relativePlacement_IfcLocalPlacement";
     public static final String IFC_PLACEMENT_LOCATION = NamespaceMapper.IFC_PREFIX + ":location_IfcPlacement";
@@ -273,6 +279,7 @@ public class CommonQuery {
     public static final String IFC_SURFACE_PLANE = NamespaceMapper.IFC_PREFIX + ":IfcPlane";
     public static final String IFC_POLYLINE = NamespaceMapper.IFC_PREFIX + ":IfcPolyline";
     public static final String IFC_POLYLOOP = NamespaceMapper.IFC_PREFIX + ":IfcPolyLoop";
+    public static final String IFC_CLIPPING_RESULT = NamespaceMapper.IFC_PREFIX + ":IfcBooleanClippingResult";
     // IfcOwl Element Classes
     public static final String IFC_CEILING = NamespaceMapper.IFC_PREFIX + ":IfcCovering";
     public static final String IFC_COLUMN = NamespaceMapper.IFC_PREFIX + ":IfcColumn";

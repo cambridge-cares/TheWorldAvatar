@@ -78,7 +78,16 @@ class GeometryFacadeTest {
     private static final String BIM_STARTING_VERTEX = TEST_BASE_URI + "LineVertex_778";
     private static final String IFC_SEC_VERTEX = TEST_BASE_URI + "IfcCartesianPoint_List_779";
     private static final String BIM_SEC_VERTEX = TEST_BASE_URI + "LineVertex_779";
-
+    // Boolean clipping result fields
+    private static final String IFC_CLIPPING_RESULT_IRI = TEST_BASE_URI + "IfcBooleanClippingResult_874";
+    private static final String BIM_CLIPPING_RESULT_IRI = TEST_BASE_URI + "BooleanClippingResult_874";
+    private static final String TEST_OPERATOR = JunitTestUtils.ifc2x3Uri + "DIFFERENCE";
+    private static final String IFC_FIRST_GEOM = TEST_BASE_URI + "IfcPolygonalBoundedHalfSpace_892";
+    private static final String IFC_SEC_GEOM = TEST_BASE_URI + "IfcPolyline_996";
+    private static final String IFC_NESTED_BOOLEAN_RESULT = TEST_BASE_URI + "IfcBooleanClippingResult_1002";
+    private static final String BIM_FIRST_GEOM = TEST_BASE_URI + "PolygonalBoundedHalfSpace_892";
+    private static final String BIM_SEC_GEOM = TEST_BASE_URI + "Polyline_996";
+    private static final String BIM_NESTED_BOOLEAN_RESULT = TEST_BASE_URI + "BooleanClippingResult_1002";
 
     @BeforeAll
     static void setUp() {
@@ -289,6 +298,32 @@ class GeometryFacadeTest {
         JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD, true), result);
     }
 
+    @Test
+    void testAddBooleanClippingResultStatements() {
+        // Set up
+        addClippingResultTriples(IFC_CLIPPING_RESULT_IRI, IFC_FIRST_GEOM, IFC_SEC_GEOM);
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Execute method
+        testHelper.addBooleanClippingResultStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Verify statements have been generated
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedBooleanClippingResultStatements(BIM_CLIPPING_RESULT_IRI, TEST_OPERATOR, BIM_FIRST_GEOM, BIM_SEC_GEOM), result);
+    }
+
+    @Test
+    void testAddBooleanClippingResultStatementsForNestedOperand() {
+        // Set up
+        addClippingResultTriples(IFC_CLIPPING_RESULT_IRI, IFC_FIRST_GEOM, IFC_NESTED_BOOLEAN_RESULT);
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Execute method
+        testHelper.addBooleanClippingResultStatements(sampleModel, sampleSet);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Verify statements have been generated
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedBooleanClippingResultStatements(BIM_CLIPPING_RESULT_IRI, TEST_OPERATOR, BIM_FIRST_GEOM, BIM_NESTED_BOOLEAN_RESULT), result);
+    }
+
     private void addFacetedBrepTriples() {
         sampleModel.createResource(IFC_FACETED_BREP_INST)
                 .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcFacetedBrep"))
@@ -376,6 +411,14 @@ class GeometryFacadeTest {
                         sampleModel.createResource(IFC_SEC_VERTEX)
                                 .addProperty(JunitTestUtils.hasContents, sampleModel.createResource(IFC_GEOM_SEC_POSITION_INST))
                 );
+    }
+
+    private void addClippingResultTriples(String instance, String firstOperand, String secOperand) {
+        sampleModel.createResource(instance)
+                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcBooleanClippingResult"))
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "operator_IfcBooleanResult"), sampleModel.createResource(TEST_OPERATOR))
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "firstOperand_IfcBooleanResult"), sampleModel.createResource(firstOperand))
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "secondOperand_IfcBooleanResult"), sampleModel.createResource(secOperand));
     }
 
     private List<String> genExpectedExtrudedAreaSolidStatements(String geomInst) {

@@ -18,6 +18,21 @@ public class StatementHandler {
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
 
     /**
+     * Creates a new geometry instance from a required IRI while retaining the numerical identifier.
+     * This is only intended to target geometry instances.
+     *
+     * @param iri IRI of instance to be renamed
+     */
+    public static String createGeometryInstanceFromIRI(String iri) {
+        // Note the string retrieved is at the first index of Ifc, and will still include fc
+        String bimClass = StringUtils.getStringAfterLastCharacterOccurrence(iri, "Ifc");
+        // Remove the fc using the method below
+        bimClass = StringUtils.getStringAfterFirstCharacterOccurrence(bimClass, "c");
+        bimClass = StringUtils.getStringBeforeLastCharacterOccurrence(bimClass, StringUtils.UNDERSCORE);
+        return createInstanceFromIRI(iri, bimClass);
+    }
+
+    /**
      * Creates a new instance from a required IRI while retaining the numerical identifier.
      *
      * @param iri      IRI of instance to be renamed
@@ -82,7 +97,7 @@ public class StatementHandler {
      */
     public static void addStatement(LinkedHashSet<Statement> statementSet, String subject, String predicate, Object object) {
         // If the object is a string class, add it as a String literal
-        if (object.getClass().equals(String.class)){
+        if (object.getClass().equals(String.class)) {
             addStatement(statementSet, subject, predicate, (String) object, true);
         } else {
             // Validates the subject and predicate URI

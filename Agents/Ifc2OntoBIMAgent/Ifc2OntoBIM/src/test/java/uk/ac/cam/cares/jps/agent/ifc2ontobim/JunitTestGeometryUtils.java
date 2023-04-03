@@ -90,4 +90,13 @@ public class JunitTestGeometryUtils {
         }
         return expected;
     }
+
+    public static List<String> genExpectedBooleanClippingResultStatements(String inst, String booleanOperator, String firstOperandIri, String secOperandIri) {
+        List<String> expected = new ArrayList<>();
+        expected.add(inst + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/BooleanClippingResult");
+        expected.add(inst + ", http://www.theworldavatar.com/kg/ontobim/hasBooleanOperator, " + booleanOperator);
+        expected.add(inst + ", http://www.theworldavatar.com/kg/ontobim/hasFirstOperand, " + firstOperandIri);
+        expected.add(inst + ", http://www.theworldavatar.com/kg/ontobim/hasSecondOperand, " + secOperandIri);
+        return expected;
+    }
 }

@@ -352,4 +352,42 @@ public class GeometryFacade {
         // Reset the geom mappings for poline and poly loop
         this.geomMappings = GeometryStorage.resetSingleton();
     }
+
+    /**
+     * Creates the SPARQL SELECT query statements for BooleanClippingResult.
+     *
+     * @return A string containing the SPARQL query to execute.
+     */
+    private String createBooleanClippingResultSelectQuery() {
+        SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
+        selectBuilder.addVar(CommonQuery.GEOM_VAR)
+                .addVar(CommonQuery.OPERATOR_VAR)
+                .addVar(CommonQuery.FIRST_OPERAND_VAR)
+                .addVar(CommonQuery.SEC_OPERAND_VAR);
+        selectBuilder.addWhere(CommonQuery.GEOM_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_CLIPPING_RESULT)
+                .addWhere(CommonQuery.GEOM_VAR, CommonQuery.IFC_CLIPPING_RESULT_OPERATOR, CommonQuery.OPERATOR_VAR)
+                .addWhere(CommonQuery.GEOM_VAR, CommonQuery.IFC_CLIPPING_RESULT_FIRST_OPERAND, CommonQuery.FIRST_OPERAND_VAR)
+                .addOptional(CommonQuery.GEOM_VAR, CommonQuery.IFC_CLIPPING_RESULT_SEC_OPERAND, CommonQuery.SEC_OPERAND_VAR);
+        return selectBuilder.buildString();
+    }
+
+    /**
+     * Retrieve the OntoBIM statements for BooleanClippingResult.
+     *
+     * @param owlModel     The IfcOwl model containing the triples to query from.
+     * @param statementSet A list containing the new OntoBIM triples.
+     */
+    public void addBooleanClippingResultStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
+        String query = createBooleanClippingResultSelectQuery();
+        ResultSet results = QueryHandler.execSelectQuery(query, owlModel);
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            String iri = soln.get(CommonQuery.GEOM_VAR).toString();
+            String operator = QueryHandler.retrieveIri(soln, CommonQuery.OPERATOR_VAR);
+            String firstGeomIri = QueryHandler.retrieveIri(soln, CommonQuery.FIRST_OPERAND_VAR);
+            String secGeomIri = QueryHandler.retrieveIri(soln, CommonQuery.SEC_OPERAND_VAR);
+            BooleanClippingResult geometry = new BooleanClippingResult(iri, operator, firstGeomIri, secGeomIri);
+            geometry.constructStatements(statementSet);
+        }
+    }
 }

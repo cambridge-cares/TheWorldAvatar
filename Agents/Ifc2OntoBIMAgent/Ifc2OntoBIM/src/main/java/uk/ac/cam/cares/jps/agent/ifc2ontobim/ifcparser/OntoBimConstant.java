@@ -65,6 +65,9 @@ public class OntoBimConstant {
     public static final String BIM_HAS_POLYGONAL_BOUNDARY = NamespaceMapper.BIM_NAMESPACE + "hasPolygonalBoundary";
     public static final String BIM_HAS_STARTING_VERTEX = NamespaceMapper.BIM_NAMESPACE + "hasStartingVertex";
     public static final String BIM_HAS_NEXT_VERTEX = NamespaceMapper.BIM_NAMESPACE + "hasNextVertex";
+    public static final String BIM_HAS_BOOLEAN_OPERATOR = NamespaceMapper.BIM_NAMESPACE + "hasBooleanOperator";
+    public static final String BIM_HAS_FIRST_OPERAND = NamespaceMapper.BIM_NAMESPACE + "hasFirstOperand";
+    public static final String BIM_HAS_SEC_OPERAND = NamespaceMapper.BIM_NAMESPACE + "hasSecondOperand";
     // OntoBuildingStructure stair properties
     public static final String BUILDING_STRUCTURE_HAS_RISER_NUM = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + "hasNumOfRiser";
     public static final String BUILDING_STRUCTURE_HAS_TREAD_NUM = NamespaceMapper.BUILDING_STRUCTURE_NAMESPACE + "hasNumOfTread";
@@ -176,6 +179,8 @@ public class OntoBimConstant {
     public static final String BIM_POLYLOOP_CLASS = NamespaceMapper.BIM_NAMESPACE + POLYLOOP_CLASS;
     public static final String LINE_VERTEX_CLASS = "LineVertex";
     public static final String BIM_LINE_VERTEX_CLASS = NamespaceMapper.BIM_NAMESPACE + LINE_VERTEX_CLASS;
+    public static final String CLIPPING_RESULT_CLASS = "BooleanClippingResult";
+    public static final String BIM_CLIPPING_RESULT_CLASS = NamespaceMapper.BIM_NAMESPACE + CLIPPING_RESULT_CLASS;
     // OM classes
     public static final String HEIGHT_CLASS = NamespaceMapper.OM_NAMESPACE + "Height";
     public static final String MEASURE_CLASS = NamespaceMapper.OM_NAMESPACE + "Measure";

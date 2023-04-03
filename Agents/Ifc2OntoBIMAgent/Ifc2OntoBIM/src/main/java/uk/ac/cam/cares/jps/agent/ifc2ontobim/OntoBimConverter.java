@@ -150,6 +150,10 @@ public class OntoBimConverter {
         geometryHelper.addPolylineStatements(this.owlModel, statementSet, true);
         LOGGER.info("Storing poly loop statements into a temp file...");
         statementSet = this.storeInTempFiles(statementSet);
+        LOGGER.info("Retrieving and generating statements related to boolean clipping results...");
+        geometryHelper.addBooleanClippingResultStatements(this.owlModel, statementSet);
+        LOGGER.info("Storing boolean clipping result statements into a temp file...");
+        statementSet = this.storeInTempFiles(statementSet);
         // Final steps
         LOGGER.info("Retrieving and generating statements related to direction and cartesian points...");
         operatorMappings.constructAllStatements(statementSet);
