@@ -22,7 +22,12 @@ class GeometryFacadeTest {
     private static ModellingOperatorStorage operatorMappings;
     private static GeometryFacade testHelper;
     private static final String TEST_BASE_URI = "http://www.theworldavatar.com/test/";
+    private static final String POLYLINE_CLASS = "IfcPolyline";
+    private static final String POLYLINE_PROPERTY = "points_IfcPolyline";
+    private static final String POLYLOOP_CLASS = "IfcPolyLoop";
+    private static final String POLYLOOP_PROPERTY = "polygon_IfcPolyLoop";
     private static final Resource IFC_DIRECTION = ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcDirection");
+
     // Extruded area solid fields
     private static final String IFC_EXTRUDED_AREA_SOLID_INST = TEST_BASE_URI + "IfcExtrudedAreaSolid_14823";
     private static final String BIM_EXTRUDED_AREA_SOLID_INST = TEST_BASE_URI + "ExtrudedAreaSolid_14823";
@@ -58,6 +63,8 @@ class GeometryFacadeTest {
     // Polyline fields
     private static final String IFC_POLYLINE_INSTANCE = TEST_BASE_URI + "IfcPolyline_777";
     private static final String BIM_POLYLINE_INSTANCE = TEST_BASE_URI + "Polyline_777";
+    private static final String IFC_POLYLOOP_INSTANCE = TEST_BASE_URI + "IfcPolyLoop_625";
+    private static final String BIM_POLYLOOP_INSTANCE = TEST_BASE_URI + "PolyLoop_625";
     private static final String IFC_STARTING_VERTEX = TEST_BASE_URI + "IfcCartesianPoint_List_778";
     private static final String BIM_STARTING_VERTEX = TEST_BASE_URI + "LineVertex_778";
     private static final String IFC_SEC_VERTEX = TEST_BASE_URI + "IfcCartesianPoint_List_779";
@@ -167,15 +174,15 @@ class GeometryFacadeTest {
     @Test
     void testAddPolylineStatements() {
         // Set up
-        addPolylineTriples();
+        addPolylineTriples(IFC_POLYLINE_INSTANCE, POLYLINE_CLASS, POLYLINE_PROPERTY);
         addPolylineSecondVertexTriples();
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         // Execute method
-        testHelper.addPolylineStatements(sampleModel, sampleSet);
+        testHelper.addPolylineStatements(sampleModel, sampleSet, false);
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Verify statements have been generated
-        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(BIM_POLYLINE_INSTANCE, BIM_STARTING_VERTEX, operatorMappings.getPoint(IFC_GEOM_POSITION_INST).getIri()), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(BIM_POLYLINE_INSTANCE, BIM_STARTING_VERTEX, operatorMappings.getPoint(IFC_GEOM_POSITION_INST).getIri(), "Polyline"), result);
         JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(BIM_STARTING_VERTEX, BIM_SEC_VERTEX, operatorMappings.getPoint(IFC_GEOM_SEC_POSITION_INST).getIri()), result);
         // Verify that the right points are generated
         operatorMappings.constructAllStatements(sampleSet);
@@ -187,14 +194,53 @@ class GeometryFacadeTest {
     @Test
     void testAddPolylineStatementsOneVertex() {
         // Set up
-        addPolylineTriples();
+        addPolylineTriples(IFC_POLYLINE_INSTANCE, POLYLINE_CLASS, POLYLINE_PROPERTY);
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
         // Execute method
-        testHelper.addPolylineStatements(sampleModel, sampleSet);
+        testHelper.addPolylineStatements(sampleModel, sampleSet, false);
         // Clean up results as one string
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Verify statements have been generated
-        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(BIM_POLYLINE_INSTANCE, BIM_STARTING_VERTEX, operatorMappings.getPoint(IFC_GEOM_POSITION_INST).getIri()), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(BIM_POLYLINE_INSTANCE, BIM_STARTING_VERTEX, operatorMappings.getPoint(IFC_GEOM_POSITION_INST).getIri(), "Polyline"), result);
+        // Verify the next vertex is not generated since it doesn't exist
+        JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(BIM_STARTING_VERTEX, BIM_SEC_VERTEX, operatorMappings.getPoint(IFC_GEOM_SEC_POSITION_INST).getIri()), result);
+        // Verify that the right points are generated
+        operatorMappings.constructAllStatements(sampleSet);
+        result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD, true), result);
+    }
+
+    @Test
+    void testAddPolylineStatementsForPolyLoop() {
+        // Set up
+        addPolylineTriples(IFC_POLYLOOP_INSTANCE, POLYLOOP_CLASS, POLYLOOP_PROPERTY);
+        addPolylineSecondVertexTriples();
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Execute method
+        testHelper.addPolylineStatements(sampleModel, sampleSet, true);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Verify statements have been generated
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(BIM_POLYLOOP_INSTANCE, BIM_STARTING_VERTEX, operatorMappings.getPoint(IFC_GEOM_POSITION_INST).getIri(), "PolyLoop"), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(BIM_STARTING_VERTEX, BIM_SEC_VERTEX, operatorMappings.getPoint(IFC_GEOM_SEC_POSITION_INST).getIri()), result);
+        // Verify that the right points are generated
+        operatorMappings.constructAllStatements(sampleSet);
+        result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_GEOM_POSITION_X_COORD, IFC_GEOM_POSITION_Y_COORD, IFC_GEOM_POSITION_Z_COORD, true), result);
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_GEOM_SEC_POSITION_X_COORD, IFC_GEOM_SEC_POSITION_Y_COORD, IFC_GEOM_SEC_POSITION_Z_COORD, true), result);
+    }
+
+    @Test
+    void testAddPolylineStatementsOneVertexForPolyLoop() {
+        // Set up
+        addPolylineTriples(IFC_POLYLOOP_INSTANCE, POLYLOOP_CLASS, POLYLOOP_PROPERTY);
+        LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
+        // Execute method
+        testHelper.addPolylineStatements(sampleModel, sampleSet, true);
+        // Clean up results as one string
+        String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        // Verify statements have been generated
+        JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedCommonPolylineStatements(BIM_POLYLOOP_INSTANCE, BIM_STARTING_VERTEX, operatorMappings.getPoint(IFC_GEOM_POSITION_INST).getIri(), "PolyLoop"), result);
         // Verify the next vertex is not generated since it doesn't exist
         JunitTestUtils.doesExpectedListNotExist(JunitTestGeometryUtils.genExpectedNextLineVertexStatements(BIM_STARTING_VERTEX, BIM_SEC_VERTEX, operatorMappings.getPoint(IFC_GEOM_SEC_POSITION_INST).getIri()), result);
         // Verify that the right points are generated
@@ -253,10 +299,10 @@ class GeometryFacadeTest {
                 );
     }
 
-    private void addPolylineTriples() {
-        sampleModel.createResource(IFC_POLYLINE_INSTANCE)
-                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcPolyline"))
-                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "points_IfcPolyline"),
+    private void addPolylineTriples(String instance, String ifcClass, String property) {
+        sampleModel.createResource(instance)
+                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + ifcClass))
+                .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + property),
                         sampleModel.createResource(IFC_STARTING_VERTEX)
                                 .addProperty(JunitTestUtils.hasContents, sampleModel.createResource(IFC_GEOM_POSITION_INST))
                 );

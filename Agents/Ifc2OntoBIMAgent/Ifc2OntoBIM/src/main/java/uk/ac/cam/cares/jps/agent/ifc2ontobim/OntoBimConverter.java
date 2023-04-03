@@ -139,8 +139,12 @@ public class OntoBimConverter {
         LOGGER.info("Storing bounded half space statements into a temp file...");
         statementSet = this.storeInTempFiles(statementSet);
         LOGGER.info("Retrieving and generating statements related to polyline...");
-        geometryHelper.addPolylineStatements(this.owlModel, statementSet);
+        geometryHelper.addPolylineStatements(this.owlModel, statementSet, false);
         LOGGER.info("Storing polyline statements into a temp file...");
+        statementSet = this.storeInTempFiles(statementSet);
+        LOGGER.info("Retrieving and generating statements related to poly loops...");
+        geometryHelper.addPolylineStatements(this.owlModel, statementSet, false);
+        LOGGER.info("Storing poly loop statements into a temp file...");
         statementSet = this.storeInTempFiles(statementSet);
         // Final steps
         LOGGER.info("Retrieving and generating statements related to direction and cartesian points...");

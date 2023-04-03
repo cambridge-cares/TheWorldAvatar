@@ -218,6 +218,8 @@ public class CommonQuery {
     public static final String IFC_HALF_SPACE_SURFACE = NamespaceMapper.IFC_PREFIX + ":baseSurface_IfcHalfSpaceSolid";
     public static final String IFC_HALF_SPACE_SURFACE_POSITION = NamespaceMapper.IFC_PREFIX + ":position_IfcElementarySurface";
     public static final String IFC_POLYLINE_POINTS = NamespaceMapper.IFC_PREFIX + ":points_IfcPolyline";
+    public static final String IFC_POLYLOOP_POLYGON = NamespaceMapper.IFC_PREFIX + ":polygon_IfcPolyLoop";
+
     // IfcOwl modelling operator properties
     public static final String IFC_PLACEMENT_POSITION = NamespaceMapper.IFC_PREFIX + ":relativePlacement_IfcLocalPlacement";
     public static final String IFC_PLACEMENT_LOCATION = NamespaceMapper.IFC_PREFIX + ":location_IfcPlacement";
@@ -259,6 +261,8 @@ public class CommonQuery {
     public static final String IFC_POLYGONAL_HALF_SPACE = NamespaceMapper.IFC_PREFIX + ":IfcPolygonalBoundedHalfSpace";
     public static final String IFC_SURFACE_PLANE = NamespaceMapper.IFC_PREFIX + ":IfcPlane";
     public static final String IFC_POLYLINE = NamespaceMapper.IFC_PREFIX + ":IfcPolyline";
+    public static final String IFC_POLYLOOP = NamespaceMapper.IFC_PREFIX + ":IfcPolyLoop";
+
     // IfcOwl Element Classes
     public static final String IFC_CEILING = NamespaceMapper.IFC_PREFIX + ":IfcCovering";
     public static final String IFC_COLUMN = NamespaceMapper.IFC_PREFIX + ":IfcColumn";

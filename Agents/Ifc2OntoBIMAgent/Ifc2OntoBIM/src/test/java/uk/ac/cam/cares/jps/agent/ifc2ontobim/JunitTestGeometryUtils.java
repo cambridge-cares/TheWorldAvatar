@@ -17,9 +17,9 @@ public class JunitTestGeometryUtils {
         return expected;
     }
 
-    public static List<String> genExpectedCommonPolylineStatements(String polylineInst, String startingVertexInst, String startingPointInst) {
+    public static List<String> genExpectedCommonPolylineStatements(String polylineInst, String startingVertexInst, String startingPointInst, String bimClass) {
         List<String> expected = new ArrayList<>();
-        expected.add(polylineInst + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/Polyline");
+        expected.add(polylineInst + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/" + bimClass);
         expected.add(polylineInst + ", http://www.theworldavatar.com/kg/ontobim/hasStartingVertex, " + startingVertexInst);
         expected.add(startingVertexInst + ", http://www.theworldavatar.com/kg/ontobim/hasRefPoint, " + startingPointInst);
         expected.add(startingVertexInst + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LineVertex");

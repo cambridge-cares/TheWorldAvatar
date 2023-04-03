@@ -159,6 +159,8 @@ public class OntoBimConstant {
     public static final String BIM_SURFACE_PLANE_CLASS = NamespaceMapper.BIM_NAMESPACE + SURFACE_PLANE_CLASS;
     public static final String POLYLINE_CLASS = "Polyline";
     public static final String BIM_POLYLINE_CLASS = NamespaceMapper.BIM_NAMESPACE + POLYLINE_CLASS;
+    public static final String POLYLOOP_CLASS = "PolyLoop";
+    public static final String BIM_POLYLOOP_CLASS = NamespaceMapper.BIM_NAMESPACE + POLYLOOP_CLASS;
     public static final String LINE_VERTEX_CLASS = "LineVertex";
     public static final String BIM_LINE_VERTEX_CLASS = NamespaceMapper.BIM_NAMESPACE + LINE_VERTEX_CLASS;
     // OM classes

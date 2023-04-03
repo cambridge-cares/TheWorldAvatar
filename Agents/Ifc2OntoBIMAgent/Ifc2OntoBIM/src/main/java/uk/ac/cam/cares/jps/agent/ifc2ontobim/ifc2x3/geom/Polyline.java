@@ -7,14 +7,29 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
 import java.util.*;
 
 /**
- * A class representing the Polyline concept in OntoBIM.
+ * A class representing the Polyline or its child PolyLoop concept in OntoBIM.
  *
  * @author qhouyee
  */
 public class Polyline {
     private final String iri;
+    private final String bimClassIRI;
     private final String startingVertexIRI;
     private final Map<String, String[]> vertexIris;
+
+    /**
+     * Overloaded Constructor initialising the common inputs and sets the default class to polyline.
+     * Note that queried results are not in order, and will require the nextVertexIri to determine their order
+     *
+     * @param instance          This instance's IRI in the IfcOwl triples.
+     * @param startingVertexIri The starting vertex of the point.
+     * @param currentVertexIri  The IRI of the current vertex retrieved.
+     * @param currentPointIri   The current vertex's point IRI retrieved.
+     * @param nextVertexIri     An optional field for IRI of the next vertex retrieved (if any exists).
+     */
+    public Polyline(String instance, String startingVertexIri, String currentVertexIri, String currentPointIri, String nextVertexIri) {
+        this(instance, startingVertexIri, currentVertexIri, currentPointIri, nextVertexIri, OntoBimConstant.POLYLINE_CLASS);
+    }
 
     /**
      * Standard Constructor initialising the common inputs.
@@ -25,9 +40,11 @@ public class Polyline {
      * @param currentVertexIri  The IRI of the current vertex retrieved.
      * @param currentPointIri   The current vertex's point IRI retrieved.
      * @param nextVertexIri     An optional field for IRI of the next vertex retrieved (if any exists).
+     * @param ontoBimClass      The OntoBIM class of this instance.
      */
-    public Polyline(String instance, String startingVertexIri, String currentVertexIri, String currentPointIri, String nextVertexIri) {
-        this.iri = StatementHandler.createInstanceFromIRI(instance, OntoBimConstant.POLYLINE_CLASS);
+    public Polyline(String instance, String startingVertexIri, String currentVertexIri, String currentPointIri, String nextVertexIri, String ontoBimClass) {
+        this.iri = StatementHandler.createInstanceFromIRI(instance, ontoBimClass);
+        this.bimClassIRI = ontoBimClass.equals(OntoBimConstant.POLYLOOP_CLASS) ? OntoBimConstant.BIM_POLYLOOP_CLASS : OntoBimConstant.BIM_POLYLINE_CLASS;
         this.startingVertexIRI = startingVertexIri;
         // Initialise the mappings
         this.vertexIris = new HashMap<>();
@@ -55,7 +72,7 @@ public class Polyline {
      * @param statementSet The set containing the new ontoBIM triples.
      */
     public void constructStatements(LinkedHashSet<Statement> statementSet) {
-        StatementHandler.addStatement(statementSet, this.iri, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_POLYLINE_CLASS);
+        StatementHandler.addStatement(statementSet, this.iri, OntoBimConstant.RDF_TYPE, this.bimClassIRI);
         StatementHandler.addStatement(statementSet, this.iri, OntoBimConstant.BIM_HAS_STARTING_VERTEX, StatementHandler.createInstanceFromIRI(this.startingVertexIRI, OntoBimConstant.LINE_VERTEX_CLASS));
         // First retrieve the starting vertex information
         String[] currentVertexData = this.vertexIris.get(this.startingVertexIRI);

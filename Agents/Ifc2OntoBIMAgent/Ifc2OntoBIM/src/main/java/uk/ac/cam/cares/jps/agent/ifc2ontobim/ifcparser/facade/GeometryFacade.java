@@ -11,6 +11,7 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.Polyline;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.RectangleProfileDefinition;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.CommonQuery;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.GeometryStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.ModellingOperatorStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.QueryHandler;
@@ -25,7 +26,6 @@ import java.util.LinkedHashSet;
 public class GeometryFacade {
     private GeometryStorage geomMappings;
     private final ModellingOperatorStorage operatorMappings;
-
 
 
     /**
@@ -237,33 +237,40 @@ public class GeometryFacade {
     }
 
     /**
-     * Creates the SPARQL SELECT query statements for Polyline.
+     * Creates the SPARQL SELECT query statements for Polyline and PolyLoop.
      *
+     * @param isPolyLoop A boolean indicating if this method should be executed as a PolyLoop or Polyline.
      * @return A string containing the SPARQL query to execute.
      */
-    private String createPolylineSelectQuery() {
+    private String createPolylineSelectQuery(boolean isPolyLoop) {
         SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
         selectBuilder.addVar(CommonQuery.GEOM_VAR)
                 .addVar(CommonQuery.FIRST_LINE_VERTEX_VAR)
                 .addVar(CommonQuery.CART_POINT_VAR)
                 .addVar(CommonQuery.LINE_VERTEX_VAR)
                 .addVar(CommonQuery.NEXT_LINE_VERTEX_VAR);
-        selectBuilder.addWhere(CommonQuery.GEOM_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_POLYLINE)
-                .addWhere(CommonQuery.GEOM_VAR, CommonQuery.IFC_POLYLINE_POINTS, CommonQuery.FIRST_LINE_VERTEX_VAR)
-                .addWhere(CommonQuery.FIRST_LINE_VERTEX_VAR, "(" + CommonQuery.LIST_HAS_NEXT + ")*", CommonQuery.LINE_VERTEX_VAR)
+        if (isPolyLoop) {
+            selectBuilder.addWhere(CommonQuery.GEOM_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_POLYLOOP)
+                    .addWhere(CommonQuery.GEOM_VAR, CommonQuery.IFC_POLYLOOP_POLYGON, CommonQuery.FIRST_LINE_VERTEX_VAR);
+        } else {
+            selectBuilder.addWhere(CommonQuery.GEOM_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_POLYLINE)
+                    .addWhere(CommonQuery.GEOM_VAR, CommonQuery.IFC_POLYLINE_POINTS, CommonQuery.FIRST_LINE_VERTEX_VAR);
+        }
+        selectBuilder.addWhere(CommonQuery.FIRST_LINE_VERTEX_VAR, "(" + CommonQuery.LIST_HAS_NEXT + ")*", CommonQuery.LINE_VERTEX_VAR)
                 .addWhere(CommonQuery.LINE_VERTEX_VAR, CommonQuery.LIST_HAS_CONTENT, CommonQuery.CART_POINT_VAR)
                 .addOptional(CommonQuery.LINE_VERTEX_VAR, CommonQuery.LIST_HAS_NEXT, CommonQuery.NEXT_LINE_VERTEX_VAR);
         return selectBuilder.buildString();
     }
 
     /**
-     * Retrieve the OntoBIM statements for Polyline.
+     * Retrieve the OntoBIM statements for PolyLoop.
      *
      * @param owlModel     The IfcOwl model containing the triples to query from.
      * @param statementSet A list containing the new OntoBIM triples.
+     * @param isPolyLoop   A boolean indicating if this method should be executed as a PolyLoop or Polyline.
      */
-    public void addPolylineStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
-        String query = createPolylineSelectQuery();
+    public void addPolylineStatements(Model owlModel, LinkedHashSet<Statement> statementSet, boolean isPolyLoop) {
+        String query = createPolylineSelectQuery(isPolyLoop);
         ResultSet results = QueryHandler.execSelectQuery(query, owlModel);
         while (results.hasNext()) {
             QuerySolution soln = results.nextSolution();
@@ -284,8 +291,9 @@ public class GeometryFacade {
                 geometry = this.geomMappings.getPolyline(iri);
                 geometry.appendVertex(currentVertex, currentPointIri, nextVertex);
             } else {
-                // Generate a new polyline and construct the statements
-                geometry = new Polyline(iri, startingVertex, currentVertex, currentPointIri, nextVertex);
+                // Generate a new polyline or polyloop depending on the class and construct the statements
+                geometry = isPolyLoop ? new Polyline(iri, startingVertex, currentVertex, currentPointIri, nextVertex, OntoBimConstant.POLYLOOP_CLASS) :
+                        new Polyline(iri, startingVertex, currentVertex, currentPointIri, nextVertex);
                 // Add the object into the mappings for its IRI
                 this.geomMappings.add(iri, geometry);
             }
