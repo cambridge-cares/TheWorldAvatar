@@ -556,8 +556,6 @@ def retrieve_timeseries_data_from_api(crs: str = 'EPSG:4326', ts_ids=[],
 
     # Loop to avoid API timeout
     chunks = [ts_ids[i:i+chunksize] for i in range(0,len(ts_ids),chunksize)]
-    #TODO: remove testing limit
-    chunks = chunks[:2]
     i, j = 1, len(chunks)
     for chunk in chunks: 
         print(f'Retrieving chunk {i:>4}/{j:>4} of time series data from API ...')
