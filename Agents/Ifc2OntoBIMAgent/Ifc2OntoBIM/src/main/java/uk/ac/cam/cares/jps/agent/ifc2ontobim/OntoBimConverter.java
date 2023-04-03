@@ -143,7 +143,7 @@ public class OntoBimConverter {
         LOGGER.info("Storing polyline statements into a temp file...");
         statementSet = this.storeInTempFiles(statementSet);
         LOGGER.info("Retrieving and generating statements related to poly loops...");
-        geometryHelper.addPolylineStatements(this.owlModel, statementSet, false);
+        geometryHelper.addPolylineStatements(this.owlModel, statementSet, true);
         LOGGER.info("Storing poly loop statements into a temp file...");
         statementSet = this.storeInTempFiles(statementSet);
         // Final steps
