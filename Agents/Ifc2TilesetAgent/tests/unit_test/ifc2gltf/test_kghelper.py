@@ -8,7 +8,7 @@ A test suite for the agent.ifc2gltf.kghelper submodule.
 import pandas as pd
 
 # Self import
-from agent.ifc2gltf.kghelper import classify_file_name
+from agent.ifc2gltf.kghelper import classify_filename
 
 
 def test_create_query():
@@ -18,19 +18,13 @@ def test_create_query():
     pass
 
 
-def test_classify_file_name():
-    """
-    Tests classify_file_name()
-    """
-    # Generate sample data
-    data = {
-        "name": ["Water Meter", "Solar Panel", "Desk", "Chemistry Robot (Detectors)"]
-    }
-    sampledf = pd.DataFrame(data)
-    # Execute method
-    sampledf = classify_file_name(sampledf)
-    # Test assertions
-    assert sampledf["file"].iloc[0] == "asset1"
-    assert sampledf["file"].iloc[1] == "solarpanel"
-    assert sampledf["file"].iloc[2] == "furniture"
-    assert sampledf["file"].iloc[3] == "asset2"
+def test_classify_filename():
+    # Arrange
+    filenames = pd.Series(["Water Meter", "Solar Panel", "Desk", "Chemistry Robot (Detectors)"])
+    expected = pd.Series(["asset1", "solarpanel", "furniture", "asset2"])
+
+    # Act
+    actual = classify_filename(filenames)
+
+    # Assert
+    assert (actual == expected).all()

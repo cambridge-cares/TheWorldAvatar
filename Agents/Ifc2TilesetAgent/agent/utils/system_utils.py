@@ -26,7 +26,7 @@ def run_shellcommand(command: Union[str, List[str]], require_shell: bool = False
     All non-error messages are suppressed.
 
     Args:
-        command: Command arguments in the form ["command","command2"] or "command command2".
+        command: Command arguments in the form ["command", "command2"] or "command command2".
         require_shell: A bool indicating if shell is required. Must be True for npm operations.
     """
     subprocess.run(command, shell=require_shell)

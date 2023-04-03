@@ -5,6 +5,7 @@ This module retrieves metadata from the knowledge graph.
 """
 
 # Third party imports
+from itertools import count
 import pandas as pd
 import numpy as np
 from py4jps import agentlogging
@@ -18,8 +19,7 @@ logger = agentlogging.get_logger("dev")
 
 
 def create_metadata_query():
-    """Creates the SPARQL query for retrieving asset metadata.
-    """
+    """Creates the SPARQL query for retrieving asset metadata."""
     return """\
 PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
@@ -65,40 +65,31 @@ SELECT ?iri ?uid ?name WHERE {
 """
 
 
-def classify_file_name(dataframe: pd.DataFrame):
+def classify_filename(series: pd.Series):
     """Classifies if assets should be an asset, furniture, or other categories (solar panel, sewage network).
 
-    Filename is appended to the dataframe.
-
     Args:
-        dataframe: dataframe containing the query results, with headers 'name', 'uid', 'iri'.
+        series: A Pandas series of asset labels.
 
     Returns:
-        A dataframe with headers 'file', 'name', 'uid', 'iri'.
+        A Pandas series of asset classes.
     """
-    # Initialise a new empty column to contain file name
-    dataframe["file"] = np.nan
     # Initialise a list containing partial names of individual assets to be split
-    assetlist = ["Sensor", "Weather Station", "Meter",
+    asset_list = ["Sensor", "Weather Station", "Meter",
                  "Fume Hood", "Explosive Precursor", "Chemistry Robot",
                  "Fridge"]
-    counter = 1  # counter for appending asset name
-
-    for row in range(len(dataframe.index)):
-        # If asset is to be split, generate it as an asset file
-        if find_word(assetlist, dataframe[NAME_VAR].iloc[row]):
-            dataframe.at[row, "file"] = "asset" + str(counter)
-            counter = counter + 1
-        # If asset is a solar panel, generate it as a solarpanel file
-        elif find_word(["Solar Panel"], dataframe[NAME_VAR].iloc[row]):
-            dataframe.at[row, "file"] = "solarpanel"
-        # If asset is a manhole, generate it as a sewage file
-        elif find_word(["Manhole"], dataframe[NAME_VAR].iloc[row]):
-            dataframe.at[row, "file"] = "sewagenetwork"
-        # Else, all other asset types are generated as a furniture file
-        else:
-            dataframe.at[row, "file"] = "furniture"
-    return dataframe
+    
+    counter = count(start=1, step=1)
+    def _classify(name: str):
+        if find_word(asset_list, name):
+            return "asset" + str(next(counter))
+        if find_word(["Solar Panel"], name):
+            return "solarpanel"
+        if find_word(["Manhole"], name):
+            return "sewagenetwork"
+        return "furniture"
+    
+    return series.apply(_classify)
 
 
 def retrieve_metadata(query_endpoint: str, update_endpoint: str):
@@ -124,7 +115,9 @@ def retrieve_metadata(query_endpoint: str, update_endpoint: str):
     metadata = pd.DataFrame(results, columns=["iri", "uid", "name"])
 
     logger.debug("Classifying results into their files...")
-    return classify_file_name(metadata)
+    metadata["file"] = classify_filename(metadata["name"])
+    
+    return metadata
 
 
 def get_building_iri(query_endpoint: str, update_endpoint: str) -> str:

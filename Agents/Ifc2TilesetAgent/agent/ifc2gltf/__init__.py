@@ -9,7 +9,7 @@ from py4jps import agentlogging
 
 # Self imports
 from agent.ifc2gltf.kghelper import retrieve_metadata, get_building_iri
-from agent.ifc2gltf.ifchelper import gendict4split, append_ifcconvert_command
+from agent.ifc2gltf.ifchelper import exec_gltf_conversion, get_filename_to_ifc_ids_mapping
 from agent.utils import run_shellcommand, retrieve_abs_filepath
 
 # Retrieve logger
@@ -30,23 +30,26 @@ def conv2gltf(input_ifc: str, query_endpoint: str, update_endpoint: str):
     """
     logger.info("Retrieving metadata from endpoint...")
     metadata = retrieve_metadata(query_endpoint, update_endpoint)
-    building_iri = get_building_iri(query_endpoint, update_endpoint)
 
     logger.info("Generating dictionary for splitting IFC assets.")
-    dict_for_split, asset_data = gendict4split(metadata)
+    filename_to_ifc_ids_mappings = get_filename_to_ifc_ids_mapping(metadata)
 
-    for key, value_list in dict_for_split.items():
-        glbpath = "./data/glb/" + key + ".glb"
-        glbpath = retrieve_abs_filepath(glbpath)
+    # Convert IFC -> glb for building
+    # Initialise a dictionary with the IFC classes to exclude from the building output model
+    # Non-exhaustive. If required, add more classes in the format 'IfcFeatureType'
+    building_exclude_ifcclasses = ["IfcBuildingElementProxy", "IfcFurnishingElement", "IfcFlowTerminal", "IfcSpace",
+                                   "IfcOpeningElement", "IfcFlowSegment"]
+    building_ifcconvert_options = ["--exclude", "entities"] + building_exclude_ifcclasses
+    exec_gltf_conversion(input_ifc, "building", building_ifcconvert_options)
 
-        # Initialise the commands and append accordingly
-        ifcconvert_command = ["./IfcConvert", "-q", input_ifc, glbpath]
-        ifcconvert_command = append_ifcconvert_command(key, value_list, ifcconvert_command)
-
-        # Convert from IFC -> glb -> glTF
-        logger.info("Converting " + key + " to glTF...")
-        run_shellcommand(ifcconvert_command)
-
+    # Convert IFC -> glb for assets
+    for filename, ifc_ids in filename_to_ifc_ids_mappings.items():
+        ifcconvert_options = ["--include", "attribute", "GlobalId"] + ifc_ids
+        exec_gltf_conversion(input_ifc, filename, ifcconvert_options)
+    
     logger.info("Conversion to gltf completed...")
 
+    asset_data = metadata[~metadata["file"].isin(["furniture", "solarpanel", "sewagenetwork"])]
+    building_iri = get_building_iri(query_endpoint, update_endpoint)
+    
     return asset_data, building_iri

@@ -30,8 +30,9 @@ def gen_sample_tileset(
 def gen_sample_asset_df(test_range: int):
     """Generates sample datafarame for asset metadata.
 
-    Argus:
+    Args:
         test_range: Number of assets to be generated.
+
     Returns:
         A dataframe with sample data.
     """
@@ -47,6 +48,14 @@ def gen_sample_asset_df(test_range: int):
 
 
 def gen_sample_asset_contents(test_range: int):
+    """Generates `contents` field of a tile populated with sample asset metadata.
+    
+    Args:
+        test_range: Number of assets to be generated.
+    
+    Returns:
+        A list of dict.
+    """
     return [
         {
             "uri": f"./glb/asset{i}.glb",
