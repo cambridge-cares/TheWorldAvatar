@@ -5,10 +5,11 @@
 
 from flask import Blueprint, request, jsonify
 
-from agent.datainstantiation.stations import instantiate_all_stations
-from agent.datainstantiation.readings import instantiate_all_station_readings
-from agent.datainstantiation.readings import add_all_readings_timeseries
-from agent.datainstantiation.readings import update_all_stations
+from agent.datainstantiation.stations import instantiate_all_stations, \
+                                             instantiate_mocked_kingslynn_stations
+from agent.datainstantiation.readings import instantiate_all_station_readings, \
+                                             add_all_readings_timeseries, \
+                                             update_all_stations
 
 
 # Initialise logger
@@ -98,3 +99,20 @@ def api_update_all_stations():
     except Exception as ex:
         logger.error('Update failed: ' + str(ex))
         return jsonify({'msg': 'Update failed: ' + str(ex)}), 500
+    
+
+# Define route for API request to instantiate mocked/virtual station in King's Lynn
+@inputtasks_bp.route('/airqualityagent/instantiate/mocked', methods=['GET'])
+def api_instantiate_mocked_stations():
+    # Check arguments (query parameters)
+    if len(request.args) > 0:
+        logger.warning("Query parameters provided, although not required. \
+                        Provided arguments will be neglected.")
+    try:
+        response = instantiate_mocked_kingslynn_stations()
+        print(f"Number of mocked stations: {response}")
+        return jsonify({"Instantiated mocked stations": response}), 200
+
+    except Exception as ex:
+        logger.error('Instantiation failed: ' + str(ex))
+        return jsonify({'msg': 'Instantiation failed: ' + str(ex)}), 500

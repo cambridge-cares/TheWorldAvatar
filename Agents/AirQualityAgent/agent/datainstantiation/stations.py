@@ -184,6 +184,59 @@ def instantiate_all_stations(query_endpoint: str = QUERY_ENDPOINT,
     return len(missing_ids)
 
 
+def instantiate_mocked_kingslynn_stations(query_endpoint: str = QUERY_ENDPOINT,
+                                          update_endpoint: str = UPDATE_ENDPOINT):
+    """
+    Instantiate a mocked air quality station within King's Lynn, which simply 
+    displays the air quality measurements from the mocked station
+    
+    NOTE: The UK-AIR sensor observations currently do not cover East Anglia, i.e.
+          King's Lynn; hence, we place a virtual station in King's Lynn and simply
+          connect it to readings of the specified station
+    """
+    
+    # Define properties of mocked station(s)
+    mocked_stations = [
+        {"label": "King's Lynn (virtual)",
+         "lat": "52.7448",
+         "lon": "0.4016",
+         "elevation": 5.5,
+         "station_to_mock": "Aberdeen Erroll Park",
+         },
+    ]
+
+    # Initialise KG client
+    kg_client = KGClient(query_endpoint, update_endpoint)
+
+    for s in mocked_stations:
+        # Create station data list as required by "instantiate_stations"
+        data = {}
+        data['station'] = s.get('label')
+        data['latitude'] = s.get('lat')
+        data['longitude'] = s.get('lon')
+        data['elevation'] = s.get('elevation')
+        station_id = s.get('label') + '_' + s.get('lat') + '#' + s.get('lon')
+        station_data = [{station_id: data}]
+
+        # 1) Instantiate mocked station(s) if not yet instantiated
+        query = all_airquality_station_ids()
+        res = kg_client.performQuery(query)
+        if station_id not in [r.get('id') for r in res]:
+            instantiate_stations(station_data)
+
+        # 2) Connect mocked station(s) to real station measurements
+        # Retrieve identifiers of station to mock and the one used for mocking
+        virtual_station = s.get('label')
+        mock_station = s.get('station_to_mock')
+        # Execute SPARQL update
+        query_string = connect_mocked_station(virtual_station=virtual_station,
+                                              station_to_mock=mock_station)
+        kg_client.performUpdate(query_string)
+
+    return len(mocked_stations)
+
+
+
 def _condition_airquality_data(station_data: dict) -> dict:
     """
         Condition retrieved UK AIR data as required for query template

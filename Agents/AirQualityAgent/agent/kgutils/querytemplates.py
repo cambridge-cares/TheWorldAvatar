@@ -153,6 +153,30 @@ def instantiated_observations(station_iris: list = None):
     return query
 
 
+def connect_mocked_station(virtual_station, station_to_mock) -> str:
+    """
+    Returns query to connect mocked station to actual station observations
+    
+    Arguments:
+        virtual_station: label of virtual station (i.e. mocked station)
+        station_to_mock: label of actual station for which virtual station 
+                         shall return readings
+    """
+    query = f"""
+        INSERT {{
+            ?virtual <{EMS_REPORTS}> ?quantity .
+        }}
+        WHERE {{
+            ?virtual <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ; 
+                     <{RDFS_LABEL}> "{virtual_station}" . 
+            ?actual <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ; 
+                    <{RDFS_LABEL}> "{station_to_mock}" ; 
+                    <{EMS_REPORTS}> ?quantity .
+        }}
+    """
+    query = ' '.join(query.split())
+    return query
+
 def instantiated_observation_timeseries(station_iris: list = None):
     # Returns query to retrieve (all) instantiated observation time series per station
     if station_iris:
