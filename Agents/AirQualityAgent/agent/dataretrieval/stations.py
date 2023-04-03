@@ -12,12 +12,12 @@ import json
 import time
 import pathlib
 import pandas as pd
-from agent.kgutils import kgclient
 
 from agent.kgutils.kgclient import KGClient
 from agent.kgutils.timeseries import TSClient
 from agent.kgutils.querytemplates import *
-from agent.utils.stack_configs import DB_PASSWORD, DB_URL, DB_USER, QUERY_ENDPOINT, UPDATE_ENDPOINT
+from agent.utils.stack_configs import DB_PASSWORD, DB_URL, DB_USER, QUERY_ENDPOINT, \
+                                      UPDATE_ENDPOINT, ONTOP_URL
 from agent.errorhandling.exceptions import InvalidInput
 from agent.dataretrieval.readings import get_time_series_data
 from agent.utils.output_formatting import create_geojson_output, create_metadata_output
@@ -87,6 +87,7 @@ def get_all_airquality_stations(query_endpoint: str = QUERY_ENDPOINT,
 
 def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
                                   update_endpoint: str = UPDATE_ENDPOINT,
+                                  ontop_endpoint: str = ONTOP_URL,
                                   circle_center: str = None,
                                   circle_radius: str = None):
     """
@@ -113,14 +114,22 @@ def get_all_stations_with_details(query_endpoint: str = QUERY_ENDPOINT,
 
     # Construct KG client with correct query
     query_string = instantiated_airquality_stations_with_details(circle_center=circle_center,
-                                                                 circle_radius=circle_radius)
+                                                                 circle_radius=circle_radius,
+                                                                 ontop_endpoint=ontop_endpoint)
     kg_client = KGClient(query_endpoint, update_endpoint)
     # Execute query
     results = kg_client.performQuery(query=query_string)
+
+    # Convert 'wkt' literals into 'latlon' strings
+    # PostGIS documentation: For geodetic coordinates, X is longitude and Y is latitude
+    lonlat = {r['station']: r['wkt'][r['wkt'].rfind('(')+1:-1].split(' ') for r in results}
+    latlon = {k: '#'.join(v[::-1]) for k,v in lonlat.items()}
+
     # Parse results into DataFrame
     df = pd.DataFrame(columns=['stationID', 'station', 'label', 'latlon', 
-                               'elevation', 'dataIRI'])
-    df = pd.concat([df, pd.DataFrame.from_dict(results)], axis=0)
+                               'elevation', 'dataIRI'],
+                      data=results)
+    df['latlon'] = df['station'].map(latlon)
     df = df.drop_duplicates()
 
     return df
@@ -130,7 +139,8 @@ def create_json_output_files(outdir: str, observation_types: list = None,
                              circle_center: str = None, circle_radius: str = None, 
                              tmin: str = None, tmax: str = None, 
                              query_endpoint: str = QUERY_ENDPOINT,
-                             update_endpoint: str = UPDATE_ENDPOINT):
+                             update_endpoint: str = UPDATE_ENDPOINT,
+                             ontop_endpoint: str = ONTOP_URL):
     """
         Creates output files required by Digital Twin Visualisation Framework,
         i.e. geojson file with station locations, json file with metadata about
@@ -171,6 +181,7 @@ def create_json_output_files(outdir: str, observation_types: list = None,
     logger.info('Retrieving instantiated stations from KG ...')
     t1 = time.time()
     station_details = get_all_stations_with_details(query_endpoint, update_endpoint,
+                                                    ontop_endpoint,
                                                     circle_center, circle_radius)
     t2 = time.time()
     diff = t2-t1
@@ -215,8 +226,10 @@ def create_json_output_files(outdir: str, observation_types: list = None,
     # Get List of corresponding dtvf ids for list of time series
     # (to assign time series output to correct station in DTVF)
     dataIRIs = [t.getDataIRIs()[0] for t in ts_data]
-    id_list = [int(stations.loc[stations['dataIRI'] == i, 'dtvf_id'].values) for i in dataIRIs]
-    tsjson = ts_client.convertToJSON(ts_data, id_list, ts_units, ts_names)
+    # Extract first matching DTVF ID (there should be only one for all actual
+    # stations and only affect time series "double assigned" to mocked stations)
+    id_list = [int(stations.loc[stations['dataIRI'] == i, 'dtvf_id'].values[0]) for i in dataIRIs]
+    tsjson = ts_client.tsclient.convertToJSON(ts_data, id_list, ts_units, ts_names)
     # Make JSON file readable in Python
     timeseries = json.loads(tsjson.toString())
     t2 = time.time()

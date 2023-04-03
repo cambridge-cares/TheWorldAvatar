@@ -62,7 +62,8 @@ def instantiated_airquality_stations(circle_center: str = None,
     return query
 
 
-def instantiated_airquality_stations_with_details(circle_center: str = None,
+def instantiated_airquality_stations_with_details(ontop_endpoint: str,
+                                                  circle_center: str = None,
                                                   circle_radius: str = None) -> str:
     # Returns query to retrieve all instantiated station details
 
@@ -71,23 +72,33 @@ def instantiated_airquality_stations_with_details(circle_center: str = None,
         filter_expression = filter_stations_in_circle(circle_center, circle_radius)
     else:
         # Returns query to retrieve all instantiated station details
-        filter_expression = ''
-
+        filter_expression = ""
+    
+    # Geospatial information will be queried from Ontop endpoint
+    # NOTE: OntopClient sometimes faces connection issues; hence query via Blazegraph
+    #       using SERVICE keyword
+    service_expression = f"""
+        SERVICE <{ontop_endpoint}> {{ 
+        ?station <{RDF_TYPE}> <{GEO_FEATURE}> ;
+                <{GEO_HAS_GEOMETRY}>/<{GEO_ASWKT}> ?wkt 
+        }}
+    """
     # Construct query
     query = f"""
-        SELECT ?stationID ?station ?label ?latlon ?elevation ?dataIRI
+        SELECT ?stationID ?station ?label ?wkt ?elevation ?dataIRI
         WHERE {{
         {filter_expression}
+        {service_expression}
         ?station <{RDF_TYPE}> <{EMS_REPORTING_STATION}> ;
                  <{EMS_DATA_SOURCE}> "UK-AIR Sensor Observation Service" ;
                  <{EMS_HAS_IDENTIFIER}> ?stationID .
         OPTIONAL {{ ?station <{RDFS_LABEL}> ?label }}
-        OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_LOCATION}> ?latlon }}
         OPTIONAL {{ ?station <{EMS_HAS_OBSERVATION_ELEVATION}> ?elevation }}
         OPTIONAL {{ ?station <{EMS_REPORTS}>/<{OM_HAS_VALUE}> ?dataIRI }}
         }}
     """
     
+    query = ' '.join(query.split())
     return query
 
 
