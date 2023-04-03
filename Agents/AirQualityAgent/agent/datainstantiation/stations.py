@@ -110,7 +110,7 @@ def retrieve_station_data_from_api(crs: str = 'EPSG:4326') -> list:
             List of dicts with station data as returned by API
     """
 
-    # Construct API call to get basic information for all staions
+    # Construct API call to get basic information for all stations
     if crs and re.match(r"EPSG:\d+", crs):
         url = f'https://uk-air.defra.gov.uk/sos-ukair/api/v1/stations?{crs}'
         if crs != 'EPSG:4326':
@@ -165,7 +165,7 @@ def instantiate_all_stations(query_endpoint: str = QUERY_ENDPOINT,
     available = retrieve_station_data_from_api('EPSG:4326')
     available_ids = [list(d.keys())[0] for d in available]
     #TODO: remove testing limit
-    available_ids = available_ids[:10]
+    available_ids = available_ids[:5]
 
     # Get already instantiated stations
     instantiated_ids = get_all_airquality_station_ids(query_endpoint=query_endpoint)
