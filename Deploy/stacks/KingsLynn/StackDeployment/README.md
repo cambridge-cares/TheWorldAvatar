@@ -351,7 +351,21 @@ The [RiverLevelsAgent] (also referred to as *Flood Agent*) instantiates river le
 
 ## 4.3) AirQuality Agent
 
-tbd
+> The following description refers to the published Docker image `ghcr.io/cambridge-cares/airquality_agent:1.0.0` as of commit `8b4d4882da8a45f8e344d8cb26243ea235a46230`
+
+The [AirQuality Agent] continuously (i.e. once per day) queries data from the UK-AIR Sensor Observation Service API and instantiates it according to the OntoEMS ontology. Deploy the agent as described in the [AirQuality Agent] README, i.e. provide environment variables in the `docker-compose.yml` file and deploy the agent to the spun up stack by running `bash ./stack.sh start KINGS-LYNN` inside the agent repository. See the `docker-compose_airquality.yml` in the [Agent docker-compose file folder] for the actually used compose file.
+
+After agent startup, latest airquality observations will be instantiated/updated once the cronjob is triggered (i.e. currently at 53:00am UTC). An initial data instantiation can be invoked by sending the following HTTP request to the agent:
+```
+GET http://165.232.172.16:5002/airqualityagent/update/all
+Content-Type: application/json
+```
+
+As the UK-AIR Sensor Observation Service API (currently) does not cover King's Lynn, virtual (mocked) station(s) can be instantiated by sending the following request. Currently, this instantiates one mocked station which shows readings from the actual station in Aberdeen Erroll Park. This is an arbitrary choice and can be changed [here](https://github.com/cambridge-cares/TheWorldAvatar/blob/1468-dev-stackerise-air-quality-agent/Agents/AirQualityAgent/agent/datainstantiation/stations.py#L197)
+```
+GET http://165.232.172.16:5002/airqualityagent/instantiate/mocked
+Content-Type: application/json
+```
 
 &nbsp;
 # Tracking instantiated building information
@@ -470,7 +484,7 @@ Property Value Estimation Agent
 [Flood Warning Agent resources folder]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodWarningAgent/resources
 [MetOffice Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/MetOfficeAgent
 [RiverLevelsAgent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FloodAgent
-
+[AirQuality Agent]: https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/AirQualityAgent
 
 <!-- Repositories -->
 [Agent docker-compose file folder]: /StackDeployment/inputs/docker_compose_files
