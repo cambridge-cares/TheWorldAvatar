@@ -233,15 +233,16 @@ class OntoCAPE_Material(BaseOntology):
         solute: str,
         solvent_as_constraint: List[str]=None,
     ) -> bool:
+        solute_list = solute.split('|')
         if bool(solvent_as_constraint):
             for sol in solvent_as_constraint:
-                list_of_requested_species = [solute, sol]
+                list_of_requested_species = solute_list + [sol]
                 if all([s in [pc.representsOccurenceOf for pc in self.thermodynamicBehaviour.isComposedOfSubsystem] for s in list_of_requested_species]):
                     return True
                 else:
                     continue
         else:
-            return solute in [pc.representsOccurenceOf for pc in self.thermodynamicBehaviour.isComposedOfSubsystem]
+            return all(s in [pc.representsOccurenceOf for pc in self.thermodynamicBehaviour.isComposedOfSubsystem] for s in solute_list)
         return False
 
     def get_concentration_of_species(self, species_iri: str, target_unit: str=None) -> OntoCAPE_PhaseComponentConcentration:
@@ -263,7 +264,10 @@ class OntoCAPE_Material(BaseOntology):
         elif len(identified_solute) == 0:
             raise ValueError(f"No solute found in {self.instance_iri} given list of species {lst_species}")
         else:
-            raise ValueError(f"Multiple solutes found in {self.instance_iri} given list of species {lst_species}")
+            # TODO [future work] add more logic here to handle multiple solutes
+            # currently, we just take the first solute in the list
+            return identified_solute[0]
+            # raise ValueError(f"Multiple solutes found in {self.instance_iri} given list of species {lst_species}")
 
 class Chemical(OntoCAPE_Material):
     clz: str = ONTOREACTION_CHEMICAL
@@ -295,6 +299,9 @@ class Catalyst(OntoKin_Species):
 class Solvent(OntoKin_Species):
     clz: str = ONTOREACTION_SOLVENT
 
+class Base(OntoKin_Species):
+    clz: str = ONTOREACTION_BASE
+
 class TargetProduct(OntoKin_Product):
     clz: str = ONTOREACTION_TARGETPRODUCT
 
@@ -307,6 +314,7 @@ class OntoCAPE_ChemicalReaction(BaseOntology):
     hasProduct: List[OntoKin_Species]
     hasCatalyst: Optional[List[OntoKin_Species]]
     hasSolvent: Optional[List[OntoKin_Species]]
+    hasBase: Optional[List[OntoKin_Species]]
     # NOTE here we simplify the implementation by using str instead of the actual OntoDoE:DesignOfExperiment
     # NOTE this is to prevent circular import error
     hasDoETemplate: Optional[str]
@@ -318,6 +326,8 @@ class OntoCAPE_ChemicalReaction(BaseOntology):
         if self.hasCatalyst is not None:
             lst_of_species += self.hasCatalyst
         lst_of_species += self.hasSolvent
+        if self.hasBase is not None:
+            lst_of_species += self.hasBase
         return lst_of_species
 
     def get_list_of_reactant(self) -> List[str]:
@@ -334,6 +344,12 @@ class OntoCAPE_ChemicalReaction(BaseOntology):
 
     def get_list_of_product(self) -> List[str]:
         return [s.hasUniqueSpecies for s in self.hasProduct]
+
+    def get_list_of_base(self) -> List[str]:
+        if self.hasBase is None:
+            return []
+        return [s.hasUniqueSpecies for s in self.hasBase]
+
 
 class ReactionCondition(BaseOntology):
     objPropWithExp: List[str]

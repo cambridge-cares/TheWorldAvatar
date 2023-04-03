@@ -412,7 +412,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         lst_unique_chem_rxn = dal.get_unique_values_in_list_of_dict(response_mapping, 'chem_rxn')
         query = f"""{PREFIX_RDF}
                     SELECT DISTINCT ?chem_rxn ?reactant ?reac_type ?reac_species ?product ?prod_type ?prod_species
-                    ?catalyst ?cata_type ?cata_species ?solvent ?solv_type ?solv_species ?doe_template
+                    ?catalyst ?cata_type ?cata_species ?solvent ?solv_type ?solv_species ?base ?base_type ?base_species
+                    ?doe_template
                     WHERE {{
                         VALUES ?reac_type {{<{ONTOKIN_SPECIES}> <{ONTOKIN_REACTANT}>}}.
                         VALUES ?prod_type {{<{ONTOKIN_SPECIES}> <{ONTOKIN_PRODUCT}> <{ONTOREACTION_TARGETPRODUCT}> <{ONTOREACTION_IMPURITY}>}}.
@@ -430,6 +431,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                             ?chem_rxn <{ONTOREACTION_HASSOLVENT}> ?solvent.
                             ?solvent rdf:type ?solv_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?solv_species.
                         }}
+                        OPTIONAL{{
+                            VALUES ?base_type {{<{ONTOKIN_SPECIES}> <{ONTOREACTION_BASE}>}}.
+                            ?chem_rxn <{ONTOREACTION_HASBASE}> ?base.
+                            ?base rdf:type ?base_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?base_species.
+                        }}
                         OPTIONAL{{?chem_rxn <{ONTODOE_HASDOETEMPLATE}> ?doe_template.}}
                     }}"""
         response_of_all_chem_rxn = self.performQuery(query)
@@ -444,6 +450,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 hasProduct=self.get_ontokin_species_from_chem_rxn(response, 'product', 'prod_type', 'prod_species'),
                 hasCatalyst=self.get_ontokin_species_from_chem_rxn(response, 'catalyst', 'cata_type', 'cata_species'),
                 hasSolvent=self.get_ontokin_species_from_chem_rxn(response, 'solvent', 'solv_type', 'solv_species'),
+                hasBase=self.get_ontokin_species_from_chem_rxn(response, 'base', 'base_type', 'base_species'),
                 hasDoETemplate=dal.get_the_unique_value_in_list_of_dict(response, 'doe_template'),
             )
 
@@ -459,7 +466,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         chem_rxn_iri = trimIRI(chem_rxn_iri)
         query = f"""{PREFIX_RDF}
                 SELECT DISTINCT ?chem_rxn ?reactant ?reac_type ?reac_species ?product ?prod_type ?prod_species
-                ?catalyst ?cata_type ?cata_species ?solvent ?solv_type ?solv_species ?doe_template
+                ?catalyst ?cata_type ?cata_species ?solvent ?solv_type ?solv_species ?base ?base_type ?base_species
+                    ?doe_template
                 WHERE {{
                     VALUES ?reac_type {{<{ONTOKIN_SPECIES}> <{ONTOKIN_REACTANT}>}}.
                     VALUES ?prod_type {{<{ONTOKIN_SPECIES}> <{ONTOKIN_PRODUCT}> <{ONTOREACTION_TARGETPRODUCT}> <{ONTOREACTION_IMPURITY}>}}.
@@ -477,6 +485,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         ?chem_rxn <{ONTOREACTION_HASSOLVENT}> ?solvent.
                         ?solvent rdf:type ?solv_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?solv_species.
                     }}
+                    OPTIONAL{{
+                        VALUES ?base_type {{<{ONTOKIN_SPECIES}> <{ONTOREACTION_BASE}>}}.
+                        ?chem_rxn <{ONTOREACTION_HASBASE}> ?base.
+                        ?base rdf:type ?base_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?base_species.
+                    }}
                     OPTIONAL{{?chem_rxn <{ONTODOE_HASDOETEMPLATE}> ?doe_template.}}
                 }}"""
         response = self.performQuery(query)
@@ -487,6 +500,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             hasProduct=self.get_ontokin_species_from_chem_rxn(response, 'product', 'prod_type', 'prod_species'),
             hasCatalyst=self.get_ontokin_species_from_chem_rxn(response, 'catalyst', 'cata_type', 'cata_species'),
             hasSolvent=self.get_ontokin_species_from_chem_rxn(response, 'solvent', 'solv_type', 'solv_species'),
+            hasBase=self.get_ontokin_species_from_chem_rxn(response, 'base', 'base_type', 'base_species'),
             hasDoETemplate=dal.get_the_unique_value_in_list_of_dict(response, 'doe_template'),
         )
 
@@ -554,6 +568,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     species = Catalyst(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
                 elif u_s_info[species_type] == ONTOREACTION_SOLVENT:
                     species = Solvent(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
+                elif u_s_info[species_type] == ONTOREACTION_BASE:
+                    species = Base(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
                 else:
                     raise Exception("Species type (%s) NOT supported for: %s" % (u_s_info[species_type], str(u_s_info)))
                 list_species.append(species)
