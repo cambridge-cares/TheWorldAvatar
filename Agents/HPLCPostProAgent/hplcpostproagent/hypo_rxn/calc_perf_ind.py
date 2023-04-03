@@ -30,8 +30,9 @@ def calculate_performance_indicator(
         return [calculate_yield(rxn_exp_instance, hypo_reactor, hypo_end_stream, pi) for pi in lst_reference]
     elif target_clz == ONTOREACTION_CONVERSION:
         return [calculate_conversion(rxn_exp_instance, hypo_reactor, hypo_end_stream, pi) for pi in lst_reference]
-    elif target_clz == ONTOREACTION_ECOSCORE:
-        return [calculate_eco_score(rxn_exp_instance, hypo_reactor, hypo_end_stream, pi) for pi in lst_reference]
+    # commented out as it's not used in the current version
+    # elif target_clz == ONTOREACTION_ECOSCORE:
+    #     return [calculate_eco_score(rxn_exp_instance, hypo_reactor, hypo_end_stream, pi) for pi in lst_reference]
     elif target_clz == ONTOREACTION_ENVIRONMENTALFACTOR:
         return [calculate_enviromental_factor(rxn_exp_instance, hypo_reactor, hypo_end_stream, pi) for pi in lst_reference]
     elif target_clz == ONTOREACTION_SPACETIMEYIELD:
@@ -116,18 +117,19 @@ def calculate_space_time_yield(rxn_exp_instance: ReactionExperiment, hypo_reacto
 
     return pi_sty
 
-def calculate_eco_score(rxn_exp_instance: ReactionExperiment, hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, reference_performance_indicator: PerformanceIndicator) -> PerformanceIndicator:
-    """This method calculates the reaction eco score."""
-    residence_time = unit_conv.unit_conversion_return_value_dq(hypo_reactor.residence_time, unit_conv.UNIFIED_TIME_UNIT)
-    reactor_temperature = unit_conv.unit_conversion_return_value_dq(hypo_reactor.reactor_temperature, OM_DEGREECELSIUS)
-    time_temperature_eco_score = TIME_TEMPERATURE_ECO_SCORE_FACTOR * residence_time * (
-        (reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS) * (reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS) / abs(reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS))
-    total_run_eco_score = retrieve_total_run_eco_score(hypo_reactor)
-    _eco_score = round(ECO_SCORE_BASE_VALUE - time_temperature_eco_score - total_run_eco_score, 2) # Round the decimal place
+# commented out as it's not used in the current version
+# def calculate_eco_score(rxn_exp_instance: ReactionExperiment, hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, reference_performance_indicator: PerformanceIndicator) -> PerformanceIndicator:
+#     """This method calculates the reaction eco score."""
+#     residence_time = unit_conv.unit_conversion_return_value_dq(hypo_reactor.residence_time, unit_conv.UNIFIED_TIME_UNIT)
+#     reactor_temperature = unit_conv.unit_conversion_return_value_dq(hypo_reactor.reactor_temperature, OM_DEGREECELSIUS)
+#     time_temperature_eco_score = TIME_TEMPERATURE_ECO_SCORE_FACTOR * residence_time * (
+#         (reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS) * (reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS) / abs(reactor_temperature-AMBIENT_TEMPERATURE_DEGREECELSIUS))
+#     total_run_eco_score = retrieve_total_run_eco_score(hypo_reactor)
+#     _eco_score = round(ECO_SCORE_BASE_VALUE - time_temperature_eco_score - total_run_eco_score, 2) # Round the decimal place
 
-    pi_eco_score = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _eco_score, unit_conv.UNIFIED_ECOSCORE_UNIT)
+#     pi_eco_score = create_performance_indicator_instance(rxn_exp_instance, reference_performance_indicator, _eco_score, unit_conv.UNIFIED_ECOSCORE_UNIT)
 
-    return pi_eco_score
+#     return pi_eco_score
 
 def calculate_enviromental_factor(rxn_exp_instance: ReactionExperiment, hypo_reactor: HypoReactor, hypo_end_stream: HypoEndStream, reference_performance_indicator: PerformanceIndicator) -> PerformanceIndicator:
     """This method calculates the reaction environmental factor."""
@@ -153,9 +155,9 @@ def calculate_run_material_cost(rxn_exp_instance: ReactionExperiment, hypo_react
     """This method calculates the reaction material cost for a single run, which commonly has (pound sterling per litre) as its unit."""
 
     # Calculate the total cost of all the reactants and solvents
-    all_reactant_catalyst = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute if s._is_reactant or s._is_catalyst]
+    all_reactant_catalyst_base = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute if s._is_reactant or s._is_catalyst or s._is_base]
     all_solvent = [inlet.solvent for inlet in hypo_reactor.inlet_run_stream]
-    reactant_catalyst_solvent = all_reactant_catalyst + all_solvent
+    reactant_catalyst_solvent = all_reactant_catalyst_base + all_solvent
     # NOTE here the unit of the _run_volume and def_cost should already be standardised at creation of each HypoStreamSpecies instance
     # NOTE therefore the unit conversion is omitted
     _total_material_cost = sum([s._run_volume.hasNumericalValue * s.def_cost.hasNumericalValue for s in reactant_catalyst_solvent])
@@ -265,10 +267,9 @@ def retrieve_yield_limiting_species(hypo_reactor: HypoReactor) -> HypoStreamSpec
     if len(yield_limiting_species_lst) > 1:
         all_reactant_species_if_ref_pump = [r.species_iri for reac in all_inlet_stream if reac.is_ref_pump for r in reac.solute if r._is_reactant]
         _species = [s for s in yield_limiting_species_lst if s in all_reactant_species_if_ref_pump]
-        if len(_species) == 1:
+        if len(_species) >= 1:
+            # NOTE here we pick the first one if there are multiple yield limiting species from the reference pump
             yield_limiting_species_iri = _species[0]
-        elif len(_species) > 1:
-            raise Exception(f"Multiple reactant species {_species} in reference pump identified, the HypoReactor: {str(hypo_reactor)}.")
         else:
             # NOTE here we just pick the first one if there are multiple yield limiting species but none of them is in the reference pump
             yield_limiting_species_iri = yield_limiting_species_lst[0]
@@ -289,10 +290,11 @@ def retrieve_product_species(hypo_end_stream: HypoEndStream) -> Optional[HypoStr
         target_product = all_target_product[0]
     return target_product
 
-def retrieve_total_run_eco_score(hypo_reactor: HypoReactor):
-    """This method retrieves tht total run eco score given the instance of HypoReactor."""
-    all_solute = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute]
-    all_solvent = [inlet.solvent for inlet in hypo_reactor.inlet_run_stream]
-    all_species = all_solute + all_solvent
-    total_run_eco_score = sum([unit_conv.unit_conversion_return_value_dq(s.def_eco_score, unit_conv.UNIFIED_ECOSCORE_UNIT) for s in all_species])
-    return total_run_eco_score
+# commented out as it's not used in the current version
+# def retrieve_total_run_eco_score(hypo_reactor: HypoReactor):
+#     """This method retrieves tht total run eco score given the instance of HypoReactor."""
+#     all_solute = [s for inlet in hypo_reactor.inlet_run_stream for s in inlet.solute]
+#     all_solvent = [inlet.solvent for inlet in hypo_reactor.inlet_run_stream]
+#     all_species = all_solute + all_solvent
+#     total_run_eco_score = sum([unit_conv.unit_conversion_return_value_dq(s.def_eco_score, unit_conv.UNIFIED_ECOSCORE_UNIT) for s in all_species])
+#     return total_run_eco_score
