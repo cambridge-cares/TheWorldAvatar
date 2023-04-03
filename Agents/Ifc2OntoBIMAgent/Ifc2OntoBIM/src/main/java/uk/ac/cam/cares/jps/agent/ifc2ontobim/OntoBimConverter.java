@@ -138,6 +138,10 @@ public class OntoBimConverter {
         geometryHelper.addExtrudedAreaSolidStatements(this.owlModel, statementSet);
         LOGGER.info("Storing extruded area solid statements into a temp file...");
         statementSet = this.storeInTempFiles(statementSet);
+        LOGGER.info("Retrieving and generating statements related to half space solids...");
+        geometryHelper.addHalfSpaceSolidStatements(this.owlModel, statementSet);
+        LOGGER.info("Storing half space solid statements into a temp file...");
+        statementSet = this.storeInTempFiles(statementSet);
         LOGGER.info("Retrieving and generating statements related to bounded half space...");
         geometryHelper.addHalfSpaceStatements(this.owlModel, statementSet);
         LOGGER.info("Storing bounded half space statements into a temp file...");

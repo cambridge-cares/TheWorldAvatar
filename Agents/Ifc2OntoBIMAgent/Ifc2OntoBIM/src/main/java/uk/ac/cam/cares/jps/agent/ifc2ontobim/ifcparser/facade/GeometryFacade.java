@@ -286,6 +286,65 @@ public class GeometryFacade {
     }
 
     /**
+     * Creates the SPARQL SELECT query statements for HalfSpaceSolid.
+     *
+     * @return A string containing the SPARQL query to execute.
+     */
+    private String createHalfSpaceSolidSelectQuery() {
+        SelectBuilder selectBuilder = QueryHandler.initSelectQueryBuilder();
+        selectBuilder.addVar(CommonQuery.GEOM_VAR)
+                .addVar(CommonQuery.CART_POINT_VAR)
+                .addVar(CommonQuery.REF_DIR_VECTOR_VAR)
+                .addVar(CommonQuery.AXIS_DIR_VECTOR_VAR)
+                .addVar(CommonQuery.BOOLEAN_VAR);
+        selectBuilder.addWhere(CommonQuery.GEOM_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_HALF_SPACE_SOLID)
+                .addWhere(CommonQuery.GEOM_VAR, CommonQuery.IFC_HALF_SPACE_FLAG + CommonQuery.EXPRESS_HASBOOLEAN, CommonQuery.BOOLEAN_VAR)
+                .addWhere(CommonQuery.GEOM_VAR, CommonQuery.IFC_HALF_SPACE_SURFACE, CommonQuery.SURFACE_VAR)
+                .addWhere(CommonQuery.SURFACE_VAR, QueryHandler.RDF_TYPE, CommonQuery.IFC_SURFACE_PLANE)
+                .addWhere(CommonQuery.SURFACE_VAR, CommonQuery.IFC_HALF_SPACE_SURFACE_POSITION + "/" + CommonQuery.IFC_PLACEMENT_LOCATION, CommonQuery.CART_POINT_VAR)
+                .addOptional(CommonQuery.SURFACE_VAR, CommonQuery.IFC_HALF_SPACE_SURFACE_POSITION + "/" + CommonQuery.IFC_REF_DIRECTION_3D, CommonQuery.REF_DIR_VECTOR_VAR)
+                .addOptional(CommonQuery.SURFACE_VAR, CommonQuery.IFC_HALF_SPACE_SURFACE_POSITION + "/" + CommonQuery.IFC_AXIS_DIRECTION_3D, CommonQuery.AXIS_DIR_VECTOR_VAR);
+        return selectBuilder.buildString();
+    }
+
+    /**
+     * Retrieve the OntoBIM statements for HalfSpaceSolid.
+     *
+     * @param owlModel     The IfcOwl model containing the triples to query from.
+     * @param statementSet A list containing the new OntoBIM triples.
+     */
+    public void addHalfSpaceSolidStatements(Model owlModel, LinkedHashSet<Statement> statementSet) {
+        String query = createHalfSpaceSolidSelectQuery();
+        ResultSet results = QueryHandler.execSelectQuery(query, owlModel);
+        while (results.hasNext()) {
+            QuerySolution soln = results.nextSolution();
+            // For surface plane
+            String planePointIri = QueryHandler.retrieveIri(soln, CommonQuery.CART_POINT_VAR);
+            if (planePointIri != null) {
+                CartesianPoint point = this.operatorMappings.getPoint(planePointIri);
+                planePointIri = point.getIri();
+            }
+            String planeRefDirIri = QueryHandler.retrieveIri(soln, CommonQuery.REF_DIR_VECTOR_VAR);
+            if (planeRefDirIri != null) {
+                DirectionVector refDir = this.operatorMappings.getDirectionVector(planeRefDirIri);
+                planeRefDirIri = refDir.getIri();
+            }
+            String planeAxisDirIri = QueryHandler.retrieveIri(soln, CommonQuery.AXIS_DIR_VECTOR_VAR);
+            if (planeAxisDirIri != null) {
+                DirectionVector axisDir = this.operatorMappings.getDirectionVector(planeAxisDirIri);
+                planeAxisDirIri = axisDir.getIri();
+            }
+            LocalPlacement planePosition = new LocalPlacement(planePointIri, planeRefDirIri, planeAxisDirIri);
+            planePosition.constructStatements(statementSet);
+            // Generate the main geometry
+            String iri = soln.get(CommonQuery.GEOM_VAR).toString();
+            boolean agreementFlag = Boolean.parseBoolean(QueryHandler.retrieveLiteral(soln, CommonQuery.BOOLEAN_VAR));
+            HalfSpaceSolid geometry = new HalfSpaceSolid(iri, planePosition.getIri(), agreementFlag);
+            geometry.constructStatements(statementSet);
+        }
+    }
+
+    /**
      * Creates the SPARQL SELECT query statements for Polyline and PolyLoop.
      *
      * @param isPolyLoop A boolean indicating if this method should be executed as a PolyLoop or Polyline.

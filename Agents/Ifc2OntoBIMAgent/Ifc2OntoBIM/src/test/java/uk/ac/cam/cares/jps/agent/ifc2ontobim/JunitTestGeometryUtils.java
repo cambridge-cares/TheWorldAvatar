@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim;
 
+import org.apache.lucene.util.packed.PagedGrowableWriter;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,13 +27,18 @@ public class JunitTestGeometryUtils {
     }
 
     public static List<String> genExpectedHalfSpaceStatements(String baseURI, String inst, String positionIri, String surfacePosition, String boundaryIri, boolean agreementFlag) {
-        List<String> expected = new ArrayList<>();
-        expected.add(inst + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/PolygonalBoundedHalfSpace");
+        List<String> expected = genExpectedHalfSpaceSolidStatements(baseURI, inst, "PolygonalBoundedHalfSpace", surfacePosition, agreementFlag);
         expected.add(inst + ", http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + positionIri);
+        expected.add(inst + ", http://www.theworldavatar.com/kg/ontobim/hasPolygonalBoundary, " + boundaryIri);
+        return expected;
+    }
+
+    public static List<String> genExpectedHalfSpaceSolidStatements(String baseURI, String inst, String bimClass, String surfacePosition, boolean agreementFlag) {
+        List<String> expected = new ArrayList<>();
+        expected.add(inst + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/" + bimClass);
         expected.add(inst + ", http://www.theworldavatar.com/kg/ontobim/hasBaseSurface, " + baseURI + "SurfacePlane_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         expected.add(baseURI + "SurfacePlane_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/SurfacePlane");
         expected.add(baseURI + "SurfacePlane_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + surfacePosition);
-        expected.add(inst + ", http://www.theworldavatar.com/kg/ontobim/hasPolygonalBoundary, " + boundaryIri);
         expected.add(inst + ", http://www.theworldavatar.com/kg/ontobim/hasAgreementFlag, \"" + agreementFlag);
         return expected;
     }

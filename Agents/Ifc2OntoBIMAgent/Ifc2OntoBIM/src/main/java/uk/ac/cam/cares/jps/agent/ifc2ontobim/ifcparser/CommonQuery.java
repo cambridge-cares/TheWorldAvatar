@@ -275,6 +275,7 @@ public class CommonQuery {
     public static final String IFC_FACE = NamespaceMapper.IFC_PREFIX + ":IfcFace";
     public static final String IFC_FACE_OUTER_BOUND = NamespaceMapper.IFC_PREFIX + ":IfcFaceOuterBound";
     public static final String IFC_EXTRUDED_AREA_SOLID = NamespaceMapper.IFC_PREFIX + ":IfcExtrudedAreaSolid";
+    public static final String IFC_HALF_SPACE_SOLID = NamespaceMapper.IFC_PREFIX + ":IfcHalfSpaceSolid";
     public static final String IFC_POLYGONAL_HALF_SPACE = NamespaceMapper.IFC_PREFIX + ":IfcPolygonalBoundedHalfSpace";
     public static final String IFC_SURFACE_PLANE = NamespaceMapper.IFC_PREFIX + ":IfcPlane";
     public static final String IFC_POLYLINE = NamespaceMapper.IFC_PREFIX + ":IfcPolyline";

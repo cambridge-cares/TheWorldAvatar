@@ -169,6 +169,8 @@ public class OntoBimConstant {
     public static final String BIM_EXTRUDED_AREA_SOLID_CLASS = NamespaceMapper.BIM_NAMESPACE + EXTRUDED_AREA_SOLID_CLASS;
     public static final String RECTANGLE_PROFILE_DEFINITION_CLASS = "RectangleProfileDefinition";
     public static final String BIM_RECTANGLE_PROFILE_DEFINITION_CLASS = NamespaceMapper.BIM_NAMESPACE + RECTANGLE_PROFILE_DEFINITION_CLASS;
+    public static final String HALF_SPACE_SOLID_CLASS = "HalfSpaceSolid";
+    public static final String BIM_HALF_SPACE_SOLID_CLASS = NamespaceMapper.BIM_NAMESPACE + HALF_SPACE_SOLID_CLASS;
     public static final String POLYGONAL_BOUNDED_HALF_SPACE_CLASS = "PolygonalBoundedHalfSpace";
     public static final String BIM_POLYGONAL_BOUNDED_HALF_SPACE_CLASS = NamespaceMapper.BIM_NAMESPACE + POLYGONAL_BOUNDED_HALF_SPACE_CLASS;
     public static final String SURFACE_PLANE_CLASS = "SurfacePlane";
