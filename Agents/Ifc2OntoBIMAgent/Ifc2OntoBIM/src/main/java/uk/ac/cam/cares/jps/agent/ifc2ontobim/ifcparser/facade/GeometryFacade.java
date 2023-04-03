@@ -5,10 +5,7 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ExtrudedAreaSolid;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.PolygonalBoundedHalfSpace;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.Polyline;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.RectangleProfileDefinition;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.CommonQuery;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
@@ -37,7 +34,6 @@ public class GeometryFacade {
         // Purge any old values
         this.geomMappings = GeometryStorage.resetSingleton();
     }
-
 
     /**
      * Creates the SPARQL SELECT query statements for ExtrudedAreaSolid.
@@ -291,7 +287,7 @@ public class GeometryFacade {
                 geometry = this.geomMappings.getPolyline(iri);
                 geometry.appendVertex(currentVertex, currentPointIri, nextVertex);
             } else {
-                // Generate a new polyline or polyloop depending on the class and construct the statements
+                // Generate a new polyline or poly loop depending on the class and construct the statements
                 geometry = isPolyLoop ? new Polyline(iri, startingVertex, currentVertex, currentPointIri, nextVertex, OntoBimConstant.POLYLOOP_CLASS) :
                         new Polyline(iri, startingVertex, currentVertex, currentPointIri, nextVertex);
                 // Add the object into the mappings for its IRI
@@ -299,6 +295,8 @@ public class GeometryFacade {
             }
         }
         // Construct all poly lines' statements
-        this.geomMappings.constructGeomStatements(statementSet);
+        this.geomMappings.constructPolyLineStatements(statementSet);
+        // Reset the geom mappings for poline and poly loop
+        this.geomMappings = GeometryStorage.resetSingleton();
     }
 }
