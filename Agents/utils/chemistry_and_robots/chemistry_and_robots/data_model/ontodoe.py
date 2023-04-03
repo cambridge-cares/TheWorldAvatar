@@ -35,6 +35,15 @@ class TSEMO(Strategy):
         g.add((URIRef(self.instance_iri), URIRef(ONTODOE_POPULATIONSIZE), Literal(self.populationSize)))
         return g
 
+class NewSTBO(Strategy):
+    clz: str = ONTODOE_NEWSTBO
+    # this refers to the realisation of SOBO algorithm in Summit python package
+    # for now we omit parameters in SOBO algorithm
+
+    def create_instance_for_kg(self, g: Graph):
+        g = super().create_instance_for_kg(g)
+        return g
+
 class LHS(Strategy):
     clz: str = ONTODOE_LHS
     seed: int
@@ -108,9 +117,30 @@ class FixedParameter(BaseOntology):
 
         return g
 
+
 class CategoricalVariable(DesignVariable):
     clz: str = ONTODOE_CATEGORICALVARIABLE
-    pass
+    name: str=None # NOTE this is not part of OntoDoE ontology, but it is used for working with Summit python package
+    hasLevel: List[str]
+    positionalID: Optional[str]
+    refersTo: OM_Quantity
+
+    def create_instance_for_kg(self, g: Graph):
+        g = super().create_instance_for_kg(g)
+
+        for level in self.hasLevel:
+            g.add((URIRef(self.instance_iri), URIRef(ONTODOE_HASLEVEL), Literal(level)))
+
+        if self.positionalID is not None:
+            g.add((URIRef(self.instance_iri), URIRef(ONTODOE_POSITIONALID), Literal(self.positionalID)))
+
+        g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTO), URIRef(self.refersTo.instance_iri)))
+        g.add((URIRef(self.refersTo.instance_iri), RDF.type, URIRef(self.refersTo.clz)))
+        g.add((URIRef(self.refersTo.instance_iri), URIRef(OM_HASVALUE), URIRef(self.refersTo.hasValue.instance_iri)))
+        g = self.refersTo.hasValue.create_instance_for_kg(g)
+
+        return g
+
 
 class Domain(BaseOntology):
     clz: str = ONTODOE_DOMAIN
@@ -173,8 +203,8 @@ class Domain(BaseOntology):
                         _skip = True
                         break
                 elif isinstance(var, CategoricalVariable):
-                # TODO [future work]: implement
-                    raise NotImplementedError(f"Design variable type {type(var)} is not implemented yet.")
+                    # TODO [next iteration]: implement checks for categorical variables
+                    pass
                 else:
                     raise NotImplementedError(f"Design variable type {type(var)} is not implemented yet.")
 

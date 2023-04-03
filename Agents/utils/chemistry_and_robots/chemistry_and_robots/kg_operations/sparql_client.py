@@ -172,21 +172,21 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # Delete "<" and ">" around the IRI
         domain_iri = trimIRI(domain_iri)
 
-        # TODO add support for CategoricalVariable
         # Prepare query string
-        query = f"""SELECT DISTINCT ?var ?quantity ?clz ?unit ?id ?lower ?upper
+        query_continuous = f"""SELECT DISTINCT ?var ?quantity ?clz ?unit ?id ?lower ?upper
                 WHERE {{
                     <{domain_iri}> <{ONTODOE_HASDESIGNVARIABLE}> ?var .
+                    ?var a <{ONTODOE_CONTINUOUSVARIABLE}> .
                     ?var <{ONTODOE_REFERSTO}> ?quantity .
                     ?quantity a ?clz; <{OM_HASUNIT}> ?unit.
                     OPTIONAL {{?var <{ONTODOE_POSITIONALID}> ?id . }}
                     OPTIONAL {{?var <{ONTODOE_LOWERLIMIT}> ?lower . }}
                     OPTIONAL {{?var <{ONTODOE_UPPERLIMIT}> ?upper . }}
                 }}"""
-        
+
         # Perform query
-        response = self.performQuery(query)
-        
+        response = self.performQuery(query_continuous)
+
         # Construct list of design variables
         list_var = []
         for res in response:
@@ -205,6 +205,41 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 )
             )
 
+        # Query for categorical variables
+        query_categorical = f"""
+            SELECT DISTINCT ?var ?cat ?quantity ?clz ?measure ?unit ?value ?id
+            WHERE {{
+                <{domain_iri}> <{ONTODOE_HASDESIGNVARIABLE}> ?var .
+                ?var a <{ONTODOE_CATEGORICALVARIABLE}>.
+                ?var <{ONTODOE_HASLEVEL}> ?cat.
+                ?var <{ONTODOE_REFERSTO}> ?quantity .
+                ?quantity a ?clz; <{OM_HASVALUE}> ?measure.
+                ?measure <{OM_HASUNIT}> ?unit; <{OM_HASNUMERICALVALUE}> ?value.
+                OPTIONAL {{?var <{ONTODOE_POSITIONALID}> ?id . }}
+            }}
+            """
+        response = self.performQuery(query_categorical)
+        _var = dal.get_unique_values_in_list_of_dict(response, 'var')
+        for _v in _var:
+            # NOTE we assume that each categorical variable only refers to ONE quantity
+            _info_v = dal.get_sublist_in_list_of_dict_matching_key_value(response, 'var', _v) # info for a single categorical variable
+            list_var.append(
+                CategoricalVariable(
+                    instance_iri=_v,
+                    name=getShortName(_v), # NOTE this is not part of OntoDoE ontology, but it is used for working with Summit python package
+                    hasLevel=dal.get_unique_values_in_list_of_dict(_info_v, 'cat'),
+                    refersTo=OM_Quantity(
+                        instance_iri=_info_v[0]['quantity'],
+                        clz=_info_v[0]['clz'],
+                        hasValue=OM_Measure(
+                            instance_iri=_info_v[0]['measure'],
+                            hasUnit=_info_v[0]['unit'],
+                            hasNumericalValue=_info_v[0]['value']
+                        )
+                    ),
+                    positionalID=_info_v[0].get('id')
+                )
+            )
         return list_var
 
     def getSystemResponses(self, systemResponse_iris) -> List[SystemResponse]:
@@ -1001,14 +1036,13 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         strategy_iri = trimIRI(strategy_iri)
 
         # Construct query string
-        query = PREFIX_RDF + \
-                PREFIX_OWL + \
-                """SELECT ?strategy \
-                WHERE { \
-                <%s> rdf:type ?strategy . \
-                FILTER(?strategy != owl:Thing && ?strategy != owl:NamedIndividual) . \
-                }""" % (strategy_iri)
-        
+        query = f"""{PREFIX_RDF} {PREFIX_OWL}
+                SELECT ?strategy
+                WHERE {{
+                    <{strategy_iri}> rdf:type ?strategy .
+                    FILTER(?strategy != owl:Thing && ?strategy != owl:NamedIndividual) .
+                }}"""
+
         # Perform SPARQL query
         response = self.performQuery(query)
 
@@ -1020,6 +1054,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         if (res[0] == ONTODOE_TSEMO):
             tsemo_instance = self.getTSEMOSettings(strategy_iri)
             return tsemo_instance
+        elif (res[0] == ONTODOE_NEWSTBO):
+            sobo_instance = self.get_newstbo_settings(strategy_iri)
+            return sobo_instance
         elif (res[0] == ONTODOE_LHS):
             # TODO implement handling for LHS
             raise NotImplementedError("LHS as a OntoDoE:Strategy is not yet supported.")
@@ -1053,6 +1090,10 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             raise Exception("Instance <%s> should only have one set of settings." % (tsemo_iri))
         tsemo_instance = TSEMO(instance_iri=tsemo_iri,**response[0])
         return tsemo_instance
+
+    def get_newstbo_settings(self, newstbo_iri: str) -> NewSTBO:
+        # TODO add support for customising NewSTBO settings
+        return NewSTBO(instance_iri=newstbo_iri)
 
     def getNewExperimentFromDoE(self, doe_iri: str) -> ReactionExperiment:
         doe_iri = trimIRI(doe_iri)
