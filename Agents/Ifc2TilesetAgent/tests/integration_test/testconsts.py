@@ -14,12 +14,6 @@ from dataclasses import dataclass
 # NOTE Port must be mapped to host for this to work
 KG_ENDPOINT = "http://172.17.0.1:9999/blazegraph/namespace/kb/sparql"
 
-DEFAULT_RESPONSE = "The Ifc2Tileset agent offers the following functionality at the specified API endpoint:<BR>"
-DEFAULT_RESPONSE += "<BR>"
-DEFAULT_RESPONSE += "(POST) request to convert IFC models to Cesium's 3D tilesets:<BR>"
-DEFAULT_RESPONSE += "&nbsp&nbsp [this_url]/api<BR>"
-DEFAULT_RESPONSE += "&nbsp&nbsp [this_url] is the host and port currently shown in the address bar"
-
 SUCCESSFUL_API_RESPONSE = "IFC model has successfully been converted. Please visit the 'data' directory for the outputs"
 
 # ----------------------------------------------------------------------------------
@@ -40,11 +34,11 @@ PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
 
 insert_element_query = prefix + "INSERT DATA { base:Inst_1 a bot:Element }"
 select_element_query = "PREFIX bot:<https://w3id.org/bot#> SELECT ?inst WHERE {?inst a bot:Element}"
-expected_select_element_result = [{'inst': base_namespace + 'Inst_1'}]
+expected_select_element_result = [{"inst": base_namespace + "Inst_1"}]
 
 
 @dataclass
-class Element:
+class OntoBimTestElement:
     # without namespace
     iri: str
     # with namespace
@@ -53,7 +47,7 @@ class Element:
     label: str
 
 
-sample_wall = Element(
+sample_wall = OntoBimTestElement(
     iri="Wall_1",
     type="ontobuildingstructure:Wall",
     ifc_id="a01912518",
@@ -61,13 +55,13 @@ sample_wall = Element(
 )
 
 # OTHER ASSETS
-sample_water_meter = Element(
+sample_water_meter = OntoBimTestElement(
     iri="Meter_1",
     type="ifc2x3:IfcBuildingElementProxy",
     ifc_id="b01351",
     label="Water Meter"
 )
-sample_fridge = Element(
+sample_fridge = OntoBimTestElement(
     iri="Fridge_3",
     type="ontodevice:Fridge",
     ifc_id="c12746",
@@ -75,7 +69,7 @@ sample_fridge = Element(
 )
 
 # SOLAR PANEL
-sample_solar_panel = Element(
+sample_solar_panel = OntoBimTestElement(
     iri="SolarPanel_51",
     type="ifc2x3:IfcBuildingElementProxy",
     ifc_id="d7213",
@@ -83,13 +77,13 @@ sample_solar_panel = Element(
 )
 
 # FURNITURE
-sample_chair = Element(
+sample_chair = OntoBimTestElement(
     iri="Chair_4",
     type="bot:Element",
     ifc_id="k2931",
     label="Chair"
 )
-sample_table = Element(
+sample_table = OntoBimTestElement(
     iri="Table_91",
     type="bot:Element",
     ifc_id="e9411",
@@ -108,7 +102,7 @@ SAMPLE_ONTOBIM_ELEMENT_STORE = dict(
 counter = itertools.count()
 
 
-def _elem_to_tripe(e: Element):
+def _elem_to_tripe(e: OntoBimTestElement):
     ifc_model_rep_num = str(next(counter)).zfill(3)
     return f"""\
 base:{e.iri} rdf:type {e.type};
@@ -123,8 +117,8 @@ sample_building_inst = "Building_1"
 sample_building_iri = base_namespace + sample_building_inst
 building_triple = f"""\
 base:{sample_building_inst} bot:hasStorey base:Storey_5a9f7642-2d12-11b2-8040-cdbcaabc8e65;
-                                rdf:type bot:Building;
-                                ontobim:hasIfcRepresentation base:IfcBuildingRepresentation_130.
+                            rdf:type bot:Building;
+                            ontobim:hasIfcRepresentation base:IfcBuildingRepresentation_130.
 base:IfcBuildingRepresentation_130 rdf:type ontobim:IfcModelRepresentation;
                                    ontobim:hasIfcId '0jvyVdjY901wSsMTGJsL4G'^^xsd:string;
                                    rdfs:label 'TestBuilding'^^xsd:string.
@@ -147,4 +141,3 @@ SAMPLE_ONTOBIM_GEOM_STORE = dict(
     chair=((3., 0., 0.), (3.5, 0.5, 1.)),       # (0.5, 0.5, 1) box on ground floor
     table=((0., 1., 3.), (1., 2., 3.5))         # (1 x 1 x 0.5) box on second floor
 )
-
