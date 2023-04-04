@@ -20,7 +20,7 @@ import java.util.List;
 
 public class BuildingsTest {
 
-    String simulationDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\29\\";
+    String simulationDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\30\\";
 
     //    Polygons defining rectangular regions in EPSG:4326/WGS84 coordinates.
     // wkt is for Jurong Island while wkt2 is for Pirmasens.
@@ -46,7 +46,7 @@ public class BuildingsTest {
 
     . */
     @Test
-    public void testInit() throws ParseException {
+    public void testInit() throws ParseException, org.apache.jena.sparql.lang.sparql_11.ParseException {
 
         int centreZoneNumber = (int) Math.floor((scope.getCentroid().getCoordinate().getX() + 180)/6) + 1;
         System.out.println(centreZoneNumber);
@@ -62,7 +62,7 @@ public class BuildingsTest {
         bp.init(Path.of(simulationDirectory), scope, srid, nx,ny);
         Assertions.assertTrue(bp.locindex > -1);
  
-        bp.getProperties();      
+        bp.getProperties2();      
 
         // Assertions.assertEquals(bp.StackEmissions.size(),numStacks);
         // Assertions.assertEquals(bp.BPIPPRMStackInput.size(),numStacks);
@@ -282,7 +282,7 @@ public class BuildingsTest {
         int numStacks = 1;
         int numBuildings = 4;
 
-        JSONArray StackIRIQueryResult = QueryClient.StackQuery("http://localhost:8080/blazegraph/namespace/pirmasensChemicalPlants/sparql/");
+        JSONArray StackIRIQueryResult = BuildingsQueryClient.StackQuery("http://localhost:8080/blazegraph/namespace/pirmasensChemicalPlants/sparql/");
         Assertions.assertEquals(numStacks,StackIRIQueryResult.length());
         // JSONArray BuildingIRIQueryResult = QueryClient.BuildingQuery("pirmasensChemicalPlants");
         // Assertions.assertEquals(numBuildings,BuildingIRIQueryResult.length());
@@ -292,7 +292,7 @@ public class BuildingsTest {
     @Test
     public void testBuildingGeometricQuery2() {
 
-        JSONArray BuildingGeometricQueryResult = QueryClient.BuildingGeometricQuery2("pirmasensEPSG32633", 
+        JSONArray BuildingGeometricQueryResult = BuildingsQueryClient.BuildingGeometricQuery2("pirmasensEPSG32633", 
         Arrays.asList("http://www.theworldavatar.com:83/citieskg/namespace/pirmasensEPSG32633/sparql/building/UUID_LOD2_Pirmasens_4f8d0f1a-3b21-40d4-8b90-89723e31a7ca/"));
         Assertions.assertEquals(BuildingGeometricQueryResult.length(), 346);
         for (int i = 0; i < BuildingGeometricQueryResult.length(); i++) {
