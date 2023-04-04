@@ -557,17 +557,21 @@ public class FHAgent{
         return result;
     }
 
-    public JSONObject getLastState (String dataIRI) {
-
-        JSONObject result = new JSONObject();
-        JSONObject row = new JSONObject();
-        JSONArray col = new JSONArray();
+    public void getTS(String dataIRI){
         try (Connection conn = RDBClient.getConnection()){
             occStateTS = tsClient.getLatestData(dataIRI, conn);
         } catch (Exception e) {
             throw new JPSRuntimeException(GETLATESTDATA_ERROR_MSG, e);
         }
+    }
 
+    public JSONObject getLastState (String dataIRI) {
+
+        JSONObject result = new JSONObject();
+        JSONObject row = new JSONObject();
+        JSONArray col = new JSONArray();
+
+        getTS(dataIRI);
 
         try {
             //process timeseries object and convert to a suitable form, retrieve values only
