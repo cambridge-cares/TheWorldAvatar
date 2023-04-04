@@ -11,7 +11,7 @@ class AgentMatrixGenerator():
 
     def __init__(self, agent):
         self.agent = agent
-        self.full_dataset_dir = os.path.join(DATA_DIR, "CrossGraph", self.agent)
+        self.full_dataset_dir = os.path.join(DATA_DIR, "CrossGraph", "agents", self.agent)
         self.ent_embedding = pd.read_csv(os.path.join(self.full_dataset_dir, 'ent_embedding.tsv'), sep='\t',
                                          header=None)
         self.file_loader = FileLoader(full_dataset_dir=self.full_dataset_dir)
@@ -19,7 +19,7 @@ class AgentMatrixGenerator():
         self.pce = False
         if self.agent == 'ontopceagent':
             self.pce = True
-            ontothermoagent_dataset_dir = os.path.join(DATA_DIR, "CrossGraph", "ontothermoagent")
+            ontothermoagent_dataset_dir = os.path.join(DATA_DIR, "CrossGraph", "agents", "ontothermoagent")
             ontothermoagent_file_loader = FileLoader(full_dataset_dir=ontothermoagent_dataset_dir)
             self.thermo_entity2idx, self.thermo_idx2entity, self.thermo_rel2idx, self.thermo_idx2rel = ontothermoagent_file_loader.load_index_files()
             self.thermo_ent_embedding = pd.read_csv(os.path.join(ontothermoagent_dataset_dir, 'ent_embedding.tsv'), sep='\t',
@@ -33,15 +33,11 @@ class AgentMatrixGenerator():
         inputs = data['input']
         outputs = data['output']
         agent_matrices = {}
-        # agent_matrices = []
         for input in inputs:
             for output in outputs:
-                # print(input)
                 if self.pce:
-                    # agent_matrices.append( np.array([list(self.thermo_ent_embedding.iloc[self.thermo_entity2idx[input]]), list(self.ent_embedding.iloc[self.entity2idx[output]]) ]))
                     agent_matrices[output] = np.array([list(self.thermo_ent_embedding.iloc[self.thermo_entity2idx[input]]), list(self.ent_embedding.iloc[self.entity2idx[output]]) ])
                 else:
-                    # agent_matrices.append(np.array([list(self.ent_embedding.iloc[self.entity2idx[input]]), list(self.ent_embedding.iloc[self.entity2idx[output]]) ]))
                     agent_matrices[output] = np.array([list(self.ent_embedding.iloc[self.entity2idx[input]]), list(self.ent_embedding.iloc[self.entity2idx[output]]) ])
 
         return agent_matrices
