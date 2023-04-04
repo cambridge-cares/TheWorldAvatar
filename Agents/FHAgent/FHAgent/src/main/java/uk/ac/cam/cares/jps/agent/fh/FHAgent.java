@@ -9,7 +9,6 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient.Type;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesSparql;
-import uk.ac.cam.cares.jps.base.query.RemoteRDBStoreClient;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -20,7 +19,6 @@ import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.TimeZone;
-import java.sql.Connection;
 
 
 import org.apache.logging.log4j.LogManager;
@@ -64,10 +62,6 @@ public class FHAgent{
      * The Zone offset of the timestamp (https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneOffset.html)
      */
     public static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
-    /**
-     * RDB Client Object
-     */
-    private RemoteRDBStoreClient RDBClient;
 
     /**
      * Log messages
@@ -557,12 +551,13 @@ public class FHAgent{
         return result;
     }
 
-    public void getTS(String dataIRI){
-        try (Connection conn = RDBClient.getConnection()){
-            occStateTS = tsClient.getLatestData(dataIRI, conn);
+    public TimeSeries<OffsetDateTime> getTS(String dataIRI){
+        try {
+            occStateTS = tsClient.getLatestData(dataIRI);
         } catch (Exception e) {
             throw new JPSRuntimeException(GETLATESTDATA_ERROR_MSG, e);
         }
+        return occStateTS;
     }
 
     public JSONObject getLastState (String dataIRI) {
