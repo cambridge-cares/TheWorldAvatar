@@ -226,11 +226,10 @@ class RxnOptGoalAgent(ABC):
 
         # Varify the parameters
         self.logger.info(f"Received a goal request with parameters: {parameters}")
+        # TODO [next iteration] provide a more scalable way to deal with the multiple goals
         all_parameters = ["chem_rxn", "cycleAllowance", "deadline",
                           "first_goal_clz", "first_goal_desires", "first_goal_num_val", "first_goal_unit",
-                          "rxn_opt_goal_plan",
-                          "second_goal_clz", "second_goal_desires", "second_goal_num_val", "second_goal_unit",
-                          "labs"]
+                          "rxn_opt_goal_plan", "labs"]
         if not all([p in parameters and bool(parameters[p]) for p in all_parameters]):
             return f"""The request parameters are incomplete, required parameters: {all_parameters}.
                     Received parameters: {parameters}.
@@ -260,26 +259,29 @@ class RxnOptGoalAgent(ABC):
             desiresGreaterThan=first_goal_desires_quantity if first_goal_desires == ONTOGOAL_DESIRESGREATERTHAN else None,
             desiresLessThan=first_goal_desires_quantity if first_goal_desires == ONTOGOAL_DESIRESLESSTHAN else None,
         )
+        goal_list = [first_goal]
 
-        second_goal_desires = parameters['second_goal_desires']
-        second_goal_desires_quantity = OM_Quantity(
-            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-            namespace_for_init=self.derivation_instance_base_url,
-            clz=parameters['second_goal_clz'],
-            hasValue=OM_Measure(
+        if parameters.get('second_goal_desires') and parameters.get('second_goal_clz') and parameters.get('second_goal_unit') and parameters.get('second_goal_num_val'):
+            second_goal_desires = parameters['second_goal_desires']
+            second_goal_desires_quantity = OM_Quantity(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=self.derivation_instance_base_url,
-                hasUnit=parameters['second_goal_unit'],
-                hasNumericalValue=parameters['second_goal_num_val']
+                clz=parameters['second_goal_clz'],
+                hasValue=OM_Measure(
+                    instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                    namespace_for_init=self.derivation_instance_base_url,
+                    hasUnit=parameters['second_goal_unit'],
+                    hasNumericalValue=parameters['second_goal_num_val']
+                )
             )
-        )
-        second_goal = Goal(
-            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-            namespace_for_init=self.derivation_instance_base_url,
-            hasPlan=rxn_opt_goal_plan,
-            desiresGreaterThan=second_goal_desires_quantity if second_goal_desires == ONTOGOAL_DESIRESGREATERTHAN else None,
-            desiresLessThan=second_goal_desires_quantity if second_goal_desires == ONTOGOAL_DESIRESLESSTHAN else None,
-        )
+            second_goal = Goal(
+                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                namespace_for_init=self.derivation_instance_base_url,
+                hasPlan=rxn_opt_goal_plan,
+                desiresGreaterThan=second_goal_desires_quantity if second_goal_desires == ONTOGOAL_DESIRESGREATERTHAN else None,
+                desiresLessThan=second_goal_desires_quantity if second_goal_desires == ONTOGOAL_DESIRESLESSTHAN else None,
+            )
+            goal_list.append(second_goal)
 
         # Get the list of available labs
         # NOTE The remaining cycleAllowance will be deducted by the number of labs
@@ -294,7 +296,6 @@ class RxnOptGoalAgent(ABC):
         )
 
         # Now we need to construct a GoalSet object with above information
-        goal_list = [first_goal, second_goal]
         goal_set_instance = GoalSet(
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             namespace_for_init=self.derivation_instance_base_url,
