@@ -33,11 +33,10 @@ def run_shellcommand(command: Union[str, List[str]], require_shell: bool = False
 
 
 def retrieve_abs_filepath(filepath: str):
-    """Retrieves the absolute filepath from a relative filepath. """
+    """Retrieves the absolute filepath from a relative filepath."""
     if filepath == ".":
         return os.getcwd()
-    else:
-        return os.path.abspath(filepath)
+    return os.path.abspath(filepath)
 
 
 def find_ifc_file(ifc_dir: List[str]):
@@ -53,38 +52,25 @@ def find_ifc_file(ifc_dir: List[str]):
         FileNotFoundError: No IFC file is found in the provided directory.
         InvalidInputError: More than one IFC files are found in the provided directory.
     """
-    # If empty list,
-    if not ifc_dir:
-        ifc_relpath = "."
-    else:
-        for directory in ifc_dir:
-            # Check if this variable exist
-            try:
-                ifc_relpath
-            # If it doesn't exist, initialise the variable
-            except NameError:
-                ifc_relpath = os.path.join(".", directory)
-            # If it exist, append to filepath
-            else:
-                ifc_relpath = os.path.join(ifc_relpath, directory)
-
+    ifc_relpath = os.path.join(".", *ifc_dir)
     ifcpath = retrieve_abs_filepath(ifc_relpath)
 
     filelist = [file for file in os.listdir(ifcpath)
-                if os.path.isfile(os.path.join(ifcpath, file)) and not file == ".gitignore"]
-    ifc_input = ""
-    if not filelist:
-        errormsg = 'No ifc file is available at the ./data/ifc folder'
-        logger.error(errormsg)
-        raise FileNotFoundError(errormsg)
-    elif len(filelist) == 1:
-        ifc_input = os.path.join(ifcpath, filelist[0])
-        logger.debug("One IFC file detected: " + ifc_input)
-    elif len(filelist) > 1:
-        errormsg = 'More than one IFC file is located at the ./data/ifc folder. '
-        errormsg += 'Please place only ONE IFC file'
-        logger.error(errormsg)
-        raise InvalidInputError(errormsg)
+                if os.path.isfile(os.path.join(ifcpath, file)) and file.endswith(".ifc")]
+
+    if len(filelist) == 0:
+        error_msg = "No ifc file is available at the ./data/ifc folder"
+        logger.error(error_msg)
+        raise FileNotFoundError(error_msg)
+
+    if len(filelist) > 1:
+        error_msg = "More than one IFC file is located at the ./data/ifc folder. Please place only ONE IFC file."
+        logger.error(error_msg)
+        raise InvalidInputError(error_msg)
+
+    ifc_input = os.path.join(ifcpath, filelist[0])
+    logger.debug("One IFC file detected: " + ifc_input)
+
     return ifc_input
 
 

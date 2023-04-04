@@ -15,64 +15,54 @@ from agent.utils import retrieve_abs_filepath, find_ifc_file
 from agent.exceptions import InvalidInputError
 
 
-def test_retrieve_abs_filepath():
-    """
-    Tests both potential outputs of retrieve_abs_filepath()
-    """
-    expected_path = os.getcwd()
-    # Execute method
-    filepath = retrieve_abs_filepath(".")
-    assert filepath == expected_path
+@pytest.mark.parametrize(
+    "relpath, expected",
+    [
+        (".", os.getcwd()),
+        ("./agent", os.path.join(os.getcwd(), "agent"))
+    ]
+)
+def test_retrieve_abs_filepath(relpath, expected):
+    # Act
+    actual = retrieve_abs_filepath(relpath)
 
-    expected_path = os.path.join(os.getcwd(), "agent")
-    # Execute method
-    filepath = retrieve_abs_filepath("./agent")
-    assert filepath == expected_path
+    # Assert
+    assert actual == expected
 
 
 def test_read_ifc_file():
-    """
-    Tests read_ifc_file()
-    """
+    # Arrange
     # Create file path of new IFC file
     ifcfile = os.path.join("data", "ifc", "temp.ifc")
-    expected_path = os.path.join(os.getcwd(), ifcfile)
-    # Create a new file and execute method
     open(ifcfile, "x", encoding="utf-8").close()
-    try:
-        result_path = find_ifc_file(["data", "ifc"])
-        assert result_path == expected_path
-    finally:
-        # Remove file once code has run and before assertions
-        os.remove(ifcfile)
+
+    expected_path = os.path.join(os.getcwd(), ifcfile)
+
+    # Act
+    result_path = find_ifc_file(["data", "ifc"])
+
+    # Assert
+    assert result_path == expected_path
 
 
 def test_read_ifc_file_empty_dir_fails():
-    """
-    Tests that the read_ifc_file() will fail in an empty directory
-    """
-    # Raise error with Empty directory containing no IFC file
+    """Tests that the read_ifc_file() will fail in an empty directory."""
+    # Act & Assert
     with pytest.raises(FileNotFoundError) as exc_info:
         find_ifc_file(["data", "ifc"])
-    assert exc_info.match(
-        r"^No ifc file is available at the ./data/ifc folder$")
+    assert exc_info.match(r"^No ifc file is available at the ./data/ifc folder$")
 
 
 def test_read_ifc_file_multiple_ifc_fails():
-    """
-    Tests that the read_ifc_file() will fail if there are multiple IFC files
-    """
-    # Create two empty IFC files for testing
+    """Tests that the read_ifc_file() will fail if there are multiple IFC files."""
+    # Arrange
     ifcfile = os.path.join("data", "ifc", "temp.ifc")
     ifcfile2 = os.path.join("data", "ifc", "temp2.ifc")
     open(ifcfile, "x", encoding="utf-8").close()
     open(ifcfile2, "x", encoding="utf-8").close()
-    try:
-        # Raises error for directory with more than 1 IFC file
-        with pytest.raises(InvalidInputError) as exc_info:
-            find_ifc_file(["data", "ifc"])
-        assert exc_info.match(
-            r"^More than one IFC file is located at the ./data/ifc folder. Please place only ONE IFC file$")
-    finally:
-        os.remove(ifcfile)
-        os.remove(ifcfile2)
+
+    # Act & Assert
+    with pytest.raises(InvalidInputError) as exc_info:
+        find_ifc_file(["data", "ifc"])
+    assert exc_info.match(
+        r"^More than one IFC file is located at the ./data/ifc folder. Please place only ONE IFC file.$")

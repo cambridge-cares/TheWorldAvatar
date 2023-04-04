@@ -11,22 +11,26 @@ import pytest
 from agent.utils import validate_asset_url
 
 
-def test_validate_asset_url():
-    """
-    Tests valid inputs for validate_asset_url()
-    """
-    valid_input = [".", "..", "./dir", "../prev/dir/path",
-        "http://www.example.org", "http://www.example.com/ns"]
-    for url in valid_input:
-        assert validate_asset_url(url)
+@pytest.mark.parametrize(
+    "asset_url, expected",
+    [
+        (".", True),
+        ("..", True),
+        ("./dir", True),
+        ("../prev/dir/path", True),
+        ("http://www.example.org", True),
+        ("http://www.example.com/ns", True),
+        ("./", False),
+        ("dir", False),
+        ("/dir/", False),
+        ("../../", False),
+        ("www.example.org", False),
+        ("http://www.example.com/ns/", False)
+    ]
+)
+def test_validate_asset_url(asset_url, expected):
+    # Act
+    actual = validate_asset_url(asset_url)
 
-
-def test_validate_asset_url_fails():
-    """
-    Tests invalid inputs for validate_asset_url()
-    """
-    invalid_input = ["./", "dir", "/dir/", "../../",
-        "www.example.org", "http://www.example.com/ns/"]
-    for url in invalid_input:
-        # Assert that validation method returns false
-        assert not validate_asset_url(url)
+    # Assert
+    assert actual == expected
