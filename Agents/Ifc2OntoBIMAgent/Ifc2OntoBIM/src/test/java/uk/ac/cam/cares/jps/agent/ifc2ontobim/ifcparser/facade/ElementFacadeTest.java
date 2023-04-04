@@ -39,21 +39,26 @@ class ElementFacadeTest {
     private static final String TABLE_UID = "e01835hg";
     private static final String TABLE_PLACEMENT_INST = TEST_BASE_URI + "LocalPlacement_30158";
     private static final String TABLE_SHAPE_REP_INST = TEST_BASE_URI + "ModelRepresentation_5312";
-    private static final String TABLE_GEOM_INST = TEST_BASE_URI + "FacetedBrep_296358";
+    private static final String TABLE_GEOM_INST = TEST_BASE_URI + "IfcFacetedBrep_296358";
+    private static final String TABLE_GEOM_BIM_INST = TEST_BASE_URI + "FacetedBrep_296358";
     // Element 2 fields
     private static final String ELEC_METER_INST = TEST_BASE_URI + "Element_3525";
     private static final String ELEC_METER_NAME = "Electrical meter";
     private static final String ELEC_METER_UID = "vas8134ras";
     private static final String ELEC_METER_PLACEMENT_INST = TEST_BASE_URI + "LocalPlacement_3158";
     private static final String ELEC_METER_SHAPE_REP_INST = TEST_BASE_URI + "ModelRepresentation_25312";
-    private static final String ELEC_METER_GEOM_INST = TEST_BASE_URI + "FacetedBrep_2958";
+    private static final String ELEC_METER_GEOM_INST = TEST_BASE_URI + "IfcFacetedBrep_2958";
+    private static final String ELEC_METER_GEOM_BIM_INST = TEST_BASE_URI + "FacetedBrep_2958";
+
     // Element 3 fields
     private static final String CHEMICAL_CONTAINER_INST = TEST_BASE_URI + "Element_625";
     private static final String CHEMICAL_CONTAINER_NAME = "Explosive precursor bottle";
     private static final String CHEMICAL_CONTAINER_UID = "a618a37hb";
     private static final String CHEMICAL_CONTAINER_PLACEMENT_INST = TEST_BASE_URI + "LocalPlacement_6758";
     private static final String CHEMICAL_CONTAINER_SHAPE_REP_INST = TEST_BASE_URI + "ModelRepresentation_3312";
-    private static final String CHEMICAL_CONTAINER_GEOM_INST = TEST_BASE_URI + "FacetedBrep_29558";
+    private static final String CHEMICAL_CONTAINER_GEOM_INST = TEST_BASE_URI + "IfcFacetedBrep_29558";
+    private static final String CHEMICAL_CONTAINER_GEOM_BIM_INST = TEST_BASE_URI + "FacetedBrep_29558";
+
     // Geometry classes
     private static final String FACETED_BREP_CLASS = JunitTestUtils.bimUri + "FacetedBrep";
     // Element Classes
@@ -99,7 +104,7 @@ class ElementFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Element", ELEMENT_CLASS, TABLE_NAME, TABLE_UID, TABLE_PLACEMENT_INST), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(TABLE_GEOM_INST, FACETED_BREP_CLASS, REP_TYPE), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(TABLE_GEOM_BIM_INST, REP_TYPE), result);
     }
 
     @Test
@@ -115,7 +120,7 @@ class ElementFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("ElectricityMeter", ELEC_METER_CLASS, ELEC_METER_NAME, ELEC_METER_UID, ELEC_METER_PLACEMENT_INST), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(ELEC_METER_GEOM_INST, FACETED_BREP_CLASS, REP_TYPE), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(ELEC_METER_GEOM_BIM_INST, REP_TYPE), result);
     }
 
     @Test
@@ -131,7 +136,7 @@ class ElementFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("ChemicalContainer", CHEMICAL_CONTAINER_CLASS, CHEMICAL_CONTAINER_NAME, CHEMICAL_CONTAINER_UID, CHEMICAL_CONTAINER_PLACEMENT_INST), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(CHEMICAL_CONTAINER_GEOM_INST, FACETED_BREP_CLASS, REP_TYPE), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(CHEMICAL_CONTAINER_GEOM_BIM_INST, REP_TYPE), result);
     }
 
     private void addBaseTriples(String elementIRI, String elementClass, String name, String uid, String placementInst) {
@@ -190,10 +195,9 @@ class ElementFacadeTest {
         return expected;
     }
 
-    private List<String> genExpectedModelRepGeometryItemStatements(String geomInst, String geomClass, String repTypeValue) {
+    private List<String> genExpectedModelRepGeometryItemStatements(String geomInst, String repTypeValue) {
         List<String> expected = new ArrayList<>();
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + geomInst);
-        expected.add(geomInst + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, " + geomClass);
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + repTypeValue);
         return expected;
     }

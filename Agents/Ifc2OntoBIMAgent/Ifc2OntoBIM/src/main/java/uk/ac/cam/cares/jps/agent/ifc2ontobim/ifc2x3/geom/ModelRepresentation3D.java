@@ -18,11 +18,9 @@ import java.util.UUID;
  */
 public class ModelRepresentation3D {
     private final String bimIri;
-    private final String prefix;
     private final String repType;
     private final String subContext;
     private final Queue<String> geomIris;
-    private final Queue<String> geomTypes;
     private final String sourcePlacementIri;
     private final String targetPlacementIri;
 
@@ -36,12 +34,10 @@ public class ModelRepresentation3D {
      * @param cartesianTransformerIri An optional field for the transformation operator's IRI to translate the source to target placement.
      */
     public ModelRepresentation3D(String subContextIri, String geomIri, String repType, String sourcePlacementIri, String cartesianTransformerIri) {
-        this.prefix = NamespaceMapper.getBaseNameSpace();
-        this.bimIri = this.prefix + OntoBimConstant.GEOM_MODEL_REP_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
+        this.bimIri = NamespaceMapper.getBaseNameSpace() + OntoBimConstant.GEOM_MODEL_REP_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.subContext = StatementHandler.createInstanceFromIRI(subContextIri,OntoBimConstant.GEOM_SUB_CONTEXT_CLASS);
         // Initialise the queue and append the geometries
         this.geomIris = new ArrayDeque<>();
-        this.geomTypes = new ArrayDeque<>();
         appendGeometry(geomIri);
         // Optional fields: if the argument is null, the field will still be null
         this.repType = repType;
@@ -57,13 +53,10 @@ public class ModelRepresentation3D {
      * @param geomIRI The element's geometry IRI.
      */
     public void appendGeometry(String geomIRI) {
-        // Add the geom IRI directly to the queue
+        // Create the geom instance IRI
+        geomIRI = StatementHandler.createGeometryInstanceFromIRI(geomIRI);
+        // Add the IRI to the queue
         this.geomIris.offer(geomIRI);
-        // Retrieve the geometry type from the IRI
-        String geomInst = geomIris.contains(StringUtils.HASHMARK) ?
-                StringUtils.getStringAfterLastCharacterOccurrence(geomIRI, StringUtils.HASHMARK) : StringUtils.getStringAfterLastCharacterOccurrence(geomIRI, StringUtils.SLASH);
-        String geomType = StringUtils.getStringBeforeFirstCharacterOccurrence(geomInst, StringUtils.UNDERSCORE);
-        this.geomTypes.offer(geomType);
     }
 
     /**
@@ -78,7 +71,6 @@ public class ModelRepresentation3D {
         while (!this.geomIris.isEmpty()){
             String geomIri = this.geomIris.poll();
             StatementHandler.addStatement(statementSet, this.getBimIri(), OntoBimConstant.BIM_HAS_REP_ITEM, geomIri);
-            StatementHandler.addStatement(statementSet, geomIri, OntoBimConstant.RDF_TYPE, NamespaceMapper.BIM_NAMESPACE + this.geomTypes.poll());
         }
         StatementHandler.addOptionalStatement(statementSet, this.getBimIri(), OntoBimConstant.BIM_HAS_REP_TYPE, this.repType, false);
         StatementHandler.addOptionalStatement(statementSet, this.getBimIri(), OntoBimConstant.BIM_HAS_SOURCE_PLACEMENT, this.sourcePlacementIri);

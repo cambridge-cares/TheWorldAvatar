@@ -28,13 +28,13 @@ class ElementStorageTest {
     private static final String TEST_ELEMENT_CLASS = "IfcDoor";
     private static final String TEST_ELEMENT_IRI = TEST_BASE_URI + TEST_ELEMENT_CLASS + "_12";
     private static final String TEST_SEC_ELEMENT_IRI = TEST_BASE_URI + TEST_ELEMENT_CLASS + "_10581";
-    private static final String TEST_SHAPE_REP_IRI = TEST_BASE_URI + "ModelRepresentation3D_519618";
     private static final String TEST_SUB_CONTEXT_IRI = TEST_BASE_URI + "GeometricRepresentationSubContext_3";
-    private static final String TEST_GEOM_CLASS = "FacetedBrep";
-    private static final String TEST_GEOM_IRI = TEST_BASE_URI + TEST_GEOM_CLASS + "_10585";
+    private static final String TEST_GEOM_IRI = TEST_BASE_URI + "IfcFacetedBrep_10585";
+    private static final String TEST_GEOM_BIM_IRI = TEST_BASE_URI + "FacetedBrep_10585";
     private static final String TEST_SEC_SUB_CONTEXT_IRI = TEST_BASE_URI + "GeometricRepresentationSubContext_5";
-    private static final String TEST_SEC_GEOM_CLASS = "HalfSpaceSolid";
-    private static final String TEST_SEC_GEOM_IRI = TEST_BASE_URI + TEST_SEC_GEOM_CLASS + "_33321";
+    private static final String TEST_SEC_GEOM_IRI = TEST_BASE_URI + "IfcHalfSpaceSolid_33321";
+    private static final String TEST_SEC_GEOM_BIM_IRI = TEST_BASE_URI + "HalfSpaceSolid_33321";
+
     private static final String NON_EXISTING_ERROR = NON_EXISTENT_IRI + " does not exist in mappings!";
 
     @BeforeAll
@@ -202,8 +202,8 @@ class ElementStorageTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedCommonStatements(), result);
-        // Assert 4 sample statements are generated
-        assertEquals(4, sampleSet.size());
+        // Assert 3 sample statements are generated
+        assertEquals(3, sampleSet.size());
     }
 
     @Test
@@ -237,23 +237,21 @@ class ElementStorageTest {
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedCommonStatements(), result);
         JunitTestUtils.doesExpectedListExist(genExpectedAdditionalGeomRepStatements(), result);
-        // Assert 8 sample statements are generated, which is double that of 1 model rep object
-        assertEquals(8, sampleSet.size());
+        // Assert 6 sample statements are generated, which is double that of 1 model rep object
+        assertEquals(6, sampleSet.size());
     }
 
     private List<String> genExpectedCommonStatements() {
         List<String> expected = new ArrayList<>();
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D");
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSubContext, " + TEST_SUB_CONTEXT_IRI);
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + TEST_GEOM_IRI);
-        expected.add(TEST_GEOM_IRI + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/" + TEST_GEOM_CLASS);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + TEST_GEOM_BIM_IRI);
         return expected;
     }
 
     private List<String> genExpectedAdditionalGeomRepStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + TEST_SEC_GEOM_IRI);
-        expected.add(TEST_SEC_GEOM_IRI + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/" + TEST_SEC_GEOM_CLASS);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + TEST_SEC_GEOM_BIM_IRI);
         return expected;
     }
 }

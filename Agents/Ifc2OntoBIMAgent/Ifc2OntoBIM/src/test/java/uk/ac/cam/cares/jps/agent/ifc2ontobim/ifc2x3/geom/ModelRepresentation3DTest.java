@@ -15,22 +15,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ModelRepresentation3DTest {
     private static final String testBaseUri = "http://www.example.org/";
-    private static final String testIri1 = testBaseUri + "IfcShapeRepresentation_332";
-    private static final String testIri2 = testBaseUri + "IfcWall_322";
     private static final String testSubContextIri = testBaseUri + "GeometricRepresentationSubContext_117";
-    private static final String testGeomIri = testBaseUri + "FacetedBrep_9185";
+    private static final String testGeomIri = testBaseUri + "IfcFacetedBrep_9185";
+    private static final String testGeomBimIri = testBaseUri + "FacetedBrep_9185";
+
     private static final String testShapeRepType = "Brep";
     private static final String testPlacementValIRI = "2517";
     private static final String testPlacementIri = testBaseUri + "IfcLocalPlacement_" + testPlacementValIRI;
     private static final String testBIMPlacementIRI = testBaseUri + "LocalPlacement_" + testPlacementValIRI;
     private static final String testTransformOperatorIri = testBaseUri + "IfcCartesianTransformationOperator_515";
     private static final String testBimTransformOperatorIri = testBaseUri + "CartesianTransformationOperator_515";
-    private static final String testGeomClass = JunitTestUtils.bimUri + "FacetedBrep";
-    private static final String testAdditionalGeomIri = testBaseUri + "ExtrudedAreaSolid_37216";
-    private static final String testAdditionalGeomIri2 = testBaseUri + "PolygonalBoundedHalfSpace_59158";
-    private static final String testAdditionalGeomClass = JunitTestUtils.bimUri + "ExtrudedAreaSolid";
-    private static final String testAdditionalGeomClass2 = JunitTestUtils.bimUri + "PolygonalBoundedHalfSpace";
-
+    private static final String testAdditionalGeomIri = testBaseUri + "IfcExtrudedAreaSolid_37216";
+    private static final String testAdditionalGeomIri2 = testBaseUri + "IfcPolygonalBoundedHalfSpace_59158";
+    private static final String testAdditionalGeomBimIri = testBaseUri + "ExtrudedAreaSolid_37216";
+    private static final String testAdditionalGeomBimIri2 = testBaseUri + "PolygonalBoundedHalfSpace_59158";
     @BeforeAll
     static void createNamespace(){ NamespaceMapper.setBaseNameSpace(testBaseUri); }
     @AfterAll
@@ -112,8 +110,7 @@ class ModelRepresentation3DTest {
         List<String> expected = new ArrayList<>();
         expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D");
         expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSubContext, " + testSubContextIri);
-        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + testGeomIri);
-        expected.add(testGeomIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, " + testGeomClass);
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + testGeomBimIri);
         return expected;
     }
 
@@ -127,15 +124,13 @@ class ModelRepresentation3DTest {
 
     private List<String> genExpectedAreaSolidStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + testAdditionalGeomIri);
-        expected.add(testAdditionalGeomIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, " + testAdditionalGeomClass);
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + testAdditionalGeomBimIri);
         return expected;
     }
 
     private List<String> genExpectedHalfSpaceSolidStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + testAdditionalGeomIri2);
-        expected.add(testAdditionalGeomIri2 + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, " + testAdditionalGeomClass2);
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + testAdditionalGeomBimIri2);
         return expected;
     }
 }

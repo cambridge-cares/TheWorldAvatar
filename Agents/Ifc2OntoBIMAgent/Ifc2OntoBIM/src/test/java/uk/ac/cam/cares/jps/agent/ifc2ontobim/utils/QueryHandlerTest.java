@@ -53,8 +53,8 @@ class QueryHandlerTest {
     private static final String testSubContextVar = "subcontext";
     private static final String testSubContextIri = testBaseUri + "GeometricRepresentationSubContext_5151";
     private static final String testGeomVar = "geometry";
-    private static final String testGeomIri = testBaseUri + "FacetedBrep_32516";
-    private static final String testGeomType = JunitTestUtils.bimUri + "FacetedBrep";
+    private static final String testGeomIri = testBaseUri + "IfcFacetedBrep_32516";
+    private static final String testGeomBimIri = testBaseUri + "FacetedBrep_32516";
     private static final String testShapeRepTypeVar = "shapereptype";
     private static final String testShapeRepType = "Faceted Brep";
     private static final String testSourcePlacementVar = "geomaxisplacement";
@@ -66,8 +66,8 @@ class QueryHandlerTest {
     private static final String testSecSubContextVar = "secondsubcontext";
     private static final String testSecSubContextIri = testBaseUri + "GeometricRepresentationSubContext_3209";
     private static final String testSecGeomVar = "secgeometry";
-    private static final String testSecGeomIri = testBaseUri + "Polyline_8771";
-    private static final String testSecGeomType = JunitTestUtils.bimUri + "Polyline";
+    private static final String testSecGeomIri = testBaseUri + "IfcPolyline_8771";
+    private static final String testSecGeomBimIri = testBaseUri + "Polyline_8771";
     private static final String testSecShapeRepTypeVar = "secshapereptype";
     private static final String testSecShapeRepType = "Curve2D";
     // For testing Void shape rep
@@ -80,7 +80,8 @@ class QueryHandlerTest {
     private static final String testVoidSubContextVar = "voidsubcontext";
     private static final String testVoidSubContextIri = testBaseUri + "GeometricRepresentationSubContext_3209";
     private static final String testVoidGeomVar = "voidgeometry";
-    private static final String testVoidGeomIri = testBaseUri + "ExtrudedAreaSolid_3151";
+    private static final String testVoidGeomIri = testBaseUri + "IfcExtrudedAreaSolid_3151";
+    private static final String testVoidGeomBimIri = testBaseUri + "ExtrudedAreaSolid_3151";
     private static final String testVoidGeomType = JunitTestUtils.bimUri + "ExtrudedAreaSolid";
     private static final String testVoidShapeRepTypeVar = "voidshapereptype";
     private static final String testVoidShapeRepType = "SweptSolid";
@@ -242,7 +243,7 @@ class QueryHandlerTest {
         resultModel.addModelRepresentation3DStatements(sampleSet);
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
-        JunitTestUtils.doesExpectedListExist(genExpectedAdditionalModelRep3DStatements(testSecSubContextIri, testSecShapeRepType, testSecGeomIri, testSecGeomType), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedAdditionalModelRep3DStatements(testSecSubContextIri, testSecShapeRepType, testSecGeomBimIri), result);
     }
 
     @Test
@@ -268,7 +269,7 @@ class QueryHandlerTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedGeometricVoidStatements(), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedAdditionalModelRep3DStatements(testVoidSubContextIri, testVoidShapeRepType, testVoidGeomIri, testVoidGeomType), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedAdditionalModelRep3DStatements(testVoidSubContextIri, testVoidShapeRepType, testVoidGeomBimIri), result);
     }
 
     private List<String> genInitQuery() {
@@ -316,8 +317,7 @@ class QueryHandlerTest {
         List<String> expected = new ArrayList<>();
         expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D");
         expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSubContext, " + testSubContextIri);
-        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + testGeomIri);
-        expected.add(testGeomIri + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, " + testGeomType);
+        expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + testGeomBimIri);
         return expected;
     }
 
@@ -329,13 +329,12 @@ class QueryHandlerTest {
         return expected;
     }
 
-    private List<String> genExpectedAdditionalModelRep3DStatements(String subContextIRI, String shapeRepType, String geomIRI, String geomType) {
+    private List<String> genExpectedAdditionalModelRep3DStatements(String subContextIRI, String shapeRepType, String geomIRI) {
         List<String> expected = new ArrayList<>();
         expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D");
         expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSubContext, " + subContextIRI);
         expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + shapeRepType);
         expected.add(testBaseUri + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + geomIRI);
-        expected.add(geomIRI + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, " + geomType);
         return expected;
     }
 

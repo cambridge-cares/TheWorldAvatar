@@ -83,10 +83,10 @@ class BuildingStructureFacadeTest {
     private static final String IFC_MAPPED_SHAPE_REP = TEST_BASE_URI + "IfcShapeRepresentation_8672";
     private static final String IFC_GEOM_SUB_CONTEXT_INST = TEST_BASE_URI + "IfcGeometricRepresentationSubContext_5108";
     private static final String BIM_GEOM_SUB_CONTEXT_INST = TEST_BASE_URI + "GeometricRepresentationSubContext_5108";
-    private static final String FACETED_BREP_CLASS = "FacetedBrep";
-    private static final String EXTRUDED_AREA_SOLID_CLASS = "ExtrudedAreaSolid";
-    private static final String IFC_FACETED_BREP_INST = TEST_BASE_URI + FACETED_BREP_CLASS + "_726358";
-    private static final String IFC_FACETED_BREP_SEC_INST = TEST_BASE_URI + FACETED_BREP_CLASS + "_18517";
+    private static final String IFC_FACETED_BREP_INST = TEST_BASE_URI + "IfcFacetedBrep_726358";
+    private static final String IFC_FACETED_BREP_SEC_INST = TEST_BASE_URI + "IfcFacetedBrep_18517";
+    private static final String BIM_FACETED_BREP_INST = TEST_BASE_URI + "FacetedBrep_726358";
+    private static final String BIM_FACETED_BREP_SEC_INST = TEST_BASE_URI + "FacetedBrep_18517";
     private static final String IFC_REP_TYPE_VAL = "Faceted Brep";
     private static final String IFC_MAPPED_REP_TYPE_VAL = "MappedRepresentation";
     private static final String IFC_SOURCE_PLACEMENT_INST = TEST_BASE_URI + JunitTestUtils.IFC_PLACEMENT_CLASS + "_571261";
@@ -97,25 +97,29 @@ class BuildingStructureFacadeTest {
     private static final String IFC_REP_MAP_INST = TEST_BASE_URI + "IfcRepresentationMap_3213";
     // Stair geometry properties
     private static final String STAIR_FLIGHT_SHAPE_REP_INST = TEST_BASE_URI + "IfcShapeRepresentation_6817";
-    private static final String STAIR_FLIGHT_GEOM_INST = TEST_BASE_URI + EXTRUDED_AREA_SOLID_CLASS + "_296358";
+    private static final String STAIR_FLIGHT_GEOM_INST = TEST_BASE_URI + "IfcExtrudedAreaSolid_296358";
+    private static final String STAIR_FLIGHT_GEOM_BIM_INST = TEST_BASE_URI + "ExtrudedAreaSolid_296358";
     private static final String STAIR_FLIGHT_REP_TYPE_VAL = "Swept Solid";
     private static final Integer STAIR_FLIGHT_RISER_NUM_VAL = 13;
     private static final Integer STAIR_FLIGHT_TREAD_NUM_VAL = 6;
     private static final Double STAIR_FLIGHT_RISER_HEIGHT_VAL = 1.10;
     private static final Double STAIR_FLIGHT_TREAD_LENGTH_VAL = 0.15;
     private static final String STAIR_LANDING_SHAPE_REP_INST = TEST_BASE_URI + "IfcShapeRepresentation_6912";
-    private static final String STAIR_LANDING_GEOM_INST = TEST_BASE_URI + EXTRUDED_AREA_SOLID_CLASS + "_7810";
+    private static final String STAIR_LANDING_GEOM_INST = TEST_BASE_URI + "IfcExtrudedAreaSolid_7810";
+    private static final String STAIR_LANDING_GEOM_BIM_INST = TEST_BASE_URI + "ExtrudedAreaSolid_7810";
     private static final String STAIR_LANDING_REP_TYPE_VAL = "Swept Solid";
     private static final String STAIR_RAILING_SHAPE_REP_INST = TEST_BASE_URI + "IfcShapeRepresentation_6955";
-    private static final String STAIR_RAILING_GEOM_INST = TEST_BASE_URI + FACETED_BREP_CLASS + "_187513";
+    private static final String STAIR_RAILING_GEOM_INST = TEST_BASE_URI + "IfcFacetedBrep_187513";
+    private static final String STAIR_RAILING_GEOM_BIM_INST = TEST_BASE_URI +  "FacetedBrep_187513";
     private static final String STAIR_RAILING_REP_TYPE_VAL = "Faceted Brep";
     private static final String STAIR_STRUCT_COMP_SHAPE_REP_INST = TEST_BASE_URI + "IfcShapeRepresentation_7010";
-    private static final String STAIR_STRUCT_COMP_GEOM_INST = TEST_BASE_URI + FACETED_BREP_CLASS + "_71728";
+    private static final String STAIR_STRUCT_COMP_GEOM_INST = TEST_BASE_URI + "IfcFacetedBrep_71728";
+    private static final String STAIR_STRUCT_COMP_GEOM_BIM_INST = TEST_BASE_URI + "FacetedBrep_71728";
     private static final String STAIR_STRUCT_COMP_REP_TYPE_VAL = "Faceted Brep";
     // Second geometry type for walls
     private static final String IFC_SEC_SHAPE_REP_INST = TEST_BASE_URI + "IfcShapeRepresentation_91871";
-    private static final String POLYLINE_CLASS = "Polyline";
-    private static final String IFC_POLYLINE_INST = TEST_BASE_URI + POLYLINE_CLASS + "_726358";
+    private static final String IFC_POLYLINE_INST = TEST_BASE_URI + "IfcPolyline_726358";
+    private static final String BIM_POLYLINE_INST = TEST_BASE_URI + "Polyline_726358";
     private static final String IFC_SEC_REP_TYPE_VAL = "Curve2D";
     // Void representation
     private static final String IFC_GEOMETRIC_VOID_INST = TEST_BASE_URI + "GeometricVoid_31296";
@@ -126,7 +130,8 @@ class BuildingStructureFacadeTest {
     private static final String IFC_VOID_SHAPE_REP_INST = TEST_BASE_URI + "ModelRepresentation3D_1753";
     private static final String IFC_VOID_SUB_CONTEXT_INST = TEST_BASE_URI + "IfcGeometricRepresentationSubContext_451852";
     private static final String BIM_VOID_SUB_CONTEXT_INST = TEST_BASE_URI + "GeometricRepresentationSubContext_451852";
-    private static final String IFC_VOID_GEOM_INST = TEST_BASE_URI + "ExtrudedAreaSolid_8152";
+    private static final String IFC_VOID_GEOM_INST = TEST_BASE_URI + "IfcExtrudedAreaSolid_8152";
+    private static final String BIM_VOID_GEOM_INST = TEST_BASE_URI + "ExtrudedAreaSolid_8152";
     // Properties
     private static final Property hasString = ResourceFactory.createProperty(JunitTestUtils.expressUri + "hasString");
     private static final Property hasDouble = ResourceFactory.createProperty(JunitTestUtils.expressUri + "hasDouble");
@@ -193,7 +198,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Ceiling", CEILING_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(IFC_REP_TYPE_VAL), result);
         // The following statements are optional and should not exist
         JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalGeomStatements(), result);
@@ -221,7 +226,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Ceiling", CEILING_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedOptionalGeomStatements(), result);
     }
 
@@ -240,7 +245,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Column", COLUMN_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(IFC_REP_TYPE_VAL), result);
         // The following statements are optional and should not exist
         JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalGeomStatements(), result);
@@ -261,7 +266,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Column", COLUMN_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedOptionalGeomStatements(), result);
     }
 
@@ -285,7 +290,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Door", DOOR_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedAssemblyStatements("Door"), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(IFC_REP_TYPE_VAL), result);
         // The following statements are optional and should not exist
@@ -312,7 +317,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Door", DOOR_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedAssemblyStatements("Door"), result);
         JunitTestUtils.doesExpectedListExist(genExpectedOptionalGeomStatements(), result);
     }
@@ -333,7 +338,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Floor", FLOOR_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(IFC_REP_TYPE_VAL), result);
         // The following statements are optional and should not exist
         JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalGeomStatements(), result);
@@ -355,7 +360,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Floor", FLOOR_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(IFC_REP_TYPE_VAL), result);
         // The following statements are optional and should not exist
         JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalGeomStatements(), result);
@@ -378,7 +383,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Floor", FLOOR_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(IFC_REP_TYPE_VAL), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeometricVoidStatements(), result);
         // The following statements are optional and should not exist
@@ -401,7 +406,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Floor", FLOOR_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedOptionalGeomStatements(), result);
     }
 
@@ -421,7 +426,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Roof", ROOF_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(IFC_REP_TYPE_VAL), result);
         // The following statements are optional and should not exist
         JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalGeomStatements(), result);
@@ -444,7 +449,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Roof", ROOF_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(IFC_REP_TYPE_VAL), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeometricVoidStatements(), result);
         // The following statements are optional and should not exist
@@ -467,7 +472,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Roof", ROOF_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedOptionalGeomStatements(), result);
     }
 
@@ -487,16 +492,16 @@ class BuildingStructureFacadeTest {
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Stair", STAIR_NAME), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(IFC_REP_TYPE_VAL), result);
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("StairFlight", STAIR_FLIGHT_NAME, STAIR_FLIGHT_ID, STAIR_FLIGHT_POSITION_BIM_INST), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(STAIR_FLIGHT_GEOM_INST, EXTRUDED_AREA_SOLID_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(STAIR_FLIGHT_GEOM_BIM_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(STAIR_FLIGHT_REP_TYPE_VAL), result);
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Landing", STAIR_LANDING_NAME, STAIR_LANDING_ID, STAIR_LANDING_POSITION_BIM_INST), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(STAIR_LANDING_GEOM_INST, EXTRUDED_AREA_SOLID_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(STAIR_LANDING_GEOM_BIM_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(STAIR_LANDING_REP_TYPE_VAL), result);
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Railing", STAIR_RAILING_NAME, STAIR_RAILING_ID, STAIR_RAILING_POSITION_BIM_INST), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(STAIR_RAILING_GEOM_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(STAIR_RAILING_GEOM_BIM_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(STAIR_RAILING_REP_TYPE_VAL), result);
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("StairStructuralComponent", STAIR_STRUCT_COMP_NAME, STAIR_STRUCT_COMP_ID, STAIR_STRUCT_COMP_POSITION_BIM_INST), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(STAIR_STRUCT_COMP_GEOM_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(STAIR_STRUCT_COMP_GEOM_BIM_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(STAIR_STRUCT_COMP_REP_TYPE_VAL), result);
         JunitTestUtils.doesExpectedListExist(genExpectedStoreyStatements(), result);
 
@@ -520,7 +525,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Wall", WALL_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(IFC_REP_TYPE_VAL), result);
         // The following statements are optional and should not exist
         JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalGeomStatements(), result);
@@ -541,7 +546,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Wall", WALL_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedOptionalGeomStatements(), result);
     }
 
@@ -561,7 +566,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Wall", WALL_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedMultipleGeometricRepresentationStatements(), result);
     }
 
@@ -585,7 +590,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Window", WINDOW_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedAssemblyStatements("Window"), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(IFC_REP_TYPE_VAL), result);
         // The following statements are optional and should not exist
@@ -612,7 +617,7 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Window", WINDOW_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedAssemblyStatements("Window"), result);
         JunitTestUtils.doesExpectedListExist(genExpectedOptionalGeomStatements(), result);
     }
@@ -633,9 +638,9 @@ class BuildingStructureFacadeTest {
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
         // Generated expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(genExpectedBaseStatements("Column", COLUMN_NAME), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_INST), result);
         JunitTestUtils.doesExpectedListExist(genExpectedGeomRepTypeStatements(IFC_REP_TYPE_VAL), result);
-        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(IFC_FACETED_BREP_SEC_INST, FACETED_BREP_CLASS), result);
+        JunitTestUtils.doesExpectedListExist(genExpectedModelRepGeometryItemStatements(BIM_FACETED_BREP_SEC_INST), result);
         // The following statements are optional and should not exist
         JunitTestUtils.doesExpectedListNotExist(genExpectedOptionalGeomStatements(), result);
     }
@@ -873,10 +878,9 @@ class BuildingStructureFacadeTest {
         return expected;
     }
 
-    private List<String> genExpectedModelRepGeometryItemStatements(String geomInst, String geomClass) {
+    private List<String> genExpectedModelRepGeometryItemStatements(String geomInst) {
         List<String> expected = new ArrayList<>();
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + geomInst);
-        expected.add(geomInst + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/" + geomClass);
         return expected;
     }
 
@@ -903,8 +907,7 @@ class BuildingStructureFacadeTest {
     private List<String> genExpectedMultipleGeometricRepresentationStatements() {
         List<String> expected = new ArrayList<>();
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSubContext, " + BIM_GEOM_SUB_CONTEXT_INST);
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + IFC_POLYLINE_INST);
-        expected.add(IFC_POLYLINE_INST + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/" + POLYLINE_CLASS);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + BIM_POLYLINE_INST);
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + IFC_REP_TYPE_VAL);
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + IFC_SEC_REP_TYPE_VAL);
         return expected;
@@ -920,8 +923,7 @@ class BuildingStructureFacadeTest {
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D");
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSubContext, " + BIM_VOID_SUB_CONTEXT_INST);
         expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + IFC_VOID_SHAPE_REP_TYPE);
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + IFC_VOID_GEOM_INST);
-        expected.add(IFC_VOID_GEOM_INST + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/ExtrudedAreaSolid");
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + BIM_VOID_GEOM_INST);
         return expected;
     }
 
