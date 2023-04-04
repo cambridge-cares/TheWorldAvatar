@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='doeagent',
-    version='0.0.1',
+    version='0.0.2',
     author='Jiaru Bai',
     author_email='jb2197@cam.ac.uk',
     license='MIT',
