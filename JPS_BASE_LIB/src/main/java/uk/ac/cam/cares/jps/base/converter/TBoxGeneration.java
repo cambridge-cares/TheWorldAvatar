@@ -5,7 +5,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.filechooser.FileFilter;
 
@@ -44,6 +46,16 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	public static final String VERSION_INFO = "http://www.w3.org/2002/07/owl#versionInfo";
 	public static final String RDFS_COMMENT = "http://www.w3.org/2000/01/rdf-schema#comment";
 	public static final String OWL_IMPORTS = "http://www.w3.org/2002/07/owl#imports";
+	public static TBoxConfiguration tBoxConfig;
+	
+	/**
+	 * Stores the mapping between a child class and its parents.
+	 */
+	Map<String, List<String>> childParentMap = new HashMap<String, List<String>>();
+	/**
+	 * Stores the mapping between a domain class and its relations.
+	 */
+	Map<String, List<String>> classRelationMap = new HashMap<String, List<String>>();
 	
 	public static void main(String[] args) {
 		File folder = Dialogs.selectFileDialog(new File(System.getProperty("user.home")), new FileFilter[]{new ExtensionFileFilter("Comma-separated Value", "csv")}, false);
@@ -134,6 +146,33 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 		}
 	}
 	
+	/**
+	 * Reads a CSV template with inputs to produce the following:
+	 * 1. the mapping between a child class and its parents.
+	 * 2. the mapping between a domain class and its relations.
+	 * 
+	 * @param csvFileNamePlusPath
+	 * @throws IOException
+	 * @throws OWLOntologyCreationException 
+	 */
+	private void storeRelationships(String csvFileNamePlusPath) throws IOException, JPSRuntimeException, OWLOntologyCreationException{
+		List<List<String>> brSourceCtml = FileUtil.openCSVSourceFile(csvFileNamePlusPath);
+		for(List<String> singleLine:brSourceCtml){
+			if (singleLine.size() > tBoxConfig.getIndexOfRelationColumn() 
+					&& singleLine.get(tBoxConfig.getIndexOfTypeColumn()).equalsIgnoreCase(tBoxConfig.getElementTypeClass()) 
+					&& singleLine.get(tBoxConfig.getIndexOfRelationColumn()).equalsIgnoreCase(tBoxConfig.getIsARelation())) {
+				if (childParentMap.containsKey(singleLine.get(tBoxConfig.getIndexOfSourceColumn()))) {
+					childParentMap.get(singleLine.get(tBoxConfig.getIndexOfSourceColumn()).toLowerCase()).add(singleLine.get(tBoxConfig.getIndexOfSourceColumn()).toLowerCase());
+				} else {
+					List<String> parents = new ArrayList<String>();
+					parents.add(singleLine.get(tBoxConfig.getIndexOfSourceColumn()).toLowerCase());
+					childParentMap.put(singleLine.get(tBoxConfig.getIndexOfSourceColumn()).toLowerCase(), parents);
+				}
+			}
+		}
+	}
+
+
 	/**
 	 * Processes the header of the CSV file being read.
 	 * 
