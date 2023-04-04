@@ -557,7 +557,7 @@ public class FHAgent{
         return result;
     }
 
-    private JSONObject getLastState (String dataIRI) {
+    public JSONObject getLastState (String dataIRI) {
 
         JSONObject result = new JSONObject();
         JSONObject row = new JSONObject();
