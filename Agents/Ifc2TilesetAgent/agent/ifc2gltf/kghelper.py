@@ -65,11 +65,11 @@ SELECT ?iri ?uid ?name WHERE {
 """
 
 
-def classify_filename(series: pd.Series):
+def classify_filename(names: pd.Series):
     """Classifies if assets should be an asset, furniture, or other categories (solar panel, sewage network).
 
     Args:
-        series: A Pandas series of asset labels.
+        names: A Pandas series of asset labels.
 
     Returns:
         A Pandas series of asset classes.
@@ -80,6 +80,7 @@ def classify_filename(series: pd.Series):
                  "Fridge"]
     
     counter = count(start=1, step=1)
+
     def _classify(name: str):
         if find_word(asset_list, name):
             return "asset" + str(next(counter))
@@ -89,7 +90,7 @@ def classify_filename(series: pd.Series):
             return "sewagenetwork"
         return "furniture"
     
-    return series.apply(_classify)
+    return names.apply(_classify)
 
 
 def retrieve_metadata(query_endpoint: str, update_endpoint: str):

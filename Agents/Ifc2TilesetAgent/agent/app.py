@@ -7,7 +7,7 @@ validates POST request before running the agent.
 
 # Third party imports
 import ifcopenshell
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from py4jps import agentlogging
 
 from agent.exceptions import InvalidInputError
@@ -31,12 +31,7 @@ def create_app():
     # Show an instructional message at the app's home page
     @app.route('/')
     def default():
-        msg = "The Ifc2Tileset agent offers the following functionality at the specified API endpoint:<BR>"
-        msg += "<BR>"
-        msg += "(POST) request to convert IFC models to Cesium's 3D tilesets:<BR>"
-        msg += "&nbsp&nbsp [this_url]/api<BR>"
-        msg += "&nbsp&nbsp [this_url] is the host and port currently shown in the address bar"
-        return msg
+        return render_template("home.html")
 
     # Define a route for API requests
     @app.route('/api', methods=['POST'])

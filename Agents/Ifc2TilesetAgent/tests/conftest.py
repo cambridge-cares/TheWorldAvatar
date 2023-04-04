@@ -6,7 +6,7 @@ import pytest
 
 @pytest.fixture(scope="function", autouse=True)
 def cleanup_data_dir():
-    """Cleans up data dir and keeps only empty folders glb and ifc."""
+    """Cleans up data dir and keeps only empty subfolders glb and ifc."""
     yield
 
     data_dir = "./data"
