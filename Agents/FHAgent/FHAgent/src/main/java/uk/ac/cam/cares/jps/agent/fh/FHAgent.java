@@ -257,7 +257,7 @@ public class FHAgent{
                         }
                     
                 } catch (Exception e) {
-                	throw new JPSRuntimeException("Could not add timeseries data!");
+                	throw new JPSRuntimeException("Could not add timeseries data!" + e);
                 }
                 }
                 
@@ -522,8 +522,10 @@ public class FHAgent{
     private JSONObject TallyDist (JSONObject readings) {
         Boolean tallyResult = false;
         JSONObject result = new JSONObject();
+        JSONArray col = new JSONArray();
+        JSONObject row = new JSONObject();
         JSONArray tsAndValue = readings.getJSONArray("avgDist");
-        String latestTimeStamp = tsAndValue.getJSONObject(tsAndValue.length() - 1).getString("ts");
+        Long latestTimeStamp = tsAndValue.getJSONObject(tsAndValue.length() - 1).getLong("ts");
         //Go through the JSON objects in the array one by one
         for (int j = tsAndValue.length() - 1; j >= 0; j--) {
         // Get the value and add it to the corresponding list
@@ -548,14 +550,18 @@ public class FHAgent{
 
         }
 
-        result.put("ts", latestTimeStamp);
-        result.put("value", tallyResult);
+        row.put("ts", latestTimeStamp);
+        row.put("value", tallyResult);
+        col.put(row);
+        result.put("occupiedState", col);
         return result;
     }
 
     private JSONObject getLastState (String dataIRI) {
 
         JSONObject result = new JSONObject();
+        JSONObject row = new JSONObject();
+        JSONArray col = new JSONArray();
         try (Connection conn = RDBClient.getConnection()){
             occStateTS = tsClient.getLatestData(dataIRI, conn);
         } catch (Exception e) {
@@ -569,8 +575,10 @@ public class FHAgent{
             Boolean latestTimeSeriesValue = Boolean.parseBoolean(dataValuesAsString.get(dataValuesAsString.size() - 1));
             OffsetDateTime latestTimeStamp = occStateTS.getTimes().get(occStateTS.getTimes().size() - 1);
 
-            result.put("ts", latestTimeStamp);
-            result.put("value", latestTimeSeriesValue);
+            row.put("ts", latestTimeStamp);
+            row.put("value", latestTimeSeriesValue);
+            col.put(row);
+            result.put("occupiedState", col);
             return result;
         } catch (Exception e){
             throw new JPSRuntimeException("Unable to retrieve latest value and timestamp from timeseries object.");
