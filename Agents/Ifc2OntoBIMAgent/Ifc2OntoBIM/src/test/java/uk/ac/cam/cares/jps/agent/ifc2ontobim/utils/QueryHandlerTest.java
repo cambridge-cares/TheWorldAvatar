@@ -99,8 +99,8 @@ class QueryHandlerTest {
         room = new IfcRoomRepresentation(null, null, testPlacementIri, null);
         // Add the storey and room to the singleton
         zoneMappings = SpatialZoneStorage.Singleton();
-        zoneMappings.add(testParentStoreyIri, storey);
-        zoneMappings.add(testParentRoomIri, room);
+        zoneMappings.add(testParentStoreyIri, storey.getBotStoreyIRI());
+        zoneMappings.add(testParentRoomIri, room.getBimRoomIRI());
     }
     @AfterAll
     static void resetNamespace(){

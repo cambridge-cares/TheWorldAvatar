@@ -91,7 +91,7 @@ public class SpatialZoneFacade {
             String northDirIri = QueryHandler.retrieveIri(soln, CommonQuery.NORTH_DIR_VAR);
             GeometricRepresentationContext context = new GeometricRepresentationContext(contextIri, dimension, precision, wcsIri, northDirIri);
             IfcProjectRepresentation project = new IfcProjectRepresentation(name, phase, context);
-            zoneMappings.add(iri, project);
+            zoneMappings.add(iri, project.getIri());
             project.constructStatements(statementSet);
             context.constructStatements(statementSet);
         }
@@ -191,9 +191,9 @@ public class SpatialZoneFacade {
             }
             String elev = QueryHandler.retrieveLiteral(soln, CommonQuery.ELEVATION_VAR);
             String project = soln.contains(CommonQuery.PROJECT_VAR) ?
-                    zoneMappings.getProject(QueryHandler.retrieveIri(soln, CommonQuery.PROJECT_VAR)).getIri() : null;
+                    zoneMappings.getZone(QueryHandler.retrieveIri(soln, CommonQuery.PROJECT_VAR)) : null;
             IfcSiteRepresentation site = new IfcSiteRepresentation(name, uid, placement, project, latitude, longitude, elev);
-            zoneMappings.add(iri, site);
+            zoneMappings.add(iri, site.getBotSiteIRI());
             site.constructStatements(statementSet);
         }
     }
@@ -239,10 +239,9 @@ public class SpatialZoneFacade {
             String elev = QueryHandler.retrieveLiteral(soln, CommonQuery.ELEVATION_VAR);
             String terElev = QueryHandler.retrieveLiteral(soln, CommonQuery.TER_ELEVATION_VAR);
             String project = soln.contains(CommonQuery.PROJECT_VAR) ?
-                    zoneMappings.getProject(QueryHandler.retrieveIri(soln, CommonQuery.PROJECT_VAR)).getIri() : null;
-            IfcSiteRepresentation site = zoneMappings.getSite(QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR));
-            IfcBuildingRepresentation building = new IfcBuildingRepresentation(name, uid, placement, project, site.getBotSiteIRI(), elev, terElev);
-            zoneMappings.add(iri, building);
+                    zoneMappings.getZone(QueryHandler.retrieveIri(soln, CommonQuery.PROJECT_VAR)) : null;
+            IfcBuildingRepresentation building = new IfcBuildingRepresentation(name, uid, placement, project, zoneMappings.getZone(QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR)), elev, terElev);
+            zoneMappings.add(iri, building.getBotBuildingIRI());
             building.constructStatements(statementSet);
         }
     }
@@ -282,9 +281,8 @@ public class SpatialZoneFacade {
             String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
             String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
             String elev = QueryHandler.retrieveLiteral(soln, CommonQuery.ELEVATION_VAR);
-            IfcBuildingRepresentation building = zoneMappings.getBuilding(QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR));
-            IfcStoreyRepresentation storey = new IfcStoreyRepresentation(name, uid, placement, building.getBotBuildingIRI(), elev);
-            zoneMappings.add(iri, storey);
+            IfcStoreyRepresentation storey = new IfcStoreyRepresentation(name, uid, placement, zoneMappings.getZone(QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR)), elev);
+            zoneMappings.add(iri, storey.getBotStoreyIRI());
             storey.constructStatements(statementSet);
         }
     }
@@ -322,9 +320,8 @@ public class SpatialZoneFacade {
             String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
             String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
             String storeyIri = QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR);
-            IfcStoreyRepresentation storey = zoneMappings.getStorey(storeyIri);
-            IfcRoomRepresentation room = new IfcRoomRepresentation(name, uid, placement, storey.getBotStoreyIRI());
-            zoneMappings.add(iri, room);
+            IfcRoomRepresentation room = new IfcRoomRepresentation(name, uid, placement, zoneMappings.getZone(storeyIri));
+            zoneMappings.add(iri, room.getBimRoomIRI());
             room.constructStatements(statementSet);
         }
     }

@@ -104,10 +104,7 @@ public class QueryHandler {
      */
     public static String retrieveHostZone(QuerySolution soln, SpatialZoneStorage zoneMappings) {
         String zoneIri = retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR);
-        if (zoneIri.contains(CommonQuery.IFCSTOREY_CLASS)) {
-            return zoneMappings.getStorey(zoneIri).getBotStoreyIRI();
-        }
-        return zoneMappings.getRoom(zoneIri).getBimRoomIRI();
+        return zoneMappings.getZone(zoneIri);
     }
 
     /**

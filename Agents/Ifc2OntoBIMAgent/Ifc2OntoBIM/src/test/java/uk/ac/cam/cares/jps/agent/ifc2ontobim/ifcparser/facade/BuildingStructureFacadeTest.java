@@ -160,7 +160,7 @@ class BuildingStructureFacadeTest {
         IfcStoreyRepresentation storey = new IfcStoreyRepresentation(null, null, TEST_ZONE_PLACEMENT_IRI, null, null);
         // Add the storey to the singleton
         SpatialZoneStorage zoneMappings = SpatialZoneStorage.Singleton();
-        zoneMappings.add(STOREY_INST, storey);
+        zoneMappings.add(STOREY_INST, storey.getBotStoreyIRI());
     }
 
     @BeforeEach
@@ -279,7 +279,7 @@ class BuildingStructureFacadeTest {
         // Get the singleton to add the assembly inst
         ElementStorage elementMappings = ElementStorage.Singleton();
         Wall wall = new Wall(WALL_NAME, null, ELEMENT_POSITION_INST, null, null, null);
-        elementMappings.add(WALL_INST, wall);
+        elementMappings.add(WALL_INST, wall.getElementIri());
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
         addGeometryTriples(sampleModel.getResource(DOOR_INST));
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
@@ -306,7 +306,7 @@ class BuildingStructureFacadeTest {
         // Get the singleton to add the assembly inst
         ElementStorage elementMappings = ElementStorage.Singleton();
         Wall wall = new Wall(WALL_NAME, null, ELEMENT_POSITION_INST, null, null, null);
-        elementMappings.add(WALL_INST, wall);
+        elementMappings.add(WALL_INST, wall.getElementIri());
         // Generate the alternate mapped geometry representation triples
         addMappedGeometryTriples(sampleModel.getResource(DOOR_INST));
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
@@ -579,7 +579,7 @@ class BuildingStructureFacadeTest {
         // Get the singleton to add the assembly inst
         ElementStorage elementMappings = ElementStorage.Singleton();
         Wall wall = new Wall(WALL_NAME, null, ELEMENT_POSITION_INST, null, null, null);
-        elementMappings.add(WALL_INST, wall);
+        elementMappings.add(WALL_INST, wall.getElementIri());
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
         addGeometryTriples(sampleModel.getResource(WINDOW_INST));
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
@@ -606,7 +606,7 @@ class BuildingStructureFacadeTest {
         // Get the singleton to add the assembly inst
         ElementStorage elementMappings = ElementStorage.Singleton();
         Wall wall = new Wall(WALL_NAME, null, ELEMENT_POSITION_INST, null, null, null);
-        elementMappings.add(WALL_INST, wall);
+        elementMappings.add(WALL_INST, wall.getElementIri());
         // Generate the alternate mapped geometry representation triples
         addMappedGeometryTriples(sampleModel.getResource(WINDOW_INST));
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();

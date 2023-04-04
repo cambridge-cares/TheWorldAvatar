@@ -54,32 +54,8 @@ class SpatialZoneStorageTest {
     static void resetNamespace(){ NamespaceMapper.setBaseNameSpace("");}
 
     @Test
-    void testGetProjectFail() {
-        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> testMappings.getProject(NON_EXISTENT_IRI));
-        assertEquals(NON_EXISTING_ERROR, thrownError.getMessage());
-    }
-
-    @Test
-    void testGetSiteFail() {
-        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> testMappings.getSite(NON_EXISTENT_IRI));
-        assertEquals(NON_EXISTING_ERROR, thrownError.getMessage());
-    }
-
-    @Test
-    void testGetBuildingFail() {
-        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> testMappings.getBuilding(NON_EXISTENT_IRI));
-        assertEquals(NON_EXISTING_ERROR, thrownError.getMessage());
-    }
-
-    @Test
-    void testGetStoreyFail() {
-        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> testMappings.getStorey(NON_EXISTENT_IRI));
-        assertEquals(NON_EXISTING_ERROR, thrownError.getMessage());
-    }
-
-    @Test
-    void testGetRoomFail() {
-        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> testMappings.getRoom(NON_EXISTENT_IRI));
+    void testGetZoneFail() {
+        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> testMappings.getZone(NON_EXISTENT_IRI));
         assertEquals(NON_EXISTING_ERROR, thrownError.getMessage());
     }
 
@@ -88,9 +64,9 @@ class SpatialZoneStorageTest {
         // Create a new sample representation
         IfcProjectRepresentation sampleProject = new IfcProjectRepresentation(null, null, null);
         // Execute method
-        testMappings.add(TEST_PROJECT_IRI, sampleProject);
+        testMappings.add(TEST_PROJECT_IRI, sampleProject.getIri());
         // Assert if they are equals
-        assertEquals(sampleProject, testMappings.getProject(TEST_PROJECT_IRI));
+        assertEquals(sampleProject.getIri(), testMappings.getZone(TEST_PROJECT_IRI));
     }
 
     @Test
@@ -98,9 +74,9 @@ class SpatialZoneStorageTest {
         // Create a new sample representation
         IfcSiteRepresentation sampleSite = new IfcSiteRepresentation(TEST_SITE_NAME, TEST_SITE_UID, TEST_ZONE_PLACEMENT_IRI, null, null, null, TEST_ELEV.toString());
         // Execute method
-        testMappings.add(TEST_SITE_IRI, sampleSite);
+        testMappings.add(TEST_SITE_IRI, sampleSite.getBotSiteIRI());
         // Assert if they are equals
-        assertEquals(sampleSite, testMappings.getSite(TEST_SITE_IRI));
+        assertEquals(sampleSite.getBotSiteIRI(), testMappings.getZone(TEST_SITE_IRI));
     }
 
     @Test
@@ -109,9 +85,9 @@ class SpatialZoneStorageTest {
         IfcBuildingRepresentation sampleBuilding = new IfcBuildingRepresentation(TEST_BUILDING_NAME, TEST_BUILDING_UID,
                 TEST_ZONE_PLACEMENT_IRI, null, TEST_SITE_IRI, TEST_ELEV.toString(), TEST_ELEV.toString());
         // Execute method
-        testMappings.add(TEST_BUILDING_IRI, sampleBuilding);
+        testMappings.add(TEST_BUILDING_IRI, sampleBuilding.getBotBuildingIRI());
         // Assert if they are equals
-        assertEquals(sampleBuilding, testMappings.getBuilding(TEST_BUILDING_IRI));
+        assertEquals(sampleBuilding.getBotBuildingIRI(), testMappings.getZone(TEST_BUILDING_IRI));
     }
 
     @Test
@@ -120,9 +96,9 @@ class SpatialZoneStorageTest {
         IfcStoreyRepresentation sampleStorey = new IfcStoreyRepresentation(TEST_STOREY_NAME,
                 TEST_STOREY_UID, TEST_ZONE_PLACEMENT_IRI, TEST_BUILDING_IRI, TEST_ELEV.toString());
         // Execute method
-        testMappings.add(TEST_STOREY_IRI, sampleStorey);
+        testMappings.add(TEST_STOREY_IRI, sampleStorey.getBotStoreyIRI());
         // Assert if they are equals
-        assertEquals(sampleStorey, testMappings.getStorey(TEST_STOREY_IRI));
+        assertEquals(sampleStorey.getBotStoreyIRI(), testMappings.getZone(TEST_STOREY_IRI));
     }
 
     @Test
@@ -131,8 +107,8 @@ class SpatialZoneStorageTest {
         IfcRoomRepresentation sampleRoom = new IfcRoomRepresentation(TEST_ROOM_NAME,
                 TEST_ROOM_UID, TEST_ZONE_PLACEMENT_IRI, TEST_STOREY_IRI);
         // Execute method
-        testMappings.add(TEST_ROOM_IRI, sampleRoom);
+        testMappings.add(TEST_ROOM_IRI, sampleRoom.getBimRoomIRI());
         // Assert if they are equals
-        assertEquals(sampleRoom, testMappings.getRoom(TEST_ROOM_IRI));
+        assertEquals(sampleRoom.getBimRoomIRI(), testMappings.getZone(TEST_ROOM_IRI));
     }
 }

@@ -47,6 +47,9 @@ public class OntoBimConverter {
         // Create a new Set to ensure statements are kept in one object and not duplicated
         LinkedHashSet<Statement> statementSet = new LinkedHashSet<>();
         statementSet = genZoneAndElementStatements(statementSet);
+        // Reset the singleton to clear memory space
+        SpatialZoneStorage.resetSingleton();
+        ElementStorage.resetSingleton();
         genGeometryContentStatements(statementSet);
         return this.tempFilePaths;
     }

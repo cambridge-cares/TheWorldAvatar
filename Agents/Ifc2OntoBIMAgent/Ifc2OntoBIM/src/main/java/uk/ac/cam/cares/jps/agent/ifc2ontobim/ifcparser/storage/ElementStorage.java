@@ -4,10 +4,6 @@ import org.apache.jena.rdf.model.Statement;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.Ifc2OntoBIMAgent;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Floor;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Roof;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Stair;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.element.buildingstructure.Wall;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.geom.ModelRepresentation3D;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -24,10 +20,7 @@ public class ElementStorage {
     // Single instance of this class
     private static ElementStorage single_instance = null;
     private static Map<String, ModelRepresentation3D> geometries;
-    private static Map<String, Wall> walls;
-    private static Map<String, Floor> floors;
-    private static Map<String, Roof> roofs;
-    private static Map<String, Stair> stairs;
+    private static Map<String, String> elementMappings;
     private static Set<String> stairComponents;
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
     private static final String NON_EXISTING_ERROR = " does not exist in mappings!";
@@ -37,11 +30,8 @@ public class ElementStorage {
      */
     private ElementStorage() {
         geometries = new HashMap<>();
-        walls = new HashMap<>();
-        floors = new HashMap<>();
-        roofs = new HashMap<>();
-        stairs = new HashMap<>();
-        stairComponents= new HashSet<>();
+        elementMappings = new HashMap<>();
+        stairComponents = new HashSet<>();
     }
 
     /**
@@ -85,55 +75,13 @@ public class ElementStorage {
     }
 
     /**
-     * Retrieve the wall's Java object associated with the IRI input.
+     * Retrieve the OntoBIM IRI for an element's IfcRepresentation.
      *
      * @param iri The data IRI generated from IfcOwl.
      */
-    public Wall getWall(String iri) {
-        if (walls.containsKey(iri)) {
-            return walls.get(iri);
-        } else {
-            LOGGER.error(iri + NON_EXISTING_ERROR);
-            throw new JPSRuntimeException(iri + NON_EXISTING_ERROR);
-        }
-    }
-
-    /**
-     * Retrieve the floor's Java object associated with the IRI input.
-     *
-     * @param iri The data IRI generated from IfcOwl.
-     */
-    public Floor getFloor(String iri) {
-        if (floors.containsKey(iri)) {
-            return floors.get(iri);
-        } else {
-            LOGGER.error(iri + NON_EXISTING_ERROR);
-            throw new JPSRuntimeException(iri + NON_EXISTING_ERROR);
-        }
-    }
-
-    /**
-     * Retrieve the roof's Java object associated with the IRI input.
-     *
-     * @param iri The data IRI generated from IfcOwl.
-     */
-    public Roof getRoof(String iri) {
-        if (roofs.containsKey(iri)) {
-            return roofs.get(iri);
-        } else {
-            LOGGER.error(iri + NON_EXISTING_ERROR);
-            throw new JPSRuntimeException(iri + NON_EXISTING_ERROR);
-        }
-    }
-
-    /**
-     * Retrieve the stair's Java object associated with the IRI input.
-     *
-     * @param iri The data IRI generated from IfcOwl.
-     */
-    public Stair getStair(String iri) {
-        if (stairs.containsKey(iri)) {
-            return stairs.get(iri);
+    public String getElementIri(String iri) {
+        if (elementMappings.containsKey(iri)) {
+            return elementMappings.get(iri);
         } else {
             LOGGER.error(iri + NON_EXISTING_ERROR);
             throw new JPSRuntimeException(iri + NON_EXISTING_ERROR);
@@ -146,54 +94,28 @@ public class ElementStorage {
      * @param iri      The element's IRI generated from IfcOwl.
      * @param modelRep The ModelRepresentation3D object generated from the iri.
      */
-    public void add(String iri, ModelRepresentation3D modelRep) { geometries.put(iri, modelRep); }
-
-    /**
-     * An overloaded method to store the element IRI and its associated 3D model representation Java object as mappings.
-     *
-     * @param iri      The element's IRI generated from IfcOwl.
-     * @param wall     The Wall object generated from the iri.
-     */
-    public void add(String iri, Wall wall) {
-        walls.put(iri, wall);
-    }
-
-    /**
-     * An overloaded method to store the element IRI and its associated 3D model representation Java object as mappings.
-     *
-     * @param iri      The element's IRI generated from IfcOwl.
-     * @param floor    The Floor object generated from the iri.
-     */
-    public void add(String iri, Floor floor) {
-        floors.put(iri, floor);
+    public void add(String iri, ModelRepresentation3D modelRep) {
+        geometries.put(iri, modelRep);
     }
 
     /**
      * An overloaded method to store the element IRI and its associated 3D model representation Java object as mappings.
      *
      * @param iri     The element's IRI generated from IfcOwl.
-     * @param roof    The Roof object generated from the iri.
+     * @param element The element's IRI generated from this agent.
      */
-    public void add(String iri, Roof roof) {
-        roofs.put(iri, roof);
-    }
-
-    /**
-     * An overloaded method to store the element IRI and its associated 3D model representation Java object as mappings.
-     *
-     * @param iri      The element's IRI generated from IfcOwl.
-     * @param stair    The Stair object generated from the iri.
-     */
-    public void add(String iri, Stair stair) {
-        stairs.put(iri, stair);
+    public void add(String iri, String element) {
+        elementMappings.put(iri, element);
     }
 
     /**
      * An overloaded method to store the IRI for any stair subcomponents.
      *
-     * @param stairComponentIri  The element's IRI generated from IfcOwl.
+     * @param stairComponentIri The element's IRI generated from IfcOwl.
      */
-    public void add(String stairComponentIri) { stairComponents.add(stairComponentIri); }
+    public void add(String stairComponentIri) {
+        stairComponents.add(stairComponentIri);
+    }
 
     /**
      * Check if the mappings contain this IRI for the model representation 3D.
@@ -209,8 +131,8 @@ public class ElementStorage {
      *
      * @param iri The element's IRI generated from IfcOwl.
      */
-    public boolean containsStairAssemblyIri(String iri) {
-        return stairs.containsKey(iri);
+    public boolean containsIri(String iri) {
+        return elementMappings.containsKey(iri);
     }
 
     /**
@@ -228,7 +150,7 @@ public class ElementStorage {
      * @param statementSet A list containing the new OntoBIM triples.
      */
     public void constructModelRepStatements(LinkedHashSet<Statement> statementSet) {
-        for (ModelRepresentation3D modelRepInst: geometries.values()){
+        for (ModelRepresentation3D modelRepInst : geometries.values()) {
             modelRepInst.addModelRepresentation3DStatements(statementSet);
         }
     }

@@ -57,26 +57,8 @@ class ElementStorageTest {
     }
 
     @Test
-    void testGetWallFail() {
-        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> testMappings.getWall(NON_EXISTENT_IRI));
-        assertEquals(NON_EXISTING_ERROR, thrownError.getMessage());
-    }
-
-    @Test
-    void testGetFloorFail() {
-        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> testMappings.getFloor(NON_EXISTENT_IRI));
-        assertEquals(NON_EXISTING_ERROR, thrownError.getMessage());
-    }
-
-    @Test
-    void testGetRoofFail() {
-        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> testMappings.getRoof(NON_EXISTENT_IRI));
-        assertEquals(NON_EXISTING_ERROR, thrownError.getMessage());
-    }
-
-    @Test
-    void testGetStairFail() {
-        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> testMappings.getStair(NON_EXISTENT_IRI));
+    void testGetElementIriFail() {
+        JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, () -> testMappings.getElementIri(NON_EXISTENT_IRI));
         assertEquals(NON_EXISTING_ERROR, thrownError.getMessage());
     }
 
@@ -91,43 +73,43 @@ class ElementStorageTest {
     }
 
     @Test
-    void testAddAndGetWall() {
+    void testAddAndGetElementForWall() {
         // Create a new sample representation
         Wall sampleWall = new Wall(null, null, TEST_ELEMENT_PLACEMENT_IRI, null, null, null);
         // Execute method
-        testMappings.add(TEST_ELEMENT_IRI, sampleWall);
+        testMappings.add(TEST_ELEMENT_IRI, sampleWall.getElementIri());
         // Assert if they are equals
-        assertEquals(sampleWall, testMappings.getWall(TEST_ELEMENT_IRI));
+        assertEquals(sampleWall.getElementIri(), testMappings.getElementIri(TEST_ELEMENT_IRI));
     }
 
     @Test
-    void testAddAndGetFloor() {
+    void testAddAndGetElementForFloor() {
         // Create a new sample representation
         Floor sampleFloor = new Floor(null, null, TEST_ELEMENT_PLACEMENT_IRI, null, null);
         // Execute method
-        testMappings.add(TEST_ELEMENT_IRI, sampleFloor);
+        testMappings.add(TEST_ELEMENT_IRI, sampleFloor.getIfcRepIri());
         // Assert if they are equals
-        assertEquals(sampleFloor, testMappings.getFloor(TEST_ELEMENT_IRI));
+        assertEquals(sampleFloor.getIfcRepIri(), testMappings.getElementIri(TEST_ELEMENT_IRI));
     }
 
     @Test
-    void testAddAndGetRoof() {
+    void testAddAndGetElementForRoof() {
         // Create a new sample representation
         Roof sampleRoof = new Roof(null, null, TEST_ELEMENT_PLACEMENT_IRI, null, null);
         // Execute method
-        testMappings.add(TEST_ELEMENT_IRI, sampleRoof);
+        testMappings.add(TEST_ELEMENT_IRI, sampleRoof.getIfcRepIri());
         // Assert if they are equals
-        assertEquals(sampleRoof, testMappings.getRoof(TEST_ELEMENT_IRI));
+        assertEquals(sampleRoof.getIfcRepIri(), testMappings.getElementIri(TEST_ELEMENT_IRI));
     }
 
     @Test
-    void testAddAndGetStair() {
+    void testAddAndGetElementForStair() {
         // Create a new sample representation
         Stair sampleStair = new Stair(null, null, TEST_ELEMENT_PLACEMENT_IRI, null);
         // Execute method
-        testMappings.add(TEST_ELEMENT_IRI, sampleStair);
+        testMappings.add(TEST_ELEMENT_IRI, sampleStair.getBIMIri());
         // Assert if they are equals
-        assertEquals(sampleStair, testMappings.getStair(TEST_ELEMENT_IRI));
+        assertEquals(sampleStair.getBIMIri(), testMappings.getElementIri(TEST_ELEMENT_IRI));
     }
 
     @Test
@@ -169,15 +151,15 @@ class ElementStorageTest {
     @Test
     void testContainsStairAssemblyIri() {
         // Assert that non-existing IRIs return false
-        assertFalse(testMappings.containsStairAssemblyIri(TEST_ELEMENT_IRI));
-        assertFalse(testMappings.containsStairAssemblyIri(NON_EXISTENT_IRI));
+        assertFalse(testMappings.containsIri(TEST_ELEMENT_IRI));
+        assertFalse(testMappings.containsIri(NON_EXISTENT_IRI));
         // Create a new sample representation
         Stair sampleStair = new Stair(null, null, TEST_ELEMENT_PLACEMENT_IRI, null);
         // Execute method
-        testMappings.add(TEST_ELEMENT_IRI, sampleStair);
+        testMappings.add(TEST_ELEMENT_IRI, sampleStair.getBIMIri());
         // Assert that non-existing IRIs return false and existing IRIs return true
-        assertTrue(testMappings.containsStairAssemblyIri(TEST_ELEMENT_IRI));
-        assertFalse(testMappings.containsStairAssemblyIri(NON_EXISTENT_IRI));
+        assertTrue(testMappings.containsIri(TEST_ELEMENT_IRI));
+        assertFalse(testMappings.containsIri(NON_EXISTENT_IRI));
     }
 
     @Test

@@ -75,7 +75,7 @@ class ElementFacadeTest {
         IfcRoomRepresentation room = new IfcRoomRepresentation(null, null, TEST_ZONE_PLACEMENT_IRI, null);
         // Add the storey to the singleton
         SpatialZoneStorage zoneMappings = SpatialZoneStorage.Singleton();
-        zoneMappings.add(ROOM_INST, room);
+        zoneMappings.add(ROOM_INST, room.getBimRoomIRI());
     }
 
     @BeforeEach
