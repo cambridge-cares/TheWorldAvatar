@@ -3,7 +3,7 @@ version: "3.8"
 
 services:
   vapourtec_schedule_agent:
-    image: ghcr.io/cambridge-cares/vapourtec_schedule_agent:1.1.0
+    image: ghcr.io/cambridge-cares/vapourtec_schedule_agent:1.2.0-SNAPSHOT
     container_name: vapourtec_schedule_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"

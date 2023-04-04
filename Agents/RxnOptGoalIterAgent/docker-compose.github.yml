@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   rxn_opt_goal_iter_agent:
-    image: ghcr.io/cambridge-cares/rxn_opt_goal_iter_agent:1.1.0
+    image: ghcr.io/cambridge-cares/rxn_opt_goal_iter_agent:1.2.0-SNAPSHOT
     container_name: rxn_opt_goal_iter_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
