@@ -505,7 +505,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			}
 		}
 
-		addDomain(objectProperty, domain, quantifier);
+		addDomain(objectProperty, domain);
 		addRange(objectProperty, range, quantifier);
 		OWLObjectProperty parentProperty = null;
 		if (targetName != null && !targetName.isEmpty() && relation!=null && !relation.isEmpty()) {
@@ -547,10 +547,9 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param domain
-	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addDomain(OWLObjectProperty objectProperty, String domain, String quantifier) throws JPSRuntimeException {
+	private void addDomain(OWLObjectProperty objectProperty, String domain) throws JPSRuntimeException {
 		if(domain==null || domain.isEmpty()){
 			return;
 		}
@@ -558,7 +557,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			addUnionOfDomain(objectProperty, domain.split("UNION"));
 		} else if(domain.contains("INTERSECTION")){
 			addIntersectionOfDomain(objectProperty, domain.split("INTERSECTION"));
-		} else if(quantifier==null || quantifier.isEmpty()){
+		} else if(domain!=null || !domain.isEmpty()){
 			addSingleClassDomain(objectProperty, domain);
 		}
 	}
@@ -598,7 +597,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			addUnionOfRange(objectProperty, range.split("UNION"));
 		} else if(range.contains("INTERSECTION") && (quantifier==null || quantifier.isEmpty())){
 			addIntersectionOfRange(objectProperty, range.split("INTERSECTION"));
-		} else if(quantifier==null || quantifier.isEmpty()){
+		} else if(range!=null || !range.isEmpty()){
 			addSingleClassRange(objectProperty, range);
 		}
 	}
