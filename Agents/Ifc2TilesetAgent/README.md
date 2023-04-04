@@ -3,12 +3,12 @@
 ## Description
 This agent queries and processes the IFC data stored on a knowledge graph into the [3D Tiles Next](https://github.com/CesiumGS/3d-tiles/tree/main/next) specifications for visualisation in Cesium.
 Before running this agent, the IFC model **MUST** be instantiated with the [Ifc2OntoBim agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent). Please ensure that the IFC model has been preprocessed according to the [Tips for BIM processing](#4-tips-for-bim-processing) section. Tilesets and
-their geometry (`gltf`/`glb`) files will be generated in the output `data` directory.
+their geometry (`glb`) files will be generated in the output `data` directory.
 
 A brief description of the workflow can be found below:
 1. Instantiate the semantic and geometry data in IFC models using the [Ifc2OntoBim agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent).
 2. Queries the metadata (IFC uid, asset name, data IRI) of relevant assets from a specified endpoint.
-3. Split the geometries in the IFC model based on these metadata into their individual assets (if necessary).* These are then converted into glTF models that are stored locally.
+3. Split the geometries in the IFC model based on these metadata into their individual assets (if necessary).* These are then converted into glb models that are stored locally.
 4. 3D Tilesets are generated for the building, solar panels, and sewerage network (if they exist). The building tileset are supplemented with the queried asset metadata (if any).
 
 **At the moment, this agent is unable to process the geometry data queried from the knowledge graph, and will require the same IFC model file as an input to create the geometry files.*
@@ -28,7 +28,7 @@ A brief description of the workflow can be found below:
         subgraph Ifc2TilesetAgent
         direction LR
             id6(<b>START</b><br> query results) ---|split IFC assets| id7{{IFC file}}:::start
-            id7 --> |geometry conversion|id8{{glTF/glb}}
+            id7 --> |geometry conversion|id8{{glb}}
             id6 --> |store metadata|id9{{<b>OUTPUT</b><br>3D Tileset}}
             id8 --> id9
         end
@@ -44,19 +44,16 @@ A brief description of the workflow can be found below:
 The agent is designed for deployment on [Docker](#12-docker-deployment). Although it can be deployed on a local development environment, this is not the recommended setup. 
 
 ### 1.1 Required dependencies:
+These dependencies have been added to the Dockerfile. But in the event there is a need to update their links, please read the steps below on how to find and extract the dependencies.
 1. **IfcOpenShell**
     - Required to load and parse IFC files
     - Download required version from https://blenderbim.org/docs-python/ifcopenshell-python/installation.html
-    - Extract and place the `ifcopenshell` from `blenderbim/libs/site/packages/` to `<venv_name>\Lib\site-packages`
+    - Extract and place the `ifcopenshell` from `blenderbim/libs/site/packages/` to the `\Lib\site-packages` of either your temporary python environment `venv` or the python program
     - Delete the remaining extracted content
 2. **IfcConvert.exe**
     - Required to convert IFC to glb format
     - Download IfcConvert.exe from: https://blenderbim.org/docs-python/ifcconvert/installation.html
     - Extract it to `<root>`
-3. **gltf-pipeline NPM package**
-    - Required to convert glb to glTF format [glTF is human readable which is useful for geometry operations]
-    - Read documentation from https://github.com/CesiumGS/gltf-pipeline
-    - Install the library globally using `npm install -g gltf-pipeline`
 
 ### 1.2 Docker Deployment:
 **TEST ENVIRONMENT**
@@ -88,12 +85,9 @@ docker-compose up -d
 Place only one IFC file in `<root>\data\ifc\`. This directory is directly linked to the relevant directory in the Docker container. The agent is only able to convert ONE IFC model at a time.
 
 Please modify the following properties in `config/properties.yaml`:
-- `root_tile`*: Bounding box for the root tile ie entire model
-- `child_tile`*: Bounding box for all children tiles containing assets
+
 - `query_endpoint`^ : SPARQL endpoint for Query operations
 - `update_endpoint`^ : SPARQL endpoint for UPDATE operations
-
-**WIP: Generating bounding boxes from their model automatically, will make this redundant*
 
 ^*Endpoints are required to query for metadata in tileset and interactions during visualisation*
 
@@ -103,7 +97,7 @@ Instructions for the agent and its various API routes can be found at the API ro
 A brief overview is as follows:
 - **POST** request to convert an IFC model to 3D Tileset, and output tileset.json files. Accepted parameters:
     1. `assetUrl`  
-    - Sets the file path to directory or url holding the glTF assets in the tilesets generated.
+    - Sets the file path to directory or url holding the glb assets in the tilesets generated.
     - Valid formats include `"."`, `"./file/path"`, `"../../file/path"`, and `"http://www.example.com"`. Please do not add an ending `/`, which will be generated in the code itself.
 ```
 /api
@@ -112,7 +106,7 @@ A brief overview is as follows:
 ### 2.3 POST Request
 Run the agent by sending a POST request with the required JSON Object to the necessary endpoint. A sample request in `curl` syntax is as follows:
 ```
-curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{\"assetUrl\":\"./gltf\"}'  
+curl -X POST localhost:5105/api -H 'Content-Type: application/json' -d '{\"assetUrl\":\"./glb\"}'  
 ```
 
 If the agent ran successfully, a JSON Object would be returned as follows:
@@ -129,7 +123,6 @@ The agent have been packaged into the following submodules:
 - `agent/utils` contain miscellaneous functions for searching, validating inputs, and system operations
 - `agent/ifc2gltf` contain functions to query the metadata, and process the IFC input into their individual geometry files for each asset
 - `agent/ifc2tileset` contain functions to generate the tileset and write them to json
-    - If you are unable to see the assets, **Modify the bounding box coordinates** according to your use case
 
 As Git does not allow empty directories, `.gitignore` files have been added to the subdirectories  of `<root>\data\`. This is important to set up the file structure for the code to run. 
 
@@ -141,8 +134,8 @@ As Git does not allow empty directories, `.gitignore` files have been added to t
         - EITHER *create a new file, and copy and paste the contents as group*
             - You may need to transfer project standards under the Manage Tab
         - OR *move the content directly and altering the point coordinates*
-- When converted into 3D Tiles format, Cesium does a poor job at handling these native georeference coordinates. The building model will likely not be found anywhere close to your ideal location
-- It is easier to include geolocation information directly through Cesium 
+- During the conversion into 3D Tiles format, the IFC coordinate systems are currently not properly translated into Cesium's CRS (Coordinate Reference System). Any attempt to place the tileset into the actual coordinate is likely incorrect, and requires further workaround. 
+- Thus, it is recommended to exclude geolocation information in the IFC model, and include them directly through Cesium 
 
 >Material Display
 - For exports to IFC, only materials viewable in `Visual Style: Shaded` will appear. Other material information is not retained
@@ -155,7 +148,7 @@ As Git does not allow empty directories, `.gitignore` files have been added to t
 >Classifying the furniture and building element appropriately
 - Determine the purpose of an asset 
     - Picking individual asset to get their meta data in pop-ups
-    - Merely a background element 
+    - Merely a background element
 - Selecting individual assets' names
     - Their names must include the following supported words:
         - Sensors
@@ -163,6 +156,5 @@ As Git does not allow empty directories, `.gitignore` files have been added to t
         - Weather Station
         - Solar Panels
         - Fridge
-- Ensure that the assets are classified as Furniture or Generic Models for the converter to recognise them
-    - `Furniture` are exported as IfcFurnishingElement while `Generic Models` are exported as IfcBuildingElementProxy 
-    - For new asset types, please include their name into `classify_file_name()` at `agent/ifc2gltf/kghelper.py`
+    - For new asset types, please include their name into `classify_filename()` at `agent/ifc2gltf/kghelper.py`
+    - Do not include their name if they are supposed to be a background element
