@@ -26,7 +26,7 @@ class QuestionAgentMatcher():
         self.question_rel_embedding = output_emb.view(-1).tolist()
 
         #List of all agents
-        self.agents = ['ontothermoagent', 'ontopceagent', 'chem1agent', 'chem2agent', 'chem3agent']
+        self.agents = ['ontothermoagent', 'ontopceagent', 'chem1agent', 'chem2agent', 'chem3agent', 'NotAnAgent']
 
         #Create the input-output configuration matrices for each agent
         self.agent_matrices = {}
@@ -45,7 +45,7 @@ class QuestionAgentMatcher():
         self.question_entity_embedding = agent_ent_embedding.iloc[agent_entity2idx[self.agent_input]]
 
     def run(self):
-        question_matrix = torch.Tensor(np.array([self.question_entity_embedding, self.question_rel_embedding]))     
+        question_matrix = torch.Tensor(np.array([self.question_entity_embedding, self.question_rel_embedding]))
         agent_scores = {}
         for agent in self.agents:
             agent_matrices = self.agent_matrices[agent]
@@ -65,19 +65,27 @@ class QuestionAgentMatcher():
                             sim_scores.append(similarity)
                     row_score.append(max(sim_scores))
                 agent_score[output] = np.average(row_score)
+            # print(agent, agent_score)
             agent_scores[agent] = max(agent_score.items(), key=lambda x: x[1])
+        # print(agent_scores)
 
         agent_result = max(agent_scores, key=lambda x: agent_scores[x][1])
 
-        return agent_result, agent_scores[agent_result][0]
+        if agent_result == 'NotAnAgent':
+            print('No relevant agent found')
+            return None, None
+        else:
+            return agent_result, agent_scores[agent_result][0]
     
 if __name__ == '__main__':
     # agents = ['ontopceagent', 'ontothermoagent', 'chem1agent', 'chem2agent', 'chem3agent']
-    question = "What reaction produces H2 + OH"
+    # question = "What reaction produces H2 + OH"
+    question = "What is the molecular weight of ch4"
     my_matcher = QuestionAgentMatcher(question=question)
     agent, output = my_matcher.run()
     print("Output: ", output)
     print("Agent : ", agent)
 
-    my_invoker = AgentInvoker(agent=agent, output=output, species_iri="http://www.theworldavatar.com/kb/ontospecies/Species_2fb70cfe-6707-4d6c-b977-bae913c4878f", qualifier={'temperature':60, 'pressure':167023})
-    print(my_invoker.result)
+    if(agent != None):
+        my_invoker = AgentInvoker(agent=agent, output=output, species_iri="http://www.theworldavatar.com/kg/ontospecies/Species_8270caad-fec5-4331-9243-fb4e37edc10e")
+        print(my_invoker.result)
