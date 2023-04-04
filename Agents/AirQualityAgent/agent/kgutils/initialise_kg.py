@@ -102,9 +102,7 @@ def instantiate_all_units():
 def upload_ontology(tbox_url=TBOX):
     """
     Uploads TBox and unit symbols to KG namespace
-    NOTE: Uploading .owl files seems to create blank nodes when "collections" are
-    used in the .owl file. This behaviour has been observed using both the fileUpload
-    method of the RemoteStoreClient and using the owlready2 Python library.
+    NOTE: Uploading .owl files likely results in the instantiation of some blank nodes
     
     Arguments:
         tbox_url - URL to TBox
