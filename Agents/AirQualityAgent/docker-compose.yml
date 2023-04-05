@@ -1,32 +1,34 @@
 version: "3.8"
 
-services:
-  airquality_agent_debug:
-    container_name: airquality_agent_debug
-    image: docker.cmclinnovations.com/airquality_agent_debug:1.0.0-SNAPSHOT
-    build:
-      # Path to dockerfile ('.' represents current directory with .yml file)
-      context: .
-      target: debug
+services:  
+  airquality_agent:
+    image: ghcr.io/cambridge-cares/airquality_agent:1.0.0
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      # Target Blazegraph namespace
+      - NAMESPACE=airquality
+      # Target layer name in geoserver, also table name in PostGIS
+      - LAYERNAME=airquality
+      # Target PostGIS/PostgreSQL database name
+      # (default name "postgres" required for Ontop to work)
+      - DATABASE=postgres
+      - GEOSERVER_WORKSPACE=stations
+      - ONTOP_FILE=/app/resources/ontop.obda
     ports:
-      # Mapping of container port to host (host:container)
-      - "5000:5000"
-      - "5678:5678"
-    volumes:
-      # Link container working dir with local dir to allow flask hot-reload functionality
-      # Link container output directory to local directory to access output files
-      # (local dir : dir in container)
-      - ./airquality:/app/airquality      
-      - ./output:/app/output
-  
-  airquality_agent_production:
-    container_name: airquality_agent_production
-    image: docker.cmclinnovations.com/airquality_agent_production:1.0.0-SNAPSHOT
-    build:
-      context: .
-      target: prod
-    ports:
-      - "5000:5000"
+      - "5002:5000"
     volumes:
       # Link container output directory to local directory to access output files
       - ./output:/app/output
+      - logs:/root/.jps
+    configs:
+      - blazegraph
+      - geoserver
+      - ontop
+      - postgis
+    secrets:
+      - geoserver_password
+      - postgis_password
+
+volumes:
+  logs:
+    name: "logs"
