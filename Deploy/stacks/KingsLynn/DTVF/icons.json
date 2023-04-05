@@ -1,0 +1,23 @@
+{
+	"metoffice": "data/icons/metoffice.png",
+	"floodmonitoring": "data/icons/floodmonitoring.png",
+	"ukair": "data/icons/ukair.png",
+	"weather": "data/icons/weather.png",
+	"weather-for": "data/icons/weather-for.png",
+	"weather-obs": "data/icons/weather-obs.png",
+	"airquality": "data/icons/airquality.png",
+	"flow": "data/icons/flow.png",
+	"rainfall": "data/icons/rainfall.png",
+	"temperature": "data/icons/temperature.png",
+	"water-level": "data/icons/water-level.png",
+	"wind": "data/icons/wind.png",
+	"met_weather": "data/icons/met_weather.png",
+	"met_weather-for": "data/icons/met_weather-for.png",
+	"met_weather-obs": "data/icons/met_weather-obs.png",
+	"ea_flow": "data/icons/ea_flow.png",
+	"ea_rainfall": "data/icons/ea_rainfall.png",
+	"ea_temperature": "data/icons/ea_temperature.png",
+	"ea_water-level": "data/icons/ea_water-level.png",
+	"ea_wind": "data/icons/ea_wind.png",
+	"air_airquality": "data/icons/air_airquality.png"
+}
