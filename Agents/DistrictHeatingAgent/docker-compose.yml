@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  district-heating-agent:
+    image: district-heating-agent:1.0.0
+    build: .
+    container_name: district-heating-agent
+    pull_policy: if_not_present
+    ports:
+      - "1080:8080"

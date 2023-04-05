@@ -15,6 +15,7 @@ from agent.datainstantiation.ea_data import retrieve_current_warnings, \
 from agent.datainstantiation.ons_data import retrieve_ons_county
 from agent.kgutils.tsclient import TSClient
 from agent.kgutils.querytemplates import *
+from agent.utils.env_configs import FLOOD_ASSESSMENT_AGENT_IRI
 from agent.utils.stack_configs import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from agent.utils.stackclients import GdalClient, GeoserverClient, \
                                      OntopClient, PostGISClient, \
