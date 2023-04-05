@@ -19,8 +19,8 @@ It requires support from the [IfcOwlConverterAgent](https://github.com/cambridge
 ## Instructions
 ### 1. Requirements
 #### 1.1 IFC File
-This agent is designed to work with IFC2x3 TC1 schema. IFC4 schema are not yet included. The scope coverage is also 
-non-exhaustive at this point, including only the relevant concepts.
+This agent is designed to work with the [IFC2x3 TC1 schema](https://technical.buildingsmart.org/standards/ifc/ifc-schema-specifications/). IFC4 schema are not yet included.
+The scope coverage is also non-exhaustive at this point, including only the relevant concepts.
 
 Some excluded concepts are:
  - Property Sets
@@ -29,12 +29,16 @@ Some excluded concepts are:
 
 Notes:
 - In the IFC schema, only certain elements (IfcFurnishingElement, IfcBuildingElementProxy) are linked to their Spaces. 
-Other elements are always linked to their Storey, even if there is a Space defined.
+Other elements are always linked to their Storey, even if there is a Space defined. 
+- For all elements that are not the building structure components like walls, floors, doors, windows, roofs etc, please export them as IfcFurnishingElement or IfcBuildingElementProxy.
+Otherwise, they will not be instantiated.
+- Triples related to the OntoBIM:Facility concept will have to be manually instantiated as there is no equivalent concept from IFC.
 
 #### 1.2 Technical Requirements
 - Java 11
 - Apache Maven 3.8+
 - Docker
+- At least 16GB of RAM
 
 ### 2. Building the Agent
 The agent is designed for execution through a Docker container. Other deployment workflows are beyond the scope of this document.
@@ -58,8 +62,8 @@ which must have a 'scope' that [allows you to publish and install packages](http
 docker compose -f "./docker/docker-compose.test.yml" up -d --build
 ```
 
-**DEBUGGER ENVIRONMENT**
-- Deploy the agent for debugging by running the following code in the CLI at the directory. The debugger will be available at port 5005.
+**DEVELOPMENT ENVIRONMENT**
+- Deploy the agent for development by running the following code in the CLI at the directory. The remote JVM endpoint for debugging will be available at port 5005.
 ```
 docker compose -f "./docker/docker-compose.debug.yml" up -d --build
 ```
@@ -78,8 +82,12 @@ docker-compose up -d
 
 *WIP to transfer these Maven credentials over agents, instead of being implemented as Docker instructions
 
+*Both development and production environment have set the default JVM Heap size to use 8GB of RAM in their respective docker-compose files. 
+Check if you have sufficient technical specifications by ensuring agent is running after deployment. 
+If not, please remove the environment values or set it to use less RAM.
+
 #### 2.3 Running the Agent
-The agent currently offers two API routes:
+The agent currently offers three API routes:
 ##### 2.3.1 GET ROUTE: `~url~/ifc2ontobim-agent/status` 
 
 This route requires a GET request without any parameters, to retrieve the agent's current status. A sample request is as follows:
@@ -104,8 +112,6 @@ configuration for:
 - `sparql.update.endpoint`: The SPARQL update endpoint to upload the instantiated triples
 - `ifc.owl.agent`: The IfcOwlConverterAgent dependency's API endpoint
 
-
-
 ###### POST request parameters
 Once both inputs are ready, a POST request can be sent to this route to convert IFC models to TTL formats with the following parameter:
 1. Base URI - Mandatory
@@ -113,6 +119,9 @@ Once both inputs are ready, a POST request can be sent to this route to convert 
 This sets the base URI for all instances. Examples of valid URIs include `http://www.theworldavatar.com/ifc/` and  `https://www.theworldavatar.com/bim#`.
 
 A default URI of `http://www.theworldavatar.com/ifc/resources_16UUID/` is also available. Please access this with a request of `"uri":"default"`.
+
+Note that the instantiation process can be memory-intensive, and will require at least 8GB of RAM allocated for more complex IFC models. However, if your specifications
+are too low, you may instantiate only the core triples, (excluding the geometry triples), by sending a POST request to `~url~/ifc2ontobim-agent/convert-no-geom`.
 
 ###### Sample POST request
 Run the agent by sending a POST request with the required JSON Object to `http://localhost:3025/ifc2ontobim-agent/convert`. A sample request is as follows:
