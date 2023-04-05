@@ -51,15 +51,6 @@ public class EndpointConfig {
         }
         this.kguser = blazegraphEndpointConfig.getUsername();
         this.kgpassword = blazegraphEndpointConfig.getPassword();
-
-        PostGISEndpointConfig postGISEndpointConfig = containerClient.readEndpointConfig("postgis",
-                PostGISEndpointConfig.class);
-        this.dburl = postGISEndpointConfig.getJdbcURL("bms");
-        this.dbuser = postGISEndpointConfig.getUsername();
-        this.dbpassword = postGISEndpointConfig.getPassword();
-
-        OntopEndpointConfig ontopEndpointConfig = containerClient.readEndpointConfig("ontop", OntopEndpointConfig.class);
-        this.ontopurl = ontopEndpointConfig.getUrl();
     }
 
     private String getBasicAuthHeader(String username, String password) {
@@ -147,21 +138,5 @@ public class EndpointConfig {
 
     public String getKgpassword() {
         return this.kgpassword;
-    }
-
-    public String getOntopurl() {
-        return this.ontopurl;
-    }
-
-    public String getDburl() {
-        return this.dburl;
-    }
-
-    public String getDbuser() {
-        return this.dbuser;
-    }
-
-    public String getDbpassword() {
-        return this.dbpassword;
     }
 }

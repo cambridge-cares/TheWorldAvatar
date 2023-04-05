@@ -25,13 +25,10 @@ public class BMSQueryAgentLauncher extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(BMSQueryAgentLauncher.class);
 
     static final String KEY_ROOMIRI = "roomIRI";
-//    private static final String KEY_CLIENT_PROPERTIES = "clientProperties";
 
     public static final String PARAMETERS_VALIDATION_ERROR_MSG = "Unable to validate request sent to the agent.";
     public static final String EMPTY_PARAMETER_ERROR_MSG = "Empty Request.";
     public static final String AGENT_Construction_ERROR_MSG = "The BMSQueryAgent could not be constructed.";
-    public static final String TSCLIENT_CONSTRUCTION_ERROR_MSG = "Could not construct the time series client needed by the input agent.";
-    public static final String RSCLIENT_CONSTRUCTION_ERROR_MSG = "Could not construct the remote store client needed by the input agent.";
 
     @Override
     public void init() throws ServletException {
@@ -80,8 +77,6 @@ public class BMSQueryAgentLauncher extends JPSAgent {
                 }
 
                 String roomIRI = request.getParameter(KEY_ROOMIRI);
-//            String clientProperties = request.getParameter(KEY_CLIENT_PROPERTIES);
-//            String clientPropertiesFile = System.getenv(clientProperties);
 
                 JSONObject queryResult = agent.queryEquipmentInstances(roomIRI);
 
@@ -107,17 +102,6 @@ public class BMSQueryAgentLauncher extends JPSAgent {
             return false;
         }
         LOGGER.info("Data Received: " + request.getParameter(KEY_ROOMIRI));
-
-//        if (request.getParameter(KEY_CLIENT_PROPERTIES).isEmpty()) {
-//            LOGGER.error(KEY_CLIENT_PROPERTIES + "is missing.");
-//            return false;
-//        }
-//
-//        String clientProperties = request.getParameter(KEY_CLIENT_PROPERTIES);
-//        if (System.getenv(clientProperties) == null) {
-//            LOGGER.error("Client property file is not found in the environment variable.");
-//            return false;
-//        }
 
         return true;
     }
@@ -153,60 +137,5 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         response.setStatus(Response.Status.OK.getStatusCode());
         response.getWriter().write("{\"description\":\"BMSQueryAgent is ready.\"}");
     }
-
-
-    // ****************************** endpoint set up for non-stack version ********************************************
-//    private TimeSeriesClient<OffsetDateTime> createTimeSeriesClient(JSONObject jsonMessage, String clientPropertyFile) {
-//        TimeSeriesClient<OffsetDateTime> tsClient;
-//        try {
-//            tsClient = new TimeSeriesClient<>(OffsetDateTime.class, clientPropertyFile);
-//        } catch (IOException | JPSRuntimeException e) {
-//            LOGGER.error(TSCLIENT_CONSTRUCTION_ERROR_MSG, e);
-//            throw new JPSRuntimeException(TSCLIENT_CONSTRUCTION_ERROR_MSG, e);
-//        }
-//        LOGGER.info("Time series client object initialized.");
-//        jsonMessage.accumulate("Message", "Time series client object initialized.");
-//        return tsClient;
-//    }
-//
-//    private RemoteStoreClient createRemoteStoreClient(JSONObject jsonMessage, String clientPropertyFile) {
-//        RemoteStoreClient kbClient = new RemoteStoreClient();
-//        try {
-//            setSparqlConfig(clientPropertyFile, kbClient);
-//        } catch (IOException e) {
-//            throw new JPSRuntimeException(RSCLIENT_CONSTRUCTION_ERROR_MSG, e);
-//        }
-//        LOGGER.info("Remote store client object initialized.");
-//        jsonMessage.accumulate("Message", "Remote store client object initialized.");
-//        return kbClient;
-//    }
-//
-//    private void setSparqlConfig(String filepath, TripleStoreClientInterface kbClient) throws IOException {
-//        File file = new File(filepath);
-//        if (!file.exists()) {
-//            throw new JPSRuntimeException("No properties file found at specified filepath: " + filepath);
-//        }
-//
-//        // Try-with-resource to ensure closure of input stream
-//        try (InputStream input = new FileInputStream(file)) {
-//
-//            // Load properties file from specified path
-//            Properties prop = new Properties();
-//            prop.load(input);
-//
-//            // Get the property values and assign
-//            if (prop.containsKey("sparql.query.endpoint")) {
-//                kbClient.setQueryEndpoint(prop.getProperty("sparql.query.endpoint"));
-//            } else {
-//                throw new JPSRuntimeException("Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\" ");
-//            }
-//            if (prop.containsKey("sparql.update.endpoint")) {
-//                kbClient.setUpdateEndpoint(prop.getProperty("sparql.update.endpoint"));
-//            } else {
-//                throw new JPSRuntimeException("Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\" ");
-//            }
-//        }
-//    }
-    // *****************************************************************************************************************
 
 }

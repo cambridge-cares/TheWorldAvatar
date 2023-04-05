@@ -6,12 +6,6 @@ services:
     build: .
     configs:
       - blazegraph
-      - ontop
-      - postgis
-    secrets:
-      - postgis_password
-    environment:
-      CLIENT_PROPERTIES: "client.properties"
 
 #    container_name: bms-query-agent
 #    pull_policy: if_not_present
