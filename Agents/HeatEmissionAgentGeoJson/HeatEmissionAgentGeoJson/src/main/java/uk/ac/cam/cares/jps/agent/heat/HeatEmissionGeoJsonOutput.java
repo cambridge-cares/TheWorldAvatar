@@ -16,6 +16,13 @@ import javax.servlet.annotation.WebServlet;
 import java.io.FileWriter;
 import java.io.IOException;
 import org.springframework.stereotype.Controller;
+import geotrellis.proj4.CRS;
+import geotrellis.proj4.Transform;
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
+import scala.Function2;
+import scala.Tuple2;
+
+
 
 @Controller
 @WebServlet(urlPatterns = {"/performheatgeojson"})
@@ -61,20 +68,41 @@ public class HeatEmissionGeoJsonOutput extends JPSAgent {
             Double x_coordinate =  Double.parseDouble(heatcoordi_split[0]);
             Double y_coordinate =  Double.parseDouble(heatcoordi_split[1]);
             
+    		double xi = x_coordinate;
+            double yi = y_coordinate;
+            
             double[] region_boundary = Boundary(sample1);
             if (region_boundary[0] < x_coordinate && region_boundary[2] > x_coordinate && region_boundary[1] < y_coordinate && region_boundary[3] > y_coordinate) {
-                double heatamount = Double.parseDouble(CO2)/Double.parseDouble(CEI)*1e12/365/24/3600/1e6*Double.parseDouble(Efficiency); 
+                double heatamount = 0.3*Double.parseDouble(CO2)/Double.parseDouble(CEI)*1e12/365/24/3600/1e6*Double.parseDouble(Efficiency); 
                 JSONObject row = new JSONObject();
                 row.put("Coordinate", heatcoordi);
                 row.put("Heat Emission", heatamount);
                 heatresult.put(row);   
                 heat_data = heatamount;
             }
+            
+        String inputCRS = "EPSG:24500";
+        String outputCRS = "EPSG:4326";
+        
+        String inputSys = inputCRS.split(":")[1];
+        int inputCode = Integer.valueOf(inputSys);
+        String outputSys = outputCRS.split(":")[1];
+        int outputCode = Integer.valueOf(outputSys);
+        CRS sourceCRS = CRS.fromEpsgCode(inputCode);
+        CRS targetCRS = CRS.fromEpsgCode(outputCode);
+        Function2<Object, Object, Tuple2<Object, Object>> convert = Transform.apply(sourceCRS,targetCRS);
+		
+        Tuple2<Object, Object> res;
+        res = convert.apply(xi,yi);
+        double xt = (double) res._1();
+        double yt = (double) res._2();
+        
+        String x_coordi = Double.toString(xt);
+        String y_coordi = Double.toString(yt);
         
         String[] xyz_coordi = heatcoordi.split("#"); 	
-		String x_coordi =  xyz_coordi[0];
-		String y_coordi =  xyz_coordi[1];
 		String z_coordi =  xyz_coordi[2];
+		
                     
         StringBuffer heatemission = new StringBuffer("{\n\"type\": \"Feature\",\n");
         heatemission.append("\"properties\": {\n\"height:m\":").append(z_coordi+","+"\n");
@@ -116,7 +144,6 @@ public class HeatEmissionGeoJsonOutput extends JPSAgent {
 	        pw.close(); 
 	        jsonMessage.accumulate("Result", "GeoJson heat data outputted.");
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
         

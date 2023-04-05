@@ -54,6 +54,8 @@ def retrieve_affected_property_info(sparql_client: PySparqlClient, affected_prop
                 OPTIONAL {{ ?property <{OBE_HASMARKETVALUE}> ?mv. }}
             }}"""
 
+    # Remove empty enclosing brackets (only present in case of empty property list)
+    query = query.replace('<>', '')
     # Remove unnecessary whitespaces
     query = ' '.join(query.split())
     logger.info(f"Query to retrieve property info: {query}")
