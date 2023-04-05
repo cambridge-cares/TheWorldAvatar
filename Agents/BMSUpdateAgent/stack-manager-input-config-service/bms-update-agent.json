@@ -1,0 +1,26 @@
+{
+  "ServiceSpec": {
+    "Name": "bms-update-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "bms-update-agent:1.0.0-SNAPSHOT",
+        "Env": [
+          "CLIENT_PROPERTIES=/app/config/client.properties"
+        ],
+        "Mounts": [
+          {
+            "Type": "bind",
+            "Source": "<YOUR_WORK_DIR>/TheWorldAvatar/Agents/BMSUpdateAgent/config",
+            "Target": "/app/config"
+          }
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/bms-update-agent/",
+      "externalPath": "/bms-update-agent/"
+    }
+  }
+}
