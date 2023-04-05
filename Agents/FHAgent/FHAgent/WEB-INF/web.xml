@@ -6,16 +6,16 @@
 		metadata-complete="false" 
 		version="3.1">
 
-	<display-name>thingsboard-agent</display-name>
-	<description>Simple servlet to accept incoming request and retrieve readings from the ThingsBoard database.</description>
+	<display-name>fh-agent</display-name>
+	<description>Simple servlet to accept incoming request and retrieve readings from the ThingsBoard database and calculate fumehood occupancy.</description>
 
 	<servlet>
-		<servlet-name>ThingsBoardAgentServlet</servlet-name>
-		<servlet-class>uk.ac.cam.cares.jps.agent.thingsboard.ThingsBoardInputAgentLauncher</servlet-class>
+		<servlet-name>FHAgentServlet</servlet-name>
+		<servlet-class>uk.ac.cam.cares.jps.agent.fh.FHAgentLauncher</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>ThingsBoardAgentServlet</servlet-name>
+		<servlet-name>FHAgentServlet</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
