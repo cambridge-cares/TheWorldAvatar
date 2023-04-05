@@ -55,7 +55,12 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	/**
 	 * Stores the mapping between a domain class and its relations.
 	 */
-	Map<String, List<String>> classRelationMap = new HashMap<String, List<String>>();
+	Map<String, List<String>> domainRelationMap = new HashMap<String, List<String>>();
+	/**
+	 * Stores the mapping between a range class and its relations.
+	 */
+	Map<String, List<String>> rangeRelationMap = new HashMap<String, List<String>>();
+
 	
 	public static void main(String[] args) {
 		File folder = Dialogs.selectFileDialog(new File(System.getProperty("user.home")), new FileFilter[]{new ExtensionFileFilter("Comma-separated Value", "csv")}, false);
@@ -158,6 +163,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	private void storeRelationships(String csvFileNamePlusPath) throws IOException, JPSRuntimeException, OWLOntologyCreationException{
 		List<List<String>> brSourceCtml = FileUtil.openCSVSourceFile(csvFileNamePlusPath);
 		for(List<String> singleLine:brSourceCtml){
+			// Creates the mapping between a class and its parents
 			if (singleLine.size() > tBoxConfig.getIndexOfRelationColumn() 
 					&& singleLine.get(tBoxConfig.getIndexOfTypeColumn()).equalsIgnoreCase(tBoxConfig.getElementTypeClass()) 
 					&& singleLine.get(tBoxConfig.getIndexOfRelationColumn()).equalsIgnoreCase(tBoxConfig.getIsARelation())) {
@@ -167,6 +173,32 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 					List<String> parents = new ArrayList<String>();
 					parents.add(singleLine.get(tBoxConfig.getIndexOfSourceColumn()).toLowerCase());
 					childParentMap.put(singleLine.get(tBoxConfig.getIndexOfSourceColumn()).toLowerCase(), parents);
+				}
+			}
+			
+			// Creates the mapping between a domain class and relations associated with it.
+			if (singleLine.size() > tBoxConfig.getIndexOfDomainColumn() 
+					&& singleLine.get(tBoxConfig.getIndexOfDomainColumn())!= null
+					&& !singleLine.get(tBoxConfig.getIndexOfDomainColumn()).equals("")) {
+				if (domainRelationMap.containsKey(singleLine.get(tBoxConfig.getIndexOfDomainColumn()))) {
+					domainRelationMap.get(singleLine.get(tBoxConfig.getIndexOfDomainColumn()).toLowerCase()).add(singleLine.get(tBoxConfig.getIndexOfDomainColumn()).toLowerCase());
+				} else {
+					List<String> parents = new ArrayList<String>();
+					parents.add(singleLine.get(tBoxConfig.getIndexOfDomainColumn()).toLowerCase());
+					domainRelationMap.put(singleLine.get(tBoxConfig.getIndexOfDomainColumn()).toLowerCase(), parents);
+				}
+			}
+			
+			// Creates the mapping between a range class and relations associated with it.
+			if (singleLine.size() > tBoxConfig.getIndexOfRangeColumn() 
+					&& singleLine.get(tBoxConfig.getIndexOfRangeColumn())!= null
+					&& !singleLine.get(tBoxConfig.getIndexOfRangeColumn()).equals("")) {
+				if (rangeRelationMap.containsKey(singleLine.get(tBoxConfig.getIndexOfRangeColumn()))) {
+					rangeRelationMap.get(singleLine.get(tBoxConfig.getIndexOfRangeColumn()).toLowerCase()).add(singleLine.get(tBoxConfig.getIndexOfRangeColumn()).toLowerCase());
+				} else {
+					List<String> parents = new ArrayList<String>();
+					parents.add(singleLine.get(tBoxConfig.getIndexOfRangeColumn()).toLowerCase());
+					rangeRelationMap.put(singleLine.get(tBoxConfig.getIndexOfRangeColumn()).toLowerCase(), parents);
 				}
 			}
 		}
