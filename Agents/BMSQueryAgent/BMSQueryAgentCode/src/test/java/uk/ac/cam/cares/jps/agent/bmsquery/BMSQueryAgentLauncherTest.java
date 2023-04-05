@@ -1,95 +1,64 @@
 package uk.ac.cam.cares.jps.agent.bmsquery;
 
-import org.json.JSONObject;
+import org.apache.commons.collections.map.HashedMap;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
-import static com.github.stefanbirkner.systemlambda.SystemLambda.withEnvironmentVariable;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class BMSQueryAgentLauncherTest {
     BMSQueryAgentLauncher launcher;
-
-    private final String CLIENT_PROPERTIES_FILE_NAME = "client.properties";
-    private final String CLIENT_PROPERTIES_ENV_VAR = "CLIENT_PROPERTIES";
 
     @Before
     public void setup() throws IOException {
         launcher = new BMSQueryAgentLauncher();
     }
 
-    @Ignore("Unable to test valid input for ProcessRequestParameter, because it needs to access the RDB which should belong to the integration test")
     @Test
-    public void testProcessRequestParameters_ValidParameters() {
-        JSONObject testInput = new JSONObject();
-        testInput.put("dataIRI", "http://example.com/example_iri");
-        testInput.put("clientProperties", CLIENT_PROPERTIES_FILE_NAME);
-    }
+    public void testDoGet_Status() throws IOException {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        HttpServletResponse response = mock(HttpServletResponse.class);
 
-    @Test
-    public void testProcessRequestParameters_InvalidParametersKey() {
-        JSONObject testInput = new JSONObject();
-        testInput.put("data", "http://example.com/example_iri");
-        testInput.put("clientProperties", CLIENT_PROPERTIES_FILE_NAME);
+        when(request.getRequestURI()).thenReturn("http://localhost:3838/bms-query-agent/status");
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter writer = new PrintWriter(stringWriter);
+        when(response.getWriter()).thenReturn(writer);
 
-        try {
-            launcher.processRequestParameters(testInput);
-        } catch (JPSRuntimeException e) {
-            assertEquals(BMSQueryAgentLauncher.PARAMETERS_VALIDATION_ERROR_MSG, e.getMessage());
-        }
+
+        launcher.doGet(request, response);
+        writer.flush();
+        assertEquals("{\"description\":\"BMSQueryAgent is ready.\"}" , stringWriter.toString());
 
     }
 
-    // TODO: fix and add test cases
-    /**
-     * This test method does not validate the existence of properties file. It only checks whether the properties file is set in the environment variables.
-     * The check of file existence is done in TimeSeriesClient initialization, which is called in launcher.initializeAgent() and is not tested in this unit test file.
-     */
+
+
     @Test
-    @Ignore
     public void testValidateInput_ValidParameters() throws Exception {
-        JSONObject testInput = new JSONObject();
-        testInput.put("dataIRI", "http://example.com/example_iri");
-        testInput.put("clientProperties", CLIENT_PROPERTIES_ENV_VAR);
+        HttpServletRequest request = mock(HttpServletRequest.class);
 
-        boolean validateResult = withEnvironmentVariable(CLIENT_PROPERTIES_ENV_VAR, CLIENT_PROPERTIES_FILE_NAME)
-                .execute(() -> launcher.validateInput(testInput));
-        assertTrue(validateResult);
+        HashedMap paramMap = new HashedMap() ;
+        paramMap.put(BMSQueryAgentLauncher.KEY_ROOMIRI, new String[] {"http://example.com/example_iri"});
+
+        when(request.getParameterMap()).thenReturn(paramMap);
+        when(request.getParameter(BMSQueryAgentLauncher.KEY_ROOMIRI)).thenReturn("http://example.com/example_iri");
+
+        assertTrue(launcher.validateInput(request));
     }
 
     @Test
     public void testValidateInput_EmptyRequest() {
-        JSONObject testInput = new JSONObject();
+        HttpServletRequest request = mock(HttpServletRequest.class);
 
-        assertFalse(launcher.validateInput(testInput));
+        assertFalse(launcher.validateInput(request));
     }
 
-    @Test
-    public void testValidateInput_MissingDataIRI() {
-        JSONObject testInput = new JSONObject();
-        testInput.put("clientProperties", CLIENT_PROPERTIES_FILE_NAME);
-
-        assertFalse(launcher.validateInput(testInput));
-    }
-
-    @Test
-    public void testValidateInput_MissingClientProperty() {
-        JSONObject testInput = new JSONObject();
-        testInput.put("dataIRI", "http://example.com/example_iri");
-
-        assertFalse(launcher.validateInput(testInput));
-    }
-
-    @Test
-    public void testValidateInput_ClientPropertyNotFound() {
-        JSONObject testInput = new JSONObject();
-        testInput.put("dataIRI", "http://example.com/example_iri");
-        testInput.put("clientProperties", "not_exist_file_path");
-
-        assertFalse(launcher.validateInput(testInput));
-    }}
+}
