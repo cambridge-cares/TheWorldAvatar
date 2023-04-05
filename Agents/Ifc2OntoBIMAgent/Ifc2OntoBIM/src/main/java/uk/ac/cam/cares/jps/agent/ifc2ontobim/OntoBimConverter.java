@@ -34,7 +34,7 @@ public class OntoBimConverter {
     /**
      * Read the ttl file output for IfcOwl and instantiate them as OntoBIM instances.
      */
-    public List<Path> convertOntoBIM(String ttlFile) {
+    public List<Path> convertOntoBIM(String ttlFile, Boolean isGeomRequired) {
         // Reset the values from previous iterations
         SpatialZoneStorage.resetSingleton();
         ElementStorage.resetSingleton();
@@ -50,10 +50,9 @@ public class OntoBimConverter {
         // Reset the singleton to clear memory space
         SpatialZoneStorage.resetSingleton();
         ElementStorage.resetSingleton();
-        genGeometryContentStatements(statementSet);
+        if (isGeomRequired) genGeometryContentStatements(statementSet);
         return this.tempFilePaths;
     }
-
 
     /**
      * Generate the OntoBIM triples for spatial zones and elements.

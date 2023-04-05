@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author qhouyee
  */
-@WebServlet(urlPatterns = {"/convert", "/status"})
+@WebServlet(urlPatterns = {"/convert", "/convert-no-geom", "/status"})
 public class Ifc2OntoBIMAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(Ifc2OntoBIMAgent.class);
     // Agent starts off in valid state, and will be invalid when running into exceptions
@@ -85,7 +85,21 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
                     // Process request parameters
                     String baseURI = requestParams.getString(KEY_BASEURI);
                     String[] args = (!baseURI.equals("default")) ? new String[]{baseURI} : new String[]{"default"};
-                    jsonMessage = this.runAgent(args);
+                    jsonMessage = this.runAgent(args, true);
+                } else if (!requestType.equals("POST")) {
+                    LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
+                    jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
+                } else {
+                    LOGGER.fatal("Request parameters are not defined correctly.");
+                    jsonMessage.put("Result", "Request parameters are not defined correctly.");
+                }
+                break;
+            case "convert-no-geom":
+                if (validateInput(requestParams)) {
+                    // Process request parameters
+                    String baseURI = requestParams.getString(KEY_BASEURI);
+                    String[] args = (!baseURI.equals("default")) ? new String[]{baseURI} : new String[]{"default"};
+                    jsonMessage = this.runAgent(args, false);
                 } else if (!requestType.equals("POST")) {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
                     jsonMessage.put("Result", INVALID_ROUTE_ERROR_MSG + route + " can only accept POST request.");
@@ -158,7 +172,7 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
      *
      * @return A response to the request called as a JSON Object.
      */
-    protected JSONObject runAgent(String[] args) {
+    protected JSONObject runAgent(String[] args, Boolean isGeomRequired) {
         JSONObject response = new JSONObject();
         Map<String, String> config = AccessClient.retrieveClientProperties();
         // Convert the IFC files in the target directory to TTL using IfcOwl Schema
@@ -190,7 +204,7 @@ public class Ifc2OntoBIMAgent extends JPSAgent {
         OntoBimConverter bimConverter = new OntoBimConverter();
         for (String ttlFile : ttlFileList) {
             LOGGER.info("Preparing to convert IFCOwl to OntoBIM schema for TTL file: " + ttlFile);
-            List<Path> tempFilePaths = bimConverter.convertOntoBIM(ttlFile);
+            List<Path> tempFilePaths = bimConverter.convertOntoBIM(ttlFile, isGeomRequired);
             LOGGER.info("Uploading statements to " + endpoint);
             AccessClient.uploadStatements(endpoint, tempFilePaths);
             AccessClient.cleanUp(ttlFile, tempFilePaths);

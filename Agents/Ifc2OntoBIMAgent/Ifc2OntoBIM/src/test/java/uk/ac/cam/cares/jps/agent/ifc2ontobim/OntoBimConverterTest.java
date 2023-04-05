@@ -38,7 +38,7 @@ class OntoBimConverterTest {
         try (MockedStatic<AccessClient> mockAccessClient = Mockito.mockStatic(AccessClient.class)) {
             // Stub the method to do nothing when called
             mockAccessClient.when(() -> AccessClient.uploadStatements(Mockito.anyString(), Mockito.any())).thenAnswer((Answer<Void>) invocation -> null);
-            List<Path> sampleFilePaths = converter.convertOntoBIM(sampleTtl.toString());
+            List<Path> sampleFilePaths = converter.convertOntoBIM(sampleTtl.toString(), true);
             assertEquals(0, sampleFilePaths.size());
         }
     }
