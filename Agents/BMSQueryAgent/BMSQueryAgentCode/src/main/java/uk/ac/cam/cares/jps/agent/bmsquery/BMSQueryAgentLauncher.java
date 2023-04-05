@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 public class BMSQueryAgentLauncher extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(BMSQueryAgentLauncher.class);
 
-    private static final String KEY_ROOMIRI = "roomIRI";
+    static final String KEY_ROOMIRI = "roomIRI";
 //    private static final String KEY_CLIENT_PROPERTIES = "clientProperties";
 
     public static final String PARAMETERS_VALIDATION_ERROR_MSG = "Unable to validate request sent to the agent.";
