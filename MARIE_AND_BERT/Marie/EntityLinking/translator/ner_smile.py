@@ -2,18 +2,24 @@ import torch
 import transformers
 import re
 SPECIAL_SYM = "[,\'\[\]\{\}\(\)\-\]\*\+\-\_\.\/\:\>]"
+stopwords = ['the', 'which', 'in', 'that', 'what']
 
 
 class NerSMILE():
     def __init__(self, config):
     #config parameters
     #read model
-        model = transformers.BertForTokenClassification.from_pretrained('bert-base-cased',  num_labels = 6)
+        model = transformers.BertForTokenClassification.from_pretrained('bert-base-cased',  num_labels = 7)
         model = torch.nn.DataParallel(model)
         model.load_state_dict(torch.load(config['model_path']),strict=False)
         self.model = model
         self.config = config
 
+    def remove_stwords(self, text):
+        for st in stopwords:
+            text = text.replace(st, '')
+            text = text.lstrip().rstrip()
+        return text
 
 
     def extractSMILE(self, sentence_list):
@@ -43,6 +49,8 @@ class NerSMILE():
             label_list = []
 
             for k, j in enumerate(prediction):
+                if j == 2:
+                    j = 0
                 if (len(prediction)>1):#The sentence is more than one token long
 
                     if (j!=0) & (k==0):
@@ -68,10 +76,10 @@ class NerSMILE():
 
                     elif (j!=0) & (k>=1) & (prediction[k-1]!=0):
                         # Or first word of a keyword of another category
-                        if prediction[k-1] != j:#Not same category
+                        if prediction[k-1] != j and not tkns[k].startswith('##'):#Not same category
                             #Add last keyword to list
                             kword_list.append(kword.rstrip().lstrip())
-                            label_list.append(j)
+                            label_list.append(prediction[k-1])
                             #Restart the word counting
                             begin = tkns[k]
                             kword = begin
@@ -107,6 +115,8 @@ class NerSMILE():
                         kword_list.append(kword.rstrip().lstrip())
                         label_list.append(j)
 
+        print(kword_list)
+        print(label_list)
         return kword_list,label_list
 
     #data format?
@@ -129,9 +139,9 @@ class NerSMILE():
             if len(sub_sentence_prediction_kword_list) !=0:#found some keywords
                 current_id_predictions = current_id_predictions + sub_sentence_prediction_kword_list
 
-            results[id] = [x.upper() for x in list(set(current_id_predictions))]
+            results[id] = [self.remove_stwords(x) for x in current_id_predictions] #[x.upper() for x in list(set(current_id_predictions))]
             types[id] = sub_type_list
-        return results,sub_type_list
+        return results,types
 
     def kword2original(self, sentence, kwords):
         orginal = []
