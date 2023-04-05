@@ -61,7 +61,7 @@ class CrossGraphQAEngine:
         '''
         Init all engines for each domain
         '''
-        for domain, index in self.domain_list:
+        for domain, index in self.domain_list.items():
             if domain == "pubchem":
                 self.engine_list[index] = PubChemQAEngine()
             elif domain == "ontocompchem":
