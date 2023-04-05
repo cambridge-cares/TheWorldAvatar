@@ -46,7 +46,7 @@ public class Buildings {
 
     //TODO: The next 4 variables need to be updated with additional entries for locations other than Jurong Island.
     // Use the full endpoint for the local blazegraph and only the namespace for TWA blazegraph.
-    public static String[] StackQueryEndpoint = {"jibusinessunits","http://localhost:48888/pirmasensChemicalPlants"} ;
+    public static String[] StackQueryEndpoint = {"jibusinessunits","pirmasensChemicalPlants"} ;
     public static String[] GeospatialQueryEndpoint = {"jriEPSG24500","pirmasensEPSG32633"} ;
     public static String[] DatabaseCRS = {"EPSG:24500","EPSG:32633"};
     public static int[] propertiesMethod = {1,2};
@@ -700,7 +700,7 @@ public class Buildings {
 
             for (int k = 0; k < edgeCoordinates.length;k += 3) {
                 double dx = Double.parseDouble(edgeCoordinates[k]) - aveX;
-                double dy = Double.parseDouble(edgeCoordinates[k]) - aveY;
+                double dy = Double.parseDouble(edgeCoordinates[k+1]) - aveY;
                 double dist = Math.sqrt(dx*dx + dy*dy);
                 radius += dist;
             }

@@ -65,12 +65,12 @@ def get_aermod_geojson(aermod_output, srid):
     fig, ax = plt.subplots()
     concLog = np.log10(conc_matrix)
 
-    crf = ax.contourf(x_matrix, y_matrix, concLog, levels=contour_level,cmap=plt.cm.jet)
+    crf = ax.contourf(x_matrix, y_matrix, conc_matrix, levels=contour_level,cmap=plt.cm.jet)
     # cbar = fig.colorbar(crf,ax)
     try :
        cm = 1/2.54
        plt.figure(figsize=(10*cm, 20*cm))
-       concBar = np.log10(np.asarray(conc_list))
+       concBar = np.asarray(conc_list)
        concBar = np.expand_dims(concBar,0)
        img = plt.imshow(concBar, cmap=plt.cm.jet)
        plt.gca().set_visible(False)
