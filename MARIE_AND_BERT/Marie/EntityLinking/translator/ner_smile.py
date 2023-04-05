@@ -1,8 +1,9 @@
 import torch
 import transformers
 import re
-SPECIAL_SYM = "[,\'\[\]\{\}\(\)\-\]\*\+\-\_\.\/\:\>]"
+SPECIAL_SYM = "[,\'\[\]\{\}\(\)\-\]\*\+\-\_\.\/\:\>=]"
 stopwords = ['the', 'which', 'in', 'that', 'what']
+tags_2_idx={'O': 0 , 'B': 1, 'P': 2, 'C':3, 'I-K':4, 'I-M':5, 'S':6} # no-tag, smiles, padding-tag, ontospecies_class, instance ontokin, instance_mops, shapes_mops
 
 
 class NerSMILE():
@@ -23,9 +24,16 @@ class NerSMILE():
 
 
     def extractSMILE(self, sentence_list):
-        results = self.get_predictions(self.model, sentence_list)
-        return results
+        names, types = self.get_predictions(self.model, sentence_list)
+        final_names = []
+        for idxQ in names:
+            filtered = [name for name, type in zip(names[idxQ], types[idxQ]) if type==1 or type==5 or type==4]
+            final_names.append(filtered)
+        return final_names
 
+    def extractAllTypes(self, sentence_list):
+        names, types = self.get_predictions(self.model, sentence_list)
+        return names,types
     def prediction_fn(self, model, tokenized_sub_sentence):
 
         tkns = tokenized_sub_sentence

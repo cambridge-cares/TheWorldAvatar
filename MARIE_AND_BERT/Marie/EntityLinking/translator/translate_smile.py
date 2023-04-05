@@ -39,6 +39,7 @@ class Translator():
         smiles_string = None
         sentences = [entry['text'] for entry in raw_data]
         smiles = self.ner.extractSMILE(sentences)
+        print(smiles)
         for smile_candidates, entry in zip(smiles, raw_data):
             if len(smile_candidates) > 0:
                 for c in smile_candidates:
@@ -52,7 +53,7 @@ class Translator():
 
     def extract_ner(self,raw_data):
         sentences = [entry['text'] for entry in raw_data]
-        names, types = self.ner.extractSMILE(sentences)
+        names, types = self.ner.extractAllTypes(sentences)
         return names, types
 
 
@@ -134,6 +135,8 @@ if __name__ == "__main__":
              {'text': 'Show all the MOPs having Octahedron shape'},
              {'text': 'List the MOPs with trigonal bipyramid as the shape'}
              ]
+    dummy = [{
+        'text': 'What is the name for C(=O)C(C(=O)O)O'}]
     t = Translator(modelpath="C:/Users\Shaocong\Documents\GitHub\TheWorldAvatar\MARIE_AND_BERT\DATA\EntityLinking\SMILES_NER_V10.bin")
-    out = t.extract_ner(dummy)
+    out = t.translate_ner(dummy)
     print(out)
