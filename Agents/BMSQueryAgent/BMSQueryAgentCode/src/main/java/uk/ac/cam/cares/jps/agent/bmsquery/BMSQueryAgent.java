@@ -150,7 +150,7 @@ public class BMSQueryAgent {
         }
 
         JSONObject result = new JSONObject();
-        result.put("Equipments", parseLabel(jsonResult));
+        result.put("equipment", parseLabel(jsonResult));
         LOGGER.info("Getting result:" + result);
 
         return result;

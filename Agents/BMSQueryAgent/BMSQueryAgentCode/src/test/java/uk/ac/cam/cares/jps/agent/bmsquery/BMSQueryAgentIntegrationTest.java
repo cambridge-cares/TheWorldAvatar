@@ -125,7 +125,7 @@ public class BMSQueryAgentIntegrationTest {
         createNewData("lab", "testQueryEquipment.xml");
 
         JSONObject result = agent.queryEquipmentInstances("http://www.example.com/Room_1");
-        assertEquals(2, result.getJSONArray("Equipments").length());
+        assertEquals(2, result.getJSONArray("equipment").length());
     }
 
     @Test
@@ -133,7 +133,7 @@ public class BMSQueryAgentIntegrationTest {
         createNewData("lab", "testQueryEquipment_Empty.xml");
 
         JSONObject result = agent.queryEquipmentInstances("http://www.example.com/Room_1");
-        assertTrue(result.getJSONArray("Equipments").isEmpty());
+        assertTrue(result.getJSONArray("equipment").isEmpty());
     }
 
     private String getBlazegraphEndPoint() {
