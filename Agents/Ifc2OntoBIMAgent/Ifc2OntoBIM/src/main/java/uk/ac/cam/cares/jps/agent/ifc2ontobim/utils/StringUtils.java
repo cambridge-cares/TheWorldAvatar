@@ -6,27 +6,8 @@ package uk.ac.cam.cares.jps.agent.ifc2ontobim.utils;
  * @author qhouyee
  */
 public class StringUtils {
-    public static final String SEMICOLON = ":";
-    public static final String WHITESPACE = " ";
     public static final String UNDERSCORE = "_";
-    public static final String HASHMARK = "#";
     public static final String SLASH = "/";
-
-    /**
-     * Retrieve the substring from the starting character to the first appearance of a specified character.
-     * Eg for "string utils" and character " ", this will retrieve "string".
-     *
-     * @param line      A line of text.
-     * @param character A specific character of interest to stop at.
-     * @return The substring of interest
-     */
-    public static String getStringBeforeFirstCharacterOccurrence(String line, String character) {
-        try {
-            return line.substring(0, line.indexOf(character));
-        } catch (StringIndexOutOfBoundsException e) {
-            return line;
-        }
-    }
 
     /**
      * Retrieve the substring from the starting character to the just before the last appearance of a specified character.

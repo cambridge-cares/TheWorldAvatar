@@ -32,7 +32,7 @@ public class CartesianTransformationOperator {
         this.pointIRI = pointIri;
         this.xAxisDirIRI = xAxisDirectionIri;
         this.yAxisDirIRI = yAxisDirectionIri;
-        if (scaleFactor!=null) {
+        if (scaleFactor != null) {
             this.scaleFactor = Double.valueOf(scaleFactor);
         } else {
             this.scaleFactor = null;

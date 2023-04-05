@@ -29,8 +29,7 @@ public class GeometricVoid {
      * @param voidModelRepIri The model representation IRI of this void.
      */
     public GeometricVoid(String elementIri, String voidModelRepIri, String voidType, String placementIri) {
-        String prefix = NamespaceMapper.getBaseNameSpace();
-        this.bimIRI = prefix + OntoBimConstant.GEOM_VOID_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
+        this.bimIRI = NamespaceMapper.getBaseNameSpace() + OntoBimConstant.GEOM_VOID_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.elementIRI = elementIri;
         this.voidModelRepIRI = voidModelRepIri;
         this.voidType = voidType;

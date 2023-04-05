@@ -29,17 +29,31 @@ public class IfcModelRepresentation {
      */
     public IfcModelRepresentation(String name, String uid, String placementIri) {
         this.prefix = NamespaceMapper.getBaseNameSpace();
-        this.ifcRepIri = this.prefix + OntoBimConstant.ASSET_MODEL_REP_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
+        this.ifcRepIri = NamespaceMapper.getBaseNameSpace() + OntoBimConstant.ASSET_MODEL_REP_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.name = name;
         this.uid = uid;
         this.placementIri = StatementHandler.createInstanceFromIRI(placementIri, OntoBimConstant.LOCAL_PLACEMENT_CLASS);
     }
 
-    public String getIfcRepIri() { return this.ifcRepIri;}
-    public String getPrefix() { return this.prefix;}
-    public String getName() { return this.name;}
-    public String getUid() { return this.uid;}
-    public String getPlacementIri() { return this.placementIri;}
+    public String getIfcRepIri() {
+        return this.ifcRepIri;
+    }
+
+    public String getPrefix() {
+        return this.prefix;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getUid() {
+        return this.uid;
+    }
+
+    public String getPlacementIri() {
+        return this.placementIri;
+    }
 
     /**
      * An abstract method that must be overridden and used in each subclass

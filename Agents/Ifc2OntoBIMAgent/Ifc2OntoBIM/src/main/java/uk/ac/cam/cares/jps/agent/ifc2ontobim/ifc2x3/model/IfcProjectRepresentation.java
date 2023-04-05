@@ -4,7 +4,6 @@ import org.apache.jena.rdf.model.Statement;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
 import java.util.LinkedHashSet;
 import java.util.UUID;
@@ -18,14 +17,13 @@ public class IfcProjectRepresentation {
     /**
      * Standard Constructor initialising the necessary and optional inputs.
      *
-     * @param name  An optional field for the name of this IFC project.
-     * @param phase An optional field for the phase of the project in String.
+     * @param name    An optional field for the name of this IFC project.
+     * @param phase   An optional field for the phase of the project in String.
      * @param context The context for all geometric representation in the project.
      */
     public IfcProjectRepresentation(String name, String phase, GeometricRepresentationContext context) {
-        String prefix = NamespaceMapper.getBaseNameSpace();
         // Generate new project IRI
-        this.iri = prefix + OntoBimConstant.PROJECT_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
+        this.iri = NamespaceMapper.getBaseNameSpace() + OntoBimConstant.PROJECT_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         this.context = context;
         // Parse the optional values
         if (name != null) {
@@ -36,7 +34,9 @@ public class IfcProjectRepresentation {
         }
     }
 
-    public String getIri() {return this.iri;}
+    public String getIri() {
+        return this.iri;
+    }
 
     /**
      * Generate and add the statements required for this Class to the statement set input.

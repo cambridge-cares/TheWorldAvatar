@@ -25,8 +25,7 @@ public class DirectionVector {
      * @param zDirRatio An optional field for the z direction ratio.
      */
     public DirectionVector(String xDirRatio, String yDirRatio, String zDirRatio) {
-        String prefix = NamespaceMapper.getBaseNameSpace();
-        this.iri = prefix + OntoBimConstant.DIR_VEC_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
+        this.iri = NamespaceMapper.getBaseNameSpace() + OntoBimConstant.DIR_VEC_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
         // Initialise the array and add coordinates
         this.dirRatios = new Double[3];
         this.dirRatios[0] = Double.valueOf(xDirRatio);

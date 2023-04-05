@@ -175,7 +175,7 @@ public class SpatialZoneFacade {
                 latitude.offer(QueryHandler.retrieveLiteral(soln, CommonQuery.LAT_SEC_VAR));
                 latitude.offer(QueryHandler.retrieveLiteral(soln, CommonQuery.LAT_MIL_SEC_VAR));
             } else {
-               latitude = null;
+                latitude = null;
             }
             Queue<String> longitude;
             // Add longitude values as a queue

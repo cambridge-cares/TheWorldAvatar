@@ -47,21 +47,6 @@ public class QueryHandler {
     }
 
     /**
-     * Executes a Sparql Construct query and add the statements returned into a Linked Hash Set.
-     *
-     * @param queryString  A string containing the SPARQL query.
-     * @param queryModel   The query model to retrieve statements from.
-     * @param statementSet An ordered set to store the statements from the query results.
-     */
-    public static void queryConstructStatementsAsSet(String queryString, Model queryModel, LinkedHashSet<Statement> statementSet) {
-        Query query = QueryFactory.create(queryString);
-        try (QueryExecution qExec = QueryExecutionFactory.create(query, queryModel)) {
-            Model results = qExec.execConstruct();
-            results.listStatements().forEach(statementSet::add);
-        }
-    }
-
-    /**
      * Retrieves the IRI as a string from a row of Jena Result Set if it exists.
      *
      * @param soln     The row of Jena result set to retrieve information from.

@@ -61,7 +61,7 @@ public class FacetedBrep {
         StatementHandler.addStatement(statementSet, this.bimIRI, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_FACETED_BREP_CLASS);
         StatementHandler.addStatement(statementSet, this.bimIRI, OntoBimConstant.BIM_HAS_EXTERIOR_BOUNDARY, this.closedShellIRI);
         StatementHandler.addStatement(statementSet, this.closedShellIRI, OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_CLOSED_SHELL_CLASS);
-        while(!this.faces.isEmpty()){
+        while (!this.faces.isEmpty()) {
             Object[] currentFaceValues = this.faces.poll();
             StatementHandler.addStatement(statementSet, this.closedShellIRI, OntoBimConstant.BIM_HAS_CONNECTED_FACES, currentFaceValues[0]);
             StatementHandler.addStatement(statementSet, (String) currentFaceValues[0], OntoBimConstant.RDF_TYPE, OntoBimConstant.BIM_FACE_CLASS);

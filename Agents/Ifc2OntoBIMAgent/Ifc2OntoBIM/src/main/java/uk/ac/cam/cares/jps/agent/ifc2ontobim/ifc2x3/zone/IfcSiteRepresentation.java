@@ -16,7 +16,7 @@ import java.util.UUID;
  * @author qhouyee
  */
 public class IfcSiteRepresentation extends IfcAbstractRepresentation {
-    private String botSiteIRI;
+    private final String botSiteIRI;
     private Double latitudeDegree;
     private Double latitudeMinute;
     private Double latitudeSecond;
@@ -58,8 +58,13 @@ public class IfcSiteRepresentation extends IfcAbstractRepresentation {
         }
     }
 
-    public String getBotSiteIRI() {return botSiteIRI;}
-    protected Double getRefElevation() {return this.refElevation;}
+    public String getBotSiteIRI() {
+        return botSiteIRI;
+    }
+
+    protected Double getRefElevation() {
+        return this.refElevation;
+    }
 
     /**
      * Parses the latitude and longitude values for validation and attaching their values.

@@ -1,23 +1,12 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.utils;
 
 import org.junit.jupiter.api.Test;
-import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StringUtils;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class StringUtilsTest {
     private final String testStr = "sample#test#string#one#two";
     private final String testChar = "#";
-
-    @Test
-    void testGetStringBeforeFirstCharacterOccurrence() {
-        assertEquals("sample", StringUtils.getStringBeforeFirstCharacterOccurrence(testStr, testChar));
-    }
-
-    @Test
-    void testGetStringBeforeFirstCharacterOccurrenceFail() {
-        assertEquals(testStr, StringUtils.getStringBeforeFirstCharacterOccurrence(testStr, "+"));
-    }
 
     @Test
     void testGetStringBeforeLastCharacterOccurrence() {

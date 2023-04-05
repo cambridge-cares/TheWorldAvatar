@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim;
 
-import org.apache.lucene.util.packed.PagedGrowableWriter;
-
 import java.util.ArrayList;
 import java.util.List;
 

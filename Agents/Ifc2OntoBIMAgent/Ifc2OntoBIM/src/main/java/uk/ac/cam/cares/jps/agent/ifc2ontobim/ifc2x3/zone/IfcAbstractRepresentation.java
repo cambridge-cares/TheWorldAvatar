@@ -37,15 +37,25 @@ public class IfcAbstractRepresentation {
         this.placementIri = StatementHandler.createInstanceFromIRI(placementIri, OntoBimConstant.LOCAL_PLACEMENT_CLASS);
     }
 
-    protected String getIri() { return this.iri;}
+    protected String getIri() {
+        return this.iri;
+    }
 
-    protected String getPrefix() { return this.prefix;}
+    protected String getPrefix() {
+        return this.prefix;
+    }
 
-    protected String getName() { return this.name;}
+    protected String getName() {
+        return this.name;
+    }
 
-    protected String getUid() { return this.uid;}
+    protected String getUid() {
+        return this.uid;
+    }
 
-    protected String getPlacementIri() { return this.placementIri;}
+    protected String getPlacementIri() {
+        return this.placementIri;
+    }
 
     /**
      * An abstract method that must be overridden and used in each subclass

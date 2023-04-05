@@ -36,7 +36,7 @@ public class OntoBimConstant {
     public static final String BIM_HAS_CONTEXT = NamespaceMapper.BIM_NAMESPACE + "hasContext";
     public static final String BIM_HAS_SPACE_DIMENSION = NamespaceMapper.BIM_NAMESPACE + "hasSpaceDimensions";
     public static final String BIM_HAS_PRECISION = NamespaceMapper.BIM_NAMESPACE + "hasPrecision";
-    public static final String BIM_HAS_TRUE_NORTH= NamespaceMapper.BIM_NAMESPACE + "hasTrueNorth";
+    public static final String BIM_HAS_TRUE_NORTH = NamespaceMapper.BIM_NAMESPACE + "hasTrueNorth";
     public static final String BIM_HAS_WCS = NamespaceMapper.BIM_NAMESPACE + "hasWorldCoordinateSystem";
     // OntoBIM element geometry properties
     public static final String BIM_HAS_GEOM_REP = NamespaceMapper.BIM_NAMESPACE + "hasGeometricRepresentation";

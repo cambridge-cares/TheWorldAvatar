@@ -75,7 +75,7 @@ public class BuildingStructureFacade {
                 // Add the object into the mappings for its IRI
                 this.modelRepMappings.add(iri, geomModel);
                 // Construct the element's instance and its statements
-                Ceiling ceiling = new Ceiling( name, uid, placement, hostZone, geomModel.getBimIri());
+                Ceiling ceiling = new Ceiling(name, uid, placement, hostZone, geomModel.getBimIri());
                 ceiling.constructStatements(statementSet);
             }
         }

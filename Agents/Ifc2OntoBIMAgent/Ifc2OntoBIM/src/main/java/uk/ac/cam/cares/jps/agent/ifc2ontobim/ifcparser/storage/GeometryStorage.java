@@ -56,7 +56,7 @@ public class GeometryStorage {
     /**
      * A method to store the data IRI and its associated geometry's Java object as mappings.
      *
-     * @param iri      The data IRI generated from IfcOwl.
+     * @param iri  The data IRI generated from IfcOwl.
      * @param brep The FacetedBrep object generated from the iri.
      */
     public void add(String iri, FacetedBrep brep) {

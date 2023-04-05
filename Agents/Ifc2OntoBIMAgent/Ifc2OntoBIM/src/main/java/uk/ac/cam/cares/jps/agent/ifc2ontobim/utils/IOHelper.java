@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
+
 /**
  * Provide helper methods to handle simple input and output operations.
  *
@@ -38,8 +39,6 @@ public class IOHelper {
             throw new JPSRuntimeException("Temporary file cannot be created! See error message for more details: " + e);
         }
     }
-
-
 
     /**
      * Standard method to write triples to an intermediate temporary file. This method is intended to store statements

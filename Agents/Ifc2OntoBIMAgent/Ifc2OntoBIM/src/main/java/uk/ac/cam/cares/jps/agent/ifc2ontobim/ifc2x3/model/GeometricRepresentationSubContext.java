@@ -7,7 +7,6 @@ import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.StatementHandler;
 import java.util.LinkedHashSet;
 
 public class GeometricRepresentationSubContext {
-
     private final String iri;
     private final String parentContextIRI;
     private final String targetViewIRI;

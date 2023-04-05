@@ -24,7 +24,7 @@ public class GeometricRepresentationContext {
      */
     public GeometricRepresentationContext(String iri, String spaceDimension, String precision, String worldCoordinateSysIri, String trueNorthDirectionIRI) {
         // Generate new geometric representation context IRI
-        this.iri = StatementHandler.createInstanceFromIRI(iri,OntoBimConstant.GEOM_CONTEXT_CLASS);
+        this.iri = StatementHandler.createInstanceFromIRI(iri, OntoBimConstant.GEOM_CONTEXT_CLASS);
         this.dimension = Double.valueOf(spaceDimension);
         this.wcsIri = StatementHandler.createInstanceFromIRI(worldCoordinateSysIri, OntoBimConstant.LOCAL_PLACEMENT_CLASS);
         // Parse the optional values
@@ -36,7 +36,9 @@ public class GeometricRepresentationContext {
         }
     }
 
-    public String getIri() {return this.iri;}
+    public String getIri() {
+        return this.iri;
+    }
 
     /**
      * Generate and add the statements required for this Class to the statement set input.

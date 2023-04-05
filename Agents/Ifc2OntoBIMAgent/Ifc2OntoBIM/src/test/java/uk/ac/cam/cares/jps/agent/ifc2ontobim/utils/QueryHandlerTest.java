@@ -82,7 +82,6 @@ class QueryHandlerTest {
     private static final String testVoidGeomVar = "voidgeometry";
     private static final String testVoidGeomIri = testBaseUri + "IfcExtrudedAreaSolid_3151";
     private static final String testVoidGeomBimIri = testBaseUri + "ExtrudedAreaSolid_3151";
-    private static final String testVoidGeomType = JunitTestUtils.bimUri + "ExtrudedAreaSolid";
     private static final String testVoidShapeRepTypeVar = "voidshapereptype";
     private static final String testVoidShapeRepType = "SweptSolid";
     private static final boolean testBooleanLiteral = true;
@@ -125,21 +124,6 @@ class QueryHandlerTest {
         }
         assertTrue(expected.contains(JunitTestUtils.bimUri + inst));
         assertTrue(expected.contains(JunitTestUtils.bimUri + secondInst));
-    }
-
-    @Test
-    void testQueryConstructStatementsAsSet() {
-        Model sampleModel = this.genSampleModel();
-        LinkedHashSet<Statement> results = new LinkedHashSet<>();
-        QueryHandler.queryConstructStatementsAsSet(this.genSampleConstructQuery(), sampleModel, results);
-        // Store the results as string to make it easier to compare
-        List<String> strResults = new ArrayList<>();
-        results.forEach(statement -> strResults.add(statement.toString()));
-        // Generate the expected statements
-        String firstStatement = "[" + JunitTestUtils.bimUri + inst + ", " + RDF.type + ", " + JunitTestUtils.bimUri + testConstructClass + "]";
-        String secondStatement = "[" + JunitTestUtils.bimUri + secondInst + ", " + RDF.type + ", " + JunitTestUtils.bimUri + testConstructClass + "]";
-        assertTrue(strResults.contains(firstStatement));
-        assertTrue(strResults.contains(secondStatement));
     }
 
     @Test

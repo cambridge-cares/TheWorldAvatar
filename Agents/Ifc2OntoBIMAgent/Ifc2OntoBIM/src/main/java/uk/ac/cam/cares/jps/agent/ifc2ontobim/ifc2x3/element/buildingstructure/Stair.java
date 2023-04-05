@@ -31,7 +31,9 @@ public class Stair extends IfcModelRepresentation {
         this.hostZoneIRI = hostZoneIri;
     }
 
-    public String getBIMIri() { return this.elementIRI;}
+    public String getBIMIri() {
+        return this.elementIRI;
+    }
 
     /**
      * Generate and add the statements required for this Class to the statement set input.

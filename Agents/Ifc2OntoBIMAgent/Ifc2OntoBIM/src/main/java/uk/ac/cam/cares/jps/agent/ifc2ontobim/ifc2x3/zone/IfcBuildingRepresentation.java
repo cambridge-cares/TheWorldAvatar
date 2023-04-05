@@ -14,8 +14,8 @@ import java.util.UUID;
  * @author qhouyee
  */
 public class IfcBuildingRepresentation extends IfcAbstractRepresentation {
-    private String siteIRI;
-    private String botBuildingIRI;
+    private final String siteIRI;
+    private final String botBuildingIRI;
     private final String projectIRI;
     private final Double refElevation;
     private final Double terrainElevation;
@@ -33,7 +33,7 @@ public class IfcBuildingRepresentation extends IfcAbstractRepresentation {
      */
     public IfcBuildingRepresentation(String name, String uid, String placementIri, String projectIri, String siteIri, String refElevation, String terElevation) {
         // Initialise the super class
-        super(OntoBimConstant.BUILDING_REP_CLASS,  name, uid, placementIri);
+        super(OntoBimConstant.BUILDING_REP_CLASS, name, uid, placementIri);
         this.siteIRI = siteIri;
         // Generate a new bot Building IRI
         this.botBuildingIRI = this.getPrefix() + OntoBimConstant.BUILDING_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
@@ -54,9 +54,17 @@ public class IfcBuildingRepresentation extends IfcAbstractRepresentation {
         }
     }
 
-    public String getBotBuildingIRI() {return botBuildingIRI;}
-    protected Double getRefElevation() {return this.refElevation;}
-    protected Double getTerElevation() {return this.terrainElevation;}
+    public String getBotBuildingIRI() {
+        return botBuildingIRI;
+    }
+
+    protected Double getRefElevation() {
+        return this.refElevation;
+    }
+
+    protected Double getTerElevation() {
+        return this.terrainElevation;
+    }
 
     /**
      * Generate and add the statements required for this Class to the statement set input.

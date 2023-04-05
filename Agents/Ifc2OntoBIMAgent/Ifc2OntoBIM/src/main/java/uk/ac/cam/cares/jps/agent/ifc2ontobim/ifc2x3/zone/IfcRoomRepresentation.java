@@ -19,20 +19,22 @@ public class IfcRoomRepresentation extends IfcAbstractRepresentation {
     /**
      * Standard Constructor initialising the necessary and optional inputs.
      *
-     * @param name      The name of this IFC object.
-     * @param uid       The IFC uid generated for this object.
+     * @param name         The name of this IFC object.
+     * @param uid          The IFC uid generated for this object.
      * @param placementIri The local placement IRI for the zone's position.
-     * @param storeyIri The IRI of bot:Storey that is linked to this building instance.
+     * @param storeyIri    The IRI of bot:Storey that is linked to this building instance.
      */
     public IfcRoomRepresentation(String name, String uid, String placementIri, String storeyIri) {
         // Initialise the super class
-        super(OntoBimConstant.ROOM_REP_CLASS,  name, uid, placementIri);
+        super(OntoBimConstant.ROOM_REP_CLASS, name, uid, placementIri);
         this.storeyIRI = storeyIri;
         // Generate a new bim Room IRI
         this.bimRoomIRI = this.getPrefix() + OntoBimConstant.ROOM_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
     }
 
-    public String getBimRoomIRI() {return bimRoomIRI;}
+    public String getBimRoomIRI() {
+        return bimRoomIRI;
+    }
 
     /**
      * Generate and add the statements required for this Class to the statement set input.

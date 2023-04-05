@@ -29,7 +29,7 @@ public class IfcStoreyRepresentation extends IfcAbstractRepresentation {
      */
     public IfcStoreyRepresentation(String name, String uid, String placementIri, String buildingIri, String refElevation) {
         // Initialise the super class
-        super(OntoBimConstant.STOREY_REP_CLASS,  name, uid, placementIri);
+        super(OntoBimConstant.STOREY_REP_CLASS, name, uid, placementIri);
         this.buildingIRI = buildingIri;
         // Generate a new bot Storey IRI
         this.botStoreyIRI = this.getPrefix() + OntoBimConstant.STOREY_CLASS + OntoBimConstant.UNDERSCORE + UUID.randomUUID();
@@ -42,8 +42,13 @@ public class IfcStoreyRepresentation extends IfcAbstractRepresentation {
         }
     }
 
-    public String getBotStoreyIRI() {return botStoreyIRI;}
-    protected Double getRefElevation() {return this.refElevation;}
+    public String getBotStoreyIRI() {
+        return botStoreyIRI;
+    }
+
+    protected Double getRefElevation() {
+        return this.refElevation;
+    }
 
     /**
      * Generate and add the statements required for this Class to the statement set input.
