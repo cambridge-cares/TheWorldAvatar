@@ -30,7 +30,7 @@ public class BMSQueryAgent {
     RemoteStoreClient rsClient;
     List<String> kgUrls;
 
-    private final String BOT_STR =  "https://w3id.org/bot#";
+    private final String BOT_STR = "https://w3id.org/bot#";
     private final Prefix P_BOT = SparqlBuilder.prefix("bot", iri(BOT_STR));
 
     private final String BIM_STR = "http://www.theworldavatar.com/kg/ontobim/";
@@ -60,6 +60,7 @@ public class BMSQueryAgent {
         Variable roomLabel = SparqlBuilder.var("roomLabel");
         TriplePattern getRoomsNames = GraphPatterns.tp(room, ifcLabel, roomLabel);
 
+        // allow optional in (facility and room), optional in room
         SelectQuery query = Queries.SELECT();
         query.prefix(P_BIM, P_BOT)
                 .distinct()
@@ -71,12 +72,9 @@ public class BMSQueryAgent {
                         facilityLabel,
                         roomLabel)
                 .where(getAllBuildings,
-                    getAllFacilitiesInBuildings,
-                    getBuildingsNames,
-                    getFacilitiesTypes,
-                    getFacilitiesNames,
-                    getAllRoomsInFacilities,
-                    getRoomsNames
+                        getBuildingsNames,
+                        GraphPatterns.optional(getAllFacilitiesInBuildings, getFacilitiesTypes, getFacilitiesNames,
+                                GraphPatterns.optional(getAllRoomsInFacilities, getRoomsNames))
                 );
 
         JSONArray jsonResult;
@@ -91,15 +89,13 @@ public class BMSQueryAgent {
         return parseTableToJSONObj(jsonResult);
     }
 
-    JSONObject parseTableToJSONObj(JSONArray ja) {
+    private JSONObject parseTableToJSONObj(JSONArray ja) {
         JSONObject result = new JSONObject();
         result.put("buildings", new HashMap<>());
         for (int i = 0; i < ja.length(); i++) {
             JSONObject originalJo = ja.getJSONObject(i);
-            String building = originalJo.getString("building");
-            String facility = originalJo.getString("facility");
-            String room = originalJo.getString("room");
 
+            String building = originalJo.getString("building");
             JSONObject buildings = result.getJSONObject("buildings");
             if (!buildings.keySet().contains(building)) {
                 buildings.put(building, new HashMap<>());
@@ -107,6 +103,10 @@ public class BMSQueryAgent {
                 buildings.getJSONObject(building).put("facilities", new HashMap<>());
             }
 
+            if (!originalJo.has("facility")) {
+                continue;
+            }
+            String facility = originalJo.getString("facility");
             JSONObject facilities = buildings.getJSONObject(building).getJSONObject("facilities");
             if (!facilities.keySet().contains(facility)) {
                 facilities.put(facility, new HashMap<>());
@@ -114,6 +114,10 @@ public class BMSQueryAgent {
                 facilities.getJSONObject(facility).put("rooms", new HashMap<>());
             }
 
+            if (!originalJo.has("room")) {
+                continue;
+            }
+            String room = originalJo.getString("room");
             JSONObject rooms = facilities.getJSONObject(facility).getJSONObject("rooms");
             rooms.put(room, new HashMap<>());
             rooms.getJSONObject(room).put("label", originalJo.getString("roomLabel"));
@@ -163,8 +167,8 @@ public class BMSQueryAgent {
             if (label.charAt(0) == '"') {
                 label = label.substring(1);
             }
-            if (label.charAt(label.length()-1) == '"') {
-                label = label.substring(0, label.length()-1);
+            if (label.charAt(label.length() - 1) == '"') {
+                label = label.substring(0, label.length() - 1);
             }
             jo.put("label", label);
         }
