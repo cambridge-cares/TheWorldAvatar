@@ -65,10 +65,10 @@ let staticHTML = `
     <div class="legend-section">
         <div class="legend-upper">
             <h3>Flood Alert and Warning Types</h3>
-            <br/>
             <i class="fas fa-angle-up fa-lg" onclick="toggleLegend(this, 'warnings-lower')"></i>
         </div>
         <div class="legend-lower" id="warnings-lower">
+            <br/>
             <img src="data/icons/flood_warning_types.png" height="130px">
         </div>
     </div>
@@ -101,41 +101,41 @@ let staticHTML = `
         <div class="legend-lower" id="network-lower">
             <h4>Water Network:</h4>
             <div class="legend-entry">
-                <img src="./icons/legend/water-clean.png"/>
+                <img src="data/icons/water-clean.png"/>
                 <p>Water Sites</p>
             </div>
             <div class="legend-entry">
-                <img src="./icons/legend/water-sewage.png"/>
+                <img src="data/icons/water-sewage.png"/>
                 <p>Sewage Sites</p>
             </div>
             <div class="legend-entry">
-                <img src="./icons/legend/water-sludge.png"/>
+                <img src="data/icons/water-sludge.png"/>
                 <p>Sludge Sites</p>
             </div>
             <h4>Power Network:</h4>
             <div class="legend-entry">
-                <img src="./icons/legend/power-primary.png"/>
+                <img src="data/icons/power-primary.png"/>
                 <p>Primary Substations</p>
             </div>
             <div class="legend-entry">
-                <img src="./icons/legend/power-secondary.png"/>
+                <img src="data/icons/power-secondary.png"/>
                 <p>Secondary Substations</p>
             </div>
             <h4>Status Indicators:</h4>
             <div class="legend-entry">
-                <img src="./icons/legend/low-primary-failure.png"/>
+                <img src="data/icons/low-primary-failure.png"/>
                 <p>Direct failure</p>
             </div>
             <div class="legend-entry">
-                <img src="./icons/legend/low-secondary-failure.png" />
+                <img src="data/icons/low-secondary-failure.png" />
                 <p>Indirect failure</p>
             </div>
             <div class="legend-entry">
-                <img src="./icons/legend/low-tertiary-failure.png" />
+                <img src="data/icons/low-tertiary-failure.png" />
                 <p>Secondary failure</p>
             </div>
             <div class="legend-entry">
-                <img src="./icons/legend/connection-failed.png" />
+                <img src="data/icons/connection-failed.png" />
                 <p>Unsupplied connection</p>
             </div>
         </div>
