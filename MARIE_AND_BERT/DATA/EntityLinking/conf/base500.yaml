@@ -5,7 +5,7 @@ path_to_model_config: training_params.txt
 output_path: models
 cand_encode_path: embeddingbase.pt
 entity_dict_path: pubchem5000alt.jsonl
-smile_model_path: SMILES_NER_V8_combined_cased_smiles.bin
+smile_model_path: SMILES_NER_V10.bin
 
 #model_spec
 encode_batch_size: 8
