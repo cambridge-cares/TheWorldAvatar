@@ -9,6 +9,8 @@ services:
       target: agent
     environment:
       - "JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+      - "JAVA_OPTS=-Xmx8g -Xms8g -XX:InitialRAMPercentage=10 -XX:MinRAMPercentage=50 -XX:MaxRAMPercentage=80"
+
     ports:
       - "5005:5005"
       - "3025:8080"
