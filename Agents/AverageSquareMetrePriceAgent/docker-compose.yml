@@ -34,6 +34,10 @@ services:
       - LOG4J_FORMAT_MSG_NO_LOOKUPS=true
     ports:
       - "5011:5000"
+    # Enable unlimited request line length to allow for large sets of derivation inputs
+    # (details: https://docs.gunicorn.org/en/stable/settings.html#limit-request-line)
+    # NOTE: This should be used with caution, and only commented out if required/expected
+    #entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "avgsqmpriceagent:create_app()", "--preload", "--limit-request-line", "0"]
     volumes:
       - logs:/root/.jps
     configs:

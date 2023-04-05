@@ -6,13 +6,13 @@
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
      xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
-     xmlns:OntoFlood="https://www.theworldavatar.com/kg/ontoflood/"
+     xmlns:ontoflood="https://www.theworldavatar.com/kg/ontoflood/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoflood/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">22 April 2022</dc:date>
-        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">25 March 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Flood Risk Monitoring ontology (OntoFlood) is an ontology developed for representing flood events as well as flood warnings, together with the risk and (potential) impacts imposed by those events.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
+        <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
 
@@ -100,6 +100,30 @@
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has value</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.w3.org/2006/time#hasBeginning -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.w3.org/2006/time#hasBeginning">
+        <rdfs:domain rdf:resource="http://www.w3.org/2006/time#Interval"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2006/time#Instant"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/2006/time</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has beginning</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.w3.org/2006/time#hasEnd -->
+
+
+    <owl:ObjectProperty rdf:about="http://www.w3.org/2006/time#hasEnd">
+        <rdfs:domain rdf:resource="http://www.w3.org/2006/time#Interval"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2006/time#Instant"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/2006/time</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has end</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -306,7 +330,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoflood/hasTimeInterval">
         <rdfs:domain rdf:resource="http://sweetontology.net/phen/Event"/>
-        <rdfs:range rdf:resource="https://www.w3.org/2006/time#Interval"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2006/time#Interval"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an event and the time interval associated with the duration of the event.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoflood/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has time interval</rdfs:label>
@@ -392,30 +416,6 @@
     
 
 
-    <!-- https://www.w3.org/2006/time#hasBeginning -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.w3.org/2006/time#hasBeginning">
-        <rdfs:domain rdf:resource="https://www.w3.org/2006/time#Interval"/>
-        <rdfs:range rdf:resource="https://www.w3.org/2006/time#Instant"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.w3.org/2006/time</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has beginning</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.w3.org/2006/time#hasEnd -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.w3.org/2006/time#hasEnd">
-        <rdfs:domain rdf:resource="https://www.w3.org/2006/time#Interval"/>
-        <rdfs:range rdf:resource="https://www.w3.org/2006/time#Instant"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.w3.org/2006/time</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has end</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
@@ -496,6 +496,44 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.ontology-of-units-of-measure.org/resource/om-2/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">symbol</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.w3.org/2000/01/rdf-schema#label -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.w3.org/2000/01/rdf-schema#label">
+        <rdfs:domain rdf:resource="http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea"/>
+        <rdfs:domain rdf:resource="http://purl.obolibrary.org/obo/ENVO_00000063"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoflood/Likelihood"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoflood/PotentialImpact"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoflood/Severity"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.w3.org/2006/time#hasXSDDuration -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.w3.org/2006/time#hasXSDDuration">
+        <rdfs:domain rdf:resource="http://www.w3.org/2006/time#Interval"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/2006/time</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has duration</rdfs:label>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.w3.org/2006/time#inXSDDateTimeStamp -->
+
+
+    <owl:DatatypeProperty rdf:about="http://www.w3.org/2006/time#inXSDDateTimeStamp">
+        <rdfs:domain rdf:resource="http://www.w3.org/2006/time#Instant"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.w3.org/2006/time</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has time stamp</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -631,52 +669,6 @@
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontotimeseries/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has time unit</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- https://www.w3.org/2000/01/rdf-schema#label -->
-
-
-    <owl:DatatypeProperty rdf:about="https://www.w3.org/2000/01/rdf-schema#label">
-        <rdfs:domain rdf:resource="http://environment.data.gov.uk/flood-monitoring/def/core/FloodArea"/>
-        <rdfs:domain rdf:resource="http://purl.obolibrary.org/obo/ENVO_00000063"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoflood/Likelihood"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoflood/PotentialImpact"/>
-        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoflood/Severity"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a Flood Area and its textual description.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a water body and its textual description.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Textual description of the impact potential of a flood event (e.g. minimal, minor, significant, severe).</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Textual description of the likelihood of a flood event (e.g. very low, low, medium, high).</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Textual description of the severity of a flood warning/alert (e.g. minimal, minor, significant, severe).</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoflood/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has textual description</rdfs:label>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">label</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- https://www.w3.org/2006/time#hasXSDDuration -->
-
-
-    <owl:DatatypeProperty rdf:about="https://www.w3.org/2006/time#hasXSDDuration">
-        <rdfs:domain rdf:resource="https://www.w3.org/2006/time#Interval"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#duration"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.w3.org/2006/time</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has duration</rdfs:label>
-    </owl:DatatypeProperty>
-    
-
-
-    <!-- https://www.w3.org/2006/time#inXSDDateTimeStamp -->
-
-
-    <owl:DatatypeProperty rdf:about="https://www.w3.org/2006/time#inXSDDateTimeStamp">
-        <rdfs:domain rdf:resource="https://www.w3.org/2006/time#Instant"/>
-        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#dateTimeStamp"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.w3.org/2006/time</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has time stamp</rdfs:label>
     </owl:DatatypeProperty>
     
 
@@ -942,7 +934,7 @@
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontoflood/hasTimeInterval"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.w3.org/2006/time#Interval"/>
+                <owl:onClass rdf:resource="http://www.w3.org/2006/time#Interval"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://sweetontology.net/phen</rdfs:isDefinedBy>
@@ -1015,6 +1007,27 @@
     
 
 
+    <!-- http://www.opengis.net/ont/geosparql#Feature -->
+
+
+    <owl:Class rdf:about="http://www.opengis.net/ont/geosparql#Feature"/>
+    
+
+
+    <!-- http://www.w3.org/2006/time#Instant -->
+
+
+    <owl:Class rdf:about="http://www.w3.org/2006/time#Instant"/>
+    
+
+
+    <!-- http://www.w3.org/2006/time#Interval -->
+
+
+    <owl:Class rdf:about="http://www.w3.org/2006/time#Interval"/>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontoflood/AdministrativeDistrict -->
 
 
@@ -1041,6 +1054,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoflood/ArealExtentPolygon">
+        <rdfs:subClassOf rdf:resource="http://www.opengis.net/ont/geosparql#Feature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Polygon describing the footprint of an event.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoflood/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Areal extent polygon</rdfs:label>
@@ -1560,17 +1574,25 @@
     
 
 
-    <!-- https://www.w3.org/2006/time#Instant -->
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotations
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
 
 
-    <owl:Class rdf:about="https://www.w3.org/2006/time#Instant"/>
-    
-
-
-    <!-- https://www.w3.org/2006/time#Interval -->
-
-
-    <owl:Class rdf:about="https://www.w3.org/2006/time#Interval"/>
+    <rdf:Description rdf:about="http://www.w3.org/2000/01/rdf-schema#label">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a Flood Area and its textual description.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a water body and its textual description.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Textual description of the impact potential of a flood event (e.g. minimal, minor, significant, severe).</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Textual description of the likelihood of a flood event (e.g. very low, low, medium, high).</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Textual description of the severity of a flood warning/alert (e.g. minimal, minor, significant, severe).</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoflood/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has textual description</rdfs:label>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">label</rdfs:label>
+    </rdf:Description>
 </rdf:RDF>
 
 

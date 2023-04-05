@@ -143,6 +143,15 @@ def update_transaction_records(property_iris=None, min_conf_score=90,
         #      for pre-existing, and hence updated, transactions
         time_stamps_to_update.extend([t['tx_iri'] for t in matched_tx if t.get('tx_iri')])
     derivation_client.updateTimestamps(time_stamps_to_update)
+
+    if add_avgsqm_derivation_markup or add_propvalue_derivation_markup:
+        # Delete potential sales transaction duplicates per property
+        # NOTE: This should actually not be required, but is a safeguard in case
+        #       Potentially to be removed in future version, once issue with multiple
+        #       address details for some properties is resolved
+        logger.info('Deleting potential transaction duplicates ...')
+        update_query = delete_potential_transaction_duplicates()
+        kg_client_obe.performUpdate(update_query)
     
     if add_avgsqm_derivation_markup:
         # 6) Add derivation markup for Average Square Metre Price per Postal Code
@@ -298,36 +307,45 @@ def update_all_transaction_records(min_conf_score=90,
         instantiated_tx += tx_new
         updated_tx += tx_upd
 
+        # Delete potential sales transaction duplicates per property
+        # NOTE: This should actually not be required, but kept for reference in case
+        #       Potentially to be removed in future version, once issue with multiple
+        #       address details for some properties is resolved
+        #logger.info('Deleting potential transaction duplicates ...')
+        #update_query = delete_potential_transaction_duplicates()
+        #kg_client_obe.performUpdate(update_query)
+
         # 6) Add derivation markup for Average Square Metre Price per Postal Code
         # Retrieve relevant postal code info
         postal_code_info_lst = retrieve_avgsqmprice_postal_code_info(sparql_client=kg_client_obe,
                                                                      postcodes=pc)
         print(f'Adding derivation markup for {len(postal_code_info_lst)} postcodes ...')
         # Add derivation markup for each postal code
-        for i in range(len(postal_code_info_lst)):
-            logger.info(f"Processing postal code {i+1}/{len(postal_code_info_lst)}")
+        for j in range(len(postal_code_info_lst)):
+            logger.info(f"Processing postal code {j+1}/{len(postal_code_info_lst)}")
             avg_sqm_price_derivation_markup(
                 derivation_client=derivation_client,
                 sparql_client=kg_client_obe,
-                postal_code_iri=postal_code_info_lst[i]['postal_code'],
-                transaction_record_iri_lst=postal_code_info_lst[i]['tx'],
-                property_price_index_iri=postal_code_info_lst[i]['ppi'],
-                existing_avg_sqm_price_iri=postal_code_info_lst[i].get('asp'),
-                existing_asp_derivation_iri=postal_code_info_lst[i].get('derivation'),
-                existing_asp_derivation_tx_iri_lst=postal_code_info_lst[i].get('deriv_tx'),
+                postal_code_iri=postal_code_info_lst[j]['postal_code'],
+                transaction_record_iri_lst=postal_code_info_lst[j]['tx'],
+                property_price_index_iri=postal_code_info_lst[j]['ppi'],
+                existing_avg_sqm_price_iri=postal_code_info_lst[j].get('asp'),
+                existing_asp_derivation_iri=postal_code_info_lst[j].get('derivation'),
+                existing_asp_derivation_tx_iri_lst=postal_code_info_lst[j].get('deriv_tx'),
             )
         # Allow for some time to update derivations in KG (10s is arbitrary)
         logger.info(f"Derivation markup for postcodes completed. Waiting shortly before continuing with properties ...")
         time.sleep(10)
     
         # 7) Add derivation markup for Market Value Estimate per Property
-        #    (optional as more efficient in update_all_transaction_records considering all postcodes)        # Retrieve relevant property info
+        #    (optional as more efficient in update_all_transaction_records considering all postcodes)        
+        # Retrieve relevant property info
         property_info_dct = retrieve_marketvalue_property_info(sparql_client=kg_client_obe,
                                                                property_iris=prop_iris)
         print(f'Adding derivation markup for {len(property_info_dct)} properties ...')
         # Add derivation markup for each property
-        for i, (iri, info) in enumerate(property_info_dct.items()):
-            logger.info(f"Processing property {i+1}/{len(property_info_dct)}")
+        for k, (iri, info) in enumerate(property_info_dct.items()):
+            logger.info(f"Processing property {k+1}/{len(property_info_dct)}")
             property_value_estimation_derivation_markup(
                 derivation_client=derivation_client,
                 sparql_client=kg_client_obe,
@@ -385,6 +403,17 @@ def create_conditioned_dataframe_obe(sparql_results:list) -> pd.DataFrame:
                                                       df['bldg_name'], df['unit_name'])]
         # Remove unnecessary whitespaces
         df['epc_address'] = df['epc_address'].apply(lambda x: ' '.join(x.split()))
+
+        # Remove potentially duplicated properties, i.e.
+        # NOTE: It has been observed that a minor fraction of properties (<10 in 
+        #       set >13000 properties) gets assigned multiple address details (e.g. 
+        #       2 street names). To avoid instantiation of multiple transaction 
+        #       records for property (which is based on address matching), 
+        #       remove duplicated IRIs
+        # TODO: Understand why multiple address details get instantiated in the 
+        #       first place in EPC Agent (likely some issue with instantiation of
+        #       parent building when only containing one other property/flat)
+        df.drop_duplicates(subset=['property_iri'], keep='first', inplace=True)
 
         return df
 

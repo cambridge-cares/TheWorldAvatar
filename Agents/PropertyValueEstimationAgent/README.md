@@ -38,6 +38,8 @@ REGISTER_AGENT                # Boolean flag whether to register agent in KG (`t
 ```
 After estimating the latest property market values, they are also uploaded to PostGIS for visualisation/styling purposes using Geoserver. Hence, the required PostGIS and Geoserver settings.
 
+To allow for large derivation input sets, the `"--limit-request-line", "0"` flag should be included in the `entrypoint` command list. The required line is provided in the [Docker compose file] and can be uncommented if needed. If not, requests for synchronous derivation update via HTTP GET which exceed the default line limit of the gunicorn server will result in `Request Line is too large` exceptions.
+
 ### **2) Accessing Github's Container registry**
 
 While building the Docker image of the agent, it also gets pushed to the [Container registry on Github]. **Please note** that this only applies to the stack-deployable images of the agent (i.e. images mentioned in section 1.3) and not the test images. Access needs to be ensured beforehand via your github [personal access token], which must have a `scope` that [allows you to publish and install packages]. To log in to the [Container registry on Github] simply run the following command to establish the connection and provide the access token when prompted:
