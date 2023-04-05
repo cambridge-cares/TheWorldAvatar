@@ -27,26 +27,11 @@ WORKDIR /app
 # Copy in the properties file
 COPY ./config/agent.properties /root/agent.properties
 
-# Set the required environment variable
-ENV HISTORICALNTUENERGY_AGENTPROPERTIES="/root/agent.properties"
-
 # Copy in the properties file
 COPY ./config/xlsxconnector.properties /root/xlsxconnector.properties
 
-# Set the required environment variable
-ENV HISTORICALNTUENERGY_XLSXCONNECTORPROPERTIES="/root/xlsxconnector.properties"
-
-# Copy in the properties file
-COPY ./config/client.properties /root/client.properties
-
-# Set the required environment variable
-ENV HISTORICALNTUENERGY_CLIENTPROPERTIES="/root/client.properties"
-
 # Copy in the mapping folder
 COPY ./config/mappings /root/mappings
-
-# Set the required environment variable
-ENV HISTORICALNTUENERGY_AGENT_MAPPINGS="/root/mappings"
 
 # Copy in the energy data
 COPY ./data/NTU_Energy_Consumption.xlsx /root/NTU_Energy_Consumption.xlsx

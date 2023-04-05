@@ -4,7 +4,19 @@ services:
   historical-ntuenergy-agent:
     image: historical-ntuenergy-agent:1.0.0
     build: .
-    container_name: historical-ntuenergy-agent
-    pull_policy: if_not_present
-    ports:
-      - "1080:8080"
+    configs:
+      - blazegraph
+      - ontop
+      - postgis
+    secrets:
+      - postgis_password
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      - HISTORICALNTUENERGY_AGENTPROPERTIES=/root/agent.properties
+      - HISTORICALNTUENERGY_XLSXCONNECTORPROPERTIES=/root/xlsxconnector.properties
+      - HISTORICALNTUENERGY_AGENT_MAPPINGS=/root/mappings
+
+#    container_name: historical-ntuenergy-agent
+#    pull_policy: if_not_present
+#    ports:
+#      - "48086:8080"

@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import java.io.IOException;
@@ -20,10 +21,9 @@ import org.apache.logging.log4j.Logger;
 
 @WebServlet(urlPatterns = {"/retrieve"})
 public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
-	
-	public static final String KEY_AGENTPROPERTIES = "agentProperties";
-	public static final String KEY_XLSXCONNECTORPROPERTIES = "xlsxConnectorProperties";
-	public static final String KEY_CLIENTPROPERTIES = "clientProperties";
+
+    public static final String KEY_AGENTPROPERTIES = "agentProperties";
+    public static final String KEY_XLSXCONNECTORPROPERTIES = "xlsxConnectorProperties";
 
     /**
      * Logger for reporting info/errors.
@@ -32,7 +32,7 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
     /**
      * Logging / error messages
      */
-    private static final String ARGUMENT_MISMATCH_MSG = "Need three properties files in the following order: 1) input agent 2) time series client 3) xlsx connector.";
+    private static final String NAMESPACE_NOTFOUND_MSG = "Could not find a knowledge base endpoint for ntuenergy, please create a namespace ntuenergy";
     private static final String AGENT_ERROR_MSG = "The Historical NTUEnergy agent could not be constructed!";
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
     private static final String INITIALIZE_ERROR_MSG = "Could not initialize time series.";
@@ -44,81 +44,72 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         return processRequestParameters(requestParams);
-    } 
-    
-    
+    }
+
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
-    	JSONObject jsonMessage = new JSONObject();
-      if (validateInput(requestParams)) {
-        	LOGGER.info("Passing request to Historical NTUEnergy Agent..");
+        JSONObject jsonMessage = new JSONObject();
+        if (validateInput(requestParams)) {
             String agentProperties = System.getenv(requestParams.getString(KEY_AGENTPROPERTIES));
-            String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
             String xlsxConnectorProperties = System.getenv(requestParams.getString(KEY_XLSXCONNECTORPROPERTIES));
-            String[] args = new String[] {agentProperties,clientProperties, xlsxConnectorProperties};
-          try {
-              jsonMessage = initializeAgent(args);
-          } catch (IOException e) {
-              throw new RuntimeException(e);
-          }
-
-          jsonMessage.accumulate("Result", "Timeseries Data has been updated.");
+            String[] properties = new String[] {agentProperties, xlsxConnectorProperties};
+            jsonMessage = initializeAgent(properties);
+            jsonMessage.accumulate("Result", "Timeseries Data has been updated.");
             requestParams = jsonMessage;
-            }
-      else {
-    	  jsonMessage.put("Result", "Request parameters are not defined correctly.");
-    	  requestParams = jsonMessage;
-      }
-	return requestParams;
-}
+        }
+        else {
+            jsonMessage.put("Result", "Request parameters are not defined correctly.");
+            requestParams = jsonMessage;
+        }
+        return requestParams;
+    }
 
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams == null || requestParams.isEmpty()) {
             return false;
         }
-
         String agentProperties = requestParams.optString(KEY_AGENTPROPERTIES);
-        String clientProperties = requestParams.optString(KEY_CLIENTPROPERTIES);
         String xlsxConnectorProperties = requestParams.optString(KEY_XLSXCONNECTORPROPERTIES);
 
-        return validateProperty(agentProperties) && validateProperty(clientProperties) && validateProperty(xlsxConnectorProperties);
+        return validateProperty(agentProperties) && validateProperty(xlsxConnectorProperties);
     }
 
     private boolean validateProperty(String property) {
         if (property == null || property.isEmpty()) {
             return false;
         }
-
         String value = System.getenv(property);
         return (value != null && !value.isEmpty());
     }
 
-    public static JSONObject initializeAgent(String[] args) throws JPSRuntimeException, IOException {
-    	JSONObject jsonMessage = new JSONObject();
-        // Ensure that there are three properties files
-        if (args.length != 3) {
-            LOGGER.error(ARGUMENT_MISMATCH_MSG);
-            throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
-        }
-        LOGGER.debug("Launcher called with the following files: " + String.join(" ", args));
+    public static JSONObject initializeAgent(String[] properties) {
+        JSONObject jsonMessage = new JSONObject();
+        EndpointConfig config = new EndpointConfig();
 
-        // Create the agent
         HistoricalNTUEnergyAgent agent;
         try {
-            agent = new HistoricalNTUEnergyAgent(args[0]);
+            agent = new HistoricalNTUEnergyAgent(properties[0]);
         } catch (IOException e) {
             LOGGER.error(AGENT_ERROR_MSG, e);
             throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
         }
-        LOGGER.info("Input agent object initialized.");
 
-        // Create and set the time series client
-        TimeSeriesClient<OffsetDateTime> tsClient;
+        RemoteStoreClient kbClient = null;
+        for (String endpoint : config.getKgurls()) {
+            if (endpoint.contains("ntuenergy")){
+                kbClient = new RemoteStoreClient(endpoint, endpoint, config.getKguser(), config.getKgpassword());
+            }
+        }
+        if (kbClient == null) {
+            throw new JPSRuntimeException(NAMESPACE_NOTFOUND_MSG);
+        }
+        TimeSeriesClient timeSeriesClient;
         try {
-            tsClient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
-            agent.setTsClient(tsClient);
-        } catch (IOException | JPSRuntimeException e) {
+            //timeSeriesClient = new TimeSeriesClient(properties[1]);
+            timeSeriesClient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, config.getDburl(), config.getDbuser(), config.getDbpassword());
+            agent.setTsClient(timeSeriesClient);
+        } catch (JPSRuntimeException e) {
             LOGGER.error(TSCLIENT_ERROR_MSG, e);
             throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e);
         }
@@ -136,7 +127,7 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
         // Create the connector to interact with the Energy XLSX
         HistoricalNTUEnergyAgentXLSXConnector connector;
         try {
-            connector = new HistoricalNTUEnergyAgentXLSXConnector(System.getenv("ENERGY_READINGS"), args[2]);
+            connector = new HistoricalNTUEnergyAgentXLSXConnector(System.getenv("ENERGY_READINGS"), properties[1]);
         } catch (IOException e) {
             LOGGER.error(CONNECTOR_ERROR_MSG, e);
             throw new JPSRuntimeException(CONNECTOR_ERROR_MSG, e);
@@ -171,10 +162,16 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
             LOGGER.error(ONE_READING_EMPTY_ERROR_MSG);
             throw new JPSRuntimeException(ONE_READING_EMPTY_ERROR_MSG);
         }
+
         HistoricalQueryBuilder queryBuilder;
-        queryBuilder = new HistoricalQueryBuilder(args[0],args[1]);
-        LOGGER.info("QueryBuilder constructed");
+        try{
+            queryBuilder = new HistoricalQueryBuilder(properties[0],kbClient);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         queryBuilder.instantiateTriples();
+
         return jsonMessage;
     }
 

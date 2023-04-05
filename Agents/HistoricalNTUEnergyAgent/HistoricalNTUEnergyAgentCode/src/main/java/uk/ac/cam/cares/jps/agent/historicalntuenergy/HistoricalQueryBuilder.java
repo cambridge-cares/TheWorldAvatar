@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.historicalntuenergy;
 import com.hp.hpl.jena.graph.Triple;
 import org.json.JSONObject;
+import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 
 import java.io.File;
@@ -41,9 +42,9 @@ public class HistoricalQueryBuilder {
      */
     public static final String PowsysPrefix = "https://www.theworldavatar.com/kg/ontopowsys/";
     public static final String OmPrefix = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
+    public static final String OntoCapeUnitPrefix = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#";
     public static final String generatedIRIPrefix = OmPrefix + "measure";
-    public String queryEndpoint;
-    public String updateEndpoint;
+
 
     /**
      * Classes
@@ -57,7 +58,7 @@ public class HistoricalQueryBuilder {
     public static final String absorbedReactivePower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#AbsorbedReactivePower";
     public static final String voltageAngle = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#VoltageAngle";
     public static final String voltageMagnitude = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#VoltageMagnitude";
-
+    public static final String SIDerivedUnit = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit";
 
     /**
      * Model variables
@@ -82,14 +83,22 @@ public class HistoricalQueryBuilder {
     private static final String isModeledBy = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isModeledBy";
     private static final String hasModelVariable = "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable";
     private static final String numericalValue = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue";
+    private static final String hasUnitOfMeasure = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure";
 
     /**
      * Individuals
      */
     private static final String kilowatt = OmPrefix + "kilowatt";
     private static final String kilovoltamperereactive = OmPrefix + "kilovoltamperereactive";
-    private static final String degree = OmPrefix + "degree";
+    private static final String omDegree = OmPrefix + "degree";
     private static final String kilovolt = OmPrefix + "kilovolt";
+
+    public static final String MW = OntoCapeUnitPrefix + "MW";
+    public static final String Mvar = OntoCapeUnitPrefix + "Mvar";
+    public static final String MVA = OntoCapeUnitPrefix + "MVA";
+    public static final String degree = OntoCapeUnitPrefix + "degree";
+    public static final String kV = OntoCapeUnitPrefix + "kV";
+
 
     /**
      * NTU building to Bus number mapping
@@ -119,17 +128,15 @@ public class HistoricalQueryBuilder {
 
     RemoteStoreClient kbClient;
     public String agentProperties;
-    public String clientProperties;
+
     private List<JSONKeyToIRIMapper> mappings;
 
-    public HistoricalQueryBuilder(String agentProp, String clientProp) throws IOException
+    public HistoricalQueryBuilder(String agentProp, RemoteStoreClient kbClient) throws IOException
     {
         agentProperties = agentProp;
-        clientProperties = clientProp;
-
-        loadconfigs(clientProperties);
         //readings endpoints from client.properties
         loadproperties(agentProperties);
+        this.kbClient = kbClient;
 
         // Specifies the relationship between building names and bus node numbers
         // This can be improved by importing a data file
@@ -160,8 +167,8 @@ public class HistoricalQueryBuilder {
         busParams.put("Va", Arrays.asList("0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"));
         busParams.put("baseKV", Arrays.asList("11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "11", "11"));
         busParams.put("Zone", Arrays.asList("1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1"));
-        busParams.put("Vmax", Arrays.asList("1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1"));
-        busParams.put("Vmin", Arrays.asList("1", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9"));
+        busParams.put("VmMax", Arrays.asList("1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1", "1.1"));
+        busParams.put("VmMin", Arrays.asList("1", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9", "0.9"));
 
         // Specifies Branch model parameters
         // This can be improved by importing a data file
@@ -187,8 +194,8 @@ public class HistoricalQueryBuilder {
         BusNodeModelVariables.put("Bs", PowerSystemModelPrefix + "Bs");
         BusNodeModelVariables.put("Gs", PowerSystemModelPrefix + "Gs");
         BusNodeModelVariables.put("baseKV", PowerSystemModelPrefix + "baseKV");
-        BusNodeModelVariables.put("Vmin", PowerSystemModelPrefix + "VmMin");
-        BusNodeModelVariables.put("Vmax", PowerSystemModelPrefix + "VmMax");
+        BusNodeModelVariables.put("VmMin", PowerSystemModelPrefix + "VmMin");
+        BusNodeModelVariables.put("VmMax", PowerSystemModelPrefix + "VmMax");
         BusNodeModelVariables.put("Zone", PowerSystemModelPrefix + "Zone");
         BusNodeModelVariables.put("Vm", PowerSystemModelPrefix + "Vm");
         BusNodeModelVariables.put("Va", PowerSystemModelPrefix + "Va");
@@ -268,44 +275,6 @@ public class HistoricalQueryBuilder {
         BranchModelVariables.put("r", PowerSystemModelPrefix + "R");
         BranchModelVariables.put("tbus", PowerSystemModelPrefix + "BusTo");
         BranchModelVariables.put("status", PowerSystemModelPrefix + "BranchStatus");
-
-        // Specifies query and update endpoints
-        kbClient = new RemoteStoreClient();
-        kbClient.setUpdateEndpoint(updateEndpoint);
-        kbClient.setQueryEndpoint(queryEndpoint);
-    }
-
-    public void loadconfigs(String filepath) throws IOException
-    {
-        File file = new File(filepath);
-        if(!file.exists())
-        {
-            throw new FileNotFoundException("There was no file found in the path");
-        }
-
-        try(InputStream input = new FileInputStream(file))
-        {
-            Properties prop = new Properties();
-            prop.load(input);
-
-            if(prop.containsKey("sparql.query.endpoint"))
-            {
-                queryEndpoint = prop.getProperty("sparql.query.endpoint");
-            }
-            else
-            {
-                throw new IOException("The file is missing: \"sparql.query.endpoint=<queryEndpoint>\"");
-            }
-
-            if(prop.containsKey("sparql.update.endpoint"))
-            {
-                updateEndpoint = prop.getProperty("sparql.update.endpoint");
-            }
-            else
-            {
-                throw new IOException("The file is missing: \"sparql.update.endpoint=<updateEndpoint>\"");
-            }
-        }
     }
 
     public void loadproperties(String propfile) throws IOException
@@ -404,8 +373,47 @@ public class HistoricalQueryBuilder {
                 TriplePattern ModelVariableSpecificationisType = iri(ModelVariableSpecificationIRI).isA(iri(modelVariableSpecification));
                 String numValue = generatorParams.get(GeneratorModelName).get(entry);
                 TriplePattern SpecNumericalValue = iri(ModelVariableSpecificationIRI).has(iri(numericalValue), numValue);
-                InsertDataQuery GeneratorInsertion2 = Queries.INSERT_DATA(ModelHasVariable, VariableisTypeVariable,
-                        GeneratorModelVariableHasValueSpec, ModelVariableSpecificationisType, SpecNumericalValue);
+                TriplePattern SpecUnit = null;
+                TriplePattern SpecUnitIsType = null;
+                if(ModelVariableSpecificationIRI.contains("Qmax")){
+                    SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(Mvar));
+                    SpecUnitIsType = iri(Mvar).isA(iri(SIDerivedUnit));
+                }
+                if(ModelVariableSpecificationIRI.contains("Qmin")){
+                    SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(Mvar));
+                    SpecUnitIsType = iri(Mvar).isA(iri(SIDerivedUnit));
+                }
+                if(ModelVariableSpecificationIRI.contains("mBase")){
+                    SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(MVA));
+                    SpecUnitIsType = iri(MVA).isA(iri(SIDerivedUnit));
+                }
+                if(ModelVariableSpecificationIRI.contains("Qg")){
+                    SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(Mvar));
+                    SpecUnitIsType = iri(Mvar).isA(iri(SIDerivedUnit));
+                }
+                if(ModelVariableSpecificationIRI.contains("Pg")){
+                    SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(MW));
+                    SpecUnitIsType = iri(MW).isA(iri(SIDerivedUnit));
+                }
+                if(ModelVariableSpecificationIRI.contains("Pmin")){
+                    SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(MW));
+                    SpecUnitIsType = iri(MW).isA(iri(SIDerivedUnit));
+                }
+                if(ModelVariableSpecificationIRI.contains("Pmax")){
+                    SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(MW));
+                    SpecUnitIsType = iri(MW).isA(iri(SIDerivedUnit));
+                }
+
+                InsertDataQuery GeneratorInsertion2 = null;
+                if(SpecUnit == null){
+                    GeneratorInsertion2 = Queries.INSERT_DATA(ModelHasVariable, VariableisTypeVariable,
+                            GeneratorModelVariableHasValueSpec, ModelVariableSpecificationisType, SpecNumericalValue);
+                }
+                else{
+                    GeneratorInsertion2 = Queries.INSERT_DATA(ModelHasVariable, VariableisTypeVariable,
+                            GeneratorModelVariableHasValueSpec, ModelVariableSpecificationisType, SpecNumericalValue, SpecUnit, SpecUnitIsType);
+                }
+
                 kbClient.executeUpdate(GeneratorInsertion2.getQueryString());
             }
         }
@@ -432,7 +440,27 @@ public class HistoricalQueryBuilder {
                 TriplePattern ModelVariableSpecificationisType = iri(ModelVariableSpecificationIRI).isA(iri(modelVariableSpecification));
                 String numValue = branchParams.get(BranchModelName).get(entry);
                 TriplePattern SpecNumericalValue = iri(ModelVariableSpecificationIRI).has(iri(numericalValue), numValue);
-                InsertDataQuery BranchInsertion2 = Queries.INSERT_DATA(ModelHasVariable, VariableisTypeVariable, BranchModelVariableHasValueSpec, ModelVariableSpecificationisType, SpecNumericalValue);
+                TriplePattern SpecUnit = null;
+                TriplePattern SpecUnitIsType = null;
+                if(ModelVariableSpecificationIRI.contains("AngleMax")){
+                    SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(degree));
+                    SpecUnitIsType = iri(degree).isA(iri(SIDerivedUnit));
+                }
+                if(ModelVariableSpecificationIRI.contains("AngleMin")){
+                    SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(degree));
+                    SpecUnitIsType = iri(degree).isA(iri(SIDerivedUnit));
+                }
+                if(ModelVariableSpecificationIRI.contains("Angle")){
+                    SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(degree));
+                    SpecUnitIsType = iri(kV).isA(iri(SIDerivedUnit));
+                }
+                InsertDataQuery BranchInsertion2 = null;
+                if(SpecUnit == null) {
+                    BranchInsertion2 = Queries.INSERT_DATA(ModelHasVariable, VariableisTypeVariable, BranchModelVariableHasValueSpec, ModelVariableSpecificationisType, SpecNumericalValue);
+                }
+                else{
+                    BranchInsertion2 = Queries.INSERT_DATA(ModelHasVariable, VariableisTypeVariable, BranchModelVariableHasValueSpec, ModelVariableSpecificationisType, SpecNumericalValue, SpecUnit, SpecUnitIsType);
+                }
                 kbClient.executeUpdate(BranchInsertion2.getQueryString());
             }
         }
@@ -459,8 +487,37 @@ public class HistoricalQueryBuilder {
                 TriplePattern ModelVariableSpecificationisType = iri(ModelVariableSpecificationIRI).isA(iri(modelVariableSpecification));
                 String numValue = busParams.get(BusNodeModelName).get(entry - 1);
                 TriplePattern SpecNumericalValue = iri(ModelVariableSpecificationIRI).has(iri(numericalValue), numValue);
-                InsertDataQuery BusNodeInsertion2 = Queries.INSERT_DATA(ModelHasVariable, VariableisTypeVariable,
-                        BusNodeModelVariableHasValueSpec, ModelVariableSpecificationisType, SpecNumericalValue);
+                TriplePattern SpecUnit = null;
+                TriplePattern SpecUnitIsType = null;
+                if(ModelVariableSpecificationIRI.contains("baseKV")){
+                    SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(kV));
+                    SpecUnitIsType = iri(kV).isA(iri(SIDerivedUnit));
+                }
+                if(ModelVariableSpecificationIRI.contains("VmMin")){
+                    SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(kV));
+                    SpecUnitIsType = iri(kV).isA(iri(SIDerivedUnit));
+                }
+                if(ModelVariableSpecificationIRI.contains("VmMax")){
+                    SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(kV));
+                    SpecUnitIsType = iri(kV).isA(iri(SIDerivedUnit));
+                }
+                if(ModelVariableSpecificationIRI.contains("Vm")){
+                    SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(kV));
+                    SpecUnitIsType = iri(kV).isA(iri(SIDerivedUnit));
+                }
+                if(ModelVariableSpecificationIRI.contains("Va")){
+                    SpecUnit = iri(ModelVariableSpecificationIRI).has(iri(hasUnitOfMeasure), iri(degree));
+                    SpecUnitIsType = iri(degree).isA(iri(SIDerivedUnit));
+                }
+
+                InsertDataQuery BusNodeInsertion2 = null;
+                if(SpecUnit == null) {
+                    BusNodeInsertion2 = Queries.INSERT_DATA(ModelHasVariable, VariableisTypeVariable,
+                            BusNodeModelVariableHasValueSpec, ModelVariableSpecificationisType, SpecNumericalValue);
+                } else {
+                    BusNodeInsertion2 = Queries.INSERT_DATA(ModelHasVariable, VariableisTypeVariable,
+                            BusNodeModelVariableHasValueSpec, ModelVariableSpecificationisType, SpecNumericalValue, SpecUnit, SpecUnitIsType);
+                }
                 kbClient.executeUpdate(BusNodeInsertion2.getQueryString());
             }
         }
@@ -497,7 +554,7 @@ public class HistoricalQueryBuilder {
                 else if(iri.contains("DEGREE")){
                     String voltageAngleIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_VoltageAngle";
                     TriplePattern BNHasVoltageAngle = iri(busNodeIRI).has(iri(hasVoltageAngle), iri(voltageAngleIRI));
-                    TriplePattern omHasUnit = iri(iri).has(iri(hasUnit), iri(degree));
+                    TriplePattern omHasUnit = iri(iri).has(iri(hasUnit), iri(omDegree));
                     TriplePattern VAHasValue = iri(voltageAngleIRI).has(iri(OMHasValue), iri(iri));
                     TriplePattern typeVA = iri(voltageAngleIRI).isA(iri(voltageAngle));
                     InsertDataQuery insert = Queries.INSERT_DATA(omHasUnit, VAHasValue, typeVA, BNHasVoltageAngle);

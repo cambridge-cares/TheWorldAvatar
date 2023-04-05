@@ -1,0 +1,19 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix ontocape: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+prefix ontocapeMath: <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#>
+
+SELECT ?Property ?Value ?Unit
+WHERE {
+
+    <https://www.theworldavatar.com/kg/ontopowsys/NTU_BusNode_1> rdf:type ?IRI .
+
+    <https://www.theworldavatar.com/kg/ontopowsys/NTU_BusNode_1> ontocape:isModeledBy ?Model .
+
+    ?Model ontocapeMath:hasModelVariable ?Variable.
+
+    ?Variable ontocape:hasValue ?Property.
+
+    ?Property ontocape:numericalValue ?Value.
+
+}

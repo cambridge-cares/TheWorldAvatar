@@ -1,0 +1,39 @@
+{
+    "ServiceSpec": {
+        "Name": "historical-ntuenergy-agent",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "historical-ntuenergy-agent:1.0.0",
+                "Env": [
+                    "ENERGY_READINGS=/root/NTU_Energy_Consumption.xlsx",
+                    "STACK_NAME=${STACK_NAME}",
+                    "HISTORICALNTUENERGY_AGENTPROPERTIES=/root/agent.properties",
+                    "HISTORICALNTUENERGY_XLSXCONNECTORPROPERTIES=/root/xlsxconnector.properties",
+                    "HISTORICALNTUENERGY_AGENT_MAPPINGS=/root/mappings"
+                ],
+                "Configs": [
+                    {
+                        "ConfigName": "blazegraph"
+                    },
+                    {
+                        "ConfigName": "ontop"
+                    },
+                    {
+                        "ConfigName": "postgis"
+                    }
+                ],
+                "Secrets": [
+                    {
+                        "SecretName": "postgis_password"
+                    }
+                ]
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:8080/historical-ntuenergy-agent/",
+            "externalPath": "/historical-ntuenergy-agent/retrieve"
+        }
+    }
+}

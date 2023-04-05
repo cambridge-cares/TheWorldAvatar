@@ -1,0 +1,13 @@
+{
+  "queries":
+          [
+            {
+              "class": "https://www.theworldavatar.com/kg/ontopowsys/PowerSystem_NTU",
+              "metaFile": "energy_meta.sparql",
+              "timeFile": "energy_time.sparql",
+              "timeLimit": 48,
+              "databaseName": "ntuenergy"
+            }
+
+          ]
+}

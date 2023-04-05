@@ -1,0 +1,13 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix om:  <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+
+SELECT ?Measurement ?Name ?Unit ?LastUpdate
+WHERE {
+  {
+  # Observations/Measurements
+  [IRI] om:hasValue ?Measurement .
+  ?Measurement ^om:hasValue/rdf:type ?type ;
+               om:hasUnit/om:symbol ?Unit .
+  BIND (concat(replace(str(?type), ''), ' observation') as ?Name)
+}

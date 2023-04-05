@@ -67,10 +67,10 @@ public class HistoricalNTUEnergyAgent {
             try {
                 // Read the mappings folder from the properties file
                 mappingFolder = System.getenv(prop.getProperty("ntuenergy.mappingfolder"));
-                }
-                catch (NullPointerException e) {
-                	throw new IOException ("The key ntuenergy.mappingfolder cannot be found in the properties file.");
-                }
+            }
+            catch (NullPointerException e) {
+                throw new IOException ("The key ntuenergy.mappingfolder cannot be found in the properties file.");
+            }
             if (mappingFolder == null) {
                 throw new InvalidPropertiesFormatException("The properties file does not contain the key ntuenergy.mappingfolder " +
                         "with a path to the folder containing the required JSON key to IRI mappings.");
@@ -136,12 +136,10 @@ public class HistoricalNTUEnergyAgent {
                 // Get the classes (datatype) corresponding to each JSON key needed for initialization
                 List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
                 // Initialize the time series
-                try {
+
                 tsClient.initTimeSeries(iris, classes, timeUnit, Type.INSTANTANEOUS, null, null);
                 LOGGER.info(String.format("Initialized time series with the following IRIs: %s", String.join(", ", iris)));
-            } catch (Exception e) {
-            	throw new JPSRuntimeException("Could not initialize timeseries!");
-            }
+
             }
         }
     }
@@ -155,19 +153,19 @@ public class HistoricalNTUEnergyAgent {
     private boolean timeSeriesExist(List<String> iris) {
         // If any of the IRIs does not have a time series the time series does not exist
         for(String iri: iris) {
-        	try {
-	            if (!tsClient.checkDataHasTimeSeries(iri)) {
-	                return false;
-	            }
-	        // If central RDB lookup table ("dbTable") has not been initialised, the time series does not exist
-        	} catch (DataAccessException e) {
-        		if (e.getMessage().contains("ERROR: relation \"dbTable\" does not exist")) {
-        			return false;
-        		}
-        		else {
-        			throw e;
-        		}        		
-        	}
+            try {
+                if (!tsClient.checkDataHasTimeSeries(iri)) {
+                    return false;
+                }
+                // If central RDB lookup table ("dbTable") has not been initialised, the time series does not exist
+            } catch (DataAccessException e) {
+                if (e.getMessage().contains("ERROR: relation \"dbTable\" does not exist")) {
+                    return false;
+                }
+                else {
+                    throw e;
+                }
+            }
         }
         return true;
     }
@@ -375,13 +373,13 @@ public class HistoricalNTUEnergyAgent {
      * @return The resulting datetime object.
      */
     private OffsetDateTime convertStringToOffsetDateTime(String timestamp) {
-    	
+
         // Convert first to a local time
         //LOGGER.info(timestamp);
         LocalDateTime localTime = LocalDateTime.parse(timestamp);
-        
+
         // Then add the zone id
-  
+
         return OffsetDateTime.of(localTime, HistoricalNTUEnergyAgent.ZONE_OFFSET);
     }
 

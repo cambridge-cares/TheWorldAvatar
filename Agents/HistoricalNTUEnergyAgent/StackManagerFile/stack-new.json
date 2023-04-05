@@ -1,0 +1,9 @@
+{
+  "services": {
+    "includes": [
+      "feature-info-agent", "historical-ntuenergy-agent"
+  ],
+    "excludes": [
+  ]
+  }
+}
