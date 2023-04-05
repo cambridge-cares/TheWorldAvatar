@@ -59,6 +59,24 @@ public class TBoxConfiguration {
 	
 	@Value("${tbox.index.of.relation.column}")
 	private int indexOfRelationColumn;
+
+	@Value("${tbox.index.of.domain.column}")
+	private int indexOfDomainColumn;
+
+	@Value("${tbox.index.of.range.column}")
+	private int indexOfRangeColumn;
+
+	@Value("${tbox.index.of.quantifier.column}")
+	private int indexOfQuantifierColumn;
+
+	@Value("${tbox.index.of.comment.column}")
+	private int indexOfCommentColumn;
+
+	@Value("${tbox.index.of.defined.by.column}")
+	private int indexOfDefinedByColumn;
+
+	@Value("${tbox.index.of.label.column}")
+	private int indexOfLabelColumn;
 	
 	@Value("${tbox.data.of.publication}")
 	private String annotationPropertyDate;
@@ -197,6 +215,54 @@ public class TBoxConfiguration {
 
 	public void setIndexOfRelationColumn(int indexOfRelationColumn) {
 		this.indexOfRelationColumn = indexOfRelationColumn;
+	}
+
+	public int getIndexOfDomainColumn() {
+		return indexOfDomainColumn;
+	}
+
+	public void setIndexOfDomainColumn(int indexOfDomainColumn) {
+		this.indexOfDomainColumn = indexOfDomainColumn;
+	}
+
+	public int getIndexOfRangeColumn() {
+		return indexOfRangeColumn;
+	}
+
+	public void setIndexOfRangeColumn(int indexOfRangeColumn) {
+		this.indexOfRangeColumn = indexOfRangeColumn;
+	}
+
+	public int getIndexOfQuantifierColumn() {
+		return indexOfQuantifierColumn;
+	}
+
+	public void setIndexOfQuantifierColumn(int indexOfQuantifierColumn) {
+		this.indexOfQuantifierColumn = indexOfQuantifierColumn;
+	}
+
+	public int getIndexOfCommentColumn() {
+		return indexOfCommentColumn;
+	}
+
+	public void setIndexOfCommentColumn(int indexOfCommentColumn) {
+		this.indexOfCommentColumn = indexOfCommentColumn;
+	}
+
+	public int getIndexOfDefinedByColumn() {
+		return indexOfDefinedByColumn;
+	}
+
+	public void setIndexOfDefinedByColumn(int indexOfDefinedByColumn) {
+		this.indexOfDefinedByColumn = indexOfDefinedByColumn;
+	}
+
+	public int getIndexOfLabelColumn() {
+		return indexOfLabelColumn;
+	}
+
+	public void setIndexOfLabelColumn(int indexOfLabelColumn) {
+		this.indexOfLabelColumn = indexOfLabelColumn;
 	}
 
 	public String getAnnotationPropertyDate() {
