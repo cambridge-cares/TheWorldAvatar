@@ -62,7 +62,7 @@ Follow these [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main
 # 2. Usage
 The agent accepts a POST request path `/set`. The following command will set the setpoint to `<TEMPERATURE>` and turn on/off a cooling fan based on the measured temperature and the setpoint.
 ```
-curl --location 'http://localhost:3838/bms-update-agent/set' \
+curl -X POST 'http://localhost:3838/bms-update-agent/set' \
 --header 'Content-Type: application/json' \
 --data '{
     "dataIRI":"https://www.theworldavatar.com/kg/ontodevice/V_Setpoint-01-Temperature",
