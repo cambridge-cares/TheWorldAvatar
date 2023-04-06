@@ -183,9 +183,9 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 				logger.error("The ontology was not created as the Source is null or empty in the CSV file in row: "+rowCount);
 				throw new JPSRuntimeException("The ontology was not created as the Source is null or empty in the CSV file in row: "+rowCount);
 			}
-			source = source.trim().toLowerCase();
+			source = source.replaceAll("\\s+", "").toLowerCase();
 			type = type.trim().toLowerCase();
-			target = target.trim().toLowerCase();
+			target = target.replaceAll("\\s+", "").toLowerCase();
 			if (singleLine.size() > tBoxConfig.getIndexOfRelationColumn() 
 					&& type.equalsIgnoreCase(tBoxConfig.getElementTypeClass()) 
 					&& relation.equalsIgnoreCase(tBoxConfig.getIsARelation())) {
@@ -211,7 +211,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 				}
 				if (domainClasses != null){
 					for(String domainClass:domainClasses) {
-						domainClass = domainClass.trim().toLowerCase();
+						domainClass = domainClass.replaceAll("\\s+", "").toLowerCase();
 						if (domainRelationMap.containsKey(domainClass)) {
 							domainRelationMap.get(domainClass).add(source);
 						} else {
@@ -236,7 +236,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 				}
 				if (rangeClasses != null) {
 					for(String rangeClass:rangeClasses) {
-						rangeClass = rangeClass.trim().toLowerCase();
+						rangeClass = rangeClass.replaceAll("\\s+", "").toLowerCase();
 						if (rangeRelationMap.containsKey(rangeClass)) {
 							rangeRelationMap.get(rangeClass).add(source);
 						} else {

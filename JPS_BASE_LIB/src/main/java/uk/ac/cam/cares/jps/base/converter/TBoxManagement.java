@@ -4,10 +4,13 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.jena.base.Sys;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AddImport;
@@ -503,7 +506,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			}
 		}
 
-		addDomain(objectProperty, domain);
+		addDomain(objectProperty, domain, quantifier);
 		addRange(objectProperty, range, quantifier);
 		OWLObjectProperty parentProperty = null;
 		if (targetName != null && !targetName.isEmpty() && relation!=null && !relation.isEmpty()) {
@@ -545,14 +548,16 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param domain
+	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addDomain(OWLObjectProperty objectProperty, String domain) throws JPSRuntimeException {
+	private void addDomain(OWLObjectProperty objectProperty, String domain, String quantifier) throws JPSRuntimeException {
 		if(domain==null || domain.isEmpty()){
 			return;
 		}
+		
 		if(domain.contains("UNION")){
-			addUnionOfDomain(objectProperty, domain.split("UNION"));
+			addUnionOfDomain(objectProperty, domain.split("UNION"), quantifier);
 		} else if(domain.contains("INTERSECTION")){
 			addIntersectionOfDomain(objectProperty, domain.split("INTERSECTION"));
 		} else if(domain!=null || !domain.isEmpty()){
@@ -708,16 +713,46 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param domains
+	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addUnionOfDomain(OWLObjectProperty objectProperty, String[] domains) throws JPSRuntimeException{
+	private void addUnionOfDomain(OWLObjectProperty objectProperty, String[] domains, String quantifier) throws JPSRuntimeException{
 		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
 		for(String domain: domains){
-			owlClassExpressions.add(createClass(domain));
+			if(quantifier != null || !quantifier.equals("")) {
+				if(!isDomainsParentInSameRelation(domain.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
+					owlClassExpressions.add(createClass(domain));
+				}
+			}
 		}
 		manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty, dataFactory.getOWLObjectUnionOf(owlClassExpressions))));
 	}
+	
+	private boolean isDomainsParentInSameRelation(String domain, String relation) {
+		Set<String> ancestors = new HashSet<String>();
+		ancestors = getAncestors(relation, ancestors);
+		if (childParentMap.containsKey(relation)) {
+			for(String ancestor: ancestors) {
+				if(domainRelationMap.containsKey(ancestor) && domainRelationMap.get(ancestor).contains(relation)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	private Set<String> getAncestors(String ontologyClass, Set<String> ancestors) {
+		if (childParentMap.containsKey(ontologyClass))
+			for (String parent : childParentMap.get(ontologyClass)) {
+				if (!ancestors.contains(parent)) {
+					ancestors.add(parent);
+					getAncestors(parent, ancestors);
+				}
+			}
+		return ancestors;
+	}
+	
 	
 	/**
 	 * Adds the domain(s) to the current data property and returns the union 
