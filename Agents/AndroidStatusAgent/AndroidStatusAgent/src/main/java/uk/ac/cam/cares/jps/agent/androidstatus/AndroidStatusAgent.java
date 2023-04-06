@@ -39,6 +39,7 @@ public class AndroidStatusAgent extends JPSAgent{
             LOGGER.info("Successfully set equipment iri to " + equipmentIRI);
 
             response.setStatus(HttpServletResponse.SC_OK);
+            return;
         }
 
         throw new JPSRuntimeException("Unknown Path");
