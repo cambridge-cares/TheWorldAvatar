@@ -41,7 +41,7 @@ docker build . -t bms-update-agent:1.0.0-SNAPSHOT
 ### 3) Add Agent Config to Stack Manager
 Copy `stack-manager-input-config-service/bms-update-agent.json` to `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/services/`.
 
-Add the agent to `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/<STACK NAME>.json` as follows:
+Create `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/<STACK NAME>.json` manually if it doesn't exist. If it exists already, append the agent to the file as follows:
 ```json
 {
   "services": {
@@ -55,6 +55,16 @@ Add the agent to `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/<STA
   }
 }
 ```
+
+After this step, the `stack-manager/inputs/config` folder will have the following structure:
+```
+config/
+|_ services/
+   |_ bms-update-agent.json
+   |_ ...
+|_ <STACK NAME>.json
+```
+More information about adding custom containers to the stack can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#adding-custom-containers).
 
 ## 1.2 Spin Up Stack
 Follow these [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack) to spin up the stack.
