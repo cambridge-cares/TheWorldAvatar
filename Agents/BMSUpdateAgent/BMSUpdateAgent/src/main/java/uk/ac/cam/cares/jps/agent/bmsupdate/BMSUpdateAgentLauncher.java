@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.esphomecontrol;
+package uk.ac.cam.cares.jps.agent.bmsupdate;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
