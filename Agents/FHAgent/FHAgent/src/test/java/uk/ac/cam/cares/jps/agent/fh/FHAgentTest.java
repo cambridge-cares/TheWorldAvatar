@@ -13,6 +13,7 @@ import com.github.stefanbirkner.systemlambda.SystemLambda;
 
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import wiremock.org.eclipse.jetty.util.ajax.JSON;
 
 import java.io.*;
 import java.lang.reflect.Array;
@@ -47,6 +48,7 @@ public class FHAgentTest {
 
     // Readings used by several tests
     JSONObject allReadings;
+    JSONObject expectedTally;
 
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {
         // Overwrite potentially existing properties file
@@ -93,14 +95,33 @@ public class FHAgentTest {
     public void createExampleReadings() {
 
         allReadings = new JSONObject();
+        expectedTally = new JSONObject();
         
         JSONArray avgDistMeasurements = new JSONArray();
+        JSONArray tallied = new JSONArray();
 
-        Double[] measurements = {350., 350., 220., 210., 170., 175., 165.,150., 155., 150., 150., 165., 180., 350., 350.};
+        Double[] measurements = {350.,   350.,  220.,  210., 170.,  175., 165., 150., 155., 150., 150., 165., 180., 350., 350.};
+        //tally =               {0,      0,     0,     0,    0.35,  0.20, 0.35, 0.70, 1.15(on), 1.50, 1.85, 2.00, 1.65, 1.30, 1.05}
+        Boolean[] tallies =     {false, false, false, false, false, false, false, false, true, true, true, true, true, true, true};
+
+        int onIndex = 8;
         long ts = 1234560000000L;
+
+        JSONObject rowTally1 = new JSONObject();
+        rowTally1.put(FHAgent.timestampKey, ts );
+        rowTally1.put("value", tallies[0]);
+
+        tallied.put(rowTally1);
+
+        JSONObject rowTally2 = new JSONObject();
+        rowTally2.put(FHAgent.timestampKey, ts+ onIndex *1000);
+        rowTally2.put("value", tallies[onIndex]);
+
+        tallied.put(rowTally2);
 
         for (Double dist: measurements) {
             JSONObject row = new JSONObject();
+
             row.put(FHAgent.timestampKey, ts);
             row.put("value", dist);
 
@@ -109,6 +130,7 @@ public class FHAgentTest {
         }
 
         allReadings.put("avgDist",avgDistMeasurements);
+        expectedTally.put("occupiedState", tallied);
         
     }
 
@@ -211,15 +233,9 @@ public class FHAgentTest {
     public void testTallyDist () throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         Method TallyDist = FHAgent.class.getDeclaredMethod("TallyDist", JSONObject.class);
         TallyDist.setAccessible(true);
-        JSONObject expected = new JSONObject();
-        JSONObject row = new JSONObject();
-        JSONArray col = new JSONArray();
-        row.put("ts", 1234560000000L + 14000L);
-        row.put("value", true);
-        col.put(row);
-        expected.put("occupiedState", col);
+
         JSONObject actual = (JSONObject) TallyDist.invoke(testAgent, allReadings);
-        JSONAssert.assertEquals(expected, actual, true);
+        JSONAssert.assertEquals(expectedTally, actual, true);
         //Assert.assertEquals(expected.get("ts"), actual.get("ts"));
         //Assert.assertEquals(expected.get("value"), actual.get("value"));
     }

@@ -514,21 +514,21 @@ public class FHAgent{
 
 
     private JSONObject TallyDist (JSONObject readings) {
-        Boolean tallyResult = false;
+        Boolean tallyLatest = false;
         JSONObject result = new JSONObject();
         JSONArray col = new JSONArray();
-        JSONObject row = new JSONObject();
         JSONArray tsAndValue = readings.getJSONArray("avgDist");
-        Long latestTimeStamp = tsAndValue.getJSONObject(tsAndValue.length() - 1).getLong("ts");
+        
         //Go through the JSON objects in the array one by one
-        for (int j = tsAndValue.length() - 1; j >= 0; j--) {
+        for (int j =  0; j <tsAndValue.length() ; j++) {
         // Get the value and add it to the corresponding list
             JSONObject timeSeriesEntry = tsAndValue.getJSONObject(j);
+            Long timeStamp = tsAndValue.getJSONObject(j).getLong("ts");
             Double value; 
 
             try {
                 value = timeSeriesEntry.getDouble("value");
-                if (value >= Threshold) {
+                if (value <= Threshold) {
                     tally += increaseFactor;
                 }
                 }
@@ -539,14 +539,22 @@ public class FHAgent{
                 value = Double.NaN;
             }
             tally -= decreaseFactor;
+            tally = Math.min(tallyMax, Math.max(tallyMin, tally));
 
-            tallyResult = tally >= tallyLim;
+            Boolean tallyLast = tally >= tallyLim;
 
+            if(col.isEmpty() || tallyLast != tallyLatest) {
+                JSONObject row = new JSONObject();
+                row.put("ts", timeStamp);
+                row.put("value", tallyLast);
+                col.put(row);
+
+                tallyLatest = tallyLast;
+            }
+        
         }
 
-        row.put("ts", latestTimeStamp);
-        row.put("value", tallyResult);
-        col.put(row);
+        
         result.put("occupiedState", col);
         return result;
     }
