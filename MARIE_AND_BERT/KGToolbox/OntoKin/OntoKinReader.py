@@ -32,7 +32,7 @@ def camel_case_split(identifier):
 class OntoKinReader:
 
     def __init__(self):
-        self.dataset_path = os.path.join(DATA_DIR, 'CrossGraph', 'ontokin')
+        self.dataset_path = os.path.join(DATA_DIR, '../CrossGraph', 'ontokin')
         data_folder = 'CrossGraph/ontokin'
         e2i_path = open(os.path.join(DATA_DIR, f'{data_folder}/entity2idx.pkl'), 'rb')
         r2i_path = open(os.path.join(DATA_DIR, f'{data_folder}/relation2idx.pkl'), 'rb')
@@ -145,7 +145,7 @@ class OntoKinReader:
 
         df_questions = pd.DataFrame(question_list)
         df_questions.columns = ["question", "head", "tail", "rel"]
-        df_questions.to_csv(os.path.join(self.dataset_path, "score_model_training.tsv"), sep='\t')
+        df_questions.to_csv(os.path.join(self.dataset_path, "../score_model_training.tsv"), sep='\t')
 
 
 if __name__ == '__main__':

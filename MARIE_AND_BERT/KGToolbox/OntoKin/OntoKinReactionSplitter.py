@@ -28,6 +28,17 @@ class OntoKinReactionSplitter:
         self.unique_species = []
         self.all_triples_list = []
 
+
+    def find_unrelated_reaction(self):
+        """
+        For one reaction, it is highly likely that there exist some reactions that have no reactants/products
+        in common with it ...
+        Iterate the KG, randomly select a set of reactions, find all the species that are 
+        :return:
+        """
+
+
+
     def split_triples_by_species(self):
         unique_species_path = os.path.join(DATA_DIR, "CrossGraph/ontokin_reactions", "unique_species.json")
         if os.path.exists(unique_species_path):
