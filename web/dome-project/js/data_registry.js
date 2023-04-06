@@ -115,24 +115,15 @@ class DataRegistry {
      * @param {*} group 
      */
     #recurseFirstGroup(currentEntry, group) {
-		try {
-			if(currentEntry["groups"]) {
-				if(currentEntry["groups"]["label"] && currentEntry["groups"]["groups"]) {
-					group.push(currentEntry["groups"]["groups"][0]["directory"]);
-					this.#recurseFirstGroup(currentEntry["groups"]["groups"][0], group);
-				} else {
-					let firstGroup = currentEntry["groups"][0];
-					
-					if(firstGroup === null || firstGroup === undefined) {
-						console.log("ehgeeh");
-					}
-					group.push(firstGroup["directory"]);
-					this.#recurseFirstGroup(currentEntry["groups"][0], group);
-				}
-			}
-		} catch(error) {
-			console.log(error);
-		}
+        if(currentEntry["groups"]) {
+            if(currentEntry["groups"]["label"] && currentEntry["groups"]["groups"]) {
+                group.push(currentEntry["groups"]["groups"][0]["directory"]);
+                this.#recurseFirstGroup(currentEntry["groups"]["groups"][0], group);
+            } else {
+                group.push(currentEntry["groups"][0]["directory"]);
+                this.#recurseFirstGroup(currentEntry["groups"][0], group);
+            }
+        }
     }
 
     /**
