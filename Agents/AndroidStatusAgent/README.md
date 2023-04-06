@@ -6,6 +6,8 @@ An example use case for AndroidStatusAgent is to record the selected equipment, 
 
 Because DTVF can only send request instead of taking in any, logging the status in this agent allows the app have more control on what to display.
 
+![AndroidStatusAgent in visualisation use case](./resources/usecase_assist_visualisation.png)
+
 # 1. Setup
 This agent is designed to run in stack, which is spun up by [Stack Manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager).
 A successful setup will result in 9 containers:
@@ -33,7 +35,7 @@ docker build . -t android-status-agent:1.0.0-SANPSHOT
 ### 2) Add Config to Stack Manager
 Copy `stack-manager-input-config-service/android-status-agent.json` to `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/services/`.
 
-Add the agent to `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/<STACK NAME>.json` as follows:
+Create `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/<STACK NAME>.json` manually if it doesn't exist. If it exists already, append the agent to the file as follows:
 ```json
 {
   "services": {
