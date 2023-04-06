@@ -1,8 +1,8 @@
 Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
 OntoBIM,TBox,https://www.theworldavatar.com/ontology/ontobim/ontoBIM.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,,
-OntoBIM,TBox,1.1,https://www.w3.org/2002/07/owl#versionInfo,,,,,,
-OntoBIM,TBox,"The Building Information Modelling ontology (OntoBIM) is an ontology developed to represent the detailed information and spatial relationships of buildings and their components (walls, doors, roofs, furniture, equipment) that is available in the Industry Foundation Classes (IFC) data schema. Information about their individual characteristics such as material, readings, and dimensions is combined from IFC or other data sources.",https://www.w3.org/2000/01/rdf-schema#comment,,,,,,
-OntoBIM,TBox,,https://www.w3.org/2002/07/owl#imports,,,,,,
+OntoBIM,TBox,1.2,http://www.w3.org/2002/07/owl#versionInfo,,,,,,
+OntoBIM,TBox,"The Building Information Modelling ontology (OntoBIM) is an ontology developed to represent the detailed information and spatial relationships of buildings and their components (walls, doors, roofs, furniture, equipment) that is available in the Industry Foundation Classes (IFC) data schema. Information about their individual characteristics such as material, readings, and dimensions is combined from IFC or other data sources.",http://www.w3.org/2000/01/rdf-schema#comment,,,,,,
+OntoBIM,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,,
 https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#AREA,Class,,,,,,,https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL,
 https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#IfcGeometricProjectionEnum,Class,,,,,,,https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL,
 CompoundPlaneAngle,Class,https://www.ontology-of-units-of-measure.org/resource/om-2/Angle,IS-A,,,,"A compound measure of the plane angle in degrees, minutes, seconds, and optionally micro-seconds of arc, as defined in IfcCompoundPlaneAngleMeasure. This quantity class is intended to work only for IFC models.",https://www.theworldavatar.com/kg/ontobim/,Compound Plane Angle
