@@ -275,7 +275,7 @@ public class FHAgentTest {
         for(TimeSeries<OffsetDateTime> ts: timeSeriesArgument.getAllValues()) {
         	
             // Check that number of timestamps is correct
-            Assert.assertEquals(1, ts.getTimes().size());
+            Assert.assertEquals(2, ts.getTimes().size());
             numIRIs = numIRIs + ts.getDataIRIs().size();
         }
         // Number of unique keys in readings should match the number of IRIs

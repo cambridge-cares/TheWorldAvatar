@@ -243,12 +243,17 @@ public class FHAgent{
                 // Only update if there actually is data
                 if (!ts.getTimes().isEmpty()) {
                 	try {
+                        /*
                         JSONObject lastOccState = getLastState (ts.getDataIRIs().get(0));
                         if (latestOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value") != lastOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value")) {
                             toggleFH(latestOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value"));
                             tsClient.addTimeSeriesData(ts);
                             LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
                         }
+                        */
+
+                        tsClient.addTimeSeriesData(ts);
+                        LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
                     
                 } catch (Exception e) {
                 	throw new JPSRuntimeException("Could not add timeseries data!" + e);
