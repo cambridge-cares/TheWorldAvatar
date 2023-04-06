@@ -56,7 +56,7 @@ jobs:
         
       # Echo the docker image name for debugging
       - name: Test the tag format
-        run: echo "Image tag is ${{ env.TAG }}"
+        run: echo "Docker image tag is ${{ env.TAG }}"
         
       # Build the agent's Docker image
       #- name: Build image (inc. unit tests)
