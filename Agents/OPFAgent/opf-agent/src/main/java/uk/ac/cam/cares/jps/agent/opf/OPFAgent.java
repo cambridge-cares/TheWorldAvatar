@@ -250,7 +250,7 @@ public class OPFAgent extends JPSAgent{
 	        	throw new IOException("Properties file is missing \"sparql.update.endpoint=<sparql_update_endpoint>\"");
 	        }
         }
-        }
+    }
 
 	/**
 	 * Generate input files by querying the electrical network graph with access agent.
@@ -842,7 +842,7 @@ public class OPFAgent extends JPSAgent{
 			String[] dummyarray = new String[21];
 			Arrays.fill(dummyarray, "0");
 			dummyarray[3] = activePower.get(i)[1].toString();
-			String message = String.join("\t", dummyarray)+"\n";
+			String message = String.join("\t", dummyarray) + "\n";
 			content += message;
 	    }
 		
@@ -865,7 +865,7 @@ public class OPFAgent extends JPSAgent{
 			List<IriMapping> original = map2.deserialize2(mapdir);
 			List<IriMapping> originalforbus = map2.deserialize2(mapdirbus);// because the gen and branch input also
 																			// depends on the bus number
-																			// =baseUrl+"/mappingforbus.csv"
+																			// = baseUrl + "/mappingforbus.csv"
 			for (int x = 0; x < line; x++) {
 				int element = componentlist.get(x).length;
 				for (int e = 0; e < element; e++) {
@@ -887,7 +887,7 @@ public class OPFAgent extends JPSAgent{
 						bw.write(content);
 					} else {// the rest element index (not the first and not the last
 
-						if (e == 1 && mapdir.contains("mappingforgenerator.csv")&& !mapdir.contains("cost.csv")) { // condition that original bus
+						if (e == 1 && mapdir.contains("mappingforgenerator.csv") && !mapdir.contains("cost.csv")) { // condition that original bus
 																					// number extracted from gen owl
 																					// file need to be mapped to the
 																					// mapped bus number
