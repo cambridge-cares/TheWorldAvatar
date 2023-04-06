@@ -23,12 +23,6 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-# Copy in the properties file
-COPY ./config/client.properties /root/client.properties
-
-# Set the required environment variable for ts client properties
-ENV CLIENT_PROPERTIES="/root/client.properties"
-
 COPY --from=builder /root/BMSQueryAgentCode/output/bms-query-agent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
