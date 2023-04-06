@@ -11,7 +11,9 @@ public class Facility extends Instance{
     public Facility(String iri, JSONObject response) throws JSONException {
         this.iri = iri;
         this.label = response.getString("label");
-        generateSubLevelItemsFromJSON(response.getJSONObject("rooms"));
+        if (response.has("rooms")) {
+            generateSubLevelItemsFromJSON(response.getJSONObject("rooms"));
+        }
     }
 
     @Override

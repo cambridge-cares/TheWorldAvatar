@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                 responseStr -> {
                     LOGGER.info("Getting Response: " + responseStr);
                     try {
-                        currentRoom.buildEquipmentFromJSON(new JSONObject(responseStr).getJSONArray("Equipments"));
+                        currentRoom.buildEquipmentFromJSON(new JSONObject(responseStr).getJSONArray("equipment"));
 
                         initTypeSpinner(currentRoom);
 

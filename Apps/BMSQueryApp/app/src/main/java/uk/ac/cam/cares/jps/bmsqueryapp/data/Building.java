@@ -12,7 +12,9 @@ public class Building extends Instance{
         this.label = response.getString("label");
         this.iri = iri;
 
-        generateSubLevelItemsFromJSON(response.getJSONObject("facilities"));
+        if (response.has("facilities")) {
+            generateSubLevelItemsFromJSON(response.getJSONObject("facilities"));
+        }
     }
 
     @Override
