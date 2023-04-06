@@ -244,8 +244,8 @@ public class FHAgent{
                 if (!ts.getTimes().isEmpty()) {
                 	try {
                         JSONObject lastOccState = getLastState (ts.getDataIRIs().get(0));
-                        if (latestOccState.getBoolean("value") != lastOccState.getBoolean("value")) {
-                            toggleFH(latestOccState.getBoolean("value"));
+                        if (latestOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value") != lastOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value")) {
+                            toggleFH(latestOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value"));
                             tsClient.addTimeSeriesData(ts);
                             LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
                         }
@@ -566,7 +566,7 @@ public class FHAgent{
         JSONObject row = new JSONObject();
         JSONArray col = new JSONArray();
 
-        getTS(dataIRI);
+        occStateTS = getTS(dataIRI);
 
         try {
             //process timeseries object and convert to a suitable form, retrieve values only
@@ -580,7 +580,7 @@ public class FHAgent{
             result.put("occupiedState", col);
             return result;
         } catch (Exception e){
-            throw new JPSRuntimeException("Unable to retrieve latest value and timestamp from timeseries object.");
+            throw new JPSRuntimeException("Unable to retrieve latest value and timestamp from timeseries object." + e);
         }
     }
 
