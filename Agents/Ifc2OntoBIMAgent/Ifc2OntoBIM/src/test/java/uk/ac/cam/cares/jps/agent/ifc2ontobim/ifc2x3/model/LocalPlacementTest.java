@@ -15,10 +15,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LocalPlacementTest {
-    private static final String testBaseUri1 = "http://www.example.org/";
+    private static final String testBaseUri1 = "https://www.example.org/";
     private static final String testIri1 = testBaseUri1 + "IfcLocalPlacement_512";
     private static final String testBimIri1 = testBaseUri1 + "LocalPlacement_512";
-    private static final String testBaseUri2 = "http://www.example.org/test#";
+    private static final String testBaseUri2 = "https://www.example.org/test#";
     private static final String testIri2 = testBaseUri2 + "IfcLocalPlacement_1322";
     private static final String testBimIri2 = testBaseUri2 + "LocalPlacement_1322";
     private static final String testClassName = "LocalPlacement";
@@ -84,16 +84,16 @@ class LocalPlacementTest {
 
     private List<String> genExpectedStatements(String baseURI) {
         List<String> expected = new ArrayList<>();
-        expected.add(baseURI + "LocalPlacement_512, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
-        expected.add(baseURI + "LocalPlacement_512, http://www.theworldavatar.com/kg/ontobim/hasRefPoint, " + testRefPoint);
+        expected.add(baseURI + "LocalPlacement_512, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/LocalPlacement");
+        expected.add(baseURI + "LocalPlacement_512, https://www.theworldavatar.com/kg/ontobim/hasRefPoint, " + testRefPoint);
         return expected;
     }
 
     private List<String> genExpectedOptionalStatements(String baseURI) {
         List<String> expected = new ArrayList<>();
-        expected.add(baseURI + "LocalPlacement_512, http://www.theworldavatar.com/kg/ontobim/hasRefDirection, " + testRefDirection);
-        expected.add(baseURI + "LocalPlacement_512, http://www.theworldavatar.com/kg/ontobim/hasAxisDirection, " + testAxisDirection);
-        expected.add(baseURI + "LocalPlacement_512, http://www.theworldavatar.com/kg/ontobim/hasRelativePositionTo, " + testRelPosition);
+        expected.add(baseURI + "LocalPlacement_512, https://www.theworldavatar.com/kg/ontobim/hasRefDirection, " + testRefDirection);
+        expected.add(baseURI + "LocalPlacement_512, https://www.theworldavatar.com/kg/ontobim/hasAxisDirection, " + testAxisDirection);
+        expected.add(baseURI + "LocalPlacement_512, https://www.theworldavatar.com/kg/ontobim/hasRelativePositionTo, " + testRelPosition);
         return expected;
     }
 }

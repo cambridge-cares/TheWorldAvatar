@@ -14,7 +14,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class RectangleProfileDefinitionTest {
-    private static final String testBaseUri = "http://www.example.org/";
+    private static final String testBaseUri = "https://www.example.org/";
     private static final String testProfileType = JunitTestUtils.ifc2x3Uri + "AREA";
     private static final String testPlacementIRI = testBaseUri + "IfcLocalPlacement_235";
     private static final Double testXDim = 2.61;
@@ -55,11 +55,11 @@ class RectangleProfileDefinitionTest {
 
     private List<String> genExpectedStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(testBaseUri + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/RectangleProfileDefinition");
-        expected.add(testBaseUri + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasProfileType, " + testProfileType);
-        expected.add(testBaseUri + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + testPlacementIRI);
-        expected.add(testBaseUri + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasXDimensionExtent, \"" + testXDim);
-        expected.add(testBaseUri + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasYDimensionExtent, \"" + testYDim);
+        expected.add(testBaseUri + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/RectangleProfileDefinition");
+        expected.add(testBaseUri + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasProfileType, " + testProfileType);
+        expected.add(testBaseUri + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + testPlacementIRI);
+        expected.add(testBaseUri + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasXDimensionExtent, \"" + testXDim);
+        expected.add(testBaseUri + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasYDimensionExtent, \"" + testYDim);
         return expected;
     }
 }

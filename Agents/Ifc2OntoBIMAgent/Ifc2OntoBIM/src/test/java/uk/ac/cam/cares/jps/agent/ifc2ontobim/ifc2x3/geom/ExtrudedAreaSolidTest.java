@@ -16,10 +16,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class ExtrudedAreaSolidTest {
-    private static final String testBaseUri1 = "http://www.example.org/";
+    private static final String testBaseUri1 = "https://www.example.org/";
     private static final String testIri1 = testBaseUri1 + "IfcExtrudedAreaSolid_5128";
     private static final String testBIMIri1 = testBaseUri1 + "ExtrudedAreaSolid_5128";
-    private static final String testBaseUri2 = "http://www.example.org/test#";
+    private static final String testBaseUri2 = "https://www.example.org/test#";
     private static final String testIri2 = testBaseUri2 + "IfcExtrudedAreaSolid_6666";
     private static final String testPlacementIRI = testBaseUri1 + "LocalPlacement_7155";
     private static final String testDirectionIri = testBaseUri1 + "DirectionVector_78317";
@@ -60,11 +60,11 @@ class ExtrudedAreaSolidTest {
 
     private List<String> genExpectedStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(testBIMIri1 + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/ExtrudedAreaSolid");
-        expected.add(testBIMIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasExtrusionStartPosition, " + testPlacementIRI);
-        expected.add(testBIMIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasExtrusionDirection, " + testDirectionIri);
-        expected.add(testBIMIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasExtrusionDepth, \"" + testDepth);
-        expected.add(testBIMIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasExtrusionProfile, " + testProfileDefIRI);
+        expected.add(testBIMIri1 + ", https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/ExtrudedAreaSolid");
+        expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasExtrusionStartPosition, " + testPlacementIRI);
+        expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasExtrusionDirection, " + testDirectionIri);
+        expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasExtrusionDepth, \"" + testDepth);
+        expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasExtrusionProfile, " + testProfileDefIRI);
         return expected;
     }
 }

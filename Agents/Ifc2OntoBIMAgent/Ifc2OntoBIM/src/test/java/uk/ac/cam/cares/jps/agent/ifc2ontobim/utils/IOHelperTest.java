@@ -29,8 +29,8 @@ class IOHelperTest {
         // Create one sample statement
         Model expected = ModelFactory.createDefaultModel();
         Statement sampleStatement = expected.createStatement(
-                ModelFactory.createDefaultModel().createResource("http://example.com/subject"),
-                ModelFactory.createDefaultModel().createProperty("http://example.com/predicate"),
+                ModelFactory.createDefaultModel().createResource("https://example.com/subject"),
+                ModelFactory.createDefaultModel().createProperty("https://example.com/predicate"),
                 ModelFactory.createDefaultModel().createTypedLiteral(42));
         LinkedHashSet<Statement> statements = new LinkedHashSet<>();
         statements.add(sampleStatement);

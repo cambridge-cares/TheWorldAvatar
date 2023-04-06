@@ -14,10 +14,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GeometricRepresentationContextTest {
-    private static final String testBaseUri1 = "http://www.example.org/";
+    private static final String testBaseUri1 = "https://www.example.org/";
     private static final String testIri1 = testBaseUri1 + "IfcGeometricRepresentationContext_142";
     private static final String testBIMIri1 = testBaseUri1 + "GeometricRepresentationContext_142";
-    private static final String testBaseUri2 = "http://www.example.org/test#";
+    private static final String testBaseUri2 = "https://www.example.org/test#";
     private static final String testIri2 = testBaseUri2 + "IfcGeometricRepresentationContext_1322";
     private static final String testBIMIri2 = testBaseUri2 + "GeometricRepresentationContext_1322";
     private static final String testClassName = "GeometricRepresentationContext";
@@ -80,16 +80,16 @@ class GeometricRepresentationContextTest {
 
     private List<String> genExpectedStatements() {
         java.util.List<java.lang.String> expected = new ArrayList<>();
-        expected.add(testBIMIri1 + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationContext");
-        expected.add(testBIMIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasSpaceDimensions, \"" + testDim);
-        expected.add(testBIMIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasWorldCoordinateSystem, " + testWCSIri);
+        expected.add(testBIMIri1 + ", https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/GeometricRepresentationContext");
+        expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasSpaceDimensions, \"" + testDim);
+        expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasWorldCoordinateSystem, " + testWCSIri);
         return expected;
     }
 
     private List<String> genExpectedOptionalStatements() {
         java.util.List<java.lang.String> expected = new ArrayList<>();
-        expected.add(testBIMIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasPrecision, \"" + testPrecision);
-        expected.add(testBIMIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasTrueNorth, " + testTrueNorthIri);
+        expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasPrecision, \"" + testPrecision);
+        expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasTrueNorth, " + testTrueNorthIri);
         return expected;
     }
 }

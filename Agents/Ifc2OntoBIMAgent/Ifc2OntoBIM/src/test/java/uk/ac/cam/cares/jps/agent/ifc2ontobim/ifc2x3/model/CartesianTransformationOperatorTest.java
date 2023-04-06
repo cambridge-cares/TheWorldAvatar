@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CartesianTransformationOperatorTest {
-    private static final String testBaseUri = "http://www.example.org/";
+    private static final String testBaseUri = "https://www.example.org/";
     private static final String testIri1 = testBaseUri + "IfcCartesianTransformationOperator_39122";
     private static final String testBimIri1 = testBaseUri + "CartesianTransformationOperator_39122";
     private static final String testOriginIri = testBaseUri + "CartesianPoint_51172";
@@ -73,16 +73,16 @@ class CartesianTransformationOperatorTest {
 
     private List<String> genExpectedStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(testBimIri1 + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/CartesianTransformationOperator");
-        expected.add(testBimIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasLocalOrigin, " + testOriginIri);
+        expected.add(testBimIri1 + ", https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/CartesianTransformationOperator");
+        expected.add(testBimIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasLocalOrigin, " + testOriginIri);
         return expected;
     }
 
     private List<String> genExpectedOptionalStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(testBimIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasScale, \"" + testScaleFactor);
-        expected.add(testBimIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasDerivedXAxis, " + testXDirection);
-        expected.add(testBimIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasDerivedYAxis, " + testYDirection);
+        expected.add(testBimIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasScale, \"" + testScaleFactor);
+        expected.add(testBimIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasDerivedXAxis, " + testXDirection);
+        expected.add(testBimIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasDerivedYAxis, " + testYDirection);
         return expected;
     }
 }

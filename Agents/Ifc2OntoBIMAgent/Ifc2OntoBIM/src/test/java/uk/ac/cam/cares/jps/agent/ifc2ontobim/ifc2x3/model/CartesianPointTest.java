@@ -79,7 +79,7 @@ class CartesianPointTest {
 
     private List<String> genExpectedOptionalStatements(String baseURI, Double zCoord) {
         List<String> expected = new ArrayList<>();
-        expected.add(baseURI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasZCoordinate, \"" + zCoord);
+        expected.add(baseURI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasZCoordinate, \"" + zCoord);
         return expected;
     }
 }

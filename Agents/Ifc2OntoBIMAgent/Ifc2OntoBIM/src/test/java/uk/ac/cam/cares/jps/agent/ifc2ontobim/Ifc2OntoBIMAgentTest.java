@@ -23,14 +23,14 @@ class Ifc2OntoBIMAgentTest {
     private static Path sampleTtl;
     private static Ifc2OntoBIMAgent agent;
     private static final Map<String, String> sampleConfig = new HashMap<>();
-    private static final String sampleEndpoint = "http://www.example.org/sparql";
-    private static final String sampleIfcOwlAPI = "http://ifcowlconverter:8080/ifcowlconverter/";
+    private static final String sampleEndpoint = "https://www.example.org/sparql";
+    private static final String sampleIfcOwlAPI = "https://ifcowlconverter:8080/ifcowlconverter/";
     private static final String KEY_BASEURI = "uri";
     private static final String KEY_METHOD = "method";
     private static final String GET_METHOD = "GET";
     private static final String POST_METHOD = "POST";
     private static final String KEY_ROUTE = "requestUrl";
-    private static final String BASE_ROUTE = "http://localhost:3025/ifc2ontobim-agent/";
+    private static final String BASE_ROUTE = "https://localhost:3025/ifc2ontobim-agent/";
     private static final String GET_ROUTE = BASE_ROUTE + "status";
     private static final String POST_CONVERT_ROUTE = BASE_ROUTE + "convert";
     private static final String POST_CONVERT_NO_GEOM_ROUTE = BASE_ROUTE + "convert-no-geom";
@@ -85,7 +85,7 @@ class Ifc2OntoBIMAgentTest {
     @Test
     void testProcessRequestParametersForConvertRouteViaPOST() {
         JSONObject requestParams = new JSONObject();
-        String uri = "http://www.theworldavatar.com/ifc/building/";
+        String uri = "https://www.theworldavatar.com/ifc/building/";
         requestParams.put(KEY_BASEURI, uri);
         requestParams.put(KEY_METHOD, POST_METHOD);
         requestParams.put(KEY_ROUTE, POST_CONVERT_ROUTE);
@@ -131,7 +131,7 @@ class Ifc2OntoBIMAgentTest {
     @Test
     void testProcessRequestParametersForConvertNoGeomRouteViaPOST() {
         JSONObject requestParams = new JSONObject();
-        String uri = "http://www.theworldavatar.com/ifc/building/";
+        String uri = "https://www.theworldavatar.com/ifc/building/";
         requestParams.put(KEY_BASEURI, uri);
         requestParams.put(KEY_METHOD, POST_METHOD);
         requestParams.put(KEY_ROUTE, POST_CONVERT_NO_GEOM_ROUTE);
@@ -178,7 +178,7 @@ class Ifc2OntoBIMAgentTest {
     void testValidateInputForUri() {
         // Test both variations of accepted uris
         JSONObject requestParams = new JSONObject();
-        String uri = "http://www.theworldavatar.com/";
+        String uri = "https://www.theworldavatar.com/";
         requestParams.put(KEY_BASEURI, uri);
         assertTrue(agent.validateInput(requestParams));
 
@@ -197,14 +197,14 @@ class Ifc2OntoBIMAgentTest {
     void testValidateInputForEndpoint() {
         // Test both variations of accepted uris
         JSONObject requestParams = new JSONObject();
-        String uri = "http://www.theworldavatar.com/";
+        String uri = "https://www.theworldavatar.com/";
         requestParams.put(KEY_BASEURI, uri);
         assertTrue(agent.validateInput(requestParams));
     }
 
     @Test
     void testValidateInputFail() {
-        // Test if the string does not start with http://www. , it returns false
+        // Test if the string does not start with https://www. , it returns false
         JSONObject requestParams = new JSONObject();
         String uri = "www.theworldavatar.com/";
         requestParams.put(KEY_BASEURI, uri);

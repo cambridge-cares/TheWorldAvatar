@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade;
 
 import org.apache.jena.rdf.model.*;
-import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +20,7 @@ class GeometryFacadeTest {
     private static Model sampleModel;
     private static ModellingOperatorStorage operatorMappings;
     private static GeometryFacade testHelper;
-    private static final String TEST_BASE_URI = "http://www.theworldavatar.com/test/";
+    private static final String TEST_BASE_URI = "https://www.theworldavatar.com/test/";
     private static final String POLYLINE_CLASS = "IfcPolyline";
     private static final String POLYLINE_PROPERTY = "points_IfcPolyline";
     private static final String POLYLOOP_CLASS = "IfcPolyLoop";
@@ -347,18 +346,18 @@ class GeometryFacadeTest {
 
     private void addFacetedBrepTriples() {
         sampleModel.createResource(IFC_FACETED_BREP_INST)
-                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcFacetedBrep"))
+                .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcFacetedBrep"))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "outer_IfcManifoldSolidBrep"), sampleModel.createResource(IFC_CLOSED_SHELL_INST)
-                        .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcClosedShell"))
+                        .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcClosedShell"))
                 );
     }
 
     private void addFacetedBrepFaceTriples(String faceBoundaryIri, boolean indicator) {
         sampleModel.getResource(IFC_CLOSED_SHELL_INST)
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "cfsFaces_IfcConnectedFaceSet"), sampleModel.createResource()
-                        .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcFace"))
+                        .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcFace"))
                         .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "bounds_IfcFace"), sampleModel.createResource()
-                                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcFaceOuterBound"))
+                                .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcFaceOuterBound"))
                                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "bound_IfcFaceBound"), sampleModel.createResource(faceBoundaryIri))
                                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "orientation_IfcFaceBound"),
                                         sampleModel.createResource().addProperty(JunitTestUtils.hasBoolean, sampleModel.createTypedLiteral(indicator))
@@ -376,15 +375,15 @@ class GeometryFacadeTest {
             profilePosition.addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "refDirection_IfcAxis2Placement2D"), sampleModel.createResource(IFC_PROFILE_DIR_VECTOR_INST));
         }
         sampleModel.createResource(iri)
-                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcExtrudedAreaSolid"))
+                .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcExtrudedAreaSolid"))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "position_IfcSweptAreaSolid"), extrudedPosition)
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "extrudedDirection_IfcExtrudedAreaSolid"), sampleModel.createResource(IFC_REF_DIR_VECTOR_INST)
-                        .addProperty(RDF.type, IFC_DIRECTION))
+                        .addProperty(JunitTestUtils.RDF_TYPE, IFC_DIRECTION))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "depth_IfcExtrudedAreaSolid"), sampleModel.createResource()
                         .addProperty(JunitTestUtils.hasDouble, sampleModel.createTypedLiteral(EXTRUDED_DEPTH)))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "sweptArea_IfcSweptAreaSolid"),
                         sampleModel.createResource()
-                                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRectangleProfileDef"))
+                                .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRectangleProfileDef"))
                                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "profileType_IfcProfileDef"), sampleModel.createResource(IFC_GEOM_PROFILE_TYPE))
                                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "position_IfcParameterizedProfileDef"), profilePosition)
                                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "xDim_IfcRectangleProfileDef"), sampleModel.createResource()
@@ -396,12 +395,12 @@ class GeometryFacadeTest {
 
     private void addHalfSpaceSolidTriples(String iri, String ifcClass) {
         sampleModel.createResource(iri)
-                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + ifcClass))
+                .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + ifcClass))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "agreementFlag_IfcHalfSpaceSolid"), sampleModel.createResource()
                         .addProperty(JunitTestUtils.hasBoolean, sampleModel.createTypedLiteral(HALF_SPACE_FLAG))
                 )
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "baseSurface_IfcHalfSpaceSolid"), sampleModel.createResource()
-                        .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcPlane"))
+                        .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcPlane"))
                         .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "position_IfcElementarySurface"),
                                 sampleModel.createResource()
                                         .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "location_IfcPlacement"), sampleModel.createResource(IFC_GEOM_SEC_POSITION_INST))
@@ -414,7 +413,7 @@ class GeometryFacadeTest {
         addHalfSpaceSolidTriples(IFC_HALF_SPACE_INSTANCE, "IfcPolygonalBoundedHalfSpace");
         sampleModel.getResource(IFC_HALF_SPACE_INSTANCE)
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "polygonalBoundary_IfcPolygonalBoundedHalfSpace"), sampleModel.createResource(IFC_POLYLINE_INSTANCE)
-                        .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcPolyline")))
+                        .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcPolyline")))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "position_IfcPolygonalBoundedHalfSpace"), sampleModel.createResource()
                         .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "location_IfcPlacement"), sampleModel.createResource(IFC_GEOM_POSITION_INST))
                         .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "refDirection_IfcAxis2Placement3D"), sampleModel.createResource(IFC_REF_DIR_VECTOR_INST))
@@ -424,7 +423,7 @@ class GeometryFacadeTest {
 
     private void addPolylineTriples(String instance, String ifcClass, String property) {
         sampleModel.createResource(instance)
-                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + ifcClass))
+                .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + ifcClass))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + property),
                         sampleModel.createResource(IFC_STARTING_VERTEX)
                                 .addProperty(JunitTestUtils.hasContents, sampleModel.createResource(IFC_GEOM_POSITION_INST))
@@ -441,7 +440,7 @@ class GeometryFacadeTest {
 
     private void addClippingResultTriples(String instance, String firstOperand, String secOperand) {
         sampleModel.createResource(instance)
-                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcBooleanClippingResult"))
+                .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcBooleanClippingResult"))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "operator_IfcBooleanResult"), sampleModel.createResource(TEST_OPERATOR))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "firstOperand_IfcBooleanResult"), sampleModel.createResource(firstOperand))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "secondOperand_IfcBooleanResult"), sampleModel.createResource(secOperand));
@@ -449,25 +448,25 @@ class GeometryFacadeTest {
 
     private List<String> genExpectedExtrudedAreaSolidStatements(String geomInst) {
         List<String> expected = new ArrayList<>();
-        expected.add(geomInst + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/ExtrudedAreaSolid");
-        expected.add(geomInst + ", http://www.theworldavatar.com/kg/ontobim/hasExtrusionStartPosition, " + TEST_BASE_URI + "LocalPlacement_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "LocalPlacement_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/LocalPlacement");
-        expected.add(geomInst + ", http://www.theworldavatar.com/kg/ontobim/hasExtrusionDirection, " + TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(geomInst + ", http://www.theworldavatar.com/kg/ontobim/hasExtrusionDepth, \"" + EXTRUDED_DEPTH);
-        expected.add(geomInst + ", http://www.theworldavatar.com/kg/ontobim/hasExtrusionProfile, " + TEST_BASE_URI + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/RectangleProfileDefinition");
-        expected.add(TEST_BASE_URI + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasProfileType, " + IFC_GEOM_PROFILE_TYPE);
-        expected.add(TEST_BASE_URI + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + TEST_BASE_URI + "LocalPlacement_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasXDimensionExtent, \"" + REC_PROFILE_X_EXTENT);
-        expected.add(TEST_BASE_URI + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasYDimensionExtent, \"" + REC_PROFILE_Y_EXTENT);
-        expected.add(TEST_BASE_URI + "LocalPlacement_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefPoint, " + TEST_BASE_URI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(geomInst + ", https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/ExtrudedAreaSolid");
+        expected.add(geomInst + ", https://www.theworldavatar.com/kg/ontobim/hasExtrusionStartPosition, " + TEST_BASE_URI + "LocalPlacement_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "LocalPlacement_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/LocalPlacement");
+        expected.add(geomInst + ", https://www.theworldavatar.com/kg/ontobim/hasExtrusionDirection, " + TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(geomInst + ", https://www.theworldavatar.com/kg/ontobim/hasExtrusionDepth, \"" + EXTRUDED_DEPTH);
+        expected.add(geomInst + ", https://www.theworldavatar.com/kg/ontobim/hasExtrusionProfile, " + TEST_BASE_URI + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/RectangleProfileDefinition");
+        expected.add(TEST_BASE_URI + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasProfileType, " + IFC_GEOM_PROFILE_TYPE);
+        expected.add(TEST_BASE_URI + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + TEST_BASE_URI + "LocalPlacement_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasXDimensionExtent, \"" + REC_PROFILE_X_EXTENT);
+        expected.add(TEST_BASE_URI + "RectangleProfileDefinition_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasYDimensionExtent, \"" + REC_PROFILE_Y_EXTENT);
+        expected.add(TEST_BASE_URI + "LocalPlacement_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRefPoint, " + TEST_BASE_URI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         return expected;
     }
 
     private List<String> genExpectedOptionalExtrudedAreaSolidStatements(String geomInst) {
         List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "LocalPlacement_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefDirection, " + TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "LocalPlacement_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasAxisDirection, " + TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "LocalPlacement_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRefDirection, " + TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "LocalPlacement_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasAxisDirection, " + TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         return expected;
     }
 }

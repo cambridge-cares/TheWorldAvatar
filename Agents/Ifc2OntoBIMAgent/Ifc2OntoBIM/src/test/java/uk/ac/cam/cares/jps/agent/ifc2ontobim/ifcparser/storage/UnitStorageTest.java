@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class UnitStorageTest {
     private static UnitStorage testMappings;
-    private static final String TEST_BASE_URI = "http://www.example.org/";
+    private static final String TEST_BASE_URI = "https://www.example.org/";
     private static final String NON_EXISTENT_IRI = TEST_BASE_URI + "DOES/NOT/EXIST_1223";
     private static final String LENGTH_IDENTIFIER = "meter";
     private static final String LENGTH = "Length";

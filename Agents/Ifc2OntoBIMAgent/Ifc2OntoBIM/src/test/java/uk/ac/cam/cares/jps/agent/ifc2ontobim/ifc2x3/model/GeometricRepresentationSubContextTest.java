@@ -14,10 +14,10 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class GeometricRepresentationSubContextTest {
-    private static final String testBaseUri1 = "http://www.example.org/";
+    private static final String testBaseUri1 = "https://www.example.org/";
     private static final String testIri1 = testBaseUri1 + "IfcGeometricRepresentationSubContext_2";
     private static final String testBIMIri1 = testBaseUri1 + "GeometricRepresentationSubContext_2";
-    private static final String testBaseUri2 = "http://www.example.org/test#";
+    private static final String testBaseUri2 = "https://www.example.org/test#";
     private static final String testIri2 = testBaseUri2 + "IfcGeometricRepresentationSubContext_4";
     private static final String testParentContextIri = testBaseUri1 + "GeometricRepresentationContext_6";
     private static final String testTargetViewIri = JunitTestUtils.ifc2x3Uri + "MODEL_VIEW";
@@ -60,11 +60,11 @@ class GeometricRepresentationSubContextTest {
 
     private List<String> genExpectedStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(testBIMIri1 + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");
-        expected.add(testBIMIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasParentContext, " + testParentContextIri);
-        expected.add(testBIMIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasContextType, \"" + testContextType);
-        expected.add(testBIMIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasContextIdentifier, \"" + testContextIdentifier);
-        expected.add(testBIMIri1 + ", http://www.theworldavatar.com/kg/ontobim/hasTargetView, " + testTargetViewIri);
+        expected.add(testBIMIri1 + ", https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");
+        expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasParentContext, " + testParentContextIri);
+        expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasContextType, \"" + testContextType);
+        expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasContextIdentifier, \"" + testContextIdentifier);
+        expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasTargetView, " + testTargetViewIri);
         return expected;
     }
 }

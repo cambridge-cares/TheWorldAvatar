@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ModellingOperatorStorageTest {
     private static ModellingOperatorStorage testMappings;
-    private static final String TEST_BASE_URI = "http://www.example.org/";
+    private static final String TEST_BASE_URI = "https://www.example.org/";
     private static final String TEST_POINT_CLASS = "CartesianPoint";
     private static final String TEST_FIRST_POINT_IRI = TEST_BASE_URI + TEST_POINT_CLASS + "_12";
     private static final String TEST_SECOND_POINT_IRI = TEST_BASE_URI + TEST_POINT_CLASS + "_5613";

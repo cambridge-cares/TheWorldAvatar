@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade;
 
 import org.apache.jena.rdf.model.*;
-import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +18,7 @@ import java.util.List;
 
 class BuildingStructureFacadeTest {
     private static Model sampleModel;
-    private static final String TEST_BASE_URI = "http://www.theworldavatar.com/test/";
+    private static final String TEST_BASE_URI = "https://www.theworldavatar.com/test/";
     private static final String TEST_ZONE_PLACEMENT_IRI = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS + "_385";
     // Element Instances
     private static final String CEILING_CLASS = "IfcCovering";
@@ -183,11 +182,11 @@ class BuildingStructureFacadeTest {
         addHostZoneTriples(CEILING_INST, STOREY_INST);
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
         addGeometryTriples(sampleModel.getResource(CEILING_INST));
-        sampleModel.createResource(REL_TYPE_DEF_INST).addProperty(RDF.type, ifcTypeRel)
+        sampleModel.createResource(REL_TYPE_DEF_INST).addProperty(JunitTestUtils.RDF_TYPE, ifcTypeRel)
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatedObjects_IfcRelDefines"), sampleModel.getResource(CEILING_INST))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatingType_IfcRelDefinesByType"),
                         sampleModel.createResource(COVERING_TYPE_INST)
-                                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCoveringType"))
+                                .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCoveringType"))
                                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "predefinedType_IfcCoveringType"), sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "CEILING"))
                 );
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
@@ -211,11 +210,11 @@ class BuildingStructureFacadeTest {
         addHostZoneTriples(CEILING_INST, STOREY_INST);
         // Generate the triples that is applicable for all generic geometry representation except mapped representation
         addMappedGeometryTriples(sampleModel.getResource(CEILING_INST));
-        sampleModel.createResource(REL_TYPE_DEF_INST).addProperty(RDF.type, ifcTypeRel)
+        sampleModel.createResource(REL_TYPE_DEF_INST).addProperty(JunitTestUtils.RDF_TYPE, ifcTypeRel)
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatedObjects_IfcRelDefines"), sampleModel.getResource(CEILING_INST))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatingType_IfcRelDefinesByType"),
                         sampleModel.createResource(COVERING_TYPE_INST)
-                                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCoveringType"))
+                                .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCoveringType"))
                                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "predefinedType_IfcCoveringType"), sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "CEILING"))
                 );
         LinkedHashSet<Statement> sampleSet = new LinkedHashSet<>();
@@ -648,19 +647,19 @@ class BuildingStructureFacadeTest {
     private void addBaseTriples(String elementIRI, String elementClass, String name) {
         addBaseTriples(elementIRI, elementClass, name, ELEMENT_ID, ELEMENT_POSITION_INST);
         sampleModel.createResource(STOREY_INST)
-                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcBuildingStorey"));
+                .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcBuildingStorey"));
     }
 
     private void addBaseTriples(String elementIRI, String elementClass, String name, String uid, String placementInst) {
         sampleModel.createResource(elementIRI)
-                .addProperty(RDF.type,
+                .addProperty(JunitTestUtils.RDF_TYPE,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + elementClass))
                 .addProperty(hasName, sampleModel.createResource()
                         .addProperty(hasString, name))
                 .addProperty(hasId, sampleModel.createResource()
                         .addProperty(hasString, uid))
                 .addProperty(objectPlacement, sampleModel.createResource(placementInst)
-                        .addProperty(RDF.type, localPlacement));
+                        .addProperty(JunitTestUtils.RDF_TYPE, localPlacement));
     }
 
     private void addHostZoneTriples(String elementIRI, String zoneIRI) {
@@ -669,25 +668,25 @@ class BuildingStructureFacadeTest {
 
     private void addHostZoneTriples(String elementIRI, String zoneIRI, boolean isRoof) {
         if (isRoof){
-            Resource ifcRoofNode = sampleModel.createResource().addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRoof"));
+            Resource ifcRoofNode = sampleModel.createResource().addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRoof"));
             sampleModel.createResource()
-                    .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelAggregates"))
+                    .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelAggregates"))
                     .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatedObjects_IfcRelDecomposes"), sampleModel.getResource(elementIRI))
                     .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatingObject_IfcRelDecomposes"), ifcRoofNode);
             sampleModel.createResource()
-                    .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelContainedInSpatialStructure"))
+                    .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelContainedInSpatialStructure"))
                     .addProperty(ResourceFactory.createProperty(JunitTestUtils.IFC2X3_HOST_ZONE_PROPERTY), sampleModel.getResource(zoneIRI))
                     .addProperty(ResourceFactory.createProperty(JunitTestUtils.IFC2X3_CONTAIN_ELEMENT_PROPERTY), ifcRoofNode);
         } else {
             sampleModel.createResource()
-                    .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelContainedInSpatialStructure"))
+                    .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelContainedInSpatialStructure"))
                     .addProperty(ResourceFactory.createProperty(JunitTestUtils.IFC2X3_HOST_ZONE_PROPERTY), sampleModel.getResource(zoneIRI))
                     .addProperty(ResourceFactory.createProperty(JunitTestUtils.IFC2X3_CONTAIN_ELEMENT_PROPERTY), sampleModel.getResource(elementIRI));
         }
     }
 
     private void addSlabTriples(String elementIRI, String elementEnum) {
-        sampleModel.createResource(REL_TYPE_DEF_INST).addProperty(RDF.type, ifcTypeRel)
+        sampleModel.createResource(REL_TYPE_DEF_INST).addProperty(JunitTestUtils.RDF_TYPE, ifcTypeRel)
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatedObjects_IfcRelDefines"), sampleModel.getResource(elementIRI))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatingType_IfcRelDefinesByType"),
                         sampleModel.createResource()
@@ -698,13 +697,13 @@ class BuildingStructureFacadeTest {
 
 
     private void addWallAssemblyTriples(String elementIRI) {
-        Resource openingElementNode = sampleModel.createResource().addProperty(RDF.type, ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcOpeningElement"));
+        Resource openingElementNode = sampleModel.createResource().addProperty(JunitTestUtils.RDF_TYPE, ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcOpeningElement"));
         sampleModel.createResource(TEST_BASE_URI + "IfcRelFillsElement_314")
-                .addProperty(RDF.type, ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelFillsElement"))
+                .addProperty(JunitTestUtils.RDF_TYPE, ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelFillsElement"))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatedBuildingElement_IfcRelFillsElement"), sampleModel.getResource(elementIRI))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatingOpeningElement_IfcRelFillsElement"), openingElementNode);
         sampleModel.createResource(TEST_BASE_URI + "IfcRelVoidsElement_6171")
-                .addProperty(RDF.type, ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelVoidsElement"))
+                .addProperty(JunitTestUtils.RDF_TYPE, ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelVoidsElement"))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatedOpeningElement_IfcRelVoidsElement"), openingElementNode)
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatingBuildingElement_IfcRelVoidsElement"), sampleModel.createResource(WALL_INST));
     }
@@ -719,7 +718,7 @@ class BuildingStructureFacadeTest {
         addBaseTriples(STAIR_STRUCT_COMP_INST, STAIR_STRUCT_COMP_CLASS, STAIR_STRUCT_COMP_NAME, STAIR_STRUCT_COMP_ID, STAIR_STRUCT_COMP_POSITION_INST);
         addGeometryTriples(STAIR_STRUCT_COMP_INST, STAIR_STRUCT_COMP_SHAPE_REP_INST, IFC_GEOM_SUB_CONTEXT_INST, STAIR_STRUCT_COMP_GEOM_INST, STAIR_STRUCT_COMP_REP_TYPE_VAL);
         sampleModel.createResource()
-                .addProperty(RDF.type, ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelAggregates"))
+                .addProperty(JunitTestUtils.RDF_TYPE, ResourceFactory.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelAggregates"))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatingObject_IfcRelDecomposes"), sampleModel.getResource(elementIRI))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatedObjects_IfcRelDecomposes"), sampleModel.getResource(STAIR_FLIGHT_INST))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatedObjects_IfcRelDecomposes"), sampleModel.getResource(STAIR_LANDING_INST))
@@ -741,41 +740,41 @@ class BuildingStructureFacadeTest {
         sampleModel.add(element, ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representation_IfcProduct"),
                 // Create object resource and its properties
                 sampleModel.createResource()
-                        .addProperty(RDF.type, productDefShape)
+                        .addProperty(JunitTestUtils.RDF_TYPE, productDefShape)
                         .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representations_IfcProductRepresentation"), shapeRepBlankNode));
         sampleModel.add(shapeRepBlankNode, hasContents,
                 // Create object resource and its properties
                 sampleModel.createResource(IFC_SHAPE_REP_INST)
-                        .addProperty(RDF.type, shapeRep)
+                        .addProperty(JunitTestUtils.RDF_TYPE, shapeRep)
                         .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representationType_IfcRepresentation"), // Blank Node
                                 sampleModel.createResource().addProperty(hasString, IFC_REP_TYPE_VAL)) // Blank Node's properties
                         .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "contextOfItems_IfcRepresentation"),
-                                sampleModel.createResource(IFC_GEOM_SUB_CONTEXT_INST).addProperty(RDF.type, geomRepSubContext))
+                                sampleModel.createResource(IFC_GEOM_SUB_CONTEXT_INST).addProperty(JunitTestUtils.RDF_TYPE, geomRepSubContext))
                         .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "items_IfcRepresentation"),
-                                sampleModel.createResource(IFC_FACETED_BREP_INST).addProperty(RDF.type, facetedBrep)));
+                                sampleModel.createResource(IFC_FACETED_BREP_INST).addProperty(JunitTestUtils.RDF_TYPE, facetedBrep)));
     }
 
     private void addGeometryTriples(String elementIri, String shapeRepInst, String subContextInst, String geomInst, String shapeRepType) {
         sampleModel.getResource(elementIri).addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representation_IfcProduct"),
                 // Create object resource and its properties
-                sampleModel.createResource().addProperty(RDF.type, productDefShape)
+                sampleModel.createResource().addProperty(JunitTestUtils.RDF_TYPE, productDefShape)
                         .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representations_IfcProductRepresentation"),
                                 sampleModel.createResource().addProperty(hasContents,
                                         // Create object resource and its properties
                                         sampleModel.createResource(shapeRepInst)
-                                                .addProperty(RDF.type, shapeRep)
+                                                .addProperty(JunitTestUtils.RDF_TYPE, shapeRep)
                                                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representationType_IfcRepresentation"), // Blank Node
                                                         sampleModel.createResource().addProperty(hasString, shapeRepType)) // Blank Node's properties
                                                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "contextOfItems_IfcRepresentation"),
-                                                        sampleModel.createResource(subContextInst).addProperty(RDF.type, geomRepSubContext))
+                                                        sampleModel.createResource(subContextInst).addProperty(JunitTestUtils.RDF_TYPE, geomRepSubContext))
                                                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "items_IfcRepresentation"),
-                                                        sampleModel.createResource(geomInst).addProperty(RDF.type, facetedBrep)))));
+                                                        sampleModel.createResource(geomInst).addProperty(JunitTestUtils.RDF_TYPE, facetedBrep)))));
     }
 
     private void addSecondGeometryTriples() {
         sampleModel.getResource(IFC_SHAPE_REP_INST)
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "items_IfcRepresentation"),
-                        sampleModel.createResource(IFC_FACETED_BREP_SEC_INST).addProperty(RDF.type, facetedBrep));
+                        sampleModel.createResource(IFC_FACETED_BREP_SEC_INST).addProperty(JunitTestUtils.RDF_TYPE, facetedBrep));
     }
 
     private void addMultipleGeometryTypeTriples() {
@@ -785,13 +784,13 @@ class BuildingStructureFacadeTest {
         sampleModel.add(shapeRepBlankNode, hasContents,
                 // Create object resource and its properties
                 sampleModel.createResource(IFC_SEC_SHAPE_REP_INST)
-                        .addProperty(RDF.type, shapeRep)
+                        .addProperty(JunitTestUtils.RDF_TYPE, shapeRep)
                         .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representationType_IfcRepresentation"), // Blank Node
                                 sampleModel.createResource().addProperty(hasString, IFC_SEC_REP_TYPE_VAL)) // Blank Node's properties
                         .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "contextOfItems_IfcRepresentation"),
-                                sampleModel.createResource(IFC_GEOM_SUB_CONTEXT_INST).addProperty(RDF.type, geomRepSubContext))
+                                sampleModel.createResource(IFC_GEOM_SUB_CONTEXT_INST).addProperty(JunitTestUtils.RDF_TYPE, geomRepSubContext))
                         .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "items_IfcRepresentation"),
-                                sampleModel.createResource(IFC_POLYLINE_INST).addProperty(RDF.type, polyline)));
+                                sampleModel.createResource(IFC_POLYLINE_INST).addProperty(JunitTestUtils.RDF_TYPE, polyline)));
     }
 
     private void addMappedGeometryTriples(Resource element) {
@@ -799,62 +798,62 @@ class BuildingStructureFacadeTest {
         sampleModel.add(element, ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representation_IfcProduct"),
                 // Create object resource and its properties
                 sampleModel.createResource()
-                        .addProperty(RDF.type, productDefShape)
+                        .addProperty(JunitTestUtils.RDF_TYPE, productDefShape)
                         .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representations_IfcProductRepresentation"), shapeRepBlankNode));
         sampleModel.add(shapeRepBlankNode, hasContents,
                 // Create object resource and its properties
                 sampleModel.createResource(IFC_MAPPED_SHAPE_REP)
-                        .addProperty(RDF.type, shapeRep)
+                        .addProperty(JunitTestUtils.RDF_TYPE, shapeRep)
                         .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representationType_IfcRepresentation"), // Blank Node
                                 sampleModel.createResource().addProperty(hasString, IFC_MAPPED_REP_TYPE_VAL)) // Blank Node's properties
                         .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "items_IfcRepresentation"), sampleModel.createResource(IFC_MAPPED_ITEM_INST)));
         sampleModel.getResource(IFC_MAPPED_ITEM_INST)
-                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcMappedItem"))
+                .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcMappedItem"))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "mappingTarget_IfcMappedItem"), sampleModel.createResource(IFC_TARGET_TRANSFORMATION_OPERATOR_INST))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "mappingSource_IfcMappedItem"), sampleModel.createResource(IFC_REP_MAP_INST));
-        sampleModel.getResource(IFC_TARGET_TRANSFORMATION_OPERATOR_INST).addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCartesianTransformationOperator3D"));
-        sampleModel.getResource(IFC_REP_MAP_INST).addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRepresentationMap"))
+        sampleModel.getResource(IFC_TARGET_TRANSFORMATION_OPERATOR_INST).addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCartesianTransformationOperator3D"));
+        sampleModel.getResource(IFC_REP_MAP_INST).addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRepresentationMap"))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "mappingOrigin_IfcRepresentationMap"), sampleModel.createResource(IFC_SOURCE_PLACEMENT_INST))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "mappedRepresentation_IfcRepresentationMap"), sampleModel.createResource(IFC_SHAPE_REP_INST));
         sampleModel.getResource(IFC_SHAPE_REP_INST)
-                .addProperty(RDF.type, shapeRep)
+                .addProperty(JunitTestUtils.RDF_TYPE, shapeRep)
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representationType_IfcRepresentation"), // Blank Node
                         sampleModel.createResource().addProperty(hasString, IFC_MAPPED_REP_TYPE_VAL)) // Blank Node's properties
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "contextOfItems_IfcRepresentation"),
-                        sampleModel.createResource(IFC_GEOM_SUB_CONTEXT_INST).addProperty(RDF.type, geomRepSubContext))
+                        sampleModel.createResource(IFC_GEOM_SUB_CONTEXT_INST).addProperty(JunitTestUtils.RDF_TYPE, geomRepSubContext))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "items_IfcRepresentation"),
-                        sampleModel.createResource(IFC_FACETED_BREP_INST).addProperty(RDF.type, facetedBrep));
+                        sampleModel.createResource(IFC_FACETED_BREP_INST).addProperty(JunitTestUtils.RDF_TYPE, facetedBrep));
     }
 
     private void addVoidRepresentationTriples(Resource element) {
         sampleModel.createResource()
-                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelVoidsElement"))
+                .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelVoidsElement"))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatingBuildingElement_IfcRelVoidsElement"), element)
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "relatedOpeningElement_IfcRelVoidsElement"),
                         sampleModel.createResource(IFC_GEOMETRIC_VOID_INST)
-                                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcOpeningElement"))
+                                .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcOpeningElement"))
                                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "objectType_IfcObject"),
                                         sampleModel.createResource().addProperty(hasString, IFC_VOID_TYPE))
                                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "objectPlacement_IfcProduct"),
                                         sampleModel.createResource(IFC_VOID_PLACEMENT_INST)
-                                                .addProperty(RDF.type, localPlacement)
+                                                .addProperty(JunitTestUtils.RDF_TYPE, localPlacement)
                                 )
                                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representation_IfcProduct"),
                                         sampleModel.createResource()
-                                                .addProperty(RDF.type, productDefShape)
+                                                .addProperty(JunitTestUtils.RDF_TYPE, productDefShape)
                                                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representations_IfcProductRepresentation"),
                                                         sampleModel.createResource()
                                                                 .addProperty(hasContents, sampleModel.createResource(IFC_VOID_SHAPE_REP_INST)))
                                 )
                 );
         sampleModel.getResource(IFC_VOID_SHAPE_REP_INST)
-                .addProperty(RDF.type, shapeRep)
+                .addProperty(JunitTestUtils.RDF_TYPE, shapeRep)
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "representationType_IfcRepresentation"),
                         sampleModel.createResource().addProperty(hasString, IFC_VOID_SHAPE_REP_TYPE))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "contextOfItems_IfcRepresentation"),
-                        sampleModel.createResource(IFC_VOID_SUB_CONTEXT_INST).addProperty(RDF.type, geomRepSubContext))
+                        sampleModel.createResource(IFC_VOID_SUB_CONTEXT_INST).addProperty(JunitTestUtils.RDF_TYPE, geomRepSubContext))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "items_IfcRepresentation"),
-                        sampleModel.createResource(IFC_VOID_GEOM_INST).addProperty(RDF.type, extrudedAreaSolid));
+                        sampleModel.createResource(IFC_VOID_GEOM_INST).addProperty(JunitTestUtils.RDF_TYPE, extrudedAreaSolid));
     }
 
     private List<String> genExpectedBaseStatements(String bimElementClass, String name) {
@@ -865,78 +864,78 @@ class BuildingStructureFacadeTest {
 
     private List<String> genExpectedBaseStatements(String bimElementClass, String name, String id, String placementInst) {
         List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + bimElementClass + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobuildingstructure/" + bimElementClass);
-        expected.add(TEST_BASE_URI + bimElementClass + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + TEST_BASE_URI + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/IfcModelRepresentation");
-        expected.add(TEST_BASE_URI + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + name);
-        expected.add(TEST_BASE_URI + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + id);
-        expected.add(TEST_BASE_URI + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + placementInst);
+        expected.add(TEST_BASE_URI + bimElementClass + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobuildingstructure/" + bimElementClass);
+        expected.add(TEST_BASE_URI + bimElementClass + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + TEST_BASE_URI + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/IfcModelRepresentation");
+        expected.add(TEST_BASE_URI + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/2000/01/rdf-schema#label, \"" + name);
+        expected.add(TEST_BASE_URI + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + id);
+        expected.add(TEST_BASE_URI + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + placementInst);
         // Geometry representation triples
-        expected.add(TEST_BASE_URI + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasGeometricRepresentation, " + TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D");
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSubContext, " + BIM_GEOM_SUB_CONTEXT_INST);
+        expected.add(TEST_BASE_URI + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasGeometricRepresentation, " + TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D");
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasSubContext, " + BIM_GEOM_SUB_CONTEXT_INST);
         return expected;
     }
 
     private List<String> genExpectedModelRepGeometryItemStatements(String geomInst) {
         List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + geomInst);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + geomInst);
         return expected;
     }
 
     private List<String> genExpectedAssemblyStatements(String elementClass) {
         List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "Wall_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobuildingstructure/consistsOf, " + TEST_BASE_URI + elementClass + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "Wall_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobuildingstructure/consistsOf, " + TEST_BASE_URI + elementClass + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         return expected;
     }
 
     private List<String> genExpectedGeomRepTypeStatements(String repTypeValue) {
         List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + repTypeValue);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + repTypeValue);
         return expected;
     }
 
     private List<String> genExpectedOptionalGeomStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSourcePlacement, " + IFC_SOURCE_PLACEMENT_BIM_INST);
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTargetPlacement, " + BIM_TARGET_TRANSFORMATION_OPERATOR_INST);
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + IFC_MAPPED_REP_TYPE_VAL);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasSourcePlacement, " + IFC_SOURCE_PLACEMENT_BIM_INST);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasTargetPlacement, " + BIM_TARGET_TRANSFORMATION_OPERATOR_INST);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + IFC_MAPPED_REP_TYPE_VAL);
         return expected;
     }
 
     private List<String> genExpectedMultipleGeometricRepresentationStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSubContext, " + BIM_GEOM_SUB_CONTEXT_INST);
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + BIM_POLYLINE_INST);
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + IFC_REP_TYPE_VAL);
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + IFC_SEC_REP_TYPE_VAL);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasSubContext, " + BIM_GEOM_SUB_CONTEXT_INST);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + BIM_POLYLINE_INST);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + IFC_REP_TYPE_VAL);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + IFC_SEC_REP_TYPE_VAL);
         return expected;
     }
 
     private List<String> genExpectedGeometricVoidStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasVoid, " + TEST_BASE_URI + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricVoid");
-        expected.add(TEST_BASE_URI + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasGeometricRepresentation, " + TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasVoidType, \"" + IFC_VOID_TYPE);
-        expected.add(TEST_BASE_URI + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + IFC_VOID_PLACEMENT_BIM_INST);
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D");
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSubContext, " + BIM_VOID_SUB_CONTEXT_INST);
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + IFC_VOID_SHAPE_REP_TYPE);
-        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + BIM_VOID_GEOM_INST);
+        expected.add(TEST_BASE_URI + "IfcModelRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasVoid, " + TEST_BASE_URI + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/GeometricVoid");
+        expected.add(TEST_BASE_URI + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasGeometricRepresentation, " + TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasVoidType, \"" + IFC_VOID_TYPE);
+        expected.add(TEST_BASE_URI + "GeometricVoid_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + IFC_VOID_PLACEMENT_BIM_INST);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D");
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasSubContext, " + BIM_VOID_SUB_CONTEXT_INST);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRepresentationType, \"" + IFC_VOID_SHAPE_REP_TYPE);
+        expected.add(TEST_BASE_URI + "ModelRepresentation3D_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRepresentationItem, " + BIM_VOID_GEOM_INST);
         return expected;
     }
 
     private List<String> genExpectedStoreyStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "Stair_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobuildingstructure/consistsOf, " + TEST_BASE_URI + "Landing_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "Stair_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobuildingstructure/consistsOf, " + TEST_BASE_URI + "Railing_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "Stair_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobuildingstructure/consistsOf, " + TEST_BASE_URI + "StairFlight_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "Stair_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobuildingstructure/consistsOf, " + TEST_BASE_URI + "StairStructuralComponent_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "StairFlight_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobuildingstructure/hasNumOfRiser, \"" + STAIR_FLIGHT_RISER_NUM_VAL);
-        expected.add(TEST_BASE_URI + "StairFlight_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobuildingstructure/hasNumOfTread, \"" + STAIR_FLIGHT_TREAD_NUM_VAL);
-        expected.add(TEST_BASE_URI + "StairFlight_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobuildingstructure/hasRiserHeight, \"" + STAIR_FLIGHT_RISER_HEIGHT_VAL);
-        expected.add(TEST_BASE_URI + "StairFlight_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobuildingstructure/hasTreadLength, \"" + STAIR_FLIGHT_TREAD_LENGTH_VAL);
+        expected.add(TEST_BASE_URI + "Stair_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobuildingstructure/consistsOf, " + TEST_BASE_URI + "Landing_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "Stair_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobuildingstructure/consistsOf, " + TEST_BASE_URI + "Railing_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "Stair_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobuildingstructure/consistsOf, " + TEST_BASE_URI + "StairFlight_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "Stair_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobuildingstructure/consistsOf, " + TEST_BASE_URI + "StairStructuralComponent_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "StairFlight_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobuildingstructure/hasNumOfRiser, \"" + STAIR_FLIGHT_RISER_NUM_VAL);
+        expected.add(TEST_BASE_URI + "StairFlight_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobuildingstructure/hasNumOfTread, \"" + STAIR_FLIGHT_TREAD_NUM_VAL);
+        expected.add(TEST_BASE_URI + "StairFlight_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobuildingstructure/hasRiserHeight, \"" + STAIR_FLIGHT_RISER_HEIGHT_VAL);
+        expected.add(TEST_BASE_URI + "StairFlight_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobuildingstructure/hasTreadLength, \"" + STAIR_FLIGHT_TREAD_LENGTH_VAL);
         return expected;
     }
 }

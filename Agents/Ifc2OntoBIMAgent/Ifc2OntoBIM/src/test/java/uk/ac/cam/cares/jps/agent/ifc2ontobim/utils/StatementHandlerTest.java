@@ -9,7 +9,7 @@ import java.util.LinkedHashSet;
 import static org.junit.jupiter.api.Assertions.*;
 
 class StatementHandlerTest {
-    private static final String baseURI = "http://www.example.org/";
+    private static final String baseURI = "https://www.example.org/";
     private static final String testFirstGeomInstance = baseURI + "IfcExtrudedAreaSolid_4";
     private static final String testSecGeomInstance = baseURI + "IfcBooleanClippingResult_5";
     private static final String testThirdGeomInstance = baseURI + "IfcPolyline_6";

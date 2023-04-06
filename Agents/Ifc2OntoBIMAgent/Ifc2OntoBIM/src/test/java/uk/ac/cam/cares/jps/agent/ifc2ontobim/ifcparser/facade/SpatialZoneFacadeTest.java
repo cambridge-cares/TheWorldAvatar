@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.facade;
 
 import org.apache.jena.rdf.model.*;
-import org.apache.jena.vocabulary.RDF;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,7 @@ import java.util.List;
 
 class SpatialZoneFacadeTest {
     private static Model sampleModel;
-    private static final String TEST_BASE_URI = "http://www.theworldavatar.com/test/";
+    private static final String TEST_BASE_URI = "https://www.theworldavatar.com/test/";
     // Project and context
     private static final String PROJECT_INST = TEST_BASE_URI + "IfcProject_1";
     private static final String PROJECT_NAME = "New Project";
@@ -101,7 +100,7 @@ class SpatialZoneFacadeTest {
         Resource projectContextDimBlankNode = sampleModel.createResource();
         Resource projectContextPrecisionBlankNode = sampleModel.createResource();
         Resource projectContext= sampleModel.createResource(REP_CONTEXT_INST)
-                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcGeometricRepresentationContext"))
+                .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcGeometricRepresentationContext"))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "coordinateSpaceDimension_IfcGeometricRepresentationContext"), projectContextDimBlankNode)
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "precision_IfcGeometricRepresentationContext"), projectContextPrecisionBlankNode)
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "worldCoordinateSystem_IfcGeometricRepresentationContext"), ResourceFactory.createResource(WCS_INST));
@@ -111,7 +110,7 @@ class SpatialZoneFacadeTest {
         Resource projectNameBlankNode = sampleModel.createResource();
         Resource projectPhaseBlankNode = sampleModel.createResource();
         sampleModel.createResource(PROJECT_INST)
-                .addProperty(RDF.type,
+                .addProperty(JunitTestUtils.RDF_TYPE,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcProject"))
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "longName_IfcProject"), projectNameBlankNode)
                 .addProperty(ResourceFactory.createProperty(JunitTestUtils.ifc2x3Uri + "phase_IfcProject"), projectPhaseBlankNode)
@@ -122,9 +121,9 @@ class SpatialZoneFacadeTest {
         Resource siteBlankNode = sampleModel.createResource();
         Resource siteNameBlankNode = sampleModel.createResource();
         Resource siteIDBlankNode = sampleModel.createResource();
-        Resource sitePositionNode = sampleModel.createResource(SITE_POSITION_INST).addProperty(RDF.type, localPlacement);
+        Resource sitePositionNode = sampleModel.createResource(SITE_POSITION_INST).addProperty(JunitTestUtils.RDF_TYPE, localPlacement);
         sampleModel.createResource(SITE_INST)
-                .addProperty(RDF.type,
+                .addProperty(JunitTestUtils.RDF_TYPE,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcSite"))
                 .addProperty(hasName, siteNameBlankNode)
                 .addProperty(hasId,siteIDBlankNode)
@@ -138,9 +137,9 @@ class SpatialZoneFacadeTest {
         Resource buildingBlankNode = sampleModel.createResource();
         Resource buildingNameBlankNode = sampleModel.createResource();
         Resource buildingIDBlankNode = sampleModel.createResource();;
-        Resource buildingPositionNode = sampleModel.createResource(BUILDING_POSITION_INST).addProperty(RDF.type, localPlacement);
+        Resource buildingPositionNode = sampleModel.createResource(BUILDING_POSITION_INST).addProperty(JunitTestUtils.RDF_TYPE, localPlacement);
         sampleModel.createResource(BUILDING_INST)
-                .addProperty(RDF.type,
+                .addProperty(JunitTestUtils.RDF_TYPE,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcBuilding"))
                 .addProperty(hasName, buildingNameBlankNode)
                 .addProperty(hasId, buildingIDBlankNode)
@@ -151,7 +150,7 @@ class SpatialZoneFacadeTest {
         sampleModel.add(buildingIDBlankNode, hasString, ResourceFactory.createPlainLiteral(BUILDING_ID));
         sampleModel.add(buildingBlankNode, hasDouble, ResourceFactory.createTypedLiteral(String.valueOf(TEST_BUILDING_REF_ELEV_DOUBLE)));
         sampleModel.createResource(BUILDING_AGG_INST)
-                .addProperty(RDF.type,
+                .addProperty(JunitTestUtils.RDF_TYPE,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelAggregates"))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "relatingObject_IfcRelDecomposes"),
                         sampleModel.getResource(SITE_INST))
@@ -282,15 +281,15 @@ class SpatialZoneFacadeTest {
         Resource secStoreyIDBlankNode = sampleModel.createResource();
         // For IfcBuilding
         sampleModel.createResource(BUILDING_INST)
-                .addProperty(RDF.type,
+                .addProperty(JunitTestUtils.RDF_TYPE,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcBuilding"))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "elevationOfTerrain_IfcBuilding"),
                         buildingBlankNode);
         sampleModel.add(buildingBlankNode, hasDouble, ResourceFactory.createTypedLiteral(String.valueOf(TEST_BUILDING_TER_ELEV_DOUBLE)));
         // For IfcBuildingStorey
-        Resource storeyPositionNode = sampleModel.createResource(STOREY_POSITION_INST).addProperty(RDF.type, localPlacement);
+        Resource storeyPositionNode = sampleModel.createResource(STOREY_POSITION_INST).addProperty(JunitTestUtils.RDF_TYPE, localPlacement);
         sampleModel.createResource(STOREY_INST)
-                .addProperty(RDF.type,
+                .addProperty(JunitTestUtils.RDF_TYPE,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcBuildingStorey"))
                 .addProperty(hasName, storeyNameBlankNode)
                 .addProperty(hasId, storeyIDBlankNode)
@@ -301,9 +300,9 @@ class SpatialZoneFacadeTest {
         sampleModel.add(storeyIDBlankNode, hasString, ResourceFactory.createPlainLiteral(STOREY_ID));
         sampleModel.add(storeyBlankNode, hasDouble, ResourceFactory.createTypedLiteral(String.valueOf(TEST_STOREY_DOUBLE)));
         // For second storey
-        Resource storeySecPositionNode = sampleModel.createResource(STOREY_2_POSITION_INST).addProperty(RDF.type, localPlacement);
+        Resource storeySecPositionNode = sampleModel.createResource(STOREY_2_POSITION_INST).addProperty(JunitTestUtils.RDF_TYPE, localPlacement);
         sampleModel.createResource(STOREY_INST2)
-                .addProperty(RDF.type,
+                .addProperty(JunitTestUtils.RDF_TYPE,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcBuildingStorey"))
                 .addProperty(hasName, secStoreyNameBlankNode)
                 .addProperty(hasId, secStoreyIDBlankNode)
@@ -314,7 +313,7 @@ class SpatialZoneFacadeTest {
         sampleModel.add(secStoreyIDBlankNode, hasString, ResourceFactory.createPlainLiteral(STOREY_2_ID));
         sampleModel.add(secStoreyBlankNode, hasDouble, ResourceFactory.createTypedLiteral(String.valueOf(TEST_STOREY_DOUBLE2)));
         sampleModel.createResource(STOREY_AGG_INST)
-                .addProperty(RDF.type,
+                .addProperty(JunitTestUtils.RDF_TYPE,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelAggregates"))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "relatingObject_IfcRelDecomposes"),
                         sampleModel.getResource(BUILDING_INST))
@@ -325,9 +324,9 @@ class SpatialZoneFacadeTest {
         // For IfcSpaces of living room
         Resource livingNameBlankNode = sampleModel.createResource();
         Resource livingIDBlankNode = sampleModel.createResource();
-        Resource livingPositionNode = sampleModel.createResource(LIVING_ROOM_POSITION_INST).addProperty(RDF.type, localPlacement);
+        Resource livingPositionNode = sampleModel.createResource(LIVING_ROOM_POSITION_INST).addProperty(JunitTestUtils.RDF_TYPE, localPlacement);
         sampleModel.createResource(LIVING_ROOM_INST)
-                .addProperty(RDF.type,
+                .addProperty(JunitTestUtils.RDF_TYPE,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcSpace"))
                 .addProperty(hasName, livingNameBlankNode)
                 .addProperty(hasId, livingIDBlankNode)
@@ -337,9 +336,9 @@ class SpatialZoneFacadeTest {
         // For IfcSpaces of bedroom
         Resource bedNameBlankNode = sampleModel.createResource();
         Resource bedIDBlankNode = sampleModel.createResource();
-        Resource bedPositionNode = sampleModel.createResource(BEDROOM_POSITION_INST).addProperty(RDF.type, localPlacement);
+        Resource bedPositionNode = sampleModel.createResource(BEDROOM_POSITION_INST).addProperty(JunitTestUtils.RDF_TYPE, localPlacement);
         sampleModel.createResource(BEDROOM_INST)
-                .addProperty(RDF.type,
+                .addProperty(JunitTestUtils.RDF_TYPE,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcSpace"))
                 .addProperty(hasName, bedNameBlankNode)
                 .addProperty(hasId, bedIDBlankNode)
@@ -349,9 +348,9 @@ class SpatialZoneFacadeTest {
         // For IfcSpaces of kitchen
         Resource kitchenNameBlankNode = sampleModel.createResource();
         Resource kitchenIDBlankNode = sampleModel.createResource();
-        Resource kitchenPositionNode = sampleModel.createResource(KITCHEN_POSITION_INST).addProperty(RDF.type, localPlacement);
+        Resource kitchenPositionNode = sampleModel.createResource(KITCHEN_POSITION_INST).addProperty(JunitTestUtils.RDF_TYPE, localPlacement);
         sampleModel.createResource(KITCHEN_INST)
-                .addProperty(RDF.type,
+                .addProperty(JunitTestUtils.RDF_TYPE,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcSpace"))
                 .addProperty(hasName, kitchenNameBlankNode)
                 .addProperty(hasId, kitchenIDBlankNode)
@@ -359,7 +358,7 @@ class SpatialZoneFacadeTest {
         sampleModel.add(kitchenNameBlankNode, hasString, ResourceFactory.createPlainLiteral(KITCHEN_NAME));
         sampleModel.add(kitchenIDBlankNode, hasString, ResourceFactory.createPlainLiteral(KITCHEN_ID));
         sampleModel.createResource(ROOM_AGG_INST)
-                .addProperty(RDF.type,
+                .addProperty(JunitTestUtils.RDF_TYPE,
                         sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelAggregates"))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "relatingObject_IfcRelDecomposes"),
                         sampleModel.getResource(STOREY_INST))
@@ -373,7 +372,7 @@ class SpatialZoneFacadeTest {
 
     private void addProjectRootZoneTriples(String root) {
         sampleModel.createResource(PROJECT_AGG_INST)
-                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelAggregates"))
+                .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcRelAggregates"))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "relatingObject_IfcRelDecomposes"),
                         sampleModel.getResource(PROJECT_INST))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "relatedObjects_IfcRelDecomposes"),
@@ -384,7 +383,7 @@ class SpatialZoneFacadeTest {
         Resource latitudeNode = sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCompoundPlaneAngleMeasure_321");
         Resource longitudeNode = sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCompoundPlaneAngleMeasure_532");
         sampleModel.createResource(SITE_INST)
-                .addProperty(RDF.type, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCompoundPlaneAngleMeasure"))
+                .addProperty(JunitTestUtils.RDF_TYPE, sampleModel.createResource(JunitTestUtils.ifc2x3Uri + "IfcCompoundPlaneAngleMeasure"))
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "refLatitude_IfcSite"), latitudeNode)
                 .addProperty(sampleModel.createProperty(JunitTestUtils.ifc2x3Uri + "refLongitude_IfcSite"), longitudeNode);
         // Latitude statements
@@ -428,32 +427,32 @@ class SpatialZoneFacadeTest {
 
     private List<String> genExpectedStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/IfcProjectRepresentation");
-        expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + PROJECT_NAME);
-        expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasPhase, \"" + PROJECT_PHASE);
-        expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasContext, " + BIM_REP_CONTEXT_INST);
-        expected.add(BIM_REP_CONTEXT_INST + ", http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/GeometricRepresentationContext");
-        expected.add(BIM_REP_CONTEXT_INST + ", http://www.theworldavatar.com/kg/ontobim/hasSpaceDimensions, \"" + TEST_PROJECT_DIMENSIONS);
-        expected.add(BIM_REP_CONTEXT_INST + ", http://www.theworldavatar.com/kg/ontobim/hasPrecision, \"" + TEST_PROJECT_PRECISION);
-        expected.add(BIM_REP_CONTEXT_INST + ", http://www.theworldavatar.com/kg/ontobim/hasWorldCoordinateSystem, " + WCS_INST);
-        expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefElevation, " + TEST_BASE_URI + "Height_");
-        expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + SITE_NAME);
-        expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + SITE_ID);
-        expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + SITE_POSITION_BIM_INST);
-        expected.add(TEST_BASE_URI + "Site_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://w3id.org/bot#Site");
-        expected.add(TEST_BASE_URI + "Site_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "Height_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.ontology-of-units-of-measure.org/resource/om-2/Height");
-        expected.add(TEST_BASE_URI + "Height_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue, " + TEST_BASE_URI + "Measure_");
-        expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.ontology-of-units-of-measure.org/resource/om-2/Measure");
-        expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue, \"" + TEST_SITE_DOUBLE);
-        expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit, " + TEST_BASE_URI + "Length_");
-        expected.add(TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefElevation, " + TEST_BASE_URI + "Height_");
-        expected.add(TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + BUILDING_NAME);
-        expected.add(TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + BUILDING_ID);
-        expected.add(TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + BUILDING_POSITION_BIM_INST);
-        expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue, \"" + TEST_BUILDING_REF_ELEV_DOUBLE);
-        expected.add(TEST_BASE_URI + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://w3id.org/bot#Building");
-        expected.add(TEST_BASE_URI + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/IfcProjectRepresentation");
+        expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/2000/01/rdf-schema#label, \"" + PROJECT_NAME);
+        expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasPhase, \"" + PROJECT_PHASE);
+        expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasContext, " + BIM_REP_CONTEXT_INST);
+        expected.add(BIM_REP_CONTEXT_INST + ", https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/GeometricRepresentationContext");
+        expected.add(BIM_REP_CONTEXT_INST + ", https://www.theworldavatar.com/kg/ontobim/hasSpaceDimensions, \"" + TEST_PROJECT_DIMENSIONS);
+        expected.add(BIM_REP_CONTEXT_INST + ", https://www.theworldavatar.com/kg/ontobim/hasPrecision, \"" + TEST_PROJECT_PRECISION);
+        expected.add(BIM_REP_CONTEXT_INST + ", https://www.theworldavatar.com/kg/ontobim/hasWorldCoordinateSystem, " + WCS_INST);
+        expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRefElevation, " + TEST_BASE_URI + "Height_");
+        expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/2000/01/rdf-schema#label, \"" + SITE_NAME);
+        expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + SITE_ID);
+        expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + SITE_POSITION_BIM_INST);
+        expected.add(TEST_BASE_URI + "Site_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://w3id.org/bot#Site");
+        expected.add(TEST_BASE_URI + "Site_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "Height_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.ontology-of-units-of-measure.org/resource/om-2/Height");
+        expected.add(TEST_BASE_URI + "Height_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.ontology-of-units-of-measure.org/resource/om-2/hasValue, " + TEST_BASE_URI + "Measure_");
+        expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.ontology-of-units-of-measure.org/resource/om-2/Measure");
+        expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue, \"" + TEST_SITE_DOUBLE);
+        expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit, " + TEST_BASE_URI + "Length_");
+        expected.add(TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRefElevation, " + TEST_BASE_URI + "Height_");
+        expected.add(TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/2000/01/rdf-schema#label, \"" + BUILDING_NAME);
+        expected.add(TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + BUILDING_ID);
+        expected.add(TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + BUILDING_POSITION_BIM_INST);
+        expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue, \"" + TEST_BUILDING_REF_ELEV_DOUBLE);
+        expected.add(TEST_BASE_URI + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://w3id.org/bot#Building");
+        expected.add(TEST_BASE_URI + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         expected.add(TEST_BASE_URI + "Site_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://w3id.org/bot#hasBuilding, " + TEST_BASE_URI + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         return expected;
     }
@@ -461,58 +460,58 @@ class SpatialZoneFacadeTest {
     private List<String> genProjectRootZoneStatements(boolean isSite) {
         List<String> expected = new ArrayList<>();
         if (isSite) {
-            expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRootZone, " + TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+            expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRootZone, " + TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         } else {
-            expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRootZone, " + TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+            expected.add(TEST_BASE_URI + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRootZone, " + TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         }
         return expected;
     }
 
     private List<String> genExpectedLatLongStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefLatitude, " + TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/CompoundPlaneAngle");
-        expected.add(TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasDegree, \"" + TEST_SITE_LAT_DEGREE);
-        expected.add(TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasMinute, \"" + TEST_SITE_LAT_MINUTE);
-        expected.add(TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSecond, \"" + TEST_SITE_LAT_SEC);
-        expected.add(TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasMillionthSecond, \"" + TEST_SITE_LAT_MIL_SEC);
-        expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefLongitude, " + TEST_BASE_URI + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasDegree, \"" + TEST_SITE_LONG_DEGREE);
-        expected.add(TEST_BASE_URI + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasMinute, \"" + TEST_SITE_LONG_MINUTE);
-        expected.add(TEST_BASE_URI + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasSecond, \"" + TEST_SITE_LONG_SEC);
-        expected.add(TEST_BASE_URI + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasMillionthSecond, \"" + TEST_SITE_LONG_MIL_SEC);
+        expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRefLatitude, " + TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/CompoundPlaneAngle");
+        expected.add(TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasDegree, \"" + TEST_SITE_LAT_DEGREE);
+        expected.add(TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasMinute, \"" + TEST_SITE_LAT_MINUTE);
+        expected.add(TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasSecond, \"" + TEST_SITE_LAT_SEC);
+        expected.add(TEST_BASE_URI + "Latitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasMillionthSecond, \"" + TEST_SITE_LAT_MIL_SEC);
+        expected.add(TEST_BASE_URI + "IfcSiteRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRefLongitude, " + TEST_BASE_URI + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasDegree, \"" + TEST_SITE_LONG_DEGREE);
+        expected.add(TEST_BASE_URI + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasMinute, \"" + TEST_SITE_LONG_MINUTE);
+        expected.add(TEST_BASE_URI + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasSecond, \"" + TEST_SITE_LONG_SEC);
+        expected.add(TEST_BASE_URI + "Longitude_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasMillionthSecond, \"" + TEST_SITE_LONG_MIL_SEC);
         return expected;
     }
 
     private List<String> genExpectedComplexModelStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(BIM_REP_CONTEXT_INST + ", http://www.theworldavatar.com/kg/ontobim/hasTrueNorth, " + TRUE_NORTH_INST);
-        expected.add(TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasTerrainElevation, " + TEST_BASE_URI + "Height_");
-        expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue, \"" + TEST_BUILDING_TER_ELEV_DOUBLE);
-        expected.add(TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRefElevation, " + TEST_BASE_URI + "Height_");
-        expected.add(TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + STOREY_NAME);
-        expected.add(TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + STOREY_ID);
-        expected.add(TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + STOREY_2_POSITION_BIM_INST);
-        expected.add(TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + STOREY_2_NAME);
-        expected.add(TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + STOREY_2_ID);
-        expected.add(TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + STOREY_POSITION_BIM_INST);
-        expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue, \"" + TEST_STOREY_DOUBLE);
-        expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue, \"" + TEST_STOREY_DOUBLE2);
-        expected.add(TEST_BASE_URI + "Storey_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://w3id.org/bot#Storey");
-        expected.add(TEST_BASE_URI + "Storey_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(BIM_REP_CONTEXT_INST + ", https://www.theworldavatar.com/kg/ontobim/hasTrueNorth, " + TRUE_NORTH_INST);
+        expected.add(TEST_BASE_URI + "IfcBuildingRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasTerrainElevation, " + TEST_BASE_URI + "Height_");
+        expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue, \"" + TEST_BUILDING_TER_ELEV_DOUBLE);
+        expected.add(TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRefElevation, " + TEST_BASE_URI + "Height_");
+        expected.add(TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/2000/01/rdf-schema#label, \"" + STOREY_NAME);
+        expected.add(TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + STOREY_ID);
+        expected.add(TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + STOREY_2_POSITION_BIM_INST);
+        expected.add(TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/2000/01/rdf-schema#label, \"" + STOREY_2_NAME);
+        expected.add(TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + STOREY_2_ID);
+        expected.add(TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + STOREY_POSITION_BIM_INST);
+        expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue, \"" + TEST_STOREY_DOUBLE);
+        expected.add(TEST_BASE_URI + "Measure_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue, \"" + TEST_STOREY_DOUBLE2);
+        expected.add(TEST_BASE_URI + "Storey_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://w3id.org/bot#Storey");
+        expected.add(TEST_BASE_URI + "Storey_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + TEST_BASE_URI + "IfcStoreyRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         expected.add(TEST_BASE_URI + "Building_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://w3id.org/bot#hasStorey, " + TEST_BASE_URI + "Storey_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "Room_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://www.theworldavatar.com/kg/ontobim/Room");
-        expected.add(TEST_BASE_URI + "Room_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "Storey_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasRoom, " + TEST_BASE_URI + "Room_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
-        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + LIVING_ROOM_NAME);
-        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + LIVING_ROOM_ID);
-        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + LIVING_ROOM_POSITION_BIM_INST);
-        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + BEDROOM_NAME);
-        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + BEDROOM_ID);
-        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + BEDROOM_POSITION_BIM_INST);
-        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2000/01/rdf-schema#label, \"" + KITCHEN_NAME);
-        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + KITCHEN_ID);
-        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + KITCHEN_POSITION_BIM_INST);
+        expected.add(TEST_BASE_URI + "Room_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/Room");
+        expected.add(TEST_BASE_URI + "Room_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation, " + TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "Storey_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasRoom, " + TEST_BASE_URI + "Room_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
+        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/2000/01/rdf-schema#label, \"" + LIVING_ROOM_NAME);
+        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + LIVING_ROOM_ID);
+        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + LIVING_ROOM_POSITION_BIM_INST);
+        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/2000/01/rdf-schema#label, \"" + BEDROOM_NAME);
+        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + BEDROOM_ID);
+        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + BEDROOM_POSITION_BIM_INST);
+        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/2000/01/rdf-schema#label, \"" + KITCHEN_NAME);
+        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasIfcId, \"" + KITCHEN_ID);
+        expected.add(TEST_BASE_URI + "IfcRoomRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasLocalPosition, " + KITCHEN_POSITION_BIM_INST);
         return expected;
     }
 }

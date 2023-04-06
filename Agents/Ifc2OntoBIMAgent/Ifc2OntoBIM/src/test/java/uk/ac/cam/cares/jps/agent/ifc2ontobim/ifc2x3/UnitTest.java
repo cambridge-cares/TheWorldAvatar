@@ -12,7 +12,7 @@ import java.util.LinkedHashSet;
 import static org.junit.jupiter.api.Assertions.*;
 
 class UnitTest {
-    private static final String TEST_BASE_URI = "http://www.example.org/";
+    private static final String TEST_BASE_URI = "https://www.example.org/";
 
     @BeforeAll
     static void createNamespace(){ NamespaceMapper.setBaseNameSpace(TEST_BASE_URI); }

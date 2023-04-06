@@ -20,8 +20,8 @@ class AccessClientTest {
     private static Path tempDir;
     @TempDir
     private static Path tempSecDir;
-    private static final String endpoint = "http://ipaddress:9999/blazegraph/namespace/test/sparql";
-    private static final String ifcOwlApi = "http://ifcowlconverter:8080/ifcowlconverter/";
+    private static final String endpoint = "https://ipaddress:9999/blazegraph/namespace/test/sparql";
+    private static final String ifcOwlApi = "https://ifcowlconverter:8080/ifcowlconverter/";
     private static final String queryKey = "sparql.query.endpoint";
     private static final String updateKey = "sparql.update.endpoint";
     private static final String owlAgentKey = "ifc.owl.agent";

@@ -15,7 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DirectionVectorTest {
-    private static final String testBaseUri = "http://www.example.org/";
+    private static final String testBaseUri = "https://www.example.org/";
     private static final String testClassName = "DirectionVector";
     private static final Double testXDirRatio1 = 2.0;
     private static final Double testYDirRatio1 = 3.15;
@@ -79,7 +79,7 @@ class DirectionVectorTest {
 
     private List<String> genExpectedOptionalStatements(String baseURI, Double zCoord) {
         List<String> expected = new ArrayList<>();
-        expected.add(baseURI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.theworldavatar.com/kg/ontobim/hasZDirectionRatio, \"" + zCoord);
+        expected.add(baseURI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasZDirectionRatio, \"" + zCoord);
         return expected;
     }
 }

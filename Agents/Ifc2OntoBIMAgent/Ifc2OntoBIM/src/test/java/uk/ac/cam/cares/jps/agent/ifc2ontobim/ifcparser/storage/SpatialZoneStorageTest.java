@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class SpatialZoneStorageTest {
     private static SpatialZoneStorage testMappings;
-    private static final String TEST_BASE_URI = "http://www.example.org/";
+    private static final String TEST_BASE_URI = "https://www.example.org/";
     private static final String NON_EXISTENT_IRI = TEST_BASE_URI + "DOES/NOT/EXIST_1223";
     private static final String TEST_ZONE_PLACEMENT_IRI = TEST_BASE_URI + JunitTestUtils.BIM_PLACEMENT_CLASS + "_532";
     private static final String TEST_PROJECT_CLASS = "IfcProjectRepresentation";
