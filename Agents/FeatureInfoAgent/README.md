@@ -140,3 +140,7 @@ It is worth noting that the docker compose setup for this agent creates a bind m
 <!-- Links -->
 [queries]: queries
 [OntoEMS]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontoems/OntoEMS.owl
+
+# Automated actions
+
+TBD

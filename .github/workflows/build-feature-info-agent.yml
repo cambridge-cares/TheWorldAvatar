@@ -52,11 +52,11 @@ jobs:
         id: extractor
         uses: mikefarah/yq@master
         with:
-          cmd: echo "tag=$(yq '.services.feature-info-agent.image' ./Agents/FeatureInfoAgent/docker-compose.yml)" >> $GITHUB_OUTPUT
+          cmd: echo "TAG=$(yq '.services.feature-info-agent.image' ./Agents/FeatureInfoAgent/docker-compose.yml)" >> $GITHUB_ENV
         
       # Echo the docker image name for debugging
       - name: Test the tag format
-        run: echo "Image tag is ${{ steps.extractor.tag }}"
+        run: echo "Image tag is ${{ env.TAG }}"
         
       # Build the agent's Docker image
       #- name: Build image (inc. unit tests)
