@@ -57,7 +57,9 @@ which must have a 'scope' that [allows you to publish and install packages](http
 
 #### 2.2 Docker Deployment
 **TEST ENVIRONMENT**
-- Deploy the agent to execute the unit and integration tests by running the following code in the CLI at the <root> directory:
+- Deploy the agent to execute the unit and integration tests by running the following code in the CLI at the <root> directory. 
+- Do note that there are two containers (for the test environment and a test RDF database), and the test will ONLY run after they are started.
+- The success of all tests must be verified through the Docker logs.
 ```
 docker compose -f "./docker/docker-compose.test.yml" up -d --build
 ```

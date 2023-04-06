@@ -9,3 +9,18 @@ services:
       target: test
     ports:
       - "3025:8080"
+    depends_on:
+      - blazegraph_test
+    networks:
+      - my-network
+  # Blazegraph
+  blazegraph_test:
+    image: nawer/blazegraph:2.1.5
+    container_name: blazegraph_test
+    restart: unless-stopped
+    ports:
+      - "9999:9999"
+    networks:
+      - my-network
+networks:
+  my-network:
