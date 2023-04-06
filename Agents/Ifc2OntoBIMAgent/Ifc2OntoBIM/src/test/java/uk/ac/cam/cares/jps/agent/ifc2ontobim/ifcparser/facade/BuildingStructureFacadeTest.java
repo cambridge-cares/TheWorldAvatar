@@ -157,7 +157,7 @@ class BuildingStructureFacadeTest {
         NamespaceMapper.setBaseNameSpace(TEST_BASE_URI);
         // Create a new storey instance, which does not require any values except for the IRI
         // This IRI is necessary to generate the Storey IRI within the element class
-        IfcStoreyRepresentation storey = new IfcStoreyRepresentation(null, null, TEST_ZONE_PLACEMENT_IRI, null, null);
+        IfcStoreyRepresentation storey = new IfcStoreyRepresentation(null, null, TEST_ZONE_PLACEMENT_IRI, null, null, null);
         // Add the storey to the singleton
         SpatialZoneStorage zoneMappings = SpatialZoneStorage.Singleton();
         zoneMappings.add(STOREY_INST, storey.getBotStoreyIRI());

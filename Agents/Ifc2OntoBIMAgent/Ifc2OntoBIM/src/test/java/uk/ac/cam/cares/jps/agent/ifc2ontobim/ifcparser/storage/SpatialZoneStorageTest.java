@@ -72,7 +72,7 @@ class SpatialZoneStorageTest {
     @Test
     void testAddAndGetSite() {
         // Create a new sample representation
-        IfcSiteRepresentation sampleSite = new IfcSiteRepresentation(TEST_SITE_NAME, TEST_SITE_UID, TEST_ZONE_PLACEMENT_IRI, null, null, null, TEST_ELEV.toString());
+        IfcSiteRepresentation sampleSite = new IfcSiteRepresentation(TEST_SITE_NAME, TEST_SITE_UID, TEST_ZONE_PLACEMENT_IRI, null, null, null, TEST_ELEV.toString(), null);
         // Execute method
         testMappings.add(TEST_SITE_IRI, sampleSite.getBotSiteIRI());
         // Assert if they are equals
@@ -83,7 +83,7 @@ class SpatialZoneStorageTest {
     void testAddAndGetBuilding() {
         // Create a new sample representation
         IfcBuildingRepresentation sampleBuilding = new IfcBuildingRepresentation(TEST_BUILDING_NAME, TEST_BUILDING_UID,
-                TEST_ZONE_PLACEMENT_IRI, null, TEST_SITE_IRI, TEST_ELEV.toString(), TEST_ELEV.toString());
+                TEST_ZONE_PLACEMENT_IRI, null, TEST_SITE_IRI, TEST_ELEV.toString(), TEST_ELEV.toString(), null);
         // Execute method
         testMappings.add(TEST_BUILDING_IRI, sampleBuilding.getBotBuildingIRI());
         // Assert if they are equals
@@ -94,7 +94,7 @@ class SpatialZoneStorageTest {
     void testAddAndGetStorey() {
         // Create a new sample representation
         IfcStoreyRepresentation sampleStorey = new IfcStoreyRepresentation(TEST_STOREY_NAME,
-                TEST_STOREY_UID, TEST_ZONE_PLACEMENT_IRI, TEST_BUILDING_IRI, TEST_ELEV.toString());
+                TEST_STOREY_UID, TEST_ZONE_PLACEMENT_IRI, TEST_BUILDING_IRI, TEST_ELEV.toString(), null);
         // Execute method
         testMappings.add(TEST_STOREY_IRI, sampleStorey.getBotStoreyIRI());
         // Assert if they are equals

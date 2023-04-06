@@ -19,7 +19,6 @@ public class IfcAbstractRepresentation {
     private final String name;
     private final String uid;
     private final String placementIri;
-    protected static final String METRE_UNIT = "m";
 
     /**
      * Standard Constructor initialising the common inputs.

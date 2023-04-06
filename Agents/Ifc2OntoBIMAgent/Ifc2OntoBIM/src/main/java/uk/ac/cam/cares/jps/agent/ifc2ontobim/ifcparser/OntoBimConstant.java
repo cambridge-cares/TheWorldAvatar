@@ -187,6 +187,7 @@ public class OntoBimConstant {
     public static final String HEIGHT_CLASS = NamespaceMapper.OM_NAMESPACE + "Height";
     public static final String MEASURE_CLASS = NamespaceMapper.OM_NAMESPACE + "Measure";
     public static final String LENGTH_CLASS = NamespaceMapper.OM_NAMESPACE + "Length";
+    public static final String METRE_UNIT = "m";
 
     // restrict instantiation
     private OntoBimConstant() {

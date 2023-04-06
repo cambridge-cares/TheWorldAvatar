@@ -5,11 +5,14 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.Statement;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.Unit;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.GeometricRepresentationContext;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.model.IfcProjectRepresentation;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifc2x3.zone.*;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.CommonQuery;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.OntoBimConstant;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.SpatialZoneStorage;
+import uk.ac.cam.cares.jps.agent.ifc2ontobim.ifcparser.storage.UnitStorage;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.NamespaceMapper;
 import uk.ac.cam.cares.jps.agent.ifc2ontobim.utils.QueryHandler;
 
@@ -25,7 +28,7 @@ import java.util.Queue;
  */
 public class SpatialZoneFacade {
     private static SpatialZoneStorage zoneMappings;
-
+    private static UnitStorage unitMappings;
 
     /**
      * Generate zone triples
@@ -35,6 +38,12 @@ public class SpatialZoneFacade {
      */
     public static void genZoneTriples(Model owlModel, LinkedHashSet<Statement> statementSet) {
         zoneMappings = SpatialZoneStorage.Singleton();
+        unitMappings = UnitStorage.Singleton();
+        // Generate a new unit for meters and create their statements
+        Unit meter = new Unit(OntoBimConstant.LENGTH_CLASS, OntoBimConstant.METRE_UNIT);
+        meter.constructStatements(statementSet);
+        unitMappings.add(OntoBimConstant.METRE_UNIT, meter.getIri());
+        // Execute all the queries
         execProjectQuery(owlModel, statementSet);
         execSiteQuery(owlModel, statementSet);
         execBuildingQuery(owlModel, statementSet);
@@ -192,7 +201,7 @@ public class SpatialZoneFacade {
             String elev = QueryHandler.retrieveLiteral(soln, CommonQuery.ELEVATION_VAR);
             String project = soln.contains(CommonQuery.PROJECT_VAR) ?
                     zoneMappings.getZone(QueryHandler.retrieveIri(soln, CommonQuery.PROJECT_VAR)) : null;
-            IfcSiteRepresentation site = new IfcSiteRepresentation(name, uid, placement, project, latitude, longitude, elev);
+            IfcSiteRepresentation site = new IfcSiteRepresentation(name, uid, placement, project, latitude, longitude, elev, unitMappings.getIri(OntoBimConstant.METRE_UNIT));
             zoneMappings.add(iri, site.getBotSiteIRI());
             site.constructStatements(statementSet);
         }
@@ -240,7 +249,7 @@ public class SpatialZoneFacade {
             String terElev = QueryHandler.retrieveLiteral(soln, CommonQuery.TER_ELEVATION_VAR);
             String project = soln.contains(CommonQuery.PROJECT_VAR) ?
                     zoneMappings.getZone(QueryHandler.retrieveIri(soln, CommonQuery.PROJECT_VAR)) : null;
-            IfcBuildingRepresentation building = new IfcBuildingRepresentation(name, uid, placement, project, zoneMappings.getZone(QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR)), elev, terElev);
+            IfcBuildingRepresentation building = new IfcBuildingRepresentation(name, uid, placement, project, zoneMappings.getZone(QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR)), elev, terElev, unitMappings.getIri(OntoBimConstant.METRE_UNIT));
             zoneMappings.add(iri, building.getBotBuildingIRI());
             building.constructStatements(statementSet);
         }
@@ -281,7 +290,7 @@ public class SpatialZoneFacade {
             String uid = QueryHandler.retrieveLiteral(soln, CommonQuery.UID_VAR);
             String placement = QueryHandler.retrieveIri(soln, CommonQuery.PLACEMENT_VAR);
             String elev = QueryHandler.retrieveLiteral(soln, CommonQuery.ELEVATION_VAR);
-            IfcStoreyRepresentation storey = new IfcStoreyRepresentation(name, uid, placement, zoneMappings.getZone(QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR)), elev);
+            IfcStoreyRepresentation storey = new IfcStoreyRepresentation(name, uid, placement, zoneMappings.getZone(QueryHandler.retrieveIri(soln, CommonQuery.PARENT_ZONE_VAR)), elev, unitMappings.getIri(OntoBimConstant.METRE_UNIT));
             zoneMappings.add(iri, storey.getBotStoreyIRI());
             storey.constructStatements(statementSet);
         }

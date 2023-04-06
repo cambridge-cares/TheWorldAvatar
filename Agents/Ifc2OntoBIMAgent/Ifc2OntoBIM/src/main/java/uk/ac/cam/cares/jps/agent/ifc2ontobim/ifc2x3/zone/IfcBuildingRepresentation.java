@@ -17,6 +17,7 @@ public class IfcBuildingRepresentation extends IfcAbstractRepresentation {
     private final String siteIRI;
     private final String botBuildingIRI;
     private final String projectIRI;
+    private final String unitIRI;
     private final Double refElevation;
     private final Double terrainElevation;
 
@@ -30,8 +31,9 @@ public class IfcBuildingRepresentation extends IfcAbstractRepresentation {
      * @param siteIri      The IRI of bot:Site that is linked to this building instance.
      * @param refElevation An optional field containing the reference elevation values stored in IFC.
      * @param terElevation An optional field containing the terrain elevation values stored in IFC.
+     * @param unitIri      An optional field for the elevation units.
      */
-    public IfcBuildingRepresentation(String name, String uid, String placementIri, String projectIri, String siteIri, String refElevation, String terElevation) {
+    public IfcBuildingRepresentation(String name, String uid, String placementIri, String projectIri, String siteIri, String refElevation, String terElevation, String unitIri) {
         // Initialise the super class
         super(OntoBimConstant.BUILDING_REP_CLASS, name, uid, placementIri);
         this.siteIRI = siteIri;
@@ -45,13 +47,13 @@ public class IfcBuildingRepresentation extends IfcAbstractRepresentation {
         } else {
             this.refElevation = null;
         }
-
         if (terElevation != null) {
             terElevation = terElevation.contains(" .") ? StringUtils.getStringBeforeLastCharacterOccurrence(terElevation, ".") : terElevation;
             this.terrainElevation = Double.valueOf(terElevation);
         } else {
             this.terrainElevation = null;
         }
+        this.unitIRI = unitIri;
     }
 
     public String getBotBuildingIRI() {
@@ -77,7 +79,6 @@ public class IfcBuildingRepresentation extends IfcAbstractRepresentation {
         StatementHandler.addStatement(statementSet, this.getBotBuildingIRI(), OntoBimConstant.RDF_TYPE, OntoBimConstant.BOT_BUILDING_CLASS);
         StatementHandler.addStatement(statementSet, this.getBotBuildingIRI(), OntoBimConstant.BIM_HAS_IFC_REPRESENTATION, this.getIri());
         StatementHandler.addStatement(statementSet, this.siteIRI, OntoBimConstant.BOT_HAS_BUILDING, this.getBotBuildingIRI());
-
         if (this.projectIRI != null) {
             StatementHandler.addStatement(statementSet, this.projectIRI, OntoBimConstant.BIM_HAS_ROOT_ZONE, this.getIri());
         }
@@ -85,29 +86,23 @@ public class IfcBuildingRepresentation extends IfcAbstractRepresentation {
         if (this.refElevation != null) {
             String refElevHeightInst = this.getPrefix() + "Height_" + UUID.randomUUID();
             String refElevMeasureInst = this.getPrefix() + "Measure_" + UUID.randomUUID();
-            String refElevLengthInst = this.getPrefix() + "Length_" + UUID.randomUUID();
             StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_REF_ELEVATION, refElevHeightInst);
             StatementHandler.addStatement(statementSet, refElevHeightInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.HEIGHT_CLASS);
             StatementHandler.addStatement(statementSet, refElevHeightInst, OntoBimConstant.OM_HAS_VALUE, refElevMeasureInst);
             StatementHandler.addStatement(statementSet, refElevMeasureInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.MEASURE_CLASS);
             StatementHandler.addStatement(statementSet, refElevMeasureInst, OntoBimConstant.OM_HAS_NUMERICAL_VALUE, this.refElevation);
-            StatementHandler.addStatement(statementSet, refElevMeasureInst, OntoBimConstant.OM_HAS_UNIT, refElevLengthInst);
-            StatementHandler.addStatement(statementSet, refElevLengthInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.LENGTH_CLASS);
-            StatementHandler.addStatement(statementSet, refElevLengthInst, OntoBimConstant.SKOS_NOTATION, METRE_UNIT, false);
+            StatementHandler.addStatement(statementSet, refElevMeasureInst, OntoBimConstant.OM_HAS_UNIT, this.unitIRI);
         }
         // Add the statements for Terrain Elevation if it exists
         if (this.terrainElevation != null) {
             String terElevHeightInst = this.getPrefix() + "Height_" + UUID.randomUUID();
             String terElevMeasureInst = this.getPrefix() + "Measure_" + UUID.randomUUID();
-            String terElevLengthInst = this.getPrefix() + "Length_" + UUID.randomUUID();
             StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_TER_ELEVATION, terElevHeightInst);
             StatementHandler.addStatement(statementSet, terElevHeightInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.HEIGHT_CLASS);
             StatementHandler.addStatement(statementSet, terElevHeightInst, OntoBimConstant.OM_HAS_VALUE, terElevMeasureInst);
             StatementHandler.addStatement(statementSet, terElevMeasureInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.MEASURE_CLASS);
             StatementHandler.addStatement(statementSet, terElevMeasureInst, OntoBimConstant.OM_HAS_NUMERICAL_VALUE, this.terrainElevation);
-            StatementHandler.addStatement(statementSet, terElevMeasureInst, OntoBimConstant.OM_HAS_UNIT, terElevLengthInst);
-            StatementHandler.addStatement(statementSet, terElevLengthInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.LENGTH_CLASS);
-            StatementHandler.addStatement(statementSet, terElevLengthInst, OntoBimConstant.SKOS_NOTATION, METRE_UNIT, false);
+            StatementHandler.addStatement(statementSet, terElevMeasureInst, OntoBimConstant.OM_HAS_UNIT, this.unitIRI);
         }
     }
 }

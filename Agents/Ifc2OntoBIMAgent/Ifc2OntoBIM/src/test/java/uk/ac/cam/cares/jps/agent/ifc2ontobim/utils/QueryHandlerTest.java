@@ -94,7 +94,7 @@ class QueryHandlerTest {
         NamespaceMapper.setBaseNameSpace(testBaseUri);
         // Create a new storey and room instance, which does not require any values except for the IRI
         // This IRI is necessary to generate the respective zone IRI within the class
-        storey = new IfcStoreyRepresentation(null, null, testPlacementIri, null, null);
+        storey = new IfcStoreyRepresentation(null, null, testPlacementIri, null, null, null);
         room = new IfcRoomRepresentation(null, null, testPlacementIri, null);
         // Add the storey and room to the singleton
         zoneMappings = SpatialZoneStorage.Singleton();

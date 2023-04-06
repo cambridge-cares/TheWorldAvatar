@@ -16,6 +16,7 @@ import java.util.UUID;
 public class IfcStoreyRepresentation extends IfcAbstractRepresentation {
     private final String buildingIRI;
     private final String botStoreyIRI;
+    private final String unitIRI;
     private final Double refElevation;
 
     /**
@@ -26,8 +27,9 @@ public class IfcStoreyRepresentation extends IfcAbstractRepresentation {
      * @param placementIri The local placement IRI for the zone's position.
      * @param buildingIri  The IRI of bot:Building that is linked to this building instance.
      * @param refElevation An optional field containing the reference elevation values stored in IFC.
+     * @param unitIri      An optional field for the elevation units.
      */
-    public IfcStoreyRepresentation(String name, String uid, String placementIri, String buildingIri, String refElevation) {
+    public IfcStoreyRepresentation(String name, String uid, String placementIri, String buildingIri, String refElevation, String unitIri) {
         // Initialise the super class
         super(OntoBimConstant.STOREY_REP_CLASS, name, uid, placementIri);
         this.buildingIRI = buildingIri;
@@ -40,6 +42,7 @@ public class IfcStoreyRepresentation extends IfcAbstractRepresentation {
         } else {
             this.refElevation = null;
         }
+        this.unitIRI = unitIri;
     }
 
     public String getBotStoreyIRI() {
@@ -66,16 +69,13 @@ public class IfcStoreyRepresentation extends IfcAbstractRepresentation {
             // Generate the instances
             String heightInst = this.getPrefix() + "Height_" + UUID.randomUUID();
             String measureInst = this.getPrefix() + "Measure_" + UUID.randomUUID();
-            String lengthInst = this.getPrefix() + "Length_" + UUID.randomUUID();
             // Add the statements we are interested in
             StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_REF_ELEVATION, heightInst);
             StatementHandler.addStatement(statementSet, heightInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.HEIGHT_CLASS);
             StatementHandler.addStatement(statementSet, heightInst, OntoBimConstant.OM_HAS_VALUE, measureInst);
             StatementHandler.addStatement(statementSet, measureInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.MEASURE_CLASS);
             StatementHandler.addStatement(statementSet, measureInst, OntoBimConstant.OM_HAS_NUMERICAL_VALUE, this.refElevation);
-            StatementHandler.addStatement(statementSet, measureInst, OntoBimConstant.OM_HAS_UNIT, lengthInst);
-            StatementHandler.addStatement(statementSet, lengthInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.LENGTH_CLASS);
-            StatementHandler.addStatement(statementSet, lengthInst, OntoBimConstant.SKOS_NOTATION, METRE_UNIT, false);
+            StatementHandler.addStatement(statementSet, measureInst, OntoBimConstant.OM_HAS_UNIT, this.unitIRI);
         }
     }
 }

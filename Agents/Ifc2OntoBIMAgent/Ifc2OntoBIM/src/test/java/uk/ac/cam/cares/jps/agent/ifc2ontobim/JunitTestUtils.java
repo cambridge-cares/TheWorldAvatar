@@ -5,10 +5,7 @@ import org.apache.jena.rdf.model.Property;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.apache.jena.rdf.model.Statement;
 
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,6 +18,7 @@ public class JunitTestUtils {
     public static final String expressUri = "https://w3id.org/express#";
     public static final String ifc2x3Uri = "http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#";
     public static final String listUri = "https://w3id.org/list#";
+    public static final String omUri = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     public static final String rdfUri = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     public static final String rdfsUri = "http://www.w3.org/2000/01/rdf-schema#";
     public static final String IFC2X3_ID_PROPERTY = ifc2x3Uri + "globalId_IfcRoot";
@@ -35,18 +33,9 @@ public class JunitTestUtils {
     public static final Property hasBoolean = ResourceFactory.createProperty(JunitTestUtils.expressUri + "hasBoolean");
     public static final Property hasContents = ResourceFactory.createProperty(JunitTestUtils.listUri + "hasContents");
     public static final Property hasNext = ResourceFactory.createProperty(JunitTestUtils.listUri + "hasNext");
-
-    public static void addPrefix(ConstructBuilder builder) {
-        Map<String, String> nsMapping = new HashMap<>();
-        nsMapping.put("rdfs", rdfsUri);
-        nsMapping.put("rdf", rdfUri);
-        nsMapping.put("bim", bimUri);
-        nsMapping.put("bot", botUri);
-        nsMapping.put("ifc", ifc2x3Uri);
-        nsMapping.put("list", listUri);
-        nsMapping.put("express", expressUri);
-        builder.addPrefixes(nsMapping);
-    }
+    public static final String LENGTH = "Length";
+    public static final String LENGTH_CLASS = omUri + LENGTH;
+    public static final String LENGTH_SYMBOL = "m";
 
     public static String appendStatementsAsString(LinkedHashSet<Statement> statementSet) {
         StringBuilder builder = new StringBuilder();
@@ -66,5 +55,12 @@ public class JunitTestUtils {
             Matcher matcher = Pattern.compile(statement).matcher(result);
             assertFalse(matcher.find());
         });
+    }
+
+    public static List<String> genExpectedUnitStatements(String baseUri) {
+        List<String> expected = new ArrayList<>();
+        expected.add(baseUri + LENGTH + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, " + LENGTH_CLASS);
+        expected.add(baseUri + LENGTH + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2004/02/skos/core#notation, \"" + LENGTH_SYMBOL);
+        return expected;
     }
 }

@@ -17,6 +17,7 @@ import java.util.UUID;
  */
 public class IfcSiteRepresentation extends IfcAbstractRepresentation {
     private final String botSiteIRI;
+    private final String unitIRI;
     private Double latitudeDegree;
     private Double latitudeMinute;
     private Double latitudeSecond;
@@ -31,7 +32,6 @@ public class IfcSiteRepresentation extends IfcAbstractRepresentation {
     /**
      * Standard Constructor initialising the necessary and optional inputs.
      *
-     * @param iri          The instance IRI to be created.
      * @param name         The name of this IFC object.
      * @param uid          The IFC uid generated for this object.
      * @param placementIri The local placement IRI for the zone's position.
@@ -39,8 +39,9 @@ public class IfcSiteRepresentation extends IfcAbstractRepresentation {
      * @param latitude     A queue of the latitude's degree, minute, second, and millionth-second values.
      * @param longitude    A queue of the longitude's degree, minute, second, and millionth-second values.
      * @param refElevation An optional field containing the reference elevation values stored in IFC.
+     * @param unitIri      An optional field for the elevation units.
      */
-    public IfcSiteRepresentation(String name, String uid, String placementIri, String projectIri, Queue<String> latitude, Queue<String> longitude, String refElevation) {
+    public IfcSiteRepresentation(String name, String uid, String placementIri, String projectIri, Queue<String> latitude, Queue<String> longitude, String refElevation,  String unitIri) {
         // Initialise the super class
         super(OntoBimConstant.SITE_REP_CLASS, name, uid, placementIri);
         // Generate new site IRIs
@@ -56,6 +57,7 @@ public class IfcSiteRepresentation extends IfcAbstractRepresentation {
         } else {
             this.refElevation = null;
         }
+        this.unitIRI = unitIri;
     }
 
     public String getBotSiteIRI() {
@@ -135,16 +137,13 @@ public class IfcSiteRepresentation extends IfcAbstractRepresentation {
             // Generate the instances
             String heightInst = this.getPrefix() + "Height_" + UUID.randomUUID();
             String measureInst = this.getPrefix() + "Measure_" + UUID.randomUUID();
-            String lengthInst = this.getPrefix() + "Length_" + UUID.randomUUID();
             // Add the statements we are interested in
             StatementHandler.addStatement(statementSet, this.getIri(), OntoBimConstant.BIM_HAS_REF_ELEVATION, heightInst);
             StatementHandler.addStatement(statementSet, heightInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.HEIGHT_CLASS);
             StatementHandler.addStatement(statementSet, heightInst, OntoBimConstant.OM_HAS_VALUE, measureInst);
             StatementHandler.addStatement(statementSet, measureInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.MEASURE_CLASS);
             StatementHandler.addStatement(statementSet, measureInst, OntoBimConstant.OM_HAS_NUMERICAL_VALUE, this.refElevation);
-            StatementHandler.addStatement(statementSet, measureInst, OntoBimConstant.OM_HAS_UNIT, lengthInst);
-            StatementHandler.addStatement(statementSet, lengthInst, OntoBimConstant.RDF_TYPE, OntoBimConstant.LENGTH_CLASS);
-            StatementHandler.addStatement(statementSet, lengthInst, OntoBimConstant.SKOS_NOTATION, METRE_UNIT, false);
+            StatementHandler.addStatement(statementSet, measureInst, OntoBimConstant.OM_HAS_UNIT, this.unitIRI);
         }
     }
 }
