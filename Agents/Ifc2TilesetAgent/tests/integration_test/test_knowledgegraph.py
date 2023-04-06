@@ -22,16 +22,13 @@ from .testutils import init_kg_client, assert_df_equal, assert_assets_present
     [(C.select_element_query, C.insert_element_query, C.expected_select_element_result)]
 )
 def test_execute_query(select_query, update_query, expected, kg_client):
-    """
-    Tests that the KG client can execute queries and update values with the endpoint
-    """
-    # Update the test triples into the KG
+    # Arrange
     kg_client.execute_update(update_query)
 
-    # Query for the triples
+    # Act
     actual = kg_client.execute_query(select_query)
 
-    # Assert if triples have been updated and queried properly
+    # Assert
     assert actual == expected
 
 
@@ -65,24 +62,24 @@ def test_execute_query(select_query, update_query, expected, kg_client):
     )]
 )
 def test_retrieve_metadata(init_assets, expected, kg_client):
-    # arrange
+    # Arrange
     init_kg_client(kg_client, init_assets)
 
-    # act
+    # Act
     actual = retrieve_metadata(C.KG_ENDPOINT, C.KG_ENDPOINT)
 
-    # assert
+    # Assert
     assert_df_equal(actual, expected)
 
 
 def test_get_building_iri(endpoint, kg_client):
-    # arrange
+    # Arrange
     init_kg_client(kg_client, ["building"])
 
-    # act
+    # Act
     actual = get_building_iri(endpoint, endpoint)
 
-    # assert
+    # Assert
     assert actual == C.sample_building_iri
 
 
@@ -116,24 +113,14 @@ def test_get_building_iri(endpoint, kg_client):
 )
 def test_conv2gltf(init_assets, expected_gltf, expected_asset_data, expected_building_iri, endpoint, kg_client,
                    gen_sample_ifc_file):
-    """
-    Tests that the conv2gltf() in agent.ifc2gltf submodule runs and generates only one gltf file
-    """
-    # Generate the test IFC triples
+    # Arrange
     init_kg_client(kg_client, init_assets)
-
-    # Generate sample ifc files and file paths
     ifcpath = gen_sample_ifc_file("./data/ifc/sample.ifc", assets=init_assets)
 
-    # Execute method to convert a IFC model to gltf
+    # Act
     actual_asset_data, actual_building_iri = conv2gltf(ifcpath, endpoint, endpoint)
 
-    try:
-        assert_df_equal(actual_asset_data, expected_asset_data)
-
-        # Assert that the geometry files are generated
-        assert_assets_present(expected_gltf)
-
-        assert actual_building_iri == expected_building_iri
-    finally:
-        os.remove(ifcpath)
+    # Assert
+    assert_df_equal(actual_asset_data, expected_asset_data)
+    assert_assets_present(expected_gltf)
+    assert actual_building_iri == expected_building_iri

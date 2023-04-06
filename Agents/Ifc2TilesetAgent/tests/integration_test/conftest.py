@@ -5,7 +5,6 @@ A module that provides all pytest fixtures and utility functions for all integra
 """
 # Standard import
 import os
-import shutil
 from typing import Iterable, Tuple
 
 # Third party import
@@ -63,32 +62,33 @@ def gen_sample_ifc_file():
         run("aggregate.assign_object", model, relating_object=site, product=building)
         run("aggregate.assign_object", model, relating_object=building, product=storey)
 
-        # Create a wall
-        wall = run("root.create_entity", model, ifc_class="IfcWall")
-        # Add body geometry in meters
-        representation = run("geometry.add_wall_representation", model, context=body, length=5, height=3, thickness=0.2)
-        # Assign body geometry to the wall
-        run("geometry.assign_representation", model, product=wall, representation=representation)
-        # Place the wall on ground floor
-        run("spatial.assign_container", model, relating_structure=storey, product=wall)
-
         ifc_building_elements = []
         ifc_furnishing_elements = []
 
-        ifc_building_base_permissible_values = ("building", "wall")
         ifc_building_element_permissible_values = ("water_meter", "fridge", "solar_panel")
         ifc_furnishing_element_permissible_values = ("chair", "table")
 
         for asset in assets:
-            if asset in ifc_building_base_permissible_values:
+            if asset == "building":
                 pass
+            elif asset == "wall":
+                # Create a wall
+                wall = run("root.create_entity", model, ifc_class="IfcWall", GlobalId=C.sample_wall.ifc_id,
+                           Name=C.sample_wall.label)
+                # Add body geometry in meters
+                representation = run("geometry.add_wall_representation", model, context=body, length=5, height=3,
+                                     thickness=0.2)
+                # Assign body geometry to the wall
+                run("geometry.assign_representation", model, product=wall, representation=representation)
+                # Place the wall on ground floor
+                run("spatial.assign_container", model, relating_structure=storey, product=wall)
             elif asset in ifc_building_element_permissible_values:
                 ifc_building_elements.append(asset)
             elif asset in ifc_furnishing_element_permissible_values:
                 ifc_furnishing_elements.append(asset)
             else:
-                permissible_values = ifc_building_base_permissible_values + ifc_building_element_permissible_values \
-                                    + ifc_furnishing_element_permissible_values
+                permissible_values = ("building", "wall") + ifc_building_element_permissible_values \
+                                     + ifc_furnishing_element_permissible_values
                 raise ValueError(f"Unexpected argument `{asset}` for an asset value; must be either "
                                  f"{permissible_values}.")
 

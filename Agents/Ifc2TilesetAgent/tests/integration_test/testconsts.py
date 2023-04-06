@@ -91,7 +91,6 @@ sample_table = OntoBimTestElement(
 )
 
 SAMPLE_ONTOBIM_ELEMENT_STORE = dict(
-    wall=sample_wall,
     water_meter=sample_water_meter,
     fridge=sample_fridge,
     solar_panel=sample_solar_panel,
@@ -102,7 +101,7 @@ SAMPLE_ONTOBIM_ELEMENT_STORE = dict(
 counter = itertools.count()
 
 
-def _elem_to_tripe(e: OntoBimTestElement):
+def _elem_to_triple(e: OntoBimTestElement):
     ifc_model_rep_num = str(next(counter)).zfill(3)
     return f"""\
 base:{e.iri} rdf:type {e.type};
@@ -126,12 +125,12 @@ base:IfcBuildingRepresentation_130 rdf:type ontobim:IfcModelRepresentation;
 
 SAMPLE_ONTOBIM_TRIPLESTORE = dict(
     building=building_triple,
-    wall=_elem_to_tripe(sample_wall),
-    water_meter=_elem_to_tripe(sample_water_meter),
-    fridge=_elem_to_tripe(sample_fridge),
-    solar_panel=_elem_to_tripe(sample_solar_panel),
-    chair=_elem_to_tripe(sample_chair),
-    table=_elem_to_tripe(sample_table)
+    wall=_elem_to_triple(sample_wall),
+    water_meter=_elem_to_triple(sample_water_meter),
+    fridge=_elem_to_triple(sample_fridge),
+    solar_panel=_elem_to_triple(sample_solar_panel),
+    chair=_elem_to_triple(sample_chair),
+    table=_elem_to_triple(sample_table)
 )
 
 SAMPLE_ONTOBIM_GEOM_STORE = dict(
