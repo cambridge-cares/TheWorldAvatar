@@ -13,11 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 @WebServlet(urlPatterns = {"/set", "/get"})
 public class AndroidStatusAgent extends JPSAgent{
     private static final Logger LOGGER = LogManager.getLogger(AndroidStatusAgent.class);
-    private String equipmentIRI;
+    private String equipmentIRI = "";
     private final String EQUIPMENT_IRI_KEY = "equipmentIRI";
 
     @Override
@@ -26,14 +27,21 @@ public class AndroidStatusAgent extends JPSAgent{
         String datetime = dateFormat.format(new Date());
         LOGGER.info("POST Request received at: {}", datetime);
 
-        if (!check(request)) {
-            throw new JPSRuntimeException("Unable to validate request sent to the agent.");
+        String url = request.getRequestURI();
+        if (url.contains("?")) url = url.split(Pattern.quote("?"))[0];
+
+        if (url.contains("set")) {
+            if (!check(request)) {
+                throw new JPSRuntimeException("Unable to validate request sent to the agent.");
+            }
+
+            this.equipmentIRI = request.getParameter(EQUIPMENT_IRI_KEY);
+            LOGGER.info("Successfully set equipment iri to " + equipmentIRI);
+
+            response.setStatus(HttpServletResponse.SC_OK);
         }
 
-        this.equipmentIRI = request.getParameter(EQUIPMENT_IRI_KEY);
-        LOGGER.info("Successfully set equipment iri to " + equipmentIRI);
-
-        response.setStatus(HttpServletResponse.SC_OK);
+        throw new JPSRuntimeException("Unknown Path");
     }
 
     private boolean check(HttpServletRequest request) {
@@ -56,10 +64,18 @@ public class AndroidStatusAgent extends JPSAgent{
         String datetime = dateFormat.format(new Date());
         LOGGER.info("GET Request received at: {}", datetime);
 
-        JSONObject result = new JSONObject();
-        result.put("equipmentIRI", equipmentIRI);
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.getWriter().write(result.toString());
-        LOGGER.info("Return: " + result);
+        String url = request.getRequestURI();
+        if (url.contains("?")) url = url.split(Pattern.quote("?"))[0];
+
+        if (url.contains("get")) {
+            JSONObject result = new JSONObject();
+            result.put("equipmentIRI", equipmentIRI);
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write(result.toString());
+            LOGGER.info("Return: " + result);
+            return;
+        }
+
+        throw new JPSRuntimeException("Unknown Path");
     }
 }
