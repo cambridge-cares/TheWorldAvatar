@@ -17,6 +17,8 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.slf4j.Logger;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.opencsv.CSVReader;
 
@@ -47,6 +49,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	public static final String RDFS_COMMENT = "http://www.w3.org/2000/01/rdf-schema#comment";
 	public static final String OWL_IMPORTS = "http://www.w3.org/2002/07/owl#imports";
 	public static TBoxConfiguration tBoxConfig;
+	public static ApplicationContext applicationContext;
 	
 	/**
 	 * Stores the mapping between a child class and its parents.
@@ -140,6 +143,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 * @throws OWLOntologyCreationException 
 	 */
 	private void readCSVTemplate(String csvFileNamePlusPath) throws IOException, JPSRuntimeException, OWLOntologyCreationException{
+		storeRelationships(csvFileNamePlusPath);
 		List<List<String>> brSourceCtml = FileUtil.openCSVSourceFile(csvFileNamePlusPath);
 		int countLine = 0;
 		for(List<String> singleLine:brSourceCtml){
@@ -155,6 +159,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 * Reads a CSV template with inputs to produce the following:
 	 * 1. the mapping between a child class and its parents.
 	 * 2. the mapping between a domain class and its relations.
+	 * 3. the mapping between a range class and its relations.
 	 * 
 	 * @param csvFileNamePlusPath
 	 * @throws IOException
@@ -162,46 +167,110 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 */
 	private void storeRelationships(String csvFileNamePlusPath) throws IOException, JPSRuntimeException, OWLOntologyCreationException{
 		List<List<String>> brSourceCtml = FileUtil.openCSVSourceFile(csvFileNamePlusPath);
+		int rowCount = 0;
 		for(List<String> singleLine:brSourceCtml){
+			rowCount++;
 			// Creates the mapping between a class and its parents
+			String source = singleLine.get(tBoxConfig.getIndexOfSourceColumn());
+			String type = singleLine.get(tBoxConfig.getIndexOfTypeColumn());
+			String target = singleLine.get(tBoxConfig.getIndexOfTargetColumn());
+			String relation = singleLine.get(tBoxConfig.getIndexOfRelationColumn());
+			if (type == null || type.trim().equals("")) {
+				logger.error("The ontology was not created as the Type is null or empty in the CSV file in row: "+rowCount);
+				throw new JPSRuntimeException("The ontology was not created as the Type is null or empty in the CSV file in row: "+rowCount);
+			}
+			if (source == null || source.trim().equals("")) {
+				logger.error("The ontology was not created as the Source is null or empty in the CSV file in row: "+rowCount);
+				throw new JPSRuntimeException("The ontology was not created as the Source is null or empty in the CSV file in row: "+rowCount);
+			}
+			source = source.trim().toLowerCase();
+			type = type.trim().toLowerCase();
+			target = target.trim().toLowerCase();
 			if (singleLine.size() > tBoxConfig.getIndexOfRelationColumn() 
-					&& singleLine.get(tBoxConfig.getIndexOfTypeColumn()).equalsIgnoreCase(tBoxConfig.getElementTypeClass()) 
-					&& singleLine.get(tBoxConfig.getIndexOfRelationColumn()).equalsIgnoreCase(tBoxConfig.getIsARelation())) {
-				if (childParentMap.containsKey(singleLine.get(tBoxConfig.getIndexOfSourceColumn()))) {
-					childParentMap.get(singleLine.get(tBoxConfig.getIndexOfSourceColumn()).toLowerCase()).add(singleLine.get(tBoxConfig.getIndexOfSourceColumn()).toLowerCase());
+					&& type.equalsIgnoreCase(tBoxConfig.getElementTypeClass()) 
+					&& relation.equalsIgnoreCase(tBoxConfig.getIsARelation())) {
+				if (childParentMap.containsKey(source)) {
+					childParentMap.get(type).add(target);
 				} else {
 					List<String> parents = new ArrayList<String>();
-					parents.add(singleLine.get(tBoxConfig.getIndexOfSourceColumn()).toLowerCase());
-					childParentMap.put(singleLine.get(tBoxConfig.getIndexOfSourceColumn()).toLowerCase(), parents);
+					parents.add(target);
+					childParentMap.put(source, parents);
 				}
 			}
 			
 			// Creates the mapping between a domain class and relations associated with it.
-			if (singleLine.size() > tBoxConfig.getIndexOfDomainColumn() 
-					&& singleLine.get(tBoxConfig.getIndexOfDomainColumn())!= null
-					&& !singleLine.get(tBoxConfig.getIndexOfDomainColumn()).equals("")) {
-				if (domainRelationMap.containsKey(singleLine.get(tBoxConfig.getIndexOfDomainColumn()))) {
-					domainRelationMap.get(singleLine.get(tBoxConfig.getIndexOfDomainColumn()).toLowerCase()).add(singleLine.get(tBoxConfig.getIndexOfDomainColumn()).toLowerCase());
-				} else {
-					List<String> parents = new ArrayList<String>();
-					parents.add(singleLine.get(tBoxConfig.getIndexOfDomainColumn()).toLowerCase());
-					domainRelationMap.put(singleLine.get(tBoxConfig.getIndexOfDomainColumn()).toLowerCase(), parents);
+			String domain = singleLine.get(tBoxConfig.getIndexOfDomainColumn());
+			if (singleLine.size() > tBoxConfig.getIndexOfDomainColumn()
+					&& domain != null
+					&& !domain.trim().equals("")) {
+				String[] domainClasses = null;
+				if (domain.contains("UNION")) {
+					domainClasses = domain.split("UNION");
+				} else if (domain.contains("INTERSECTION")) {
+					domainClasses = domain.split("INTERSECTION");
+				}
+				if (domainClasses != null){
+					for(String domainClass:domainClasses) {
+						domainClass = domainClass.trim().toLowerCase();
+						if (domainRelationMap.containsKey(domainClass)) {
+							domainRelationMap.get(domainClass).add(source);
+						} else {
+							List<String> relations = new ArrayList<String>();
+							relations.add(source);
+							domainRelationMap.put(domainClass, relations);
+						}
+					}
 				}
 			}
 			
 			// Creates the mapping between a range class and relations associated with it.
+			String range = singleLine.get(tBoxConfig.getIndexOfRangeColumn());
 			if (singleLine.size() > tBoxConfig.getIndexOfRangeColumn() 
-					&& singleLine.get(tBoxConfig.getIndexOfRangeColumn())!= null
-					&& !singleLine.get(tBoxConfig.getIndexOfRangeColumn()).equals("")) {
-				if (rangeRelationMap.containsKey(singleLine.get(tBoxConfig.getIndexOfRangeColumn()))) {
-					rangeRelationMap.get(singleLine.get(tBoxConfig.getIndexOfRangeColumn()).toLowerCase()).add(singleLine.get(tBoxConfig.getIndexOfRangeColumn()).toLowerCase());
-				} else {
-					List<String> parents = new ArrayList<String>();
-					parents.add(singleLine.get(tBoxConfig.getIndexOfRangeColumn()).toLowerCase());
-					rangeRelationMap.put(singleLine.get(tBoxConfig.getIndexOfRangeColumn()).toLowerCase(), parents);
+					&& range!= null
+					&& !range.equals("")) {
+				String[] rangeClasses = null;
+				if(range.contains("UNION")){
+					rangeClasses = range.split("UNION");
+				} else if (range.contains("INTERSECTION")) {
+					rangeClasses = range.split("INTERSECTION");
+				}
+				if (rangeClasses != null) {
+					for(String rangeClass:rangeClasses) {
+						rangeClass = rangeClass.trim().toLowerCase();
+						if (rangeRelationMap.containsKey(rangeClass)) {
+							rangeRelationMap.get(rangeClass).add(source);
+						} else {
+							List<String> relations = new ArrayList<String>();
+							relations.add(source);
+							rangeRelationMap.put(rangeClass, relations);
+						}
+					}
 				}
 			}
 		}
+		
+//		System.out.println("Child-parent relationships:");
+//		for(String key: childParentMap.keySet()) {
+//			System.out.println("Child:"+key);
+//			for(String parent:childParentMap.get(key)) {
+//				System.out.println("   Parent:"+parent);
+//			}
+//		}
+//
+//		System.out.println("Domain and its associated relations:");
+//		for(String key: domainRelationMap.keySet()) {
+//			System.out.println("Domain:"+key);
+//			for(String relation:domainRelationMap.get(key)) {
+//				System.out.println("   Relation:"+relation);
+//			}
+//		}
+//		System.out.println("Range and its associated relations:");
+//		for(String key: rangeRelationMap.keySet()) {
+//			System.out.println("Range:"+key);
+//			for(String relation:rangeRelationMap.get(key)) {
+//				System.out.println("   Relation:"+relation);
+//			}
+//		}
 	}
 
 
@@ -706,5 +775,13 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	 */
 	public void generateObjectProperty(String propertyName, String type, String targetName, String relation, String domain, String range, String quantifier) throws IOException, JPSRuntimeException{
 		iTBoxManagement.createOWLObjectProperty(propertyName, type, targetName, relation, domain, range, quantifier);
+	}
+	
+	/**
+	 * Initialise variables for reading configuration properties.
+	 */
+	public void init() throws JPSRuntimeException, OWLOntologyCreationException{
+		applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+		tBoxConfig = applicationContext.getBean(TBoxConfiguration.class);
 	}
  }

@@ -53,8 +53,6 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	public OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	public OWLOntology ontology;
 	public IRI ontologyIRI;
-	public static TBoxConfiguration tBoxConfig;
-	public static ApplicationContext applicationContext;
 	public String SLASH = "/";
 	public String BACKSLASH = "\\";
 	public String FILE_EXT_OWL = ".owl";
@@ -1022,14 +1020,6 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			logger.error("Property name is empty.");
 			throw new JPSRuntimeException("Property name is empty.");
 		}		
-	}
-	
-	/**
-	 * Initialise variables for reading configuration properties.
-	 */
-	public void init() throws JPSRuntimeException, OWLOntologyCreationException{
-		applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		tBoxConfig = applicationContext.getBean(TBoxConfiguration.class);
 	}
 	
 	/**
