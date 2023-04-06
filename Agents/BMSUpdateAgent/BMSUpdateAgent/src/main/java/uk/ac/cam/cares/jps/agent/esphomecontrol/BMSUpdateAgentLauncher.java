@@ -67,15 +67,34 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
         RemoteStoreClient rsClient = setupKgConnection();
 
         BMSUpdateAgent bmsUpdateAgent = new BMSUpdateAgent(esphomeAgentToggle, esphomeUpdateAgentRetrieve);
-        bmsUpdateAgent.setTemperatureInKg(dataIRI, temperature, rsClient);
+        double originalTemperature = Double.NEGATIVE_INFINITY;
+        try {
+            originalTemperature = bmsUpdateAgent.getOriginalTemperature(dataIRI, rsClient);
+            bmsUpdateAgent.setTemperatureInKg(dataIRI, temperature, rsClient);
 
-        String fanStatus = bmsUpdateAgent.toggleFan();
-        bmsUpdateAgent.updateStatusInDb();
+            String fanStatus = bmsUpdateAgent.toggleFan();
+            bmsUpdateAgent.updateStatusInDb();
 
-        result.put("message", "The temperature has been set to " + temperature);
-        result.put("fanStatus", fanStatus);
+            result.put("message", "The temperature has been set to " + temperature);
+            result.put("fanStatus", fanStatus);
 
-        return result;
+            LOGGER.info("Query finished with result: " + result);
+            return result;
+        } catch (JPSRuntimeException e) {
+            String errorMessage = "error occur, trying to roll back the knowledge graph...";
+            if (e.getMessage().equals(bmsUpdateAgent.FAIL_TO_TOGGLE)) {
+                bmsUpdateAgent.setTemperatureInKg(dataIRI, originalTemperature, rsClient);
+                errorMessage = errorMessage + "; " + "Set point has been reset to " + originalTemperature;
+            } else if (e.getMessage().equals(bmsUpdateAgent.FAIL_TO_PULL_DATA)) {
+                bmsUpdateAgent.setTemperatureInKg(dataIRI, originalTemperature, rsClient);
+                String fanStatus = bmsUpdateAgent.toggleFan();
+                errorMessage = errorMessage + "; " + "Set point has been reset to " + originalTemperature + ", and the fan status is " + fanStatus;
+            }
+
+            LOGGER.error(errorMessage);
+            result.put("Message", errorMessage);
+            return result;
+        }
     }
 
     @Override
@@ -151,6 +170,11 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
                 throw new JPSRuntimeException("Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\" ");
             }
 
+            LOGGER.debug("Properties config: ");
+            LOGGER.debug("esphomeToggle: " + esphomeAgentToggle);
+            LOGGER.debug("esphomeRetrieve: " + esphomeUpdateAgentRetrieve);
+            LOGGER.debug("sparqlQuery: " + sparqlQueryEndpoint);
+            LOGGER.debug("sparqlUpdate: " + sparqlUpdateEndpoint);
         }
 
     }

@@ -10,10 +10,13 @@ import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
@@ -27,6 +30,11 @@ public class BMSUpdateAgent {
 
     private final String esphomeAgentToggle;
     private final String esphomeUpdateAgentRetrieve;
+
+    final String FAIL_TO_GET_TEMP = "Fail to get temperature";
+    final String FAIL_TO_UPDATE_TEMP = "Fail to update temperature in knowledge graph";
+    final String FAIL_TO_TOGGLE = "Fail to trigger ESPHomeAgent to toggle device status";
+    final String FAIL_TO_PULL_DATA = "Fail to trigger ESPHomeUpdateAgent to pull data";
 
     public BMSUpdateAgent(String esphomeAgentToggle, String esphomeUpdateAgentRetrieve) {
         this.esphomeAgentToggle = esphomeAgentToggle;
@@ -45,8 +53,30 @@ public class BMSUpdateAgent {
         TriplePattern insertTemperature = GraphPatterns.tp(iri(dataIRI), P_OM.iri("hasNumericalValue"), newTemperatureLiteral);
         modifyDataQuery.insert(insertTemperature);
 
-        LOGGER.info("execute modify: " + modifyDataQuery.getQueryString());
-        rsClient.executeUpdate(modifyDataQuery.getQueryString());
+        try {
+            LOGGER.info("sending sparql request to: " + rsClient.getUpdateEndpoint());
+            LOGGER.info("execute modify: " + modifyDataQuery.getQueryString());
+            rsClient.executeUpdate(modifyDataQuery.getQueryString());
+        } catch (Exception e) {
+            LOGGER.error(FAIL_TO_UPDATE_TEMP);
+            throw new JPSRuntimeException(FAIL_TO_UPDATE_TEMP);
+        }
+    }
+
+    public double getOriginalTemperature(String dataIRI, RemoteStoreClient rsClient) {
+        SelectQuery selectQuery = Queries.SELECT();
+        Variable temperatureVar = SparqlBuilder.var("temperature");
+        TriplePattern getTemperature = GraphPatterns.tp(iri(dataIRI), P_OM.iri("hasNumericalValue"), temperatureVar);
+        selectQuery.prefix(P_OM).select(temperatureVar).where(getTemperature);
+        try {
+            LOGGER.info("getting original temperature...");
+            LOGGER.info("execute query: " + selectQuery.getQueryString());
+            JSONArray results = new JSONArray(rsClient.execute(selectQuery.getQueryString()));
+            return results.getJSONObject(0).getDouble("temperature");
+        } catch (Exception e) {
+            LOGGER.error(FAIL_TO_GET_TEMP);
+            throw new JPSRuntimeException(FAIL_TO_GET_TEMP);
+        }
     }
 
     public String toggleFan() {
@@ -55,8 +85,14 @@ public class BMSUpdateAgent {
         queryJo.put("esphomeStatusClientProperties", "ESPHOME_CLIENT_PROPERTIES");
         queryJo.put("esphomeAPIProperties", "API_PROPERTIES");
 
-        String response = AgentCaller.executePost(esphomeAgentToggle, queryJo.toString());
-        return new JSONObject(response).getJSONArray("message").getString(0);
+        try {
+            LOGGER.info("toggle device status with ESPHomeAgent at " + esphomeAgentToggle);
+            String response = AgentCaller.executePost(esphomeAgentToggle, queryJo.toString());
+            return new JSONObject(response).getJSONArray("message").getString(0);
+        } catch (Exception e) {
+            LOGGER.error(FAIL_TO_TOGGLE);
+            throw new JPSRuntimeException(FAIL_TO_TOGGLE);
+        }
     }
 
     public void updateStatusInDb() {
@@ -65,6 +101,13 @@ public class BMSUpdateAgent {
         queryJo.put("apiProperties", "ESPHOME_UPDATE_APIPROPERTIES");
         queryJo.put("clientProperties", "ESPHOME_UPDATE_CLIENTPROPERTIES");
 
-        AgentCaller.executePost(esphomeUpdateAgentRetrieve, queryJo.toString());
+        try {
+            LOGGER.info("trigger espHomeUpdateAgent at " + esphomeUpdateAgentRetrieve);
+            AgentCaller.executePost(esphomeUpdateAgentRetrieve, queryJo.toString());
+        } catch (Exception e) {
+            LOGGER.error(FAIL_TO_PULL_DATA);
+            throw new JPSRuntimeException(FAIL_TO_PULL_DATA);
+        }
+
     }
 }
