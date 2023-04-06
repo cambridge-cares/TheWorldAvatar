@@ -78,6 +78,7 @@ public class HistoricalNTUEnergyAgent {
             // Read the JSON key to IRI mappings from the mapping folder
             readMappings(mappingFolder);
         }
+
     }
 
     /**
@@ -175,6 +176,9 @@ public class HistoricalNTUEnergyAgent {
      * @param energyReadings The energy readings retrieved from the Excel file
      */
     public void updateData(JSONArray energyReadings) {
+        if (energyReadings.isEmpty()) {
+            throw new IllegalArgumentException("Readings can not be empty!");
+        }
         // Check for null parameters
         Objects.requireNonNull(energyReadings, "Energy readings cannot be null");
         // Convert readings to hash maps

@@ -32,6 +32,7 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
     /**
      * Logging / error messages
      */
+    private static final String ARGUMENT_MISMATCH_MSG = "Need two properties files in the following order: 1) input agent 2) xlsx connector.";
     private static final String NAMESPACE_NOTFOUND_MSG = "Could not find a knowledge base endpoint for ntuenergy, please create a namespace ntuenergy";
     private static final String AGENT_ERROR_MSG = "The Historical NTUEnergy agent could not be constructed!";
     private static final String TSCLIENT_ERROR_MSG = "Could not construct the time series client needed by the input agent!";
@@ -85,7 +86,10 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
 
     public static JSONObject initializeAgent(String[] properties) {
         JSONObject jsonMessage = new JSONObject();
-        EndpointConfig config = new EndpointConfig();
+        if (properties.length != 2) {
+            LOGGER.error(ARGUMENT_MISMATCH_MSG);
+            throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
+        }
 
         HistoricalNTUEnergyAgent agent;
         try {
@@ -94,7 +98,7 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
             LOGGER.error(AGENT_ERROR_MSG, e);
             throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
         }
-
+        EndpointConfig config = new EndpointConfig();
         RemoteStoreClient kbClient = null;
         for (String endpoint : config.getKgurls()) {
             if (endpoint.contains("ntuenergy")){
