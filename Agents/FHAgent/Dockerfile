@@ -47,7 +47,7 @@ COPY ./config/mappings /root/mappings
 # Set the required environment variable
 ENV THINGSBOARD_AGENT_MAPPINGS="/root/mappings"
 
-COPY --from=builder /root/FHAgent/output/fh-agent##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/FHAgent/output/fh-agent##1.0.1.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]

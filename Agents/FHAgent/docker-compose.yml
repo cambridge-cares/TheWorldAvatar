@@ -1,8 +1,8 @@
 version: "1.0"
 
 services:
-  thingsboard-agent:
-    image: fh-agent:1.0.0
+  fh-agent:
+    image: fh-agent:1.0.1
     build: .
     container_name: fh-agent
     pull_policy: if_not_present
