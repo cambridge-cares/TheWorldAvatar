@@ -127,17 +127,9 @@
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontobim/hasDirection"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/LocalPlacement"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/PolygonalBoundedHalfSpace"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/SurfacePlane"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobim/LocalPlacement"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/DirectionVector"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that determines the local placement or geometry&amp;apos;s exact direction to the local Z axis.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that determines the local placement &amp;apos;s exact direction to the local Z axis.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has axis direction</rdfs:label>
     </owl:ObjectProperty>
@@ -314,6 +306,19 @@
     
 
 
+    <!-- https://www.theworldavatar.com/kg/ontobim/hasExtrusionStartPosition -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobim/hasExtrusionStartPosition">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobim/ExtrudedAreaSolid"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/LocalPlacement"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the geometric start position of the extruded area solid.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has extrusion start position</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontobim/hasFaceBoundary -->
 
 
@@ -404,6 +409,9 @@
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/GeometricVoid"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/IfcAbstractRepresentation"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/IfcModelRepresentation"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/PolygonalBoundedHalfSpace"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/RectangleProfileDefinition"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/SurfacePlane"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -472,18 +480,9 @@
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontobim/hasDirection"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
-        <rdfs:domain>
-            <owl:Class>
-                <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/LocalPlacement"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/PolygonalBoundedHalfSpace"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/RectangleProfileDefinition"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/SurfacePlane"/>
-                </owl:unionOf>
-            </owl:Class>
-        </rdfs:domain>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobim/LocalPlacement"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/DirectionVector"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that determines the local placement or geometry direction to the local X axis.</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that determines the local placement direction to the local X axis.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has ref direction</rdfs:label>
     </owl:ObjectProperty>
@@ -543,12 +542,8 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/ExtrudedAreaSolid"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/LineVertex"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/LocalPlacement"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/PolygonalBoundedHalfSpace"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/RectangleProfileDefinition"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/SurfacePlane"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
