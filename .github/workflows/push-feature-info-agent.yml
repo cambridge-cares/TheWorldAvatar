@@ -9,7 +9,7 @@
 # it will be uploaded as a private image. You'll have to manually make
 # it public using the controls on the GitHub website.
 #
-# Author: Michael Hillman
+# Author: Michael Hillman (mdhillman<@>cmclinnovations.com)
 #
 name: Push the FeatureInfoAgent
 
@@ -59,12 +59,12 @@ jobs:
         id: extractor
         uses: mikefarah/yq@master
         with:
-          cmd: echo "tag=$(yq '.services.feature-info-agent.image' ./Agents/FeatureInfoAgent/docker-compose.yml)" >> $GITHUB_OUTPUT
+          cmd: yq '.services.feature-info-agent.image' './Agents/FeatureInfoAgent/docker-compose.yml'
         
         
       # Echo the docker image name for debugging
       - name: Test the tag format
-        run: echo "Image tag is ${{ steps.extractor.tag }}"
+        run: echo ${{ steps.extractor.outputs.result }}
         
           
       # Login to Docker image registry
@@ -81,5 +81,5 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: ${{steps.extractor.outputs.tag}}
+          tags: ${{ steps.extractor.outputs.result }}
           context: ./Agents/FeatureInfoAgent

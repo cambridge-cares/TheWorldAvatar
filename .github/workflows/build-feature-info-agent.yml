@@ -5,9 +5,9 @@
 # Note this workflow will use the automatically generated GITHUB_TOKEN
 # and the username of the account that triggered it.
 #
-# Author: Michael Hillman
+# Author: Michael Hillman (mdhillman<@>cmclinnovations.com)
 #
-name: Build the FeatureInfoAgent
+name: Test the FeatureInfoAgent
 
 
 # Trigger this workflow on pull requests to the main branch,
@@ -34,6 +34,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         
+        
       # Write Maven credentials
       - name: Set up Maven credentials
         working-directory: ./Agents/FeatureInfoAgent/credentials
@@ -42,26 +43,16 @@ jobs:
           USERNAME: ${{github.actor}}
           PASSWORD: ${{github.token}}
         
+        
       # Create & boot a builder using the default docker-container driver.
       - name: Set up Docker build
         uses: docker/setup-buildx-action@v2
       
       
-      # Extracts the image tag from the compose file
-      - name: Extract image tag
-        id: extractor
-        uses: mikefarah/yq@master
-        with:
-          cmd: yq '.services.feature-info-agent.image' './Agents/FeatureInfoAgent/docker-compose.yml'
-        
-      # Echo the docker image name for debugging
-      - name: Test the tag format
-        run: echo ${{ steps.extractor.outputs.result }}
-        
       # Build the agent's Docker image
-      #- name: Build image (inc. unit tests)
-      #  uses: docker/build-push-action@v3
-      #  with:
-      #    push: false
-      #    context: ./Agents/FeatureInfoAgent
+      - name: Run unit tests (via Docker build)
+        uses: docker/build-push-action@v3
+        with:
+          push: false
+          context: ./Agents/FeatureInfoAgent
       

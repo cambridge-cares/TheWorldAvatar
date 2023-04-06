@@ -4,7 +4,7 @@ This Feature Info Agent (FIA) acts as a single access point for [DTVF Visualisat
 
 ## Overview
 
-The FIA is a relatiely simple HTTP Agent built using the JPS Base Lib's agent framework. When a new request is received, the internal process proceeds as follows:
+The FIA is a relatively simple HTTP Agent built using the JPS Base Lib's agent framework. When a new request is received, the internal process proceeds as follows:
 
 1. Check if the configuration has been loaded.
    1. If not, then load it.
@@ -130,6 +130,7 @@ To build the Agent image and deploy it to the spun up stack, please run the foll
 
 # Build the agent image
 bash ./stack.sh build
+
 # Deploy the agent
 bash ./stack.sh start <STACK_NAME>
 
@@ -145,4 +146,12 @@ It is worth noting that the docker compose setup for this agent creates a bind m
 
 # Automated actions
 
-TBD??????
+The FIA is currently set up with two automated GitHub actions:
+
+- *Test the FeatureInfoAgent*:
+  - Only runs when files within the agent have changed AND on commits that are part of a PR to the main branch
+  - Tests the FIA by running its unit tests and compiling a Docker image (which is NOT pushed)
+  
+- *Push the FeatureInfoAgent*:
+  - Only runs when files within the agent are changed AND on the commit it on the main branch (i.e. after a PR is approved)
+  - Builds the FIA's docker image (inc. running the unit tests) AND pushed it to the TWA GitHub image registry
