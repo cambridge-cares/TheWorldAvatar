@@ -1,16 +1,17 @@
 # IfcOwlConverter Agent
 
 This agent converts IFC models into TTL files defined by the IfcOwl ontology. It is designed to support the 
-[Ifc2OntoBim Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent) to instantiate IFC models into the ontoBim Abox, and is NOT intended to be run independently. Please proceed to [the other agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent) to instantiate and store your IFC Abox.
+[Ifc2OntoBim Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent) to instantiate IFC models into the ontoBim Abox, and is NOT intended to be run independently. Please build the image for this agent and then proceed to [the other agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/Ifc2OntoBIMAgent) to instantiate and store your IFC Abox. 
 
 ```mermaid
     %%{init: {'theme':'neutral', 'fontFamily':'verdana'}}%%
     flowchart LR
     subgraph Overall Workflow
         direction LR
-        id1{{<b>START</b> - IFC Model: <br> semantic + geometry}}:::start --- id2[IfcOwlConverterAgent<br><small>generate IfcOwl Abox</small>] 
-        --- id3[Ifc2OntoBimAgent<br><small>generate OntoBim Abox</small>] 
-        --> id4[(<b>Knowledge Graph</b><br><small>stores Abox</small>)]:::db
+        id1{{<b>START</b> - IFC Model: <br> semantic + geometry}}:::start --- 
+        |generate IfcOwl Abox|id2[IfcOwlConverterAgent] 
+        --- |generate OntoBIM Abox|id3[Ifc2OntoBimAgent] 
+        --> |stores Abox|id4[(<b>Knowledge Graph</b>)]:::db
     end
     classDef start fill:#fff,stroke:#048A81,stroke-width:5px;
     classDef db fill:#D0F4EA,stroke:#3066BE,stroke-width:3px, color:#0F084B;
