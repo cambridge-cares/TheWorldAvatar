@@ -5,7 +5,7 @@
         {
             "id": "3d-tiles-source",
             "type": "tiles",
-            "uri": "https://kg.cmclinnovations.com/cdn/buildings/nyc/tileset.json"
+            "uri": "/data/sg_lod3/citydb/tileset.json"
         },
         {
             "id": "sample-2d-data",
@@ -19,14 +19,8 @@
 	"layers": [
         {
             "id": "3d-tiles-layer",
-			"name": "Buildings of New York", 
+			"name": "Buildings of Singapore",
             "source": "3d-tiles-source"    
-        },
-        {
-            "id": "sample-2d-layer",
-			"name": "Hudson River Sediment", 
-            "source": "sample-2d-data",
-            "visibility": "none"
         }
 	]
 }

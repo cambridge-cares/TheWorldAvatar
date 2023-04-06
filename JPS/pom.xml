@@ -4,6 +4,9 @@
   <artifactId>JPS</artifactId>
   <version>1.0.0</version>
   <packaging>pom</packaging>
+    <modules>
+        <module>DataIntegration</module>
+    </modules>
     <build>
     <sourceDirectory>src</sourceDirectory>
     <testSourceDirectory>test</testSourceDirectory>
