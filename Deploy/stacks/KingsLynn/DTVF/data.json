@@ -419,6 +419,2820 @@
                     }
                 }
             ]
+        },
+        {
+            "name": "Network Infrastructure",
+            "groups": [
+                {
+                    "name": "Fully operational",
+                    "groups": [
+                        {   
+
+                            "name": "Water Network (Synthetic)",
+                            "stack": "http://kg.cmclinnovations.com:3839",
+                            "sources": [
+                                {
+                                    "id": "water-source",
+                                    "type": "geojson",
+                                    "data": "http://kg.cmclinnovations.com:3839/geoserver/gHTiMMBB/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gHTiMMBB%3AWater&outputFormat=application%2Fjson",
+                                    "cluster": true,
+                                    "clusterRadius": 30,
+                                    "clusterMaxZoom": 11,
+                                    "clusterProperties": {
+                                        "flood_state": [
+                                            "min",
+                                            [
+                                                "to-number",
+                                                [
+                                                    "get",
+                                                    "flood_state"
+                                                ]
+                                            ]
+                                        ],
+                                        "output_state": [
+                                            "min",
+                                            [
+                                                "to-number",
+                                                [
+                                                    "get",
+                                                    "output_state"
+                                                ]
+                                            ]
+                                        ],
+                                        "input_lowest_state": [
+                                            "min",
+                                            [
+                                                "to-number",
+                                                [
+                                                    "get",
+                                                    "input_lowest_state"
+                                                ]
+                                            ]
+                                        ],
+                                        "description": [
+                                            "concat",
+                                            [
+                                                "case",
+                                                [
+                                                    "!=",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "flood_state"
+                                                        ]
+                                                    ],
+                                                    0.0
+                                                ],
+                                                "<div order='1'>This point represents a cluster of closely spaced Water Sites.<br/></br/><span style='color: #C63F3F;'>In this case, at least one location has a non-zero chance of <b>direct</b> failure.</span><br/><br/>Click to see details on the underlying individual locations.</div>",
+                                                [
+                                                    "case",
+                                                    [
+                                                        "!=",
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "output_state"
+                                                                ]
+                                                            ]
+                                                        ],
+                                                        0.0
+                                                    ],
+                                                    "<div order='2'>This point represents a cluster of closely spaced Water Sites.<br/></br/><span style='color: #DF6C35;'>In this case, at least one location has a non-zero chance of <b>indirect</b> failure.</span><br/><br/>Click to see details on the underlying individual locations.</div>",
+                                                    [
+                                                        "case",
+                                                        [
+                                                            "!=",
+                                                            [
+                                                                "-",
+                                                                1.0,
+                                                                [
+                                                                    "to-number",
+                                                                    [
+                                                                        "get",
+                                                                        "input_lowest_state"
+                                                                    ]
+                                                                ]
+                                                            ],
+                                                            0.0
+                                                        ],
+                                                        "<div order='3'>This point represents a cluster of closely spaced Water Sites.<br/></br/><span style='color: #7F7F7F;'>In this case, at least one location has a non-zero chance of secondary failure.</span><br/><br/>Click to see details on the underlying individual locations.</div>",
+                                                        ""
+                                                    ]
+                                                ]
+                                            ],
+                                            [
+                                                "accumulated"
+                                            ]
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "sludge-source",
+                                    "type": "geojson",
+                                    "data": "http://kg.cmclinnovations.com:3839/geoserver/gHTiMMBB/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gHTiMMBB%3ASludge&outputFormat=application%2Fjson",
+                                    "cluster": true,
+                                    "clusterRadius": 30,
+                                    "clusterMaxZoom": 11,
+                                    "clusterProperties": {
+                                        "flood_state": [
+                                            "min",
+                                            [
+                                                "to-number",
+                                                [
+                                                    "get",
+                                                    "flood_state"
+                                                ]
+                                            ]
+                                        ],
+                                        "output_state": [
+                                            "min",
+                                            [
+                                                "to-number",
+                                                [
+                                                    "get",
+                                                    "output_state"
+                                                ]
+                                            ]
+                                        ],
+                                        "input_lowest_state": [
+                                            "min",
+                                            [
+                                                "to-number",
+                                                [
+                                                    "get",
+                                                    "input_lowest_state"
+                                                ]
+                                            ]
+                                        ],
+                                        "description": [
+                                            "concat",
+                                            [
+                                                "case",
+                                                [
+                                                    "!=",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "flood_state"
+                                                        ]
+                                                    ],
+                                                    0.0
+                                                ],
+                                                "<div order='1'>This point represents a cluster of closely spaced Sludge Sites.<br/></br/><span style='color: #C63F3F;'>In this case, at least one location has a non-zero chance of <b>direct</b> failure.</span><br/><br/>Click to see details on the underlying individual locations.</div>",
+                                                [
+                                                    "case",
+                                                    [
+                                                        "!=",
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "output_state"
+                                                                ]
+                                                            ]
+                                                        ],
+                                                        0.0
+                                                    ],
+                                                    "<div order='2'>This point represents a cluster of closely spaced Sludge Sites.<br/></br/><span style='color: #DF6C35;'>In this case, at least one location has a non-zero chance of <b>indirect</b> failure.</span><br/><br/>Click to see details on the underlying individual locations.</div>",
+                                                    [
+                                                        "case",
+                                                        [
+                                                            "!=",
+                                                            [
+                                                                "-",
+                                                                1.0,
+                                                                [
+                                                                    "to-number",
+                                                                    [
+                                                                        "get",
+                                                                        "input_lowest_state"
+                                                                    ]
+                                                                ]
+                                                            ],
+                                                            0.0
+                                                        ],
+                                                        "<div order='3'>This point represents a cluster of closely spaced Sludge Sites.<br/></br/><span style='color: #7F7F7F;'>In this case, at least one location has a non-zero chance of secondary failure.</span><br/><br/>Click to see details on the underlying individual locations.</div>",
+                                                        ""
+                                                    ]
+                                                ]
+                                            ],
+                                            [
+                                                "accumulated"
+                                            ]
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "sewage-source",
+                                    "type": "geojson",
+                                    "data": "http://kg.cmclinnovations.com:3839/geoserver/gHTiMMBB/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gHTiMMBB%3ASewage&outputFormat=application%2Fjson",
+                                    "cluster": true,
+                                    "clusterRadius": 30,
+                                    "clusterMaxZoom": 11,
+                                    "clusterProperties": {
+                                        "flood_state": [
+                                            "min",
+                                            [
+                                                "to-number",
+                                                [
+                                                    "get",
+                                                    "flood_state"
+                                                ]
+                                            ]
+                                        ],
+                                        "output_state": [
+                                            "min",
+                                            [
+                                                "to-number",
+                                                [
+                                                    "get",
+                                                    "output_state"
+                                                ]
+                                            ]
+                                        ],
+                                        "input_lowest_state": [
+                                            "min",
+                                            [
+                                                "to-number",
+                                                [
+                                                    "get",
+                                                    "input_lowest_state"
+                                                ]
+                                            ]
+                                        ],
+                                        "description": [
+                                            "concat",
+                                            [
+                                                "case",
+                                                [
+                                                    "!=",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "flood_state"
+                                                        ]
+                                                    ],
+                                                    0.0
+                                                ],
+                                                "<div order='1'>This point represents a cluster of closely spaced Sewage Sites.<br/></br/><span style='color: #C63F3F;'>In this case, at least one location has a non-zero chance of <b>direct</b> failure.</span><br/><br/>Click to see details on the underlying individual locations.</div>",
+                                                [
+                                                    "case",
+                                                    [
+                                                        "!=",
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "output_state"
+                                                                ]
+                                                            ]
+                                                        ],
+                                                        0.0
+                                                    ],
+                                                    "<div order='21'>This point represents a cluster of closely spaced Sewage Sites.<br/></br/><span style='color: #DF6C35;'>In this case, at least one location has a non-zero chance of <b>indirect</b> failure.</span><br/><br/>Click to see details on the underlying individual locations.</div>",
+                                                    [
+                                                        "case",
+                                                        [
+                                                            "!=",
+                                                            [
+                                                                "-",
+                                                                1.0,
+                                                                [
+                                                                    "to-number",
+                                                                    [
+                                                                        "get",
+                                                                        "input_lowest_state"
+                                                                    ]
+                                                                ]
+                                                            ],
+                                                            0.0
+                                                        ],
+                                                        "<div order='3'>This point represents a cluster of closely spaced Sewage Sites.<br/></br/><span style='color: #7F7F7F;'>In this case, at least one location has a non-zero chance of secondary failure.</span><br/><br/>Click to see details on the underlying individual locations.</div>",
+                                                        ""
+                                                    ]
+                                                ]
+                                            ],
+                                            [
+                                                "accumulated"
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ],
+                            "layers": [
+                                {
+                                    "id": "water-layer-bottom",
+                                    "name": "Water Sites",
+                                    "source": "water-source",
+                                    "type": "symbol",
+                                    "order": 1,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "symbol-z-order": "viewport-y",
+                                        "icon-allow-overlap": false,
+                                        "icon-ignore-placement": true,
+                                        "icon-image": [
+                                            "case",
+                                            [
+                                                ">",
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0
+                                            ],
+                                            "circle",
+                                            [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                "octagon",
+                                                [
+                                                    "case",
+                                                    [
+                                                        "<",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "input_lowest_state"
+                                                            ]
+                                                        ],
+                                                        1.0
+                                                    ],
+                                                    "square",
+                                                    "circle"
+                                                ]
+                                            ]
+                                        ],
+                                        "icon-size": [
+                                            "case",
+                                            [
+                                                "all",
+                                                [
+                                                    "==",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "flood_state"
+                                                        ]
+                                                    ],
+                                                    0.0
+                                                ],
+                                                [
+                                                    "==",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                [
+                                                    "==",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "input_lowest_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ]
+                                            ],
+                                            0.55,
+                                            [
+                                                "interpolate",
+                                                [
+                                                    "linear"
+                                                ],
+                                                [
+                                                    "case",
+                                                    [
+                                                        ">",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "flood_state"
+                                                            ]
+                                                        ],
+                                                        0.0
+                                                    ],
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "flood_state"
+                                                        ]
+                                                    ],
+                                                    [
+                                                        "case",
+                                                        [
+                                                            "<",
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "output_state"
+                                                                ]
+                                                            ],
+                                                            1.0
+                                                        ],
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "output_state"
+                                                                ]
+                                                            ]
+                                                        ],
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "input_lowest_state"
+                                                                ]
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ],
+                                                0.0,
+                                                0.55,
+                                                1.0,
+                                                0.55
+                                            ]
+                                        ]
+                                    },
+                                    "paint": {
+                                        "icon-color": [
+                                            "case",
+                                            [
+                                                ">",
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0
+                                            ],
+                                            [
+                                                "interpolate",
+                                                [
+                                                    "linear"
+                                                ],
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0,
+                                                "#86C3EB",
+                                                0.001,
+                                                "#C22525",
+                                                1.0,
+                                                "#C22525"
+                                            ],
+                                            [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                [
+                                                    "interpolate",
+                                                    [
+                                                        "linear"
+                                                    ],
+                                                    [
+                                                        "-",
+                                                        1.0,
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "output_state"
+                                                            ]
+                                                        ]
+                                                    ],
+                                                    0.0,
+                                                    "#86C3EB",
+                                                    0.001,
+                                                    "#E08733",
+                                                    1.0,
+                                                    "#E08733"
+                                                ],
+                                                [
+                                                    "case",
+                                                    [
+                                                        "<",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "input_lowest_state"
+                                                            ]
+                                                        ],
+                                                        1.0
+                                                    ],
+                                                    [
+                                                        "interpolate",
+                                                        [
+                                                            "linear"
+                                                        ],
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "input_lowest_state"
+                                                                ]
+                                                            ]
+                                                        ],
+                                                        0.0,
+                                                        "#86C3EB",
+                                                        0.001,
+                                                        "#7E7E7E",
+                                                        1.0,
+                                                        "#7E7E7E"
+                                                    ],
+                                                    "#86C3EB"
+                                                ]
+                                            ]
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "water-layer-middle",
+                                    "name": "Water Sites",
+                                    "source": "water-source",
+                                    "type": "symbol",
+                                    "order": 2,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "symbol-z-order": "viewport-y",
+                                        "icon-allow-overlap": false,
+                                        "icon-ignore-placement": true,
+                                        "icon-size": 0.45,
+                                        "icon-image": [
+                                            "case",
+                                            [
+                                                ">",
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0
+                                            ],
+                                            "circle",
+                                            [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                "octagon",
+                                                [
+                                                    "case",
+                                                    [
+                                                        "<",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "input_lowest_state"
+                                                            ]
+                                                        ],
+                                                        1.0
+                                                    ],
+                                                    "square",
+                                                    "circle"
+                                                ]
+                                            ]
+                                        ]
+                                    },
+                                    "paint": {
+                                        "icon-color": "#FFFFFF"
+                                    }
+                                },
+                                {
+                                    "id": "water-layer-top",
+                                    "name": "Water Sites",
+                                    "source": "water-source",
+                                    "type": "symbol",
+                                    "order": 3,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "symbol-z-order": "viewport-y",
+                                        "icon-allow-overlap": false,
+                                        "icon-ignore-placement": true,
+                                        "icon-size": 0.5,
+                                        "icon-image": "water-clean",
+                                        "text-anchor": "center",
+                                        "text-allow-overlap": true,
+                                        "text-ignore-placement": true,
+                                        "text-font": [
+                                            "Open Sans Bold"
+                                        ],
+                                        "text-size": 16,
+                                        "text-field": "{point_count_abbreviated}"
+                                    },
+                                    "paint": {
+                                        "icon-color": "#86C3EB",
+                                        "icon-opacity": [
+                                            "case",
+                                            [
+                                                "has",
+                                                "point_count"
+                                            ],
+                                            0.0,
+                                            1.0
+                                        ],
+                                        "text-color": "#86C3EB",
+                                        "text-opacity": [
+                                            "case",
+                                            [
+                                                "!",
+                                                [
+                                                    "has",
+                                                    "point_count"
+                                                ]
+                                            ],
+                                            0.0,
+                                            1.0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "sludge-layer-bottom",
+                                    "name": "Sludge Sites",
+                                    "source": "sludge-source",
+                                    "type": "symbol",
+                                    "order": 4,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "symbol-z-order": "viewport-y",
+                                        "icon-allow-overlap": false,
+                                        "icon-ignore-placement": true,
+                                        "icon-image": [
+                                            "case",
+                                            [
+                                                ">",
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0
+                                            ],
+                                            "circle",
+                                            [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                "octagon",
+                                                [
+                                                    "case",
+                                                    [
+                                                        "<",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "input_lowest_state"
+                                                            ]
+                                                        ],
+                                                        1.0
+                                                    ],
+                                                    "square",
+                                                    "circle"
+                                                ]
+                                            ]
+                                        ],
+                                        "icon-size": [
+                                            "case",
+                                            [
+                                                "all",
+                                                [
+                                                    "==",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "flood_state"
+                                                        ]
+                                                    ],
+                                                    0.0
+                                                ],
+                                                [
+                                                    "==",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                [
+                                                    "==",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "input_lowest_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ]
+                                            ],
+                                            0.55,
+                                            [
+                                                "interpolate",
+                                                [
+                                                    "linear"
+                                                ],
+                                                [
+                                                    "case",
+                                                    [
+                                                        ">",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "flood_state"
+                                                            ]
+                                                        ],
+                                                        0.0
+                                                    ],
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "flood_state"
+                                                        ]
+                                                    ],
+                                                    [
+                                                        "case",
+                                                        [
+                                                            "<",
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "output_state"
+                                                                ]
+                                                            ],
+                                                            1.0
+                                                        ],
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "output_state"
+                                                                ]
+                                                            ]
+                                                        ],
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "input_lowest_state"
+                                                                ]
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ],
+                                                0.0,
+                                                0.55,
+                                                1.0,
+                                                0.55
+                                            ]
+                                        ]
+                                    },
+                                    "paint": {
+                                        "icon-color": [
+                                            "case",
+                                            [
+                                                ">",
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0
+                                            ],
+                                            [
+                                                "interpolate",
+                                                [
+                                                    "linear"
+                                                ],
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0,
+                                                "#86C3EB",
+                                                0.001,
+                                                "#C22525",
+                                                1.0,
+                                                "#C22525"
+                                            ],
+                                            [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                [
+                                                    "interpolate",
+                                                    [
+                                                        "linear"
+                                                    ],
+                                                    [
+                                                        "-",
+                                                        1.0,
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "output_state"
+                                                            ]
+                                                        ]
+                                                    ],
+                                                    0.0,
+                                                    "#86C3EB",
+                                                    0.001,
+                                                    "#E08733",
+                                                    1.0,
+                                                    "#E08733"
+                                                ],
+                                                [
+                                                    "case",
+                                                    [
+                                                        "<",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "input_lowest_state"
+                                                            ]
+                                                        ],
+                                                        1.0
+                                                    ],
+                                                    [
+                                                        "interpolate",
+                                                        [
+                                                            "linear"
+                                                        ],
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "input_lowest_state"
+                                                                ]
+                                                            ]
+                                                        ],
+                                                        0.0,
+                                                        "#86C3EB",
+                                                        0.001,
+                                                        "#7E7E7E",
+                                                        1.0,
+                                                        "#7E7E7E"
+                                                    ],
+                                                    "#86C3EB"
+                                                ]
+                                            ]
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "sludge-layer-middle",
+                                    "name": "Sludge Sites",
+                                    "source": "sludge-source",
+                                    "type": "symbol",
+                                    "order": 5,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "symbol-z-order": "viewport-y",
+                                        "icon-allow-overlap": false,
+                                        "icon-ignore-placement": true,
+                                        "icon-size": 0.45,
+                                        "icon-image": [
+                                            "case",
+                                            [
+                                                ">",
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0
+                                            ],
+                                            "circle",
+                                            [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                "octagon",
+                                                [
+                                                    "case",
+                                                    [
+                                                        "<",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "input_lowest_state"
+                                                            ]
+                                                        ],
+                                                        1.0
+                                                    ],
+                                                    "square",
+                                                    "circle"
+                                                ]
+                                            ]
+                                        ]
+                                    },
+                                    "paint": {
+                                        "icon-color": "#FFFFFF"
+                                    }
+                                },
+                                {
+                                    "id": "sludge-layer-top",
+                                    "name": "Sludge Sites",
+                                    "source": "sludge-source",
+                                    "type": "symbol",
+                                    "order": 6,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "symbol-z-order": "viewport-y",
+                                        "icon-allow-overlap": false,
+                                        "icon-ignore-placement": true,
+                                        "icon-size": 0.5,
+                                        "icon-image": "water-sludge",
+                                        "text-anchor": "center",
+                                        "text-allow-overlap": true,
+                                        "text-ignore-placement": true,
+                                        "text-font": [
+                                            "Open Sans Bold"
+                                        ],
+                                        "text-size": 16,
+                                        "text-field": "{point_count_abbreviated}"
+                                    },
+                                    "paint": {
+                                        "icon-color": "#86C3EB",
+                                        "icon-opacity": [
+                                            "case",
+                                            [
+                                                "has",
+                                                "point_count"
+                                            ],
+                                            0.0,
+                                            1.0
+                                        ],
+                                        "text-color": "#86C3EB",
+                                        "text-opacity": [
+                                            "case",
+                                            [
+                                                "!",
+                                                [
+                                                    "has",
+                                                    "point_count"
+                                                ]
+                                            ],
+                                            0.0,
+                                            1.0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "sewage-layer-bottom",
+                                    "name": "Sewage Sites",
+                                    "source": "sewage-source",
+                                    "type": "symbol",
+                                    "order": 7,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "symbol-z-order": "viewport-y",
+                                        "icon-allow-overlap": false,
+                                        "icon-ignore-placement": true,
+                                        "icon-image": [
+                                            "case",
+                                            [
+                                                ">",
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0
+                                            ],
+                                            "circle",
+                                            [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                "octagon",
+                                                [
+                                                    "case",
+                                                    [
+                                                        "<",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "input_lowest_state"
+                                                            ]
+                                                        ],
+                                                        1.0
+                                                    ],
+                                                    "square",
+                                                    "circle"
+                                                ]
+                                            ]
+                                        ],
+                                        "icon-size": [
+                                            "case",
+                                            [
+                                                "all",
+                                                [
+                                                    "==",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "flood_state"
+                                                        ]
+                                                    ],
+                                                    0.0
+                                                ],
+                                                [
+                                                    "==",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                [
+                                                    "==",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "input_lowest_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ]
+                                            ],
+                                            0.55,
+                                            [
+                                                "interpolate",
+                                                [
+                                                    "linear"
+                                                ],
+                                                [
+                                                    "case",
+                                                    [
+                                                        ">",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "flood_state"
+                                                            ]
+                                                        ],
+                                                        0.0
+                                                    ],
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "flood_state"
+                                                        ]
+                                                    ],
+                                                    [
+                                                        "case",
+                                                        [
+                                                            "<",
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "output_state"
+                                                                ]
+                                                            ],
+                                                            1.0
+                                                        ],
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "output_state"
+                                                                ]
+                                                            ]
+                                                        ],
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "input_lowest_state"
+                                                                ]
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ],
+                                                0.0,
+                                                0.55,
+                                                1.0,
+                                                0.55
+                                            ]
+                                        ]
+                                    },
+                                    "paint": {
+                                        "icon-color": [
+                                            "case",
+                                            [
+                                                ">",
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0
+                                            ],
+                                            [
+                                                "interpolate",
+                                                [
+                                                    "linear"
+                                                ],
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0,
+                                                "#86C3EB",
+                                                0.001,
+                                                "#C22525",
+                                                1.0,
+                                                "#C22525"
+                                            ],
+                                            [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                [
+                                                    "interpolate",
+                                                    [
+                                                        "linear"
+                                                    ],
+                                                    [
+                                                        "-",
+                                                        1.0,
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "output_state"
+                                                            ]
+                                                        ]
+                                                    ],
+                                                    0.0,
+                                                    "#86C3EB",
+                                                    0.001,
+                                                    "#E08733",
+                                                    1.0,
+                                                    "#E08733"
+                                                ],
+                                                [
+                                                    "case",
+                                                    [
+                                                        "<",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "input_lowest_state"
+                                                            ]
+                                                        ],
+                                                        1.0
+                                                    ],
+                                                    [
+                                                        "interpolate",
+                                                        [
+                                                            "linear"
+                                                        ],
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "input_lowest_state"
+                                                                ]
+                                                            ]
+                                                        ],
+                                                        0.0,
+                                                        "#86C3EB",
+                                                        0.001,
+                                                        "#7E7E7E",
+                                                        1.0,
+                                                        "#7E7E7E"
+                                                    ],
+                                                    "#86C3EB"
+                                                ]
+                                            ]
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "sewage-layer-middle",
+                                    "name": "Sewage Sites",
+                                    "source": "sewage-source",
+                                    "type": "symbol",
+                                    "order": 8,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "symbol-z-order": "viewport-y",
+                                        "icon-allow-overlap": false,
+                                        "icon-ignore-placement": true,
+                                        "icon-size": 0.45,
+                                        "icon-image": [
+                                            "case",
+                                            [
+                                                ">",
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0
+                                            ],
+                                            "circle",
+                                            [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                "octagon",
+                                                [
+                                                    "case",
+                                                    [
+                                                        "<",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "input_lowest_state"
+                                                            ]
+                                                        ],
+                                                        1.0
+                                                    ],
+                                                    "square",
+                                                    "circle"
+                                                ]
+                                            ]
+                                        ]
+                                    },
+                                    "paint": {
+                                        "icon-color": "#FFFFFF"
+                                    }
+                                },
+                                {
+                                    "id": "sewage-layer-top",
+                                    "name": "Sewage Sites",
+                                    "source": "sewage-source",
+                                    "type": "symbol",
+                                    "order": 9,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "symbol-z-order": "viewport-y",
+                                        "icon-allow-overlap": false,
+                                        "icon-ignore-placement": true,
+                                        "icon-size": 0.5,
+                                        "icon-image": "water-sewage",
+                                        "text-anchor": "center",
+                                        "text-allow-overlap": true,
+                                        "text-ignore-placement": true,
+                                        "text-font": [
+                                            "Open Sans Bold"
+                                        ],
+                                        "text-size": 16,
+                                        "text-field": "{point_count_abbreviated}"
+                                    },
+                                    "paint": {
+                                        "icon-color": "#86C3EB",
+                                        "icon-opacity": [
+                                            "case",
+                                            [
+                                                "has",
+                                                "point_count"
+                                            ],
+                                            0.0,
+                                            1.0
+                                        ],
+                                        "text-color": "#86C3EB",
+                                        "text-opacity": [
+                                            "case",
+                                            [
+                                                "!",
+                                                [
+                                                    "has",
+                                                    "point_count"
+                                                ]
+                                            ],
+                                            0.0,
+                                            1.0
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Power Network (Synthetic)",
+                            "stack": "http://kg.cmclinnovations.com:3838",
+                            "sources": [
+                                {
+                                    "id": "primary-source",
+                                    "type": "geojson",
+                                    "data": "http://kg.cmclinnovations.com:3838/geoserver/gHTiMMBB/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gHTiMMBB%3APrimary&outputFormat=application%2Fjson",
+                                    "cluster": true,
+                                    "clusterRadius": 30,
+                                    "clusterMaxZoom": 11,
+                                    "clusterProperties": {
+                                        "flood_state": [
+                                            "min",
+                                            [
+                                                "to-number",
+                                                [
+                                                    "get",
+                                                    "flood_state"
+                                                ]
+                                            ]
+                                        ],
+                                        "output_state": [
+                                            "min",
+                                            [
+                                                "to-number",
+                                                [
+                                                    "get",
+                                                    "output_state"
+                                                ]
+                                            ]
+                                        ],
+                                        "input_lowest_state": [
+                                            "min",
+                                            [
+                                                "to-number",
+                                                [
+                                                    "get",
+                                                    "input_lowest_state"
+                                                ]
+                                            ]
+                                        ],
+                                        "description": [
+                                            "concat",
+                                            [
+                                                "case",
+                                                [
+                                                    "!=",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "flood_state"
+                                                        ]
+                                                    ],
+                                                    0.0
+                                                ],
+                                                "<div order='1'>This point represents a cluster of closely spaced Primary Substations.<br/></br/><span style='color: #C63F3F;'>In this case, at least one location has a non-zero chance of <b>direct</b> output failure.</span><br/><br/>Click to see details on the underlying individual locations.</div>",
+                                                [
+                                                    "case",
+                                                    [
+                                                        "!=",
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "output_state"
+                                                                ]
+                                                            ]
+                                                        ],
+                                                        0.0
+                                                    ],
+                                                    "<div order='2'>This point represents a cluster of closely spaced Primary Substations.<br/></br/><span style='color: #DF6C35;'>In this case, at least one location has a non-zero chance of <b>indirect</b> output failure.</span><br/><br/>Click to see details on the underlying individual locations.</div>",
+                                                    [
+                                                        "case",
+                                                        [
+                                                            "!=",
+                                                            [
+                                                                "-",
+                                                                1.0,
+                                                                [
+                                                                    "to-number",
+                                                                    [
+                                                                        "get",
+                                                                        "input_lowest_state"
+                                                                    ]
+                                                                ]
+                                                            ],
+                                                            0.0
+                                                        ],
+                                                        "<div order='3'>This point represents a cluster of closely spaced Primary Substations.<br/></br/><span style='color: #7F7F7F;'>In this case, at least one location has a non-zero chance of secondary failure.</span><br/><br/>Click to see details on the underlying individual locations.</div>",
+                                                        ""
+                                                    ]
+                                                ]
+                                            ],
+                                            [
+                                                "accumulated"
+                                            ]
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "secondary-source",
+                                    "type": "geojson",
+                                    "data": "http://kg.cmclinnovations.com:3838/geoserver/gHTiMMBB/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gHTiMMBB%3ASecondary&outputFormat=application%2Fjson",
+                                    "cluster": true,
+                                    "clusterRadius": 30,
+                                    "clusterMaxZoom": 11,
+                                    "clusterProperties": {
+                                        "flood_state": [
+                                            "min",
+                                            [
+                                                "to-number",
+                                                [
+                                                    "get",
+                                                    "flood_state"
+                                                ]
+                                            ]
+                                        ],
+                                        "output_state": [
+                                            "min",
+                                            [
+                                                "to-number",
+                                                [
+                                                    "get",
+                                                    "output_state"
+                                                ]
+                                            ]
+                                        ],
+                                        "input_lowest_state": [
+                                            "min",
+                                            [
+                                                "to-number",
+                                                [
+                                                    "get",
+                                                    "input_lowest_state"
+                                                ]
+                                            ]
+                                        ],
+                                        "description": [
+                                            "concat",
+                                            [
+                                                "case",
+                                                [
+                                                    "!=",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "flood_state"
+                                                        ]
+                                                    ],
+                                                    0.0
+                                                ],
+                                                "<div order='1'>This point represents a cluster of closely spaced Secondary Substations.<br/></br/><span style='color: #C63F3F;'>In this case, at least one location has a non-zero chance of <b>direct</b> output failure.</span><br/><br/>Click to see details on the underlying individual locations.</div>",
+                                                [
+                                                    "case",
+                                                    [
+                                                        "!=",
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "output_state"
+                                                                ]
+                                                            ]
+                                                        ],
+                                                        0.0
+                                                    ],
+                                                    "<div order='2'>This point represents a cluster of closely spaced Secondary Substations.<br/></br/><span style='color: #DF6C35;'>In this case, at least one location has a non-zero chance of <b>indirect</b> output failure.</span><br/><br/>Click to see details on the underlying individual locations.</div>",
+                                                    [
+                                                        "case",
+                                                        [
+                                                            "!=",
+                                                            [
+                                                                "-",
+                                                                1.0,
+                                                                [
+                                                                    "to-number",
+                                                                    [
+                                                                        "get",
+                                                                        "input_lowest_state"
+                                                                    ]
+                                                                ]
+                                                            ],
+                                                            0.0
+                                                        ],
+                                                        "<div order='3'>This point represents a cluster of closely spaced Secondary Substations.<br/></br/><span style='color: #7F7F7F;'>In this case, at least one location has a non-zero chance of secondary failure.</span><br/><br/>Click to see details on the underlying individual locations.</div>",
+                                                        ""
+                                                    ]
+                                                ]
+                                            ],
+                                            [
+                                                "accumulated"
+                                            ]
+                                        ]
+                                    }
+                                }
+                            ],
+                            "layers": [
+                                {
+                                    "id": "primary-layer-bottom",
+                                    "name": "Primary Substations",
+                                    "source": "primary-source",
+                                    "type": "symbol",
+                                    "order": 1,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "symbol-z-order": "viewport-y",
+                                        "icon-allow-overlap": false,
+                                        "icon-ignore-placement": true,
+                                        "icon-image": [
+                                            "case",
+                                            [
+                                                ">",
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0
+                                            ],
+                                            "circle",
+                                            [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                "octagon",
+                                                [
+                                                    "case",
+                                                    [
+                                                        "<",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "input_lowest_state"
+                                                            ]
+                                                        ],
+                                                        1.0
+                                                    ],
+                                                    "square",
+                                                    "circle"
+                                                ]
+                                            ]
+                                        ],
+                                        "icon-size": [
+                                            "case",
+                                            [
+                                                "all",
+                                                [
+                                                    "==",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "flood_state"
+                                                        ]
+                                                    ],
+                                                    0.0
+                                                ],
+                                                [
+                                                    "==",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                [
+                                                    "==",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "input_lowest_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ]
+                                            ],
+                                            0.55,
+                                            [
+                                                "interpolate",
+                                                [
+                                                    "linear"
+                                                ],
+                                                [
+                                                    "case",
+                                                    [
+                                                        ">",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "flood_state"
+                                                            ]
+                                                        ],
+                                                        0.0
+                                                    ],
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "flood_state"
+                                                        ]
+                                                    ],
+                                                    [
+                                                        "case",
+                                                        [
+                                                            "<",
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "output_state"
+                                                                ]
+                                                            ],
+                                                            1.0
+                                                        ],
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "output_state"
+                                                                ]
+                                                            ]
+                                                        ],
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "input_lowest_state"
+                                                                ]
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ],
+                                                0.0,
+                                                0.55,
+                                                1.0,
+                                                0.55
+                                            ]
+                                        ]
+                                    },
+                                    "paint": {
+                                        "icon-color": [
+                                            "case",
+                                            [
+                                                ">",
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0
+                                            ],
+                                            [
+                                                "interpolate",
+                                                [
+                                                    "linear"
+                                                ],
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0,
+                                                "#F9D813",
+                                                0.001,
+                                                "#C22525",
+                                                1.0,
+                                                "#C22525"
+                                            ],
+                                            [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                [
+                                                    "interpolate",
+                                                    [
+                                                        "linear"
+                                                    ],
+                                                    [
+                                                        "-",
+                                                        1.0,
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "output_state"
+                                                            ]
+                                                        ]
+                                                    ],
+                                                    0.0,
+                                                    "#F9D813",
+                                                    0.001,
+                                                    "#E08733",
+                                                    1.0,
+                                                    "#E08733"
+                                                ],
+                                                [
+                                                    "case",
+                                                    [
+                                                        "<",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "input_lowest_state"
+                                                            ]
+                                                        ],
+                                                        1.0
+                                                    ],
+                                                    [
+                                                        "interpolate",
+                                                        [
+                                                            "linear"
+                                                        ],
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "input_lowest_state"
+                                                                ]
+                                                            ]
+                                                        ],
+                                                        0.0,
+                                                        "#F9D813",
+                                                        0.001,
+                                                        "#7E7E7E",
+                                                        1.0,
+                                                        "#7E7E7E"
+                                                    ],
+                                                    "#F9D813"
+                                                ]
+                                            ]
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "primary-layer-middle",
+                                    "name": "Primary Substations",
+                                    "source": "primary-source",
+                                    "type": "symbol",
+                                    "order": 2,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "symbol-z-order": "viewport-y",
+                                        "icon-allow-overlap": false,
+                                        "icon-ignore-placement": true,
+                                        "icon-size": 0.45,
+                                        "icon-image": [
+                                            "case",
+                                            [
+                                                ">",
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0
+                                            ],
+                                            "circle",
+                                            [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                "octagon",
+                                                [
+                                                    "case",
+                                                    [
+                                                        "<",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "input_lowest_state"
+                                                            ]
+                                                        ],
+                                                        1.0
+                                                    ],
+                                                    "square",
+                                                    "circle"
+                                                ]
+                                            ]
+                                        ]
+                                    },
+                                    "paint": {
+                                        "icon-color": "#FFFFFF"
+                                    }
+                                },
+                                {
+                                    "id": "primary-layer-top",
+                                    "name": "Primary Substations",
+                                    "source": "primary-source",
+                                    "type": "symbol",
+                                    "order": 3,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "symbol-z-order": "viewport-y",
+                                        "icon-allow-overlap": false,
+                                        "icon-ignore-placement": true,
+                                        "icon-size": 0.5,
+                                        "icon-image": "power-primary",
+                                        "text-anchor": "center",
+                                        "text-allow-overlap": true,
+                                        "text-ignore-placement": true,
+                                        "text-font": [
+                                            "Open Sans Bold"
+                                        ],
+                                        "text-size": 16,
+                                        "text-field": "{point_count_abbreviated}"
+                                    },
+                                    "paint": {
+                                        "icon-color": "#F9D813",
+                                        "icon-opacity": [
+                                            "case",
+                                            [
+                                                "has",
+                                                "point_count"
+                                            ],
+                                            0.0,
+                                            1.0
+                                        ],
+                                        "text-color": "#F9D813",
+                                        "text-opacity": [
+                                            "case",
+                                            [
+                                                "!",
+                                                [
+                                                    "has",
+                                                    "point_count"
+                                                ]
+                                            ],
+                                            0.0,
+                                            1.0
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "secondary-layer-bottom",
+                                    "name": "Secondary Substations",
+                                    "source": "secondary-source",
+                                    "type": "symbol",
+                                    "order": 4,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "symbol-z-order": "viewport-y",
+                                        "icon-allow-overlap": false,
+                                        "icon-ignore-placement": true,
+                                        "icon-image": [
+                                            "case",
+                                            [
+                                                ">",
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0
+                                            ],
+                                            "circle",
+                                            [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                "octagon",
+                                                [
+                                                    "case",
+                                                    [
+                                                        "<",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "input_lowest_state"
+                                                            ]
+                                                        ],
+                                                        1.0
+                                                    ],
+                                                    "square",
+                                                    "circle"
+                                                ]
+                                            ]
+                                        ],
+                                        "icon-size": [
+                                            "case",
+                                            [
+                                                "all",
+                                                [
+                                                    "==",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "flood_state"
+                                                        ]
+                                                    ],
+                                                    0.0
+                                                ],
+                                                [
+                                                    "==",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                [
+                                                    "==",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "input_lowest_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ]
+                                            ],
+                                            0.55,
+                                            [
+                                                "interpolate",
+                                                [
+                                                    "linear"
+                                                ],
+                                                [
+                                                    "case",
+                                                    [
+                                                        ">",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "flood_state"
+                                                            ]
+                                                        ],
+                                                        0.0
+                                                    ],
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "flood_state"
+                                                        ]
+                                                    ],
+                                                    [
+                                                        "case",
+                                                        [
+                                                            "<",
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "output_state"
+                                                                ]
+                                                            ],
+                                                            1.0
+                                                        ],
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "output_state"
+                                                                ]
+                                                            ]
+                                                        ],
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "input_lowest_state"
+                                                                ]
+                                                            ]
+                                                        ]
+                                                    ]
+                                                ],
+                                                0.0,
+                                                0.55,
+                                                1.0,
+                                                0.55
+                                            ]
+                                        ]
+                                    },
+                                    "paint": {
+                                        "icon-color": [
+                                            "case",
+                                            [
+                                                ">",
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0
+                                            ],
+                                            [
+                                                "interpolate",
+                                                [
+                                                    "linear"
+                                                ],
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0,
+                                                "#F9D813",
+                                                0.001,
+                                                "#C22525",
+                                                1.0,
+                                                "#C22525"
+                                            ],
+                                            [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                [
+                                                    "interpolate",
+                                                    [
+                                                        "linear"
+                                                    ],
+                                                    [
+                                                        "-",
+                                                        1.0,
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "output_state"
+                                                            ]
+                                                        ]
+                                                    ],
+                                                    0.0,
+                                                    "#F9D813",
+                                                    0.001,
+                                                    "#E08733",
+                                                    1.0,
+                                                    "#E08733"
+                                                ],
+                                                [
+                                                    "case",
+                                                    [
+                                                        "<",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "input_lowest_state"
+                                                            ]
+                                                        ],
+                                                        1.0
+                                                    ],
+                                                    [
+                                                        "interpolate",
+                                                        [
+                                                            "linear"
+                                                        ],
+                                                        [
+                                                            "-",
+                                                            1.0,
+                                                            [
+                                                                "to-number",
+                                                                [
+                                                                    "get",
+                                                                    "input_lowest_state"
+                                                                ]
+                                                            ]
+                                                        ],
+                                                        0.0,
+                                                        "#F9D813",
+                                                        0.001,
+                                                        "#7E7E7E",
+                                                        1.0,
+                                                        "#7E7E7E"
+                                                    ],
+                                                    "#F9D813"
+                                                ]
+                                            ]
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "secondary-layer-middle",
+                                    "name": "Secondary Substations",
+                                    "source": "secondary-source",
+                                    "type": "symbol",
+                                    "order": 5,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "symbol-z-order": "viewport-y",
+                                        "icon-allow-overlap": false,
+                                        "icon-ignore-placement": true,
+                                        "icon-size": 0.45,
+                                        "icon-image": [
+                                            "case",
+                                            [
+                                                ">",
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "flood_state"
+                                                    ]
+                                                ],
+                                                0.0
+                                            ],
+                                            "circle",
+                                            [
+                                                "case",
+                                                [
+                                                    "<",
+                                                    [
+                                                        "to-number",
+                                                        [
+                                                            "get",
+                                                            "output_state"
+                                                        ]
+                                                    ],
+                                                    1.0
+                                                ],
+                                                "octagon",
+                                                [
+                                                    "case",
+                                                    [
+                                                        "<",
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "input_lowest_state"
+                                                            ]
+                                                        ],
+                                                        1.0
+                                                    ],
+                                                    "square",
+                                                    "circle"
+                                                ]
+                                            ]
+                                        ]
+                                    },
+                                    "paint": {
+                                        "icon-color": "#FFFFFF"
+                                    }
+                                },
+                                {
+                                    "id": "secondary-layer-top",
+                                    "name": "Secondary Substations",
+                                    "source": "secondary-source",
+                                    "type": "symbol",
+                                    "order": 6,
+                                    "layout": {
+                                        "visibility": "none",
+                                        "symbol-z-order": "viewport-y",
+                                        "icon-allow-overlap": false,
+                                        "icon-ignore-placement": true,
+                                        "icon-size": 0.5,
+                                        "icon-image": "power-secondary",
+                                        "text-anchor": "center",
+                                        "text-allow-overlap": true,
+                                        "text-ignore-placement": true,
+                                        "text-font": [
+                                            "Open Sans Bold"
+                                        ],
+                                        "text-size": 16,
+                                        "text-field": "{point_count_abbreviated}"
+                                    },
+                                    "paint": {
+                                        "icon-color": "#F9D813",
+                                        "icon-opacity": [
+                                            "case",
+                                            [
+                                                "has",
+                                                "point_count"
+                                            ],
+                                            0.0,
+                                            1.0
+                                        ],
+                                        "text-color": "#F9D813",
+                                        "text-opacity": [
+                                            "case",
+                                            [
+                                                "!",
+                                                [
+                                                    "has",
+                                                    "point_count"
+                                                ]
+                                            ],
+                                            0.0,
+                                            1.0
+                                        ]
+                                    }
+                                }
+                            ]
+                        },      
+                        {
+                            "name": "Connectivity (Synthetic)",
+                            "stack": "http://kg.cmclinnovations.com:3842",
+                            "groups": [
+                                {
+                                    "name": "Power Network",
+                                    "sources": [
+                                        {
+                                            "id": "power-conns",
+                                            "type": "vector",
+                                            "tiles": [
+                                                "http://kg.cmclinnovations.com:3842/geoserver/gHTiMMBB/wms?service=WMS&version=1.1.0&request=GetMap&layers=gHTiMMBB%3APower&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                                            ]
+                                        }
+                                    ],
+                                    "layers": [
+                                        {
+                                            "id": "power-to-power-core",
+                                            "name": "Power to Power",
+                                            "source": "power-conns",
+                                            "source-layer": "Power",
+                                            "type": "line",
+                                            "order": -1,
+                                            "layout": {
+                                                "visibility": "none"
+                                            },
+                                            "minzoom": 12,
+                                            "filter": [
+                                                "all",
+                                                [
+                                                    "any", 
+                                                    ["==", ["get", "supplier_type"], "Primary"],
+                                                    ["==", ["get", "supplier_type"], "Secondary"]
+                                                ],
+                                                [
+                                                    "any", 
+                                                    ["==", ["get", "receiver_type"], "Primary"],
+                                                    ["==", ["get", "receiver_type"], "Secondary"]
+                                                ]
+                                            ],
+                                            "paint": {
+                                                "line-color": "#F9D813",
+                                                "line-width": 2
+                                            }
+                                        },
+                                        {
+                                            "id": "power-to-power-arrow",
+                                            "name": "Power to Power",
+                                            "source": "power-conns",
+                                            "source-layer": "Power",
+                                            "type": "symbol",
+                                            "order": -1,
+                                            "minzoom": 12,
+                                            "filter": [
+                                                "all",
+                                                [
+                                                    "any", 
+                                                    ["==", ["get", "supplier_type"], "Primary"],
+                                                    ["==", ["get", "supplier_type"], "Secondary"]
+                                                ],
+                                                [
+                                                    "any", 
+                                                    ["==", ["get", "receiver_type"], "Primary"],
+                                                    ["==", ["get", "receiver_type"], "Secondary"]
+                                                ]
+                                            ],
+                                            "layout": {
+                                                "visibility": "none",
+                                                "icon-image": "arrow",
+                                                "icon-rotate": 90,
+                                                "icon-allow-overlap": true,
+                                                "symbol-placement": "line",
+                                                "symbol-spacing": 100,
+                                                "icon-size": 0.2
+                                            },
+                                            "paint": {
+                                                "icon-color": "#F9D813"
+                                            }
+                                        },
+                                        {
+                                            "id": "power-to-power-under",
+                                            "name": "Power to Power",
+                                            "source": "power-conns",
+                                            "source-layer": "Power",
+                                            "type": "line",
+                                            "order": -2,
+                                            "layout": {
+                                                "visibility": "none"
+                                            },
+                                            "minzoom": 12,
+                                            "filter": [
+                                                "all",
+                                                [
+                                                    "any", 
+                                                    ["==", ["get", "supplier_type"], "Primary"],
+                                                    ["==", ["get", "supplier_type"], "Secondary"]
+                                                ],
+                                                [
+                                                    "any", 
+                                                    ["==", ["get", "receiver_type"], "Primary"],
+                                                    ["==", ["get", "receiver_type"], "Secondary"]
+                                                ],
+                                                ["<", ["to-number", ["get", "state"]], 1.0]
+                                            ],
+                                            "paint": {
+                                                "line-width": 7,
+                                                "line-color": [
+                                                    "interpolate",
+                                                    [
+                                                        "linear"
+                                                    ],
+                                                    [
+                                                        "-",
+                                                        1.0,
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "state"
+                                                            ]
+                                                        ]
+                                                    ],
+                                                    0.001,
+                                                    "#E08733",
+                                                    1.0,
+                                                    "#E08733"
+                                                ]
+                                            }
+                                        },
+                                        {
+                                            "id": "power-to-water-core",
+                                            "name": "Power to Water",
+                                            "source": "power-conns",
+                                            "source-layer": "Power",
+                                            "type": "line",
+                                            "order": -1,
+                                            "layout": {
+                                                "visibility": "none"
+                                            },
+                                            "minzoom": 12,
+                                            "filter": [
+                                                "all",
+                                                [
+                                                    "any", 
+                                                    ["==", ["get", "supplier_type"], "Primary"],
+                                                    ["==", ["get", "supplier_type"], "Secondary"]
+                                                ],
+                                                [
+                                                    "any", 
+                                                    ["==", ["get", "receiver_type"], "Water"],
+                                                    ["==", ["get", "receiver_type"], "Sewage"]
+                                                ]
+                                            ],
+                                            "paint": {
+                                                "line-color": "#F9D813",
+                                                "line-width": 2
+                                            }
+                                        },
+                                        {
+                                            "id": "power-to-water-arrow",
+                                            "name": "Power to Water",
+                                            "source": "power-conns",
+                                            "source-layer": "Power",
+                                            "type": "symbol",
+                                            "order": -1,
+                                            "minzoom": 12,
+                                            "filter": [
+                                                "all",
+                                                [
+                                                    "any", 
+                                                    ["==", ["get", "supplier_type"], "Primary"],
+                                                    ["==", ["get", "supplier_type"], "Secondary"]
+                                                ],
+                                                [
+                                                    "any", 
+                                                    ["==", ["get", "receiver_type"], "Water"],
+                                                    ["==", ["get", "receiver_type"], "Sewage"]
+                                                ]
+                                            ],
+                                            "layout": {
+                                                "visibility": "none",
+                                                "icon-image": "arrow",
+                                                "icon-rotate": 90,
+                                                "icon-allow-overlap": true,
+                                                "symbol-placement": "line",
+                                                "symbol-spacing": 100,
+                                                "icon-size": 0.2
+                                            },
+                                            "paint": {
+                                                "icon-color": "#F9D813"
+                                            }
+                                        },
+                                        {
+                                            "id": "power-to-water-under",
+                                            "name": "Power to Water",
+                                            "source": "power-conns",
+                                            "source-layer": "Power",
+                                            "type": "line",
+                                            "order": -2,
+                                            "layout": {
+                                                "visibility": "none"
+                                            },
+                                            "minzoom": 12,
+                                            "filter": [
+                                                "all",
+                                                [
+                                                    "any", 
+                                                    ["==", ["get", "supplier_type"], "Primary"],
+                                                    ["==", ["get", "supplier_type"], "Secondary"]
+                                                ],
+                                                [
+                                                    "any", 
+                                                    ["==", ["get", "receiver_type"], "Water"],
+                                                    ["==", ["get", "receiver_type"], "Sewage"]
+                                                ],
+                                                ["<", ["to-number", ["get", "state"]], 1.0]
+                                            ],
+                                            "paint": {
+                                                "line-width": 7,
+                                                "line-color": [
+                                                    "interpolate",
+                                                    [
+                                                        "linear"
+                                                    ],
+                                                    [
+                                                        "-",
+                                                        1.0,
+                                                        [
+                                                            "to-number",
+                                                            [
+                                                                "get",
+                                                                "state"
+                                                            ]
+                                                        ]
+                                                    ],
+                                                    0.001,
+                                                    "#E08733",
+                                                    1.0,
+                                                    "#E08733"
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            ],                
+                            "sources": [
+                                {
+                                    "id": "water-conns",
+                                    "type": "vector",
+                                    "tiles": [
+                                        "http://kg.cmclinnovations.com:3842/geoserver/gHTiMMBB/wms?service=WMS&version=1.1.0&request=GetMap&layers=gHTiMMBB%3AWater&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                                    ]
+                                }
+                            ],
+                            "layers": [
+                                {
+                                    "id": "water-to-water-core",
+                                    "name": "Water Network",
+                                    "source": "water-conns",
+                                    "source-layer": "Water",
+                                    "type": "line",
+                                    "order": -1,
+                                    "layout": {
+                                        "visibility": "none"
+                                    },
+                                    "minzoom": 12,
+                                    "filter": [
+                                        "all",
+                                        ["==", ["get", "supplier_type"], "Water"],
+                                        ["==", ["get", "receiver_type"], "Water"]
+                                    ],
+                                    "paint": {
+                                        "line-color": "#86C3EB",
+                                        "line-width": 2
+                                    }
+                                },
+                                {
+                                    "id": "water-to-water-arrow",
+                                    "name": "Water Network",
+                                    "source": "water-conns",
+                                    "source-layer": "Water",
+                                    "type": "symbol",
+                                    "order": -1,
+                                    "minzoom": 12,
+                                    "filter": [
+                                        "all",
+                                        ["==", ["get", "supplier_type"], "Water"],
+                                        ["==", ["get", "receiver_type"], "Water"]
+                                    ],
+                                    "layout": {
+                                        "visibility": "none",
+                                        "icon-image": "arrow",
+                                        "icon-rotate": 90,
+                                        "icon-allow-overlap": true,
+                                        "symbol-placement": "line",
+                                        "symbol-spacing": 100,
+                                        "icon-size": 0.2
+                                    },
+                                    "paint": {
+                                        "icon-color": "#86C3EB"
+                                    }
+                                },
+                                {
+                                    "id": "water-to-water-under",
+                                    "name": "Water Network",
+                                    "source": "water-conns",
+                                    "source-layer": "Water",
+                                    "type": "line",
+                                    "order": -2,
+                                    "layout": {
+                                        "visibility": "none"
+                                    },
+                                    "minzoom": 12,
+                                    "filter": [
+                                        "all",
+                                        ["==", ["get", "supplier_type"], "Water"],
+                                        ["==", ["get", "receiver_type"], "Water"],
+                                        ["<", ["to-number", ["get", "state"]], 1.0]
+                                    ],
+                                    "paint": {
+                                        "line-width": 7,
+                                        "line-color": [
+                                            "interpolate",
+                                            [
+                                                "linear"
+                                            ],
+                                            [
+                                                "-",
+                                                1.0,
+                                                [
+                                                    "to-number",
+                                                    [
+                                                        "get",
+                                                        "state"
+                                                    ]
+                                                ]
+                                            ],
+                                            0.001,
+                                            "#E08733",
+                                            1.0,
+                                            "#E08733"
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "Disrupted operations",
+                    "groups": [
+
+                    ]
+                }
+            ]
         }
     ]
 }
