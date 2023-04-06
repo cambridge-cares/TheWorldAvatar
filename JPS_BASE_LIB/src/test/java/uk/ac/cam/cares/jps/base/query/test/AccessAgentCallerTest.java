@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 
 import org.json.JSONObject;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import uk.ac.cam.cares.jps.base.config.IKeys;
@@ -19,6 +20,12 @@ import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 
 public class AccessAgentCallerTest {
 
+	@BeforeAll
+	static void setAccessAgentHostUrl(){
+		//set default accessagent_host to value in jps.properties
+		AccessAgentCaller.accessAgentHost = KeyValueMap.getInstance().get(IKeys.URL_ACCESSAGENT_HOST);
+	}
+	
 	@Test
 	public void testCreateRequestUrlCase1() throws UnsupportedEncodingException, URISyntaxException {
 			

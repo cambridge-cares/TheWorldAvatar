@@ -1,0 +1,32 @@
+[
+    {
+        "groupName": "Sensors",
+        "layers": [
+            {
+                "layerName": "MIDAS Wind Sensors",
+                "defaultState": "visible",
+                "layerIDs": ["MIDASWind"]
+            },
+            {
+                "layerName": "Newcastle Solar Sensors",
+                "defaultState": "visible",
+                "layerIDs": ["NewcastleSolar"]
+            },
+            {
+                "layerName": "Newcastle Wind Sensors",
+                "defaultState": "visible",
+                "layerIDs": ["NewcastleWind"]
+            },
+            {
+                "layerName": "MIDAS Solar Sensors",
+                "defaultState": "visible",
+                "layerIDs": ["MIDASSolar"]
+            },
+            {
+                "layerName": "Postcode Energy",
+                "defaultState": "visible",
+                "layerIDs": ["PostcodeEnergy"]
+            }
+        ]
+    }
+]

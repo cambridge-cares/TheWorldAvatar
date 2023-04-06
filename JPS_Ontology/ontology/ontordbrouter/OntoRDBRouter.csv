@@ -1,0 +1,7 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By
+OntoRDBRouter,TBox,http://www.theworldavatar.com/ontology/ontordbrouter/OntoRDBRouter.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,
+OntoRDBRouter,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,
+OntoRDBRouter,TBox,An ontology developed for representing Relational Database routing maps.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,
+OntoRDBRouter,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,
+TargetRDBResource,Class,,,,,,,http://www.theworldavatar.com/kg/ontordbrouter/
+hasUrl,Data Property,,,TargetRDBResource,http://www.w3.org/2001/XMLSchema#string,,Defines the url of a relational database.,http://www.theworldavatar.com/kg/ontordbrouter/

@@ -1,0 +1,33 @@
+{
+    "dataStore": {
+        "name": "$DB",
+        "connectionParameters": {
+            "entry": [
+                {
+                    "@key": "host",
+                    "$": "$POSTGRES_HOST"
+                },
+                {
+                    "@key": "port",
+                    "$": "$POSTGRES_PORT"
+                },
+                {
+                    "@key": "database",
+                    "$": "$DB"
+                },
+                {
+                    "@key": "user",
+                    "$": "$POSTGRES_USER"
+                },
+                {
+                    "@key": "passwd",
+                    "$": "$POSTGRES_PASSWORD"
+                },
+                {
+                    "@key": "dbtype",
+                    "$": "postgis"
+                }
+            ]
+        }
+    }
+}

@@ -335,14 +335,21 @@
     </owl:ObjectProperty>
     
 
-
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasVoltageAngle -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasVoltageAngle">
         <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#VoltageAngle"/>
+    </owl:ObjectProperty>
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasVoltageMagnitude -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasVoltageMagnitude">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#VoltageMagnitude"/>
     </owl:ObjectProperty>
     
-
 
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasVoltageInput -->
 

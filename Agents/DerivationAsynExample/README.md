@@ -5,7 +5,7 @@
 There are a few namespaces used in this example:
 
 ```sparql
-PREFIX OntoDerivation: <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+PREFIX OntoDerivation: <https://www.theworldavatar.com/kg/ontoderivation/>
 PREFIX derivationBase: <https://www.derivationasynexample.com/triplestore/repository/>
 PREFIX example: <http://derivation_asyn_example#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -281,17 +281,16 @@ You'll need to provide  your credentials in single-word text files in the `crede
 
 `repo_username.txt` should contain your github username, and `repo_password.txt` your github [personal access token](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token), which must have a 'scope' that [allows you to publish and install packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-apache-maven-registry#authenticating-to-github-packages).
 
-`blazegraph_password` will set the password for the blazegraph containers. For simplicity, you may just provide an empty file.
+`blazegraph_password` will set the password for the blazegraph containers.
 
 Next, you will also need to populate the file `DerivationAsynExample/src/main/resources/agents.properties` with the passwords you set for your blazegraph containers, i.e.
 ```
 kg.password=[YOUR_BLAZEGRAPH_PASSWORD]
 ```
-If `blazegraph_password` is left empty, then you should leave the `agents.properties` file unchanged.
 
 By all means, you should leave the other fields unchanged.
 
-To build and start the service, you need to spin up the stack using the docker-compose.yml file provided. Before composing the docker container, please make sure you have already set up the [Docker Environment](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Environment) and obtained access to [Docker Image Registry](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry) - the latter is required to pull the blazegraph image. In Visual Studio Code, ensure the Docker extension is installed, then right-click docker-compose.yml and select 'Compose Up'.
+To build and start the service, you need to spin up the stack using the docker-compose.yml file provided. Before composing the docker container, please make sure you have already set up the [Docker Environment](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Environment). In Visual Studio Code, ensure the Docker extension is installed, then right-click docker-compose.yml and select 'Compose Up'.
 Alternatively, from the command line, and in the same directory as this README, run
 
 ```
@@ -307,7 +306,7 @@ The default port numbers for the containers are (accesing from host machine, i.e
 Once the docker stack is up and running, you should be able to access the blazegraph container at (http://localhost:8889/blazegraph).
 
 ## Test
-To test the full asynchronous operation (case 6), there are integration tests written for this example - `uk.ac.cam.cares.derivation.asynexample.IntegrationTest`. The tests should pass if you already correctly setup the [Docker Environment](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Environment) and obtained access to [Docker Image Registry](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry).
+To test the full asynchronous operation (case 6), there are integration tests written for this example - `uk.ac.cam.cares.derivation.asynexample.IntegrationTest`. The tests should pass if you already correctly setup the [Docker Environment](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Environment).
 
 To test the complete docker set up (where all six cases are provided), another sets of integration tests are provided - `uk.ac.cam.cares.derivation.asynexample.DockerIntegrationTest`. The tests should pass if you have correctly spin up the docker images provided in the `TheWorldAvatar/Agents/DerivationAsynExample/docker-compose.yml`. 
 
@@ -343,7 +342,7 @@ If this is not successful, it may be the case that the `derivationasynexample` c
 As the derivations are marked as `Requested` at their creations, the new information will be generated automatically. As here we are demonstrating full asynchronous operation (case 6), you may use below SPARQL query in the blazegraph container (http://localhost:8889/blazegraph) to check the status during the course of update:
 
 ```sparql
-PREFIX OntoDerivation: <https://github.com/cambridge-cares/TheWorldAvatar/blob/develop/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
+PREFIX OntoDerivation: <https://www.theworldavatar.com/kg/ontoderivation/>
 PREFIX time: <http://www.w3.org/2006/time#>
 SELECT ?derivation ?devTime ?inputTime ?status ?status_type
 WHERE {
@@ -365,6 +364,7 @@ Once the new information is generated is finished, you may get results from SPAR
 | `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_7843ed41-a60e-4fdb-94eb-450164b6ed93>` | 1650312245 |
 | `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_28aea05d-4801-4f63-a498-a61287e664ee>` | 1650312245 |
 | `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_ecb4acda-b4e8-499c-b1ed-ec6a9e9d1c47>` | 1650312255 |
+
 During the course of update, you may also see IRIs appear at the `status` and `status_type` columns, and there may be instances `0` appear in `inputTime` for `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_7843ed41-a60e-4fdb-94eb-450164b6ed93>`, `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_28aea05d-4801-4f63-a498-a61287e664ee>`, and `<https://www.derivationasynexample.com/triplestore/repository/derivedAsyn_ecb4acda-b4e8-499c-b1ed-ec6a9e9d1c47>` - as by design these async derivations are directly connected with its upstream derivation via `<isDerivedFrom>` before the outputs of the upstream derivations are generated, thus the inputs of these three derivation instances are all in fact their upstream derivations, thus timestamp with `0` are added.
 
 ## Updating existing information

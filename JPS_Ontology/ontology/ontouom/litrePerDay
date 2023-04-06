@@ -30,7 +30,7 @@
 
   <!-- Litre Per Day Ontology -->
 
-  <om:UnitDivision rdf:about="http://theworldavatar.com/resource/ontouom/litrePerDay">
+  <om:UnitDivision rdf:about="https://www.theworldavatar.com/kg/ontouom/litrePerDay">
     <rdfs:label xml:lang="en">litre per day</rdfs:label>
     <om:symbol>l/d</om:symbol>
     <om:alternativeSymbol>l d-1</om:alternativeSymbol>

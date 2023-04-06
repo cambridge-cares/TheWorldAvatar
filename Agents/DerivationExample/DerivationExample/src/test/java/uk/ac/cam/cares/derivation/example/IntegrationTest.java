@@ -32,17 +32,17 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
  */
 public class IntegrationTest {
 	JSONObject initResponse;
-	
+
 	// note that the URLs in the properties file are the URLs when they are accessed from within the docker 
 	String kgurl = "http://localhost:8889/blazegraph/namespace/kb/sparql";
 	String rdburl = "jdbc:postgresql://localhost:7432/postgres";
-	
+
 	@Before
 	public void initialise() {
 		// the response is a JSON object containing the IRIs of the initialise instances, refer to InitialiseInstances for the keys
-	    initResponse = new JSONObject(AgentCaller.executeGet("http://localhost:8081/DerivationExample/InitialiseInstances"));
+		initResponse = new JSONObject(AgentCaller.executeGet("http://localhost:8081/DerivationExample/InitialiseInstances"));
 	}
-	
+
 	@Test
 	public void testInputAgent() {
 		// obtain IRI of the input that is initialised
@@ -52,15 +52,15 @@ public class IntegrationTest {
 		TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, rdburl, Config.dbuser, Config.dbpassword);
 
 		TimeSeries<Instant> ts1 = tsClient.getTimeSeries(Arrays.asList(input));
-		
+
 		// the input agent will add a row to the time series table
 		AgentCaller.executeGet("http://localhost:8081/DerivationExample/InputAgent");
-		
+
 		TimeSeries<Instant> ts2 = tsClient.getTimeSeries(Arrays.asList(input));
-		
+
 		Assert.assertTrue(ts2.getTimes().size() > ts1.getTimes().size());
 	}
-	
+
 	/**
 	 * assumes that if the derivation time stamps are updated, it is functioning as intended
 	 * derivations are initialised with timestamp = 0
@@ -74,32 +74,33 @@ public class IntegrationTest {
 	public void testUpdateDerivations() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Config.initProperties();
 		RemoteStoreClient storeClient = new RemoteStoreClient(kgurl, kgurl, Config.kguser, Config.kgpassword);
-		
+
 		// get IRIs of initialise instances, the keys are located in the servlet InitialiseInstances
 		String derived_diff = initResponse.getString(InitialiseInstances.diff_dev_key);
 		String derived_average = initResponse.getString(InitialiseInstances.avg_dev_key);
-		
+
 		DerivationSparql devClient = new DerivationSparql(storeClient, InitialiseInstances.derivationInstanceBaseURL);
-		
+
 		Method getTimestamp = devClient.getClass().getDeclaredMethod("getTimestamp", String.class);
 		getTimestamp.setAccessible(true);
-		
+
 		long oldtimestamp_diff = (long) getTimestamp.invoke(devClient, derived_diff);
 		long oldtimestamp_average = (long) getTimestamp.invoke(devClient, derived_average);
-		
+
 		AgentCaller.executeGet("http://localhost:8081/DerivationExample/UpdateDerivations");
-		
+
 		long newtimestamp_diff = (long) getTimestamp.invoke(devClient, derived_diff);
 		long newtimestamp_average = (long) getTimestamp.invoke(devClient, derived_average);
-		
+
 		Assert.assertTrue(newtimestamp_diff > oldtimestamp_diff);
 		Assert.assertTrue(newtimestamp_average > oldtimestamp_average);
 	}
-	
+
 	@Test
 	public void testMinValueAgent() {
 		String input = initResponse.getString(InitialiseInstances.input_key);
 		JSONObject request = new JSONObject()
+				.put(DerivationClient.SYNC_NEW_INFO_FLAG, false) // this is added to indicate call for update
 				.put(DerivationClient.AGENT_INPUT_KEY,
 						new JSONObject().put(SparqlClient.getRdfTypeString(SparqlClient.InputData), input))
 				.put(DerivationClient.BELONGSTO_KEY,
@@ -110,7 +111,7 @@ public class IntegrationTest {
 				.put(DerivationClient.DOWNSTREAMDERIVATION_KEY, new JSONObject().put(
 						initResponse.getString(InitialiseInstances.min_key),
 						new JSONArray(Arrays.asList(initResponse.getString(InitialiseInstances.diff_dev_key)))));
-		
+
 		String response = AgentCaller.executeGetWithURLAndJSON("http://localhost:8081/DerivationExample/MinValueAgent", request.toString());
 		JSONObject responseJson = new JSONObject(response);
 		Assert.assertTrue(responseJson.has(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY));
@@ -120,6 +121,7 @@ public class IntegrationTest {
 	public void testMaxValueAgent() {
 		String input = initResponse.getString(InitialiseInstances.input_key);
 		JSONObject request = new JSONObject()
+				.put(DerivationClient.SYNC_NEW_INFO_FLAG, false) // this is added to indicate call for update
 				.put(DerivationClient.AGENT_INPUT_KEY,
 						new JSONObject().put(SparqlClient.getRdfTypeString(SparqlClient.InputData), input))
 				.put(DerivationClient.BELONGSTO_KEY,
@@ -130,25 +132,26 @@ public class IntegrationTest {
 				.put(DerivationClient.DOWNSTREAMDERIVATION_KEY, new JSONObject().put(
 						initResponse.getString(InitialiseInstances.max_key),
 						new JSONArray(Arrays.asList(initResponse.getString(InitialiseInstances.diff_dev_key)))));
-		
+
 		String response = AgentCaller.executeGetWithURLAndJSON("http://localhost:8081/DerivationExample/MaxValueAgent", request.toString());
 		JSONObject responseJson = new JSONObject(response);
 		Assert.assertTrue(responseJson.getLong(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY) > 0);
 	}
-	
+
 	@Test
 	public void testAverageAgent() {
 		String input = initResponse.getString(InitialiseInstances.input_key);
 		String average = initResponse.getString(InitialiseInstances.avg_key);
-		
+
 		Config.initProperties();
 		RemoteStoreClient storeClient = new RemoteStoreClient(kgurl, kgurl, Config.kguser, Config.kgpassword);
 		TimeSeriesClient<Instant> tsClient = new TimeSeriesClient<Instant>(storeClient, Instant.class, rdburl, Config.dbuser, Config.dbpassword);
-		
+
 		TimeSeries<Instant> ts1 = tsClient.getTimeSeries(Arrays.asList(average));
-		
+
 		// now call agent to update the table containing averages
 		JSONObject request = new JSONObject()
+				.put(DerivationClient.SYNC_NEW_INFO_FLAG, false) // this is added to indicate call for update
 				.put(DerivationClient.AGENT_INPUT_KEY,
 						new JSONObject().put(SparqlClient.getRdfTypeString(SparqlClient.InputData), input))
 				.put(DerivationClient.BELONGSTO_KEY,
@@ -158,20 +161,21 @@ public class IntegrationTest {
 				.put(DerivationClient.DERIVATION_TYPE_KEY, DerivationSparql.ONTODERIVATION_DERIVATIONWITHTIMESERIES)
 				.put(DerivationClient.DOWNSTREAMDERIVATION_KEY, new JSONObject());
 		String response = AgentCaller.executeGetWithURLAndJSON("http://localhost:8081/DerivationExample/AverageAgent", request.toString());
-		
+
 		TimeSeries<Instant> ts2 = tsClient.getTimeSeries(Arrays.asList(average));
-		
+
 		Assert.assertTrue(ts2.getTimes().size() > ts1.getTimes().size());
 		JSONObject responseJson = new JSONObject(response);
 		Assert.assertTrue(responseJson.getLong(DerivationOutputs.RETRIEVED_INPUTS_TIMESTAMP_KEY) > 0);
 	}
-	
+
 	@Test
 	public void testDifferenceAgent() {
 		String min = initResponse.getString(InitialiseInstances.min_key);
 		String max = initResponse.getString(InitialiseInstances.max_key);
-		
+
 		JSONObject request = new JSONObject()
+				.put(DerivationClient.SYNC_NEW_INFO_FLAG, false) // this is added to indicate call for update
 				.put(DerivationClient.AGENT_INPUT_KEY, new JSONObject()
 						.put(SparqlClient.getRdfTypeString(SparqlClient.MinValue), min)
 						.put(SparqlClient.getRdfTypeString(SparqlClient.MaxValue), max))

@@ -1,0 +1,12 @@
+[
+    {
+        "groupName": "Churchill",
+        "layers": [
+            {
+                "layerName": "Sensors",
+                "defaultState": "visible",
+                "layerIDs": ["sensors"]
+            }
+        ]
+    }
+]

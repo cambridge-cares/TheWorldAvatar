@@ -3,12 +3,12 @@
 	"seed": 1
 },
 "dataset":{
-	"src": "./data/power_plant_DEU/kwl.ttl",
-	"tgt": "./data/power_plant_DEU/gppd_DEU.ttl"
+	"src": "./data/kwl.ttl",
+	"tgt": "./data/gppd_DEU.ttl"
 },
 "pre_processing":{
 	"http": true,
-	"add_knowledge": "ontomatch.knowledge.geoNames"
+	"add_knowledge": false
 },
 "blocking":{
 	"name": "TokenBasedPairIterator",
@@ -52,6 +52,6 @@
 	}
 },
 "post_processing":{
-	"link_file": "../tmp/linked_power_plants.owl"
+	"link_file": "./tmp/linked_power_plants.owl"
 }
 }

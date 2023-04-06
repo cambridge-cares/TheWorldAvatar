@@ -1,0 +1,68 @@
+{
+	"folders": [
+		{
+			"path": "stack-manager"
+		},
+		{
+			"path": "stack-clients"
+		},
+		{
+			"path": "stack-data-uploader"
+		},
+		{
+			"path": "common-scripts"
+		},
+		{
+			"path": "examples"
+		},
+		{
+			"path": "../../../Agents/utils/parent-pom"
+		},
+		{
+			"path": "../../../JPS_BASE_LIB"
+		}
+	],
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "automatic",
+		"java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx8G -Xms100m",
+		"cSpell.words": [
+			"Adminer",
+			"Blazegraph",
+			"CMCL",
+			"cmclinnovations",
+			"crome",
+			"cropmap",
+			"datasubset",
+			"EPSG",
+			"freelist",
+			"gdal",
+			"gdbindexes",
+			"gdbtable",
+			"gdbtablx",
+			"Geodatabase",
+			"geotiff",
+			"GEOTIFFS",
+			"LINESTRING",
+			"MULTILINESTRING",
+			"Multimap",
+			"OBDA",
+			"pgsql",
+			"POSTGIS",
+			"Shapefile",
+			"Shapefiles",
+			"SPARQL",
+			"SRID"
+		],
+		"java.compile.nullAnalysis.mode": "automatic"
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-azuretools.vscode-docker",
+			"vscjava.vscode-java-pack",
+			"ms-vscode-remote.remote-containers",
+			"redhat.vscode-yaml",
+			"sonarsource.sonarlint-vscode",
+			"augustocdias.tasks-shell-input"
+		]
+	}
+}

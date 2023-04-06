@@ -1,0 +1,6 @@
+# Git ignore all data
+*
+Just commit the .gitignore files and config files
+!.gitignore
+!config_files/
+!config_files/*

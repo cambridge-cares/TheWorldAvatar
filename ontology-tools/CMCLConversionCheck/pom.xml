@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.cmclinnovations</groupId>
   <artifactId>CMCLConversionCheck</artifactId>
-  <version>0.0.1</version>
+  <version>0.1.1</version>
   <packaging>jar</packaging>
   <name>CMCLConversionCheck</name>
 
@@ -56,6 +56,7 @@
                     <arg>-Xlint:all,-options,-path, unchecked</arg>
                     <source>1.8</source>
                     <target>1.8</target>
+                    <release>8</release>
                     <showDeprecation>true</showDeprecation>
                 </configuration>
             </plugin>

@@ -1,0 +1,22 @@
+# This configuration file includes all docker-compose options required to *build and publish* the
+# blazegraph docker image to the cambridge-cares GitHub Container Registry.
+#
+# When adding a new service, please copy the configuration for an existing service, then modify the
+# service name, the 'image' tag (retaining 'ghcr.io/cambridge-cares') and the 'build/*',
+# 'labels/authors' and 'labels/description' nodes.
+# =================================================================================================
+
+version: "3.8"
+
+services:
+
+  # Blazegraph
+  blazegraph:
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
+    build:
+      context: blazegraph
+      labels:
+        authors: "support@cmclinnovations"
+        builder: "${BUILDER}"
+        description: "Blazegraph with BASIC authentication, based on the official Tomcat 9 image."
+        hash: "${HASH}"

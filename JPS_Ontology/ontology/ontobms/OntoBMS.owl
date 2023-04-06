@@ -1,0 +1,675 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl"
+     xmlns:OntoBMS="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:om="http://www.ontology-of-units-of-measure.org/resource/om-2/"
+     xmlns:saref="https://saref.etsi.org/core/"
+     xmlns:s4bldg="https://saref.etsi.org/saref4bldg/"
+     xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+     xmlns:qudt="http://qudt.org/schema/qudt/">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl">
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoBMS is an ontology for Building Management Systems.</rdfs:comment>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.5</owl:versionInfo>
+    </owl:Ontology>
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#observes -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#observes">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/core/State"/>
+    </owl:ObjectProperty>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#isObservedBy -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#isObservedBy">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/State"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/core/Device"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#observes"/>
+    </owl:ObjectProperty>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#contains -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#contains">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/core/Device"/>
+    </owl:ObjectProperty>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#isContainedIn -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#isContainedIn">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:range rdf:resource="https://w3id.org/bot#Zone"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#contains"/>
+    </owl:ObjectProperty>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#sendsSignalTo -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#sendsSignalTo">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/core/Device"/>
+    </owl:ObjectProperty>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#hasQualitativeValue -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#hasQualitativeValue">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Quality"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#QualitativeValue"/>
+    </owl:ObjectProperty>
+
+    <!-- https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries -->
+
+    <owl:ObjectProperty rdf:about="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#QualitativeValue"/>
+        <rdfs:range rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries"/>
+        <rdfs:isDefinedBy rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#"/>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has time series</rdfs:label>
+    </owl:ObjectProperty>
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+        <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/"/>
+    </owl:ObjectProperty>
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue -->
+
+    <owl:ObjectProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/"/>
+    </owl:ObjectProperty>
+
+    <!-- https://saref.etsi.org/core/consistsOf -->
+
+    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/consistsOf">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
+    </owl:ObjectProperty>
+
+    <!-- https://saref.etsi.org/core/measuresProperty -->
+
+    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/measuresProperty">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/core/Property"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
+    </owl:ObjectProperty>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#hasPart -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#hasPart">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Property"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/core/Property"/>
+    </owl:ObjectProperty>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#isPartOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#isPartOf">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Property"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/core/Property"/>
+        <owl:inverseOf rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#hasPart"/>
+    </owl:ObjectProperty>
+
+    <!-- https://saref.etsi.org/core/isMeasuredByDevice -->
+
+    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/isMeasuredByDevice">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Property"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
+    </owl:ObjectProperty>
+
+    <!-- https://saref.etsi.org/core/hasState -->
+
+    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/hasState">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/core/State"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
+    </owl:ObjectProperty>
+
+    <!-- https://saref.etsi.org/core/hasProperty -->
+
+    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/hasProperty">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/FeatureOfInterest"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/core/Property"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
+    </owl:ObjectProperty>
+
+    <!-- https://saref.etsi.org/core/isPropertyOf -->
+
+    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/isPropertyOf">
+        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Property"/>
+        <rdfs:range rdf:resource="https://saref.etsi.org/core/FeatureOfInterest"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
+        <owl:inverseOf rdf:resource="https://saref.etsi.org/core/hasProperty"/>
+    </owl:ObjectProperty>
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue -->
+
+    <owl:DatatypeProperty rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/hasNumericalValue">
+        <rdfs:domain rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Measure"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/"/>
+    </owl:DatatypeProperty>
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+
+
+
+
+  <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#ElectricalPower-AC -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#ElectricalPower-AC">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#</rdfs:isDefinedBy>
+    </owl:Class>
+
+
+
+  <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#ElectricalPower-DC -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#ElectricalPower-DC">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#</rdfs:isDefinedBy>
+    </owl:Class>
+
+
+
+  <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Quality -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Quality">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#hasQualitativeValue"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#QualitativeValue"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+  <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#QualitativeValue -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#QualitativeValue">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#hasTimeSeries"/>
+                <owl:allValuesFrom rdf:resource="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontotimeseries/OntoTimeSeries.owl#TimeSeries"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+
+  <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#OutdoorArea -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#OutdoorArea">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Space"/>
+    </owl:Class>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Room -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Room">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Space"/>
+    </owl:Class>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#CommonSpace -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#CommonSpace">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Space"/>
+    </owl:Class>
+
+   <!-- https://w3id.org/bot#Space -->
+
+    <owl:Class rdf:about="https://w3id.org/bot#Space">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:isDefinedBy rdf:resource="https://w3id.org/bot#"/>
+    </owl:Class>
+
+
+    <!-- https://saref.etsi.org/saref4bldg/BuildingDevice -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/BuildingDevice">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/saref4bldg/"/>
+    </owl:Class>
+
+    <!-- https://saref.etsi.org/saref4bldg/DistributionDevice -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/DistributionDevice">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/BuildingDevice"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/saref4bldg/"/>
+    </owl:Class>
+
+    <!-- https://saref.etsi.org/saref4bldg/DistributionFlowDevice -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/DistributionFlowDevice">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/DistributionDevice"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/saref4bldg/"/>
+    </owl:Class>
+
+    <!-- https://saref.etsi.org/saref4bldg/EnergyConversionDevice -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/EnergyConversionDevice">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/DistributionFlowDevice"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/saref4bldg/"/>
+    </owl:Class>
+
+    <!-- https://saref.etsi.org/saref4bldg/Coil -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/Coil">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/EnergyConversionDevice"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/saref4bldg/"/>
+    </owl:Class>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#ElectricalCoil -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#ElectricalCoil">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/Coil"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Type of coil for heat exchange using the electricity as the energy source. </rdfs:comment>
+    </owl:Class>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#WaterCoil -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#WaterCoil">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/Coil"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Type of coil that involve utility stream other than the main stream to do the heat exchange. </rdfs:comment>
+    </owl:Class>
+
+    <!-- https://saref.etsi.org/saref4bldg/FlowController -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/FlowController">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/DistributionFlowDevice"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/saref4bldg/"/>
+    </owl:Class>
+
+    <!-- https://saref.etsi.org/saref4bldg/Damper -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/Damper">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowController"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/saref4bldg/"/>
+    </owl:Class>
+
+    <!-- https://saref.etsi.org/saref4bldg/Valve -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/Valve">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowController"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/saref4bldg/"/>
+    </owl:Class>
+
+    <!-- https://saref.etsi.org/saref4bldg/DistributionControlDevice -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/DistributionControlDevice">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/DistributionDevice"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/saref4bldg/"/>
+    </owl:Class>
+
+    <!-- https://saref.etsi.org/saref4bldg/Controller -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/Controller">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/DistributionControlDevice"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/saref4bldg/"/>
+    </owl:Class>
+
+    <!-- https://saref.etsi.org/saref4bldg/FlowMovingDevice -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/FlowMovingDevice">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/DistributionFlowDevice"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/saref4bldg/"/>
+    </owl:Class>
+
+    <!-- https://saref.etsi.org/saref4bldg/Fan -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/Fan">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/saref4bldg/"/>
+    </owl:Class>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#ExhaustAirFan -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#ExhaustAirFan">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/Fan"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device for removing low quality, moist or polluted air from the building envelope and rejected to the environment.</rdfs:comment>
+    </owl:Class>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#HighPlumeFan -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#HighPlumeFan">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/Fan"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device used to extract laboratory, process, or fume hood effluent air and dilute the effluent with outside ambient air.</rdfs:comment>
+    </owl:Class>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Duct -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Duct">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
+        <rdfs:comment>a tube or passageway in a building or machine for air.</rdfs:comment>
+    </owl:Class>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Pipe -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Pipe">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A tube used to convey water, gas, oil, or other fluid substances.</rdfs:comment>
+    </owl:Class>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Tee -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Tee">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowMovingDevice"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Connectors between pipes to separate or combine some streams.</rdfs:comment>
+    </owl:Class>
+
+    <!-- https://saref.etsi.org/saref4bldg/FlowTreatmentDevice -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/FlowTreatmentDevice">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/DistributionFlowDevice"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/saref4bldg/"/>
+    </owl:Class>
+
+    <!-- https://saref.etsi.org/saref4bldg/Filter -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/Filter">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowTreatmentDevice"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/saref4bldg/"/>
+    </owl:Class>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#FumeHood -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#FumeHood">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/FlowTreatmentDevice"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ventilation device that is designed to limit exposure to hazardous or toxic fumes, vapors or dusts</rdfs:comment>
+    </owl:Class>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#CanopyHood -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#CanopyHood">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#FumeHood"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Exhaust canopy fume hood type for venting non-toxic materials such as non-toxic smoke, steam, heat, and odors</rdfs:comment>
+    </owl:Class>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#WalkInFumeHood -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#WalkInFumeHood">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#FumeHood"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A larger ventilation device that is designed to limit exposure to hazardous or toxic fumes, vapors or dusts</rdfs:comment>
+    </owl:Class>
+
+
+   <!-- https://saref.etsi.org/core/Device -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/Device">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://saref.etsi.org/core/consistsOf"/>
+                <owl:allValuesFrom rdf:resource="https://saref.etsi.org/core/Device"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#sendsSignalTo"/>
+                <owl:allValuesFrom rdf:resource="https://saref.etsi.org/core/Device"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#observes"/>
+                <owl:allValuesFrom rdf:resource="https://saref.etsi.org/core/State"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasState"/>
+                <owl:allValuesFrom rdf:resource="https://saref.etsi.org/core/State"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://saref.etsi.org/core/measuresProperty"/>
+                <owl:allValuesFrom rdf:resource="https://saref.etsi.org/core/Property"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#isContainedIn"/>
+                <owl:allValuesFrom rdf:resource="https://w3id.org/bot#Zone"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <!-- https://saref.etsi.org/core/Sensor -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/Sensor">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
+    </owl:Class>
+
+   <!-- https://saref.etsi.org/core/Meter -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/Meter">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
+    </owl:Class>
+
+   <!-- https://saref.etsi.org/core/HVAC -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/HVAC">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
+    </owl:Class>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Plenum -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Plenum">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/HVAC"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A plenum is used to circulate air for cooling and heating purposes by providing a path for heated or cooled air to pass. </rdfs:comment>
+    </owl:Class>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#FanCoilUnit -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#FanCoilUnit">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/HVAC"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relatively small piece of equipment that consists of a fan, a coil, and other components, that are used to cool or heat the air recirculating within a room.  </rdfs:comment>
+    </owl:Class>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#AirHandlingUnit -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#AirHandlingUnit">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/HVAC"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device used to condition and distribute air within a building. </rdfs:comment>
+    </owl:Class>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#MakeupAirUnit -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#MakeupAirUnit">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/HVAC"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A large air handler that conditions 100% outside air for interior use as an alternative to recirculating stale air that could carry odors and bacteria. </rdfs:comment>
+    </owl:Class>
+
+    <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#CAVSystem -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#CAVSystem">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/HVAC"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device used to supply a constant airflow at a variable temperature. </rdfs:comment>
+    </owl:Class>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#VAVSystem -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#VAVSystem">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/HVAC"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A device used to supply a varying airflow at a constant temperature. </rdfs:comment>
+    </owl:Class>
+
+
+  <!-- https://saref.etsi.org/core/FeatureOfInterest -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/FeatureOfInterest">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasProperty"/>
+                <owl:allValuesFrom rdf:resource="https://saref.etsi.org/core/Property"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
+    </owl:Class>
+
+  <!-- https://saref.etsi.org/core/State -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/State">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#isObservedBy"/>
+                <owl:allValuesFrom rdf:resource="https://saref.etsi.org/core/Device"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
+    </owl:Class>
+
+
+ 
+   <!-- https://saref.etsi.org/core/Property -->
+
+    <owl:Class rdf:about="https://saref.etsi.org/core/Property">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://saref.etsi.org/core/isMeasuredByDevice"/>
+                <owl:allValuesFrom rdf:resource="https://saref.etsi.org/core/Device"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="https://saref.etsi.org/core/isPropertyOf"/>
+                <owl:allValuesFrom rdf:resource="https://saref.etsi.org/core/FeatureOfInterest"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:isDefinedBy rdf:resource="https://saref.etsi.org/core/"/>
+    </owl:Class>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Current -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Current">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Property"/>
+    </owl:Class>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Frequency -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Frequency">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Property"/>
+    </owl:Class>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#PowerFactor -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#PowerFactor">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Property"/>
+    </owl:Class>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Voltage -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Voltage">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Property"/>
+    </owl:Class>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Flow -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Flow">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Property"/>
+    </owl:Class>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#AirFlow -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#AirFlow">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Flow"/>
+    </owl:Class>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#WaterFlow -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#WaterFlow">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#Flow"/>
+    </owl:Class>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#SashOpening -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#SashOpening">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Property"/>
+    </owl:Class>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#SetPoint -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#SetPoint">
+        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Property"/>
+    </owl:Class>
+
+
+
+   <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRateUnit -->
+
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRateUnit">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Unit"/>
+        <rdfs:isDefinedBy rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/"/>
+    </owl:Class>
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#cubicMetrePerHour-Time -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#cubicMetrePerHour-Time">
+        <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRateUnit"/>
+        <skos:notation rdf:datatype="http://qudt.org/schema/qudt/UCUMcs">m3/h</skos:notation>
+        <skos:notation rdf:datatype="http://qudt.org/schema/qudt/UCUMcs">m3.h-1</skos:notation>
+    </owl:NamedIndividual>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#litrePerMinute -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#litrePerMinute">
+        <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRateUnit"/>
+        <skos:notation rdf:datatype="http://qudt.org/schema/qudt/UCUMcs">L/min</skos:notation>
+        <skos:notation rdf:datatype="http://qudt.org/schema/qudt/UCUMcs">L.min-1</skos:notation>
+    </owl:NamedIndividual>
+
+   <!-- http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#pound-ForcePerSquareInch -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontobms/OntoBMS.owl#pound-ForcePerSquareInch">
+        <rdf:type rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/PressureUnit"/>
+        <skos:notation rdf:datatype="http://qudt.org/schema/qudt/UCUMcs">psi</skos:notation>
+    </owl:NamedIndividual>
+
+ 
+
+</rdf:RDF>
