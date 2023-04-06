@@ -2,19 +2,24 @@ version: "3.8"
 
 services:
   propertyvalue_agent:
-    image: ghcr.io/cambridge-cares/propertyvalue_agent:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/propertyvalue_agent:1.2.0
     environment:
       #--- Stack & Stack Client parameters ---#
       - STACK_NAME=${STACK_NAME}
       # Specify PostGIS/PostgreSQL database name
       - DATABASE=postgres
       # Specify Blazegraph namespace
-      - NAMESPACE=buildings
+      - NAMESPACE=kingslynn
+      # Target layer name in Geoserver, also table name in PostGIS
+      - LAYERNAME=marketvalues
+      - GEOSERVER_WORKSPACE=kingslynn
+      # PostGIS table containing all building footprints
+      - BUILDINGS_TABLE=buildings
       #--- Derivation Agent parameters ---#
       # For details, see: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_derivation_agent/pyderivationagent/conf/agent_conf.py
-      - ONTOAGENT_SERVICE_IRI=http://www.theworldavatar.com/resource/agents/Service__KL_PropertyValueEstimation/Service
+      - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__KL_PropertyValueEstimation/Service
       # Host and port of ONTOAGENT_OPERATION_HTTP_URL should match port specified in `port` node below
-      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5011/PropertyValueEstimation
+      - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5012/PropertyValueEstimation
       - DERIVATION_INSTANCE_BASE_URL=https://www.theworldavatar.com/kg/derivation/
       - DERIVATION_PERIODIC_TIMESCALE=604800
       - REGISTER_AGENT=true
@@ -28,16 +33,21 @@ services:
       - FILE_SERVER_USERNAME=''
       - FILE_SERVER_PASSWORD=''
       #--- Miscellaneous ---#
-      #TODO: Check whether that's still needed
       - LOG4J_FORMAT_MSG_NO_LOOKUPS=true
     ports:
-      - "5011:5000"
+      - "5012:5000"
+    # Enable unlimited request line length to allow for large sets of derivation inputs
+    # (details: https://docs.gunicorn.org/en/stable/settings.html#limit-request-line)
+    # NOTE: This should be used with caution, and only commented out if required/expected
+    #entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "propertyvalueestimation:create_app()", "--preload", "--limit-request-line", "0"]
     volumes:
       - logs:/root/.jps
     configs:
       - blazegraph
+      - geoserver
       - postgis
     secrets:
+      - geoserver_password
       - postgis_password
 
 volumes:

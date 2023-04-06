@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -56,7 +57,7 @@ import com.github.dockerjava.core.command.ExecStartResultCallback;
 import com.github.dockerjava.httpclient5.ApacheDockerHttpClient;
 import com.github.dockerjava.transport.DockerHttpClient;
 
-public class DockerClient extends BaseClient {
+public class DockerClient extends BaseClient implements ContainerManager<com.github.dockerjava.api.DockerClient> {
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(DockerClient.class);
 
@@ -66,12 +67,16 @@ public class DockerClient extends BaseClient {
 
     public static DockerClient getInstance() {
         if (null == instance) {
-            instance = new DockerClient();
+            if (StackClient.getContainerEngineName().equals("podman")) {
+                instance = new PodmanClient();
+            } else {
+                instance = new DockerClient();
+            }
         }
         return instance;
     }
 
-    private DockerClient() {
+    protected DockerClient() {
         this(null);
     }
 
@@ -83,7 +88,6 @@ public class DockerClient extends BaseClient {
         }
 
         DockerClientConfig dockerConfig = dockerConfigBuilder
-                .withApiVersion(RemoteApiVersion.VERSION_1_40)
                 .build();
 
         DockerHttpClient httpClient = new ApacheDockerHttpClient.Builder()
@@ -91,9 +95,16 @@ public class DockerClient extends BaseClient {
                 .sslConfig(dockerConfig.getSSLConfig())
                 .build();
 
-        internalClient = DockerClientBuilder.getInstance(dockerConfig).withDockerHttpClient(httpClient).build();
+        internalClient = buildInternalClient(dockerConfig, httpClient);
     }
 
+    @Override
+    public com.github.dockerjava.api.DockerClient buildInternalClient(DockerClientConfig dockerConfig,
+            DockerHttpClient httpClient) {
+        return DockerClientBuilder.getInstance(dockerConfig).withDockerHttpClient(httpClient).build();
+    }
+
+    @Override
     public com.github.dockerjava.api.DockerClient getInternalClient() {
         return internalClient;
     }
@@ -466,16 +477,33 @@ public class DockerClient extends BaseClient {
 
     public Optional<Container> getContainer(String containerName, boolean showAll) {
         try (ListContainersCmd listContainersCmd = internalClient.listContainersCmd()) {
-            return listContainersCmd.withNameFilter(List.of(containerName))
+            Pattern fullContainerNamePattern = Pattern
+                    .compile("/?" + StackClient.getStackName() + "-" + containerName + "(?:\\..*)?");
+            List<Container> possibleContainers = listContainersCmd.withNameFilter(List.of(containerName))
                     .withLabelFilter(StackClient.getStackNameLabelMap())
-                    .withShowAll(showAll).exec()
-                    .stream().findAny();
+                    .withShowAll(showAll).exec();
+            return possibleContainers
+                    .stream()
+                    .filter(container -> Stream.of(container.getNames())
+                            .anyMatch(name -> {
+                                return fullContainerNamePattern.matcher(name).matches();
+                            }))
+                    .findAny();
         }
     }
 
     public Optional<Container> getContainer(String containerName) {
         // Setting "showAll" to "true" ensures non-running containers are also returned
         return getContainer(containerName, true);
+    }
+
+    public Optional<Container> getContainerFromID(String containerId) {
+        try (ListContainersCmd listContainersCmd = internalClient.listContainersCmd()) {
+            // Setting "showAll" to "true" ensures non-running containers are also returned
+            return listContainersCmd.withIdFilter(List.of(containerId))
+                    .withShowAll(true).exec()
+                    .stream().findAny();
+        }
     }
 
     public boolean isContainerUp(String containerName) {
@@ -547,8 +575,7 @@ public class DockerClient extends BaseClient {
     }
 
     public void removeConfig(Config config) {
-        try (RemoveConfigCmd removeConfigCmd = getInternalClient()
-                .removeConfigCmd(config.getId())) {
+        try (RemoveConfigCmd removeConfigCmd = internalClient.removeConfigCmd(config.getId())) {
             removeConfigCmd.exec();
         } catch (Exception ex) {
             // Either the Config has been removed externally
@@ -566,6 +593,10 @@ public class DockerClient extends BaseClient {
         return readEndpointConfig(endpointName, endpointConfigClass, this);
     }
 
+    protected Map<String, String> getSecretLabels() {
+        return StackClient.getStackNameLabelMap();
+    }
+
     public boolean secretExists(String secretName) {
         return getSecret(secretName).isPresent();
     }
@@ -573,12 +604,7 @@ public class DockerClient extends BaseClient {
     public Optional<Secret> getSecret(String secretName) {
         try (ListSecretsCmd listSecretsCmd = internalClient.listSecretsCmd()) {
             String fullSecretName = StackClient.prependStackName(secretName);
-            return listSecretsCmd
-                    .withNameFilter(List.of(fullSecretName))
-                    .withLabelFilter(StackClient.getStackNameLabelMap())
-                    .exec().stream()
-                    .filter(secret -> secret.getSpec().getName().equals(fullSecretName))
-                    .findFirst();
+            return getSecret(listSecretsCmd.withNameFilter(List.of(fullSecretName)).exec(), secretName);
         }
     }
 
@@ -591,9 +617,7 @@ public class DockerClient extends BaseClient {
 
     public List<Secret> getSecrets() {
         try (ListSecretsCmd listSecretsCmd = internalClient.listSecretsCmd()) {
-            return listSecretsCmd
-                    .withLabelFilter(StackClient.getStackNameLabelMap())
-                    .exec().stream().collect(Collectors.toList());
+            return listSecretsCmd.withLabelFilter(getSecretLabels()).exec().stream().collect(Collectors.toList());
         }
     }
 
@@ -601,16 +625,14 @@ public class DockerClient extends BaseClient {
         SecretSpec secretSpec = new SecretSpec()
                 .withName(StackClient.prependStackName(secretName))
                 .withData(data)
-                .withLabels(StackClient.getStackNameLabelMap());
-        try (CreateSecretCmd createSecretCmd = getInternalClient()
-                .createSecretCmd(secretSpec)) {
+                .withLabels(getSecretLabels());
+        try (CreateSecretCmd createSecretCmd = internalClient.createSecretCmd(secretSpec)) {
             createSecretCmd.exec();
         }
     }
 
     public void removeSecret(Secret secret) {
-        try (RemoveSecretCmd removeSecretCmd = getInternalClient()
-                .removeSecretCmd(secret.getId())) {
+        try (RemoveSecretCmd removeSecretCmd = internalClient.removeSecretCmd(secret.getId())) {
             removeSecretCmd.exec();
         } catch (Exception ex) {
             // Either the Secret has been removed externally

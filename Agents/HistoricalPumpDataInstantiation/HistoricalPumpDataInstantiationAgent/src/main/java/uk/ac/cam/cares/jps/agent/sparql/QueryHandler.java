@@ -17,12 +17,15 @@ class QueryHandler {
     protected static void genInsertPrefixMapping(InsertBuilder builder, String baseNameSpace) {
         builder.addPrefix(OntologyConstant.BASE_PREFIX, baseNameSpace);
         builder.addPrefix(OntologyConstant.RDF_PREFIX, OntologyConstant.RDF_URI);
+        builder.addPrefix(OntologyConstant.RDFS_PREFIX, OntologyConstant.RDFS_URI);
+        builder.addPrefix(OntologyConstant.XSD_PREFIX, OntologyConstant.XSD_URI);
         builder.addPrefix(OntologyConstant.OM_PREFIX, OntologyConstant.OM_URI);
         builder.addPrefix(OntologyConstant.SKOS_PREFIX, OntologyConstant.SKOS_URI);
         builder.addPrefix(OntologyConstant.QUDT_PREFIX, OntologyConstant.QUDT_URI);
         builder.addPrefix(OntologyConstant.UBEMMP_PREFIX, OntologyConstant.UBEMMP_URI);
         builder.addPrefix(OntologyConstant.ONTOHEATNETWORK_PREFIX, OntologyConstant.ONTOHEATNETWORK_URI);
         builder.addPrefix(OntologyConstant.ONTOCAPE_PREFIX, OntologyConstant.ONTOCAPE_URI);
+        builder.addPrefix(OntologyConstant.PS_PREFIX, OntologyConstant.PS_URI);
     }
 
     /**

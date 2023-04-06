@@ -21,7 +21,7 @@ from forecasting.utils.tools import *
 from forecasting.kgutils.kgclient import KGClient
 from forecasting.kgutils.tsclient import TSClient
 
-from forecasting.utils.env_configs import DB_USER, DB_PASSWORD
+from forecasting.utils.default_configs import DB_USER, DB_PASSWORD
 
 
 # ----------------------------------------------------------------------------------
@@ -193,6 +193,26 @@ query_error10 = {"query": {
                 "horizon": 3
                 }}
 expected_error10 = 'Could not get time series for '
+
+# test HTTP connection config error
+query_error11 = {"query": {
+                "forecast_start_date": FORECAST_START_PROPHET,
+                "iri": GENERATED_HEAT_IRI,
+                "data_length": 168,
+                "horizon": 3,
+                "use_model_configuration": "DEFAULT",
+                "db_url": "renamed"
+                }}
+expected_error11 = 'Could not get time series for iri'
+query_error12 = {"query": {
+                "forecast_start_date": FORECAST_START_PROPHET,
+                "iri": GENERATED_HEAT_IRI,
+                "data_length": 168,
+                "horizon": 3,
+                "use_model_configuration": "DEFAULT",
+                "query_endpoint": "renamed"
+                }}
+expected_error12 = 'SPARQL query not successful.'
 
 
 # ----------------------------------------------------------------------------------

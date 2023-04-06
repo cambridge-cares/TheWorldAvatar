@@ -7,16 +7,18 @@
 
 from py4jps import agentlogging
 
-from .stack_gateway import stackClientsGw
-
 # Initialise logger instance (ensure consistent logger level`)
 logger = agentlogging.get_logger('prod')
 
 
 def retrieve_stack_settings(database, namespace):
     """
-        Reads settings from Stack clients (as global variables).
+        Reads settings from Stack clients
     """
+
+    # Import stack gateway module only when needed to avoid import issues/
+    # potentially unnecessary installation of py4jps StackClients resource
+    from .stack_gateway import stackClientsGw
 
     # Create module views to relevant Stack clients
     stackClientsView = stackClientsGw.createModuleView()

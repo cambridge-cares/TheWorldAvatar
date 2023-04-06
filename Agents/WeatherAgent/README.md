@@ -20,7 +20,7 @@ Create a file called docker-compose.yml using docker-compose.yml.template, then 
 
 The environment variables used by this container:
 1) STACK_NAME
-2) API_KEY (API key for https://openweathermap.org/api)
+2) API_KEY (API key for https://openweathermap.org/api, note that you need to enable OneCall API in your subscription)
 3) LAYERNAME
 4) DATABASE
 5) GEOSERVER_WORKSPACE
