@@ -13,13 +13,15 @@ from Marie.Util.Logging import MarieLogger
 
 class TransEScoreModel(nn.Module):
 
-    def __init__(self, device, model_name, for_training=False, dataset_dir=None, dim=20):
+    def __init__(self, device, model_name, for_training=False, dataset_dir=None, dim=20, tokenizer_name = "bert-base-cased"):
         super(TransEScoreModel, self).__init__()
         self.logger = MarieLogger()
         self.dim = dim
         self.dataset_dir = dataset_dir
         self.device = device
-        self.bert_with_reduction = TransERelPredictionModel(device=device, dataset_dir=self.dataset_dir, dim=self.dim)
+        self.bert_with_reduction = TransERelPredictionModel(device=device, dataset_dir=self.dataset_dir, dim=self.dim, tokenizer_name=tokenizer_name)
+
+
         self.bert_with_reduction = self.bert_with_reduction.to(self.device)
         self.bert_with_reduction.load_model(model_name)
         if for_training:

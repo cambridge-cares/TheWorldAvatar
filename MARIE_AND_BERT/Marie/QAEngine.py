@@ -28,8 +28,14 @@ class QAEngine:
         self.value_dictionary = self.file_loader.load_value_dict(dict_type=dict_type)
         # ===============================================================================================
         if embedding == "transe":
-            self.score_model = TransEScoreModel(device=self.device, model_name=self.model_name,
-                                                dataset_dir=self.dataset_dir, dim=dim)
+            try:
+                self.score_model = TransEScoreModel(device=self.device, model_name=self.model_name,
+                                                    dataset_dir=self.dataset_dir, dim=dim, tokenizer_name="bert-base-cased")
+            except RuntimeError:
+                self.score_model = TransEScoreModel(device=self.device, model_name=self.model_name,
+                                                    dataset_dir=self.dataset_dir, dim=dim,
+                                                    tokenizer_name="bert-base-uncased")
+
             self.score_model = self.score_model.to(self.device)
 
         '''Initialize tokenizer'''
