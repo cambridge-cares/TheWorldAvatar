@@ -124,7 +124,6 @@ class TransEA(nn.Module):
         #
         # self.attr_embedding.weight.data[:-1, :].div_(
         #     self.attr_embedding.weight.data[:-1, :].norm(p=1, dim=1, keepdim=True))
-
         dist_positive = self.distance(positive_triplets).to(self.device)
         # x2, as big as possible
         dist_negative = self.distance(negative_triplets).to(self.device)

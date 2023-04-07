@@ -20,7 +20,7 @@ class TransR(nn.Module):
     """
 
     def __init__(self, rel_dim, rel_num, ent_dim, ent_num, device="cpu", use_projection=False, alpha=0.1,
-                 margin=5, resume_training=False, dataset_path=None):
+                 margin=5, resume_training=False, dataset_path=None, enable_numerical = True):
         super(TransR, self).__init__()
         self.device = device
         print(f"========= Device used in TransR model {self.device} ==============")
@@ -28,6 +28,7 @@ class TransR(nn.Module):
         self.ent_num = ent_num
         self.rel_dim = rel_dim
         self.ent_dim = ent_dim
+        self.enable_numerical = enable_numerical
         self.dataset_path = dataset_path
 
         if not resume_training:
@@ -38,6 +39,7 @@ class TransR(nn.Module):
             self.bias_embedding = nn.Embedding(num_embeddings=self.rel_num, embedding_dim=1)
             self.bias_embedding.weight.data.uniform_(0, 1)
             self.proj_matrix = self._init_embedding(num=self.rel_num, dim=self.rel_dim * self.ent_dim).to(self.device)
+            xavier_uniform_(self.proj_matrix.weight.data)
 
         else:
 
@@ -68,8 +70,8 @@ class TransR(nn.Module):
     def _init_ent_embedding(self):
         ent_embedding = nn.Embedding(embedding_dim=self.ent_dim, num_embeddings=self.ent_num + 1,
                                      padding_idx=self.ent_num)
-        ent_embedding.weight.data.uniform_(-1, 1)
-        # xavier_uniform_(ent_embedding.weight.data)
+        # ent_embedding.weight.data.uniform_(-1, 1)
+        xavier_uniform_(ent_embedding.weight.data)
         return ent_embedding
 
     def _init_attr_embedding(self):
@@ -83,7 +85,8 @@ class TransR(nn.Module):
     def _init_rel_embedding(self):
         rel_embedding = nn.Embedding(embedding_dim=self.rel_dim, num_embeddings=self.rel_num + 1,
                                      padding_idx=self.rel_num)
-        rel_embedding.weight.data.uniform_(-1, 1)
+        # rel_embedding.weight.data.uniform_(-1, 1)
+        xavier_uniform_(rel_embedding.weight.data)
         #  rel_embedding.weight.data[:-1, :].div_(rel_embedding.weight.data[:-1, :].norm(p=1, dim=1, keepdim=True))
         return rel_embedding
 
@@ -103,7 +106,7 @@ class TransR(nn.Module):
         dist_pos = self.distance(pos_triples).to(self.device)
         dist_neg = self.distance(neg_triples).to(self.device)
         if mode == "non_numerical":
-            return self.loss(dist_pos, dist_neg).mean().to(self.device)
+            return self.loss(dist_pos, dist_neg).mean().to(self.device) # + self.regularization(dist_pos)
         else:
             numerical_loss = self.numerical_forward(
                 pos_triples.to(self.device)).to(self.device)  # numerical loss only requires pos triples
@@ -226,8 +229,6 @@ class TransR(nn.Module):
         e_h_idx = triples[0]
         r_idx = triples[1]
         e_t_idx = triples[2]
-        value = triples[3]
-
         # =============== prepare embeddings =======================
         e_h = normalize(self.ent_embedding(e_h_idx))
         e_t = normalize(self.ent_embedding(e_t_idx))
@@ -261,7 +262,10 @@ class TransR(nn.Module):
         # e_h = normalize(self.ent_embedding(e_h_idx)).to(self.device)
         # e_t = normalize(self.ent_embedding(e_t_idx)).to(self.device)
         e_h = self.ent_embedding(e_h_idx).to(self.device)
-        e_t = self.ent_embedding(e_t_idx).to(self.device)
+        try:
+            e_t = self.ent_embedding(e_t_idx).to(self.device)
+        except IndexError:
+            print("full set", triples)
         r = self.rel_embedding(r_idx).to(self.device)
         # ==========================================================
 

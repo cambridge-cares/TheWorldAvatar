@@ -10,19 +10,19 @@ from Marie.CandidateSelection.location import DATA_DIR
 
 class CrossGraphAlignmentModel(nn.Module):
 
-    def __init__(self, device):
+    def __init__(self, device, dim = 9):
         super(CrossGraphAlignmentModel, self).__init__()
         self.device = device
         self.bert = BertModel.from_pretrained('bert-base-uncased')
         # self.bert_reduction_layer = nn.Linear(768, 512)
-        self.bert_reduction_layer = nn.Linear(768, 5)
+        self.bert_reduction_layer = nn.Linear(768, dim)
         # self.bert_reduction_layer_2 = nn.Linear(512, 5)
         # self.bert_reduction_layer_3 = nn.Linear(256, 5)
         # self.bert_reduction_layer_4 = nn.Linear(128, 64)
         # self.bert_reduction_layer_5 = nn.Linear(64, 32)
         # self.bert_reduction_layer_6 = nn.Linear(32, 5)
-        self.domain_factor_layer = nn.Linear(5, 1)
-        self.domain_question_factor_layer = nn.Linear(5, 1)
+        self.domain_factor_layer = nn.Linear(dim, 1)
+        self.domain_question_factor_layer = nn.Linear(dim, 1)
         self.criterion = nn.MarginRankingLoss(margin=1, reduction='none').to(self.device)
         self.sigmoid = nn.Sigmoid()
         self.softmax = nn.Softmax()

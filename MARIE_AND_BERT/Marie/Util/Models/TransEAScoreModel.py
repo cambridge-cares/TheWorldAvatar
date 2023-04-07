@@ -268,9 +268,10 @@ class TransEAScoreModel(nn.Module):
         distance_B = torch.abs(y_b - linear_output_B)
         # distance = self.alpha * distance_R + self.alpha * distance_A + 8 * operator_loss + 0.4 * distance_B
         # distance = distance_R + distance_A + 10 * operator_loss + distance_B
-        distance = 200 * operator_loss
+        # distance = 200 * operator_loss
+        distance = operator_loss
         # distance = (1 - self.alpha) * distance_R + self.alpha * distance_A + self.alpha * operator_loss
-        distance_P = 2 * distance_R + 2 * distance_A + distance_B
+        distance_P = 5 * distance_R + 5 * distance_A + 0.1 * distance_B
         '''
         Update the loss function to do a calculation eh + r = et, where r is the output of linear_output ... 
         If the fine-tuning of the current thing fails 
