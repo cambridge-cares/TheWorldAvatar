@@ -19,3 +19,9 @@ class OntoKinReactionInterface():
         equations = request.get_equations()
 
         return equations
+
+if __name__ == "__main__":
+    my_ontokin = OntoKinReactionInterface("Reactions with H2 + O2")
+    rst = my_ontokin.run()
+    print(rst)
+

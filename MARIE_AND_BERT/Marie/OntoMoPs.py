@@ -24,9 +24,9 @@ if __name__ == "__main__":
     my_engine = OntoMoPsQAEngine(dataset_dir=dataset_dir, dataset_name=sub_ontology, sub_ontology=sub_ontology,
                                  ontology=ontology)
 
-    text = "List the MOPs with (3-pyramidal)8(2-bent)12(Cs) as the assembly model"
-    rst = my_engine.run(text)
-    print(rst)
+    # text = "List the MOPs with (3-pyramidal)8(2-bent)12(Cs) as the assembly model"
+    # rst = my_engine.run(text)
+    # print(rst)
 
     text = "MoPs with molecular weight more than 10"
     rst = my_engine.run(text)

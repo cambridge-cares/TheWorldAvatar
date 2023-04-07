@@ -17,18 +17,17 @@ from Marie.Util.location import TRAINING_DIR, DEPLOYMENT_DIR, DATA_DIR
 
 max_len = 12
 
-
 class TransERelPredictionModel(nn.Module):
 
     def __init__(self, device=torch.device("cpu"), for_training=False, dataset_dir="CrossGraph/pubchem", dim=20,
-                 mode="general"):
+                 mode="general", tokenizer_name="bert-base-uncased"):
         super(TransERelPredictionModel, self).__init__()
         self.mode = mode
         self.dim = dim
         self.dataset_dir = dataset_dir
         self.device = device
         # self.bert = BertModel.from_pretrained('bert-base-cased')
-        self.bert = BertModel.from_pretrained('bert-base-cased')
+        self.bert = BertModel.from_pretrained(tokenizer_name)
         self.dropout = nn.Dropout(0.1)
 
         if mode == "agent":
@@ -140,4 +139,3 @@ if __name__ == "__main__":
     _, tokenzied_question = nlp_tool.tokenize_question("heat capacity",
                                                        repeat_num=0)
     agent_emb, output_emb = my_model.predict(question=tokenzied_question)
-

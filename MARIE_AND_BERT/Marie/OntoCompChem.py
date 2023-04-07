@@ -152,5 +152,5 @@ class OntoCompChemEngine:
 # 3.
 if __name__ == '__main__':
     my_ontochemistry_engine = OntoCompChemEngine()
-    rst = my_ontochemistry_engine.run(question="what is co2's geometry")
+    rst = my_ontochemistry_engine.run(question="what is co2's geometry", mention="co2")
     print(rst)

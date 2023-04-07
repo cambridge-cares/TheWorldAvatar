@@ -148,7 +148,8 @@ class QAEngineNumerical:
             heads = self.all_heads_indices
         predicted_attr = self.score_model.get_attribute_prediction(self.input_dict.single_question_embedding)
         attr_batch = predicted_attr.repeat(len(heads), 1)
-        numerical_values, _ = self.score_model.get_numerical_prediction(heads, attr_batch) * self.numerical_scale_factor
+        numerical_values, _ = self.score_model.get_numerical_prediction(heads, attr_batch)
+        numerical_values = numerical_values * self.numerical_scale_factor
         if self.input_dict.numerical_operator == "larger":
             indices = (numerical_values > self.input_dict.numerical_value)
             indices = indices.nonzero().squeeze(1)
@@ -208,8 +209,11 @@ class QAEngineNumerical:
         # _, pred_p_idx = self.score_model.get_relation_prediction(self.input_dict.single_question_embedding)
 
         idx_to_replace = [23, 8, 12, 13, 18, 0]
-        self.input_dict.instance_label = self.input_dict.mention[2].lower()
-        self.input_dict.question = self.input_dict.question.lower().replace(self.input_dict.instance_label, "")
+        self.input_dict.instance_label = self.input_dict.mention[2]
+        if self.input_dict.instance_label:
+            self.input_dict.instance_label = self.input_dict.instance_label.lower()
+            self.input_dict.question = self.input_dict.question.lower().replace(self.input_dict.instance_label, "")
+
         scores_top_k = []
         targets_top_k = []
         prediction_batch, candidates, split_indices, head_entity_batch = self.prepare_multi_target_prediction_batch()
@@ -352,12 +356,12 @@ class QAEngineNumerical:
         # if the question doesn't contain any numerical value, it is is_numerical is false
         if type(mention) == type(()):
             # if the mention is a tuple, it contains both target and
-            has_target, has_instance_list = True, True
+            has_target, has_instance_list = mention[0], mention[1]
 
         self.input_dict.numerical_string = numerical_string
         self.input_dict.numerical_value = numerical_value
-
-        return is_numerical, has_target, has_target, numerical_string, numerical_value
+        return is_numerical, has_target, has_instance_list, numerical_string, numerical_value
+        # return is_numerical, has_target, has_target, numerical_string, numerical_value
 
     def find_answers(self):
         """
@@ -368,18 +372,23 @@ class QAEngineNumerical:
         # TODO: 1. put the mechanism for question answering sequence on top
         # TODO: 2. wrap question answer mechanism into functions
         mention = self.nel.get_mention(self.input_dict.question)
+        print(mention)
         self.input_dict.mention = mention
         self.input_dict.question = text_filtering(self.input_dict.question)
         _, tokenized_question = self.nlp.tokenize_question(question=self.input_dict.question, repeat_num=1)
         single_question_embedding = self.score_model.get_question_embedding(question=tokenized_question)
         self.input_dict.single_question_embedding = single_question_embedding
-
+        self.get_numerical_operator(tokenized_question=tokenized_question,
+                                    single_question_embedding=single_question_embedding)
         is_numerical, has_target, has_instance_list, numerical_string, numerical_value = \
             self.rule_based_question_classification()
         if has_target and has_instance_list:
             return self.answer_multi_target_question()
-        self.get_numerical_operator(tokenized_question=tokenized_question,
-                                    single_question_embedding=single_question_embedding)
+        else:
+            return self.answer_numerical_question()
+
+
+
 
         self.marie_logger.info(f"numerical operator: {self.input_dict.numerical_operator}")
 
