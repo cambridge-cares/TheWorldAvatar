@@ -41,6 +41,7 @@ else:
 
 DEPLOYMENT_DIR = os.path.join(DATA_DIR, 'Deployment')
 DICTIONARY_DIR = os.path.join(DATA_DIR, 'Dictionaries')
+EVALUATION_DIR = os.path.join(DATA_DIR, 'Evaluation')
 
 
 
@@ -54,5 +55,4 @@ PUBCHEM500_JSONL_PATH = os.path.join(ENTITY_LINKING_DATA_DIR, r'pubchem5000_trim
 # print('============= LOCATION CHECKLIST ===============')
 # print("JAVA_PATH", JAVA_PATH)
 # print("JAVA_DIR", JAVA_DIR)
-print(DATA_DIR)
 PRETRAINED_DIR = os.path.join(DATA_DIR, r'bert_pretrained')
