@@ -28,7 +28,7 @@ class TransERelPredictionModel(nn.Module):
         self.dataset_dir = dataset_dir
         self.device = device
         # self.bert = BertModel.from_pretrained('bert-base-cased')
-        self.bert = BertModel.from_pretrained('bert-base-uncased')
+        self.bert = BertModel.from_pretrained('bert-base-cased')
         self.dropout = nn.Dropout(0.1)
 
         if mode == "agent":

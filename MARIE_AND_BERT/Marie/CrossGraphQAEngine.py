@@ -55,6 +55,24 @@ class CrossGraphQAEngine:
         self.score_adjust_model.load_state_dict(torch.load(os.path.join(self.dataset_path,
                                                                         'cross_graph_model_with_wikidata'),
                                                            map_location=self.device))
+        self.init_engines()
+
+    def init_engines(self):
+        '''
+        Init all engines for each domain
+        '''
+        for domain, index in self.domain_encoding.items():
+            if domain == "pubchem":
+                self.engine_list[index] = PubChemQAEngine()
+            elif domain == "ontocompchem":
+                self.engine_list[index] = OntoCompChemEngine()
+            elif domain == "ontospecies":
+                self.engine_list[index] = OntoSpeciesQAEngine()
+            elif domain == "ontokin":
+                self.engine_list[index] = OntoKinQAEngine()
+            elif domain == "wikidata":
+                self.engine_list[index] = WikidataEngine()
+            print(f"Engine for {domain} created")
 
     def create_triple_for_prediction(self, question, score_list, domain_list, target_list):
         # try:
@@ -123,22 +141,8 @@ class CrossGraphQAEngine:
         if mention is not None:
             question = question.replace(mention, "")
 
-        def process_domain(domain, index, head=None):
+        def call_domain(domain, index, head=None):
             nonlocal score_list, label_list, target_list
-
-            if domain == "pubchem":
-                self.engine_list[index] = PubChemQAEngine()
-            elif domain == "ontocompchem":
-                self.engine_list[index] = OntoCompChemEngine()
-            elif domain == "ontospecies":
-                self.engine_list[index] = OntoSpeciesQAEngine()
-            elif domain == "ontokin":
-                self.engine_list[index] = OntoKinQAEngine()
-            elif domain == "wikidata":
-                self.engine_list[index] = WikidataEngine()
-
-            print(f"Engine for {domain} created")
-            
             engine = self.engine_list[index]
 
             print(f"======================== USING ENGINE {domain}============================")
@@ -166,7 +170,7 @@ class CrossGraphQAEngine:
                 head = heads[domain]
             else:
                 head = None
-            t = threading.Thread(target=process_domain, args=(domain, i, head))
+            t = threading.Thread(target=call_domain, args=(domain, i, head))
             threads.append(t)
             t.start()
 
