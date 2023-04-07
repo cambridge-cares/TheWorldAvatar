@@ -8,7 +8,7 @@ from CreateOntoCompChemEvaluationSet import CreateOntoCompChemEvaluationSet
 from CreateOntoSpeciesEvaluationSet import CreateOntoSpeciesEvaluationSet
 from CreatePubChemEvaluationSet import CreatePubChemEvaluationSet
 
-from Utils.location import DATA_DIR
+from Marie.Util.location import DATA_DIR
 
 
 def create_question(question_dict):

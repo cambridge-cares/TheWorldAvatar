@@ -8,7 +8,7 @@ import torch
 
 from Marie.Util.Models.TransEAScoreModel import TransEAScoreModel
 from Marie.Util.NHopExtractor import HopExtractor
-from Utils.location import DATA_DIR
+from Marie.Util.location import DATA_DIR
 from Marie.Util.CommonTools.FileLoader import FileLoader
 
 

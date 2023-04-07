@@ -5,7 +5,7 @@ import random
 import pandas as pd
 
 from Marie.Util.location import DICTIONARY_DIR
-from Utils.location import DATA_DIR
+from Marie.Util.location import DATA_DIR
 
 
 class CreateOntoCompChemEvaluationSet:
