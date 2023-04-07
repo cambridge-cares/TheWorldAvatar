@@ -1,7 +1,8 @@
 import sys
+
 sys.path.append("")
 import os
-import torch 
+import torch
 import pandas as pd
 import numpy as np
 from Marie.Util.location import DATA_DIR
@@ -11,35 +12,36 @@ from Marie.Util.AgentTools.agent_invoker import AgentInvoker
 from Marie.Util.Models.TransERelPredictionModel import TransERelPredictionModel
 from Marie.Util.CommonTools.NLPTools import NLPTools
 
+
 class QuestionAgentMatcher():
 
-    def __init__(self, question):
-        
-        #Use TransERelPredictionModel to obtain the embedding of the relation in the given question
+    def __init__(self, question, tokenizer_name="bert-base-uncased"):
+
+        # Use TransERelPredictionModel to obtain the embedding of the relation in the given question
         my_model = TransERelPredictionModel(device=torch.device("cpu"),
-                                        dataset_dir=os.path.join(DATA_DIR, "CrossGraph/agents"), dim=40,
-                                        mode="agent")
+                                            dataset_dir=os.path.join(DATA_DIR, "CrossGraph/agents"), dim=40,
+                                            mode="agent")
         my_model.load_model("bert_ontoagent")
-        nlp_tool = NLPTools(tokenizer_name = "bert-base-uncased")
+        nlp_tool = NLPTools(tokenizer_name=tokenizer_name)
         _, tokenzied_question = nlp_tool.tokenize_question(question=question, repeat_num=0)
         output_emb = my_model.predict(question=tokenzied_question)
         self.question_rel_embedding = output_emb.view(-1).tolist()
 
-        #List of all agents
+        # List of all agents
         self.agents = ['ontothermoagent', 'ontopceagent', 'chem1agent', 'chem2agent', 'chem3agent', 'NotAnAgent']
 
-        #Create the input-output configuration matrices for each agent
+        # Create the input-output configuration matrices for each agent
         self.agent_matrices = {}
         for agent in self.agents:
             matrix_generator = AgentMatrixGenerator(agent=agent)
             self.agent_matrices[agent] = matrix_generator.create_agent_matrices()
 
-        #Define the input embedding from ThermoAgent used by both PCE and ThermoAgent
+        # Define the input embedding from ThermoAgent used by both PCE and ThermoAgent
         # TODO: Removed hardcoded agent input after combining the embeddings of all the ontoagents.
         self.agent_input = "Species"
         agent_dataset_dir = os.path.join(DATA_DIR, "CrossGraph", "agents", "ontothermoagent")
         agent_ent_embedding = pd.read_csv(os.path.join(agent_dataset_dir, 'ent_embedding.tsv'), sep='\t',
-                                         header=None)
+                                          header=None)
         agent_file_loader = FileLoader(full_dataset_dir=agent_dataset_dir)
         agent_entity2idx, agent_idx2entity, agent_rel2idx, agent_idx2rel = agent_file_loader.load_index_files()
         self.question_entity_embedding = agent_ent_embedding.iloc[agent_entity2idx[self.agent_input]]
@@ -54,7 +56,7 @@ class QuestionAgentMatcher():
                 row_score = []
                 matrix = torch.Tensor(matrix)
                 for i in range(matrix.shape[0]):
-                    sim_scores=[]
+                    sim_scores = []
                     for j in range(question_matrix.shape[0]):
                         similarity = torch.nn.functional.cosine_similarity(matrix[i], question_matrix[j], dim=0).item()
                         if similarity < 0:
@@ -76,7 +78,8 @@ class QuestionAgentMatcher():
             return None, None
         else:
             return agent_result, agent_scores[agent_result][0]
-    
+
+
 if __name__ == '__main__':
     # agents = ['ontopceagent', 'ontothermoagent', 'chem1agent', 'chem2agent', 'chem3agent']
     # question = "What reaction produces H2 + OH"
@@ -86,6 +89,7 @@ if __name__ == '__main__':
     print("Output: ", output)
     print("Agent : ", agent)
 
-    if(agent != None):
-        my_invoker = AgentInvoker(agent=agent, output=output, species_iri="http://www.theworldavatar.com/kg/ontospecies/Species_8270caad-fec5-4331-9243-fb4e37edc10e")
+    if (agent != None):
+        my_invoker = AgentInvoker(agent=agent, output=output,
+                                  species_iri="http://www.theworldavatar.com/kg/ontospecies/Species_8270caad-fec5-4331-9243-fb4e37edc10e")
         print(my_invoker.result)
