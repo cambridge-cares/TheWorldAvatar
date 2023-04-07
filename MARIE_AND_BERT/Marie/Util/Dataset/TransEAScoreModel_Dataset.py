@@ -24,7 +24,7 @@ class Dataset(TorchDataset):
         self.dataset_dir = dataset_dir
         self.file_loader = FileLoader(os.path.join(DATA_DIR, dataset_dir))
         entity2idx, idx2entity, rel2idx, idx2rel = self.file_loader.load_index_files()
-        self.tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
+        self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
         self.df = df
         self.max_len = 12
         self.filter_words = ["###", "@@@", "&&&", "***", "%%%", "$$$"]
@@ -42,7 +42,8 @@ class Dataset(TorchDataset):
         self.bias_embedding = pd.read_csv(os.path.join(DATA_DIR, self.dataset_dir, 'bias_embedding.tsv'), sep='\t',
                                           header=None)
 
-        self.operator_dict = {"smaller": 0, "larger": 1, "none": 2}
+        # self.operator_dict = {"smaller": 0, "larger": 1, "none": 2}
+        self.operator_dict = {"smaller": 0, "larger": 1, "none": 2}   # , "about": 3}
 
         self.operators = Tensor([self.operator_dict[opr.strip()] for opr in self.df["numerical_operator"].tolist()]).to(
             torch.int64)

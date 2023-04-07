@@ -3,9 +3,9 @@ import pickle
 import random
 import time
 from random import choice
-import torch
-from tqdm import tqdm
 
+import numpy as np
+import torch
 from Marie.Util.location import DATA_DIR
 from Marie.Util.NHopExtractor import HopExtractor
 import pandas as pd
@@ -39,55 +39,57 @@ class ComplexDataset(torch.utils.data.Dataset):
         self.rel_num = len(self.relation2idx.keys())
         self.candidates = [e for e in self.entity2idx.keys()]
         self.triples_path = os.path.join(DATA_DIR, f'{data_folder}/triples-{mode}.json')
+        self.neg_sample_dict_path = os.path.join(DATA_DIR, f'{data_folder}/neg_sample_dict.json')
+        self.neg_sample_dict = json.loads(open(self.neg_sample_dict_path).read())
         if os.path.exists(self.triples_path):
-            # self.all_triples = json.loads(open(self.triples_path).read())
-            pass
+            self.all_triples = json.loads(open(self.triples_path).read())
         else:
-            print("creating the triples")
             self.all_triples = self.create_all_triples()
-            # with open(self.triples_path, 'w') as f:
-            # f.write(json.dumps(self.all_triples))
-            # f.close()
-            print("done creating the triple")
+            with open(self.triples_path, "w") as f:
+                f.write(json.dumps(self.all_triples))
+                f.close()
 
     def __len__(self):
         return len(self.all_triples)
 
     def create_fake_triple(self, s, p, o, mode="head"):
-        all_neighbours = self.hop_extractor.extract_neighbour_from_idx(s)
-        # all_neighbours = random.randint(0, self.ent_num - 1)
-        if all_neighbours is None:
-            return None
-        flag = True
-        while flag:
-            fake_idx = random.sample(all_neighbours, 1)
-            if mode == "head":
+        s_p_str = f'{s}_{p}'
+        fake_candidates = self.neg_sample_dict[s_p_str]
+        return fake_candidates
 
-                fake_triple = (fake_idx, p, o, -1)
-                triple_str = f'{fake_idx}_{p}_{o}'
-                flag = self.hop_extractor.check_triple_existence(triple_str)
-                if not flag:
-                    return fake_triple
+        # return random.sample(fake_candidates, min(self.neg_rate, len(fake_candidates)))
+        # all_neighbours = self.hop_extractor.extract_neighbour_from_idx(s)
+        # all_neighbours = random.randint(0, self.ent_num - 1)
+        # if all_neighbours is None:
+        #     return None
+        # flag = True
+        # while flag:
+        #     if mode == "head":
+        #         # fake_o = random.choice(all_neighbours)
+        #         # use random index instead ...
+        #         s_p_str = f'{s}_{p}'
+        #         return self.neg_sample_dict[s_p_str]
+        #         # fake_o = random.randint(0, self.ent_num)
+        #         # fake_triple = (s, p, fake_o, 0)
+        #         # triple_str = f'{s}_{p}_{fake_o}'
+        #         # flag = self.hop_extractor.check_triple_existence(triple_str)
+        #         # if not flag:
+        #         # return fake_triple
 
     def create_all_triples(self):
+        # create triples
         triples = []
-        for idx, row in tqdm(self.df.iterrows()):
+        for idx, row in self.df.iterrows():
+            print(f"{idx} out of {len(self.df)}")
             s = self.entity2idx[row[0]]
             p = self.relation2idx[row[1]]
             o = self.entity2idx[row[2]]
             true_triple = (s, p, o, 1)
-            for i in range(self.neg_rate):
-                fake_triple = self.create_fake_triple(s, p, o, mode="tail")
-                if fake_triple is not None:
-                    triples.append(fake_triple)
-                    triples.append(true_triple)
-
-            for i in range(self.neg_rate):
-                fake_triple = self.create_fake_triple(s, p, o, mode="head")
-                if fake_triple is not None:
-                    triples.append(fake_triple)
-                    triples.append(true_triple)
-
+            fake_tails = self.create_fake_triple(s, p, o, mode="head")
+            for fake_tail in fake_tails:
+                fake_triple = (s, p, fake_tail, 0)
+                triples.append(fake_triple)
+                triples.append(true_triple)
         return triples
 
     def __getitem__(self, idx):
