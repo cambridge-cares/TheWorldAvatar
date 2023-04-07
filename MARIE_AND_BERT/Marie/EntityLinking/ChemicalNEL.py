@@ -54,7 +54,7 @@ class ChemicalNEL:
 
         self.ner = BertNEL()
         self.translator = Translator(
-            modelpath=os.path.join(ENTITY_LINKING_DATA_DIR, "SMILES_NER_V8_combined_cased_smiles.bin"))
+            modelpath=os.path.join(ENTITY_LINKING_DATA_DIR, "SMILES_NER_V10.bin"))
 
     def get_mention_type(self, mention):
         for type_key, label_list in self.type_dict.items():
@@ -122,9 +122,9 @@ class ChemicalNEL:
             mention_str = mention
             # TODO: rearrange the chemical formula
             rearranged_mention_str = rearrange_formula(mention_str)
-            print(rearranged_mention_str)
+            # print(rearranged_mention_str)
             confidence, key = self.fuzzy_search(rearranged_mention_str)[0]
-            print(f"the key is {key}")
+            # print(f"the key is {key}")
             return confidence, self.name_dict[key], str(mention_str), key
 
         except (IndexError, TypeError):
@@ -140,14 +140,17 @@ class ChemicalNEL:
 if __name__ == '__main__':
     cn = ChemicalNEL(dataset_name="OntoMoPs", enable_class_ner=True)
     START_TIME = time.time()
-    text = "List the MOPs with (3-pyramidal)8(2-bent)12(Cs) as the assembly model"
-    while text != "quit":
-        text = input("Question:")
-        mention = cn.get_mention(text)
-        print(mention)
-        print(type(mention))
-        print(type(mention) == type(()))
-
+    text = "MoPs with molecular weight more than 10"
+    mention = cn.get_mention(text)
+    print(mention)
+    print("---------------")
+    # text = "List the MOPs with (3-pyramidal)8(2-bent)12(Cs) as the assembly model"
+    # while text != "quit":
+    #     text = input("Question:")
+    #     mention = cn.get_mention(text)
+    #     print(mention)
+    #     print(type(mention))
+    #     print(type(mention) == type(()))
 
     # print("====================================================")
     # mention = cn.get_mention("what is the mass of [I-].[I-].[I-].[I-].[Po]")

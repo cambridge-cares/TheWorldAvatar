@@ -39,7 +39,7 @@ class Translator():
         smiles_string = None
         sentences = [entry['text'] for entry in raw_data]
         smiles = self.ner.extractSMILE(sentences)
-        print(smiles)
+        # print(smiles)
         for smile_candidates, entry in zip(smiles, raw_data):
             if len(smile_candidates) > 0:
                 for c in smile_candidates:
