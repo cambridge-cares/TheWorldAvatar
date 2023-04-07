@@ -35,7 +35,8 @@ class CrossGraphTrainer:
         self.model = CrossGraphAlignmentModel(device=self.device).to(self.device)
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
         self.scheduler = ExponentialLR(self.optimizer, gamma=self.gamma)
-
+        # print(df["true_domain"])
+        # df["true_domain"].apply(eval)
         # df_train, df_test = np.split(df.sample(frac=1, random_state=11), [int(.8 * len(df))])
         df_train = df
         df_test = df.sample(frac=1)
@@ -135,14 +136,14 @@ class CrossGraphTrainer:
         print(f"total test outrank rate {total_test_outrank_rate}")
 
     def save_model(self):
-        model_path = os.path.join(self.dataset_path, 'cross_graph_model_with_wikidata')
+        model_path = os.path.join(self.dataset_path, 'cross_graph_model_with_all_9')
         print(' - Saving the scoring model')
         torch.save(self.model.state_dict(), model_path)
 
 
 if __name__ == '__main__':
     dataset_path = os.path.join(DATA_DIR, 'CrossGraph')
-    df = pd.read_csv(os.path.join(dataset_path, 'cross_graph_alignment_training.tsv'), sep='\t',
+    df = pd.read_csv(os.path.join(dataset_path, 'cross_graph_alignment_training_updated.tsv'), sep='\t',
                      index_col=None)
     # df.columns = ["question", "true_score", "true_domain"]
     my_cross_graph_trainer = CrossGraphTrainer(df, dataset_path=dataset_path)

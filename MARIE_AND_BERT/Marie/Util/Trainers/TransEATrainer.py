@@ -1,6 +1,7 @@
 import json
 import os, sys
-
+sys.path.append('')
+sys.path.append('../')
 sys.path.append('../../')
 sys.path.append("../../..")
 import torch
@@ -12,7 +13,8 @@ from Marie.Util.Dataset.TransEA_Dataset import Dataset
 from Marie.Util.Models.TransEA import TransEA
 from Marie.Util.NHopExtractor import HopExtractor
 
-from Utils.location import DATA_DIR
+from Marie.Util.location import DATA_DIR
+from Marie.Util.location import EVALUATION_DIR
 
 
 class TransEATrainer:
@@ -23,7 +25,7 @@ class TransEATrainer:
     """
 
     def __init__(self, dataset_path, dataset_name, dim, epoch_num, learning_rate=1.0, gamma=1.0, batch_size=128,
-                 test_step=100, alpha=0.1, resume_training=True):
+                 test_step=100, alpha=0.1, resume_training=True, enable_numerical=False):
         self.dataset_path = dataset_path
         self.dataset_name = dataset_name
         self.dim = dim
@@ -34,6 +36,7 @@ class TransEATrainer:
         self.gamma = gamma
         self.step = 0
         self.alpha = alpha
+        self.enable_numerical = enable_numerical
 
         train_triplets = [line.split('\t') for line in
                           open(os.path.join(DATA_DIR, self.dataset_path,
@@ -61,20 +64,6 @@ class TransEATrainer:
                                           dataset_name=self.dataset_name)
 
     def get_train_data(self):
-        train_triplets_numerical = [line.split('\t') for line in
-                                    open(os.path.join(DATA_DIR, self.dataset_path,
-                                                      f'{self.dataset_name}_numerical-train.txt')).read().splitlines()]
-
-        test_triplets_numerical = [line.split('\t') for line in
-                                   open(os.path.join(DATA_DIR, self.dataset_path,
-                                                     f'{self.dataset_name}_numerical-test.txt')).read().splitlines()]
-
-        train_numerical_set = Dataset(train_triplets_numerical, dataset_path=self.dataset_path, is_numerical=True)
-        test_numerical_set = Dataset(test_triplets_numerical, dataset_path=self.dataset_path, is_numerical=True)
-        train_numerical_dataloader = torch.utils.data.DataLoader(train_numerical_set, batch_size=self.batch_size,
-                                                                 shuffle=True)
-        test_numerical_dataloader = torch.utils.data.DataLoader(test_numerical_set, batch_size=self.batch_size,
-                                                                shuffle=True)
         # wikidata_single_full_numerical-train
         train_triplets_non_numerical = [line.split('\t') for line in
                                         open(os.path.join(DATA_DIR, self.dataset_path,
@@ -84,18 +73,34 @@ class TransEATrainer:
                                        open(os.path.join(DATA_DIR, self.dataset_path,
                                                          f'{self.dataset_name}-test.txt')).read().splitlines()]
 
-        train_non_numerical_set = Dataset(train_triplets_non_numerical, dataset_path=self.dataset_path,
+        train_non_numerical_set = Dataset(train_triplets_non_numerical, dataset_path=self.dataset_path, dataset_name= self.dataset_name,
                                           is_numerical=False)
-        test_non_numerical_set = Dataset(test_triplets_non_numerical, dataset_path=self.dataset_path,
+        test_non_numerical_set = Dataset(test_triplets_non_numerical, dataset_path=self.dataset_path, dataset_name= self.dataset_name,
                                          is_numerical=False)
         train_non_numerical_dataloader = torch.utils.data.DataLoader(train_non_numerical_set,
                                                                      batch_size=self.batch_size,
                                                                      shuffle=True)
         test_non_numerical_dataloader = torch.utils.data.DataLoader(test_non_numerical_set, batch_size=self.batch_size,
                                                                     shuffle=True)
+        if self.enable_numerical:
+            train_triplets_numerical = [line.split('\t') for line in
+                                        open(os.path.join(DATA_DIR, self.dataset_path,
+                                                          f'{self.dataset_name}_numerical-train.txt')).read().splitlines()]
 
-        return train_numerical_dataloader, train_non_numerical_dataloader, \
-               test_numerical_dataloader, test_non_numerical_dataloader
+            test_triplets_numerical = [line.split('\t') for line in
+                                       open(os.path.join(DATA_DIR, self.dataset_path,
+                                                         f'{self.dataset_name}_numerical-test.txt')).read().splitlines()]
+
+            train_numerical_set = Dataset(train_triplets_numerical, dataset_path=self.dataset_path, is_numerical=True)
+            test_numerical_set = Dataset(test_triplets_numerical, dataset_path=self.dataset_path, is_numerical=True)
+            train_numerical_dataloader = torch.utils.data.DataLoader(train_numerical_set, batch_size=self.batch_size,
+                                                                     shuffle=True)
+            test_numerical_dataloader = torch.utils.data.DataLoader(test_numerical_set, batch_size=self.batch_size,
+                                                                    shuffle=True)
+            return train_numerical_dataloader, train_non_numerical_dataloader, \
+                   test_numerical_dataloader, test_non_numerical_dataloader
+        else:
+            return train_non_numerical_dataloader, test_non_numerical_dataloader
 
     def hit_at_k(self, predictions, ground_truth_idx, k: int = 10, largest=False):
         k = min(k, len(predictions))
@@ -191,8 +196,11 @@ class TransEATrainer:
         self.write_embeddings(self.model.bias, "bias_embedding")
 
     def run(self):
-        train_numerical_dataloader, train_non_numerical_dataloader, \
-        test_numerical_dataloader, test_non_numerical_dataloader = self.get_train_data()
+        if self.enable_numerical:
+            train_numerical_dataloader, train_non_numerical_dataloader, \
+            test_numerical_dataloader, test_non_numerical_dataloader = self.get_train_data()
+        else:
+            train_non_numerical_dataloader, test_non_numerical_dataloader= self.get_train_data()
         with tqdm(total=self.epoch_num, unit=' epoch') as tepoch:
 
             # train numerical datasets first
@@ -209,20 +217,22 @@ class TransEATrainer:
                     self.optimizer.step()
                     self.step += 1
 
-                for pos_triples, neg_triples, numerical_list in train_numerical_dataloader:
-                    self.optimizer.zero_grad()
-                    loss = self.model(positive_triplets=pos_triples, negative_triplets=neg_triples,
-                                      numerical_list=numerical_list, is_numerical=True)
-                    loss.backward()
-                    total_loss_train += loss.mean().item()
-                    self.optimizer.step()
-                    self.step += 1
+                if self.enable_numerical:
+                    for pos_triples, neg_triples, numerical_list in train_numerical_dataloader:
+                        self.optimizer.zero_grad()
+                        loss = self.model(positive_triplets=pos_triples, negative_triplets=neg_triples,
+                                          numerical_list=numerical_list, is_numerical=True)
+                        loss.backward()
+                        total_loss_train += loss.mean().item()
+                        self.optimizer.step()
+                        self.step += 1
 
                 if (epoch + 1) % 500 == 0:
                     self.scheduler.step()
 
                 if (epoch + 1) % self.test_step == 0:
-                    self.evaluate(test_numerical_dataloader, is_numerical=True)
+                    if self.enable_numerical:
+                        self.evaluate(test_numerical_dataloader, is_numerical=True)
                     self.evaluate(test_non_numerical_dataloader, is_numerical=False)
                     print(f"Learning rate changed to {self.scheduler.get_lr()}")
                     print("Exporting embedding")
@@ -246,8 +256,9 @@ if __name__ == "__main__":
     print(f"lr: {learning_rate}")
     print(f"dim: {dim}")
     print(f"batch size: {batch_size}")
-    trainer = TransEATrainer(dataset_path="CrossGraph/OntoMoPs/numerical_with_implicit",
-                             dataset_name="numerical_with_implicit", dim=dim, epoch_num=epoch_num,
+    ontology = "base_full_no_pref_selected_role_limited_100"
+    trainer = TransEATrainer(dataset_path=os.path.join(EVALUATION_DIR, "ontospecies_inference", ontology),
+                             dataset_name=ontology, dim=dim, epoch_num=epoch_num,
                              learning_rate=learning_rate, batch_size=batch_size, gamma=gamma, test_step=test_step,
                              alpha=alpha, resume_training=False)
     print("Starting the training")
