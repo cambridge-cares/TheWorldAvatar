@@ -2,7 +2,7 @@ import os
 import sys
 import random
 
-sys.path.append("..")
+sys.path.append("../..")
 import json
 import time
 
@@ -32,7 +32,8 @@ class WikiDataReader:
 
         self.dataset_dir = os.path.join(DATA_DIR, 'CrossGraph/wikidata')
         self.dictionary_dir = os.path.join(DATA_DIR, 'Dictionaries/wikidata')
-        self.collected_species = load_file(file_dir=self.dataset_dir, file_name='log', mode='list')
+        # self.collected_species = load_file(file_dir=self.dataset_dir, file_name='log', mode='list')
+        self.collected_species = []
         self.unique_relations = load_file(file_dir=self.dataset_dir, file_name='unique_relations.json', mode='list')
 
         self.name_list = load_file(file_dir=self.dictionary_dir, file_name="name_list.json", mode='list')
@@ -42,7 +43,8 @@ class WikiDataReader:
         # self.df = pd.read_csv(os.path.join(self.dataset_dir, "wikidata-train.txt"),
         #                       header=None, index_col=None, sep='\t')
         # self.triples = list(self.df.itertuples(index=False))
-        self.value_dict = load_file(file_dir=self.dataset_dir, file_name="wikidata_value_dict.json", mode='dict')
+        # self.value_dict = load_file(file_dir=self.dataset_dir, file_name="wikidata_value_dict.json", mode='dict')
+        self.value_dict = {}
         self.repeated_hash = load_file(file_dir=self.dataset_dir, file_name="repeated_hash.json", mode='list')
         self.failed_species = []
 

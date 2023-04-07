@@ -32,7 +32,7 @@ class OntoChemistryReader:
     """
 
     def __init__(self):
-        self.dataset_path = os.path.join(DATA_DIR, 'CrossGraph')
+        self.dataset_path = os.path.join(DATA_DIR, '')
         self.dataset_name = "ontospecies"
         self.triples = pd.read_csv(os.path.join(self.dataset_path, self.dataset_name, f'{self.dataset_name}-train.txt')
                                    , sep='\t', header=None)

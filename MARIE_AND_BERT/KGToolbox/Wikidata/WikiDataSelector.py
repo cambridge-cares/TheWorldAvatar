@@ -18,7 +18,9 @@ for line in wikidata_triples:
     if l <= 7:
         selected_lines = selected_lines + line
 
-with open(os.path.join(DATA_DIR, 'CrossGraph/wikidata/wikidata-train.txt'), 'w') as f:
+ontology_name = "wikidata_cs"
+
+with open(os.path.join(DATA_DIR, f'CrossGraph/{ontology_name}/{ontology_name}-train.txt'), 'w') as f:
     f.write(selected_lines)
     f.close()
 

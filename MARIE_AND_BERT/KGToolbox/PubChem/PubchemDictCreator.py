@@ -14,7 +14,7 @@ from Marie.Util.location import TRAINING_DIR, DATA_DIR
 def add_missing_cid():
     new_names = []
     new_dict = {}
-    missing_cid_list = json.loads(open(os.path.join(DATA_DIR, 'CrossGraph', 'missing_cid_list.json')).read())
+    missing_cid_list = json.loads(open(os.path.join(DATA_DIR, '../CrossGraph', 'missing_cid_list.json')).read())
     for cid in missing_cid_list:
         for key in get_info_from_pubchem(cid=cid):
             if key is not None:

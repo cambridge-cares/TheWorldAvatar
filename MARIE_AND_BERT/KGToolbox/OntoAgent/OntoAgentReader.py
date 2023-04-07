@@ -5,17 +5,17 @@ import sys
 import json
 from sklearn.model_selection import train_test_split
 sys.path.append("")
-from KGToolbox.CreateNegSamplingDictionary import NegSamplingCreator
+from KGToolbox.Tools.CreateNegSamplingDictionary import NegSamplingCreator
 from Marie.CandidateSelection.location import DATA_DIR
-from Marie.Util.CommonTools.FileLoader import FileLoader
 from Marie.Util.NHopExtractor import HopExtractor
-from KGToolbox import MakeIndex
+from KGToolbox.Tools import MakeIndex
+
 
 class OntoAgentReader:
 
     def __init__(self, agent, qualifier_exists, namespace):
         self.agent = agent
-        self.full_dataset_dir = os.path.join(DATA_DIR, "CrossGraph", self.agent)
+        self.full_dataset_dir = os.path.join(DATA_DIR, "../CrossGraph", self.agent)
         self.qualifier = qualifier_exists
         self.namespace=namespace
 

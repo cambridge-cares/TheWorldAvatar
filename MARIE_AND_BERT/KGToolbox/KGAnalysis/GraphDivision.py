@@ -64,8 +64,6 @@ class GraphDivider:
 
         # pickle.dump(self.graph, open(self.graph_path, 'wb'))
 
-
-
         return unique_reactions
 
     """
@@ -109,12 +107,17 @@ class GraphDivider:
         reaction_species_mapping = {}
         unique_species = []
         counter = 0
+
+        s_r_properties = ["isReactant", "isProduct"]
+        r_s_properties = ["hasReactant", "hasProduct"]
+
         for triple in self.triples:
             counter += 1
             print(f"{counter} out of {len(self.triples)}")
             s, p, o = [e.strip() for e in triple.split("\t")]
-            # if s not in unique_species:
-            unique_species.append(s)
+            if p in s_r_properties:
+                # if s not in unique_species:
+                unique_species.append(s)
         unique_species = list(set(unique_species))
         selected_species = unique_species
         # selected_species = random.sample(unique_species, 1000)
@@ -126,18 +129,21 @@ class GraphDivider:
             s, p, o = [e.strip() for e in triple.split("\t")]
             s_idx = self.entity2idx[s]
             o_idx = self.entity2idx[o]
-            if o_idx in reaction_species_mapping:
-                reaction_species_mapping[o_idx].append(s_idx)
-                reaction_species_mapping[o_idx] = list(set(reaction_species_mapping[o_idx]))
-            else:
-                reaction_species_mapping[o_idx] = [s_idx]
-        with open(os.path.join(self.full_dataset_dir, "reaction_species_mapping.json"), "w") as f:
-            f.write(json.dumps(reaction_species_mapping))
-            f.close()
-        with open(os.path.join(self.full_dataset_dir, "reaction_idx_list.json"), "w") as f:
-            f.write(json.dumps(list(reaction_species_mapping.keys())))
-            f.close()
+            if p in s_r_properties:
+                if o_idx in reaction_species_mapping:
+                    reaction_species_mapping[o_idx].append(s_idx)
+                    reaction_species_mapping[o_idx] = list(set(reaction_species_mapping[o_idx]))
+                else:
+                    reaction_species_mapping[o_idx] = [s_idx]
 
+        return reaction_species_mapping
+
+        # with open(os.path.join(self.full_dataset_dir, "reaction_species_mapping_clean.json"), "w") as f:
+        #     f.write(json.dumps(reaction_species_mapping))
+        #     f.close()
+        # with open(os.path.join(self.full_dataset_dir, "reaction_list_clean.json"), "w") as f:
+        #     f.write(json.dumps(list(reaction_species_mapping.keys())))
+        #     f.close()
 
     def find_subgraphs(self):
         idx_list = list(self.idx2entity.keys())

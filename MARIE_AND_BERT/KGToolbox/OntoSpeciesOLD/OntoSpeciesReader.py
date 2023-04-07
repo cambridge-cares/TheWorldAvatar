@@ -15,7 +15,7 @@ class OntoSpeciesReader:
 
     def __init__(self):
         self.all_species_iri = []
-        self.dataset_path = os.path.join(DATA_DIR, 'CrossGraph', 'ontospecies')
+        self.dataset_path = os.path.join(DATA_DIR, '../CrossGraph', 'ontospecies')
         self.p_iri_list = []
         self.p_iri_name = []
         self.p_label_list = []

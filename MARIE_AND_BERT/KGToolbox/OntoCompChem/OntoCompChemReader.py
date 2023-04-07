@@ -42,7 +42,8 @@ class OntoCompChemReader:
     def construct_value_dict(self):
         value_dict = {}
         counter = 0
-        all_calculation = json.loads(open(os.path.join(DATA_DIR, 'CrossGraph/ontocompchem' ,'ontocompchem_all_calculation.json')).read())
+        all_calculation = json.loads(
+            open(os.path.join(DATA_DIR, 'CrossGraph/ontocompchem', 'ontocompchem_all_calculation.json')).read())
         col_names = ['geomType', 'vibAnal', 'rotConsts', 'rotSym']
         for row in all_calculation['results']['bindings']:
             counter += 1
@@ -59,7 +60,7 @@ class OntoCompChemReader:
                             if not node.endswith("Value"):
                                 value_dict[node + "Value"] = row[col_n + 'Value']['value']
 
-        with open(os.path.join(DATA_DIR,'CrossGraph/ontocompchem' , 'ontocompchem_value_dict.json'), 'w') as f:
+        with open(os.path.join(DATA_DIR, 'CrossGraph/ontocompchem', 'ontocompchem_value_dict.json'), 'w') as f:
             f.write(json.dumps(value_dict))
             f.close()
 

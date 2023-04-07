@@ -48,5 +48,5 @@ def create_indexing(dataset_name='pubchem500', data_dir=None):
 
 
 if __name__ == '__main__':
-    ontology = "ontospecies_new/role_with_subclass"
-    create_indexing("role_with_subclass", data_dir= f'CrossGraph/{ontology}')
+    ontology = "fb15k"
+    create_indexing("fb15k", data_dir= f'CrossGraph/{ontology}')

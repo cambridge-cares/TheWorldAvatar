@@ -3,8 +3,8 @@ import os
 
 from SPARQLWrapper import SPARQLWrapper, JSON
 
-from KGToolbox import MakeIndex
-from KGToolbox.CreateNegSamplingDictionary import NegSamplingCreator
+from KGToolbox.Tools import MakeIndex
+from KGToolbox.Tools.CreateNegSamplingDictionary import NegSamplingCreator
 from Marie.Util.CommonTools.FileLoader import FileLoader
 from Marie.Util.NHopExtractor import HopExtractor
 from Marie.Util.location import DATA_DIR
@@ -27,16 +27,26 @@ class IntegratedTrainingFileCreator:
         self.endpoint_url = endpoint_url
         self.ontology = ontology
         self.sub_ontology = sub_ontology
-        self.full_dataset_dir = os.path.join(DATA_DIR, "CrossGraph", self.ontology)
+        self.full_dataset_dir = os.path.join(DATA_DIR, "../CrossGraph", self.ontology)
         self.sub_ontology_path = os.path.join(self.full_dataset_dir, self.sub_ontology)
         self.node_value_dict = node_value_dict
+        self.cached_query_path = os.path.join(self.full_dataset_dir, "cached_query.json")
+        if os.path.exists(self.cached_query_path):
+            self.cached_query = json.loads(open(self.cached_query_path).read())
+        else:
+            self.cached_query = {}
+
 
     def query_blazegraph(self, query):
-        print(f"Querying {self.endpoint_url}")
-        sparql = SPARQLWrapper(f"{self.endpoint_url}/namespace/" + self.sparql_namespace + "/sparql")
-        sparql.setQuery(query)
-        sparql.setReturnFormat(JSON)
-        results = sparql.query().convert()
+        # print(f"Querying {self.endpoint_url}")
+        if query not in self.cached_query:
+            sparql = SPARQLWrapper(f"{self.endpoint_url}/namespace/" + self.sparql_namespace + "/sparql")
+            sparql.setQuery(query)
+            sparql.setReturnFormat(JSON)
+            results = sparql.query().convert()
+            self.cached_query[query] = results
+        else:
+            results = self.cached_query[query]
         return results
 
     def filter_singular_nodes(self, triples):
@@ -82,6 +92,7 @@ class IntegratedTrainingFileCreator:
                                         other_class_frac=self.other_frac, same_class_frac=self.same_frac,
                                         node_value_dict=node_value_dict)
         my_creator.create_full_neg_dictionary()
+        return entity2idx
 
     def create_inference_candidate_dict(self, entity2idx, target_dictionary):
         """

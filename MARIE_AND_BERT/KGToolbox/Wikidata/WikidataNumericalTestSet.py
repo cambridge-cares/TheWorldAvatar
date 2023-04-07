@@ -25,10 +25,10 @@ for label, iri in name_dict.items():
 class WikidataNumericalTestSetCreator:
 
     def __init__(self):
-        triple_path = os.path.join(DATA_DIR, "CrossGraph", dataset_dir, "wikidata_numerical-train.txt")
-        numerical_triple_path = os.path.join(DATA_DIR, "CrossGraph", dataset_dir,
+        triple_path = os.path.join(DATA_DIR, "../CrossGraph", dataset_dir, "wikidata_numerical-train.txt")
+        numerical_triple_path = os.path.join(DATA_DIR, "../CrossGraph", dataset_dir,
                                              "wikidata_numerical_numerical-train.txt")
-        self.value_dictionary_path = os.path.join(DATA_DIR, "CrossGraph", dataset_dir,
+        self.value_dictionary_path = os.path.join(DATA_DIR, "../CrossGraph", dataset_dir,
                                                   f"wikidata_numerical_value_dict.json")
 
         self.value_dictionary = json.loads(open(self.value_dictionary_path).read())
@@ -50,7 +50,7 @@ class WikidataNumericalTestSetCreator:
         self.normal_question_template = "what is the %s of %s"
         self.numerical_question_template = "find all species with %s %s %s"
 
-        selected_p_path = os.path.join(DATA_DIR, "CrossGraph", dataset_dir,
+        selected_p_path = os.path.join(DATA_DIR, "../CrossGraph", dataset_dir,
                                        "selected_p.json")
 
         with open(selected_p_path, "w") as f:
@@ -123,7 +123,7 @@ class WikidataNumericalTestSetCreator:
             row = (question, None, p, full_filled_tails, "numerical", None, operator_type)
             all_.append(row)
 
-        numerical_test_set_path = os.path.join(DATA_DIR, "CrossGraph", dataset_dir,
+        numerical_test_set_path = os.path.join(DATA_DIR, "../CrossGraph", dataset_dir,
                                                "wikidata_numerical_test_set-numerical.json")
         with open(numerical_test_set_path, "w") as f:
             f.write(json.dumps(all_))
@@ -150,7 +150,7 @@ class WikidataNumericalTestSetCreator:
                     row = (question, s, p, o, "normal", species_label, None, None)
                     all_.append(row)
 
-        normal_test_set_path = os.path.join(DATA_DIR, "CrossGraph", dataset_dir,
+        normal_test_set_path = os.path.join(DATA_DIR, "../CrossGraph", dataset_dir,
                                             "wikidata_numerical_test_set-normal.json")
         print(len(all_))
         with open(normal_test_set_path, "w") as f:
