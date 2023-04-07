@@ -146,7 +146,7 @@ if __name__ == '__main__':
     start = time.time()
 
     print('start')
-    result = model.find_cid("what is the exact mass of C=C=C=C")
+    result = model.find_cid("what is the exact mass of C=C=C=C and CH4")
     print(result)
     print(time.time() - start)
 
