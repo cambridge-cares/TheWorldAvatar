@@ -40,7 +40,14 @@ class HopExtractor:
             self.three_hop_dict_index_path = os.path.join(DATA_DIR, self.dataset_dir, 'three_hop_dict_index')
         self.three_hop_dict_label = {}
         self.three_hop_dict_index = {}
-        self.parse_knowledge_graph()
+        if os.path.exists(self.three_hop_dict_label_path) and os.path.exists(self.three_hop_dict_index_path):
+            self.three_hop_dict_label = json.loads(open(self.three_hop_dict_label_path).read())
+            print(f"Loading 3 hop dictionary from {self.three_hop_dict_label_path}")
+            self.three_hop_dict_index = json.loads(open(self.three_hop_dict_index_path).read())
+            print(f"Loading 3 hop dictionary from {self.three_hop_dict_index_path}")
+
+        else:
+            self.parse_knowledge_graph()
         self.idx_triples = self.make_idx_triples()
         self.entity_labels = list(self.entity2idx.keys())
         self.relation_labels = list(self.relation2idx.keys())
@@ -64,61 +71,55 @@ class HopExtractor:
         :return: a dictionary mapping node name to a list of neighbours, a dictionary mapping index to a list of
         neighbour's indices
         """
-        if os.path.exists(self.three_hop_dict_label_path) and os.path.exists(self.three_hop_dict_index_path):
-            self.three_hop_dict_label = json.loads(open(self.three_hop_dict_label_path).read())
-            print(f"Loading 3 hop dictionary from {self.three_hop_dict_label_path}")
-            self.three_hop_dict_index = json.loads(open(self.three_hop_dict_index_path).read())
-            print(f"Loading 3 hop dictionary from {self.three_hop_dict_index_path}")
 
-        else:
-            print(f"Creating 3 hop dictionary.")
-            one_hop_dict = {}  # label to label dict
-            one_hop_idx_dict = {}  # idx to idx dict
-            three_hop_dict = {}  # label to label dict
-            three_hop_idx_dict = {}  # idx to idx dict
-            counter = 0
-            for entity in self.ent_labels:
-                if "Reaction" not in entity:
-                    entity_idx = self.entity2idx[entity]
-                    neighbour_rows = self.triples[self.triples.isin([entity]).any(axis=1)]
-                    # extract first neighbours
-                    neighbours = neighbour_rows.iloc[:, 0].values.tolist() + neighbour_rows.iloc[:, 2].values.tolist()
-                    if entity in neighbours:
-                        neighbours.remove(entity)
-                    neighbours_idx = [self.entity2idx[n] for n in neighbours]
-                    one_hop_dict[entity] = neighbours
-                    one_hop_idx_dict[entity_idx] = neighbours_idx
-                    counter += 1
-                    print(f"{counter} out of {len(self.ent_labels)}")
+        print(f"Creating 3 hop dictionary.")
+        one_hop_dict = {}  # label to label dict
+        one_hop_idx_dict = {}  # idx to idx dict
+        three_hop_dict = {}  # label to label dict
+        three_hop_idx_dict = {}  # idx to idx dict
+        counter = 0
+        for entity in self.ent_labels:
+            if "Reaction" not in entity:
+                entity_idx = self.entity2idx[entity]
+                neighbour_rows = self.triples[self.triples.isin([entity]).any(axis=1)]
+                # extract first neighbours
+                neighbours = neighbour_rows.iloc[:, 0].values.tolist() + neighbour_rows.iloc[:, 2].values.tolist()
+                if entity in neighbours:
+                    neighbours.remove(entity)
+                neighbours_idx = [self.entity2idx[n] for n in neighbours]
+                one_hop_dict[entity] = neighbours
+                one_hop_idx_dict[entity_idx] = neighbours_idx
+                counter += 1
+                print(f"{counter} out of {len(self.ent_labels)}")
 
-                # for entity in self.ent_labels:
-                #     entity_idx = self.entity2idx[entity]
-                #     first_neighbours = one_hop_dict[entity]
-                #     second_neighbours = []
-                #     third_neighbours = []
-                #     for first_neighbour in first_neighbours:
-                #         second_neighbours += one_hop_dict[first_neighbour]
-                #         for second_neighbour in second_neighbours:
-                #             third_neighbours += one_hop_dict[second_neighbour]
+            # for entity in self.ent_labels:
+            #     entity_idx = self.entity2idx[entity]
+            #     first_neighbours = one_hop_dict[entity]
+            #     second_neighbours = []
+            #     third_neighbours = []
+            #     for first_neighbour in first_neighbours:
+            #         second_neighbours += one_hop_dict[first_neighbour]
+            #         for second_neighbour in second_neighbours:
+            #             third_neighbours += one_hop_dict[second_neighbour]
 
-                    # three_hop_dict[entity] = list(set(first_neighbours + second_neighbours + third_neighbours))
-                    three_hop_dict[entity] = list(set(neighbours))
-                    if entity in three_hop_dict[entity]:
-                        three_hop_dict[entity].remove(entity)
-                    three_hop_idx_dict[entity_idx] = [self.entity2idx[e_idx] for e_idx in three_hop_dict[entity]]
+                # three_hop_dict[entity] = list(set(first_neighbours + second_neighbours + third_neighbours))
+                three_hop_dict[entity] = list(set(neighbours))
+                if entity in three_hop_dict[entity]:
+                    three_hop_dict[entity].remove(entity)
+                three_hop_idx_dict[entity_idx] = [self.entity2idx[e_idx] for e_idx in three_hop_dict[entity]]
 
-            self.three_hop_dict_label = three_hop_dict
-            self.three_hop_dict_index = three_hop_idx_dict
+        self.three_hop_dict_label = three_hop_dict
+        self.three_hop_dict_index = three_hop_idx_dict
 
-            with open(self.three_hop_dict_label_path, 'w') as f:
-                f.write(json.dumps(self.three_hop_dict_label))
-                f.close()
-            print(f'Writing label dictionary to {self.three_hop_dict_index_path}')
+        with open(self.three_hop_dict_label_path, 'w') as f:
+            f.write(json.dumps(self.three_hop_dict_label))
+            f.close()
+        print(f'Writing label dictionary to {self.three_hop_dict_index_path}')
 
-            with open(self.three_hop_dict_index_path, 'w') as f:
-                f.write(json.dumps(self.three_hop_dict_index))
-                f.close()
-            print(f'Writing index dictionary to {self.three_hop_dict_index_path}')
+        with open(self.three_hop_dict_index_path, 'w') as f:
+            f.write(json.dumps(self.three_hop_dict_index))
+            f.close()
+        print(f'Writing index dictionary to {self.three_hop_dict_index_path}')
 
     def extract_neighbour_from_idx(self, entity_idx):
         if str(entity_idx) in self.three_hop_dict_index:
@@ -129,9 +130,9 @@ class HopExtractor:
 
 if __name__ == "__main__":
     START_TIME = time.time()
-    _ontology = "ontospecies_new"
-    _dataset_dir = f"CrossGraph/{_ontology}/full"
+    _ontology = "fb15k"
+    _dataset_dir = f"CrossGraph/{_ontology}"
     my_extractor = HopExtractor(dataset_dir=os.path.join(DATA_DIR, _dataset_dir),
-                                dataset_name="full")
+                                dataset_name=_ontology)
 
     print(time.time() - START_TIME)
