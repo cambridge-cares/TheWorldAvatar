@@ -4,7 +4,7 @@ import pickle
 
 import torch
 
-from KGToolbox.IntegratedTrainingFileCreator import IntegratedTrainingFileCreator
+from KGToolbox.Tools.IntegratedTrainingFileCreator import IntegratedTrainingFileCreator
 from Marie.Util.CommonTools.FileLoader import FileLoader
 from Marie.Util.location import DATA_DIR
 

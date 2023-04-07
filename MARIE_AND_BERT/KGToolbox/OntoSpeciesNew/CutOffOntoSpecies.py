@@ -2,8 +2,7 @@ import json
 import os
 
 from SPARQLWrapper import SPARQLWrapper, JSON, N3
-
-from Marie.Util.location import DATA_DIR
+# from Marie.Util.location import DATA_DIR
 
 
 class CutOff:
@@ -48,13 +47,21 @@ class CutOff:
             f.close()
 
     def run(self):
+        # FULL_QUERY_TEST = """
+        # CONSTRUCT { ?s ?p ?o }
+        # WHERE { ?s  rdf:type  <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species> .
+        #         ?s  ?p ?o . }
+        # """
         FULL_QUERY_TEST = """
         CONSTRUCT { ?s ?p ?o } 
-        WHERE { ?s  rdf:type  <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species> . 
-                ?s  ?p ?o . }	
+        WHERE {  ?s  ?p ?o . }	
         """
         rst = self.query_blazegraph(FULL_QUERY_TEST)
-        with open(os.path.join(DATA_DIR, "CrossGraph/ontospecies_new/ontospecies.json"), "w") as f:
+        # with open(os.path.join(DATA_DIR, "CrossGraph/ontospecies_new/ontospecies.json"), "w") as f:
+        #     f.write(json.dumps(rst))
+        #     f.close()
+
+        with open("ontospecies.json", "w") as f:
             f.write(json.dumps(rst))
             f.close()
         # self.get_all_properties()

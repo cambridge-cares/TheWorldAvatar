@@ -3,18 +3,11 @@ import os
 
 import pandas as pd
 
-from KGToolbox.IntegratedTrainingFileCreator import IntegratedTrainingFileCreator
+from KGToolbox.Tools.IntegratedTrainingFileCreator import IntegratedTrainingFileCreator
+from KGToolbox.Tools.GeneralTools import split_iri
 from Marie.Util.location import DATA_DIR
 
 
-def split_iri(iri):
-    if "#" in iri:
-        return iri.split("#")[-1]
-
-    elif "/" in iri:
-        return iri.split("/")[-1]
-    else:
-        return iri
 
 
 class OntoMopsReader:
@@ -22,10 +15,10 @@ class OntoMopsReader:
     This class handles all tasks for creating the training set of OntoMoPs ontology
     """
 
-    def __init__(self):
+    def __init__(self, sub_ontology):
         # http://kg.cmclinnovations.com:81/blazegraph_geo/#query
         self.ontology = "OntoMoPs"
-        self.sub_ontology = "numerical_with_implicit"
+        self.sub_ontology = sub_ontology
         self.full_dataset_dir = os.path.join(DATA_DIR, "CrossGraph", self.ontology, self.sub_ontology)
 
         self.property_stop_list = ["Volume", "label", "imports", "hasNumericalValue",
@@ -241,5 +234,5 @@ class OntoMopsReader:
 
 
 if __name__ == "__main__":
-    my_reader = OntoMopsReader()
+    my_reader = OntoMopsReader(sub_ontology="full")
     my_reader.run()

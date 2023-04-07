@@ -3,7 +3,7 @@ import unittest
 
 sys.path.append("..")
 
-from KGToolbox.NodeInserter import NodeInserter
+from KGToolbox.CrossGraph.NodeInserter import NodeInserter
 
 
 class MyTestCase(unittest.TestCase):
