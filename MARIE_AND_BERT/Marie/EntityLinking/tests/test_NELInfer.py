@@ -1,5 +1,8 @@
+import os
 import unittest
 import sys
+
+from Marie.CandidateSelection.location import DATA_DIR
 
 sys.path.append("..")
 
@@ -7,18 +10,27 @@ from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 
 
 class MyTestCase(unittest.TestCase):
-    def test_nel(self):
-        cnl = ChemicalNEL()
-        rst_1 = cnl.find_cid('what is the molar mass of water')
-        print(rst_1)
-        rst_2 = cnl.find_cid('blah blah blah something')
-        print(rst_2)
-        rst_3 = cnl.find_cid('blah blah blah something C6 H12')
-        print(rst_3)
-        rst_4 = cnl.find_cid('blah blah blah something  H12C6')
-        print(rst_4)
-        rst_5 = cnl.find_cid('blah blah blah something H4C2O1')
-        print(rst_5)
+
+    def test_normal_nel(self):
+        nel = ChemicalNEL()
+        rst = nel.get_mention("What is the molecular weight of CH5")
+        assert rst == "CH5"
+        rst = nel.get_mention("Find the charge of benzene and CH5")
+        assert rst == "CH5"
+        rst = nel.get_mention("Find the conductive of benzene")
+        assert rst == "benzene"
+        rst = nel.get_mention("Find species with molecular weight more than 100 g/mol")
+        assert rst == "g/mol"
+
+
+    def test_multi_target_nel(self):
+        dataset_name = "OntoMoPs"
+
+        multi_target_nel = ChemicalNEL(dataset_name=dataset_name, enable_class_ner=True)
+        rst = multi_target_nel.get_mention("MoPs with molecular weight less than 100")
+        assert rst == ('mops', None, None)
+        rst = multi_target_nel.get_mention("List the MOPs with (3-pyramidal)8(2-bent)12(Cs) as the assembly model")
+        assert rst == ('mops', ['AssemblyModel_75b7fbdf-f0cb-4dc0-a260-da7cbce678c5'], '(3-pyramidal)8(2-bent)12(Cs)')
 
 
 if __name__ == '__main__':
