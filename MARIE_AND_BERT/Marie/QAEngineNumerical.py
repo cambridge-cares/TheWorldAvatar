@@ -14,11 +14,38 @@ from Marie.Util.CommonTools.FileLoader import FileLoader
 from Marie.Util.location import DATA_DIR
 
 
+def text_filtering(question):
+    # question = question.replace("(", "").replace(")", "")
+    stop_words = ["find", "all", "species", "with", "what", "is", "the"]
+    question_tokens = [token for token in question.split(" ") if token not in stop_words]
+    question = " ".join(question_tokens)
+    return question
+
+
+class InputDict:
+
+    def __init__(self):
+        self.question, self.target, self.instance_list, self.mention = None, None, None, None
+        self.single_question_embedding, self.pred_idx, self.numerical_operator = None, None, None
+        self.instance_label = None
+        self.numerical_string = ""
+        self.numerical_value = None
+
+
+class TestData:
+    def __init__(self):
+        self.true_head, self.true_rel, self.true_tail_list, self.true_mention = None, None, None, None
+
+
 class QAEngineNumerical:
     def __init__(self, dataset_dir, dataset_name, embedding="transe", dim=20, dict_type="json", largest=False,
                  test=False, operator_dict=None, value_dict_name="wikidata_numerical_value_new.json",
-                 seperated_model=False, mode= "transe"):
+                 seperated_model=False, mode="transe", enable_class_ner=False, ontology=None, operator_dim=3, numerical_scale_factor = 1.0):
+        self.input_dict = InputDict()
+        self.test_dict = TestData()
         self.mode = mode
+        self.numerical_scale_factor = numerical_scale_factor
+        self.enable_class_ner = enable_class_ner
         self.marie_logger = MarieLogger()
         self.test = test
         self.seperated_model = seperated_model
@@ -41,16 +68,21 @@ class QAEngineNumerical:
                                                                  file_name=value_dict_name)
         # ===============================================================================================
         self.operator_dict = operator_dict
-        self.nel = ChemicalNEL(dataset_name=dataset_name)
+        self.operator_dim = len(self.operator_dict)
+        if self.enable_class_ner:
+            self.nel = ChemicalNEL(dataset_name=ontology, enable_class_ner=enable_class_ner)
+        else:
+            self.nel = ChemicalNEL(dataset_name=dataset_name, enable_class_ner=enable_class_ner)
         self.nlp = NLPTools()
         self.o_p_dict = FileLoader.create_o_p_dict(self.triples)
         if embedding == "transe":
             self.score_model = TransEAScoreModel(device=self.device,
-                                                 dataset_dir=self.dataset_dir, dim=dim)
+                                                 dataset_dir=self.dataset_dir, dim=dim, output_dim=self.operator_dim)
             self.score_model = self.score_model.to(self.device)
             if self.seperated_model:
                 self.operator_model = TransEAScoreModel(device=self.device,
-                                                        dataset_dir=self.dataset_dir, dim=dim)
+                                                        dataset_dir=self.dataset_dir, dim=dim,
+                                                        output_dim=self.operator_dim)
                 self.operator_model.load_model(f"bert_{self.dataset_name}_operator")
                 self.score_model.load_model(f"bert_{self.dataset_name}_predict")
 
@@ -58,6 +90,19 @@ class QAEngineNumerical:
                 self.score_model.load_model(f"bert_{self.dataset_name}")
 
         '''Initialize tokenizer'''
+
+    def get_numerical_operator(self, tokenized_question, single_question_embedding):
+        # ====================================== get numerical operator ====================================
+        if self.seperated_model:
+            single_question_embedding_operator = self.operator_model.get_question_embedding(question=tokenized_question)
+            numerical_operator = self.operator_model.get_numerical_operator(
+                single_question_embedding_operator)
+            self.input_dict.numerical_operator = numerical_operator
+        else:
+            numerical_operator = self.score_model.get_numerical_operator(single_question_embedding)
+        predicted_operator_idx = torch.argmax(numerical_operator).item()
+        numerical_operator = self.operator_dict[predicted_operator_idx]
+        self.input_dict.numerical_operator = numerical_operator
 
     def value_lookup(self, node):
         if node in self.value_dictionary:
@@ -71,8 +116,6 @@ class QAEngineNumerical:
         :param heads:
         :return: the rel embedding predicted, the attr embedding predicted, the numerical operator
         """
-        # TODO: cache all the possible triples ...
-
         heads_batch = []
         tails_batch = []
         split_indices = []
@@ -80,7 +123,8 @@ class QAEngineNumerical:
         for head in heads:
             # find the neighbours of this head
             # append the neighbours to tail_batch
-            neighbours = self.subgraph_extractor_numerical.extract_neighbour_from_idx(head)
+            neighbours = self.subgraph_extractor.extract_neighbour_from_idx(head)
+            # neighbours = self.subgraph_extractor_numerical.extract_neighbour_from_idx(head)
             heads_batch += [head] * len(neighbours)
             tails_batch += neighbours
             split_indices.append(len(tails_batch))
@@ -89,33 +133,35 @@ class QAEngineNumerical:
                             'e_t': torch.LongTensor(tails_batch), 'single_question': question_embedding}
         self.marie_logger.info(f" - Prediction batch is prepared")
 
-        print("tails batch", tails_batch)
+        # tail_labels = [self.idx2entity[t] for t in tails_batch]
+        # head_labels = [self.idx2entity[h] for h in heads_batch]
 
         return prediction_batch, torch.LongTensor(tails_batch), split_indices[:-1], torch.LongTensor(heads_batch)
 
-    def filter_heads_by_numerical(self, numerical_operator, question_embedding, numerical_value):
+    def filter_heads_by_numerical(self):
         """
-        :param numerical_operator: numerical operator (e.g. larger, smaller, near, none) classified by score model
-        :param question_embedding: question embedding (e_q) predicted by score model
-        :param numerical_value:  the numerical value identified by regular expression
         :return: heads that fulfill the numerical condition given
         """
-        heads = self.all_heads_indices["mops"]
-        predicted_attr = self.score_model.get_attribute_prediction(question_embedding)
+        if self.enable_class_ner:
+            heads = self.all_heads_indices["mops"]
+        else:
+            heads = self.all_heads_indices
+        predicted_attr = self.score_model.get_attribute_prediction(self.input_dict.single_question_embedding)
         attr_batch = predicted_attr.repeat(len(heads), 1)
-        numerical_values, _ = self.score_model.get_numerical_prediction(heads, attr_batch)
-        if numerical_operator == "larger":
-            indices = (numerical_values > numerical_value)
+        numerical_values, _ = self.score_model.get_numerical_prediction(heads, attr_batch) * self.numerical_scale_factor
+        if self.input_dict.numerical_operator == "larger":
+            indices = (numerical_values > self.input_dict.numerical_value)
             indices = indices.nonzero().squeeze(1)
-        elif numerical_operator == "smaller":
-            indices = (numerical_values < numerical_value)
+        elif self.input_dict.numerical_operator == "smaller":
+            indices = (numerical_values < self.input_dict.numerical_value)
             indices = indices.nonzero().squeeze(1)
-        elif numerical_operator == "about":
-            indices = torch.abs(numerical_values - numerical_value)
-            _, indices = torch.topk(indices, k=min(10, len(indices)), largest=False)
+        elif self.input_dict.numerical_operator == "about":
+            indices = torch.abs(numerical_values - self.input_dict.numerical_value)
+            # _, indices = torch.topk(indices, k=min(10, len(indices)), largest=False)
+            _, indices = torch.topk(indices, k=len(indices), largest=False)
         else:
             return []
-
+        # select the heads using the indices
         heads = heads[indices]
         return heads.tolist(), numerical_values[indices].tolist()
 
@@ -136,34 +182,65 @@ class QAEngineNumerical:
         self.marie_logger.info(f" - Prediction batch is prepared")
         return prediction_batch, candidates
 
-    def answer_numerical_question(self, question, numerical_operator, single_question_embedding,
-                                  true_p=None, true_head=None, species_label=None, mention=None, head_key="species"):
-        print("================== Processing numerical question =================")
-        numerical_value, numerical_string = NumericalTools.numerical_value_extractor(question=question)
-        print("Identified numerical_value", numerical_value)
-        question = question.replace("'s ", " # ")
-        question = question.replace(numerical_string, "")
-        print("Received mention in numerical question", mention)
-        if numerical_value is None:
-            if mention is None:
-                filtered_heads = self.all_heads_indices["mops"].tolist()
-                filtered_numerical_values = [None] * len(filtered_heads)
-            else:
-                print("=============== No numerical value but mention, fall back to normal question ======")
-                return self.answer_normal_question(question=question, numerical_operator="none",
-                                                   true_head=true_head, species_label=species_label, mention=mention)
-        else:
-            # TODO: filter heads by numerical values and operator
-            filtered_heads, filtered_numerical_values = self.filter_heads_by_numerical(
-                numerical_operator=numerical_operator,
-                question_embedding=single_question_embedding,
-                numerical_value=numerical_value)
+    def prepare_multi_target_prediction_batch(self):
+        # 1. for each instance_list element (e.g., Assembly model 1,2,3), get create a matrix (AM --rel--> MoPs )
+        instance_list = self.input_dict.mention[1]
+        target = self.input_dict.mention[0]
+        instance_list = torch.LongTensor([self.entity2idx[i] for i in instance_list])
+        candidates = self.all_heads_indices[target]
+        # candidates repeat num is len(instance_list )
+        candidates_repeat_num = len(instance_list)
+        heads_repeat_num = len(candidates)
+        # repeat for the tails
+        candidate_entity_batch = candidates.repeat(candidates_repeat_num).to(self.device)
+        # interleave repeat for the heads
+        split_indices = [indice for indice in range(heads_repeat_num, len(candidate_entity_batch), heads_repeat_num)]
+        head_entity_batch = torch.repeat_interleave(instance_list, heads_repeat_num)
+        prediction_batch = {'single_question': self.input_dict.single_question_embedding,
+                            'e_h': head_entity_batch, 'e_t': candidate_entity_batch}
 
-            print("filtered numerical values", filtered_numerical_values)
-            print("filtered heads", filtered_heads)
+        return prediction_batch, candidates, split_indices, head_entity_batch
 
-        if len(filtered_heads) == 0:
-            return [], [], [], "numerical"
+    def answer_multi_target_question(self):
+        print("================== Processing multi-target question ==============")
+        # Show all the MOPs which have Cuboctahedron shape.
+        # 1. for each instance_list element (e.g., Assembly model 1,2,3), get create a matrix (AM --rel--> MoPs )
+        # _, pred_p_idx = self.score_model.get_relation_prediction(self.input_dict.single_question_embedding)
+
+        idx_to_replace = [23, 8, 12, 13, 18, 0]
+        self.input_dict.instance_label = self.input_dict.mention[2].lower()
+        self.input_dict.question = self.input_dict.question.lower().replace(self.input_dict.instance_label, "")
+        scores_top_k = []
+        targets_top_k = []
+        prediction_batch, candidates, split_indices, head_entity_batch = self.prepare_multi_target_prediction_batch()
+        triple_scores, pred_p_idx = self.score_model.get_scores(prediction_batch, mode=self.mode)
+        if self.input_dict.mention[0] == "mops":
+            if pred_p_idx in idx_to_replace:
+                pred_p_idx = 1
+        # pred_p_label = self.idx2rel[pred_p_idx]
+        for head, tail, score in zip(head_entity_batch, candidates, triple_scores):
+            triple_string = f"{head}_{pred_p_idx}_{tail}"
+            triple_exist = self.subgraph_extractor.check_triple_existence(triple_string)
+            if triple_exist:
+                targets_top_k.append(tail)
+                scores_top_k.append(score)
+
+        labels_top_k = [self.idx2entity[t.item()] for t in targets_top_k]
+        numerical_top_k = ["EMPTY"] * len(labels_top_k)
+
+        return labels_top_k, scores_top_k, targets_top_k, numerical_top_k, "multi-target"
+
+    def answer_numerical_question(self):
+        numerical_operator = self.input_dict.numerical_operator
+        numerical_string = self.input_dict.numerical_string
+        numerical_value = self.input_dict.numerical_value
+        # question = self.input_dict.question
+        # question = question.replace("'s ", " # ").replace(numerical_string, "")
+        single_question_embedding = self.input_dict.single_question_embedding
+        filtered_heads, filtered_numerical_values = self.filter_heads_by_numerical()
+        # filtered_heads_labels = [self.idx2entity[h] for h in filtered_heads]
+
+        if len(filtered_heads) == 0: return [], [], [], [], "numerical"
         prediction_batch, tails, split_indices, filtered_heads_tensor = self.prepare_prediction_batch_numerical(
             heads=filtered_heads,
             question_embedding=single_question_embedding)
@@ -176,80 +253,46 @@ class QAEngineNumerical:
         with no_grad():
             triple_scores, pred_p_idx = self.score_model.get_scores(prediction_batch, mode=self.mode)
             pred_p_label = self.idx2rel[pred_p_idx]
-            print("predicted relation label", pred_p_label)
-            print("predicted relation idx", pred_p_idx)
-            print("triples scores", triple_scores)
             for sub_score_list, sub_tail_list, head, predicted_numerical_value in zip(
                     torch.tensor_split(triple_scores, split_indices),
                     torch.tensor_split(tails, split_indices),
                     filtered_heads, filtered_numerical_values):
-                # top_scores, indices_top_k = torch.topk(sub_score_list, k=min(2, len(sub_score_list)),
-                #                                        largest=self.largest)
-                top_scores, indices_top_k = torch.topk(sub_score_list, k= len(sub_score_list),
+                top_scores, indices_top_k = torch.topk(sub_score_list, k=len(sub_score_list),
                                                        largest=self.largest)
-                labels_top_k = [self.idx2entity[sub_tail_list[index.item()].item()] for index in indices_top_k]
-                if len(labels_top_k) > 0:
-                    print("labels top k", labels_top_k)
-                    labels_top_k = labels_top_k[0]
-                    numerical_value = self.value_lookup(labels_top_k)
-                    # predicted_tails.append(labels_top_k)
-                    # ============================================
-                    node_p_label = self.o_p_dict[labels_top_k]
-                    if pred_p_label == node_p_label:
-                        predicted_tails.append(numerical_value)
-                        score_list.append(top_scores[0].item())
-                        target_list.append(self.idx2entity[head])
-                    # ============================================
-                    if numerical_value != "NODE HAS NO VALUE":
-                        predicted_p = self.o_p_dict[labels_top_k]
-                        if predicted_p == true_p:
-                            predicted_tails_filtered.append(labels_top_k)
-                            predicted_values_list.append(predicted_numerical_value)
+                top_k_tails = [sub_tail_list[idx] for idx in indices_top_k]
+                head_label = self.idx2entity[head]
+                for tail in top_k_tails:
+                    tail = tail.item()
+                    tail_label = self.idx2entity[tail]
+                    triple_str = f"{head}_{pred_p_idx}_{tail}"
+                    # triple_label = f"{self.idx2entity[head]}_{self.idx2rel[pred_p_idx]}_{self.idx2entity[tail]}"
+                    triple_exist = self.subgraph_extractor_numerical.check_triple_existence(triple_str)
+                    # triple_exist = self.subgraph_extractor.check_triple_existence(triple_str)
+                    if triple_exist:
+                        predicted_tails.append(tail_label)
+                        predicted_values_list.append(self.value_lookup(tail_label))
+                        target_list.append(head_label)
+                        score_list.append(1)
+
+                    # if self.test:
+                    #     labels_top_k =
+                    #     if numerical_value != "NODE HAS NO VALUE":
+                    #         predicted_p = self.o_p_dict[labels_top_k]
+                    #         if predicted_p == self.test_dict.true_rel:
+                    #             predicted_tails_filtered.append(labels_top_k)
+                    #             predicted_values_list.append(predicted_numerical_value)
 
         if self.test:
             return numerical_operator, predicted_tails, predicted_tails_filtered, predicted_values_list, pred_p_label
         else:
-            return predicted_tails, score_list, target_list, "numerical"
+            return predicted_tails, score_list, target_list, predicted_values_list, "numerical"
 
-    def answer_normal_question(self, question, numerical_operator, true_head=None, species_label=None, mention=None):
+    def answer_normal_question(self):
         print("=================== Processing NORMAL question ===========================")
-        """
-        If mention is None: try to retrieve the mention 
-        
-        """
-        if mention is None:
-            try:
-                print("========= Mention is None, trying to get mention ==============")
-                mention = self.nel.get_mention(question=question)
-                if mention == "":
-                    _, tokenized_question = self.nlp.tokenize_question(question=question, repeat_num=1)
-                    single_question_embedding = self.score_model.get_question_embedding(question=tokenized_question)
-                    return self.answer_numerical_question(question=question, numerical_operator=numerical_operator,
-                                                          true_head=true_head, true_p=None,
-                                                          single_question_embedding=single_question_embedding,
-                                                          species_label=species_label, mention=None)
-            except IndexError:
-                print("========= Mention retrieval failed, fall back to class query ==============")
-                _, tokenized_question = self.nlp.tokenize_question(question=question, repeat_num=1)
-                single_question_embedding = self.score_model.get_question_embedding(question=tokenized_question)
-                return self.answer_numerical_question(question=question, numerical_operator=numerical_operator,
-                                                      true_head=true_head, true_p=None,
-                                                      single_question_embedding=single_question_embedding,
-                                                      species_label=species_label, mention=None)
 
-        question = question.replace(mention, "")
-        _, tokenized_question = self.nlp.tokenize_question(question=question, repeat_num=1)
-        single_question_embedding = self.score_model.get_question_embedding(question=tokenized_question)
+        mention = self.input_dict.mention
+        single_question_embedding = self.input_dict.single_question_embedding
         _, head, mention_str, head_key = self.nel.find_cid(mention)
-        print("In normal question, found head", head)
-        if head is None:
-            _, tokenized_question = self.nlp.tokenize_question(question=question, repeat_num=1)
-            single_question_embedding = self.score_model.get_question_embedding(question=tokenized_question)
-            return self.answer_numerical_question(question=question, numerical_operator=numerical_operator,
-                                                  true_head=true_head, true_p=None,
-                                                  single_question_embedding=single_question_embedding,
-                                                  species_label=species_label, mention=None)
-
         _, pred_p_idx = self.score_model.get_relation_prediction(question_embedding=single_question_embedding)
         pred_p_label = self.idx2rel[pred_p_idx]
         prediction_batch, candidates = self.prepare_prediction_batch(head=head,
@@ -260,84 +303,124 @@ class QAEngineNumerical:
         labels_top_k = [self.idx2entity[candidates[index]] for index in indices_top_k]
         scores_top_k = [scores[index].item() for index in indices_top_k]
         targets_top_k = [head_key] * len(scores)
-        print(f"predicted predicate: {self.idx2rel[pred_p_idx]}")
-        print(f"predicted head: {head}")
-        if self.test:
-            nel_hit = (head == true_head) and (species_label.lower().strip() == mention.lower().strip())
-            return numerical_operator, labels_top_k, nel_hit, [], self.idx2rel[pred_p_idx]
-        else:
-            return labels_top_k, scores_top_k, targets_top_k, "normal"
+        numericals_top_k = [self.value_lookup(l) for l in labels_top_k]
+        # try:
+        #     mention = self.nel.get_mention(question=question)
+        #     if mention == "":
+        #         _, tokenized_question = self.nlp.tokenize_question(question=question, repeat_num=1)
+        #         single_question_embedding = self.score_model.get_question_embedding(question=tokenized_question)
+        #         return self.answer_numerical_question()
+        # except IndexError:
+        #     _, tokenized_question = self.nlp.tokenize_question(question=question, repeat_num=1)
+        #     single_question_embedding = self.score_model.get_question_embedding(question=tokenized_question)
+        #     return self.answer_numerical_question()
+        #
+        # question = question.replace(mention, "")
+        # _, tokenized_question = self.nlp.tokenize_question(question=question, repeat_num=1)
+        # single_question_embedding = self.score_model.get_question_embedding(question=tokenized_question)
+        # _, head, mention_str, head_key = self.nel.find_cid(mention)
+        # print("In normal question, found head", head)
+        # if head is None:
+        #     _, tokenized_question = self.nlp.tokenize_question(question=question, repeat_num=1)
+        #     single_question_embedding = self.score_model.get_question_embedding(question=tokenized_question)
+        #     return self.answer_numerical_question()
+        #
+        # _, pred_p_idx = self.score_model.get_relation_prediction(question_embedding=single_question_embedding)
+        # pred_p_label = self.idx2rel[pred_p_idx]
+        # prediction_batch, candidates = self.prepare_prediction_batch(head=head,
+        #                                                              question_embedding=single_question_embedding,
+        #                                                              pred_p_label=pred_p_label)
+        #
+        # scores, _ = self.score_model.get_scores(prediction_batch, mode=self.mode)
+        # _, indices_top_k = torch.topk(scores, k=min(5, len(scores)), largest=self.largest)
+        # labels_top_k = [self.idx2entity[candidates[index]] for index in indices_top_k]
+        # scores_top_k = [scores[index].item() for index in indices_top_k]
+        # targets_top_k = [head_key] * len(scores)
+        # print(f"predicted predicate: {self.idx2rel[pred_p_idx]}")
+        # print(f"predicted head: {head}")
+        return labels_top_k, scores_top_k, targets_top_k, numericals_top_k,  "normal"
 
-    def find_answers(self, question: str, true_p=None, true_operator=None, true_head=None, species_label=None,
-                     mention=None):
+    def rule_based_question_classification(self):
+        """
+        :return: Which question answering to go first, whether enable testing (for evaluation)
+        """
+        mention = self.input_dict.mention
+        has_target, has_instance_list = False, False
+        numerical_value, numerical_string = NumericalTools.numerical_value_extractor(
+            question=self.input_dict.question)
+        is_numerical = numerical_value is not None
+        # if the question doesn't contain any numerical value, it is is_numerical is false
+        if type(mention) == type(()):
+            # if the mention is a tuple, it contains both target and
+            has_target, has_instance_list = True, True
+
+        self.input_dict.numerical_string = numerical_string
+        self.input_dict.numerical_value = numerical_value
+
+        return is_numerical, has_target, has_target, numerical_string, numerical_value
+
+    def find_answers(self):
         """
         The find answer method handles both normal questions and numerical questions for wikidata
-        :param mention:
-        :param species_label:
-        :param true_head:
-        :param true_operator:
-        :param true_p:
         :param question: question in string format
         :return: score of all candidate answers
         """
-        if true_head is None:
-            self.test = False
-        question = question.replace("(", "").replace(")", "")
-        stop_words = ["find", "all", "species", "with", "what", "is", "the"]
-        question_tokens = [token for token in question.split(" ") if token not in stop_words]
-        question = " ".join(question_tokens)
-        _, tokenized_question = self.nlp.tokenize_question(question=question, repeat_num=1)
+        # TODO: 1. put the mechanism for question answering sequence on top
+        # TODO: 2. wrap question answer mechanism into functions
+        mention = self.nel.get_mention(self.input_dict.question)
+        self.input_dict.mention = mention
+        self.input_dict.question = text_filtering(self.input_dict.question)
+        _, tokenized_question = self.nlp.tokenize_question(question=self.input_dict.question, repeat_num=1)
         single_question_embedding = self.score_model.get_question_embedding(question=tokenized_question)
+        self.input_dict.single_question_embedding = single_question_embedding
 
-        if self.seperated_model:
-            single_question_embedding_operator = self.operator_model.get_question_embedding(question=tokenized_question)
-            predicted_numerical_operator = self.operator_model.get_numerical_operator(
-                single_question_embedding_operator)
-        else:
-            predicted_numerical_operator = self.score_model.get_numerical_operator(single_question_embedding)
-        predicted_operator_idx = torch.argmax(predicted_numerical_operator).item()
-        numerical_operator = self.operator_dict[predicted_operator_idx]
-        print(f"numerical_operator: {numerical_operator}  -- question {question}")
-        print(f"predicted {predicted_operator_idx}")
-        if numerical_operator == "none":
-            return self.answer_normal_question(question=question, numerical_operator=numerical_operator,
-                                               true_head=true_head, species_label=species_label, mention=mention)
-        else:
-            return self.answer_numerical_question(question=question, numerical_operator=numerical_operator,
-                                                  true_head=true_head, true_p=true_p,
-                                                  single_question_embedding=single_question_embedding,
-                                                  species_label=species_label, mention=mention)
+        is_numerical, has_target, has_instance_list, numerical_string, numerical_value = \
+            self.rule_based_question_classification()
+        if has_target and has_instance_list:
+            return self.answer_multi_target_question()
+        self.get_numerical_operator(tokenized_question=tokenized_question,
+                                    single_question_embedding=single_question_embedding)
 
-    def process_answer(self, answer_list, mention_string, score_list, answer_type):
+        self.marie_logger.info(f"numerical operator: {self.input_dict.numerical_operator}")
+
+        if self.input_dict.numerical_operator == "none":
+            return self.answer_normal_question()
+        else:
+            return self.answer_numerical_question()
+
+    def process_answer(self, answer_list, mention_string, score_list, answer_type, numerical_list):
         if answer_type == "normal":
             if len(mention_string) > 0:
                 mention_string = mention_string[0]
             else:
                 mention_string = "EMPTY"
         result_list = []
-        self.marie_logger.info(f'=========== processing candidate answers ==============')
         for answer, score in zip(answer_list, score_list):
-            self.marie_logger.info(f'The answer:\t\t {answer}')
-            self.marie_logger.info(f'Mentioned string:\t\t {mention_string}')
-            self.marie_logger.info(f'-------------------------')
-            row = {"answer": answer, "from node": answer, "mention": mention_string}
+            row = {"answer": answer, "from node": answer, "mention": mention_string, "numerical": numerical_list}
             result_list.append(row)
         return result_list
 
-    def run(self, question, head=None, mention=None):
+    def run(self, question, mention=None):
         """
         :param mention:
         :param head: directly give a head for testing and evaluation purpose.
         :param question:
         :return:
         """
-        answer_list, score_list, target_list, answer_type = self.find_answers(question=question, mention=mention)
+        self.input_dict.__init__()
+        self.input_dict.question = question
+        self.marie_logger.info("=============== new question ============")
+        self.marie_logger.info(f"Received question: {question}")
+        if mention is not None:
+            self.input_dict.mention = mention
+
+        answer_list, score_list, target_list, numerical_list,  answer_type = self.find_answers()
         if len(score_list) == 0:
-            return [], [], [], "normal"
+            return [], [], [], [],  "normal"
 
         max_score = max(score_list)
         score_list = [(max_score + 1 - s) for s in score_list]
-        return answer_list, score_list, target_list, answer_type
+        return answer_list, score_list, target_list, numerical_list,  answer_type
 
 
 if __name__ == "__main__":
@@ -345,6 +428,8 @@ if __name__ == "__main__":
     sub_ontology = "numerical_with_implicit"
     dataset_dir = os.path.join(DATA_DIR, f"CrossGraph/{ontology}/{sub_ontology}")
     my_engine = QAEngineNumerical(dataset_dir, sub_ontology, dim=50, test=False, value_dict_name="node_value_dict.json",
-                                  seperated_model=True, operator_dict={0: "smaller", 1: "larger", 2: "none"}, mode="transr")
+                                  seperated_model=True, operator_dict={0: "smaller", 1: "larger", 2: "none"},
+                                  mode="transr", enable_class_ner=True)
     rst = my_engine.run("MoPs with molecular weight more than 10")
-    print(rst)
+    # rst = my_engine.run("Starting with Oh symmetry point group, list all the MOPs")
+    # print(rst)
