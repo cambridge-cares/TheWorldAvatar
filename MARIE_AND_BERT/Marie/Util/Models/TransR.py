@@ -20,7 +20,7 @@ class TransR(nn.Module):
     """
 
     def __init__(self, rel_dim, rel_num, ent_dim, ent_num, device="cpu", use_projection=False, alpha=0.1,
-                 margin=5, resume_training=False, dataset_path=None, enable_numerical = True):
+                 margin=5, resume_training=False, dataset_path=None, enable_numerical=True, lmbda=0.1):
         super(TransR, self).__init__()
         self.device = device
         print(f"========= Device used in TransR model {self.device} ==============")
@@ -28,6 +28,7 @@ class TransR(nn.Module):
         self.ent_num = ent_num
         self.rel_dim = rel_dim
         self.ent_dim = ent_dim
+        self.lmbda = lmbda
         self.enable_numerical = enable_numerical
         self.dataset_path = dataset_path
 
@@ -48,6 +49,8 @@ class TransR(nn.Module):
             self.attr_embedding = self.load_embedding(embedding_name="attr_embedding")
             self.bias_embedding = self.load_embedding(embedding_name="bias_embedding")
             self.proj_matrix = self.load_embedding(embedding_name="proj_matrix")
+
+        self.parameter_list = [self.ent_embedding, self.rel_embedding, self.proj_matrix]
 
         self.margin = margin
         self.criterion = nn.MarginRankingLoss(margin=self.margin).to(self.device)
@@ -106,7 +109,7 @@ class TransR(nn.Module):
         dist_pos = self.distance(pos_triples).to(self.device)
         dist_neg = self.distance(neg_triples).to(self.device)
         if mode == "non_numerical":
-            return self.loss(dist_pos, dist_neg).mean().to(self.device) # + self.regularization(dist_pos)
+            return self.loss(dist_pos, dist_neg).mean().to(self.device) + self.lmbda * self.regularization()
         else:
             numerical_loss = self.numerical_forward(
                 pos_triples.to(self.device)).to(self.device)  # numerical loss only requires pos triples
@@ -170,9 +173,9 @@ class TransR(nn.Module):
         return diff.to(self.device)
 
     def predict(self, triples):
-        head = triples[0]
-        rel = triples[1]
-        tail = triples[2]
+        head = triples[0].to(self.device)
+        rel = triples[1].to(self.device)
+        tail = triples[2].to(self.device)
         test_triples = (head, rel, tail)
         return self.distance(test_triples)
 
@@ -225,21 +228,8 @@ class TransR(nn.Module):
     #     reactants_idx = torch.LongTensor(reactants)
     #     pass
 
-    def regularization(self, triples):
-        e_h_idx = triples[0]
-        r_idx = triples[1]
-        e_t_idx = triples[2]
-        # =============== prepare embeddings =======================
-        e_h = normalize(self.ent_embedding(e_h_idx))
-        e_t = normalize(self.ent_embedding(e_t_idx))
-        r = self.rel_embedding(r_idx)
-        b_size = len(e_h_idx)
-        proj_mat = self.proj_matrix(r_idx).view(b_size, self.rel_dim, self.ent_dim)
-        regul = (torch.mean(e_h ** 2) +
-                 torch.mean(e_t ** 2) +
-                 torch.mean(r ** 2) +
-                 torch.mean(proj_mat ** 2)) / 4
-        return regul
+    def regularization(self):
+        return self.lmbda * torch.sqrt(sum([torch.sum(torch.pow(var.weight, 2)) for var in self.parameter_list]))
 
     def distance(self, triples):
         """

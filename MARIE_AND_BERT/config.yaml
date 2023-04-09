@@ -6,6 +6,9 @@ domains:
 paths:
   domain_path: "CrossGraph"
 
+tokenizers:
+  ontoagent: "bert-base-uncased"
+
 
 essential_files:
   - three_hop_dict_index

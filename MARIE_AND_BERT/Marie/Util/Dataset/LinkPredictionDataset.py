@@ -38,37 +38,67 @@ class LinkPredictionDataset(torch.utils.data.Dataset):
             self.h_r_t = pickle.load(open(os.path.join(dataset_path, "h_r_t.pkl"), "rb"))
             # self.df = self.df.sample(n=1000)
 
-    def create_fake_triples(self, h_idx, r_idx):
-        neg_triples = []
+    def create_fake_triples(self, h_idx, r_idx, t_idx):
+        neg_triples_hr_t = []
+        neg_triples_h_rt = []
+        neg_triples_ht_r = []
+        neg_triples_h_t_r = []
         counter = 0
-        while len(neg_triples) <= self.neg_rate:
+
+        while len(neg_triples_h_t_r) <= self.neg_rate:
+            counter += 1
+            # print(f"neg sample number {counter}")
+            random_head_idx = random.randrange(0, self.ent_num)
+            random_tail_idx = random.randrange(0, self.ent_num)
+            triple_str = f"{random_head_idx}_{r_idx}_{random_tail_idx}"
+            if not self.extractor.check_triple_existence(triple_str=triple_str):
+                neg_triples_h_t_r.append((random_head_idx, r_idx, random_tail_idx))
+
+        while len(neg_triples_hr_t) <= self.neg_rate:
             counter += 1
             # print(f"neg sample number {counter}")
             random_tail_idx = random.randrange(0, self.ent_num)
             triple_str = f"{h_idx}_{r_idx}_{random_tail_idx}"
             if not self.extractor.check_triple_existence(triple_str=triple_str):
-                neg_triples.append((h_idx, r_idx, random_tail_idx))
-        print("-----------------")
+                neg_triples_hr_t.append((h_idx, r_idx, random_tail_idx))
+
+        while len(neg_triples_h_rt) <= self.neg_rate:
+            counter += 1
+            # print(f"neg sample number {counter}")
+            random_head_idx = random.randrange(0, self.ent_num)
+            triple_str = f"{random_head_idx}_{r_idx}_{t_idx}"
+            if not self.extractor.check_triple_existence(triple_str=triple_str):
+                neg_triples_h_rt.append((random_head_idx, r_idx, t_idx))
+
+        while len(neg_triples_ht_r) <= self.neg_rate:
+            counter += 1
+            # print(f"neg sample number {counter}")
+            random_rel_idx = random.randrange(0, self.rel_num)
+            triple_str = f"{h_idx}_{random_rel_idx}_{t_idx}"
+            if not self.extractor.check_triple_existence(triple_str=triple_str):
+                neg_triples_ht_r.append((h_idx, random_rel_idx, t_idx))
+
+        neg_triples = neg_triples_hr_t + neg_triples_h_rt + neg_triples_ht_r + neg_triples_h_t_r
         return neg_triples
 
     # def create_test_triples(self, idx, row):
-        # triples = []
-        # for idx, row in self.df.iterrows():
-        # print(f"{idx} out out {len(self.df)}")
-        # h_idx, r_idx, true_t_idx = self.entity2idx[row[0]], self.relation2idx[row[1]], self.entity2idx[row[2]]
-        # for tail in self.all_t_idx_list:
-        # triples.append((h_idx, r_idx, tail, true_t_idx))
-        # triples.append((h_idx, r_idx, true_t_idx, true_t_idx))
-        # return [h_idx, r_idx, true_t_idx]
+    # triples = []
+    # for idx, row in self.df.iterrows():
+    # print(f"{idx} out out {len(self.df)}")
+    # h_idx, r_idx, true_t_idx = self.entity2idx[row[0]], self.relation2idx[row[1]], self.entity2idx[row[2]]
+    # for tail in self.all_t_idx_list:
+    # triples.append((h_idx, r_idx, tail, true_t_idx))
+    # triples.append((h_idx, r_idx, true_t_idx, true_t_idx))
+    # return [h_idx, r_idx, true_t_idx]
 
     def create_train_triples(self):
         print("Creating all triples for training")
         all_triples = []
         for idx, row in self.df.iterrows():
-            # print(f"{idx} out of {len(self.df)}")
+            print(f"{idx} out of {len(self.df)}")
             h_idx, r_idx, t_idx = self.entity2idx[row[0]], self.relation2idx[row[1]], self.entity2idx[row[2]]
             true_triple = (h_idx, r_idx, t_idx)
-            fake_triples = self.create_fake_triples(h_idx=h_idx, r_idx=r_idx)
+            fake_triples = self.create_fake_triples(h_idx=h_idx, r_idx=r_idx, t_idx=t_idx)
             for fake_triple in fake_triples:
                 all_triples.append((true_triple, fake_triple))
         return all_triples
@@ -91,7 +121,7 @@ class LinkPredictionDataset(torch.utils.data.Dataset):
 if __name__ == "__main__":
     dataset_dir = os.path.join(DATA_DIR, "CrossGraph", "fb15k")
     df_train = pd.read_csv(os.path.join(dataset_dir, "fb15k-train.txt"), sep="\t", header=None)
-    df_train = df_train.sample(n = 5)
+    df_train = df_train.sample(n=5)
     df_valid = pd.read_csv(os.path.join(dataset_dir, "fb15k-valid.txt"), sep="\t", header=None)
     df_test = pd.read_csv(os.path.join(dataset_dir, "fb15k-test.txt"), sep="\t", header=None)
     # relations = list(df_train.loc[:, 1].values)

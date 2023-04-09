@@ -115,7 +115,7 @@ if __name__ == "__main__":
 
     nlp = NLPTools(tokenizer_name="bert-base-uncased")
     my_alignment_model = CrossGraphAlignmentModel(device="cpu")
-    dataset_path = os.path.join(DATA_DIR, "CrossGraph/cross_graph_model_with_wikidata")
+    dataset_path = os.path.join(DATA_DIR, "CrossGraph/cross_graph_model_with_all_9")
     my_alignment_model.load_state_dict(torch.load(dataset_path, map_location="cpu"))
     questions = ["molar mass",
                  "boiling point",

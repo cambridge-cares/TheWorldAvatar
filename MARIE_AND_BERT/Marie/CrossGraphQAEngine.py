@@ -15,11 +15,12 @@ from Marie.Util.Models.CrossGraphAlignmentModel import CrossGraphAlignmentModel
 from Marie.Util.location import DATA_DIR
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.WikidataEngine import WikidataEngine
-import threading 
+import threading
+
 
 def normalize_scores(self, scores_list):
     normalized_scores = {}
-    for domain in self.domain_list: 
+    for domain in self.domain_list:
         scores = scores_list[domain]
         max_score = max(scores)
         scores = [score / max_score for score in scores]
@@ -27,7 +28,7 @@ def normalize_scores(self, scores_list):
             diff = 5 - len(scores)
             for i in range(diff):
                 scores.append(-999)
-        normalized_scores[domain]=scores
+        normalized_scores[domain] = scores
     return normalized_scores
 
 
@@ -40,7 +41,9 @@ class CrossGraphQAEngine:
         self.marie_logger = MarieLogger()
         self.nel = ChemicalNEL()
 
-        self.domain_encoding = {"pubchem": 0, "ontocompchem": 1, "ontospecies": 2, "ontokin": 3, "wikidata": 4}
+        self.domain_encoding = {"pubchem": 0, "ontocompchem": 1, "ontospecies": 2,
+                                "ontokin": 3, "wikidata": 4, "ontospecies_new": 5,
+                                "ontoagent": 6, "ontomops": 7, "ontokin_reaction": 8}
         self.encoding_domain = {v: k for k, v in self.domain_encoding.items()}
         self.domain_list = self.domain_encoding.keys()
         print(self.domain_list)
@@ -53,7 +56,7 @@ class CrossGraphQAEngine:
         self.dataset_path = os.path.join(DATA_DIR, 'CrossGraph')
         self.score_adjust_model = CrossGraphAlignmentModel(device=self.device).to(self.device)
         self.score_adjust_model.load_state_dict(torch.load(os.path.join(self.dataset_path,
-                                                                        'cross_graph_model_with_wikidata'),
+                                                                        'cross_graph_model_with_all_9'),
                                                            map_location=self.device))
         self.init_engines()
 
@@ -209,7 +212,6 @@ class CrossGraphQAEngine:
 
 
 if __name__ == '__main__':
-
     result_list = []
 
     my_qa_engine = CrossGraphQAEngine()
@@ -228,7 +230,6 @@ if __name__ == '__main__':
     # print(rst)
     # print(f"TIME USED: {time.time() - START_TIME}")
 
-
     # question_answer_dict_path = os.path.join(DATA_DIR, "CrossGraph/selected_question_answer_list.json")
     # question_answer_list = json.loads(open(question_answer_dict_path).read())
     # for obj in question_answer_list:
@@ -244,5 +245,3 @@ if __name__ == '__main__':
     #     f.write(json.dumps(result_list))
     #     f.close()
     #
-
-
