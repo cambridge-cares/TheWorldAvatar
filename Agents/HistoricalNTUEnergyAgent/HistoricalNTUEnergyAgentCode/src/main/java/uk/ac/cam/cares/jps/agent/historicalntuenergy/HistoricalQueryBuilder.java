@@ -1,4 +1,5 @@
 package uk.ac.cam.cares.jps.agent.historicalntuenergy;
+import com.hp.hpl.jena.graph.Triple;
 import uk.ac.cam.cares.jps.base.util.JSONKeyToIRIMapper;
 
 import java.io.File;
@@ -37,6 +38,7 @@ public class HistoricalQueryBuilder {
      * Classes
      */
     public static final String powerSystem = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerSystem";
+    public static final String building = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Building";
     public static final String powerSystemModel = "http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerSystemModel";
     public static final String busNode = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#BusNode";
     public static final String powerGenerator = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator";
@@ -67,10 +69,12 @@ public class HistoricalQueryBuilder {
 
     private static final String hasUnit = OmPrefix + "hasUnit";
     private static final String hasSubSystem = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem";
+    private static final String hasBusNode = "http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#hasBusNode";
     private static final String isModeledBy = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isModeledBy";
     private static final String hasModelVariable = "http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable";
     private static final String numericalValue = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue";
     private static final String hasUnitOfMeasure = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure";
+    private static final String rdfsLabel = "http://www.w3.org/2000/01/rdf-schema#label";
 
     /**
      * Individuals
@@ -326,6 +330,15 @@ public class HistoricalQueryBuilder {
         }
         return null;
     }
+    public String getBuildingNameFromBusNum(Integer busNum){
+        for (Map.Entry<String, Integer> entry : NTUBuildingToBusNum.entrySet()) {
+            if (entry.getValue().equals(busNum)) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
     /**
      * Instantiate all triples to instantiate NTU energy consumption KG
      * Design details of the KG can be found:
@@ -408,7 +421,7 @@ public class HistoricalQueryBuilder {
          * Instantiate RBANCH-related triples
          */
         for (int entry=0; entry < 14; entry++) {
-            String branchIRI = PowsysPrefix + "NTU_Branch_" + String.valueOf(entry);
+            String branchIRI = PowsysPrefix + "NTU_Branch_" +  String.valueOf(entry);
             String branchModelIRI = PowsysPrefix + "NTU_Branch_" + String.valueOf(entry) + "_Model";
             TriplePattern PSHasBranch = iri(powerSystemIRI).has(iri(hasSubSystem), iri(branchIRI));
             TriplePattern branchisType = iri(branchIRI).isA(iri(branch));
@@ -455,13 +468,18 @@ public class HistoricalQueryBuilder {
          * Instantiate BUSNODE-related triples
          */
         for (int entry=1; entry < 16; entry++) {
-            String busNodeIRI = PowsysPrefix + "NTU_BusNode_" + String.valueOf(entry);
-            String busNodeModelIRI = PowsysPrefix + "NTU_BusNode_Model_" + String.valueOf(entry) + "_Model";
+            String buildingName = getBuildingNameFromBusNum(entry);
+            String buildingIRI = PowsysPrefix + "NTU_Building_" + buildingName;
+            String busNodeIRI = PowsysPrefix + "NTU_BusNode_" + buildingName + '_' +String.valueOf(entry);
+            TriplePattern BuildingHasBusNode = iri(buildingIRI).has(iri(hasBusNode), busNodeIRI);
+            TriplePattern BuildingisType = iri(buildingIRI).isA(iri(building));
+            TriplePattern BuildingLabel = iri(buildingIRI).has(iri(rdfsLabel), buildingName);
+            String busNodeModelIRI = PowsysPrefix + "NTU_BusNode_Model_" + buildingName + '_' +String.valueOf(entry) + "_Model";
             TriplePattern PSHasBusNode = iri(powerSystemIRI).has(iri(hasSubSystem), iri(busNodeIRI));
             TriplePattern BusNodeIsType = iri(busNodeIRI).isA(iri(busNode));
             TriplePattern BusNodeIsModeledByModel = iri(busNodeIRI).has(iri(isModeledBy), iri(busNodeModelIRI));
             TriplePattern BusNodeModelisType = iri(busNodeModelIRI).isA(iri(powerSystemModel));
-            InsertDataQuery busNodeInsertion1 = Queries.INSERT_DATA(PSHasBusNode, BusNodeIsType, BusNodeIsModeledByModel, BusNodeModelisType);
+            InsertDataQuery busNodeInsertion1 = Queries.INSERT_DATA(PSHasBusNode, BusNodeIsType, BusNodeIsModeledByModel, BusNodeModelisType, BuildingHasBusNode, BuildingisType, BuildingLabel);
             kbClient.executeUpdate(busNodeInsertion1.getQueryString());
             for (Map.Entry<String, String> set : BusNodeModelVariables.entrySet()) {
                 String BusNodeModelVariable = set.getValue();

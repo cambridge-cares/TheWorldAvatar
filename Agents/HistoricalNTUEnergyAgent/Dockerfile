@@ -34,7 +34,7 @@ COPY ./config/xlsxconnector.properties /root/xlsxconnector.properties
 COPY ./config/mappings /root/mappings
 
 # Copy in the energy data
-COPY ./data/NTU_Energy_Consumption.xlsx /root/NTU_Energy_Consumption.xlsx
+COPY ./config/NTU_Energy_Consumption.xlsx /root/NTU_Energy_Consumption.xlsx
 
 # Set the required environment variable
 ENV ENERGY_READINGS="/root/NTU_Energy_Consumption.xlsx"

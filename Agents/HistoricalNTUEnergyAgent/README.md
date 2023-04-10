@@ -11,9 +11,9 @@ This agent is designed to work with Excel 2007 or later versions. Some pre-proce
 that the Excel files are compatible with the agent
 
 There are few things to take note for the Excel data file to be compatible with the agent.
-1. The NTU Energy data in Excel format must be named NTU_Energy_Consumption.xlsx and placed in the `config` folder.
-2. The keys for each column in the Excel file must correspond with the keys found in the energy.properties
-files. These properties files can be found in the `mapping` folder under the `config` folder.
+1. The NTU Energy data in Excel format must be named `NTU_Energy_Consumption.xlsx`  and placed in the `config` folder.
+2. The keys for each column in the Excel file must correspond with the keys found in the `energy.properties`.
+   files. These properties files can be found in the `mapping` folder under the `config` folder.
 3. The timestamps in the Excel files must be in UTC timezone. The agent will then convert the timestamps to a local date time with offset.
 
 The following shows the content of compatible Excel file for NTU Energy:
@@ -55,7 +55,10 @@ shows a single JSON object example for Energy readings:
 "NYA_P_KW"=0.002770001
 "NYA_Q_KVAR"=0.000400001
 ```
-
+These readings represent the values of active and reactive power for different locations in the NTU energy system.
+Active power (P) is measured in kilowatts (KW) and represents the power that is actually used by the electrical 
+equipment to perform useful work, while reactive power (Q) is measured in kilovolt-ampere reactive (KVAR) and 
+represents the power that is used to establish and maintain the electric and magnetic fields in the equipment.
 
 # 2. Setup and Running
 This part of the README describes the setup of the agent. The module itself can be packaged into an executable war, deployed as
@@ -64,7 +67,7 @@ client which maintains both instances in a knowledge graph and a Postgres databa
 set-up beforehand.
 
 ## 2.1 Agent Setup
-It is required to have several config files setup before running the agent. In specific, one mapping file, two property files and one xlsx file are required:
+It is required to have several config files set up before running the agent. In specific, one mapping file, two property files, and one xlsx file are required:
 - The [mapping file](#mapping-files) contains the mapping between the keys in the Excel file and the IRI of the KG instances.
 - The [agent.properties](#agent-properties) file points to the mapping configuration.
 - One [xlsxconnector.properties](#excel-connector-properties) file defines the number of columns/keys for the power readings Excel file.
@@ -92,11 +95,10 @@ randomly generated UUID.
 ### Agent properties
 The agent property file only needs to contain a single line:
 ```
-aqmesh.mappingfolder=HISTORICALAQMESH_AGENT_MAPPINGS
+ntuenergy.mappingfolder=HISTORICALNTUENERGY_AGENT_MAPPINGS
 ```
-where `HISTORICALAQMESH_AGENT_MAPPINGS` is the environment variable pointing to the location of a folder containing JSON key to IRI mappings.
-An example property file can be found in the `config` folder under `agent.properties`. See [this section](#mapping-files) of the README for an
-explanation of the mapping files.
+where `HISTORICALNTUENERGY_AGENT_MAPPINGS` is the environment variable pointing to the location of a folder containing JSON key to IRI mappings.
+An example property file can be found in the `config` folder under `agent.properties`.
 
 ### Excel connector properties
 The Excel connector properties contain the number of columns/keys for each of the Excel files.
@@ -104,7 +106,7 @@ It should contain the following keys:
 - `numOfEnergyKeys` the number of columns/keys in the energy readings Excel file.
 More information can be found in the example property file `xlsxconnector.properties` in the `config` folder.
 
-The [next section](#Setup) will explain the detailed instructions to run the agent.
+The next section will explain the detailed instructions to run the agent.
 
 ## 2.2 Docker Setup
 
