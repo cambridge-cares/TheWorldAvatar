@@ -84,7 +84,7 @@ class LocalPlacementTest {
 
     private List<String> genExpectedStatements(String baseURI) {
         List<String> expected = new ArrayList<>();
-        expected.add(baseURI + "LocalPlacement_512, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/LocalPlacement");
+        expected.add(baseURI + "LocalPlacement_512, " + JunitTestUtils.RDF_TYPE + ", https://www.theworldavatar.com/kg/ontobim/LocalPlacement");
         expected.add(baseURI + "LocalPlacement_512, https://www.theworldavatar.com/kg/ontobim/hasRefPoint, " + testRefPoint);
         return expected;
     }

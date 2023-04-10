@@ -14,7 +14,7 @@ public class NamespaceMapper {
     public static final String RDFS_PREFIX = "rdfs";
     public static final String RDFS_NAMESPACE= "https://www.w3.org/2000/01/rdf-schema#";
     public static final String RDF_PREFIX = "rdf";
-    public static final String RDF_NAMESPACE= "https://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    public static final String RDF_NAMESPACE= "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     public static final String BIM_PREFIX = "bim";
     public static final String BIM_NAMESPACE = "https://www.theworldavatar.com/kg/ontobim/";
     public static final String BOT_PREFIX = "bot";
@@ -24,7 +24,7 @@ public class NamespaceMapper {
     public static final String SKOS_PREFIX = "skos";
     public static final String SKOS_NAMESPACE = "https://www.w3.org/2004/02/skos/core#";
     public static final String IFC_PREFIX = "ifc";
-    public static final String IFC_NAMESPACE= "https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#";
+    public static final String IFC_NAMESPACE= "http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#";
     public static final String LIST_PREFIX = "list";
     public static final String LIST_NAMESPACE= "https://w3id.org/list#";
     public static final String EXPRESS_PREFIX = "express";

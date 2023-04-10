@@ -71,10 +71,10 @@ class NamespaceMapperTest {
         results.add("ontoems:");
         results.add("ontolab:");
         results.add("saref:");
-        results.add("<https://www.w3.org/1999/02/22-rdf-syntax-ns#>");
+        results.add("<http://www.w3.org/1999/02/22-rdf-syntax-ns#>");
         results.add("<https://w3id.org/bot#>");
         results.add("<https://www.theworldavatar.com/kg/ontobim/>");
-        results.add("<https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#>");
+        results.add("<http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#>");
         results.add("<https://www.w3.org/2000/01/rdf-schema#>");
         results.add("<https://w3id.org/express#>");
         results.add("<https://w3id.org/list#>");

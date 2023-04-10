@@ -92,6 +92,7 @@ class ModellingOperatorFacadeTest {
         // Clean up results as one string
         operatorMappings.constructAllStatements(sampleSet);
         String result = JunitTestUtils.appendStatementsAsString(sampleSet);
+        System.out.println(result);
         // Generate expected statement lists and verify their existence
         JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedPointStatements(TEST_BASE_URI, IFC_CART_POINT_X_COORD, IFC_CART_POINT_Y_COORD, IFC_CART_POINT_Z_COORD, true), result);
         JunitTestUtils.doesExpectedListExist(JunitTestGeometryUtils.genExpectedDirectionStatements(TEST_BASE_URI, IFC_DIR_VECTOR_X_RATIO, IFC_DIR_VECTOR_Y_RATIO, IFC_DIR_VECTOR_Z_RATIO, true), result);
@@ -350,7 +351,7 @@ class ModellingOperatorFacadeTest {
 
     private List<String> genExpectedPlacementStatements(String placementInst, boolean hasRefDir, boolean hasAxisDir) {
         List<String> expected = new ArrayList<>();
-        expected.add(placementInst + ", https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/LocalPlacement");
+        expected.add(placementInst + ", " + JunitTestUtils.RDF_TYPE + ", https://www.theworldavatar.com/kg/ontobim/LocalPlacement");
         expected.add(placementInst + ", https://www.theworldavatar.com/kg/ontobim/hasRefPoint, " + TEST_BASE_URI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         if (hasRefDir) {
             expected.add(placementInst + ", https://www.theworldavatar.com/kg/ontobim/hasRefDirection, " + TEST_BASE_URI + "DirectionVector_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
@@ -363,7 +364,7 @@ class ModellingOperatorFacadeTest {
 
     private List<String> genExpectedTransformationOperatorStatements(String inst, boolean hasOptional) {
         List<String> expected = new ArrayList<>();
-        expected.add(inst + ", https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/CartesianTransformationOperator");
+        expected.add(inst + ", " + JunitTestUtils.RDF_TYPE + ", https://www.theworldavatar.com/kg/ontobim/CartesianTransformationOperator");
         expected.add(inst + ", https://www.theworldavatar.com/kg/ontobim/hasLocalOrigin, " + TEST_BASE_URI + "CartesianPoint_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}");
         if (hasOptional) {
             expected.add(inst + ", https://www.theworldavatar.com/kg/ontobim/hasScale, \"" + TRANSFORMATION_OPERATOR_SCALE);
@@ -375,7 +376,7 @@ class ModellingOperatorFacadeTest {
 
     private List<String> genExpectedSubContextStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(TEST_SUB_CONTEXT_BIM_IRI + ", https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");
+        expected.add(TEST_SUB_CONTEXT_BIM_IRI + ", " + JunitTestUtils.RDF_TYPE + ", https://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");
         expected.add(TEST_SUB_CONTEXT_BIM_IRI + ", https://www.theworldavatar.com/kg/ontobim/hasParentContext, " + TEST_PARENT_CONTEXT_IRI);
         expected.add(TEST_SUB_CONTEXT_BIM_IRI + ", https://www.theworldavatar.com/kg/ontobim/hasContextType, \"" + TEST_CONTEXT_TYPE);
         expected.add(TEST_SUB_CONTEXT_BIM_IRI + ", https://www.theworldavatar.com/kg/ontobim/hasContextIdentifier, \"" + TEST_CONTEXT_IDENTIFIER);

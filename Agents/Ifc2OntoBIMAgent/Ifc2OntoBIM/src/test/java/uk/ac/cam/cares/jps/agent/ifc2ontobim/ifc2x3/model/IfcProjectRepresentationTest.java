@@ -83,7 +83,7 @@ class IfcProjectRepresentationTest {
 
     private List<String> genExpectedStatements() {
         java.util.List<java.lang.String> expected = new ArrayList<>();
-        expected.add(testBaseUri + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/IfcProjectRepresentation");
+        expected.add(testBaseUri + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, " + JunitTestUtils.RDF_TYPE + ", https://www.theworldavatar.com/kg/ontobim/IfcProjectRepresentation");
         expected.add(testBaseUri + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasContext, " + testBimGeomRepContext);
         return expected;
     }

@@ -60,7 +60,7 @@ class GeometricRepresentationSubContextTest {
 
     private List<String> genExpectedStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(testBIMIri1 + ", https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");
+        expected.add(testBIMIri1 + ", " + JunitTestUtils.RDF_TYPE + ", https://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext");
         expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasParentContext, " + testParentContextIri);
         expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasContextType, \"" + testContextType);
         expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasContextIdentifier, \"" + testContextIdentifier);

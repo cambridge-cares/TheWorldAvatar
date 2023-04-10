@@ -80,7 +80,7 @@ class GeometricRepresentationContextTest {
 
     private List<String> genExpectedStatements() {
         java.util.List<java.lang.String> expected = new ArrayList<>();
-        expected.add(testBIMIri1 + ", https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/GeometricRepresentationContext");
+        expected.add(testBIMIri1 + ", " + JunitTestUtils.RDF_TYPE + ", https://www.theworldavatar.com/kg/ontobim/GeometricRepresentationContext");
         expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasSpaceDimensions, \"" + testDim);
         expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasWorldCoordinateSystem, " + testWCSIri);
         return expected;

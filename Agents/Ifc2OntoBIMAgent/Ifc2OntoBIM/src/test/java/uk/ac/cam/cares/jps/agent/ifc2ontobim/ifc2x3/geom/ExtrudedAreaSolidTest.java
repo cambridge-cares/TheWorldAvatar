@@ -60,7 +60,7 @@ class ExtrudedAreaSolidTest {
 
     private List<String> genExpectedStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(testBIMIri1 + ", https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/ExtrudedAreaSolid");
+        expected.add(testBIMIri1 + ", " + JunitTestUtils.RDF_TYPE + ", https://www.theworldavatar.com/kg/ontobim/ExtrudedAreaSolid");
         expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasExtrusionStartPosition, " + testPlacementIRI);
         expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasExtrusionDirection, " + testDirectionIri);
         expected.add(testBIMIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasExtrusionDepth, \"" + testDepth);

@@ -73,7 +73,7 @@ class CartesianTransformationOperatorTest {
 
     private List<String> genExpectedStatements() {
         List<String> expected = new ArrayList<>();
-        expected.add(testBimIri1 + ", https://www.w3.org/1999/02/22-rdf-syntax-ns#type, https://www.theworldavatar.com/kg/ontobim/CartesianTransformationOperator");
+        expected.add(testBimIri1 + ", " + JunitTestUtils.RDF_TYPE + ", https://www.theworldavatar.com/kg/ontobim/CartesianTransformationOperator");
         expected.add(testBimIri1 + ", https://www.theworldavatar.com/kg/ontobim/hasLocalOrigin, " + testOriginIri);
         return expected;
     }
