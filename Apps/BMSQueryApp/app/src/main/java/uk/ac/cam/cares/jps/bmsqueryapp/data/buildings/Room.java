@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.bmsqueryapp.data;
+package uk.ac.cam.cares.jps.bmsqueryapp.data.buildings;
 
 import org.json.JSONArray;
 import org.json.JSONException;

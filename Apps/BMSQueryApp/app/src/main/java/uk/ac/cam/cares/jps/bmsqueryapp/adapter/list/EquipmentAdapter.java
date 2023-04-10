@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.bmsqueryapp.R;
-import uk.ac.cam.cares.jps.bmsqueryapp.data.Equipment;
+import uk.ac.cam.cares.jps.bmsqueryapp.data.buildings.Equipment;
 
 public class EquipmentAdapter extends RecyclerView.Adapter<EquipmentAdapter.EquipmentViewHolder> {
 
