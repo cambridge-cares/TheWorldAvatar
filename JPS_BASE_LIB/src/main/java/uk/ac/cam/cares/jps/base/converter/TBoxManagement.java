@@ -26,6 +26,7 @@ import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
+import org.semanticweb.owlapi.model.OWLObjectIntersectionOf;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
@@ -292,8 +293,11 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			// available, it creates the property.
 			OWLObjectProperty objectProperty = createObjectProperty(property);
 			OWLClass rangeClass = null;
-			OWLObjectUnionOf objectUnionOfRanges = null;
-			processUnionOfRelationToAddTypeOfLogicalFormula(objectProperty, quantifier, rangeClass, objectUnionOfRanges, domain, range);
+			if (range.contains("UNION")) {
+				processUnionOfRelationToAddTypeOfLogicalFormula(objectProperty, quantifier, rangeClass, domain, range);
+			} else if (range.contains("INTERSECTION")) {
+				processIntersectionOfRelationToAddTypeOfLogicalFormula(objectProperty, quantifier, rangeClass, domain, range);
+			}
 		}
 	}
 	
@@ -306,12 +310,12 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * @param objectProperty
 	 * @param quantifier
 	 * @param rangeClass
-	 * @param objectUnionOfRanges
 	 * @param domain
 	 * @param range
 	 * @throws JPSRuntimeException
 	 */
-	private void processUnionOfRelationToAddTypeOfLogicalFormula(OWLObjectProperty objectProperty, String quantifier, OWLClass rangeClass, OWLObjectUnionOf objectUnionOfRanges, String domain, String range) throws JPSRuntimeException {
+	private void processUnionOfRelationToAddTypeOfLogicalFormula(OWLObjectProperty objectProperty, String quantifier, OWLClass rangeClass, String domain, String range) throws JPSRuntimeException {
+		OWLObjectUnionOf objectUnionOfRanges = null;
 		if (range.contains("UNION")) {
 			objectUnionOfRanges = getUnionOfRange(objectProperty, range.split("UNION"));
 		}else{
@@ -322,6 +326,33 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 					singleDomain, range);
 		}
 	}
+
+	/**
+	 * Processes the domain and range values to understand if the term INTERSECTION appears</br> 
+	 * in them. If INTERSECTION appears in the domain, it applies the logical formula to</br>
+	 * each domain class separately. If INTERSECTION appears in the range, it applies the</br>
+	 * the formula to the intersection of the range classes.
+	 * 
+	 * @param objectProperty
+	 * @param quantifier
+	 * @param rangeClass
+	 * @param domain
+	 * @param range
+	 * @throws JPSRuntimeException
+	 */
+	private void processIntersectionOfRelationToAddTypeOfLogicalFormula(OWLObjectProperty objectProperty, String quantifier, OWLClass rangeClass, String domain, String range) throws JPSRuntimeException {
+		OWLObjectIntersectionOf objectIntersectionOfRanges = null;
+		if (range.contains("INTERSECTION")) {
+			objectIntersectionOfRanges = getIntersectionOfRange(objectProperty, range.split("INTERSECTION"));
+		}else{
+			rangeClass = createClass(range);
+		}
+		for (String singleDomain : domain.split("INTERSECTION")) {
+			decideToAddTypeOfLogicalFormula(objectProperty, rangeClass, objectIntersectionOfRanges, quantifier,
+					singleDomain, range);
+		}
+	}
+
 	
 	/**
 	 * Decides the type of logical formula needs to be created.</br>
@@ -358,6 +389,44 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			addMaximumOneQuantification(objectProperty, domainClass, rangeClass);
 		}
 	}
+
+	/**
+	 * Decides the type of logical formula needs to be created.</br>
+	 * Currently, it supports formulas with the following two quantifiers:<br>
+	 * - for all (only)<br>
+	 * - for some (some)<br>
+	 * - exactly 1<br>
+	 * - maximum 1<br>
+	 * - minimum 1<br>
+	 * 
+	 * @param objectProperty
+	 * @param rangeClass
+	 * @param objectIntersectionOfRanges
+	 * @param quantifier
+	 * @param singleDomain
+	 * @param range
+	 * @throws JPSRuntimeException
+	 */
+	private void decideToAddTypeOfLogicalFormula(OWLObjectProperty objectProperty, OWLClass rangeClass,
+			OWLObjectIntersectionOf objectIntersectionOfRanges, String quantifier, String singleDomain, String range)
+			throws JPSRuntimeException {
+		OWLClass domainClass = createClass(singleDomain);
+		if (quantifier != null && !quantifier.isEmpty() && quantifier.trim().equalsIgnoreCase("only")) {
+			addUniversalQuantification(objectProperty, domainClass, rangeClass, objectIntersectionOfRanges, range);
+		} else if (quantifier != null && !quantifier.isEmpty() && quantifier.trim().equalsIgnoreCase("some")) {
+			addExistentialQuantification(objectProperty, domainClass, rangeClass, objectIntersectionOfRanges, range);
+		} else if (quantifier != null && !quantifier.isEmpty()
+				&& quantifier.trim().equalsIgnoreCase("exactly 1")) {
+			addExactlyOneQuantification(objectProperty, domainClass, rangeClass);
+		} else if (quantifier !=null && !quantifier.isEmpty()
+				&& quantifier.trim().equalsIgnoreCase("minimum 1")){
+			addMinimumOneQuantification(objectProperty, domainClass, rangeClass);
+		} else if(quantifier !=null && !quantifier.isEmpty()
+				&& quantifier.trim().equalsIgnoreCase("maximum 1")){
+			addMaximumOneQuantification(objectProperty, domainClass, rangeClass);
+		}
+	}
+
 	
 	/**
 	 * Adds a logical formula with a universal quantifier.
@@ -380,6 +449,27 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	}
 
 	/**
+	 * Adds a logical formula with a universal quantifier.
+	 * 
+	 * @param objectProperty
+	 * @param domainClass
+	 * @param rangeClass
+	 * @param objectIntersectionOfRanges
+	 * @param range
+	 */
+	private void addUniversalQuantification(OWLObjectProperty objectProperty, OWLClass domainClass, OWLClass rangeClass, OWLObjectIntersectionOf objectIntersectionOfRanges, String range){
+		OWLObjectAllValuesFrom restriction;
+		if (range.contains("INTERSECTION")) {
+			restriction = dataFactory.getOWLObjectAllValuesFrom(objectProperty, objectIntersectionOfRanges);
+		} else {
+			restriction = dataFactory.getOWLObjectAllValuesFrom(objectProperty, rangeClass);
+		}
+		manager.applyChange(
+				new AddAxiom(ontology, dataFactory.getOWLSubClassOfAxiom(domainClass, restriction)));
+	}
+
+	
+	/**
 	 * Adds a logical formula with an existential quantifier.
 	 * 
 	 * @param objectProperty
@@ -392,6 +482,27 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		OWLObjectSomeValuesFrom restriction;
 		if (range.contains("UNION")) {
 			restriction = dataFactory.getOWLObjectSomeValuesFrom(objectProperty, objectUnionOfRanges);
+		} else {
+			restriction = dataFactory.getOWLObjectSomeValuesFrom(objectProperty, rangeClass);
+		}
+		manager.applyChange(
+				new AddAxiom(ontology, dataFactory.getOWLSubClassOfAxiom(domainClass, restriction)));
+	}
+
+
+	/**
+	 * Adds a logical formula with an existential quantifier.
+	 * 
+	 * @param objectProperty
+	 * @param domainClass
+	 * @param rangeClass
+	 * @param objectIntersectionOfRanges
+	 * @param range
+	 */
+	private void addExistentialQuantification(OWLObjectProperty objectProperty, OWLClass domainClass, OWLClass rangeClass, OWLObjectIntersectionOf objectIntersectionOfRanges, String range){
+		OWLObjectSomeValuesFrom restriction;
+		if (range.contains("INTERSECTION")) {
+			restriction = dataFactory.getOWLObjectSomeValuesFrom(objectProperty, objectIntersectionOfRanges);
 		} else {
 			restriction = dataFactory.getOWLObjectSomeValuesFrom(objectProperty, rangeClass);
 		}
@@ -754,6 +865,23 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		}
 		return dataFactory.getOWLObjectUnionOf(owlClassExpressions);
 	}
+
+	/**
+	 * Adds the range(s) to the current object property and returns the intersection
+	 * of classes, which form the range.
+	 * 
+	 * @param objectProperty
+	 * @param ranges
+	 * @throws JPSRuntimeException
+	 */
+	private OWLObjectIntersectionOf getIntersectionOfRange(OWLObjectProperty objectProperty, String[] ranges) throws JPSRuntimeException{
+		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
+		for(String range: ranges){
+			owlClassExpressions.add(createClass(range));
+		}
+		return dataFactory.getOWLObjectIntersectionOf(owlClassExpressions);
+	}
+
 	
 	/**
 	 * Adds the range(s) to the current object property.
