@@ -11,7 +11,7 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import uk.ac.cam.cares.jps.bmsqueryapp.data.Instance;
+import uk.ac.cam.cares.jps.bmsqueryapp.data.buildings.Instance;
 
 public class InstanceAdapter extends BaseArrayAdapter<Instance>{
     private ArrayList<Instance> instances;
