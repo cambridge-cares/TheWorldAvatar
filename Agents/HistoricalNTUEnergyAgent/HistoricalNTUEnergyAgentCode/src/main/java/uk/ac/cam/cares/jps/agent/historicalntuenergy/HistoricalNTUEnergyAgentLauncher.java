@@ -42,6 +42,7 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
             " in the pointers if one readings was successful and needs to be fixed!";
     private static final String ONE_READING_EMPTY_ERROR_MSG = "Readings are empty, that means there is " +
             "a mismatch in the pointer for the readings. This should be fixed (and might require a clean up of the database)!";
+
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         return processRequestParameters(requestParams);
@@ -53,12 +54,11 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
         if (validateInput(requestParams)) {
             String agentProperties = System.getenv(requestParams.getString(KEY_AGENTPROPERTIES));
             String xlsxConnectorProperties = System.getenv(requestParams.getString(KEY_XLSXCONNECTORPROPERTIES));
-            String[] properties = new String[] {agentProperties, xlsxConnectorProperties};
+            String[] properties = new String[]{agentProperties, xlsxConnectorProperties};
             jsonMessage = initializeAgent(properties);
             jsonMessage.accumulate("Result", "Timeseries Data has been updated.");
             requestParams = jsonMessage;
-        }
-        else {
+        } else {
             jsonMessage.put("Result", "Request parameters are not defined correctly.");
             requestParams = jsonMessage;
         }
@@ -101,7 +101,7 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
         EndpointConfig config = new EndpointConfig();
         RemoteStoreClient kbClient = null;
         for (String endpoint : config.getKgurls()) {
-            if (endpoint.contains("ntuenergy")){
+            if (endpoint.contains("ntuenergy")) {
                 kbClient = new RemoteStoreClient(endpoint, endpoint, config.getKguser(), config.getKgpassword());
             }
         }
@@ -122,9 +122,8 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
         // Initialize time series'
         try {
             agent.initializeTimeSeriesIfNotExist();
-        }
-        catch (JPSRuntimeException e) {
-            LOGGER.error(INITIALIZE_ERROR_MSG,e);
+        } catch (JPSRuntimeException e) {
+            LOGGER.error(INITIALIZE_ERROR_MSG, e);
             throw new JPSRuntimeException(INITIALIZE_ERROR_MSG, e);
         }
 
@@ -142,8 +141,7 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
         JSONArray energyReadings;
         try {
             energyReadings = connector.getEnergyReadings();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             LOGGER.error(GET_READINGS_ERROR_MSG, e);
             throw new JPSRuntimeException(GET_READINGS_ERROR_MSG, e);
         }
@@ -151,25 +149,24 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
                 energyReadings.length()));
 
         // If the file readings are not empty there is new data
-        if(!energyReadings.isEmpty()) {
+        if (!energyReadings.isEmpty()) {
             // Update the data
             agent.updateData(energyReadings);
             LOGGER.info("Data updated with new readings from API.");
             jsonMessage.put("Result", "Data updated with new readings from API.");
         }
         // If the file readings are empty, then no new readings are available
-        else if(energyReadings.isEmpty()) {
+        else if (energyReadings.isEmpty()) {
             LOGGER.info("No new readings are available.");
             jsonMessage.put("Result", "No new readings are available.");
-        }
-        else {
+        } else {
             LOGGER.error(ONE_READING_EMPTY_ERROR_MSG);
             throw new JPSRuntimeException(ONE_READING_EMPTY_ERROR_MSG);
         }
 
         HistoricalQueryBuilder queryBuilder;
-        try{
-            queryBuilder = new HistoricalQueryBuilder(properties[0],kbClient);
+        try {
+            queryBuilder = new HistoricalQueryBuilder(properties[0], kbClient);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

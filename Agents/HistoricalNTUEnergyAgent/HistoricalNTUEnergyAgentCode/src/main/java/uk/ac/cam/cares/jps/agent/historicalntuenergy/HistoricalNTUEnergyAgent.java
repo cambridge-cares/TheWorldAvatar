@@ -1,4 +1,5 @@
 package uk.ac.cam.cares.jps.agent.historicalntuenergy;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jooq.exception.DataAccessException;
@@ -7,6 +8,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeries;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient.Type;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -14,6 +16,7 @@ import java.io.InputStream;
 import java.time.*;
 import java.util.*;
 import java.util.stream.Collectors;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -54,6 +57,7 @@ public class HistoricalNTUEnergyAgent {
     /**
      * Standard constructor which reads in JSON key to IRI mappings from the config folder
      * defined in the provided properties file.
+     *
      * @param propertiesFile The properties file from which to read the path of the mapping folder.
      */
     public HistoricalNTUEnergyAgent(String propertiesFile) throws IOException {
@@ -67,9 +71,8 @@ public class HistoricalNTUEnergyAgent {
             try {
                 // Read the mappings folder from the properties file
                 mappingFolder = System.getenv(prop.getProperty("ntuenergy.mappingfolder"));
-            }
-            catch (NullPointerException e) {
-                throw new IOException ("The key ntuenergy.mappingfolder cannot be found in the properties file.");
+            } catch (NullPointerException e) {
+                throw new IOException("The key ntuenergy.mappingfolder cannot be found in the properties file.");
             }
             if (mappingFolder == null) {
                 throw new InvalidPropertiesFormatException("The properties file does not contain the key ntuenergy.mappingfolder " +
@@ -83,7 +86,8 @@ public class HistoricalNTUEnergyAgent {
 
     /**
      * Retrieves the number of time series the input agent is handling.
-     * @return  The number of time series maintained by the agent.
+     *
+     * @return The number of time series maintained by the agent.
      */
     public int getNumberOfTimeSeries() {
         return mappings.size();
@@ -91,6 +95,7 @@ public class HistoricalNTUEnergyAgent {
 
     /**
      * Setter for the time series client.
+     *
      * @param tsClient The time series client to use.
      */
     public void setTsClient(TimeSeriesClient<OffsetDateTime> tsClient) {
@@ -99,6 +104,7 @@ public class HistoricalNTUEnergyAgent {
 
     /**
      * Reads the JSON key to IRI mappings from files in the provided folder.
+     *
      * @param mappingFolder The path to the folder in which the mapping files are located.
      */
     private void readMappings(String mappingFolder) throws IOException {
@@ -114,7 +120,7 @@ public class HistoricalNTUEnergyAgent {
         }
         // Create a mapper for each file
         else {
-            for (File mappingFile: mappingFiles) {
+            for (File mappingFile : mappingFiles) {
                 JSONKeyToIRIMapper mapper = new JSONKeyToIRIMapper(HistoricalNTUEnergyAgent.generatedIRIPrefix, mappingFile.getAbsolutePath());
                 mappings.add(mapper);
                 // Save the mappings back to the file to ensure using same IRIs next time
@@ -129,11 +135,11 @@ public class HistoricalNTUEnergyAgent {
      */
     public void initializeTimeSeriesIfNotExist() {
         // Iterate through all mappings (each represents one time series)
-        for (JSONKeyToIRIMapper mapping: mappings) {
+        for (JSONKeyToIRIMapper mapping : mappings) {
             // The IRIs used by the current mapping
             List<String> iris = mapping.getAllIRIs();
             // Check whether IRIs have a time series linked and if not initialize the corresponding time series
-            if(!timeSeriesExist(iris)) {
+            if (!timeSeriesExist(iris)) {
                 // Get the classes (datatype) corresponding to each JSON key needed for initialization
                 List<Class<?>> classes = iris.stream().map(this::getClassFromJSONKey).collect(Collectors.toList());
                 // Initialize the time series
@@ -146,14 +152,15 @@ public class HistoricalNTUEnergyAgent {
     }
 
     /**
-     * Checks whether a time series exists by checking whether any of the IRIs that should be attached to 
+     * Checks whether a time series exists by checking whether any of the IRIs that should be attached to
      * the time series is not initialised in the central RDB lookup table using the time series client.
+     *
      * @param iris The IRIs that should be attached to the same time series provided as list of strings.
      * @return True if all IRIs have a time series attached, false otherwise.
      */
     private boolean timeSeriesExist(List<String> iris) {
         // If any of the IRIs does not have a time series the time series does not exist
-        for(String iri: iris) {
+        for (String iri : iris) {
             try {
                 if (!tsClient.checkDataHasTimeSeries(iri)) {
                     return false;
@@ -162,8 +169,7 @@ public class HistoricalNTUEnergyAgent {
             } catch (DataAccessException e) {
                 if (e.getMessage().contains("ERROR: relation \"dbTable\" does not exist")) {
                     return false;
-                }
-                else {
+                } else {
                     throw e;
                 }
             }
@@ -173,6 +179,7 @@ public class HistoricalNTUEnergyAgent {
 
     /**
      * Updates the database with new readings.
+     *
      * @param energyReadings The energy readings retrieved from the Excel file
      */
     public void updateData(JSONArray energyReadings) {
@@ -274,6 +281,7 @@ public class HistoricalNTUEnergyAgent {
     /**
      * Transform a JSON Array where each element is a single timestamp with all readings
      * into a Map, where values per key are gathered into a list.
+     *
      * @param readings The JSON Array to convert
      * @return The same readings in form of a Map
      */
@@ -284,7 +292,7 @@ public class HistoricalNTUEnergyAgent {
         for (int i = 0; i < readings.length(); i++) {
             JSONObject currentEntry = readings.getJSONObject(i);
             // Iterate through the keys of the entry
-            for (Iterator<String> it = currentEntry.keys(); it.hasNext();) {
+            for (Iterator<String> it = currentEntry.keys(); it.hasNext(); ) {
                 String key = it.next();
                 // Get the value and add it to the corresponding list
                 Object value = currentEntry.get(key);
@@ -311,7 +319,7 @@ public class HistoricalNTUEnergyAgent {
 
         // Convert the values to the pFVroper datatype //
         Map<String, List<?>> readingsMapTyped = new HashMap<>();
-        for (String key: readingsMap.keySet()) {
+        for (String key : readingsMap.keySet()) {
             // Get the class (datatype) corresponding to the key
             String datatype = getClassFromJSONKey(key).getSimpleName();
             // Get current list with object type
@@ -321,8 +329,7 @@ public class HistoricalNTUEnergyAgent {
             // The Number cast is required for org.json datatypes
             if (datatype.equals(Double.class.getSimpleName())) {
                 valuesTyped = valuesUntyped.stream().map(value -> ((Number) value).doubleValue()).collect(Collectors.toList());
-            }
-            else {
+            } else {
                 valuesTyped = valuesUntyped.stream().map(Object::toString).collect(Collectors.toList());
             }
             readingsMapTyped.put(key, valuesTyped);
@@ -332,11 +339,12 @@ public class HistoricalNTUEnergyAgent {
 
     /**
      * Converts the readings in form of maps to time series' using the mappings from JSON key to IRI.
+     *
      * @param energyReadings The energy readings as map.
      * @return A list of time series objects (one per mapping) that can be used with the time series client.
      */
     private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> energyReadings)
-            throws  NoSuchElementException {
+            throws NoSuchElementException {
         // Extract the timestamps by mapping the private conversion method on the list items
         // that are supposed to be string (toString() is necessary as the map contains lists of different types)
         List<OffsetDateTime> energyTimestamps = energyReadings.get(HistoricalNTUEnergyAgent.timestampKey).stream()
@@ -344,13 +352,13 @@ public class HistoricalNTUEnergyAgent {
         // Construct a time series object for each mapping
         List<TimeSeries<OffsetDateTime>> timeSeries = new ArrayList<>();
         int addedTSCounter = 0;
-        for (JSONKeyToIRIMapper mapping: mappings) {
+        for (JSONKeyToIRIMapper mapping : mappings) {
             // Initialize the list of IRIs
             List<String> iris = new ArrayList<>();
             // Initialize the list of list of values
             List<List<?>> values = new ArrayList<>();
             // Go through all keys in the mapping
-            for(String key: mapping.getAllJSONKeys()) {
+            for (String key : mapping.getAllJSONKeys()) {
 
                 if (energyReadings.containsKey(key)) {
                     // Add IRI
@@ -373,30 +381,26 @@ public class HistoricalNTUEnergyAgent {
 
     /**
      * Converts a string into a datetime object with zone information using the zone globally define for the agent.
+     *
      * @param timestamp The timestamp as string, the format should be equal to 2007-12-03T10:15:30.
      * @return The resulting datetime object.
      */
     private OffsetDateTime convertStringToOffsetDateTime(String timestamp) {
-
         // Convert first to a local time
-        //LOGGER.info(timestamp);
         LocalDateTime localTime = LocalDateTime.parse(timestamp);
-
-        // Then add the zone id
-
         return OffsetDateTime.of(localTime, HistoricalNTUEnergyAgent.ZONE_OFFSET);
     }
 
     /**
      * Returns the class (datatype) corresponding to a JSON key. Note: rules for the mapping are hardcoded in the method.
+     *
      * @param jsonKey The JSON key as string.
      * @return The corresponding class as Class<?> object.
      */
     private Class<?> getClassFromJSONKey(String jsonKey) {
-        if(jsonKey.equals("TIME")){
+        if (jsonKey.equals("TIME")) {
             return String.class;
-        }
-        else{
+        } else {
             return Double.class;
         }
     }

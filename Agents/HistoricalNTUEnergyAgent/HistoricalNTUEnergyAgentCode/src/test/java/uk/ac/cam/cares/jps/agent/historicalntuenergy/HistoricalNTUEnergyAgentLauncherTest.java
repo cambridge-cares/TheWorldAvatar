@@ -10,6 +10,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import java.io.File;
 import java.io.FileWriter;
