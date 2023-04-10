@@ -16,7 +16,6 @@ sparql_namespace = "ontomops"
 full_dataset_dir = os.path.join(DATA_DIR, "CrossGraph", ontology, sub_ontology)
 file_loader = FileLoader(full_dataset_dir=full_dataset_dir)
 entity2idx, idx2entity, rel2idx, idx2rel = file_loader.load_index_files()
-
 file_creator = IntegratedTrainingFileCreator(sparql_namespace=sparql_namespace,
                                              ontology=ontology, endpoint_url=endpoint_url,
                                              sub_ontology=sub_ontology, same_frac=1, other_frac=0)
