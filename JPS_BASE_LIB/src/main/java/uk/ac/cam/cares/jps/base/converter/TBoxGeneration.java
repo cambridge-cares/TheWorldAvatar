@@ -54,15 +54,15 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 	/**
 	 * Stores the mapping between a child class and its parents.
 	 */
-	Map<String, List<String>> childParentMap = new HashMap<String, List<String>>();
+	public static Map<String, List<String>> childParentMap = new HashMap<String, List<String>>();
 	/**
 	 * Stores the mapping between a domain class and its relations.
 	 */
-	Map<String, List<String>> domainRelationMap = new HashMap<String, List<String>>();
+	public static Map<String, List<String>> domainRelationMap = new HashMap<String, List<String>>();
 	/**
 	 * Stores the mapping between a range class and its relations.
 	 */
-	Map<String, List<String>> rangeRelationMap = new HashMap<String, List<String>>();
+	public static Map<String, List<String>> rangeRelationMap = new HashMap<String, List<String>>();
 
 	
 	public static void main(String[] args) {
@@ -190,11 +190,13 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 					&& type.equalsIgnoreCase(tBoxConfig.getElementTypeClass()) 
 					&& relation.equalsIgnoreCase(tBoxConfig.getIsARelation())) {
 				if (childParentMap.containsKey(source)) {
-					childParentMap.get(type).add(target);
+					childParentMap.get(source).add(target);
 				} else {
 					List<String> parents = new ArrayList<String>();
 					parents.add(target);
 					childParentMap.put(source, parents);
+					System.out.println(childParentMap.keySet());
+					System.out.println(source);
 				}
 			}
 			
@@ -208,6 +210,8 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 					domainClasses = domain.split("UNION");
 				} else if (domain.contains("INTERSECTION")) {
 					domainClasses = domain.split("INTERSECTION");
+				} else {
+					domainClasses = new String[] {domain};
 				}
 				if (domainClasses != null){
 					for(String domainClass:domainClasses) {
@@ -233,6 +237,8 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 					rangeClasses = range.split("UNION");
 				} else if (range.contains("INTERSECTION")) {
 					rangeClasses = range.split("INTERSECTION");
+				} else {
+					rangeClasses = new String[] {range};
 				}
 				if (rangeClasses != null) {
 					for(String rangeClass:rangeClasses) {
@@ -249,28 +255,28 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 			}
 		}
 		
-//		System.out.println("Child-parent relationships:");
-//		for(String key: childParentMap.keySet()) {
-//			System.out.println("Child:"+key);
-//			for(String parent:childParentMap.get(key)) {
-//				System.out.println("   Parent:"+parent);
-//			}
-//		}
-//
-//		System.out.println("Domain and its associated relations:");
-//		for(String key: domainRelationMap.keySet()) {
-//			System.out.println("Domain:"+key);
-//			for(String relation:domainRelationMap.get(key)) {
-//				System.out.println("   Relation:"+relation);
-//			}
-//		}
-//		System.out.println("Range and its associated relations:");
-//		for(String key: rangeRelationMap.keySet()) {
-//			System.out.println("Range:"+key);
-//			for(String relation:rangeRelationMap.get(key)) {
-//				System.out.println("   Relation:"+relation);
-//			}
-//		}
+		System.out.println("Child-parent relationships:");
+		for(String key: childParentMap.keySet()) {
+			System.out.println("Child:"+key);
+			for(String parent:childParentMap.get(key)) {
+				System.out.println("   Parent:"+parent);
+			}
+		}
+
+		System.out.println("Domain and its associated relations:");
+		for(String key: domainRelationMap.keySet()) {
+			System.out.println("Domain:"+key);
+			for(String relation:domainRelationMap.get(key)) {
+				System.out.println("   Relation:"+relation);
+			}
+		}
+		System.out.println("Range and its associated relations:");
+		for(String key: rangeRelationMap.keySet()) {
+			System.out.println("Range:"+key);
+			for(String relation:rangeRelationMap.get(key)) {
+				System.out.println("   Relation:"+relation);
+			}
+		}
 	}
 
 

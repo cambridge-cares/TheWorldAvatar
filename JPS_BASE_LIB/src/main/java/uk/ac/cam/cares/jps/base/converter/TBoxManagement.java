@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.validator.routines.UrlValidator;
-import org.apache.jena.base.Sys;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AddImport;
@@ -544,64 +543,65 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	}
 	
 	/**
-	 * Adds the domain(s) to the current object property. 
+	 * Adds the domain(s) to the current object property.
 	 * 
 	 * @param objectProperty
 	 * @param domain
 	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addDomain(OWLObjectProperty objectProperty, String domain, String quantifier) throws JPSRuntimeException {
-		if(domain==null || domain.isEmpty()){
+	private void addDomain(OWLObjectProperty objectProperty, String domain, String quantifier)
+			throws JPSRuntimeException {
+		if (domain == null || domain.isEmpty()) {
 			return;
 		}
-		
-		if(domain.contains("UNION")){
+
+		if (domain.contains("UNION")) {
 			addUnionOfDomain(objectProperty, domain.split("UNION"), quantifier);
-		} else if(domain.contains("INTERSECTION")){
-			addIntersectionOfDomain(objectProperty, domain.split("INTERSECTION"));
-		} else if(domain!=null || !domain.isEmpty()){
-			addSingleClassDomain(objectProperty, domain);
+		} else if (domain.contains("INTERSECTION")) {
+			addIntersectionOfDomain(objectProperty, domain.split("INTERSECTION"), quantifier);
+		} else {
+			addSingleClassDomain(objectProperty, domain, quantifier);
 		}
 	}
 	
 	/**
-	 * Adds the range(s) to the current data property. 
+	 * Adds the range(s) to the current data property.
 	 * 
 	 * @param dataProperty
 	 * @param range
 	 * @throws JPSRuntimeException
 	 */
 	private void addRange(OWLDataProperty dataProperty, String range) throws JPSRuntimeException {
-		if(range==null || range.isEmpty()){
+		if (range == null || range.isEmpty()) {
 			return;
 		}
-		if(range.contains("UNION")){
-		} else if(range.contains("INTERSECTION")){
-		}
-		else{
+		if (range.contains("UNION")) {
+		} else if (range.contains("INTERSECTION")) {
+		} else {
 			addSingleDataTypeRange(dataProperty, range);
 		}
 	}
 	
 	/**
-	 * Adds the range(s) to the current object property. 
+	 * Adds the range(s) to the current object property.
 	 * 
 	 * @param objectProperty
 	 * @param range
 	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addRange(OWLObjectProperty objectProperty, String range, String quantifier) throws JPSRuntimeException {
-		if(range==null || range.isEmpty()){
+	private void addRange(OWLObjectProperty objectProperty, String range, String quantifier)
+			throws JPSRuntimeException {
+		if (range == null || range.isEmpty()) {
 			return;
 		}
-		if(range.contains("UNION") && (quantifier==null || quantifier.isEmpty())){
-			addUnionOfRange(objectProperty, range.split("UNION"));
-		} else if(range.contains("INTERSECTION") && (quantifier==null || quantifier.isEmpty())){
+		if (range.contains("UNION")) {
+			addUnionOfRange(objectProperty, range.split("UNION"), quantifier);
+		} else if (range.contains("INTERSECTION")) {
 			addIntersectionOfRange(objectProperty, range.split("INTERSECTION"));
-		} else if(range!=null || !range.isEmpty()){
-			addSingleClassRange(objectProperty, range);
+		} else {
+			addSingleClassRange(objectProperty, range, quantifier);
 		}
 	}
 	
@@ -623,12 +623,23 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param domain
+	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addSingleClassDomain(OWLObjectProperty objectProperty, String domain) throws JPSRuntimeException{
-		OWLClass owlClass = createClass(domain);
-		manager.applyChange(new AddAxiom(ontology,
-				dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty, owlClass)));
+	private void addSingleClassDomain(OWLObjectProperty objectProperty, String domain, String quantifier) throws JPSRuntimeException{
+		// If the domain class and any of its ancestors do not participate in
+		// the same relation, the domain is included in the ontological model
+		if(!isDomainsParentInSameRelation(domain.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
+			manager.applyChange(new AddAxiom(ontology,
+						dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty, createClass(domain))));
+		} 
+		// If the domain class and any of its ancestors participate in the
+		// same relation and the quantifier is specified, the domain is
+		// included in the ontological model
+		else if (quantifier == null || quantifier.equals("")) {
+			manager.applyChange(new AddAxiom(ontology,
+					dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty, createClass(domain))));
+		}
 	}
 	
 	/**
@@ -652,12 +663,24 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * Adds the range(s) to the current object property.
 	 * 
 	 * @param objectProperty
-	 * @param ranges
+	 * @param range
+	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addSingleClassRange(OWLObjectProperty objectProperty, String range) throws JPSRuntimeException{
-		manager.applyChange(new AddAxiom(ontology,
+	private void addSingleClassRange(OWLObjectProperty objectProperty, String range, String quantifier) throws JPSRuntimeException{
+		// If the range class and any of its ancestors do not participate in
+		// the same relation, the range is included in the ontological model
+		if(!isRangeParentInSameRelation(range.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
+			manager.applyChange(new AddAxiom(ontology,
+						dataFactory.getOWLObjectPropertyRangeAxiom(objectProperty, createClass(range))));
+		} 
+		// If the range class and any of its ancestors participate in the
+		// same relation and the quantifier is specified, the range is
+		// included in the ontological model
+		else if (quantifier == null || quantifier.equals("")) {
+			manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLObjectPropertyRangeAxiom(objectProperty, createClass(range))));
+		}
 	}
 	
 	/**
@@ -665,12 +688,17 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param ranges
+	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addUnionOfRange(OWLObjectProperty objectProperty, String[] ranges) throws JPSRuntimeException{
+	private void addUnionOfRange(OWLObjectProperty objectProperty, String[] ranges, String quantifier) throws JPSRuntimeException{
 		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
 		for(String range: ranges){
-			owlClassExpressions.add(createClass(range));
+			if(quantifier != null || !quantifier.equals("")) {
+				if(!isRangeParentInSameRelation(range.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
+					owlClassExpressions.add(createClass(range));
+				}
+			}
 		}
 		manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLObjectPropertyRangeAxiom(objectProperty, dataFactory.getOWLObjectUnionOf(owlClassExpressions))));
@@ -731,8 +759,8 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	
 	private boolean isDomainsParentInSameRelation(String domain, String relation) {
 		Set<String> ancestors = new HashSet<String>();
-		ancestors = getAncestors(relation, ancestors);
-		if (childParentMap.containsKey(relation)) {
+		ancestors = getAncestors(domain, ancestors);
+		if(childParentMap.containsKey(domain)) {
 			for(String ancestor: ancestors) {
 				if(domainRelationMap.containsKey(ancestor) && domainRelationMap.get(ancestor).contains(relation)) {
 					return true;
@@ -741,15 +769,30 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		}
 		return false;
 	}
+
+	private boolean isRangeParentInSameRelation(String range, String relation) {
+		Set<String> ancestors = new HashSet<String>();
+		ancestors = getAncestors(range, ancestors);
+		if (childParentMap.containsKey(range)) {
+			for(String ancestor: ancestors) {
+				if(rangeRelationMap.containsKey(ancestor) && rangeRelationMap.get(ancestor).contains(relation)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	
 	private Set<String> getAncestors(String ontologyClass, Set<String> ancestors) {
-		if (childParentMap.containsKey(ontologyClass))
+		if (childParentMap.containsKey(ontologyClass)) {
 			for (String parent : childParentMap.get(ontologyClass)) {
 				if (!ancestors.contains(parent)) {
 					ancestors.add(parent);
 					getAncestors(parent, ancestors);
 				}
 			}
+		}
 		return ancestors;
 	}
 	
@@ -777,12 +820,19 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param domains
+	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addIntersectionOfDomain(OWLObjectProperty objectProperty, String[] domains) throws JPSRuntimeException{
+	private void addIntersectionOfDomain(OWLObjectProperty objectProperty, String[] domains, String quantifier) throws JPSRuntimeException{
 		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
+		
 		for(String domain: domains){
-			owlClassExpressions.add(createClass(domain));
+			if(quantifier != null || !quantifier.equals("")) {
+				if(!isDomainsParentInSameRelation(domain.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
+					owlClassExpressions.add(createClass(domain));
+				}
+			}
+
 		}
 		manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty, dataFactory.getOWLObjectIntersectionOf(owlClassExpressions))));
