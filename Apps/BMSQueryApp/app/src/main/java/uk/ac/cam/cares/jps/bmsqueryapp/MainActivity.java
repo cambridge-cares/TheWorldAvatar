@@ -28,8 +28,8 @@ import java.util.Iterator;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.bmsqueryapp.databinding.ActivityMainBinding;
-import uk.ac.cam.cares.jps.bmsqueryapp.data.Building;
-import uk.ac.cam.cares.jps.bmsqueryapp.data.Room;
+import uk.ac.cam.cares.jps.bmsqueryapp.data.buildings.Building;
+import uk.ac.cam.cares.jps.bmsqueryapp.data.buildings.Room;
 import uk.ac.cam.cares.jps.bmsqueryapp.adapter.list.EquipmentAdapter;
 import uk.ac.cam.cares.jps.bmsqueryapp.adapter.list.OnEquipmentClickedListener;
 import uk.ac.cam.cares.jps.bmsqueryapp.adapter.spinner.BaseArrayAdapter;
@@ -236,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(getBaseContext(), EquipmentInstanceActivity.class);
             intent.putExtra(EquipmentInstanceActivity.EQUIPMENT_LABEL, equipment.getLabel());
             intent.putExtra(EquipmentInstanceActivity.EQUIPMENT_IRI, equipment.getIri());
+            intent.putExtra(EquipmentInstanceActivity.EQUIPMENT_TYPE, equipment.getType());
 
             LOGGER.info("selected label: " + equipment.getLabel());
             LOGGER.info("selected iri: " + equipment.getIri());

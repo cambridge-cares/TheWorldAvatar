@@ -6,6 +6,10 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 
+import java.util.List;
+
+import uk.ac.cam.cares.jps.bmsqueryapp.data.attribtue.EditableAttribute;
+
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
  * one of the sections/tabs/pages.
@@ -14,9 +18,11 @@ public class TabAdapter extends FragmentStateAdapter {
 
     private final int NUM_TABS = 2;
     private VisualizationFragment dtvfTab;
+    private List<EditableAttribute> editableAttributes;
 
-    public TabAdapter(FragmentManager manager, Lifecycle lifecycle) {
+    public TabAdapter(FragmentManager manager, Lifecycle lifecycle, List<EditableAttribute> editableAttributes) {
         super(manager, lifecycle);
+        this.editableAttributes = editableAttributes;
     }
 
     @NonNull
@@ -26,7 +32,7 @@ public class TabAdapter extends FragmentStateAdapter {
             dtvfTab = new VisualizationFragment();
             return dtvfTab;
         } else {
-            return new EditFragment();
+            return new EditFragment(editableAttributes);
         }
 
     }

@@ -11,4 +11,9 @@
     <string name="current_value_label">The current value is :</string>
     <string name="data_collection_time_label">Data is collected at:</string>
     <string name="submit">Submit</string>
+    <string name="building">Building</string>
+    <string name="facility">Facility</string>
+    <string name="room">Room</string>
+    <string name="equipment_type">Equipment Type</string>
+    <string name="equipment">Equipment</string>
 </resources>

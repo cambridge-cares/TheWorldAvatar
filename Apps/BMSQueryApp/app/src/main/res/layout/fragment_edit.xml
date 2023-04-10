@@ -7,36 +7,54 @@
     android:paddingStart="@dimen/component_margin"
     android:paddingEnd="@dimen/component_margin">
 
-    <TextView
-        android:id="@+id/input_tv"
+<!--    <TextView-->
+<!--        android:id="@+id/input_tv"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="Please input the value:"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        android:layout_marginTop="@dimen/component_margin"-->
+<!--        android:textSize="@dimen/title_font_size"-->
+<!--        />-->
+
+
+<!--    <EditText-->
+<!--        android:id="@+id/temperature_edit"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:hint="Value"-->
+<!--        android:inputType="numberDecimal"-->
+<!--        app:layout_constraintTop_toBottomOf="@id/input_tv"-->
+
+<!--        />-->
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Please input the value:"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="@dimen/component_margin"
-        android:textSize="@dimen/title_font_size"
-        />
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            <androidx.recyclerview.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="@dimen/component_margin_small"
+                android:paddingStart="@dimen/component_margin"
+                android:paddingEnd="@dimen/component_margin"
+                android:id="@+id/editable_attribute_rv"/>
+
+            <Button
+                android:id="@+id/submit_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/submit"
+                android:textSize="@dimen/font_size"
+                android:layout_margin="@dimen/component_margin_small" />
+        </LinearLayout>
 
 
-    <EditText
-        android:id="@+id/temperature_edit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Value"
-        android:inputType="numberDecimal"
-        app:layout_constraintTop_toBottomOf="@id/input_tv"
-
-        />
-
-    <Button
-        android:id="@+id/submit_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/submit"
-        android:textSize="@dimen/font_size"
-        app:layout_constraintTop_toBottomOf="@id/temperature_edit"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="@dimen/component_margin_small"/>
+    </androidx.core.widget.NestedScrollView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
