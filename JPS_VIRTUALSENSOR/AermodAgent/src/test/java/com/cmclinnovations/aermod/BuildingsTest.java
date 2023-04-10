@@ -12,6 +12,7 @@ import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,7 +21,7 @@ import java.util.List;
 
 public class BuildingsTest {
 
-    String simulationDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\31\\";
+    String simulationDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\33\\";
 
     //    Polygons defining rectangular regions in EPSG:4326/WGS84 coordinates.
     // wkt is for Jurong Island while wkt2 is for Pirmasens.
@@ -46,7 +47,7 @@ public class BuildingsTest {
 
     . */
     @Test
-    public void testInit() throws ParseException, org.apache.jena.sparql.lang.sparql_11.ParseException {
+    public void testInit() throws ParseException, org.apache.jena.sparql.lang.sparql_11.ParseException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 
         int centreZoneNumber = (int) Math.floor((scope.getCentroid().getCoordinate().getX() + 180)/6) + 1;
         System.out.println(centreZoneNumber);
@@ -78,12 +79,25 @@ public class BuildingsTest {
         Assertions.assertEquals(res3,0);
         int res2 = bp.createAERMODSourceInput();
         Assertions.assertEquals(res2,0);
-      
 
-
+        
 
 
         /* 
+
+        Aermod aermod = new Aermod(Path.of(simulationDirectory));
+        Field aermetPath = aermod.getClass().getDeclaredField("aermetDirectory");
+        aermetPath.setAccessible(true);
+        aermetPath.set(aermod, Path.of(simulationDirectory));
+        
+        int res5 = aermod.createAermetInput(scope);
+        Assertions.assertEquals(res5, 0);
+
+
+
+
+
+
 
         int res = bp.createBPIPPRMInput();
         Assertions.assertEquals(res,0);

@@ -1595,15 +1595,24 @@ public class Buildings {
             double StackHeight = Double.parseDouble(avecoord[2]);
             double StackBaseElevation = Double.parseDouble(avecoord[3]);            
             double massFlowrateInTonYr = StackEmissions.get(i);
+            massFlowrateInTonYr = 195.0;
             double massFlowrateInGs = massFlowrateInTonYr * 1000 * 1000 / (365 * 24 * 60 * 60);
-            double gasTemperatureKelvin = 890.0;
+            double gasTemperatureKelvin = 533.15;
+            double Diameter = StackDiameter.get(i);
+            /* The following code calculates the exit velocity based on the ideal gas law assuming 
+            that the pollutant stream consists of only one component. */
+            /*   
             double atmosphericPressurePa = 101325;
             double gasConstantJoulemolKelvin = 8.314;
             double molarMassCO2gmol = 44.01;
-            double volumetricFlowRatem3s = (massFlowrateInGs / molarMassCO2gmol) * gasConstantJoulemolKelvin * gasTemperatureKelvin / atmosphericPressurePa;
-            double Diameter = StackDiameter.get(i);
+            double molarMassNO2gmol = 46.005;
+            double volumetricFlowRatem3s = (massFlowrateInGs / molarMassNO2gmol) * gasConstantJoulemolKelvin * gasTemperatureKelvin / atmosphericPressurePa;
+            // Hard-coded value
+            double AlternativeVolumetricFlowRatem3s = 5.42183;
             double stackAream2 = (Math.PI / 4) * Diameter * Diameter;
-            double velocityms = volumetricFlowRatem3s / stackAream2;
+            double velocityms = AlternativeVolumetricFlowRatem3s / stackAream2;
+            */
+            double velocityms = 10.0;
 
             String stkId = "Stk" + (i + 1);
             sb.append(String.format("SO LOCATION %s POINT %f %f %f \n", stkId, StackEastUTM, StackNorthUTM, StackBaseElevation));
