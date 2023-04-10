@@ -10,10 +10,6 @@ import java.util.List;
 
 import uk.ac.cam.cares.jps.bmsqueryapp.data.attribtue.EditableAttribute;
 
-/**
- * A [FragmentPagerAdapter] that returns a fragment corresponding to
- * one of the sections/tabs/pages.
- */
 public class TabAdapter extends FragmentStateAdapter {
 
     private final int NUM_TABS = 2;

@@ -50,6 +50,11 @@ public class EditFragment extends Fragment {
         binding.editableAttributeRv.setLayoutManager(new LinearLayoutManager(getContext()));
         binding.editableAttributeRv.setAdapter(attributeListAdapter);
 
+        if (editableAttributes.size() > 0) {
+            binding.noEditableAttrTv.setVisibility(View.GONE);
+            binding.editableAttributeScrollView.setVisibility(View.VISIBLE);
+        }
+
         return binding.getRoot();
     }
 

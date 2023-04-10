@@ -16,4 +16,5 @@
     <string name="room">Room</string>
     <string name="equipment_type">Equipment Type</string>
     <string name="equipment">Equipment</string>
+    <string name="no_editable_attribute">There is no editable attribute available for this equipment.</string>
 </resources>
