@@ -1,16 +1,13 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 A test suite for the agent.config.config submodule.
 """
 
-# Standard import
-import os
-
-# Third party import
+# Third-party imports
 import yaml
 
-# Self import
+# Self imports
 import agent.config.config as properties
 
 ENDPOINT = "http://www.example.org/test"

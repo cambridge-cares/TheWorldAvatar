@@ -1,11 +1,13 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 A test suite for the agent.utils.search_utils submodule.
 """
+
+# Third-party imports
 import pytest
 
-# Self import
+# Self imports
 from agent.utils import find_word
 
 

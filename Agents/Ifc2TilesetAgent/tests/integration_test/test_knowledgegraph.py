@@ -1,16 +1,14 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 An integration test suite for the knowledge graph interactions.
 """
-# Standard import
-import os
 
-# Third-party import
+# Third-party imports
 import pandas as pd
 import pytest
 
-# Self import
+# Self imports
 from . import testconsts as C
 from agent.ifc2gltf.kghelper import retrieve_metadata, get_building_iri
 from agent.ifc2gltf import conv2gltf

@@ -1,5 +1,5 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 This module provides helper methods to generate separate tilesets and write to a json file.
 """
@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import List, Union, Optional, Iterable
 import os
 
-# Third party imports
+# Third-party imports
 import numpy as np
 import trimesh
 from py4jps import agentlogging

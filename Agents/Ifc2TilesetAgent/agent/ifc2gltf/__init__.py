@@ -1,16 +1,16 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 This is the submodule's entry function
 to split and convert the IFC model to glTF.
 """
-# Third party imports
+
+# Third-party imports
 from py4jps import agentlogging
 
 # Self imports
 from agent.ifc2gltf.kghelper import retrieve_metadata, get_building_iri
 from agent.ifc2gltf.ifchelper import exec_gltf_conversion, get_filename_to_ifc_ids_mapping
-from agent.utils import run_shellcommand, retrieve_abs_filepath
 
 # Retrieve logger
 logger = agentlogging.get_logger("dev")

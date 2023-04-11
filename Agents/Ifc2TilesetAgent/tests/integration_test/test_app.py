@@ -1,16 +1,17 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 An integration test suite for the entire app.
 """
-# Standard import
+
+# Standard library imports
 import os
 
-# Third party import
+# Third-party imports
 import pytest
 import numpy as np
 
-# Self import
+# Self imports
 from . import testconsts as C
 from .testutils import init_kg_client, read_json_file, assert_assets_present
 

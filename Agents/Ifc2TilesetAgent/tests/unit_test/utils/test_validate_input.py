@@ -1,13 +1,13 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 A test suite for the agent.utils.validate_input submodule.
 """
 
-# Third party import
+# Third-party imports
 import pytest
 
-# Self import
+# Self imports
 from agent.utils import validate_asset_url
 
 

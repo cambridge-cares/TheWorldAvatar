@@ -1,13 +1,13 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 A test suite for the agent.ifc2gltf.kghelper submodule.
 """
 
-# Third party import
+# Third-party imports
 import pandas as pd
 
-# Self import
+# Self imports
 from agent.ifc2gltf.kghelper import classify_filename
 
 

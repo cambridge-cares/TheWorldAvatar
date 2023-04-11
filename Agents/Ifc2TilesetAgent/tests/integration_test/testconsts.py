@@ -1,8 +1,10 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 A module that provides all configurations, inputs, and expected results for tests.
 """
+
+# Standard library imports
 import itertools
 from dataclasses import dataclass
 

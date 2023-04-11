@@ -1,10 +1,10 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 A test suite for the agent.ifc2gltf.ifchelper submodule.
 """
 
-# Third party import
+# Third-party import
 import pandas as pd
 import pytest
 

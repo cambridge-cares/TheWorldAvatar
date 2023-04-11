@@ -1,5 +1,5 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 This module provides the root tile and its bounding boxes for all tilesets.
 """
@@ -7,7 +7,7 @@ This module provides the root tile and its bounding boxes for all tilesets.
 # Standard library imports
 from pathlib import Path
 
-# Third party imports
+# Third-party imports
 import pandas as pd
 from py4jps import agentlogging
 

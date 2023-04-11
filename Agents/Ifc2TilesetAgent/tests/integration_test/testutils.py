@@ -1,13 +1,19 @@
-# Standard import
+"""
+# Author: qhouyee, picas9dan #
+
+This file contains util functions for integration tests.
+"""
+
+# Standard library imports
 import json
 import os
 from typing import Iterable
 
-# Third-party import
+# Third-party imports
 import pandas as pd
 from pandas.testing import assert_frame_equal
 
-# Self import
+# Self imports
 from agent.kgutils import KGClient
 from tests.integration_test.testconsts import prefix
 from . import testconsts as C

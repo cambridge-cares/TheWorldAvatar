@@ -1,13 +1,12 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 This module retrieves metadata from the knowledge graph.
 """
 
-# Third party imports
+# Third-party imports
 from itertools import count
 import pandas as pd
-import numpy as np
 from py4jps import agentlogging
 
 # Self imports

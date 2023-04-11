@@ -1,21 +1,21 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 This module is the entrypoint to the agent, which accepts and
 validates POST request before running the agent.
 """
 
-# Third party imports
+# Third-party imports
 import ifcopenshell
 from flask import Flask, jsonify, request, render_template
 from py4jps import agentlogging
 
-from agent.exceptions import InvalidInputError
 # Self imports
 from agent.utils import find_ifc_file, cleandir, validate_asset_url
 from agent.ifc2gltf import conv2gltf
 from agent.ifc2tileset import gen_tilesets
 from agent.config import load_properties
+from agent.exceptions import InvalidInputError
 
 # Initialise logger
 logger = agentlogging.get_logger("dev")

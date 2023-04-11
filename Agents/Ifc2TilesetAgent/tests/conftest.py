@@ -1,6 +1,14 @@
+"""
+# Author: picas9dan #
+
+A module that provides pytest fixtures for all tests.
+"""
+
+# Standard library imports
 import os
 import shutil
 
+# Third-party imports
 import pytest
 
 

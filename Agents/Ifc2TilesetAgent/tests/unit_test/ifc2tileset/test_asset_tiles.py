@@ -1,16 +1,16 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 A test suite for the agent.ifc2tileset.asset_tiles submodule.
 """
 
-# Standard import
+# Standard library imports
 import os
 
-# Third-party import
+# Third-party imports
 import trimesh
 
-# Self import
+# Self imports
 from agent.ifc2tileset.asset_tiles import append_asset_metadata_schema, append_tileset_assets, append_assets_to_tileset, \
     append_assets_to_tile
 from agent.ifc2tileset.root_tile import make_tileset, append_tileset_schema_and_metadata

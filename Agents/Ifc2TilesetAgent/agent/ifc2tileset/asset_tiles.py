@@ -1,5 +1,5 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 This module provides methods to generate tilesets related to assets.
 """
@@ -7,7 +7,7 @@ This module provides methods to generate tilesets related to assets.
 # Standard library imports
 from typing import List, Optional
 
-# Third party imports
+# Third-party imports
 import pandas as pd
 from py4jps import agentlogging
 
@@ -74,9 +74,6 @@ def append_assets_to_tile(tile: Tile, asset_df: pd.DataFrame):
         "geometricError": 50,
         # Nomenclature for 1 geometry file = content:{}, multiple files = contents:[{}]
         "contents": contents
-        # CesiumJS only supports six content by default:
-        # https://github.com/CesiumGS/cesium/issues/10468
-        # If we have more than six assets, do add more inner children contents here
     }]
 
 
@@ -87,17 +84,16 @@ def append_assets_to_tileset(tileset: Tileset, asset_df: pd.DataFrame):
         tileset: A parent node to have assets added as a child node.
         asset_df: A dataframe containing mappings for asset metadata, with headers 'file', 'name', 'uid', 'iri'.
     """
+    # CesiumJS only supports six content per child node by default:
+    # https://github.com/CesiumGS/cesium/issues/10468
     assets_num_per_node = 6
 
     tile_node = tileset["root"]
     for i in range(0, len(asset_df), assets_num_per_node):
-        append_assets_to_tile(tile_node, asset_df.iloc[i: i + assets_num_per_node])
-        tile_node = tile_node["children"][0]
-
         # CAVEAT: Functionality for visualising tilesets with >10 child nodes in Cesium has yet to be tested.
         # If the code fails to work for more child nodes, perform early stopping when above the max limit of child nodes
-        # if i >= 10 * assets_num_per_node:
-        #     break
+        append_assets_to_tile(tile_node, asset_df.iloc[i: i + assets_num_per_node])
+        tile_node = tile_node["children"][0]
 
 
 def append_tileset_assets(tileset: Optional[Tileset], asset_df: pd.DataFrame):

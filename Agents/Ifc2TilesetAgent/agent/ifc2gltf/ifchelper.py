@@ -1,12 +1,13 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 This module provides helper functions to generate glTF models from the IFC file.
 """
-# Standard imports
+
+# Standard library imports
 from typing import List
 
-# Third party imports
+# Third-party imports
 import pandas as pd
 from py4jps import agentlogging
 

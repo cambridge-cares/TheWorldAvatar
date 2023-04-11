@@ -1,5 +1,5 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 A test suite for the agent.ifc2tileset.root_tile submodule.
 """
@@ -8,11 +8,11 @@ A test suite for the agent.ifc2tileset.root_tile submodule.
 import os
 from typing import List
 
-# Third-party import
+# Third-party imports
 import pandas as pd
 import trimesh
 
-# Self import
+# Self imports
 from agent.ifc2tileset.root_tile import append_tileset_schema_and_metadata, gen_root_content
 from . import testconsts as C
 from .testutils import gen_sample_asset_df, z_up_to_y_up

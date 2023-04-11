@@ -1,19 +1,20 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 A module that provides all pytest fixtures and utility functions for all integration tests.
 """
-# Standard import
+
+# Standard library imports
 import os
 from typing import Iterable, Tuple
 
-# Third party import
+# Third-party imports
 import pytest
 import ifcopenshell
 from ifcopenshell.api import run
 import yaml
 
-# Self import
+# Self imports
 from agent import create_app
 from agent.kgutils import KGClient
 from . import testconsts as C

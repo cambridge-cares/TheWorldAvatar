@@ -1,5 +1,5 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 A test suite for the agent.ifc2tileset.tile_helper submodule.
 """
@@ -7,11 +7,11 @@ A test suite for the agent.ifc2tileset.tile_helper submodule.
 # Standard library imports
 import os
 
-# Third party import
+# Third-party import
 import numpy as np
 import pytest
 
-# Self import
+# Self imports
 from agent.ifc2tileset.tile_helper import gen_solarpanel_tileset, gen_sewagenetwork_tileset, jsonwriter, compute_bbox, \
     make_tileset, make_root_tile, y_up_to_z_up
 from . import testconsts as C

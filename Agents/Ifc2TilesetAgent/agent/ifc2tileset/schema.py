@@ -1,3 +1,10 @@
+"""
+# Author: picas9dan #
+
+This file provides the 3D Tiles Next schema as TypedDict.
+"""
+
+# Standard library imports
 from typing import TypedDict, List, Literal, Dict
 
 

@@ -1,18 +1,18 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 A test suite for the agent.ifc2tileset submodule.
 """
 
-# Standard import
+# Standard library imports
 import os
 
-# Third party import
+# Third-party imports
 import numpy as np
 import pandas as pd
 import trimesh
 
-# Self import
+# Self imports
 from agent.ifc2tileset import gen_tilesets
 from . import testconsts as C
 from .testutils import read_json, gen_sample_asset_df, gen_sample_asset_contents, z_up_to_y_up

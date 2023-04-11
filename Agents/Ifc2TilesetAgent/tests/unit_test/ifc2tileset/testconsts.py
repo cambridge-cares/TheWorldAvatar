@@ -1,6 +1,14 @@
+"""
+# Author: picas9dan #
+
+This file contains test resources for ifc2tileset unit tests.
+"""
+
+# Third-party imports
 import trimesh
 import numpy as np
 
+# Self imports
 from tests.unit_test.ifc2tileset.testutils import z_up_to_y_up
 
 

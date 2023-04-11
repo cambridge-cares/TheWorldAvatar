@@ -1,5 +1,5 @@
 """
-# Author: qhouyee #
+# Author: qhouyee, picas9dan #
 
 A test suite for the agent.utils.system_utils submodule.
 """
@@ -7,10 +7,10 @@ A test suite for the agent.utils.system_utils submodule.
 # Standard library imports
 import os
 
-# Third party import
+# Third-party imports
 import pytest
 
-# Self import
+# Self imports
 from agent.utils import retrieve_abs_filepath, find_ifc_file
 from agent.exceptions import InvalidInputError
 

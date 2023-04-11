@@ -1,8 +1,17 @@
+"""
+# Author: qhouyee, picas9dan #
+
+This file contains util functions for ifc2tileset unit tests.
+"""
+
+# Standard library imports
 import json
 from typing import List
 
+# Third-party imports
 import pandas as pd
 
+# Self imports
 from agent.ifc2tileset.root_tile import append_tileset_schema_and_metadata
 from agent.ifc2tileset.tile_helper import make_root_tile, make_tileset
 
