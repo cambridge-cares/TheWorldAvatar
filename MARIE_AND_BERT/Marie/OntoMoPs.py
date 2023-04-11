@@ -14,7 +14,7 @@ class OntoMoPsQAEngine(QAEngineNumerical):
         super().__init__(dataset_dir, dataset_name, dim=50, test=False, value_dict_name="node_value_dict.json",
                          seperated_model=True, operator_dict={0: "smaller", 1: "larger", 2: "none"},
                          enable_class_ner=True, ontology=ontology,
-                         numerical_scale_factor=1000)
+                         numerical_scale_factor=1000, mode="transr")
 
 
 if __name__ == "__main__":

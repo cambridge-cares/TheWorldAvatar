@@ -15,7 +15,7 @@ class OntoSpeciesNew(QAEngineNumerical):
         super().__init__(dataset_dir, dataset_name, dim=100, test=False, value_dict_name="node_value_dict.json",
                          seperated_model=True, operator_dict=operator_dict,
                          enable_class_ner=True, ontology=ontology,
-                         numerical_scale_factor=1000, bert_tokenizer_name="bert-base-uncased")
+                         numerical_scale_factor=1000, bert_tokenizer_name="bert-base-uncased", mode="transr")
 
 
 if __name__ == "__main__":
@@ -25,9 +25,12 @@ if __name__ == "__main__":
     my_engine = OntoSpeciesNew(dataset_dir=dataset_dir, dataset_name=sub_ontology, sub_ontology=sub_ontology,
                                ontology=ontology)
 
-    question_list = ["find species with molecular weight less than 100",
-                     "find species with molecular weight over 100",
-                     "what is the boiling point of Metanol"]
+    # question_list = ["what is the melting point of CH4",
+    #                  "find species with molecular weight less than 100",
+    #                  "find species with molecular weight over 100",
+    #                  "what is the boiling point of Metanol"]
+
+    question_list = ["what is the melting point of CH4"]
 
     for question in question_list:
         print(my_engine.run(question))

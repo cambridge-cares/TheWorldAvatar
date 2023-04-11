@@ -178,6 +178,16 @@ class QAEngineNumerical:
         except TypeError:
             head_idx = self.entity2idx[head[0]]
         candidates = self.subgraph_extractor.extract_neighbour_from_idx(head_idx)
+        # temporary code for debugging before the ontospecies embedding is fixed
+        selected_candidates = []
+        for t_idx in candidates:
+            triple_str = f"{head_idx}_{pred_p_label}_{t_idx}"
+            if self.subgraph_extractor.check_triple_existence(triple_str=triple_str):
+                selected_candidates.append(t_idx)
+
+        candidates = selected_candidates
+        candidate_labels = [self.idx2entity[c] for c in candidates]
+        print("Candidate labels for normal question", candidate_labels)
         self.marie_logger.info(f" - Preparing prediction batch")
         candidate_entities = torch.LongTensor(candidates).to(self.device)
         repeat_num = len(candidates)
@@ -303,14 +313,21 @@ class QAEngineNumerical:
         _, head, mention_str, head_key = self.nel.find_cid(mention)
         _, pred_p_idx = self.score_model.get_relation_prediction(question_embedding=single_question_embedding)
         pred_p_label = self.idx2rel[pred_p_idx]
+        print("predicted relation label: ", pred_p_label)
         prediction_batch, candidates = self.prepare_prediction_batch(head=head,
                                                                      question_embedding=single_question_embedding,
-                                                                     pred_p_label=pred_p_label)
+                                                                     pred_p_label=pred_p_idx)
         scores, _ = self.score_model.get_scores(prediction_batch, mode=self.mode)
         _, indices_top_k = torch.topk(scores, k=min(5, len(scores)), largest=self.largest)
+
+        selected_candidates = []
+
         labels_top_k = [self.idx2entity[candidates[index]] for index in indices_top_k]
+
+
+
         scores_top_k = [scores[index].item() for index in indices_top_k]
-        targets_top_k = [head_key] * len(scores)
+        targets_top_k = [head_key] * len(scores_top_k)
         numericals_top_k = [self.value_lookup(l) for l in labels_top_k]
         # try:
         #     mention = self.nel.get_mention(question=question)
@@ -430,8 +447,8 @@ class QAEngineNumerical:
         self.input_dict.question = question
         self.marie_logger.info("=============== new question ============")
         self.marie_logger.info(f"Received question: {question}")
-        if mention is not None:
-            self.input_dict.mention = mention
+        # if mention is not None:
+        #    self.input_dict.mention = (mention)
 
         answer_list, score_list, target_list, numerical_list, answer_type = self.find_answers()
         if len(score_list) == 0:
