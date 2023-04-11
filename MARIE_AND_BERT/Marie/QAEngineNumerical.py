@@ -14,14 +14,6 @@ from Marie.Util.CommonTools.FileLoader import FileLoader
 from Marie.Util.location import DATA_DIR
 
 
-def text_filtering(question):
-    # question = question.replace("(", "").replace(")", "")
-    stop_words = ["find", "all", "species", "with", "what", "is", "the"]
-    question_tokens = [token for token in question.split(" ") if token not in stop_words]
-    question = " ".join(question_tokens)
-    return question
-
-
 class InputDict:
 
     def __init__(self):
@@ -38,9 +30,18 @@ class TestData:
 
 
 class QAEngineNumerical:
+
+    def text_filtering(self, question):
+        # question = question.replace("(", "").replace(")", "")
+        stop_words = ["find", "all", "species", "with", "what", "is", "the"]
+        question_tokens = [token for token in question.split(" ") if token not in stop_words]
+        question = " ".join(question_tokens)
+        return question
+
     def __init__(self, dataset_dir, dataset_name, embedding="transe", dim=20, dict_type="json", largest=False,
                  test=False, operator_dict=None, value_dict_name="wikidata_numerical_value_new.json",
-                 seperated_model=False, mode="transe", enable_class_ner=False, ontology=None, operator_dim=3, numerical_scale_factor = 1.0):
+                 seperated_model=False, mode="transe", enable_class_ner=False, ontology=None, operator_dim=3,
+                 numerical_scale_factor=1.0, bert_tokenizer_name="bert-base-cased"):
         self.input_dict = InputDict()
         self.test_dict = TestData()
         self.mode = mode
@@ -73,7 +74,7 @@ class QAEngineNumerical:
             self.nel = ChemicalNEL(dataset_name=ontology, enable_class_ner=enable_class_ner)
         else:
             self.nel = ChemicalNEL(dataset_name=dataset_name, enable_class_ner=enable_class_ner)
-        self.nlp = NLPTools()
+        self.nlp = NLPTools(tokenizer_name=bert_tokenizer_name)
         self.o_p_dict = FileLoader.create_o_p_dict(self.triples)
         if embedding == "transe":
             self.score_model = TransEAScoreModel(device=self.device,
@@ -143,7 +144,7 @@ class QAEngineNumerical:
         :return: heads that fulfill the numerical condition given
         """
         if self.enable_class_ner:
-            heads = self.all_heads_indices["mops"]
+            heads = self.all_heads_indices[self.input_dict.target]
         else:
             heads = self.all_heads_indices
         predicted_attr = self.score_model.get_attribute_prediction(self.input_dict.single_question_embedding)
@@ -172,7 +173,10 @@ class QAEngineNumerical:
         :param question_embedding: one embedding of the question
         :return: prediction_batch (dict), tails: list
         """
-        head_idx = self.entity2idx[head]
+        try:
+            head_idx = self.entity2idx[head]
+        except TypeError:
+            head_idx = self.entity2idx[head[0]]
         candidates = self.subgraph_extractor.extract_neighbour_from_idx(head_idx)
         self.marie_logger.info(f" - Preparing prediction batch")
         candidate_entities = torch.LongTensor(candidates).to(self.device)
@@ -210,6 +214,7 @@ class QAEngineNumerical:
 
         idx_to_replace = [23, 8, 12, 13, 18, 0]
         self.input_dict.instance_label = self.input_dict.mention[2]
+
         if self.input_dict.instance_label:
             self.input_dict.instance_label = self.input_dict.instance_label.lower()
             self.input_dict.question = self.input_dict.question.lower().replace(self.input_dict.instance_label, "")
@@ -293,8 +298,7 @@ class QAEngineNumerical:
 
     def answer_normal_question(self):
         print("=================== Processing NORMAL question ===========================")
-
-        mention = self.input_dict.mention
+        mention = self.input_dict.mention[2]
         single_question_embedding = self.input_dict.single_question_embedding
         _, head, mention_str, head_key = self.nel.find_cid(mention)
         _, pred_p_idx = self.score_model.get_relation_prediction(question_embedding=single_question_embedding)
@@ -342,7 +346,7 @@ class QAEngineNumerical:
         # targets_top_k = [head_key] * len(scores)
         # print(f"predicted predicate: {self.idx2rel[pred_p_idx]}")
         # print(f"predicted head: {head}")
-        return labels_top_k, scores_top_k, targets_top_k, numericals_top_k,  "normal"
+        return labels_top_k, scores_top_k, targets_top_k, numericals_top_k, "normal"
 
     def rule_based_question_classification(self):
         """
@@ -355,7 +359,7 @@ class QAEngineNumerical:
         is_numerical = numerical_value is not None
         # if the question doesn't contain any numerical value, it is is_numerical is false
         if type(mention) == type(()):
-            # if the mention is a tuple, it contains both target and
+            # if the mention is a tuple, it contains both target and instances_list
             has_target, has_instance_list = mention[0], mention[1]
 
         self.input_dict.numerical_string = numerical_string
@@ -374,28 +378,34 @@ class QAEngineNumerical:
         mention = self.nel.get_mention(self.input_dict.question)
         print(mention)
         self.input_dict.mention = mention
-        self.input_dict.question = text_filtering(self.input_dict.question)
+        self.input_dict.question = self.text_filtering(self.input_dict.question)
         _, tokenized_question = self.nlp.tokenize_question(question=self.input_dict.question, repeat_num=1)
         single_question_embedding = self.score_model.get_question_embedding(question=tokenized_question)
         self.input_dict.single_question_embedding = single_question_embedding
         self.get_numerical_operator(tokenized_question=tokenized_question,
                                     single_question_embedding=single_question_embedding)
+
         is_numerical, has_target, has_instance_list, numerical_string, numerical_value = \
             self.rule_based_question_classification()
+        self.marie_logger.info(f"numerical operator: {self.input_dict.numerical_operator}")
+        # has_target and has_instance_list -> answer_multi_target_question
+        # has_target and is_numerical -> answer numerical question
+        # not has_target, try to get the instance_list[0] -> answer normal question
+
         if has_target and has_instance_list:
             return self.answer_multi_target_question()
         else:
-            return self.answer_numerical_question()
+            if has_target and is_numerical:
+                self.input_dict.target = self.input_dict.mention[0]
+                return self.answer_numerical_question()
+            else:
 
+                if self.input_dict.numerical_operator == "none":
+                    return self.answer_normal_question()
+                else:
+                    return None
 
-
-
-        self.marie_logger.info(f"numerical operator: {self.input_dict.numerical_operator}")
-
-        if self.input_dict.numerical_operator == "none":
-            return self.answer_normal_question()
-        else:
-            return self.answer_numerical_question()
+            # return self.answer_numerical_question()
 
     def process_answer(self, answer_list, mention_string, score_list, answer_type, numerical_list):
         if answer_type == "normal":
@@ -423,13 +433,13 @@ class QAEngineNumerical:
         if mention is not None:
             self.input_dict.mention = mention
 
-        answer_list, score_list, target_list, numerical_list,  answer_type = self.find_answers()
+        answer_list, score_list, target_list, numerical_list, answer_type = self.find_answers()
         if len(score_list) == 0:
-            return [], [], [], [],  "normal"
+            return [], [], [], [], "normal"
 
         max_score = max(score_list)
         score_list = [(max_score + 1 - s) for s in score_list]
-        return answer_list, score_list, target_list, numerical_list,  answer_type
+        return answer_list, score_list, target_list, numerical_list, answer_type
 
 
 if __name__ == "__main__":

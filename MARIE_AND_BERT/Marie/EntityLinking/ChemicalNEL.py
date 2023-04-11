@@ -1,4 +1,5 @@
 from Marie.EntityLinking.translator.translate_smile import Translator
+from Marie.Util.CommonTools import NumericalTools
 from Marie.Util.Logging import MarieLogger
 # ==============================================================================================================
 
@@ -34,6 +35,8 @@ class ChemicalNEL:
         self.enable_class_ner = enable_class_ner
 
         if enable_class_ner:
+            print("DATASET NAME", dataset_name)
+            print(f"Loading dictionaries from {os.path.join(DICTIONARY_DIR, dataset_name)}")
             self.name_list = json.loads(open(os.path.join(DICTIONARY_DIR, dataset_name, 'name_list.json')).read())
             self.name_dict = json.loads(open(os.path.join(DICTIONARY_DIR, dataset_name, 'name_dict.json')).read())
             self.type_dict = json.loads(open(os.path.join(DICTIONARY_DIR, dataset_name, 'type_dict.json')).read())
@@ -65,8 +68,9 @@ class ChemicalNEL:
         # List the Chemical Building Units with 2-linear as the Generic Building Unit
         dummy = [{'text': question}]
         out = self.translator.extract_ner(dummy)
-        out = out[0][0]
-
+        print("out", out)
+        mention_list = out[0][0]
+        class_list = out[1][0]
         # TODO: create the list of all possible thing for Mops class
         # e.g., ['[(C6H3)(C6H4)3(CO2)3]', 'CBU', 'MOPS']
         # search through the class label list and find the best match
@@ -75,20 +79,28 @@ class ChemicalNEL:
         instance_label = None
         target_candidates = []
         mention_types = []
-        for original_mention in out:
-            # try:
+        print("mention_list", mention_list)
+        print("class_list", class_list)
+        for original_mention, mention_class in zip(mention_list, class_list):
+            print("original mention", original_mention)
             fuzzy_search_result = self.fuzzyset.get(original_mention)
+            print("fuzzy_search_result", fuzzy_search_result)
             mention = fuzzy_search_result[0][1]
             mention_score = fuzzy_search_result[0][0]
-            # print("for mention", mention, "score is", mention_score)
-            if mention_score > 0.65:
+            print("for mention", mention, "score is", mention_score)
+            if mention_score > 0.7:
                 mention_type = self.get_mention_type(mention)
                 label_result = self.name_dict[mention_type][mention]
+                print("mention type", mention_type)
+                print("label_result", label_result)
                 if mention_type == "class":
                     target_candidates.append(label_result)
                 else:
                     mention_types.append(mention_type)
-                    instance_list = list(set(label_result))
+                    if type(label_result) == type(""):
+                        instance_list = [label_result]
+                    else:
+                        instance_list = list(set(label_result))
                     instance_label = original_mention
             # except (IndexError, TypeError):
             #     pass
@@ -102,18 +114,46 @@ class ChemicalNEL:
         # print("=================================================")
         return target, instance_list, instance_label
 
+    def get_mention_without_class(self, question):
+        question = question.replace("'s", " of ")
+        results, smiles_string = self.ner.find_cid(question)  # [2]
+        # print("results", results)
+        # print("smiles_string", smiles_string)
+        if smiles_string is None:
+            smiles_string = results[2]
+            if smiles_string == "species":
+                return "species", [], []
+        # print("from get mention without class", smiles_string)
+        return smiles_string
+
     def get_mention(self, question):
+
+        if "find" not in question:
+            question = f"find all {question}"
+        else:
+            question = question.replace("find", "find all")
+
+        question = question.replace("degrees", "")
+        # remove numbers from the question
+        numerical_value, numerical_string = NumericalTools.numerical_value_extractor(
+            question=question)
+        if numerical_value is not None:
+            question = question.replace(numerical_string, "")
+        print(f"Processed question string is: {question}")
         instance_list = None
         target = None
         instance_label = None
         if self.enable_class_ner:
+            #    try:
             target, instance_list, instance_label = self.ner_with_class(question)
+            # print("target:", target)
+            # print("instances list", instance_list)
+            # print("instance label", instance_label)
+        # except KeyError:
+        #     return self.get_mention_without_class(question)
+
         if (target is None) and (instance_list is None):
-            question = question.replace("'s", " of ")
-            results, smiles_string = self.ner.find_cid(question)  # [2]
-            if smiles_string is None:
-                smiles_string = results[2]
-            return smiles_string
+            return self.get_mention_without_class(question)
         else:
             return target, instance_list, instance_label
 
@@ -124,8 +164,11 @@ class ChemicalNEL:
             rearranged_mention_str = rearrange_formula(mention_str)
             # print(rearranged_mention_str)
             confidence, key = self.fuzzy_search(rearranged_mention_str)[0]
-            # print(f"the key is {key}")
-            return confidence, self.name_dict[key], str(mention_str), key
+            # print(f"the key is {key}").
+            if key not in self.name_dict:
+                return confidence, self.name_dict["species"][key], str(mention_str), key
+            else:
+                return confidence, self.name_dict[key], str(mention_str), key
 
         except (IndexError, TypeError):
             return None, None, None, None
@@ -138,12 +181,62 @@ class ChemicalNEL:
 
 
 if __name__ == '__main__':
-    cn = ChemicalNEL(dataset_name="OntoMoPs", enable_class_ner=True)
+    cn = ChemicalNEL(dataset_name="wikidata_numerical", enable_class_ner=True)
     START_TIME = time.time()
-    text = "MoPs with molecular weight more than 10"
-    mention = cn.get_mention(text)
-    print(mention)
-    print("---------------")
+
+    # text = "find species with molecular weight more than"
+    question_list = ["what is the smiles string of CH4O4S",
+                     "find species with boiling point larger than 10 degrees",
+                     "find species with boiling point smaller than 10 degrees",
+                     "find species with boiling point around 100 degrees"]
+    for text in question_list:
+        # text = "find species with molecular weight over 100"
+        mention = cn.get_mention(text)
+        print("mention", mention)
+        print("---------------")
+
+    # text = "what is the molecular weight of CH4"
+    # mention = cn.get_mention(text)
+    # print("mention", mention)
+    # print("---------------")
+    #
+    # text = "what is the boiling point of benzene"
+    # mention = cn.get_mention(text)
+    # print("mention", mention)
+    # print("---------------")
+
+    # cn = ChemicalNEL(dataset_name="OntoMoPs", enable_class_ner=True)
+    # START_TIME = time.time()
+    #
+    # text = "MoPs with molecular weight more than 100"
+    # mention = cn.get_mention(text)
+    # print("mention", mention)
+    # print("---------------")
+    #
+    # text = "List the MOPs with (3-pyramidal)8(2-bent)12(Cs) as the assembly model"
+    # mention = cn.get_mention(text)
+    # print("mention", mention)
+    # print("---------------")
+    #
+    # cn = ChemicalNEL(dataset_name="ontospecies_new", enable_class_ner=True)
+    # START_TIME = time.time()
+    #
+    # text = "find species with molecular weight more than"
+    # mention = cn.get_mention(text)
+    # print("mention", mention)
+    # print("---------------")
+    #
+    # text = "what is the molecular weight of CH4"
+    # mention = cn.get_mention(text)
+    # print("mention", mention)
+    # print("---------------")
+    #
+    #
+    # text = "what is the boiling point of benzene"
+    # mention = cn.get_mention(text)
+    # print("mention", mention)
+    # print("---------------")
+
     # text = "List the MOPs with (3-pyramidal)8(2-bent)12(Cs) as the assembly model"
     # while text != "quit":
     #     text = input("Question:")

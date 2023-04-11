@@ -75,9 +75,10 @@ class TransEAScoreModel(nn.Module):
         self.cosine_similarity = torch.nn.CosineSimilarity(dim=1, eps=1e-08)
 
     def load_model(self, model_name):
-        print(" - Loading pretrained BERT Mapping model")
+        model_path = os.path.join(self.model_dir, self.dataset_dir, model_name)
+        print(f" - Loading pretrained BERT Mapping model for {model_path}")
         self.load_state_dict(
-            torch.load(os.path.join(self.model_dir, self.dataset_dir, model_name), map_location=self.device))
+            torch.load(model_path, map_location=self.device))
 
     def distance(self, emb_1, emb_2, emb_3, emb_4):
         """

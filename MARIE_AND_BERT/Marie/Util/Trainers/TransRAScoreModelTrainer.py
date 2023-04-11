@@ -205,7 +205,7 @@ if __name__ == '__main__':
     sub_ontology = "base_full_no_pref_selected_role_limited_100"
     my_trainer = TransEAScoreModelTrainer(dataset_dir=f"CrossGraph/{ontology}/{sub_ontology}")
     my_trainer.one_train_iteration(current_lr,
-                                   model_name=f'bert_{ontology}_predict',
+                                   model_name=f'bert_{sub_ontology}_predict',
                                    resume_training=True, batch_size=16, epoch_num=60, test_step=1,
                                    scheduler_step=10, gamma=1.0)
 

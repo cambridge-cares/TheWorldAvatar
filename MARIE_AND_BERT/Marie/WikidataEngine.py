@@ -10,7 +10,8 @@ class WikidataEngine(QAEngineNumerical):
 
     def __init__(self, dataset_dir="CrossGraph/wikidata_numerical", dataset_name="wikidata_numerical"):
         super().__init__(dataset_dir, dataset_name, dim=40, test=False,
-                         operator_dict={0: "smaller", 1: "larger", 2: "about", 3: "none"})
+                         operator_dict={0: "smaller", 1: "larger", 2: "about", 3: "none"}, enable_class_ner=True,
+                         ontology=dataset_name)
 
     def test(self, true_mention, true_rel, true_tails):
         """
@@ -24,7 +25,7 @@ class WikidataEngine(QAEngineNumerical):
 
 if __name__ == "__main__":
     my_engine = WikidataEngine(dataset_dir="CrossGraph/wikidata_numerical", dataset_name="wikidata_numerical")
-    rst = my_engine.run("what is the smiles string of CH4O4S")
+    rst = my_engine.run("what is the smiles string of CH4O4S", mention="C7H5NO")
     print(rst)
     rst = my_engine.run("what is the boiling point of C7H5NO", mention="C7H5NO")
     print(rst)

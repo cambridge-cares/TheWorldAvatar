@@ -43,7 +43,7 @@ WHERE {
 """
 
 all_labels = []
-label_iri_dict = {}
+label_iri_dict = {"class": {"SPECIES": "species"} , "species": {}}
 counter = 0
 for species in all_species:
     counter += 1
@@ -61,10 +61,13 @@ for species in all_species:
 
     all_labels += labels
     for label in labels:
-        if label not in label_iri_dict:
-            label_iri_dict[label] = species
+        if label not in label_iri_dict['species']:
+            label_iri_dict['species'][label] = [species]
 
-all_labels = list(set(all_labels))
+all_labels = list(set(all_labels + ["SPECIES"]))
+type_dict = {"class": ["SPECIES"], "species": all_labels}
+
+
 with open(os.path.join(DICTIONARY_DIR, ontology, "name_dict.json"), "w") as f:
     f.write(json.dumps(label_iri_dict))
     f.close()
@@ -72,6 +75,15 @@ with open(os.path.join(DICTIONARY_DIR, ontology, "name_dict.json"), "w") as f:
 with open(os.path.join(DICTIONARY_DIR, ontology, "name_list.json"), "w") as f:
     f.write(json.dumps(all_labels))
     f.close()
+
+with open(os.path.join(DICTIONARY_DIR, ontology, "class_label_list.json"), "w") as f:
+    f.write(json.dumps(["SPECIES"]))
+    f.close()
+
+with open(os.path.join(DICTIONARY_DIR, ontology, "type_dict.json"), "w") as f:
+    f.write(json.dumps(type_dict))
+    f.close()
+
 
 
 

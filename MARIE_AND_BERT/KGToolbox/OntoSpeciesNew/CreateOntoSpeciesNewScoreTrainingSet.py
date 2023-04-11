@@ -25,7 +25,7 @@ class TrainingSetCreator:
                                      "hasLogP": ["logp", "octanol-water partition coefficient"],
                                      "hasSolubility": ["solubility", "solubility"],
                                      "hasMeltingPoint": ["melting point", "freezing point"],
-                                     "hasMolecularWeight": ["molar mass", "molecular mass"],
+                                     "hasMolecularWeight": ["molar mass", "molecular weight"],
                                      "hasBoilingPoint": ["boiling point", "evaporation point"],
                                      "hasDensity": ["density", "denseness"]
                                      }

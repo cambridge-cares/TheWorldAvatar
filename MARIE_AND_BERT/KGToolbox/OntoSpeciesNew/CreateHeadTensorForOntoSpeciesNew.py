@@ -42,6 +42,6 @@ WHERE {
 }   
 """
 
-all_species_heads = get_head_tensors(GET_ALL_SPECIES)
+all_species_heads = {"species": get_head_tensors(GET_ALL_SPECIES)}
 print(len(all_species_heads))
 write_pkl_files(all_species_heads, "all_heads.pkl")
