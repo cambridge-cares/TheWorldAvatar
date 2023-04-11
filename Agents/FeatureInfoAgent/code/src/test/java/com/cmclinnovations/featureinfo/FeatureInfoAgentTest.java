@@ -509,7 +509,6 @@ public class FeatureInfoAgentTest {
      * re-enabled within the FeatureInfoAgent, then remove the @Ignore annotation.
      */
     @Test
-    @Ignore
     public void testEnforcedEndpoint() throws Exception {
         FeatureInfoAgent agent = new FeatureInfoAgent();
 
