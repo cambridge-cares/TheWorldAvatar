@@ -25,13 +25,17 @@ class WikidataEngine(QAEngineNumerical):
 
 if __name__ == "__main__":
     my_engine = WikidataEngine(dataset_dir="CrossGraph/wikidata_numerical", dataset_name="wikidata_numerical")
-    rst = my_engine.run("what is the smiles string of CH4O4S", mention="C7H5NO")
+
+    rst = my_engine.run("what is the melting point of tungsten")
     print(rst)
-    rst = my_engine.run("what is the boiling point of C7H5NO", mention="C7H5NO")
-    print(rst)
-    rst = my_engine.run("find species with boiling point larger than 10 degrees")
-    print(rst)
-    rst = my_engine.run("find species with boiling point smaller than 10 degrees")
-    print(rst)
-    rst = my_engine.run("find species with boiling point around 100 degrees")
-    print(rst)
+
+    # rst = my_engine.run("what is the smiles string of CH4O4S", mention="C7H5NO")
+    # print(rst)
+    # rst = my_engine.run("what is the boiling point of C7H5NO", mention="C7H5NO")
+    # print(rst)
+    # rst = my_engine.run("find species with boiling point larger than 10 degrees")
+    # print(rst)
+    # rst = my_engine.run("find species with boiling point smaller than 10 degrees")
+    # print(rst)
+    # rst = my_engine.run("find species with boiling point around 100 degrees")
+    # print(rst)
