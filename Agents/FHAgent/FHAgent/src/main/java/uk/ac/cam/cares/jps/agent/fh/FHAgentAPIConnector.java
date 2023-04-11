@@ -59,7 +59,7 @@ public class FHAgentAPIConnector {
     /**
      * Keys to be retrieved from ThingsBoard
      */
-    private String keys;
+    public String keys;
 
     /**
      * Standard constructor

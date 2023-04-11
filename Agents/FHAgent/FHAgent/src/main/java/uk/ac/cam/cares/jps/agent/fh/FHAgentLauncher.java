@@ -13,6 +13,8 @@ import javax.ws.rs.BadRequestException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.*;
+
 /**
  * Class with a main method that is the entry point of the compiled war and puts all components together to retrieve
  * data from the API and write it into the database.
@@ -186,7 +188,8 @@ public class FHAgentLauncher extends JPSAgent {
         // If readings are not empty there is new data
         if(!Distance.isEmpty()) {
             // Update the data
-            agent.updateData(Distance);
+            List<String> keyList = Arrays.asList(connector.keys.split(","));
+            agent.updateData(Distance, keyList);
             LOGGER.info("Data updated with new readings from API.");
             jsonMessage.accumulate("Result", "Data updated with new readings from API.");
         }

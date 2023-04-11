@@ -62,7 +62,10 @@ public class FHAgent{
      * The Zone offset of the timestamp (https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/time/ZoneOffset.html)
      */
     public static final ZoneOffset ZONE_OFFSET = ZoneOffset.UTC;
-
+    /*
+     * Mapping between raw and derived variable
+     */
+    public static JSONObject derivationMapping;
     /**
      * Log messages
      */
@@ -105,6 +108,27 @@ public class FHAgent{
             }
             // Read the JSON key to IRI mappings from
             readMappings(mappingFolder);
+
+            
+            String derivationMappingString;
+            try {
+                // Read the mappings folder from the properties file
+                derivationMappingString = prop.getProperty("derivation.mapping");
+                }
+                catch (NullPointerException e) {
+                    throw new IOException ("The key derivation.mapping cannot be found in the properties file.");
+                }
+                if (derivationMappingString == null) {
+                    throw new InvalidPropertiesFormatException("The properties file does not contain the key derivation.mapping " +
+                            "with a path to the folder containing the required JSON key to IRI mappings.");
+                }
+
+            JSONObject derivationMapping = new JSONObject();
+            for(String mappingString:derivationMappingString.split(",")){
+                String[] mapping = mappingString.split(":");
+                derivationMapping.put(mapping[0], mapping[1]);
+
+            }
         }
     }
 
@@ -204,68 +228,80 @@ public class FHAgent{
      * Updates the database with new readings.
      * @param OccupiedState The readings received from the ThingsBoard API
      */
-    public void updateData(JSONObject Distance)throws IllegalArgumentException {
+    public void updateData(JSONObject Distance, List<String> keys)throws IllegalArgumentException {
         // Transform readings in hashmap containing a list of objects for each JSON key,
         // will be empty if the JSON Object is empty
-        JSONObject latestOccState = TallyDist(Distance);
 
-    	Map<String, List<?>> timeStampReadingsMap = jsonObjectToMapForTimeStamp(latestOccState);
-    	Map<String, List<?>> OccupiedStateMap = jsonObjectToMap(latestOccState);
-        
-        
-        // Only do something if all readings contain data
-        if(!OccupiedStateMap.isEmpty() && !timeStampReadingsMap.isEmpty()) {
-            List<TimeSeries<OffsetDateTime>> timeSeries;
-            try {
-                timeSeries = convertReadingsToTimeSeries(OccupiedStateMap, timeStampReadingsMap);
-            }
-            // Is a problem as time series objects must be the same every time to ensure proper insert into the database
-            catch (NoSuchElementException e) {
-                throw new IllegalArgumentException("Readings can not be converted to proper time series!", e);
-            }
-            // Update each time series
-            for (TimeSeries<OffsetDateTime> ts : timeSeries) {
-                // Retrieve current maximum time to avoid duplicate entries (can be null if no data is in the database yet)
-                OffsetDateTime endDataTime;
-                try{
-                	endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
-                } catch (Exception e) {
-                	throw new JPSRuntimeException("Could not get max time!");
-                }
-                OffsetDateTime startCurrentTime = ts.getTimes().get(0);
-                // If there is already a maximum time
-                if (endDataTime != null) {
-                    // If the new data overlaps with existing timestamps, prune the new ones
-                    if (startCurrentTime.isBefore(endDataTime)) {
-                        ts = pruneTimeSeries(ts, endDataTime);
+        for (String key: keys){
+            try{
+                JSONObject latestOccState = TallyDist(Distance, key);
+
+                Map<String, List<?>> timeStampReadingsMap = jsonObjectToMapForTimeStamp(latestOccState);
+                Map<String, List<?>> OccupiedStateMap = jsonObjectToMap(latestOccState);
+                
+                
+                // Only do something if all readings contain data
+                if(!OccupiedStateMap.isEmpty() && !timeStampReadingsMap.isEmpty()) {
+                    List<TimeSeries<OffsetDateTime>> timeSeries;
+                    try {
+                        timeSeries = convertReadingsToTimeSeries(OccupiedStateMap, timeStampReadingsMap);
+                    }
+                    // Is a problem as time series objects must be the same every time to ensure proper insert into the database
+                    catch (NoSuchElementException e) {
+                        throw new IllegalArgumentException("Readings can not be converted to proper time series!", e);
+                    }
+                    // Update each time series
+                    for (TimeSeries<OffsetDateTime> ts : timeSeries) {
+                        // Retrieve current maximum time to avoid duplicate entries (can be null if no data is in the database yet)
+                        OffsetDateTime endDataTime;
+                        try{
+                            endDataTime = tsClient.getMaxTime(ts.getDataIRIs().get(0));
+                        } catch (Exception e) {
+                            throw new JPSRuntimeException("Could not get max time!");
+                        }
+                        OffsetDateTime startCurrentTime = ts.getTimes().get(0);
+                        // If there is already a maximum time
+                        if (endDataTime != null) {
+                            // If the new data overlaps with existing timestamps, prune the new ones
+                            if (startCurrentTime.isBefore(endDataTime)) {
+                                ts = pruneTimeSeries(ts, endDataTime);
+                            }
+                        }
+                        // Only update if there actually is data
+                        if (!ts.getTimes().isEmpty()) {
+                            try {
+                                /*
+                                JSONObject lastOccState = getLastState (ts.getDataIRIs().get(0));
+                                if (latestOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value") != lastOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value")) {
+                                    toggleFH(latestOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value"));
+                                    tsClient.addTimeSeriesData(ts);
+                                    LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
+                                }
+                                */
+
+                                tsClient.addTimeSeriesData(ts);
+                                LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
+                            
+                        } catch (Exception e) {
+                            throw new JPSRuntimeException("Could not add timeseries data!" + e);
+                        }
+                        }
+                        
                     }
                 }
-                // Only update if there actually is data
-                if (!ts.getTimes().isEmpty()) {
-                	try {
-                        /*
-                        JSONObject lastOccState = getLastState (ts.getDataIRIs().get(0));
-                        if (latestOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value") != lastOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value")) {
-                            toggleFH(latestOccState.getJSONArray("occupiedState").getJSONObject(0).getBoolean("value"));
-                            tsClient.addTimeSeriesData(ts);
-                            LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
-                        }
-                        */
+                // Is a problem as time series objects must be the same every time to ensure proper insert into the database
+                else {
+                    throw new IllegalArgumentException("Readings can not be empty!");
+                }
 
-                        tsClient.addTimeSeriesData(ts);
-                        LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
-                    
-                } catch (Exception e) {
-                	throw new JPSRuntimeException("Could not add timeseries data!" + e);
-                }
-                }
-                
             }
+            // Continue operation for the rest of the timeseries
+            catch (Exception e){
+                LOGGER.error("Failed to add timeseries for data:", key,":", e);
+            }
+            
         }
-        // Is a problem as time series objects must be the same every time to ensure proper insert into the database
-        else {
-            throw new IllegalArgumentException("Readings can not be empty!");
-        	}
+        
     }
 
     /**
@@ -518,11 +554,11 @@ public class FHAgent{
     }
 
 
-    private JSONObject TallyDist (JSONObject readings) {
+    private JSONObject TallyDist (JSONObject readings, String key) {
         Boolean tallyLatest = false;
         JSONObject result = new JSONObject();
         JSONArray col = new JSONArray();
-        JSONArray tsAndValue = readings.getJSONArray("avgDist");
+        JSONArray tsAndValue = readings.getJSONArray(key);
         
         //Go through the JSON objects in the array one by one
         for (int j =  0; j <tsAndValue.length() ; j++) {
@@ -560,7 +596,7 @@ public class FHAgent{
         }
 
         
-        result.put("occupiedState", col);
+        result.put(derivationMapping.getString(key), col);
         return result;
     }
 
