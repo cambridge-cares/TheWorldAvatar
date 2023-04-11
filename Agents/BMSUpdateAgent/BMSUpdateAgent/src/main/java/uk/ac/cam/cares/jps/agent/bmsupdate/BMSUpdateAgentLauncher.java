@@ -66,14 +66,14 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
 
         RemoteStoreClient rsClient = setupKgConnection();
 
-        BMSUpdateAgent bmsUpdateAgent = new BMSUpdateAgent(esphomeAgentToggle, esphomeUpdateAgentRetrieve);
+        BMSUpdateAgent bmsUpdateAgent = new BMSUpdateAgent();
         double originalTemperature = Double.NEGATIVE_INFINITY;
         try {
             originalTemperature = bmsUpdateAgent.getOriginalTemperature(dataIRI, rsClient);
             bmsUpdateAgent.setTemperatureInKg(dataIRI, temperature, rsClient);
 
-            String fanStatus = bmsUpdateAgent.toggleFan();
-            bmsUpdateAgent.updateStatusInDb();
+            String fanStatus = bmsUpdateAgent.toggleFan(esphomeAgentToggle);
+            bmsUpdateAgent.updateStatusInDb(esphomeUpdateAgentRetrieve);
 
             result.put("message", "The temperature has been set to " + temperature);
             result.put("fanStatus", fanStatus);
@@ -87,7 +87,7 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
                 errorMessage = errorMessage + "; " + "Set point has been reset to " + originalTemperature;
             } else if (e.getMessage().equals(bmsUpdateAgent.FAIL_TO_PULL_DATA)) {
                 bmsUpdateAgent.setTemperatureInKg(dataIRI, originalTemperature, rsClient);
-                String fanStatus = bmsUpdateAgent.toggleFan();
+                String fanStatus = bmsUpdateAgent.toggleFan(esphomeAgentToggle);
                 errorMessage = errorMessage + "; " + "Set point has been reset to " + originalTemperature + ", and the fan status is " + fanStatus;
             }
 

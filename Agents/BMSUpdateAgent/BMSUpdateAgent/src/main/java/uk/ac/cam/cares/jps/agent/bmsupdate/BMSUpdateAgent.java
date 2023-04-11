@@ -28,18 +28,10 @@ public class BMSUpdateAgent {
     private final String STR_OM = "http://www.ontology-of-units-of-measure.org/resource/om-2/";
     private final Prefix P_OM = SparqlBuilder.prefix("om", iri(STR_OM));
 
-    private final String esphomeAgentToggle;
-    private final String esphomeUpdateAgentRetrieve;
-
     final String FAIL_TO_GET_TEMP = "Fail to get temperature";
     final String FAIL_TO_UPDATE_TEMP = "Fail to update temperature in knowledge graph";
     final String FAIL_TO_TOGGLE = "Fail to trigger ESPHomeAgent to toggle device status";
     final String FAIL_TO_PULL_DATA = "Fail to trigger ESPHomeUpdateAgent to pull data";
-
-    public BMSUpdateAgent(String esphomeAgentToggle, String esphomeUpdateAgentRetrieve) {
-        this.esphomeAgentToggle = esphomeAgentToggle;
-        this.esphomeUpdateAgentRetrieve = esphomeUpdateAgentRetrieve;
-    }
 
     public void setTemperatureInKg(String dataIRI, double newTemperature, RemoteStoreClient rsClient) {
         ModifyQuery modifyDataQuery = Queries.MODIFY();
@@ -79,7 +71,7 @@ public class BMSUpdateAgent {
         }
     }
 
-    public String toggleFan() {
+    public String toggleFan(String esphomeAgentToggle) {
         JSONObject queryJo = new JSONObject();
         queryJo.put("timeseriesDataClientProperties", "CLIENT_PROPERTIES");
         queryJo.put("esphomeStatusClientProperties", "ESPHOME_CLIENT_PROPERTIES");
@@ -88,14 +80,14 @@ public class BMSUpdateAgent {
         try {
             LOGGER.info("toggle device status with ESPHomeAgent at " + esphomeAgentToggle);
             String response = AgentCaller.executePost(esphomeAgentToggle, queryJo.toString());
-            return new JSONObject(response).getJSONArray("message").getString(0);
+            return parseFanStatusMessage(response);
         } catch (Exception e) {
             LOGGER.error(FAIL_TO_TOGGLE);
             throw new JPSRuntimeException(FAIL_TO_TOGGLE);
         }
     }
 
-    public void updateStatusInDb() {
+    public void updateStatusInDb(String esphomeUpdateAgentRetrieve) {
         JSONObject queryJo = new JSONObject();
         queryJo.put("agentProperties", "ESPHOME_UPDATE_AGENTPROPERTIES");
         queryJo.put("apiProperties", "ESPHOME_UPDATE_APIPROPERTIES");
@@ -109,5 +101,16 @@ public class BMSUpdateAgent {
             throw new JPSRuntimeException(FAIL_TO_PULL_DATA);
         }
 
+    }
+
+    private String parseFanStatusMessage(String response) {
+        String statusString = new JSONObject(response).getJSONArray("message").getString(0).toLowerCase();
+        if (statusString.contains("on state") || statusString.contains("turn on")) {
+            return "The fan is in the ON state.";
+        } else if (statusString.contains("off state") || statusString.contains("turn off")) {
+            return "The fan is in the OFF state.";
+        }
+        LOGGER.warn("Unknown fan state, cannot parse the response");
+        return "";
     }
 }
