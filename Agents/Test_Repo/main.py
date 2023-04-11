@@ -13,10 +13,16 @@ import time
 from rdflib.namespace import XSD
 import pickle
 import rasterio
+from rasterio.warp import calculate_default_transform, reproject, Resampling
+from rasterio.crs import CRS
 from netCDF4 import Dataset
+import netCDF4 as nc
 from rasterio.crs import CRS
 import logging
 from datamodel.iris import *
+import csv
+import geopandas as gpd
+import pandas as pd
 
 logging.basicConfig(filename='rasterio.log', level=logging.DEBUG)
 
@@ -147,8 +153,27 @@ def consump_figure_using_tom_code():
     
     print(usage_vals)
 
+def get_the_metadat_of_nc_file():
+    # Open the NetCDF file
+    nc_file = Dataset("C:/Users/jx309/Documents/TheWorldAvatar/Agents/Test_Repo/Data/tas_hadukgrid_uk_1km_mon_202001-202012.nc", "r")
+
+    # Print the global attributes
+    print("Global attributes:")
+    for attr_name in nc_file.ncattrs():
+        print(f"\t{attr_name}: {getattr(nc_file, attr_name)}")
+
+    # Print the variable attributes
+    print("Variable attributes:")
+    for var_name, var in nc_file.variables.items():
+        print(f"\t{var_name}:")
+        for attr_name in var.ncattrs():
+            print(f"\t\t{attr_name}: {getattr(var, attr_name)}")
+
+    # Close the NetCDF file
+    nc_file.close()
+
 def convert_NetCDF_to_GeoTiff():
-        # Open the NetCDF file using netCDF4
+    # Open the NetCDF file using netCDF4
     nc_file = Dataset("C:/Users/jx309/Documents/TheWorldAvatar/Agents/Test_Repo/Data/tas_hadukgrid_uk_1km_mon_202001-202012.nc", "r")
 
     # Get the variables for time, longitude and latitude
@@ -161,8 +186,8 @@ def convert_NetCDF_to_GeoTiff():
 
     # Read the dimensions of the variables
     time_len = len(time_var)
-    lon_len = len(lon_var)
-    lat_len = len(lat_var)
+    lon_len = 900
+    lat_len = 1450
 
     # Read the data from the variable
     data = nc_file.variables["tas"][:]
@@ -171,14 +196,20 @@ def convert_NetCDF_to_GeoTiff():
     nc_file.close()
     # Define the CRS using WKT
     wkt = """
-        GEOGCRS["WGS 84",    DATUM["World Geodetic System 1984",        ELLIPSOID["WGS 84",6378137,298.257223563,            LENGTHUNIT["metre",1]],
-        ID["EPSG",6326]],
-    CS[ellipsoidal,2],
-        AXIS["geodetic latitude (Lat)",north,            ORDER[1],
-            ANGLEUNIT["degree",0.0174532925199433]],
-        AXIS["geodetic longitude (Lon)",east,            ORDER[2],
-            ANGLEUNIT["degree",0.0174532925199433]],
-    ID["EPSG",4326]]
+    PROJCS["OSGB_1936_British_National_Grid",    GEOGCS["GCS_OSGB 1936",    DATUM["D_OSGB_1936",    SPHEROID["Airy_1830",6377563.396,299.3249646]],
+    PRIMEM["Greenwich",0.0],
+    UNIT["Degree",0.0174532925199433]],
+    PROJECTION["Transverse_Mercator"],
+    PARAMETER["False_Easting",400000.0],
+    PARAMETER["False_Northing",-100000.0],
+    PARAMETER["Central_Meridian",-2.0],
+    PARAMETER["Scale_Factor",0.9996012717],
+    PARAMETER["Latitude_Of_Origin",49.0],
+    UNIT["Meter",1.0],
+    AXIS["Easting",EAST],
+    AXIS["Northing",NORTH],
+    AUTHORITY["EPSG","27700"],
+    AUTHORITY["EPSG","7405"]]
     """
 
     # Create a CRS object from the WKT string
@@ -194,13 +225,186 @@ def convert_NetCDF_to_GeoTiff():
         dtype=data.dtype,
         crs=crs,
         transform=rasterio.transform.from_bounds(
-            lat_masked.min(), lon_masked.min(), lat_masked.max(), lon_masked.max(), lon_len, lat_len
-        )
+    lon_masked.min(), lat_masked.min(), lon_masked.max(), lat_masked.max(), lon_len, lat_len
+)
     ) as dst:
         # Write the data to the GeoTIFF file
         for i in range(time_len):
             dst.write(data[i], i + 1)
-            
+    '''
+    
+    # Open the original Geotiff file
+    with rasterio.open("C:/Users/jx309/Documents/TheWorldAvatar/Agents/Test_Repo/Data/tas_uk_temp_2020.tif") as src:
+        # Define the target CRS as EPSG:4326
+        dst_crs = "EPSG:4326"
+
+        # Define the transform to use for the target CRS
+        transform, width, height = rasterio.warp.calculate_default_transform(src.crs, dst_crs, src.width, src.height, *src.bounds)
+
+        # Define the metadata for the target Geotiff file
+        meta = src.meta.copy()
+        meta.update({
+            'crs': dst_crs,
+            'transform': transform,
+            'width': width,
+            'height': height
+        })
+
+    # Create the target Geotiff file
+    with rasterio.open("C:/Users/jx309/Documents/TheWorldAvatar/Agents/Test_Repo/Data/tas_uk_temp_2020_wgs84.tif", "w", **meta) as dst:
+        # Reproject the data from the source to target CRS
+        reproject(
+            source=rasterio.band(src, 1),
+            destination=rasterio.band(dst, 1),
+            src_transform=src.transform,
+            src_crs=src.crs,
+            dst_transform=transform,
+            dst_crs=dst_crs,
+            resampling=Resampling.bilinear
+        )
+    '''
+ #           
+
+def make_geometry_valid():
+    '''
+    # ---------------------- Iteration --------------------------- #
+    # Open the CSV file
+    with open('./Data/LSOA_Geometry.csv', newline='') as csvfile:
+    # Create a CSV reader object
+        csvreader = csv.reader(csvfile)
+        # Iterate over each row in the CSV file
+        for row in csvreader:
+            # Access the LSOA code in the first column
+            lsoa_code = row[0]
+            # Access the LSOA geometry shape in the second column
+            lsoa_geometry = row[1]
+            print('GOD please let it work')
+    '''
+
+    '''
+    
+    '''
+    # Read the CSV file into a pandas DataFrame
+    df = pd.read_csv('./Data/LSOA_Geometry.csv')
+
+    # Delete rows with null or empty geometry values
+    df = df.dropna(subset=['geometry'])
+    df = df[df['geometry'] != '']
+
+    # Convert the 'geometry' column to a geoseries object
+    geometry = gpd.GeoSeries.from_wkt(df['geometry'])
+
+    # Add the 'geometry' column to the DataFrame
+    df['geometry'] = geometry
+
+    # Convert the DataFrame to a GeoDataFrame
+    gdf = gpd.GeoDataFrame(df, geometry='geometry')
+    print(gdf.dtypes)
+
+def New_convert_NetCDF_to_GeoTiff():
+    # Open the NetCDF file and read in the data
+    nc_file = nc.Dataset('C:/Users/jx309/Documents/TheWorldAvatar/Agents/Test_Repo/Data/tas_hadukgrid_uk_1km_mon_202001-202012.nc', 'r')
+    data = nc_file.variables['tas'][:]
+    src_file  = "C:/Users/jx309/Documents/TheWorldAvatar/Agents/Test_Repo/Data/tas_hadukgrid_uk_1km_mon_202001-202012.nc"
+    tgt_file  = "C:/Users/jx309/Documents/TheWorldAvatar/Agents/Test_Repo/Data/tas_uk_temp_2020.tif"
+    # Get the coordinate variables
+    lat = nc_file.variables['latitude'][:]
+    lon = nc_file.variables['longitude'][:]
+    time = nc_file.variables['time'][:]
+    lon_var = nc_file.variables["longitude"]
+    lat_var = nc_file.variables["latitude"]
+    lon_masked = np.ma.masked_array(lon_var[:], mask=np.ma.getmask(lon_var[:]))
+    lat_masked = np.ma.masked_array(lat_var[:], mask=np.ma.getmask(lat_var[:]))
+        
+    # Define the output file name and spatial reference
+    output_file = 'C:/Users/jx309/Documents/TheWorldAvatar/Agents/Test_Repo/Data/tas_uk_temp_2020.tif'
+    # Define the source CRS using WKT
+    src_crs_wkt = """
+    PROJCS["British_National_Grid",
+        GEOGCS["GCS_OSGB_1936",
+            DATUM["D_OSGB_1936",
+                SPHEROID["Airy_1830",6377563.396,299.3249646]],
+            PRIMEM["Greenwich",0],
+            UNIT["Degree",0.0174532925199433]],
+        PROJECTION["Transverse_Mercator"],
+        PARAMETER["latitude_of_origin",49],
+        PARAMETER["central_meridian",-2],
+        PARAMETER["scale_factor",0.9996012717],
+        PARAMETER["false_easting",400000],
+        PARAMETER["false_northing",-100000],
+        UNIT["Meter",1]
+    ]"""
+    # Open the source file and read its metadata
+    # Define the target CRS using EPSG code
+    tgt_crs = CRS.from_wkt("""
+        PROJCS["OSGB_1936_British_National_Grid",
+        GEOGCS["GCS_OSGB 1936",
+        DATUM["D_OSGB_1936",
+        SPHEROID["Airy_1830",6377563.396,299.3249646]],
+        PRIMEM["Greenwich",0.0],
+        UNIT["Degree",0.0174532925199433]],
+        PROJECTION["Transverse_Mercator"],
+        PARAMETER["False_Easting",400000.0],
+        PARAMETER["False_Northing",-100000.0],
+        PARAMETER["Central_Meridian",-2.0],
+        PARAMETER["Scale_Factor",0.9996012717],
+        PARAMETER["Latitude_Of_Origin",49.0],
+        UNIT["Meter",1.0]]
+    """)
+    with rasterio.open(src_file) as src:
+        src_profile = src.profile
+        src_transform = src.transform
+        src_crs = src.crs
+
+        # Calculate the transformation parameters between the source and target CRS
+        tgt_transform, tgt_width, tgt_height = calculate_default_transform(
+            src_crs, tgt_crs, src.width, src.height, *src.bounds)
+
+        # Update the target profile with the new metadata
+        tgt_profile = src_profile.copy()
+        tgt_profile.update({
+            'crs': tgt_crs,
+            'transform': tgt_transform,
+            'width': tgt_width,
+            'height': tgt_height
+        })
+
+        # Create the target file and write the reprojected data
+        # Create a new GeoTIFF file
+    with rasterio.open(
+        "C:/Users/jx309/Documents/TheWorldAvatar/Agents/Test_Repo/Data/tas_uk_temp_2020.tif",
+        "w",
+        driver="GTiff",
+        height=1450,
+        width=900,
+        count=12,
+        dtype=data.dtype,
+        crs=tgt_crs,
+        transform=rasterio.transform.from_bounds(
+            lat_masked.min(), lon_masked.min(), lat_masked.max(), lon_masked.max(), 900, 1450
+        )
+    ) as tgt:
+            for i in range(1, src.count + 1):
+                reproject(
+                    source=rasterio.band(src, i),
+                    destination=rasterio.band(tgt, i),
+                    src_transform=src_transform,
+                    src_crs=src_crs_wkt,
+                    dst_transform=tgt_transform,
+                    dst_crs=tgt_crs,
+                    resampling=Resampling.nearest)
+
+
+#############################################################################
+#                                                                           #
+#                                                                           #
+# ----------------------------- Work Board -------------------------------- #
+#                                                                           #
+#                                                                           #
+#############################################################################
+#get_the_metadat_of_nc_file()
+#convert_NetCDF_to_GeoTiff()
 convert_NetCDF_to_GeoTiff()
 #generate_temp_rdf()
 #consump_figure_using_tom_code()
+#make_geometry_valid()
