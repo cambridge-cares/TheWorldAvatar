@@ -8,6 +8,10 @@ from transformers import BertTokenizer
 from Marie.PubchemEngine import PubChemQAEngine
 from Marie.OntoCompChem import OntoCompChemEngine
 from Marie.OntoSpecies import OntoSpeciesQAEngine
+from Marie.OntoKinReaction import OntoKinReactionInterface
+from Marie.OntoMoPs import OntoMoPsQAEngine
+from Marie.Agent import AgentInterface
+from Marie.OntoSpeciesNew import OntoSpeciesNew
 from Marie.Ontokin import OntoKinQAEngine
 from Marie.Util.CommonTools.NLPTools import NLPTools
 from Marie.Util.Logging import MarieLogger
@@ -75,6 +79,14 @@ class CrossGraphQAEngine:
                 self.engine_list[index] = OntoKinQAEngine()
             elif domain == "wikidata":
                 self.engine_list[index] = WikidataEngine()
+            elif domain == "ontospecies_new":
+                self.engine_list[index] = OntoSpeciesNew()
+            elif domain == "ontoagent":
+                self.engine_list[index] = AgentInterface()
+            elif domain == "ontomops":
+                self.engine_list[index] = OntoMoPsQAEngine()
+            elif domain == "ontokin_reaction":
+                self.engine_list[index] = OntoSpeciesNew()
             print(f"Engine for {domain} created")
 
     def create_triple_for_prediction(self, question, score_list, domain_list, target_list):
