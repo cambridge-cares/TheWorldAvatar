@@ -321,12 +321,11 @@ public class Aermod {
         return 0;
     }
 
-    String uploadToFileServer() {
+    String uploadToFileServer(String filename) {
         // upload to file server via HTTP POST
 
         MultipartEntityBuilder multipartBuilder = MultipartEntityBuilder.create();
-        multipartBuilder.addPart("dispersionMatrix", new FileBody(aermodDirectory.resolve("1HR_PLOTFILE.DAT").toFile()));
-        multipartBuilder.addPart("buildingOutput",new FileBody(aermodDirectory.resolve("buildings.dat").toFile()));
+        multipartBuilder.addPart("dispersionMatrix", new FileBody(aermodDirectory.resolve(filename).toFile()));
 
         HttpPost httpPost = new HttpPost(EnvConfig.FILE_SERVER + simulationDirectory.getFileName() + "/");
         httpPost.setEntity(multipartBuilder.build());
@@ -350,13 +349,14 @@ public class Aermod {
         }
     }
 
+
     /**
      * executes get request from python-service to postprocess
      */
-    public JSONObject getGeoJSON(String outputFileURL, int srid) {
+    public JSONObject getGeoJSON(String endPoint, String outputFileURL, int srid) {
         URI httpGet;
         try {
-            URIBuilder builder = new URIBuilder(EnvConfig.PYTHON_SERVICE_URL);
+            URIBuilder builder = new URIBuilder(endPoint);
             builder.setParameter("dispersionMatrix", outputFileURL);
             builder.setParameter("srid", String.valueOf(srid));
             httpGet = builder.build();
@@ -378,7 +378,7 @@ public class Aermod {
         }
     }
 
-    int createDataJson(String shipLayerName, String dispersionLayerName, String plantsLayerName) {
+    int createDataJson(String shipLayerName, String dispersionLayerName, String plantsLayerName, String elevationLayerName) {
         // wms endpoints template without the layer name
         String shipWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile" +
             "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, shipLayerName);
@@ -388,6 +388,9 @@ public class Aermod {
         
         String plantWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile" +
             "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, plantsLayerName);
+
+        String elevWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true" +
+            "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, elevationLayerName);
 
         JSONObject group = new JSONObject();
         group.put("name", "Aermod Simulation"); // hardcoded
@@ -411,7 +414,12 @@ public class Aermod {
         dispersionSource.put("type", "raster");
         dispersionSource.put("tiles", new JSONArray().put(dispWms));
 
-        sources.put(shipSource).put(dispersionSource).put(plantSource);
+        JSONObject elevationSource = new JSONObject();
+        elevationSource.put("id", "elevation-source");
+        elevationSource.put("type", "raster");
+        elevationSource.put("tiles", new JSONArray().put(elevWms));
+
+        sources.put(shipSource).put(dispersionSource).put(plantSource).put(elevationSource);
         group.put("sources", sources);
 
         // layers
@@ -444,7 +452,15 @@ public class Aermod {
         dispersionLayer.put("minzoom", 4);
         dispersionLayer.put("layout", new JSONObject().put("visibility", "visible"));
 
-        layers.put(dispersionLayer).put(shipLayer).put(plantsLayer);
+        JSONObject elevationLayer = new JSONObject();
+        elevationLayer.put("type", "raster");
+        elevationLayer.put("name", "Dispersion");
+        elevationLayer.put("source", "dispersion-source");
+        elevationLayer.put("source-layer", elevationLayerName);
+        elevationLayer.put("minzoom", 4);
+        elevationLayer.put("layout", new JSONObject().put("visibility", "visible"));
+
+        layers.put(dispersionLayer).put(shipLayer).put(plantsLayer).put(elevationLayer);
         group.put("layers", layers);
 
         JSONObject data = new JSONObject();

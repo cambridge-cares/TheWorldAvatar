@@ -138,17 +138,24 @@ public class AermodAgent extends DerivationAgent {
 
         aermod.createAermodInputFile(scope, nx, ny, srid);
         aermod.runAermod();
-        String outputFileURL = aermod.uploadToFileServer();
-        JSONObject geoJSON = aermod.getGeoJSON(outputFileURL, srid);
+        // Call Python Service to draw contour plot for pollution concentrations
+        String outputFileURL = aermod.uploadToFileServer("1HR_PLOTFILE.DAT");
+        JSONObject geoJSON = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid);
+
+        String outFileURL = aermod.uploadToFileServer("receptor.dat");
+        JSONObject geoJSON2 = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_ELEVATION_URL, outFileURL, srid);
+
 
         // layer name
         String dispLayerName = "disp_" + simulationDirectory.getFileName();
         String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent
         String plantsLayerName = "source_layer" ;
+        String elevationLayerName = "elevation_layer";
 
         // upload to PostGIS using GDAL
         GDALClient gdalClient = new GDALClient();
         gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, dispLayerName, geoJSON.toString(), new Ogr2OgrOptions(), true);
+        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, elevationLayerName, geoJSON2.toString(), new Ogr2OgrOptions(), true);
 
         // create geoserver layer based for that
         GeoServerClient geoServerClient = new GeoServerClient();
@@ -160,10 +167,11 @@ public class AermodAgent extends DerivationAgent {
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
         geoServerVectorSettings.setDefaultStyle("dispersion_style");
         geoServerClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, dispLayerName, geoServerVectorSettings);
+        geoServerClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, elevationLayerName, geoServerVectorSettings);
 
         // ships_ is hardcoded here and in ShipInputAgent
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), outputFileURL, dispLayerName, shipLayerName, simulationTime);
-        if (aermod.createDataJson(shipLayerName, dispLayerName, plantsLayerName) != 0) {
+        if (aermod.createDataJson(shipLayerName, dispLayerName, plantsLayerName,elevationLayerName) != 0) {
             LOGGER.error("Failed to create data.json file for visualisation, terminating");
             return;
         }
