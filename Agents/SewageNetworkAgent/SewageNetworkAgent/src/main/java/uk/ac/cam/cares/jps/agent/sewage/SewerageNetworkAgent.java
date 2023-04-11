@@ -39,10 +39,10 @@ public class SewerageNetworkAgent extends JPSAgent {
 	public static String BMO = "https://w3id.org/digitalconstruction/0.3/BuildingMaterials#";
 	public static String s4watr = "https://saref.etsi.org/saref4watr/";
 	public static String schema = "https://schema.org/";
-	public static String dul = "http://www.ontologydesignpatterns.org/ont/dul/DUL.owl";
+	public static String dul = "http://www.ontologydesignpatterns.org/ont/dul/DUL.owl#";
 	public static String ogc = "http://www.opengis.net/ont/geosparql#";
-	public static String sio = "http://semanticscience.org/resource/#";
-	public static String juso = "http://rdfs.co/juso/#";
+	public static String sio = "http://semanticscience.org/resource/";
+	public static String juso = "http://rdfs.co/juso/";
 	public static String hasPart = "http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasPart";
 
 	// For units of measure
@@ -53,7 +53,6 @@ public class SewerageNetworkAgent extends JPSAgent {
 	public static String OM_HAS_UNIT = OM + "hasUnit";
 	public static String OM_SYMBOL = OM + "symbol";
 	public static String OM_Has_NUMERICAL_VALUE = OM + "hasNumericalValue";
-
 	public static String OM_LENGTH = OM + "Length";
 	public static String OM_THICKNESS = OM + "Thickness";
 	public static String OM_HEIGHT = OM + "Height";
@@ -68,7 +67,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 	public static String XSD_STRING = XSD + "string";
 	public static String XSD_FLOAT = XSD + "float";
 	public static String XSD_DATE = XSD + "date";
-	public static String XSD_BOOLEAN = XSD + "Boolean";
+	public static String XSD_BOOLEAN = XSD + "boolean";
 	public static String XSD_INTEGER = XSD + "integer";
 
 
@@ -202,14 +201,12 @@ public class SewerageNetworkAgent extends JPSAgent {
 					new UpdateBuilder()
 					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(s4watr + "Pipe"))
 					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "componentID"), HG001)		
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "isAssociateWith"), NodeFactory.createURI(KB + "SewagePlant" + HG108))	
+					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "isAssociatedWith"), NodeFactory.createURI(KB + "SewagePlant" + HG108))	
 					.addInsert(NodeFactory.createURI(KB + "SewagePlant" + HG108), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewagePlant"))		
 					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasUsage"), NodeFactory.createURI(KB + "SewerageUsage" + HG302))
 					.addInsert(NodeFactory.createURI(KB + "SewerageUsage" + HG302), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageUsage"))		
 					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasSewerageRecords"), NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageRecords"))
-
-
 					.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name), NodeFactory.createURI(OS + "hasOwnershipType"), NodeFactory.createURI(KB + "OwnershipType" + HG402))
 					.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name), NodeFactory.createURI(OS + "hasFunctionalState"), NodeFactory.createURI(KB + "FunctionalState" + HG401))
 					.addInsert(NodeFactory.createURI(KB + "OwnershipType" + HG402), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "OwnershipType"))
@@ -223,7 +220,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasConstructionProperties"), NodeFactory.createURI(KB + "ConstructionProperties" + HG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "ConstructionProperties"))
 					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + HG_Instance_Name), NodeFactory.createURI(OS + "constructionYear"), HG303)
-					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + HG_Instance_Name), NodeFactory.createURI(OS + "hasMaterial"), NodeFactory.createURI(KB + "Material" + HG304))
+					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + HG_Instance_Name), NodeFactory.createURI(BMO + "hasMaterial"), NodeFactory.createURI(KB + "Material" + HG304))
 					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + HG_Instance_Name), NodeFactory.createURI(OS + "hasChannelType"), NodeFactory.createURI(KB + "ChannelType" + HG301))
 					.addInsert(NodeFactory.createURI(KB + "Material" + HG304), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(BMO + "Material"))
 					.addInsert(NodeFactory.createURI(KB + "ChannelType" + HG301), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "ChannelType"));
@@ -240,7 +237,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + "DistanceOnMainPipe" + "BranchConnection" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DISTANCE));
 			UpdateRequest BranchConnectionHG_ur = BranchConnectionHG_ub.buildRequest();
 			AccessAgentCaller.updateStore(sparqlendpoint, BranchConnectionHG_ur.toString());
-			omHasValue("hasDistanceFromMainPipe" + "BranchConnection" + HG_Instance_Name, "meter", HG007);	
+			omHasValue("DistanceOnMainPipe" + "BranchConnection" + HG_Instance_Name, "metre", HG007);
 
 
 			UpdateBuilder CrossSectionHG_ub = 
@@ -249,14 +246,14 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + "CrossSection" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "CrossSection"))			
 					.addInsert(NodeFactory.createURI(KB + "CrossSection" + HG_Instance_Name), NodeFactory.createURI(OS + "hasShape"), NodeFactory.createURI(KB + "Shape" + HG305))
 					.addInsert(NodeFactory.createURI(KB + "Shape" + HG305), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "Shape"))
-					.addInsert(NodeFactory.createURI(KB + "CrossSection" + HG_Instance_Name), NodeFactory.createURI(OS + "hasLength"), NodeFactory.createURI(KB + "Length" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Length" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_LENGTH))
+					.addInsert(NodeFactory.createURI(KB + "CrossSection" + HG_Instance_Name), NodeFactory.createURI(OS + "hasHeight"), NodeFactory.createURI(KB + "Height" + HG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "Height" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT))
 					.addInsert(NodeFactory.createURI(KB + "CrossSection" + HG_Instance_Name), NodeFactory.createURI(OS + "hasWidth"), NodeFactory.createURI(KB + "Width" + HG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "Width" +  HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_WIDTH));		
 			UpdateRequest CrossSectionHG_ur = CrossSectionHG_ub.buildRequest();
 			AccessAgentCaller.updateStore(sparqlendpoint, CrossSectionHG_ur.toString());
-			omHasValue("Length" + HG_Instance_Name, "millimeter", HG307);		
-			omHasValue("Width"  + HG_Instance_Name, "millimeter", HG306);	
+			omHasValue("Height" + HG_Instance_Name, "millimetre", HG307);		
+			omHasValue("Width"  + HG_Instance_Name, "millimetre", HG306);	
 
 
 			UpdateBuilder SewerageFluidHG_ub = 
@@ -272,12 +269,12 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasLength"), NodeFactory.createURI(KB + "Length" + HG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "Length" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_LENGTH))
 					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasWallThickness"), NodeFactory.createURI(KB + "WallThickness" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "WallThickness" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_LENGTH));
+					.addInsert(NodeFactory.createURI(KB + "WallThickness" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_THICKNESS));
 			UpdateRequest SewerageFluidHG_ur = SewerageFluidHG_ub.buildRequest(); 
 			AccessAgentCaller.updateStore(sparqlendpoint, SewerageFluidHG_ur.toString());
-			omHasValue("Inclination" + HG_Instance_Name, "percentage", HG311);		
-			omHasValue("Length" + HG_Instance_Name, "meter", HG310);	
-			omHasValue("Thickness" + HG_Instance_Name, "meter", HG410);	
+			omHasValue("Inclination" + HG_Instance_Name, "Percentage", HG311);		
+			omHasValue("Length" + HG_Instance_Name, "metre", HG310);	
+			omHasValue("Thickness" + HG_Instance_Name, "metre", HG410);	
 
 
 			UpdateBuilder ConnectionPropertiesHG_ub = 
@@ -295,70 +292,70 @@ public class SewerageNetworkAgent extends JPSAgent {
 
 			UpdateBuilder LocationInletHG_ub = 
 					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "InletLocation"), NodeFactory.createURI(KB + "InletLocation" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "InletLocation" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "Location"))
-					.addInsert(NodeFactory.createURI(KB + "InletLocation" + HG_Instance_Name), NodeFactory.createURI(OS + "isInWaterProtectionZone"), HG403)
-					.addInsert(NodeFactory.createURI(KB + "InletLocation" + HG_Instance_Name), NodeFactory.createURI(OS + "isInFloodplane"), HG406)
-					.addInsert(NodeFactory.createURI(KB + "InletLocation" + HG_Instance_Name), NodeFactory.createURI(OS + "isAssociatedWith"), NodeFactory.createURI(KB + "AssociatedInfrastructure" + HG404))
+					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasInletLocation"), NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "location"))
+					.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name), NodeFactory.createURI(OS + "isInWaterProtectionZone"), HG403)
+					.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name), NodeFactory.createURI(OS + "isInFloodplane"), HG406)
+					.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name), NodeFactory.createURI(OS + "isAssociatedWith"), NodeFactory.createURI(KB + "AssociatedInfrastructure" + HG404))
 					.addInsert(NodeFactory.createURI(KB + "AssociatedInfrastructure" + HG404), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "AssociatedInfrastructure"))  
-					.addInsert(NodeFactory.createURI(KB + "InletLocation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinates"), NodeFactory.createURI(KB + "InletGeoCoordinate" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "InletGeoCoordinate" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "GeoCoordinate"))   	
-					.addInsert(NodeFactory.createURI(KB + "InletGeoCoordinate" + HG_Instance_Name), NodeFactory.createURI(OS + "hasPositionAccuracy"), HG_GP008A)	
-					.addInsert(NodeFactory.createURI(KB + "InletGeoCoordinate" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinateReference"), HG_GP002)		
-					.addInsert(NodeFactory.createURI(KB + "InletGeoCoordinate" + HG_Instance_Name), NodeFactory.createURI(ogc + "asWKT"), "POINT("+HG_GP003A+","+HG_GP004A+")^^ogc:wktLiteral")
-					.addInsert(NodeFactory.createURI(KB + "InletLocation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasPointDesignation"), HG_GP001A)
-					.addInsert(NodeFactory.createURI(KB + "InletLocation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevation"), NodeFactory.createURI(KB + "InletElevation" + HG_Instance_Name))	
-					.addInsert(NodeFactory.createURI(KB + "InletElevation" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "Elevation"))   
-					.addInsert(NodeFactory.createURI(KB + "InletElevation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationReference"), HG_GP010A)
-					.addInsert(NodeFactory.createURI(KB + "InletElevation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAccuracy"), HG_GP009A)
-					.addInsert(NodeFactory.createURI(KB + "InletElevation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAboveSeaLevel"), NodeFactory.createURI(KB + "InletElevationHeight" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "InletElevationHeight" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT))
-					.addInsert(NodeFactory.createURI(KB + "InletElevation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCatchmentAreaKey"), HG107)
-					.addInsert(NodeFactory.createURI(KB + "InletElevation" + HG_Instance_Name), NodeFactory.createURI(sio + "SIO_000061"), NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinates"), NodeFactory.createURI(KB + "GeoCoordinateI" + HG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "GeoCoordinateI" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "GeoCoordinates"))   	
+					.addInsert(NodeFactory.createURI(KB + "GeoCoordinateI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasPositionAccuracy"), HG_GP008A)	
+					.addInsert(NodeFactory.createURI(KB + "GeoCoordinateI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinateReference"), HG_GP002)		
+					.addInsert(NodeFactory.createURI(KB + "GeoCoordinateI" + HG_Instance_Name), NodeFactory.createURI(ogc + "asWKT"), "POINT("+HG_GP003A+","+HG_GP004A+")^^ogc:wktLiteral")
+					.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasPointDesignation"), HG_GP001A)
+					.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevation"), NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name))	
+					.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "elevation"))   
+					.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationReference"), HG_GP010A)
+					.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAccuracy"), HG_GP009A)
+					.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAboveSeaLevel"), NodeFactory.createURI(KB + "ElevationHeightI" + HG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "ElevationHeightI" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT))
+					.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCatchmentAreaKey"), HG107)
+					.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name), NodeFactory.createURI(sio + "SIO_000061"), NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(juso + "District"))
 					.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name), NodeFactory.createURI(OS + "hasDistrictReference"), HG103)
 					.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name), NodeFactory.createURI(OS + "hasDistrictName"), HG104)   
-					.addInsert(NodeFactory.createURI(KB + "InletElevation" + HG_Instance_Name), NodeFactory.createURI(sio + "SIO_000061"), NodeFactory.createURI(KB + "Street" + HG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name), NodeFactory.createURI(sio + "SIO_000061"), NodeFactory.createURI(KB + "Street" + HG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(juso + "Street"))
 					.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name), NodeFactory.createURI(OS + "hasStreetReference"), HG101)
 					.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name), NodeFactory.createURI(OS + "hasStreetName"), HG102);
 			UpdateRequest LocationInletHG_ur = LocationInletHG_ub.buildRequest();
 			AccessAgentCaller.updateStore(sparqlendpoint, LocationInletHG_ur.toString()); 
-			omHasValue("InletElevationHeight" + HG_Instance_Name, "meter", HG_GP007A);	
+			omHasValue("ElevationHeightI" + HG_Instance_Name, "metre", HG_GP007A);	
 
 
 			UpdateBuilder LocationOutletHG_ub = 
 					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "OutletLocation"), NodeFactory.createURI(KB + "OutletLocation" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "OutletLocation" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "Location"))
-					.addInsert(NodeFactory.createURI(KB + "OutletLocation" + HG_Instance_Name), NodeFactory.createURI(OS + "isInWaterProtectionZone"), HG403)
-					.addInsert(NodeFactory.createURI(KB + "OutletLocation" + HG_Instance_Name), NodeFactory.createURI(OS + "isInFloodplane"), HG406)
-					.addInsert(NodeFactory.createURI(KB + "OutletLocation" + HG_Instance_Name), NodeFactory.createURI(OS + "isAssociatedWith"), NodeFactory.createURI(KB + "AssociatedInfrastructure" + HG404))
+					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasOutletLocation"), NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "location"))
+					.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name), NodeFactory.createURI(OS + "isInWaterProtectionZone"), HG403)
+					.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name), NodeFactory.createURI(OS + "isInFloodplane"), HG406)
+					.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name), NodeFactory.createURI(OS + "isAssociatedWith"), NodeFactory.createURI(KB + "AssociatedInfrastructure" + HG404))
 					.addInsert(NodeFactory.createURI(KB + "AssociatedInfrastructure" + HG404), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "AssociatedInfrastructure"))  
-					.addInsert(NodeFactory.createURI(KB + "OutletLocation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinates"), NodeFactory.createURI(KB + "OutletGeoCoordinate" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "OutletGeoCoordinate" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "GeoCoordinate"))   	
-					.addInsert(NodeFactory.createURI(KB + "OutletGeoCoordinate" + HG_Instance_Name), NodeFactory.createURI(OS + "hasPositionAccuracy"), HG_GP008B)	
-					.addInsert(NodeFactory.createURI(KB + "OutletGeoCoordinate" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinateReference"), HG_GP002)		
-					.addInsert(NodeFactory.createURI(KB + "OutletGeoCoordinate" + HG_Instance_Name), NodeFactory.createURI(ogc + "asWKT"), "POINT("+HG_GP003B+","+HG_GP004B+")^^ogc:wktLiteral")
-					.addInsert(NodeFactory.createURI(KB + "OutletLocation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasPointDesignation"), HG_GP001B)
-					.addInsert(NodeFactory.createURI(KB + "OutletLocation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevation"), NodeFactory.createURI(KB + "OutletElevation" + HG_Instance_Name))	
-					.addInsert(NodeFactory.createURI(KB + "OutletElevation" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "Elevation"))   
-					.addInsert(NodeFactory.createURI(KB + "OutletElevation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationReference"), HG_GP010B)
-					.addInsert(NodeFactory.createURI(KB + "OutletElevation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAccuracy"), HG_GP009B)
-					.addInsert(NodeFactory.createURI(KB + "OutletElevation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAboveSeaLevel"), NodeFactory.createURI(KB + "OutletElevationHeight" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "OutletElevationHeight" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT))	
-					.addInsert(NodeFactory.createURI(KB + "OutletElevation" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCatchmentAreaKey"), HG107)
-					.addInsert(NodeFactory.createURI(KB + "OutletElevation" + HG_Instance_Name), NodeFactory.createURI(sio + "SIO_000061"), NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinates"), NodeFactory.createURI(KB + "GeoCoordinateO" + HG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "GeoCoordinateO" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "GeoCoordinates"))   	
+					.addInsert(NodeFactory.createURI(KB + "GeoCoordinateO" + HG_Instance_Name), NodeFactory.createURI(OS + "hasPositionAccuracy"), HG_GP008B)	
+					.addInsert(NodeFactory.createURI(KB + "GeoCoordinateO" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinateReference"), HG_GP002)		
+					.addInsert(NodeFactory.createURI(KB + "GeoCoordinateO" + HG_Instance_Name), NodeFactory.createURI(ogc + "asWKT"), "POINT("+HG_GP003B+","+HG_GP004B+")^^ogc:wktLiteral")
+					.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name), NodeFactory.createURI(OS + "hasPointDesignation"), HG_GP001B)
+					.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevation"), NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name))	
+					.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "elevation"))   
+					.addInsert(NodeFactory.createURI(KB + "ElevationOn" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationReference"), HG_GP010B)
+					.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAccuracy"), HG_GP009B)
+					.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAboveSeaLevel"), NodeFactory.createURI(KB + "ElevationHeightO" + HG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "ElevationHeightO" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT))	
+					.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCatchmentAreaKey"), HG107)
+					.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name), NodeFactory.createURI(sio + "SIO_000061"), NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(juso + "District"))
 					.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name), NodeFactory.createURI(OS + "hasDistrictReference"), HG103)
 					.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name), NodeFactory.createURI(OS + "hasDistrictName"), HG104)   
-					.addInsert(NodeFactory.createURI(KB + "OutletElevation" + HG_Instance_Name), NodeFactory.createURI(sio + "SIO_000061"), NodeFactory.createURI(KB + "Street" + HG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name), NodeFactory.createURI(sio + "SIO_000061"), NodeFactory.createURI(KB + "Street" + HG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(juso + "Street"))
 					.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name), NodeFactory.createURI(OS + "hasStreetReference"), HG101)
 					.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name), NodeFactory.createURI(OS + "hasStreetName"), HG102);
 			UpdateRequest LocationOutletHG_ur = LocationOutletHG_ub.buildRequest();
 			AccessAgentCaller.updateStore(sparqlendpoint, LocationOutletHG_ur.toString());   
-			omHasValue("OutletElevationHeight" + HG_Instance_Name, "meter", HG_GP007B);
+			omHasValue("ElevationHeightO" + HG_Instance_Name, "metre", HG_GP007B);
 
 
 			if (HG006.equals("None")) {
@@ -458,7 +455,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 					new UpdateBuilder()
 					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(s4watr + "Manhole"))
 					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "componentID"), KG001)	
-					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "isAssociateWith"), NodeFactory.createURI(KB + "SewagePlant" + KG108))	
+					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "isAssociatedWith"), NodeFactory.createURI(KB + "SewagePlant" + KG108))	
 					.addInsert(NodeFactory.createURI(KB + "SewagePlant" + KG108), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewagePlant"))	
 					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "hasUsage"), NodeFactory.createURI(KB + "SewerageUsage" + KG302))
 					.addInsert(NodeFactory.createURI(KB + "SewerageUsage" + KG302), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageUsage"))		
@@ -477,7 +474,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "hasConstructionProperties"), NodeFactory.createURI(KB + "ConstructionProperties" + KG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "ConstructionProperties"))
 					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + KG_Instance_Name), NodeFactory.createURI(OS + "constructionYear"), KG303)
-					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + KG_Instance_Name), NodeFactory.createURI(OS + "hasMaterial"), NodeFactory.createURI(KB + "Material" + KG304))
+					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + KG_Instance_Name), NodeFactory.createURI(BMO + "hasMaterial"), NodeFactory.createURI(KB + "Material" + KG304))
 					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + KG_Instance_Name), NodeFactory.createURI(OS + "hasChannelType"), NodeFactory.createURI(KB + "ChannelType" + KG301))
 					.addInsert(NodeFactory.createURI(KB + "Material" + KG304), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(BMO + "Material"))
 					.addInsert(NodeFactory.createURI(KB + "ChannelType" + KG301), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "ChannelType"));
@@ -499,8 +496,8 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + "Width" + "Flume" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_WIDTH));
 			UpdateRequest FlumeKG_ur = FlumeKG_ub.buildRequest();
 			AccessAgentCaller.updateStore(sparqlendpoint, FlumeKG_ur.toString());
-			omHasValue("Length" + "Flume" + KG_Instance_Name, "millimeter", KG319);		
-			omHasValue("Width" + "Flume" + KG_Instance_Name, "millimeter", KG318);	
+			omHasValue("Length" + "Flume" + KG_Instance_Name, "millimetre", KG319);		
+			omHasValue("Width" + "Flume" + KG_Instance_Name, "millimetre", KG318);	
 
 
 			UpdateBuilder ShaftKG_ub = 
@@ -516,12 +513,12 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + "Shaft" + KG_Instance_Name), NodeFactory.createURI(OS + "hasWidth"), NodeFactory.createURI(KB + "Width" + "Shaft" + KG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "Width" + "Shaft" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_WIDTH))
 					.addInsert(NodeFactory.createURI(KB + "Shaft" + KG_Instance_Name), NodeFactory.createURI(OS + "hasDepth"), NodeFactory.createURI(KB + "Depth" + "Shaft" + KG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Depth" + "Shaft" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_LENGTH));
+					.addInsert(NodeFactory.createURI(KB + "Depth" + "Shaft" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DEPTH));
 			UpdateRequest ShaftKG_ur = ShaftKG_ub.buildRequest();
 			AccessAgentCaller.updateStore(sparqlendpoint, ShaftKG_ur.toString());
-			omHasValue("Length" + "Shaft" + KG_Instance_Name, "millimeter", KG308);		
-			omHasValue("Width" + "Shaft" + KG_Instance_Name, "millimeter", KG309);	
-			omHasValue("Depth" + "Shaft" + KG_Instance_Name, "meter", KG211);	
+			omHasValue("Length" + "Shaft" + KG_Instance_Name, "millimetre", KG308);		
+			omHasValue("Width" + "Shaft" + KG_Instance_Name, "millimetre", KG309);	
+			omHasValue("Depth" + "Shaft" + KG_Instance_Name, "metre", KG211);	
 
 
 			UpdateBuilder CoverKG_ub = 
@@ -530,9 +527,9 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + "Cover" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "Cover"))
 					.addInsert(NodeFactory.createURI(KB + "Cover" + KG_Instance_Name), NodeFactory.createURI(BMO + "hasMaterial"), NodeFactory.createURI(KB + "Material" + KG311))
 					.addInsert(NodeFactory.createURI(KB + "Material" + KG311), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(BMO + "Material"))
-					.addInsert(NodeFactory.createURI(KB + "Cover" + KG_Instance_Name), NodeFactory.createURI(BMO + "hasClass"), NodeFactory.createURI(KB + "Class" + KG312))
+					.addInsert(NodeFactory.createURI(KB + "Cover" + KG_Instance_Name), NodeFactory.createURI(OS + "hasClass"), NodeFactory.createURI(KB + "Class" + KG312))
 					.addInsert(NodeFactory.createURI(KB + "Class" + KG312), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "CoverClass"))
-					.addInsert(NodeFactory.createURI(KB + "Cover" + KG_Instance_Name), NodeFactory.createURI(BMO + "hasShape"), NodeFactory.createURI(KB + "Shape" + KG310))
+					.addInsert(NodeFactory.createURI(KB + "Cover" + KG_Instance_Name), NodeFactory.createURI(OS + "hasShape"), NodeFactory.createURI(KB + "Shape" + KG310))
 					.addInsert(NodeFactory.createURI(KB + "Shape" + KG310), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "Shape"));
 			UpdateRequest CoverKG_ur = CoverKG_ub.buildRequest();
 			AccessAgentCaller.updateStore(sparqlendpoint, CoverKG_ur.toString());
@@ -541,13 +538,13 @@ public class SewerageNetworkAgent extends JPSAgent {
 			UpdateBuilder LocationKG_ub = 
 					new UpdateBuilder()
 					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(dul + "hasLocation"), NodeFactory.createURI(KB + "Location" + KG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "Location"))
+					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "location"))
 					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "isInWaterProtectionZone"), KG403)
 					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "isInFloodplane"), KG406)
 					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "isAssociatedWith"), NodeFactory.createURI(KB + "AssociatedInfrastructure" + KG404))
 					.addInsert(NodeFactory.createURI(KB + "AssociatedInfrastructure" + KG404), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "AssociatedInfrastructure")) 	
 					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinates"), NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "GeoCoordinate"))    
+					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "GeoCoordinates"))    
 					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name), NodeFactory.createURI(OS + "hasPositionAccuracy"), KG_GP008A)
 					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name), NodeFactory.createURI(OS + "hasPositionAccuracy"), KG_GP008B)
 					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinateReference"), KG_GP002)
@@ -555,7 +552,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name), NodeFactory.createURI(ogc + "asWKT"), "POINT("+KG_GP003B+","+KG_GP004B+")^^ogc:wktLiteral")  
 					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "hasPointDesignation"), KG_GP001)
 					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "hasElevation"), NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name))	
-					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "Elevation"))   
+					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "elevation"))   
 					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name), NodeFactory.createURI(OS + "hasElevationReference"), KG_GP010)
 					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAccuracy"), KG_GP009A)		
 					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAccuracy"), KG_GP009B)
@@ -563,8 +560,8 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + "ElevationAboveSeaLevel" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT));
 			UpdateRequest LocationKG_ur = LocationKG_ub.buildRequest();
 			AccessAgentCaller.updateStore(sparqlendpoint, LocationKG_ur.toString()); 	
-			omHasValue("ElevationAboveSeaLevel" + KG_Instance_Name, "meter", KG_GP007A);	
-			omHasValue("ElevationAboveSeaLevel" + KG_Instance_Name, "meter", KG_GP007B);	
+			omHasValue("ElevationAboveSeaLevel" + KG_Instance_Name, "metre", KG_GP007A);	
+			omHasValue("ElevationAboveSeaLevel" + KG_Instance_Name, "metre", KG_GP007B);	
 		}
 
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y \"None\"} where {?x ?y \"None\"}"); 
