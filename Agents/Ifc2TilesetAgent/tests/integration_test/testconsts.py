@@ -22,11 +22,11 @@ SUCCESSFUL_API_RESPONSE = "IFC model has successfully been converted. Please vis
 base_namespace = "http://www.example.org/test/"
 prefix = f"""\
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdfs: <https://www.w3.org/2000/01/rdf-schema#>
 PREFIX base: <{base_namespace}>
 PREFIX bot: <https://w3id.org/bot#>
-PREFIX ontobim: <http://www.theworldavatar.com/kg/ontobim/>
-PREFIX ontobuildingstructure: <http://www.theworldavatar.com/kg/ontobuildingstructure/>
+PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>
+PREFIX ontobuildingstructure: <https://www.theworldavatar.com/kg/ontobuildingstructure/>
 PREFIX ontodevice: <https://www.theworldavatar.com/kg/ontodevice/>
 PREFIX ifc2x3: <http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#>
 PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>

@@ -22,12 +22,10 @@ def create_metadata_query():
     """Creates the SPARQL query for retrieving asset metadata."""
     return """\
 PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdfs:<https://www.w3.org/2000/01/rdf-schema#>
 PREFIX bot:<https://w3id.org/bot#>
-
-PREFIX ontobim:<http://www.theworldavatar.com/kg/ontobim/>
-PREFIX ontobuildingstructure:<http://www.theworldavatar.com/kg/ontobuildingstructure/>
-
+PREFIX ontobim:<https://www.theworldavatar.com/kg/ontobim/>
+PREFIX ontobuildingstructure:<https://www.theworldavatar.com/kg/ontobuildingstructure/>
 SELECT ?iri ?uid ?name WHERE {
   ?iri ontobim:hasIfcRepresentation ?modelRep.
   ?modelRep rdf:type ontobim:IfcModelRepresentation;
@@ -51,15 +49,13 @@ SELECT ?iri ?uid ?name WHERE {
       ontobuildingstructure:Floor,
       ontobuildingstructure:Roof,
       ontobuildingstructure:InclinedRoof,
-      ontobuildingstructure:FlatRoof
-    ) &&
-    ?class NOT IN (
+      ontobuildingstructure:FlatRoof,
       bot:Zone,
       bot:Site,
       bot:Building,
-      bot:Storey
-    ) &&
-    ?class != ontobim:Room
+      bot:Storey,
+      ontobim:Room
+    ) 
   )
 }
 """
