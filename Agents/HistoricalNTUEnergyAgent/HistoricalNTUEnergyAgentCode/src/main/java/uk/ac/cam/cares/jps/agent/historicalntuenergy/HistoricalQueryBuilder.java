@@ -125,7 +125,6 @@ public class HistoricalQueryBuilder {
     public HistoricalQueryBuilder(String agentProp, RemoteStoreClient kbClient) throws IOException
     {
         agentProperties = agentProp;
-        //readings endpoints from client.properties
         loadproperties(agentProperties);
         this.kbClient = kbClient;
 

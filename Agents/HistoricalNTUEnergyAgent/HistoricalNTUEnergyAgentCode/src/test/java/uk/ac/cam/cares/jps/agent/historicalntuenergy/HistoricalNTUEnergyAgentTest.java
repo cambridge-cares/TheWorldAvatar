@@ -52,7 +52,7 @@ public class HistoricalNTUEnergyAgentTest {
     private final String[] timestamps = {"2021-07-11T16:10:00", "2021-07-11T16:15:00", "2021-07-11T16:20:00", "2021-07-11T16:25:00"};
     private ArrayList<Integer> energyValues;
     JSONArray energyReadings;
-    Logger LOGGER = Logger.getLogger(NTUEnergyAgentIntegrationTest.class.getName());
+    Logger LOGGER = Logger.getLogger(HistoricalNTUEnergyAgentIntegrationTest.class.getName());
 
     @Before
     public void initializeAgent() throws IOException {

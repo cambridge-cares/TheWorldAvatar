@@ -53,6 +53,8 @@ public class HistoricalNTUEnergyAgentLauncherTest {
         } catch (JPSRuntimeException e) {
             Assert.assertEquals("Need two properties files in the following order: 1) input agent 2) xlsx connector.",
                     e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -64,6 +66,8 @@ public class HistoricalNTUEnergyAgentLauncherTest {
             Assert.fail();
         } catch (JPSRuntimeException e) {
             Assert.assertEquals("The Historical NTUEnergy agent could not be constructed!", e.getMessage());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

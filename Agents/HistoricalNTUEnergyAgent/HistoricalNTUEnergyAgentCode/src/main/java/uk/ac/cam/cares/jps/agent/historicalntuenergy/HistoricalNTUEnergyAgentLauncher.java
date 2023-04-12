@@ -8,8 +8,12 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
-import java.io.IOException;
+import java.io.*;
 import java.time.OffsetDateTime;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +28,9 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
 
     public static final String KEY_AGENTPROPERTIES = "agentProperties";
     public static final String KEY_XLSXCONNECTORPROPERTIES = "xlsxConnectorProperties";
+    public static final String KEY_CLIENTPROPERTIES = "clientProperties";
+    public static String queryEndpoint;
+    public static String updateEndpoint;
 
     /**
      * Logger for reporting info/errors.
@@ -51,11 +58,28 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         JSONObject jsonMessage = new JSONObject();
-        if (validateInput(requestParams)) {
+        if(requestParams.length() == 7 && validateInput(requestParams)){
             String agentProperties = System.getenv(requestParams.getString(KEY_AGENTPROPERTIES));
             String xlsxConnectorProperties = System.getenv(requestParams.getString(KEY_XLSXCONNECTORPROPERTIES));
             String[] properties = new String[]{agentProperties, xlsxConnectorProperties};
-            jsonMessage = initializeAgent(properties);
+            try {
+                jsonMessage = initializeAgent(properties);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            jsonMessage.accumulate("Result", "Timeseries Data has been updated.");
+            requestParams = jsonMessage;
+        }
+        else if (requestParams.length() == 8 && validateInput(requestParams)) {
+            String agentProperties = System.getenv(requestParams.getString(KEY_AGENTPROPERTIES));
+            String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
+            String xlsxConnectorProperties = System.getenv(requestParams.getString(KEY_XLSXCONNECTORPROPERTIES));
+            String[] properties = new String[]{agentProperties, clientProperties, xlsxConnectorProperties};
+            try {
+                jsonMessage = initializeAgent(properties);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
             jsonMessage.accumulate("Result", "Timeseries Data has been updated.");
             requestParams = jsonMessage;
         } else {
@@ -84,13 +108,11 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
         return (value != null && !value.isEmpty());
     }
 
-    public static JSONObject initializeAgent(String[] properties) {
+    public static JSONObject initializeAgent(String[] properties) throws IOException {
         JSONObject jsonMessage = new JSONObject();
-        if (properties.length != 2) {
-            LOGGER.error(ARGUMENT_MISMATCH_MSG);
+        if (properties.length != 2 && properties.length != 3) {
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
         }
-
         HistoricalNTUEnergyAgent agent;
         try {
             agent = new HistoricalNTUEnergyAgent(properties[0]);
@@ -98,27 +120,38 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
             LOGGER.error(AGENT_ERROR_MSG, e);
             throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
         }
-        EndpointConfig config = new EndpointConfig();
         RemoteStoreClient kbClient = null;
-        for (String endpoint : config.getKgurls()) {
-            if (endpoint.contains("ntuenergy")) {
-                kbClient = new RemoteStoreClient(endpoint, endpoint, config.getKguser(), config.getKgpassword());
+        TimeSeriesClient timeSeriesClient;
+        if (properties.length == 2) {
+            EndpointConfig config = new EndpointConfig();
+            for (String endpoint : config.getKgurls()) {
+                if (endpoint.contains("ntuenergy")) {
+                    kbClient = new RemoteStoreClient(endpoint, endpoint, config.getKguser(), config.getKgpassword());
+                }
+            }
+            try {
+                timeSeriesClient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, config.getDburl(), config.getDbuser(), config.getDbpassword());
+                agent.setTsClient(timeSeriesClient);
+            } catch (JPSRuntimeException e) {
+                LOGGER.error(TSCLIENT_ERROR_MSG, e);
+                throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e);
+            }
+        } else if (properties.length == 3) {
+            kbClient = new RemoteStoreClient();
+            loadconfigs(properties[1]);
+            kbClient.setQueryEndpoint(queryEndpoint);
+            kbClient.setUpdateEndpoint(updateEndpoint);
+            try {
+                timeSeriesClient = new TimeSeriesClient<>(OffsetDateTime.class, properties[1]);
+                agent.setTsClient(timeSeriesClient);
+            } catch (IOException | JPSRuntimeException e) {
             }
         }
         if (kbClient == null) {
             throw new JPSRuntimeException(NAMESPACE_NOTFOUND_MSG);
         }
-        TimeSeriesClient timeSeriesClient;
-        try {
-            //timeSeriesClient = new TimeSeriesClient(properties[1]);
-            timeSeriesClient = new TimeSeriesClient<>(kbClient, OffsetDateTime.class, config.getDburl(), config.getDbuser(), config.getDbpassword());
-            agent.setTsClient(timeSeriesClient);
-        } catch (JPSRuntimeException e) {
-            LOGGER.error(TSCLIENT_ERROR_MSG, e);
-            throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e);
-        }
-        LOGGER.info("Time series client object initialized.");
 
+        LOGGER.info("Time series client object initialized.");
         // Initialize time series'
         try {
             agent.initializeTimeSeriesIfNotExist();
@@ -130,7 +163,11 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
         // Create the connector to interact with the Energy XLSX
         HistoricalNTUEnergyAgentXLSXConnector connector;
         try {
-            connector = new HistoricalNTUEnergyAgentXLSXConnector(System.getenv("ENERGY_READINGS"), properties[1]);
+            if (properties.length == 2) {
+                connector = new HistoricalNTUEnergyAgentXLSXConnector(System.getenv("ENERGY_READINGS"), properties[1]);
+            } else {
+                connector = new HistoricalNTUEnergyAgentXLSXConnector(System.getenv("ENERGY_READINGS"), properties[2]);
+            }
         } catch (IOException e) {
             LOGGER.error(CONNECTOR_ERROR_MSG, e);
             throw new JPSRuntimeException(CONNECTOR_ERROR_MSG, e);
@@ -174,6 +211,29 @@ public class HistoricalNTUEnergyAgentLauncher extends JPSAgent {
         queryBuilder.instantiateTriples();
 
         return jsonMessage;
+    }
+    public static void loadconfigs(String filepath) throws IOException {
+        File file = new File(filepath);
+        if (!file.exists()) {
+            throw new FileNotFoundException("There was no file found in the path");
+        }
+
+        try (InputStream input = new FileInputStream(file)) {
+            Properties prop = new Properties();
+            prop.load(input);
+
+            if (prop.containsKey("sparql.query.endpoint")) {
+                queryEndpoint = prop.getProperty("sparql.query.endpoint");
+            } else {
+                throw new IOException("The file is missing: \"sparql.query.endpoint=<queryEndpoint>\"");
+            }
+
+            if (prop.containsKey("sparql.update.endpoint")) {
+                updateEndpoint = prop.getProperty("sparql.update.endpoint");
+            } else {
+                throw new IOException("The file is missing: \"sparql.update.endpoint=<updateEndpoint>\"");
+            }
+        }
     }
 
 }

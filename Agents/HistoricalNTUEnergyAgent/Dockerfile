@@ -25,9 +25,8 @@ FROM tomcat:9.0 as agent
 WORKDIR /app
 
 # Copy in the properties file
+COPY ./config/client.properties /root/client.properties
 COPY ./config/agent.properties /root/agent.properties
-
-# Copy in the properties file
 COPY ./config/xlsxconnector.properties /root/xlsxconnector.properties
 
 # Copy in the mapping folder
@@ -35,6 +34,13 @@ COPY ./config/mappings /root/mappings
 
 # Copy in the energy data
 COPY ./config/NTU_Energy_Consumption.xlsx /root/NTU_Energy_Consumption.xlsx
+
+# Set the required environment variables
+ENV HISTORICALNTUENERGY_AGENTPROPERTIES="/root/agent.properties"
+ENV HISTORICALNTUENERGY_XLSXCONNECTORPROPERTIES="/root/xlsxconnector.properties"
+ENV HISTORICALNTUENERGY_CLIENTPROPERTIES="/root/client.properties"
+ENV HISTORICALNTUENERGY_AGENT_MAPPINGS="/root/mappings"
+
 
 # Set the required environment variable
 ENV ENERGY_READINGS="/root/NTU_Energy_Consumption.xlsx"
