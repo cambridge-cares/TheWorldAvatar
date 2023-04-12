@@ -1,9 +1,8 @@
 import unittest
 import sys
-
+sys.path.append("")
 from Marie.WikidataEngine import WikidataEngine
 
-sys.path.append("../..")
 
 
 class MyTestCase(unittest.TestCase):
@@ -12,9 +11,10 @@ class MyTestCase(unittest.TestCase):
         question_list = ["what is the smiles string of CH4O4S",
                          "find species with boiling point larger than 10 degrees",
                          "find species with boiling point smaller than 10 degrees",
-                         "find species with boiling point around 100 degrees"]
+                         "find species with boiling point around 100 degrees",
+                         "Show me the melting point of CH4"]
 
-        operator_list = ["none", "larger", "smaller", "about"]
+        operator_list = ["none", "larger", "smaller", "about", "none"]
 
         for question, operator in zip(question_list, operator_list):
             _, tokenized_question = my_engine.nlp.tokenize_question(question=question, repeat_num=1)
@@ -34,7 +34,14 @@ class MyTestCase(unittest.TestCase):
             print("question:", question)
             print("===========================")
 
-            # assert mention == true_mention
+        relation_list = ["P494", "P2102", "P2102", "P2102", "P2101"]
+        for question, relation_label in zip(question_list, relation_list):
+            question = my_engine.text_filtering(question)
+            _, tokenized_question = my_engine.nlp.tokenize_question(question=question, repeat_num=1)
+            single_question_embedding = my_engine.score_model.get_question_embedding(question=tokenized_question)
+            _, pred_p_idx = my_engine.score_model.get_relation_prediction(question_embedding=single_question_embedding)
+            p_label = my_engine.idx2rel[pred_p_idx]
+            assert p_label == relation_label
 
 
 if __name__ == '__main__':
