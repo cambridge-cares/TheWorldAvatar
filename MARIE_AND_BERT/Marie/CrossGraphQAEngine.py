@@ -48,6 +48,9 @@ class CrossGraphQAEngine:
         self.domain_encoding = {"pubchem": 0, "ontocompchem": 1, "ontospecies": 2,
                                 "ontokin": 3, "wikidata": 4, "ontospecies_new": 5,
                                 "ontoagent": 6, "ontomops": 7, "ontokin_reaction": 8}
+        self.numerical_domain_list = ["wikidata", "ontospecies_new", "ontomops"]
+        self.numerical_label_list = ["numerical", "multi-target"]
+
         self.encoding_domain = {v: k for k, v in self.domain_encoding.items()}
         self.domain_list = self.domain_encoding.keys()
         print(self.domain_list)
@@ -161,10 +164,12 @@ class CrossGraphQAEngine:
             engine = self.engine_list[index]
 
             print(f"======================== USING ENGINE {domain}============================")
-            if domain == "wikidata":
+            # if domain == "wikidata":
+            if domain in self.numerical_domain_list:
                 print("question given: ", question, "mention", mention)
                 labels, scores, targets, numerical_list, question_type = engine.run(question=question, mention=mention)
-                if question_type == "numerical":
+                # if question_type == "numerical":
+                if question_type in self.numerical_label_list:
                     return self.prepare_for_visualization(answer_list=labels, target_list=targets)
                 #     return labels, scores, targets
             else:
