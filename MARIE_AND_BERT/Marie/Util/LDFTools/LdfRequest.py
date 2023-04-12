@@ -32,6 +32,5 @@ class LdfRequest:
             if 'hasEquation' in item:
                 equations.add(item['hasEquation'])
 
-        # print(equations)
-        return equations
+        return list(equations)
     

@@ -6,14 +6,14 @@ from Marie.Util.LDFTools.LdfRequest import LdfRequest
 
 class OntoKinReactionInterface():
 
-    def __init__(self, question):
-        self.question = question
-    
-    def run(self):
+    def __init__(self):
+        pass
+
+    def run(self, question, head=None, mention=None):
         
-        my_parser = Parsing(self.question)
+        my_parser = Parsing(question)
     
-        t = my_parser.token_and_tag(self.question)
+        t = my_parser.token_and_tag(question)
         reactants, products = my_parser.parsing(t)
         request = LdfRequest(reactants, products)
         equations = request.get_equations()
@@ -21,7 +21,7 @@ class OntoKinReactionInterface():
         return equations
 
 if __name__ == "__main__":
-    my_ontokin = OntoKinReactionInterface("Reactions with H2 + O2")
-    rst = my_ontokin.run()
+    my_ontokin = OntoKinReactionInterface()
+    rst = my_ontokin.run("Reactions with H2 + O2")
     print(rst)
 
