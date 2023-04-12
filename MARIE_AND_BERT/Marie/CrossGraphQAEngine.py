@@ -163,7 +163,7 @@ class CrossGraphQAEngine:
             print(f"======================== USING ENGINE {domain}============================")
             if domain == "wikidata":
                 print("question given: ", question, "mention", mention)
-                labels, scores, targets, question_type = engine.run(question=question, mention=mention)
+                labels, scores, targets, numerical_list, question_type = engine.run(question=question, mention=mention)
                 if question_type == "numerical":
                     return self.prepare_for_visualization(answer_list=labels, target_list=targets)
                 #     return labels, scores, targets
