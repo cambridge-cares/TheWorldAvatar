@@ -7,7 +7,7 @@ from Marie.Util.location import DATA_DIR
 
 class OntoMoPsQAEngine(QAEngineNumerical):
 
-    def __init__(self, dataset_dir, dataset_name, sub_ontology, ontology):
+    def __init__(self, dataset_dir="CrossGraph/OntoMoPs/numerical_with_implicit", dataset_name='numerical_with_implicit', sub_ontology='numerical_with_implicit', ontology='OntoMoPs'):
         self.dataset_dir = dataset_dir
         self.ontology = ontology
         self.sub_ontology = sub_ontology
