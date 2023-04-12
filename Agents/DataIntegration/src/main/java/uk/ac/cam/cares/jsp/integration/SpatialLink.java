@@ -5,19 +5,17 @@ import org.apache.log4j.Logger;
 import org.geotools.geometry.jts.JTSFactoryFinder;
 import org.geotools.referencing.CRS;
 import org.geotools.geometry.jts.JTS;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
+import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class SpatialLink {
 
@@ -30,49 +28,197 @@ public class SpatialLink {
     public SpatialLink() {}
 
     public void findMatchedObjects() throws ParseException, FactoryException, TransformException {
-//        List<GeoObject2D> allObject2D = object2D.getObject2D();
-//        List<GeoObject3D> allObject3D = object3D.getObject3D();
+
         GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
         WKTReader reader = new WKTReader( geometryFactory );
 
         for (int i = 0; i < this.allObject3D.size(); i++) {
             GeoObject3D object3D = this.allObject3D.get(i);
             int srid3D = object3D.getEnvelope().getGeometry().getSrid();
-            String geom3 = object3D.getEnvelope().toString();
-            geom3 = geom3.split(";")[1];
-            Polygon envelope = (Polygon) reader.read(geom3);
-//            System.out.println(envelope);
+            String coord3D = object3D.getEnvelope().getGeometry().getValue();
+            Geometry envelope = createGeometry(coord3D);
             for (int j = 0; j < this.allObject2D.size(); j++) {
                 GeoObject2D object2D = this.allObject2D.get(j);
                 int srid2D = object2D.getGeometry2D().getGeometry().getSrid();
                 String geom2D = object2D.getGeometry2D().toString();
                 geom2D = geom2D.split(";")[1];
-                MultiPolygon polygon = (MultiPolygon) reader.read(geom2D);
+                MultiPolygon polys2D = (MultiPolygon) reader.read(geom2D);
+//                Geometry polys2D = mergeMultiPolygon(multiP);
 //                System.out.println(polygon);
 
                 if(srid3D != srid2D){
-                    CoordinateReferenceSystem CRS2D = CRS.decode("EPSG:" + srid2D);
-                    CoordinateReferenceSystem CRS3D = CRS.decode("EPSG:" + srid3D);
-                    MathTransform tr = CRS.findMathTransform(CRS3D, CRS2D);
-                    Geometry newEnvelope = JTS.transform(envelope, tr);
-                    envelope = (Polygon) reader.read(newEnvelope.toString());
+                    Geometry transGeom3D = Transform(envelope, srid3D, srid2D);
+                    srid3D = transGeom3D.getSRID();
+                    Coordinate[] reversedCoordinates = getReversedCoordinates(transGeom3D);
+                    envelope = geometryFactory.createPolygon(reversedCoordinates);
                 }
 
-                if (!polygon.within(envelope)){
-                    Geometry intersect = polygon.intersection(envelope);
-                    double areaRatio = 100.0*intersect.getArea() / envelope.getArea();
-                    System.out.println("ratio: "+areaRatio + "%");
-                    if(areaRatio>70){
-                        object3D.setName(object2D.getName());
+                if ((!polys2D.within(envelope)) || (!envelope.within(polys2D))){
+                    if(polys2D.intersects(envelope)){
+                        Geometry intersect = polys2D.intersection(envelope);
+                        double areaRatio = 100.0*intersect.getArea() / polys2D.getArea();
+                        System.out.println("ratio: "+areaRatio + "%");
+                        if(areaRatio>70){
+                            object3D.setName(object2D.getName());
+                        }
                     }
                 }else{
                     object3D.setName(object2D.getName());
                 }
 
-                object3D.updateName(object3D);
+                if (object3D.getName() != null){
+                    object3D.updateName(object3D);
+                }
+
             }
         }
 
     }
 
+    public List<Coordinate> str2coords(String st_geometry) {
+        String[] pointXYZList = null;
+        List<Coordinate> coords = new LinkedList<Coordinate>();
+        st_geometry = st_geometry.replace("(", "");
+        st_geometry = st_geometry.replace(")", "");
+
+        if (st_geometry.contains(",")) {
+            //System.out.println("====================== InputString is from POSTGIS");
+            pointXYZList = st_geometry.split(",");
+
+            for (int i = 0; i < pointXYZList.length; ++i) {
+                String[] pointXYZ = pointXYZList[i].split(" ");
+                List<String> coordinates = new LinkedList<String>(Arrays.asList(pointXYZ));
+                coordinates.removeIf(String::isEmpty);
+                //coordinates.removeAll(Arrays.asList(null, ""));
+                pointXYZ = coordinates.toArray(new String[0]);
+                if (pointXYZ.length == 2) {
+                    coords.add(new Coordinate(Double.valueOf(pointXYZ[0]), Double.valueOf(pointXYZ[1])));
+                } else if (pointXYZ.length == 3) {
+                    coords.add(new Coordinate(Double.valueOf(pointXYZ[0]), Double.valueOf(pointXYZ[1]), Double.valueOf(pointXYZ[2])));
+                } else {
+                    System.out.println("InputString has no valid format");
+                    return null;
+                }
+            }
+        } else if (st_geometry.contains("#")) {
+            //System.out.println("====================== InputString is from Blazegraph");
+            pointXYZList = st_geometry.split("#");
+            if (pointXYZList.length % 3 == 0) {
+                // 3d coordinates
+                for (int i = 0; i < pointXYZList.length; i = i + 3) {
+                    coords.add(new Coordinate(Double.valueOf(pointXYZList[i]), Double.valueOf(pointXYZList[i + 1]), Double.valueOf(pointXYZList[i + 2])));
+                }
+            } else if (pointXYZList.length % 2 == 0) {
+                // 2d coordinates
+                for (int i = 0; i < pointXYZList.length; i = i + 2) {
+                    coords.add(new Coordinate(Double.valueOf(pointXYZList[i]), Double.valueOf(pointXYZList[i + 1])));
+                }
+            }
+        } else {
+            System.out.println("InputString has no valid format");
+            return null;
+        }
+        return coords;
+
+    }
+
+    public Geometry createGeometry(String coordlist, String geomtype, int dimension, int[] dimOfRings) {
+        GeometryFactory fac = new GeometryFactory();
+        Coordinate[] coordinates = str2coords(coordlist).toArray(new Coordinate[0]);
+
+        Geometry geom = null;
+        if (geomtype.equals("POLYGON")){
+            if (dimOfRings.length >= 2){ // Polygon with Holes : LinearRing shell and LinearRing[] holes
+                Coordinate[] shell_coords = Arrays.copyOfRange(coordinates, 0, dimOfRings[0] / dimension);
+                LinearRing shell = fac.createLinearRing(shell_coords);
+                ArrayList<LinearRing> holeslist = new ArrayList<>();
+                int start = dimOfRings[0] / dimension;
+                for (int k = 1; k < dimOfRings.length; ++k){
+                    Coordinate[] holes_coords = Arrays.copyOfRange(coordinates, start, start + dimOfRings[k] /dimension);
+                    holeslist.add(fac.createLinearRing(holes_coords));
+                    start = start + dimOfRings[k] / dimension;
+                }
+                LinearRing[] holes = holeslist.toArray(new LinearRing[0]);
+                geom = fac.createPolygon(shell, holes);
+            } else if (dimOfRings.length == 1) {
+                // Polygon without holes
+                LinearRing shell = fac.createLinearRing(coordinates);
+                geom = fac.createPolygon(shell);
+            }
+        }
+        return geom;
+    }
+
+    public Geometry createGeometry(String coordlist) {
+        GeometryFactory fac = new GeometryFactory();
+        Geometry geom = fac.createPolygon(str2coords(coordlist).toArray(new Coordinate[0]));
+
+        return geom;
+    }
+
+    public Geometry Transform(Geometry geom, int srcSRID, int dstSRID) {
+
+        GeometryFactory fac = new GeometryFactory();
+        Geometry sourceGeometry = fac.createGeometry(geom);
+
+        Geometry targetGeometry = null;
+        try {
+            CoordinateReferenceSystem sourceCRS = CRS.decode("EPSG:" + srcSRID);
+            CoordinateReferenceSystem targetCRS = CRS.decode("EPSG:" + dstSRID);
+            MathTransform transform = CRS.findMathTransform(sourceCRS, targetCRS);
+            targetGeometry = JTS.transform(sourceGeometry, transform);
+            targetGeometry.setSRID(dstSRID);
+
+        } catch (FactoryException | TransformException e) {
+            e.printStackTrace();
+        }
+        return targetGeometry;
+    }
+
+    public Geometry mergeMultiPolygon(MultiPolygon multiPolygon){
+        GeometryFactory factory = new GeometryFactory();
+        ArrayList<Polygon> polygons = new ArrayList<>();
+        int num = multiPolygon.getNumGeometries();
+        for (int i = 0; i < num; i++) {
+            Polygon polygon = (Polygon)multiPolygon.getGeometryN(i);
+            polygons.add(polygon);
+        }
+
+        GeometryCollection geometryCollection1 = (GeometryCollection) factory.buildGeometry(polygons);
+        Geometry pMerge1 = geometryCollection1.union();
+
+        pMerge1 = deflate(pMerge1);
+
+        return pMerge1;
+    }
+
+    private Geometry deflate(Geometry geom) {
+        BufferParameters bufferParameters = new BufferParameters();
+        bufferParameters.setEndCapStyle(BufferParameters.CAP_ROUND);
+        bufferParameters.setJoinStyle(BufferParameters.JOIN_MITRE);
+        Geometry buffered = BufferOp.bufferOp(geom, -.0001, bufferParameters);
+        buffered.setUserData(geom.getUserData());
+        return buffered;
+    }
+
+    private Geometry inflate(Geometry geom) {
+        BufferParameters bufferParameters = new BufferParameters();
+        bufferParameters.setEndCapStyle(BufferParameters.CAP_ROUND);
+        bufferParameters.setJoinStyle(BufferParameters.JOIN_MITRE);
+        Geometry buffered = BufferOp.bufferOp(geom, .0001, bufferParameters);
+        buffered.setUserData(geom.getUserData());
+        return buffered;
+    }
+
+    public Coordinate[] getReversedCoordinates(Geometry geometry) {
+
+        Coordinate[] original = geometry.getCoordinates();
+        Coordinate[] reversed = new Coordinate[original.length];
+
+        for (int i = 0; i < original.length; i++) {
+            reversed[i] = new Coordinate(original[i].y, original[i].x);
+        }
+
+        return reversed;
+    }
 }

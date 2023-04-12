@@ -35,11 +35,7 @@ public class Main {
             spLink.findMatchedObjects();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        } catch (FactoryException e) {
-            throw new RuntimeException(e);
-        } catch (TransformException e) {
+        } catch (ParseException | FactoryException | TransformException e) {
             throw new RuntimeException(e);
         }
     }

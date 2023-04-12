@@ -18,6 +18,13 @@
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+    <repositories>
+        <repository>
+            <id>osgeo</id>
+            <name>osgeo</name>
+            <url>https://repo.osgeo.org/repository/release/</url>
+        </repository>
+    </repositories>
     <dependencies>
         <dependency>
             <groupId>log4j</groupId>
@@ -36,13 +43,13 @@
         <dependency>
             <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
-            <version>1.19.0</version>
+            <version>1.16.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-metadata</artifactId>
-            <version>26.3</version>
+            <version>20.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -51,11 +58,11 @@
             <version>7.0</version>
             <scope>compile</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.geotools/gt-main -->
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-main</artifactId>
-            <version>26.3</version>
-            <scope>compile</scope>
+            <version>20.1</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
@@ -66,13 +73,13 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-opengis</artifactId>
-            <version>26.3</version>
+            <version>20.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-referencing</artifactId>
-            <version>26.3</version>
+            <version>20.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -85,7 +92,7 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-epsg-hsql</artifactId>
-            <version>26.3</version>
+            <version>20.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -97,7 +104,7 @@
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-epsg-extension</artifactId>
-            <version>26.3</version>
+            <version>20.1</version>
         </dependency>
     </dependencies>
 
