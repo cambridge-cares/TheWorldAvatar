@@ -14,27 +14,51 @@ def numerical_value_extractor(question):
         return None, ""
 
 
+def numerical_value_extractor_with_no_space(text):
+    print("text", text)
+    numerical_values = re.findall(r"[-]*\d*[\.]*\d+", text)
+    print("numerical_values", numerical_values)
+
+    if len(numerical_values) > 0:
+        return float(numerical_values[0]), numerical_values[0]
+    else:
+        return None, ""
+
+
 def qualifier_value_extractor(question):
+    """
+    The function separates the numerical value and unit for the qualifiers
+    :param question: question in string
+    :return: a dictionary with two keys: temperature and pressure, if no value is under the category, it returns
+    None
+    """
     question = question.lower()
-    print("question:", question)
-    temperature_regex = r"((\d+[\.]*\d+)|[0-9])+[ ]*(kelvin|k|celsius|farenheit|degree[s]*)+[ ]*(celsius)*"
-    pressure_regex = r"([ ][-]*\d+[\.]*\d+[ ]*(atm|bar|pascal|p|pa|bar)) | (room temperature)"
-    xpressure_regex = r"((\d+[\.]*\d+)|[0-9])[ ]*(atm|bar|pascal|p|pa|bar)|(room temperature)"
-
+    temperature_regex = r"(((\d+[\.]*\d+)|[0-9])+[ ]*(kelvin|k|celsius|farenheit|degree[s]*)+[ ]*(celsius)*)|(room temperature)"
+    # pressure_regex = r"([ ][-]*\d+[\.]*\d+[ ]*(atm|bar|pascal|p|pa|bar)) | (room temperature)"
+    pressure_regex = r"((\d+[\.]*\d+)|[0-9])[ ]*(atm|bar|pascal|pa|bar)"
     temperature = re.search(temperature_regex, question)
-    pressure = re.search(xpressure_regex, question)
+    pressure = re.search(pressure_regex, question)
 
-
+    print("question:", question)
     if temperature:
         temperature = temperature.group()
+        print("temperature", temperature)
+        filtered_question = question.replace(temperature, "")
+        temperature, _ = numerical_value_extractor_with_no_space(temperature)
+        print(temperature)
 
     if pressure:
         pressure = pressure.group()
-        # pressure = [p for p in pressure[0] if p != ""]
+        print("pressure", pressure)
+        filtered_question = question.replace(pressure, "").replace(" and", " ").strip()
+        pressure, _ = numerical_value_extractor_with_no_space(pressure)
+        print(pressure)
 
-
-    return {"temperature": temperature,
-            "pressure": pressure}
+    if (temperature is None) and (pressure is None):
+        return {}, question
+    else:
+        return {"temperature": temperature,
+                "pressure": pressure}, filtered_question
 
 
 if __name__ == "__main__":
