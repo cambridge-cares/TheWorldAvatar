@@ -275,6 +275,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 			omHasValue("Inclination" + HG_Instance_Name, "Percentage", HG311);		
 			omHasValue("Length" + HG_Instance_Name, "metre", HG310);	
 			omHasValue("Thickness" + HG_Instance_Name, "metre", HG410);	
+			AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/PipeTypeOther>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/PipeTypeOther>}");
 
 
 			UpdateBuilder ConnectionPropertiesHG_ub = 
