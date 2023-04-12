@@ -543,7 +543,7 @@ public class HistoricalQueryBuilder {
             for (String iri:iris){
                 String buildingName = getBuildingNameFromIRI(iri);
                 int busNum = NTUBuildingToBusNum.get(buildingName);
-                String busNodeIRI = PowsysPrefix + "NTU_BusNode_" + String.valueOf(busNum);
+                String busNodeIRI = PowsysPrefix + "NTU_BusNode_" + buildingName + '_' +String.valueOf(busNum);
                 TriplePattern isTypeMeasure = iri(iri).isA(iri(Measure));
                 InsertDataQuery insertion = Queries.INSERT_DATA(isTypeMeasure);
                 kbClient.executeUpdate(insertion.getQueryString());
