@@ -117,8 +117,9 @@ class ChemicalNEL:
     def get_mention_without_class(self, question):
         question = question.replace("'s", " of ")
         results, smiles_string = self.ner.find_cid(question)  # [2]
-        # print("results", results)
-        # print("smiles_string", smiles_string)
+        print("results", results)
+        print("smiles_string", smiles_string)
+        smiles_string = results[2]
         if smiles_string is None:
             smiles_string = results[2]
             if smiles_string == "species":
@@ -157,6 +158,10 @@ class ChemicalNEL:
         else:
             return target, instance_list, instance_label
 
+    def parse_agent_questions(self, question, agent_name):
+        # what is the heat capacity of benzene at temperature of 100K
+        pass
+
     def find_cid(self, mention):
         try:
             mention_str = mention
@@ -185,7 +190,8 @@ if __name__ == '__main__':
     START_TIME = time.time()
 
     # text = "find species with molecular weight more than"
-    question_list = ["what is the smiles string of CH4O4S",
+    question_list = ["show me the melting point of CH4",
+                     "what is the smiles string of CH4O4S",
                      "find species with boiling point larger than 10 degrees",
                      "find species with boiling point smaller than 10 degrees",
                      "find species with boiling point around 100 degrees"]
