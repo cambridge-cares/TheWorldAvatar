@@ -8,11 +8,9 @@
 # agent invoker : agent_iri, qualifer, species_iri, requested output -> agent results after filtering (in case of thermo agent) -> agent inferface -> CrossGraphQAEngine
 import os
 import sys
-
+sys.path.append("")
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.Util.CommonTools import NumericalTools
-
-sys.path.append("")
 from Marie.Util.AgentTools.agent_invoker import AgentInvoker
 from Marie.Util.AgentTools.question_agent_matcher import QuestionAgentMatcher
 
@@ -25,7 +23,7 @@ class AgentInterface():
         self.pce_nel = ChemicalNEL(dataset_name=os.path.join("ontoagent", "pceagent"), enable_class_ner=False)
         self.thermo_nel = ChemicalNEL(dataset_name=os.path.join("ontoagent", "thermoagent"), enable_class_ner=False)
 
-        self.nel_dict = {"thermoagent": self.thermo_nel, "pceagent": self.pce_nel}
+        self.nel_dict = {"ontothermoagent": self.thermo_nel, "ontopceagent": self.pce_nel}
 
         # self.species_iri, self.qualifier = ChemicalNEL(question)
 
@@ -47,19 +45,19 @@ class AgentInterface():
 
         # Invoke the agent found
         if (agent != None):
-            my_invoker = AgentInvoker(agent=agent, output=output,
-                                      species_iri="http://www.theworldavatar.com/kb/ontospecies/Species_2fb70cfe-6707-4d6c-b977-bae913c4878f")
+            species_iri, qualifier = self.parse_species_iri_and_qualifier(self.question, agent)
+            my_invoker = AgentInvoker(agent=agent, output=output, species_iri=species_iri, qualifier=qualifier)
             if my_invoker.result is None:
                 print("Agent cannot be invoked")
                 return None
             else:
-                print(my_invoker.result)
                 return my_invoker.result
         else:
             return None
 
 
 if __name__ == "__main__":
-    question = "entropy"
+    question = "what is the enthalpy of C3H4O"
     agentInterface = AgentInterface(question)
-    agentInterface.run()
+    result = agentInterface.run()
+    print(result)
