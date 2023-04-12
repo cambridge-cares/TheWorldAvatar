@@ -9,7 +9,10 @@ import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SSL_EN
 import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_STARTTLS_ENABLE;
 import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SUBJECT_PREFIX;
 import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_TO_ADDRESS;
+
+import java.io.IOException;
 import java.util.Properties;
+
 import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.Message.RecipientType;
@@ -19,7 +22,11 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import org.json.JSONObject;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Response;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This class handles the connection to a specified SMTP server to send the requested email.
@@ -27,6 +34,11 @@ import org.json.JSONObject;
  * @author Michael Hillman
  */
 public class EmailHandler {
+
+    /**
+     * Logger for error output.
+     */
+    private static final Logger LOGGER = LogManager.getLogger(EmailHandler.class);
 
     /**
      * Prefix for email body
@@ -41,16 +53,24 @@ public class EmailHandler {
     private static final String BODY_SUFFIX = "<br><br><hr><br></html>";
 
     /**
+     * Constructor
+     */
+    private EmailHandler() {
+        // Empty
+    }
+
+    /**
      * Attempts to send an email to the SMTP server specified in the properties.
      *
      * @param subject email subject
      * @param body email body
-     *
-     * @return JSONObject containing the result (to be sent as response)
+     * @param response HTTP response
+     * 
+     * @throws IOException
      */
-    static JSONObject submitEmail(String subject, String body) {
+    static void submitEmail(String subject, String body, HttpServletResponse response) throws IOException {
 
-        // Load smtp properites
+        // Load SMTP properites
         Properties mailProps = new Properties();
         mailProps.put("mail.smtp.host", EmailAgentConfiguration.getProperty(KEY_SMTP_HOST));
         mailProps.put("mail.smtp.port", EmailAgentConfiguration.getProperty(KEY_SMTP_PORT));
@@ -74,68 +94,56 @@ public class EmailHandler {
         Message email = new MimeMessage(mailSession);
 
         try {
-            // To Address 
+            // To address 
             String toAddress = EmailAgentConfiguration.getProperty(KEY_TO_ADDRESS);
             String[] toAddresses = toAddress.split(",");
             for (String address : toAddresses) {
                 email.addRecipient(RecipientType.TO, new InternetAddress(address));
             }
 
-            // From Address
+            // From address
             String fromAddress = EmailAgentConfiguration.getProperty(KEY_FROM_ADDRESS);
             email.setFrom(new InternetAddress(fromAddress));
 
             // Subject
-            String fullSubject = EmailAgentConfiguration.getProperty(KEY_SUBJECT_PREFIX)
-                    + " - " + subject;
+            String fullSubject = EmailAgentConfiguration.getProperty(KEY_SUBJECT_PREFIX) + " - " + subject;
             email.setSubject(fullSubject);
 
             // Body
             String fullBody = BODY_PREFIX + body + BODY_SUFFIX;
             email.setContent(fullBody, "text/html");
 
-            System.out.println("INFO: Email content created.");
-
         } catch (MessagingException | IllegalStateException exception) {
-            System.out.println("ERROR: Could not create email message.");
-            exception.printStackTrace(System.out);
+            LOGGER.error("Could not create email object.", exception);
 
-            JSONObject response = new JSONObject();
-            response.put("status", "500");
-            response.put("description", "Could not construct email object, invalid properties?");
-            return response;
+            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.getWriter().write("{\"description\":\"Could not construct email object, invalid properties?\"}");
+            return;
         }
 
         // Send the email
-        return sendEmail(email);
+        sendEmail(email, response);
     }
 
     /**
      * Attempts to send the input email.
      *
      * @param email email to send.
-     *
-     * @return JSONObject with response to request.
+     * @param response HTTP response
+     * 
+     * @throws IOException
      */
-    private static JSONObject sendEmail(Message email) {
+    private static void sendEmail(Message email, HttpServletResponse response) throws IOException {
         try {
-            System.out.println("INFO: Submitting email to SMTP server...");
+            LOGGER.info("Submitting email to remote SMTP server.");
             Transport.send(email);
-            System.out.println("INFO: Submission sent.");
-
-            JSONObject response = new JSONObject();
-            response.put("status", "200");
-            response.put("description", "Email sent successfully.");
-            return response;
+            LOGGER.info("Submission sent.");
 
         } catch (MessagingException exception) {
-            System.out.println("ERROR: Could not send email message to SMTP server.");
-            exception.printStackTrace(System.out);
+            LOGGER.error("Could not send email to remote SMTP server.", exception);
 
-            JSONObject response = new JSONObject();
-            response.put("status", "200");
-            response.put("description", "Could not submit email (" + exception.getMessage() + ").");
-            return response;
+            response.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
+            response.getWriter().write("{\"description\":\"Could not send email to remote SMTP server.\"}");
         }
     }
 }

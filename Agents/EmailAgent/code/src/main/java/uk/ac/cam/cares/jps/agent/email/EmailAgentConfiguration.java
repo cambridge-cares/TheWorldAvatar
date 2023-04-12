@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
  * This class handles reading the configuration file for the EmailAgent and provides methods to
  * retrieve property values by their keys.
  *
- * @author Michael Hillman
+ * @author Michael Hillman (mdhillman<@>cmclinnovations.com)
  */
 public class EmailAgentConfiguration {
 
@@ -18,6 +18,7 @@ public class EmailAgentConfiguration {
      * Logger for error output.
      */
     private static final Logger LOGGER = LogManager.getLogger(EmailAgentConfiguration.class);
+
     /**
      * Name of the environment variable pointing to the location of the properties file.
      */
@@ -84,6 +85,13 @@ public class EmailAgentConfiguration {
     private static Properties properties;
 
     /**
+     * Constructor.
+     */
+    private EmailAgentConfiguration() {
+        // Empty
+    }
+    
+    /**
      * Returns the property represented by the input key as a string (or null if not found).
      *
      * @param key property key
@@ -119,7 +127,7 @@ public class EmailAgentConfiguration {
         if (properties.containsKey(key)) {
             return properties.getProperty(key).split(delimiter);
         }
-        return null;
+        return new String[0];
     }
 
     /**
@@ -131,7 +139,7 @@ public class EmailAgentConfiguration {
         properties = new Properties();
 
         String propertyFileLocation = System.getenv(PROPERTIES_ENV);
-        LOGGER.info("Attempting to read properties file at: " + propertyFileLocation);
+        LOGGER.info("Attempting to read properties file at: {}", propertyFileLocation);
 
         try ( FileInputStream file = new FileInputStream(propertyFileLocation)) {
             properties.load(file);
@@ -144,7 +152,7 @@ public class EmailAgentConfiguration {
 
                 if (allowedIPs != null) {
                     LOGGER.info("Whitelist enabled, only approving requests from local machine and following IPs...");
-                    LOGGER.info(String.join(", ", allowedIPs));
+                    LOGGER.info("{}", String.join(", ", allowedIPs));
                 }
             } else {
                 LOGGER.warn("Whitelist disabled, accepting all requests.");

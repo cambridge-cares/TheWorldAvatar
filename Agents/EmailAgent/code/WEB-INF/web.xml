@@ -10,12 +10,12 @@
 	<description>Simple servlet to accept incoming requests and (where valid) forward contents to SMTP server to generate an email notification.</description>
 
 	<servlet>
-		<servlet-name>EmailAgentServlet</servlet-name>
+		<servlet-name>EmailAgent</servlet-name>
 		<servlet-class>uk.ac.cam.cares.jps.agent.email.EmailAgent</servlet-class>
 	</servlet>
 
 	<servlet-mapping>
-		<servlet-name>EmailAgentServlet</servlet-name>
+		<servlet-name>EmailAgent</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 </web-app>
