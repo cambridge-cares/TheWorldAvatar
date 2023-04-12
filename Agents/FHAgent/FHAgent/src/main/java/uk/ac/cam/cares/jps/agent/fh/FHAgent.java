@@ -65,7 +65,7 @@ public class FHAgent{
     /*
      * Mapping between raw and derived variable
      */
-    public static JSONObject derivationMapping;
+    public JSONObject derivationMapping = new JSONObject();
     /**
      * Log messages
      */
@@ -74,7 +74,6 @@ public class FHAgent{
     /*
      * Tally System variables
      */
-    public static float tally = 0;
     public static final float tallyLim = 1;
     public static final float tallyMax = 2;
     public static final float tallyMin = 0;
@@ -123,7 +122,6 @@ public class FHAgent{
                             "with a path to the folder containing the required JSON key to IRI mappings.");
                 }
 
-            JSONObject derivationMapping = new JSONObject();
             for(String mappingString:derivationMappingString.split(",")){
                 String[] mapping = mappingString.split(":");
                 derivationMapping.put(mapping[0], mapping[1]);
@@ -555,6 +553,7 @@ public class FHAgent{
 
 
     private JSONObject TallyDist (JSONObject readings, String key) {
+        float tally = 0;
         Boolean tallyLatest = false;
         JSONObject result = new JSONObject();
         JSONArray col = new JSONArray();
@@ -595,8 +594,13 @@ public class FHAgent{
         
         }
 
+        try {
+            result.put(derivationMapping.getString(key), col);
+        }
+        catch (NullPointerException e) {
+            throw new JPSRuntimeException("Reading is not mapped to any derived variable");
+        }
         
-        result.put(derivationMapping.getString(key), col);
         return result;
     }
 
