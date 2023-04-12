@@ -10,14 +10,14 @@ from nltk.stem import *
 from Marie.Util.LDFTools.LdfRequest import LdfRequest
 from PIL import Image
 import nltk.tag, nltk.data
-
+import nltk
 class Parsing():
     def __init__(self, question):
         self.question = question
         # stop_words = set(stopwords.words('english'))
         self.stop_words = ["what", "is", "the", "list", "of", "are", "with", "a", "one", "does", "do", "species", "after", ",", "show"]
         self.stemmer = PorterStemmer()
-    
+        nltk.download('maxent_treebank_pos_tagger')
         tagger_path = r'taggers/maxent_treebank_pos_tagger/english.pickle'
         default_tagger = nltk.data.load(tagger_path)
         model = {'reaction': 'TARGET', 'mechanism': 'TARGET', 'products': 'PRODUCT_INDICATOR',
