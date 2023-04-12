@@ -85,4 +85,22 @@ public class GeoObject3D {
     void setPostGISClient(PostgresClient postgresClient) {
         this.postgresClient = postgresClient;
     }
+
+    public void updateName(GeoObject3D object3D){
+        String upSql = "UPDATE cityobject SET ";
+        if(object3D.name != null){
+            upSql = upSql + "name = " + object3D.name + "WHERE id = " + object3D.id + ";";
+            try (Connection conn = postgresClient.getConnection()) {
+                try (Statement stmt = conn.createStatement()) {
+                    stmt.executeUpdate(upSql);
+                }
+            }catch (SQLException e) {
+                LOGGER.error("Probably failed to disconnect");
+                LOGGER.error(e.getMessage());
+            }
+        }else{
+            System.out.println("No Update");
+        }
+
+    }
 }
