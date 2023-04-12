@@ -111,14 +111,25 @@ def queryBusGPSLocation(topologyNodeIRI, endpoint):
     return res 
 
 ####EGen information query####
-
-def queryEGenInfo(topologyNodeIRI, endPoint):
+def queryEGenInfo(topologyNodeIRI, endPoint, eliminateClosedPlantIRIList:list):
     if endPoint == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
         endPointIRI = str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['endpoint_iri'])
     elif parse(endPoint, rule='IRI'):
         endPointIRI = endPoint
     else:
         raiseExceptions("!!!!Please provide a valid endpoint!!!!")
+
+    if len(eliminateClosedPlantIRIList) > 0:
+        NotIncludeStr = "FILTER NOT EXISTS { "
+        for ppiri in eliminateClosedPlantIRIList:
+            if '<' and '>' not in ppiri:
+               ppiri = '<' + ppiri + '>'
+            conditionStr = "{ %s ontocape_technical_system:hasRealizationAspect ?PowerGenerator } UNION"%ppiri
+            NotIncludeStr += conditionStr
+        NotIncludeStr = NotIncludeStr[:-5]
+        NotIncludeStr += "}"                                         
+    else:
+        NotIncludeStr = ""
 
     queryStr = """
     PREFIX owl: <http://www.w3.org/2002/07/owl#>
@@ -171,8 +182,10 @@ def queryEGenInfo(topologyNodeIRI, endPoint):
 
     ?PowerPlant ontoenergysystem:hasRelevantPlace/ontoenergysystem:hasLocalAuthorityCode ?PowerPlant_LACode .
 
+    %s
+
     }
-    """% (topologyNodeIRI, topologyNodeIRI)
+    """% (topologyNodeIRI, topologyNodeIRI, NotIncludeStr)
     
     counterBusNumber = """
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -196,8 +209,8 @@ def queryEGenInfo(topologyNodeIRI, endPoint):
     # print('...starts querying counterBusNumber...')
     # numOfBus = json.loads(performQuery(endPoint_label, counterBusNumber))
     # print('...finishes querying counterBusNumber...')
-    return qres #, int(numOfBus[0]["count"])
-    
+    return qres #, int(numOfBus[0]["count"]) 
+
 # query the total electricity consumption of a UK official region 
 def queryTotalElecConsumptionofGBOrUK(endPoint_label, topologyNodeIRI, startTime_of_EnergyConsumption):
     if endPoint_label == str(EndPointConfigAndBlazegraphRepoLabel.ukdigitaltwin['label']):
