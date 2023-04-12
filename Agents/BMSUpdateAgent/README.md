@@ -80,18 +80,12 @@ curl -X POST 'http://localhost:3838/bms-update-agent/set' \
     "clientProperties":"CLIENT_PROPERTIES"
 }'
 ```
-
-If the component is already in OFF state.
+If the component is in the ON state.
 ```json
-{"fanStatus":"The component is already in the OFF state.","message":"The temperature has been set to <TEMPERATURE>"}
+{"fanStatus":"The fan is in the ON state.","message":"The temperature has been set to <TEMPERATURE>"}
 ```
 
-If the component is turned ON.
+If the component is in the OFF state.
 ```json
-{"fanStatus":"A POST request has been sent to turn on the device or component.","message":"The temperature has been set to <TEMPERATURE>"}
-```
-
-If the component is turned OFF.
-```json
-{"fanStatus":"A POST request has been sent to turn off the device or component.","message":"The temperature has been set to <TEMPERATURE>"}
+{"fanStatus":"The fan is in the OFF state.","message":"The temperature has been set to <TEMPERATURE>"}
 ```
