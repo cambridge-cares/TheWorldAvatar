@@ -27,7 +27,7 @@ bash ./redeploy.sh
 &nbsp;
 ## Feature Info Agent (FIA)
 
-> The following description refers to `ghcr.io/cambridge-cares/feature-info-agent:2.0.0` as of commit `f01834fec13ac25b205faeed05eb2b7ce83169d2` of the `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
+> The following description refers to `ghcr.io/cambridge-cares/feature-info-agent:2.0.1` as of commit `d5dc092fd6bd14ab0c7fe11a7183958da2dd6725` of the `https://github.com/cambridge-cares/TheWorldAvatar/tree/main`
 
 The Feature Info Agent is used to retrieve meta data for visualisation(s). Details on how to spin up and deploy the agent to a spun up Stack is provided in the [FeatureInfoAgent] README. However, the following steps shall be sufficient to get the agent up and running for the `KINGS-LYNN` visualisation:
 
