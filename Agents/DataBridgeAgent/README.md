@@ -40,12 +40,14 @@ docker-compose up -d
 - Follow the following instructions to deploy the agent within a stack.
   1) Build the image with the following tag at the `<root>` directory:
 ```
-docker build -t data-bridge-agant:versionNo .
+docker build -t data-bridge-agent:versionNo .
 ```
   2) Add the `<root>/docker/data-bridge-agent.json` to the [`stack-manager/inputs/config/services`](https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Deploy/stacks/dynamic/stack-manager/inputs/config/services) directory
   3) Modify the absolute path of the agent's `config` folder to your absolute file path
+     - For Windows users using WSL on Docker, the file path should start with `/mnt/c/`, which is equivalent to `C://`
   4) Include this agent service into the stack configuration file at `stack-manager/inputs/config/<STACK-NAME>.json`
      - Read more in the [Stack Configuration](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager) section
+  5) Start the stack as per normal
 
 If the agent is successfully started, the endpoint at `http://localhost:3838/data-bridge-agent/status` should return the following message.
 ```
@@ -59,12 +61,18 @@ There are currently three routes available:
 1. `<base>/status` route:
    - Returns the current status of the agent through an HTTP `GET` request.
 2. `<base>/sparql` route:
-    - Execute the agent's task through an HTTP `GET` request. This route will transfer data between the specified origin and destination endpoints.
-    - Before sending the request, please update the origin and destination SPARQL endpoint in the `<root>/config/endpoint.properties`.
-    - A sample `GET` request is as follows:
+    - Execute the agent's task through an HTTP `GET` request. This route will transfer data between the specified source and target endpoints.
+    - Before sending the request, please update the source SPARQL endpoint in the `<root>/config/endpoint.properties`.
+    - If transferring to any other endpoint, please update the target SPARQL endpoint and send the simple `GET` request.
+    - If transferring within the same stack's endpoint, please leave the target SPARQL endpoint empty, and send the `GET` request with the following parameter.
+      - The `namespace` parameter refers to the target stack SPARQL namespace, which is by default `kb`.
 ```
+# For any destination
 curl -X GET localhost:3055/data-bridge-agent/sparql
+# For namespaces within the stack
+curl -X GET localhost:3055/data-bridge-agent/sparql?namespace=kb
 ```
+
 3. `<base>/sql` route:
    - Execute the agent's task through an HTTP `GET` request. This route will transfer data between the specified source and target databases.
    - Before sending the request, please update the source and target database urls, user, and password, in the `<root>/config/endpoint.properties`.

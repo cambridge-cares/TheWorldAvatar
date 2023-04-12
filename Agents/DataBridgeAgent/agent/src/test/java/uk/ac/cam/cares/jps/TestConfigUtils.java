@@ -15,7 +15,7 @@ public class TestConfigUtils {
     private static final String targetDBPass = "target.db.password";
 
 
-    public static File genSampleSPARQLConfigFile(boolean isComplete, String srcSparql, String tgtSparql) throws IOException {
+    public static File genSampleSPARQLConfigFile(boolean isEmpty, String srcSparql, String tgtSparql) throws IOException {
         File file = new File(System.getProperty("user.dir") + "/config/endpoint.properties");
         // Check if the directory exists, create it if it doesn't
         if (!file.getParentFile().exists()) {
@@ -23,10 +23,12 @@ public class TestConfigUtils {
         }
         file.createNewFile();
         PrintWriter writer = new PrintWriter(file);
-        writer.println(srcSparqlKey + "=" + srcSparql);
-        if (isComplete) {
-            writer.println(targetSparqlKey + "=" + tgtSparql);
+        if (isEmpty) {
+            writer.println(srcSparqlKey + "=");
+        } else {
+            writer.println(srcSparqlKey + "=" + srcSparql);
         }
+        writer.println(targetSparqlKey + "=" + tgtSparql);
         writer.close();
         return file;
     }

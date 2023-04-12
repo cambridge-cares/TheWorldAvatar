@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps;
 
+import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
+import com.cmclinnovations.stack.clients.docker.ContainerClient;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -64,11 +66,21 @@ public class ConfigStore {
     }
 
     /**
-     * Retrieves SPARQL endpoints stored in the properties file.
+     * An overloaded method to retrieve SPARQL endpoints stored in the properties file.
      *
      * @return An array of these endpoints.
      */
     protected static String[] retrieveSPARQLConfig() {
+        return retrieveSPARQLConfig(null);
+    }
+
+    /**
+     * Retrieves SPARQL endpoints stored in the properties file or construct the target from the stack endpoint.
+     *
+     * @param stackNamespace The stack namespace endpoint passed as a parameter to the GET request.
+     * @return An array of these endpoints.
+     */
+    protected static String[] retrieveSPARQLConfig(String stackNamespace) {
         StringBuilder missingPropertiesErrorMessage = new StringBuilder();
         try (InputStream input = new FileInputStream(PROPERTIES_FILEPATH)) {
             Properties prop = new Properties();
@@ -76,7 +88,7 @@ public class ConfigStore {
             LOGGER.debug("Retrieving configuration from " + PROPERTIES_FILEPATH + "...");
             prop.load(input);
             config[0] = validateProperties(prop, SRC_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
-            config[1] = validateProperties(prop, TARGET_SPARQL_ENDPOINT, missingPropertiesErrorMessage);
+            configureTargetEndpoint(prop, stackNamespace, config);
             String missingMessage = missingPropertiesErrorMessage.toString();
             if (!missingMessage.isEmpty()) {
                 LOGGER.error("Missing Properties:\n" + missingMessage);
@@ -94,6 +106,30 @@ public class ConfigStore {
     }
 
     /**
+     * Retrieves the target SPARQL endpoint from the endpoint.properties if available, and defaults to the stack endpoint otherwise.
+     *
+     * @param prop           A Properties object containing the required properties.
+     * @param stackNamespace The stack namespace endpoint passed as a parameter to the GET request.
+     * @param config         The configuration array to store the results.
+     */
+    private static void configureTargetEndpoint(Properties prop, String stackNamespace, String[] config) {
+        ContainerClient client = new ContainerClient();
+        if (stackNamespace != null) {
+            BlazegraphEndpointConfig blazeConfig = client.readEndpointConfig("blazegraph", BlazegraphEndpointConfig.class);
+            config[1] = blazeConfig.getServiceUrl() + "/namespace/" + stackNamespace + "/sparql";
+            LOGGER.info("Detected namespace parameter. Target endpoint is configured within the stack at: " + config[1]);
+        } else {
+            LOGGER.info("No namespace parameter is available. Configuring target endpoint based on endpoint.properties...");
+            config[1] = prop.getProperty(TARGET_SPARQL_ENDPOINT);
+            if (config[1].isEmpty()) {
+                LOGGER.fatal("Target SPARQL endpoint is empty in endpoint.properties. Please add an endpoint or pass a namespace parameter to the GET request!");
+                throw new JPSRuntimeException("Target SPARQL endpoint is empty in endpoint.properties. Please add an endpoint or pass a namespace parameter to the GET request!");
+            }
+            LOGGER.info("Target endpoint has been configured to:" + config[1]);
+        }
+    }
+
+    /**
      * Validates the client properties, and return their value if it exists.
      *
      * @param prop                          A Properties object containing the required properties.
@@ -102,7 +138,7 @@ public class ConfigStore {
      * @return The value of the endpoints.
      */
     private static String validateProperties(Properties prop, String propertyKey, StringBuilder missingPropertiesErrorMessage) {
-        if (prop.getProperty(propertyKey) == null) {
+        if (prop.getProperty(propertyKey) == null || prop.getProperty(propertyKey).isEmpty()) {
             missingPropertiesErrorMessage.append(propertyKey + " is missing! Please add the input to endpoint.properties.\n");
             LOGGER.error(propertyKey + " is missing! Please add the input to endpoint.properties.");
         } else {

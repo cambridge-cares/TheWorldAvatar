@@ -27,12 +27,12 @@ class ConfigStoreTest {
 
     @Test
     void testRetrieveSPARQLConfigMissingInputs() throws IOException {
-        File config = TestConfigUtils.genSampleSPARQLConfigFile(false, srcSparql, targetSparql);
+        File config = TestConfigUtils.genSampleSPARQLConfigFile(true, srcSparql, targetSparql);
         try {
             // Execute method and ensure right error is thrown
             JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, ConfigStore::retrieveSPARQLConfig);
             assertEquals("Missing Properties:\n" +
-                    "sparql.target.endpoint is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
+                    "sparql.src.endpoint is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
         } finally {
             // Always delete generated config file
             config.delete();
@@ -40,8 +40,34 @@ class ConfigStoreTest {
     }
 
     @Test
-    void testRetrieveSPARQLConfig() throws IOException {
-        File config = TestConfigUtils.genSampleSPARQLConfigFile(true, srcSparql, targetSparql);
+    void testRetrieveSPARQLConfigFromNonStackEndpointEmptyTargetProperties() throws IOException {
+        File config = TestConfigUtils.genSampleSPARQLConfigFile(false, srcSparql, "");
+        try {
+            // Execute method and ensure right error is thrown
+            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, ConfigStore::retrieveSPARQLConfig);
+            assertEquals("Target SPARQL endpoint is empty in endpoint.properties. Please add an endpoint or pass a namespace parameter to the GET request!", thrownError.getMessage());
+        } finally {
+            // Always delete generated config file
+            config.delete();
+        }
+    }
+
+    @Test
+    void testOverloadedRetrieveSPARQLConfigFromNonStackEndpointEmptyTargetProperties() throws IOException {
+        File config = TestConfigUtils.genSampleSPARQLConfigFile(false, srcSparql, "");
+        try {
+            // Execute method and ensure right error is thrown
+            JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, ()-> ConfigStore.retrieveSPARQLConfig(null));
+            assertEquals("Target SPARQL endpoint is empty in endpoint.properties. Please add an endpoint or pass a namespace parameter to the GET request!", thrownError.getMessage());
+        } finally {
+            // Always delete generated config file
+            config.delete();
+        }
+    }
+
+    @Test
+    void testRetrieveSPARQLConfigFromNonStackEndpoint() throws IOException {
+        File config = TestConfigUtils.genSampleSPARQLConfigFile(false, srcSparql, targetSparql);
         try {
             // Execute method
             String[] result = ConfigStore.retrieveSPARQLConfig();

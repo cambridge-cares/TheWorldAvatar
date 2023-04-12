@@ -69,7 +69,7 @@ public class DataBridgeAgent extends JPSAgent {
         switch (route) {
             case "sparql":
                 if (requestType.equals("GET")) {
-                    String[] config = ConfigStore.retrieveSPARQLConfig();
+                    String[] config = requestParams.has("namespace") ? ConfigStore.retrieveSPARQLConfig(requestParams.get("namespace").toString()) : ConfigStore.retrieveSPARQLConfig();
                     jsonMessage = sparqlRoute(config);
                 } else {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");

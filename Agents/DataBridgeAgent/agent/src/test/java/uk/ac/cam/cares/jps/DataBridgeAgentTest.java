@@ -65,7 +65,7 @@ class DataBridgeAgentTest {
     @Test
     void testProcessRequestParametersForSparqlRouteViaGETIncompleteProperties() throws IOException {
         // Generate sample config file
-        File config = TestConfigUtils.genSampleSPARQLConfigFile(false, sparqlSrc, sparqlTarget);
+        File config = TestConfigUtils.genSampleSPARQLConfigFile(true, sparqlSrc, sparqlTarget);
         // Set up request parameters
         JSONObject requestParams = new JSONObject();
         requestParams.put(KEY_METHOD, GET_METHOD);
@@ -74,7 +74,7 @@ class DataBridgeAgentTest {
             // Execute method should throw right error and response
             JPSRuntimeException thrownError = assertThrows(JPSRuntimeException.class, ()-> agent.processRequestParameters(requestParams));
             assertEquals("Missing Properties:\n" +
-                    "sparql.target.endpoint is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
+                    "sparql.src.endpoint is missing! Please add the input to endpoint.properties.\n", thrownError.getMessage());
         } finally {
             // Always delete generated config file
             config.delete();
@@ -84,7 +84,7 @@ class DataBridgeAgentTest {
     @Test
     void testProcessRequestParametersForSparqlRouteViaGET() throws IOException {
         // Generate sample config file
-        File config = TestConfigUtils.genSampleSPARQLConfigFile(true, sparqlSrc, sparqlTarget);
+        File config = TestConfigUtils.genSampleSPARQLConfigFile(false, sparqlSrc, sparqlTarget);
         // Set up request parameters
         JSONObject requestParams = new JSONObject();
         requestParams.put(KEY_METHOD, GET_METHOD);
