@@ -41,14 +41,14 @@ public class SpatialLink {
             String geom3 = object3D.getEnvelope().toString();
             geom3 = geom3.split(";")[1];
             Polygon envelope = (Polygon) reader.read(geom3);
-            System.out.println(envelope);
+//            System.out.println(envelope);
             for (int j = 0; j < this.allObject2D.size(); j++) {
                 GeoObject2D object2D = this.allObject2D.get(j);
                 int srid2D = object2D.getGeometry2D().getGeometry().getSrid();
                 String geom2D = object2D.getGeometry2D().toString();
                 geom2D = geom2D.split(";")[1];
                 MultiPolygon polygon = (MultiPolygon) reader.read(geom2D);
-                System.out.println(polygon);
+//                System.out.println(polygon);
 
                 if(srid3D != srid2D){
                     CoordinateReferenceSystem CRS2D = CRS.decode("EPSG:" + srid2D);
