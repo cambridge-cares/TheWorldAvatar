@@ -47,7 +47,7 @@ public class OPFAgentIntegrationTest {
 	
 	//User defined variables
 	//set the desired access agent version number here
-	static final String ACCESS_AGENT_VERSION = "1.6.1";
+	static final String ACCESS_AGENT_VERSION = "1.7.0";
 	
 	//////////////////////////////////////////////////
 	
@@ -224,13 +224,21 @@ public class OPFAgentIntegrationTest {
 	// Integration tests
     @Test
     public void testReadTimeSeriesData() {
-        String[] busIRIs = {"http://www.sampleIRI.org/sample_IRI_Pd", "http://www.sampleIRI.org/sample_IRI_Qd"};
-        List<String[]> dataIRIs = new ArrayList<String[]>();
-        dataIRIs.add(busIRIs);
+        String[] busIRIsWithoutSolar = {"http://www.sampleIRI.org/sample_IRI_Pd", "http://www.sampleIRI.org/sample_IRI_Qd"};
+        String[] busIRIsWithSolar = {"http://www.sampleIRI.org/sample_IRI_Pd", "http://www.sampleIRI.org/sample_IRI_Qd", 
+                                    "http://www.sampleIRI.org/sample_IRI_solarPd", "http://www.sampleIRI.org/sample_IRI_solarQd"};
+        List<String[]> dataIRIsWithoutSolar = new ArrayList<String[]>();
+        List<String[]> dataIRIsWithSolar = new ArrayList<String[]>();
+        dataIRIsWithoutSolar.add(busIRIsWithoutSolar);
+        dataIRIsWithSolar.add(busIRIsWithSolar);
+        String[] expectedValuesWithoutSolar = {"0", "0"};
+        String[] expectedValuesWithSolar = {"0", "0", "3", null};
+
         OffsetDateTime time = OffsetDateTime.parse("2020-01-01T08:00:00+00:00");
-        List<String[]> actualValues = agent.readTimeSeriesData(dataIRIs, time, 1);
-        String[] expectedValues = {"0", "0"};
-        assertArrayEquals(expectedValues, actualValues.get(0));
+        List<String[]> actualValuesWithoutSolar = agent.readTimeSeriesData(dataIRIsWithoutSolar, time, 1, "false");
+        List<String[]> actualValuesWithSolar = agent.readTimeSeriesData(dataIRIsWithSolar, time, 1, "true");
+        assertArrayEquals(expectedValuesWithoutSolar, actualValuesWithoutSolar.get(0));
+        assertArrayEquals(expectedValuesWithSolar, actualValuesWithSolar.get(0));
     }
 
     @Test
@@ -268,10 +276,10 @@ public class OPFAgentIntegrationTest {
     }
 
     @Test
-    public void testGenerateInput() throws IOException {
+    public void testGenerateInputWithoutSolar() throws IOException {
         targetStoreClient = IntegrationTestHelper.populateRemoteStore(targetStoreClient);
         String baseUrl = tempFolder.toPath().toString();
-        agent.generateInputWithAccessAgent(targetResourceID, baseUrl, "1", "2020-01-01T08:00:00+00:00");
+        agent.generateInputWithAccessAgent(targetResourceID, baseUrl, "1", "2020-01-01T08:00:00+00:00", "false");
 
         // Expected input files to be generated
         String[] fileNames = {"/bus.txt", "/branch.txt", "/gen.txt", "/genCost.txt", "/mappingforbus.csv", "/mappingforbranch.csv",
@@ -299,7 +307,38 @@ public class OPFAgentIntegrationTest {
     }
 
     @Test
-    public void testDoConversion () throws IOException {
+    public void testGenerateInputWithSolar() throws IOException {
+        targetStoreClient = IntegrationTestHelper.populateRemoteStore(targetStoreClient);
+        String baseUrl = tempFolder.toPath().toString();
+        agent.generateInputWithAccessAgent(targetResourceID, baseUrl, "1", "2020-01-01T08:00:00+00:00", "true");
+
+        // Expected input files to be generated
+        String[] fileNames = {"/bus.txt", "/branch.txt", "/gen.txt", "/genCost.txt", "/mappingforbus.csv", "/mappingforbranch.csv",
+                             "/mappingforgenerator.csv", "/mappingforgeneratorcost.csv", "/mappingforbattery.csv", "/baseMVA.txt"};
+
+        for (int i = 0; i < 10; i++) {
+            assertTrue(new File(baseUrl + fileNames[i]).isFile());
+        }
+
+        String actualBus = FileUtil.readFileLocally(baseUrl + fileNames[0]);
+        String expectedBus = "1	3	-3.000000000	0	0	0	1	1.0	0.0	11	1	1	1\n";
+        assertEquals(expectedBus, actualBus);
+        String actualBranch = FileUtil.readFileLocally(baseUrl + fileNames[1]);
+        String expectedBranch = "1	1	0.018436446	0.012435537	0.0	9900	0	0	0	0	1	-360	360\n";
+        assertEquals(expectedBranch, actualBranch);
+        String actualGen = FileUtil.readFileLocally(baseUrl + fileNames[2]);
+        String expectedGen = "1	0.0	0.0	10.0	-10.0	1	100	1	10.0	0	0	0	0	0	0	0	0	0	0	0	0\n";
+        assertEquals(expectedGen, actualGen);
+        String actualGenCost = FileUtil.readFileLocally(baseUrl + fileNames[3]);
+        String expectedGenCost = "2	0	0	3	0	20	0\n";
+        assertEquals(expectedGenCost, actualGenCost);
+        String actualbaseMVA = FileUtil.readFileLocally(baseUrl + fileNames[9]);
+        String expectedBaseMVA = "1";
+        assertEquals(expectedBaseMVA, actualbaseMVA);
+    }
+
+    @Test
+    public void testDoConversion() throws IOException {
         targetStoreClient = IntegrationTestHelper.populateRemoteStore(targetStoreClient);
         String baseUrl = tempFolder.toPath().toString();
         String modelType = "OPF";
@@ -336,7 +375,7 @@ public class OPFAgentIntegrationTest {
     }
 
     @Test
-    public void testStartSimulation() throws IOException {
+    public void testStartSimulationWithoutSolar() throws IOException {
         targetStoreClient = IntegrationTestHelper.populateRemoteStore(targetStoreClient);
         String baseUrl = tempFolder.toPath().toString();
         String modelType = "OPF";
@@ -346,7 +385,8 @@ public class OPFAgentIntegrationTest {
         expectedOutput.put("status", "converged");
 
         try {
-            JSONObject actualOutput = agent.startSimulationWithAccessAgent(targetResourceID, baseUrl, modelType, "1", "2020-01-01T08:00:00+00:00");
+            JSONObject actualOutput = agent.startSimulationWithAccessAgent(targetResourceID, baseUrl, modelType, 
+                                    "1", "2020-01-01T08:00:00+00:00", "false");
             // Check output status
             assertEquals(expectedOutput.get("electricalnetwork"), actualOutput.get("electricalnetwork"));
             assertEquals(expectedOutput.get("status"), actualOutput.get("status"));
@@ -394,13 +434,73 @@ public class OPFAgentIntegrationTest {
     }
 
     @Test
-    public void testProcessRequestParameters() {
+    public void testStartSimulationWithSolar() throws IOException {
+        targetStoreClient = IntegrationTestHelper.populateRemoteStore(targetStoreClient);
+        String baseUrl = tempFolder.toPath().toString();
+        String modelType = "OPF";
+
+        JSONObject expectedOutput = new JSONObject();
+		expectedOutput.put("electricalnetwork", targetResourceID);
+        expectedOutput.put("status", "converged");
+
+        try {
+            JSONObject actualOutput = agent.startSimulationWithAccessAgent(targetResourceID, baseUrl, modelType, 
+                                "1", "2020-01-01T08:00:00+00:00", "true");
+            // Check output status
+            assertEquals(expectedOutput.get("electricalnetwork"), actualOutput.get("electricalnetwork"));
+            assertEquals(expectedOutput.get("status"), actualOutput.get("status"));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        // Expected input files to be generated
+        String[] fileNames = {"/bus.txt", "/branch.txt", "/gen.txt", "/genCost.txt", "/mappingforbus.csv", "/mappingforbranch.csv",
+        "/mappingforgenerator.csv", "/mappingforgeneratorcost.csv", "/mappingforbattery.csv", "/baseMVA.txt"};
+        String actualBus = FileUtil.readFileLocally(baseUrl + fileNames[0]);
+        String expectedBus = "1	3	-3.000000000	0	0	0	1	1.0	0.0	11	1	1	1\n";
+        assertEquals(expectedBus, actualBus);
+        String actualBranch = FileUtil.readFileLocally(baseUrl + fileNames[1]);
+        String expectedBranch = "1	1	0.018436446	0.012435537	0.0	9900	0	0	0	0	1	-360	360\n";
+        assertEquals(expectedBranch, actualBranch);
+        String actualGen = FileUtil.readFileLocally(baseUrl + fileNames[2]);
+        String expectedGen = "1	0.0	0.0	10.0	-10.0	1	100	1	10.0	0	0	0	0	0	0	0	0	0	0	0	0\n";
+        assertEquals(expectedGen, actualGen);
+        String actualGenCost = FileUtil.readFileLocally(baseUrl + fileNames[3]);
+        String expectedGenCost = "2	0	0	3	0	20	0\n";
+        assertEquals(expectedGenCost, actualGenCost);
+        String actualbaseMVA = FileUtil.readFileLocally(baseUrl + fileNames[9]);
+        String expectedBaseMVA = "1";
+        assertEquals(expectedBaseMVA, actualbaseMVA);
+        
+        // Check update results
+        OffsetDateTime time = OffsetDateTime.parse("2020-01-01T08:00:00+00:00");
+        List<String> vmValues = new ArrayList<String>();
+        List<String> vaValues = new ArrayList<String>();
+        vmValues.add("http://www.sampleIRI.org/sample_IRI_Vm");
+        vaValues.add("http://www.sampleIRI.org/sample_IRI_Va");
+
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            TimeSeries<OffsetDateTime> vmTimeseries = tsClient.getTimeSeriesWithinBounds(vmValues, time, time, conn);
+            TimeSeries<OffsetDateTime> vaTimeseries = tsClient.getTimeSeriesWithinBounds(vaValues, time, time, conn);
+            String vmOutput = vmTimeseries.getValuesAsString(vmValues.get(0)).get(0);
+            String vaOutput = vaTimeseries.getValuesAsString(vaValues.get(0)).get(0);
+            assertEquals("1.0", vmOutput);
+            assertEquals("0.0", vaOutput);
+        } catch (Exception e) {
+            throw new JPSRuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testProcessRequestParametersWithoutSolar() {
         targetStoreClient = IntegrationTestHelper.populateRemoteStore(targetStoreClient);
         String baseUrl = AgentLocator.getCurrentJpsAppDirectory(this) + "/opf-result";
         JSONObject requestParams = new JSONObject()
                                 .put("electricalnetwork", targetResourceID)
                                 .put("baseMVA", "1")
-                                .put("time", "2020-01-01T08:00:00+00:00");
+                                .put("time", "2020-01-01T08:00:00+00:00")
+                                .put("hasSolar", "false");
 
         JSONObject expectedOutput = new JSONObject();
         expectedOutput.put("electricalnetwork", targetResourceID);
@@ -446,5 +546,61 @@ public class OPFAgentIntegrationTest {
         } catch (Exception e) {
             throw new JPSRuntimeException(e);
         }
-    }              
+    }
+
+    @Test
+    public void testProcessRequestParametersWithSolar() {
+        targetStoreClient = IntegrationTestHelper.populateRemoteStore(targetStoreClient);
+        String baseUrl = AgentLocator.getCurrentJpsAppDirectory(this) + "/opf-result";
+        JSONObject requestParams = new JSONObject()
+                                .put("electricalnetwork", targetResourceID)
+                                .put("baseMVA", "1")
+                                .put("time", "2020-01-01T08:00:00+00:00")
+                                .put("hasSolar", "true");
+
+        JSONObject expectedOutput = new JSONObject();
+        expectedOutput.put("electricalnetwork", targetResourceID);
+        expectedOutput.put("status", "converged");     
+        
+        JSONObject actualOutput = agent.processRequestParameters(requestParams, null);
+        assertEquals(expectedOutput.get("electricalnetwork"), actualOutput.get("electricalnetwork"));
+        assertEquals(expectedOutput.get("status"), actualOutput.get("status"));
+
+        // Expected input files to be generated
+        String[] fileNames = {"/bus.txt", "/branch.txt", "/gen.txt", "/genCost.txt", "/mappingforbus.csv", "/mappingforbranch.csv",
+        "/mappingforgenerator.csv", "/mappingforgeneratorcost.csv", "/mappingforbattery.csv", "/baseMVA.txt"};
+        String actualBus = FileUtil.readFileLocally(baseUrl + fileNames[0]);
+        String expectedBus = "1	3	-3.000000000	0	0	0	1	1.0	0.0	11	1	1	1\n";
+        assertEquals(expectedBus, actualBus);
+        String actualBranch = FileUtil.readFileLocally(baseUrl + fileNames[1]);
+        String expectedBranch = "1	1	0.018436446	0.012435537	0.0	9900	0	0	0	0	1	-360	360\n";
+        assertEquals(expectedBranch, actualBranch);
+        String actualGen = FileUtil.readFileLocally(baseUrl + fileNames[2]);
+        String expectedGen = "1	0.0	0.0	10.0	-10.0	1	100	1	10.0	0	0	0	0	0	0	0	0	0	0	0	0\n";
+        assertEquals(expectedGen, actualGen);
+        String actualGenCost = FileUtil.readFileLocally(baseUrl + fileNames[3]);
+        String expectedGenCost = "2	0	0	3	0	20	0\n";
+        assertEquals(expectedGenCost, actualGenCost);
+        String actualbaseMVA = FileUtil.readFileLocally(baseUrl + fileNames[9]);
+        String expectedBaseMVA = "1";
+        assertEquals(expectedBaseMVA, actualbaseMVA);
+                
+        // Check update results
+        OffsetDateTime time = OffsetDateTime.parse("2020-01-01T08:00:00+00:00");
+        List<String> vmValues = new ArrayList<String>();
+        List<String> vaValues = new ArrayList<String>();
+        vmValues.add("http://www.sampleIRI.org/sample_IRI_Vm");
+        vaValues.add("http://www.sampleIRI.org/sample_IRI_Va");
+
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            TimeSeries<OffsetDateTime> vmTimeseries = tsClient.getTimeSeriesWithinBounds(vmValues, time, time, conn);
+            TimeSeries<OffsetDateTime> vaTimeseries = tsClient.getTimeSeriesWithinBounds(vaValues, time, time, conn);
+            String vmOutput = vmTimeseries.getValuesAsString(vmValues.get(0)).get(0);
+            String vaOutput = vaTimeseries.getValuesAsString(vaValues.get(0)).get(0);
+            assertEquals("1.0", vmOutput);
+            assertEquals("0.0", vaOutput);
+        } catch (Exception e) {
+            throw new JPSRuntimeException(e);
+        }
+    }    
 }

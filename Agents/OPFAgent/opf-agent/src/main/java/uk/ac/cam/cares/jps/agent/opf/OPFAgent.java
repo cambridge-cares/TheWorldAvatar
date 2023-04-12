@@ -78,12 +78,13 @@ public class OPFAgent extends JPSAgent{
 		String iriofnetwork = requestParams.getString("electricalnetwork");
 		String baseMVA = requestParams.getString("baseMVA");
 		String time = requestParams.getString("time");
+		String hasSolar = requestParams.getString("hasSolar");
 		String baseUrl = AgentLocator.getCurrentJpsAppDirectory(this) + "/opf-result";
 		String modeltype = "OPF";
 		JSONObject result;
 
 		try {
-			result = startSimulationWithAccessAgent(iriofnetwork, baseUrl, modeltype, baseMVA, time);
+			result = startSimulationWithAccessAgent(iriofnetwork, baseUrl, modeltype, baseMVA, time, hasSolar);
 			return result;
 		} catch (IOException e) {
 			throw new JPSRuntimeException("");
@@ -96,11 +97,12 @@ public class OPFAgent extends JPSAgent{
 	 * @param baseUrl           working directory
 	 * @param modeltype         "OPF"
 	 * @param baseMVA			baseMVA of the system
-	 * @param time				
+	 * @param time			
+	 * @param hasSolar	
 	 * @return
 	 * @throws IOException
 	 */
-	public JSONObject startSimulationWithAccessAgent(String targetResourceID, String baseUrl, String modeltype, String baseMVA, String time) throws IOException {
+	public JSONObject startSimulationWithAccessAgent(String targetResourceID, String baseUrl, String modeltype, String baseMVA, String time, String hasSolar) throws IOException {
 		
 		JSONObject resjo = new JSONObject();
 		resjo.put("electricalnetwork", targetResourceID);
@@ -108,7 +110,7 @@ public class OPFAgent extends JPSAgent{
 		logger.info("starting simulation for electrical network = " + targetResourceID + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
 		
 		try {
-			generateInputWithAccessAgent(targetResourceID, baseUrl, baseMVA, time);
+			generateInputWithAccessAgent(targetResourceID, baseUrl, baseMVA, time, hasSolar);
 		} catch (IOException e) {
 			throw new JPSRuntimeException("Input generation failed.");
 		}
@@ -168,7 +170,7 @@ public class OPFAgent extends JPSAgent{
 		} catch (IOException e) {
 			throw new JPSRuntimeException("Failed to read RDB info from config file.");
 		}
-		List<String[]> busLoadValues = readTimeSeriesData(busIRIs, OffsetDateTime.parse(time), busList.size());
+		List<String[]> busLoadValues = readTimeSeriesData(busIRIs, OffsetDateTime.parse(time), busList.size(), "false");
 
 		// replace dataIRIs with actual values
 		for (int i = 0; i < busList.size(); i++) {
@@ -180,13 +182,72 @@ public class OPFAgent extends JPSAgent{
 	}
 
 	/**
+	 * Replace dataIRIs in busList with actual values of Pd and Qd. Calculate actual bus loads if the bus has solar PV.
+	 * @param busList List of bus info
+	 * @param time
+	 */
+	public List<String[]> processBusInputWithSolar(List<String[]> busList, String time) {
+		// extract dataIRIs for each bus
+		List<String[]> busIRIs = new ArrayList<String[]>();
+		String[] oneBus;
+		for (int i = 0; i < busList.size(); i++) {
+			oneBus = new String[4];
+			oneBus[0] = busList.get(i)[2]; // PdIri of bus i
+			oneBus[1] = busList.get(i)[3]; // QdIri of bus i
+			oneBus[2] = busList.get(i)[4]; // solarPdIri of bus i
+			oneBus[3] = busList.get(i)[5]; // solarQdIri of bus i
+			busIRIs.add(oneBus);
+		}
+
+		try {
+			loadTSClientConfigs(AgentLocator.getCurrentJpsAppDirectory(this) + "/config/client.properties");
+		} catch (IOException e) {
+			throw new JPSRuntimeException("Failed to read RDB info from config file.");
+		}
+		List<String[]> busLoadValues = readTimeSeriesData(busIRIs, OffsetDateTime.parse(time), busList.size(), "true");
+		List<String[]> busInfoList = new ArrayList<String[]>();
+
+		// replace dataIRIs with actual values
+		for (int i = 0; i < busList.size(); i++) {
+			if (busLoadValues.get(i).length > 2) {
+				// when the bus has solar PV, calculate actual load by subtracting power generated from power load
+				if (busLoadValues.get(i)[2] != null) {
+					busList.get(i)[2] = String.format("%.9f", Double.parseDouble(busLoadValues.get(i)[0]) - Double.parseDouble(busLoadValues.get(i)[2]));
+				} else {
+					// If active solar power generated is null
+					busList.get(i)[2] = busLoadValues.get(i)[0];
+				}
+				if (busLoadValues.get(i)[3] != null) {
+					busList.get(i)[3] = String.format("%.9f", Double.parseDouble(busLoadValues.get(i)[1]) - Double.parseDouble(busLoadValues.get(i)[3]));
+				} else {
+					// If reactive solar power generated is null
+					busList.get(i)[3] = busLoadValues.get(i)[1];
+				}
+			} else {
+				// when the bus does not have solar PV
+				busList.get(i)[2] = busLoadValues.get(i)[0];
+				busList.get(i)[3] = busLoadValues.get(i)[1];
+			}
+
+			// remove solar data from busList since they are not required for OPF calculation
+			List<String> list = new ArrayList<String>(Arrays.asList(busList.get(i)));
+			list.remove(4);
+			list.remove(4);
+			busInfoList.add(list.toArray(new String[0]));
+		}
+		
+		return busInfoList;
+	}
+
+	/**
 	 * Read bus Pd, Qd values of a given time.
 	 * @param dataIRIs List of every bus's Pd and Qd dataIRIs
 	 * @param time     
 	 * @param numOfBus Total number of buses
+	 * @param hasSolar
 	 * @return
 	 */
-	public List<String[]> readTimeSeriesData(List<String[]> dataIRIs, OffsetDateTime time, int numOfBus) {
+	public List<String[]> readTimeSeriesData(List<String[]> dataIRIs, OffsetDateTime time, int numOfBus, String hasSolar) {
 		rdbStoreClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
 		tsClient = new TimeSeriesClient<>(kbClient ,OffsetDateTime.class);
 		List<String[]> busList = new ArrayList<String[]>();
@@ -194,12 +255,37 @@ public class OPFAgent extends JPSAgent{
 		String[] busValues;
 
 		try (Connection conn = rdbStoreClient.getConnection()) {
-			for (int i = 0; i < numOfBus; i++) {
-				busValues = new String[2];
-				timeseries = tsClient.getTimeSeriesWithinBounds(Arrays.asList(dataIRIs.get(i)), time, time, conn);
-				busValues[0] = timeseries.getValuesAsString(dataIRIs.get(i)[0]).get(0); // Pd value of this bus
-				busValues[1] = timeseries.getValuesAsString(dataIRIs.get(i)[1]).get(0); // Qd value of this bus
-				busList.add(busValues);
+			if (hasSolar.equals("false")) {
+				// If the system does not have solar PV or we do not consider solar PV
+				for (int i = 0; i < numOfBus; i++) {
+					busValues = new String[2];
+					timeseries = tsClient.getTimeSeriesWithinBounds(Arrays.asList(dataIRIs.get(i)), time, time, conn);
+					busValues[0] = timeseries.getValuesAsString(dataIRIs.get(i)[0]).get(0); // Pd value of this bus
+					busValues[1] = timeseries.getValuesAsString(dataIRIs.get(i)[1]).get(0); // Qd value of this bus
+					busList.add(busValues);
+				}
+			} else if (hasSolar.equals("true")) {
+				// If we take solar PV into consideration for this system
+				for (int i = 0; i < numOfBus; i++) {
+					if (dataIRIs.get(i)[2] == null || dataIRIs.get(i)[3] == null) {
+						// If this bus node does not have solar PV, only take Pd and Qd IRIs
+						busValues = new String[2];
+						String[] loadIRIs = new String[2];
+						loadIRIs[0] = dataIRIs.get(i)[0];
+						loadIRIs[1] = dataIRIs.get(i)[1];
+						timeseries = tsClient.getTimeSeriesWithinBounds(Arrays.asList(loadIRIs), time, time, conn);
+						busValues[0] = timeseries.getValuesAsString(dataIRIs.get(i)[0]).get(0); // Pd value of this bus
+						busValues[1] = timeseries.getValuesAsString(dataIRIs.get(i)[1]).get(0); // Qd value of this bus
+					} else {
+						// If this bus node has solar PV
+						busValues = new String[4];
+						timeseries = tsClient.getTimeSeriesWithinBounds(Arrays.asList(dataIRIs.get(i)), time, time, conn);
+						for (int j = 0; j < 4; j++) {
+							busValues[j] = timeseries.getValuesAsString(dataIRIs.get(i)[j]).get(0);
+						}
+					}
+					busList.add(busValues);
+				}
 			}
         } catch (Exception e) {
             throw new JPSRuntimeException(e);
@@ -220,7 +306,6 @@ public class OPFAgent extends JPSAgent{
         }
 		
         try (InputStream input = new FileInputStream(file)) {
-
             // Load properties file from specified path
             Properties prop = new Properties();
             prop.load(input);
@@ -257,11 +342,12 @@ public class OPFAgent extends JPSAgent{
 	 * @param targetResourceID  targetResourceURL for access agent to query
 	 * @param baseUrl 			Working directory
 	 * @param baseMVA			baseMVA of the system
-	 * @param time				
+	 * @param time	
+	 * @param hasSolar			
 	 * @return
 	 * @throws IOException
 	 */
-	public void generateInputWithAccessAgent(String targetResourceID, String baseUrl, String baseMVA, String time) throws IOException {
+	public void generateInputWithAccessAgent(String targetResourceID, String baseUrl, String baseMVA, String time, String hasSolar) throws IOException {
 		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 		+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 		+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -442,7 +528,7 @@ public class OPFAgent extends JPSAgent{
 		+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 		+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 		+ "PREFIX om: <http://www.ontology-of-units-of-measure.org/resource/om-2/> "
-		+ "SELECT ?BusNumbervalue ?typevalue ?PdIri ?QdIri ?Gsvalue ?Bsvalue ?areavalue ?VoltMagvalue ?VoltAnglevalue ?BaseKVvalue ?Zonevalue ?VMaxvalue ?VMinvalue "
+		+ "SELECT ?BusNumbervalue ?typevalue ?PdIri ?QdIri ?solarPdIri ?solarQdIri ?Gsvalue ?Bsvalue ?areavalue ?VoltMagvalue ?VoltAnglevalue ?BaseKVvalue ?Zonevalue ?VMaxvalue ?VMinvalue "
 
 		+ "WHERE {?entity  a  j1:BusNode  ." 
 		+ "?entity   j2:isModeledBy ?model ."
@@ -463,6 +549,20 @@ public class OPFAgent extends JPSAgent{
 		+ "?entity  j6:hasReactivePowerAbsorbed ?Qd ."
 		+ "?Qd  a  j6:AbsorbedReactivePower ."
 		+ "?Qd  om:hasValue ?QdIri ."  // dataIRI of Qd
+
+		+ "OPTIONAL {"
+		+ "?entity	j2:contains	?solarPV ."
+		+ "?solarPV	a	j1:PhotovoltaicGenerator ."
+
+		+ "?solarPV	j6:hasActivePowerGenerated	?solarPd ."
+		+ "?solarPd	a	j6:GeneratedActivePower ."
+		+ "?solarPd	om:hasValue	?solarPdIri ."  // dataIRI of solarPd
+
+		+ "?solarPV	j6:hasReactivePowerGenerated	?solarQd ."
+		+ "?solarQd	a	j6:GeneratedReactivePower ."
+		+ "?solarQd	om:hasValue	?solarQdIri ."  // dataIRI of solarQd
+
+		+ "}"
 
 		+ "?model   j5:hasModelVariable ?Gsvar ." 
 		+ "?Gsvar  a  j3:Gs  ." 
@@ -614,6 +714,8 @@ public class OPFAgent extends JPSAgent{
 		+ "}";
 
 		String busKeys[] = new String[] {"BusNumbervalue", "typevalue", "PdIri", "QdIri", "Gsvalue",
+		"Bsvalue", "areavalue", "VoltMagvalue", "VoltAnglevalue", "BaseKVvalue", "Zonevalue", "VMaxvalue", "VMinvalue"};
+		String busKeysWithSolar[] = new String[] {"BusNumbervalue", "typevalue", "PdIri", "QdIri", "solarPdIri", "solarQdIri", "Gsvalue",
 					 "Bsvalue", "areavalue", "VoltMagvalue", "VoltAnglevalue", "BaseKVvalue", "Zonevalue", "VMaxvalue", "VMinvalue"};
 		String genKeys[] = new String[] {"entity", "BusNumbervalue", "activepowervalue", "reactivepowervalue", "Qmaxvalue", "Qminvalue",
 					 "Vgvalue", "mBasevalue", "Statusvalue", "Pmaxvalue", "Pminvalue", "Pc1value", "Pc2value", "Qc1minvalue", "Qc1maxvalue",
@@ -624,10 +726,19 @@ public class OPFAgent extends JPSAgent{
 					 "rateAvalue", "rateBvalue", "rateCvalue", "ratiovalue", "anglevalue", "statusvalue", "angleminvalue", "anglemaxvalue"};
 		String batteryKeys[] = new String[] {"entity", "V_ActivePowerInjection_of_VRB"};
 
-		List<String[]> busList = extractTripleInArray(targetResourceID, busInfo, busKeys, "bus", baseUrl);
-		// Replace Pd and Qd dataIRIs with their actual values at the given time
-		busList = processBusInput(busList, time);
-
+		List<String[]> busList = new ArrayList<String[]>();
+		if (hasSolar.toLowerCase().equals("false")) {
+			busList = extractTripleInArray(targetResourceID, busInfo, busKeys, "bus", baseUrl);
+			// Replace Pd and Qd dataIRIs with their actual values at the given time
+			busList = processBusInput(busList, time);
+		} else if (hasSolar.toLowerCase().equals("true")) {
+			busList = extractTripleInArray(targetResourceID, busInfo, busKeysWithSolar, "bus", baseUrl);
+			// Replace Pd and Qd dataIRIs with their actual values at the given time
+			busList = processBusInputWithSolar(busList, time);
+		} else {
+			throw new JPSRuntimeException("Invalid input. hasSolar parameter has to be true or false.\n");
+		}
+ 
 		List<String[]> genList = extractTripleInArray(targetResourceID, genInfo, genKeys, "generator", baseUrl);
 		List<String[]> genCostList = extractTripleInArray(targetResourceID, genCostInfo, genCostKeys, "generatorcost", baseUrl);
 		List<String[]> branchList = extractTripleInArray(targetResourceID, branchInfo, branchKeys, "branch", baseUrl);
@@ -1005,6 +1116,8 @@ public class OPFAgent extends JPSAgent{
 			throw new JPSRuntimeException("Input should contain electrical network IRI.");
 		} else if (!requestParams.has("time")) {
 			throw new JPSRuntimeException("Input should contain time interested.");
+		} else if (!requestParams.has("hasSolar")) {
+			throw new JPSRuntimeException("Input should contain hasSolar value: true or false.");
 		}
 		
 		String time = requestParams.getString("time");

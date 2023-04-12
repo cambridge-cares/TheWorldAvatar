@@ -38,9 +38,13 @@ public class IntegrationTestHelper {
         List<String> dataIRIs = new ArrayList<String>();
         dataIRIs.add("http://www.sampleIRI.org/sample_IRI_Pd");
         dataIRIs.add("http://www.sampleIRI.org/sample_IRI_Qd");
+        dataIRIs.add("http://www.sampleIRI.org/sample_IRI_solarPd");
+        dataIRIs.add("http://www.sampleIRI.org/sample_IRI_solarQd");
         dataIRIs.add("http://www.sampleIRI.org/sample_IRI_Vm");
         dataIRIs.add("http://www.sampleIRI.org/sample_IRI_Va");
         List<Class<?>> classes = new ArrayList<>();
+        classes.add(String.class);
+        classes.add(String.class);
         classes.add(String.class);
         classes.add(String.class);
         classes.add(String.class);
@@ -53,13 +57,22 @@ public class IntegrationTestHelper {
         List<String> testIRIs = new ArrayList<>();
         testIRIs.add(dataIRIs.get(0));
         testIRIs.add(dataIRIs.get(1));
+        testIRIs.add(dataIRIs.get(2));
+        testIRIs.add(dataIRIs.get(3));
         List<List<?>> values = new ArrayList<>();
         List<String> pdValue = new ArrayList<String>();
         List<String> qdValue = new ArrayList<String>();
+        List<String> solarPdValue = new ArrayList<String>();
+        List<String> solarQdValue = new ArrayList<String>();
+
         pdValue.add("0");
         qdValue.add("0");
+        solarPdValue.add("3");
+        solarQdValue.add(null);
         values.add(pdValue);
         values.add(qdValue);
+        values.add(solarPdValue);
+        values.add(solarQdValue);
 
         TimeSeries<OffsetDateTime> testTimeSeries = new TimeSeries<>(timeValues, testIRIs, values);
         tsClient.addTimeSeriesData(testTimeSeries);
@@ -69,8 +82,8 @@ public class IntegrationTestHelper {
     public static RemoteStoreClient populateRemoteStore(RemoteStoreClient targetStoreClient) {
         List<String> triples = new ArrayList<String>();
         triples = prepareInformation(triples);
-        for (int i = 0; i < (66 + 74 + 86 + 28); i++) {
-            // 66 bus triples, 74 branch triples, 86 gen triples, 28 genCost triples
+        for (int i = 0; i < (74 + 74 + 86 + 28); i++) {
+            // 74 bus triples, 74 branch triples, 86 gen triples, 28 genCost triples
             targetStoreClient.insert(null, triples.get(i), MediaType.APPLICATION_N_TRIPLES.type);
         }
         return targetStoreClient;
@@ -140,6 +153,36 @@ public class IntegrationTestHelper {
         triples.add("<http://localhost:8080/powernetwork/EBus-001.owl#Gd_EBus-001> " 
         + "<http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue> " 
         + "<http://www.sampleIRI.org/sample_IRI_Qd>.");
+
+        // Solar PV
+        triples.add("<http://localhost:8080/powernetwork/EBus-001.owl#Ebus-001> " 
+        + "<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains> " 
+        + "<http://localhost:8080/powernetwork/EBus-001.owl#solarPV_EBus-001>.");
+        triples.add("<http://localhost:8080/powernetwork/EBus-001.owl#solarPV_EBus-001> " 
+        + "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " 
+        + "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhotovoltaicGenerator>.");
+
+        // solarPd IRI
+        triples.add("<http://localhost:8080/powernetwork/EBus-001.owl#solarPV_EBus-001> " 
+        + "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerGenerated> " 
+        + "<http://localhost:8080/powernetwork/EBus-001.owl#solarPd_EBus-001>.");
+        triples.add("<http://localhost:8080/powernetwork/EBus-001.owl#solarPd_EBus-001> " 
+        + "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " 
+        + "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedActivePower>.");
+        triples.add("<http://localhost:8080/powernetwork/EBus-001.owl#solarPd_EBus-001> " 
+        + "<http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue> " 
+        + "<http://www.sampleIRI.org/sample_IRI_solarPd>.");
+
+        // solarQd IRI
+        triples.add("<http://localhost:8080/powernetwork/EBus-001.owl#solarPV_EBus-001> " 
+        + "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasReactivePowerGenerated> " 
+        + "<http://localhost:8080/powernetwork/EBus-001.owl#solarQd_EBus-001>.");
+        triples.add("<http://localhost:8080/powernetwork/EBus-001.owl#solarQd_EBus-001> " 
+        + "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> " 
+        + "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedReactivePower>.");
+        triples.add("<http://localhost:8080/powernetwork/EBus-001.owl#solarQd_EBus-001> " 
+        + "<http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue> " 
+        + "<http://www.sampleIRI.org/sample_IRI_solarQd>.");
 
         // Gs
         triples.add("<http://localhost:8080/powernetwork/EBus-001.owl#Model_Ebus-001> " 

@@ -37,7 +37,7 @@ public class OPFAgentTest {
     public MockStoreClient mockStore = populateMockStore(new MockStoreClient());
 
     @Test
-    public void testGenerateInput() throws IOException {
+    public void testGenerateInputWithoutSolar() throws IOException {
         String baseUrl = tempFolder.getRoot().getAbsolutePath();
         String[] expectedIRIs = {"http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_Pd", 
                                 "http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_Qd"};
@@ -48,7 +48,7 @@ public class OPFAgentTest {
             }
 
             @Override
-            public List<String[]> readTimeSeriesData(List<String[]> dataIRIs, OffsetDateTime time, int numOfBus) {
+            public List<String[]> readTimeSeriesData(List<String[]> dataIRIs, OffsetDateTime time, int numOfBus, String hasSolar) {
                 assertArrayEquals(expectedIRIs, dataIRIs.get(0));
                 String[] busLoad = {"0", "0"};
                 List<String[]> busList = new ArrayList<String[]>();
@@ -57,7 +57,7 @@ public class OPFAgentTest {
             }
         };
 
-        agent.generateInputWithAccessAgent("", baseUrl, "1", "2020-01-01T08:00:00+00:00");
+        agent.generateInputWithAccessAgent("", baseUrl, "1", "2020-01-01T08:00:00+00:00", "false");
 
         // Check that bus input file is generated
         String fileName = baseUrl + "/bus.txt";
@@ -102,6 +102,73 @@ public class OPFAgentTest {
     }
 
     @Test
+    public void testGenerateInputWithSolar() throws IOException {
+        String baseUrl = tempFolder.getRoot().getAbsolutePath();
+        String[] expectedIRIs = {"http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_Pd", 
+                                "http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_Qd", 
+                                "http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_solarPd",
+                                "http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_solarQd"};
+        OPFAgent agent = new OPFAgent(){
+            @Override
+            public JSONArray callAccessAgentToQuery(String targetResourceID, String sparqlQuery) {
+                return mockStore.executeQuery(sparqlQuery);
+            }
+
+            @Override
+            public List<String[]> readTimeSeriesData(List<String[]> dataIRIs, OffsetDateTime time, int numOfBus, String hasSolar) {
+                assertArrayEquals(expectedIRIs, dataIRIs.get(0));
+                String[] busLoad = {"0", "0", null, "4"};
+                List<String[]> busList = new ArrayList<String[]>();
+                busList.add(busLoad);
+                return busList;
+            }
+        };
+
+        agent.generateInputWithAccessAgent("", baseUrl, "1", "2020-01-01T08:00:00+00:00", "true");
+
+        // Check that bus input file is generated
+        String fileName = baseUrl + "/bus.txt";
+        File file = new File(fileName);
+        assertTrue(file.exists());
+        // Check bus input information
+        String busOutput = FileUtil.readFileLocally(fileName);
+        String expectedBus = "1	3	0	-4.000000000	0	0	1	1.0	0	11	1	1	1\n";
+        assertEquals(expectedBus, busOutput);
+
+        // Check branch inputs
+        fileName = baseUrl + "/branch.txt";
+        file = new File(fileName);
+        assertTrue(file.exists());
+        String branchOutput = FileUtil.readFileLocally(fileName);
+        String expectedBranch = "1	1	0.018436446	0.012435537	0	9900	0	0	0	0	1	-360	360\n";
+        assertEquals(expectedBranch, branchOutput);
+
+        // Check generator inputs
+        fileName = baseUrl + "/gen.txt";
+        file = new File(fileName);
+        assertTrue(file.exists());
+        String genOutput = FileUtil.readFileLocally(fileName);
+        String expectedGen = "1	0	0	10	-10	1	100	1	10	0	0	0	0	0	0	0	0	0	0	0	0\n";
+        assertEquals(expectedGen, genOutput);
+
+        // Check genCost inputs
+        fileName = baseUrl + "/genCost.txt";
+        file = new File(fileName);
+        assertTrue(file.exists());
+        String genCostOutput = FileUtil.readFileLocally(fileName);
+        String expectedGenCost = "2	0	0	3	0	20	0\n";
+        assertEquals(expectedGenCost, genCostOutput);
+
+        // Check baseMVA inputs
+        fileName = baseUrl + "/baseMVA.txt";
+        file = new File(fileName);
+        assertTrue(file.exists());
+        String baseMVA = FileUtil.readFileLocally(fileName);
+        String expectedBaseMVA = "1";
+        assertEquals(expectedBaseMVA, baseMVA);
+    }
+
+    @Test
     public void testProcessBusInput() {
         OPFAgent agent = new OPFAgent(){
             @Override
@@ -110,7 +177,7 @@ public class OPFAgentTest {
             }
 
             @Override
-            public List<String[]> readTimeSeriesData(List<String[]> dataIRIs, OffsetDateTime time, int numOfBus) {
+            public List<String[]> readTimeSeriesData(List<String[]> dataIRIs, OffsetDateTime time, int numOfBus, String hasSolar) {
                 String[] busLoad = {"0", "0"};
                 List<String[]> busList = new ArrayList<String[]>();
                 busList.add(busLoad);
@@ -130,6 +197,40 @@ public class OPFAgentTest {
         expectedOutput.add(outputBusInfo);
 
         List<String[]> actualOutput = agent.processBusInput(busInput, time);
+        assertArrayEquals(expectedOutput.get(0), actualOutput.get(0));
+    }
+
+    @Test
+    public void testProcessBusInputWithSolar() {
+        OPFAgent agent = new OPFAgent(){
+            @Override
+            public JSONArray callAccessAgentToQuery(String targetResourceID, String sparqlQuery) {
+                return mockStore.executeQuery(sparqlQuery);
+            }
+
+            @Override
+            public List<String[]> readTimeSeriesData(List<String[]> dataIRIs, OffsetDateTime time, int numOfBus, String hasSolar) {
+                String[] busLoad = {"1", "4", "3", "0"};
+                List<String[]> busList = new ArrayList<String[]>();
+                busList.add(busLoad);
+                return busList;
+            }
+        };
+
+        String[] busInfo = {"1", "3", "http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_Pd", 
+                            "http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_Qd", 
+                            "http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_solarPd", 
+                            "http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_solarQd", 
+                            "0", "0", "1", "1.0", "0", "11", "1", "1", "1"};
+        List<String[]> busInput = new ArrayList<String[]>();
+        busInput.add(busInfo);
+        String time = "2020-01-01T08:00:00+00:00";
+
+        List<String[]> expectedOutput = new ArrayList<String[]>();
+        String[] outputBusInfo = {"1", "3", "-2.000000000", "4.000000000", "0", "0", "1", "1.0", "0", "11", "1", "1", "1"};
+        expectedOutput.add(outputBusInfo);
+
+        List<String[]> actualOutput = agent.processBusInputWithSolar(busInput, time);
         assertArrayEquals(expectedOutput.get(0), actualOutput.get(0));
     }
 
@@ -452,6 +553,7 @@ public class OPFAgentTest {
         JSONObject requestParams = new JSONObject();
         requestParams.put("electricalnetwork", "http://localhost:8080/");
         requestParams.put("time", "2020-01-01T08:00:00+00:00");
+        requestParams.put("hasSolar", "true");
         OPFAgent agent = new OPFAgent();
         agent.validateInput(requestParams);
     }
@@ -459,6 +561,17 @@ public class OPFAgentTest {
     @Test(expected = JPSRuntimeException.class)
     public void testValidateInputWithoutMVA() {
         JSONObject requestParams = new JSONObject();
+        requestParams.put("baseMVA", "100");
+        requestParams.put("time", "2020-01-01T08:00:00+00:00");
+        requestParams.put("hasSolar", "true");
+        OPFAgent agent = new OPFAgent();
+        agent.validateInput(requestParams);
+    }
+
+    @Test(expected = JPSRuntimeException.class)
+    public void testValidateInputWithoutSolarParam() {
+        JSONObject requestParams = new JSONObject();
+        requestParams.put("electricalnetwork", "http://localhost:8080/");
         requestParams.put("baseMVA", "100");
         requestParams.put("time", "2020-01-01T08:00:00+00:00");
         OPFAgent agent = new OPFAgent();
@@ -470,6 +583,7 @@ public class OPFAgentTest {
         JSONObject requestParams = new JSONObject();
         requestParams.put("electricalnetwork", "http://localhost:8080/");
         requestParams.put("baseMVA", "100");
+        requestParams.put("hasSolar", "true");
         OPFAgent agent = new OPFAgent();
         agent.validateInput(requestParams);
     }
@@ -480,6 +594,7 @@ public class OPFAgentTest {
         requestParams.put("electricalnetwork", "http://localhost:8080/");
         requestParams.put("baseMVA", "100");
         requestParams.put("time", "2020/01/01T08:00:00");
+        requestParams.put("hasSolar", "true");
         OPFAgent agent = new OPFAgent();
         agent.validateInput(requestParams);
     }
@@ -491,9 +606,11 @@ public class OPFAgentTest {
         requestParams1.put("electricalnetwork", "http://localhost:8080/");
         requestParams1.put("baseMVA", "100");
         requestParams1.put("time", "2020-01-01T08:00:00+00:00");
+        requestParams1.put("hasSolar", "true");
         requestParams2.put("electricalnetwork", "IRI");
         requestParams2.put("baseMVA", "100");
         requestParams2.put("time", "2020-01-01T08:00:00+00:00");
+        requestParams2.put("hasSolar", "false");
 
         OPFAgent agent = new OPFAgent();
         // Valid IRI input
@@ -643,6 +760,36 @@ public class OPFAgentTest {
         mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#Pd_EBus-001>", 
                             "<http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue>", 
                             "<http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_Pd>");
+
+        // Solar PV
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#Ebus-001>", 
+                            "<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains>", 
+                            "<http://localhost:8080/powernetwork/EBus-001.owl#solarPV_EBus-001>");
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#solarPV_EBus-001>", 
+                            "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", 
+                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhotovoltaicGenerator>");
+
+        // solarPd IRI
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#solarPV_EBus-001>", 
+                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerGenerated>", 
+                            "<http://localhost:8080/powernetwork/EBus-001.owl#solarPd_EBus-001>");
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#solarPd_EBus-001>", 
+                            "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", 
+                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedActivePower>");
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#solarPd_EBus-001>", 
+                            "<http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue>", 
+                            "<http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_solarPd>");
+        
+        // solarQd IRI
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#solarPV_EBus-001>", 
+                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasReactivePowerGenerated>", 
+                            "<http://localhost:8080/powernetwork/EBus-001.owl#solarQd_EBus-001>");
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#solarQd_EBus-001>", 
+                            "<http://www.w3.org/1999/02/22-rdf-syntax-ns#type>", 
+                            "<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedReactivePower>");
+        mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#solarQd_EBus-001>", 
+                            "<http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue>", 
+                            "<http://www.ontology-of-units-of-measure.org/resource/om-2/sample_IRI_solarQd>");
 
         // Gd IRI
         mockStore.addTriple("<http://localhost:8080/powernetwork/EBus-001.owl#Ebus-001>", 
