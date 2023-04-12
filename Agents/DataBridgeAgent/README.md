@@ -67,16 +67,21 @@ There are currently three routes available:
     - If transferring within the same stack's endpoint, please leave the target SPARQL endpoint empty, and send the `GET` request with the following parameter.
       - The `namespace` parameter refers to the target stack SPARQL namespace, which is by default `kb`.
 ```
-# For any destination
+# For any target endpoints
 curl -X GET localhost:3055/data-bridge-agent/sparql
 # For namespaces within the stack
-curl -X GET localhost:3055/data-bridge-agent/sparql?namespace=kb
+curl -X GET localhost:3838/data-bridge-agent/sparql?namespace=kb
 ```
 
 3. `<base>/sql` route:
    - Execute the agent's task through an HTTP `GET` request. This route will transfer data between the specified source and target databases.
-   - Before sending the request, please update the source and target database urls, user, and password, in the `<root>/config/endpoint.properties`.
-   - A sample `GET` request is as follows:
+   - Before sending the request, please update the source database url, user, and password, in the `<root>/config/endpoint.properties`.
+   - If transferring to any other database, please update the target jdbc url, user, and password, and send the simple `GET` request.
+   - If transferring within the same stack's database, please leave the target database fields empty, and send the `GET` request with the following parameter.
+       - The `database` parameter refers to the target database name within the same stack.
 ```
+# For any target databases
 curl -X GET localhost:3055/data-bridge-agent/sql
+# For databases within the stack
+curl -X GET localhost:3838/data-bridge-agent/sql?database=db
 ```

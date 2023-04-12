@@ -78,7 +78,7 @@ public class DataBridgeAgent extends JPSAgent {
                 break;
             case "sql":
                 if (requestType.equals("GET")) {
-                    String[] config = ConfigStore.retrieveSQLConfig();
+                    String[] config = requestParams.has("database") ? ConfigStore.retrieveSQLConfig(requestParams.get("database").toString()) : ConfigStore.retrieveSQLConfig();
                     jsonMessage = sqlRoute(config);
                 } else {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");

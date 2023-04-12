@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps;
 
 import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
+import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -31,12 +32,23 @@ public class ConfigStore {
     private static final String TARGET_DB_USER = "target.db.user";
     private static final String TARGET_DB_PASSWORD = "target.db.password";
 
+
     /**
-     * Retrieves SQL db properties stored in the properties file.
+     * An overloaded method to retrieve the SQL database properties stored in the properties file.
      *
      * @return An array of these endpoints.
      */
     protected static String[] retrieveSQLConfig() {
+        return retrieveSQLConfig(null);
+    }
+
+    /**
+     * Retrieves SQL database properties stored in the properties file or construct it from the stack database url.
+     *
+     * @param stackDatabase The stack database name passed as a parameter to the GET request.
+     * @return An array of these endpoints.
+     */
+    protected static String[] retrieveSQLConfig(String stackDatabase) {
         StringBuilder missingPropertiesErrorMessage = new StringBuilder();
         try (InputStream input = new FileInputStream(PROPERTIES_FILEPATH)) {
             Properties prop = new Properties();
@@ -46,9 +58,7 @@ public class ConfigStore {
             config[0] = validateProperties(prop, SRC_DB_URL, missingPropertiesErrorMessage);
             config[1] = validateProperties(prop, SRC_DB_USER, missingPropertiesErrorMessage);
             config[2] = validateProperties(prop, SRC_DB_PASSWORD, missingPropertiesErrorMessage);
-            config[3] = validateProperties(prop, TARGET_DB_URL, missingPropertiesErrorMessage);
-            config[4] = validateProperties(prop, TARGET_DB_USER, missingPropertiesErrorMessage);
-            config[5] = validateProperties(prop, TARGET_DB_PASSWORD, missingPropertiesErrorMessage);
+            retrieveTargetDatabase(prop, stackDatabase, config);
             String missingMessage = missingPropertiesErrorMessage.toString();
             if (!missingMessage.isEmpty()) {
                 LOGGER.error("Missing Properties:\n" + missingMessage);
@@ -62,6 +72,40 @@ public class ConfigStore {
         } catch (IOException e) {
             LOGGER.error(INACCESSIBLE_CLIENT_PROPERTIES_MSG + e);
             throw new JPSRuntimeException(INACCESSIBLE_CLIENT_PROPERTIES_MSG + e);
+        }
+    }
+
+    /**
+     * Retrieves the target database from either the endpoint.properties if available, or defaults to the stack database otherwise.
+     *
+     * @param prop          A Properties object containing the required properties.
+     * @param stackDatabase The stack database name passed as a parameter to the GET request.
+     * @param config        The configuration array to store the results.
+     */
+    private static void retrieveTargetDatabase(Properties prop, String stackDatabase, String[] config) {
+        ContainerClient client = new ContainerClient();
+        if (stackDatabase != null) {
+            PostGISEndpointConfig postConfig = client.readEndpointConfig("postgis", PostGISEndpointConfig.class);
+            config[3] = postConfig.getJdbcURL(stackDatabase);
+            config[4] = postConfig.getUsername();
+            config[5] = postConfig.getPassword();
+            LOGGER.info("Detected database parameter. Target stack database is configured for: " + config[3]);
+        } else {
+            LOGGER.info("No database parameter is available. Configuring target database based on endpoint.properties...");
+            config[3] = prop.getProperty(TARGET_DB_URL);
+            config[4] = prop.getProperty(TARGET_DB_USER);
+            config[5] = prop.getProperty(TARGET_DB_PASSWORD);
+            if (config[3].isEmpty()) {
+                LOGGER.fatal("Target database url is empty in endpoint.properties. Please add an url or pass a database parameter to the GET request!");
+                throw new JPSRuntimeException("Target database url is empty in endpoint.properties. Please add an url or pass a database parameter to the GET request!");
+            } else if (config[4].isEmpty()) {
+                LOGGER.fatal("Target database user is empty in endpoint.properties. Please add an user!");
+                throw new JPSRuntimeException("Target database user is empty in endpoint.properties. Please add an user!");
+            } else if (config[5].isEmpty()) {
+                LOGGER.fatal("Target database password is empty in endpoint.properties. Please add the password!");
+                throw new JPSRuntimeException("Target database password is empty in endpoint.properties. Please add the password!");
+            }
+            LOGGER.info("Target database has been configured to:" + config[3]);
         }
     }
 
