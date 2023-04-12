@@ -42,9 +42,12 @@ public class FHAgentTest {
     // A default list of IRIs
     private final List<String> iris = Arrays.asList("iri1");
     // Default list of JSON keys
-    private final String[] keys = {"occupiedState"};
+    private final String[] keys = {"occupiedState1", "occupiedState2"};
     
     //Default list of timestamps
+
+    //Mock set of keys from Thingsboard
+    List<String> mockKeys = Arrays.asList("avgDist1", "avgDist2");
 
     // Readings used by several tests
     JSONObject allReadings;
@@ -75,8 +78,9 @@ public class FHAgentTest {
         }
         writePropertyFile(mappingFile, mappings);
         // Filepath for the properties file
+        
         String propertiesFile = Paths.get(folder.getRoot().toString(), "agent.properties").toString();
-        writePropertyFile(propertiesFile, Collections.singletonList("thingsboard.mappingfolder=TEST_MAPPINGS"));
+        writePropertyFile(propertiesFile, Arrays.asList(new String[]{"thingsboard.mappingfolder=TEST_MAPPINGS", "derivation.mapping=avgDist1:occupiedState1,avgDist2:occupiedState2"}));
         // To create testAgent without an exception being thrown, SystemLambda is used to mock an environment variable
         // To mock the environment variable, a try catch need to be used
         try {
@@ -86,6 +90,7 @@ public class FHAgentTest {
         }
         // There should not be any exception thrown as the agent is initiated correctly
         catch (Exception e) {
+            System.out.println(e);
         }
         // Set the mocked time series client
         testAgent.setTsClient(mockTSClient);
@@ -97,41 +102,89 @@ public class FHAgentTest {
         allReadings = new JSONObject();
         expectedTally = new JSONObject();
         
-        JSONArray avgDistMeasurements = new JSONArray();
-        JSONArray tallied = new JSONArray();
+        JSONArray avgDistMeasurements1 = new JSONArray();
+        JSONArray tallied1 = new JSONArray();
 
-        Double[] measurements = {350.,   350.,  220.,  210., 170.,  175., 165., 150., 155., 150., 150., 165., 180., 350., 350.};
+        JSONArray avgDistMeasurements2 = new JSONArray();
+        JSONArray tallied2 = new JSONArray();
+
+        Double[] measurements1 = {350.,   350.,  220.,  210., 170.,  175., 165., 150., 155., 150., 150., 165., 180., 350., 350.};
         //tally =               {0,      0,     0,     0,    0.35,  0.20, 0.35, 0.70, 1.15(on), 1.50, 1.85, 2.00, 1.65, 1.30, 1.05}
-        Boolean[] tallies =     {false, false, false, false, false, false, false, false, true, true, true, true, true, true, true};
+        Boolean[] tallies1 =     {false, false, false, false, false, false, false, false, true, true, true, true, true, true, true};
+
+        Double[] measurements2 = {150.,   150.,  150.,  150., 170., 175., 195., 210., 350., 350., 350., 350., 350., 350., 350.};
+        //tally =                {0.35,    0.7,  1.05,  1.40, 1.75, 1.60, 1.45, 1.30, 1.15, 1.00, 0.85, 0.70, 0.55, 0.40, 0.25}
+        Boolean[] tallies2 =     {false, false,  true,  true, true, true, true, true, true, true, false, false, false, false, false};
 
         int onIndex = 8;
         long ts = 1234560000000L;
+        long offset = 1500L;
 
         JSONObject rowTally1 = new JSONObject();
         rowTally1.put(FHAgent.timestampKey, ts );
-        rowTally1.put("value", tallies[0]);
+        rowTally1.put("value", tallies1[0]);
 
-        tallied.put(rowTally1);
+        tallied1.put(rowTally1);
 
         JSONObject rowTally2 = new JSONObject();
         rowTally2.put(FHAgent.timestampKey, ts+ onIndex *1000);
-        rowTally2.put("value", tallies[onIndex]);
+        rowTally2.put("value", tallies1[onIndex]);
 
-        tallied.put(rowTally2);
+        tallied1.put(rowTally2);
 
-        for (Double dist: measurements) {
+
+        long ts2 = 1234560000000L + offset;
+
+        JSONObject rowTally3 = new JSONObject();
+        rowTally3.put(FHAgent.timestampKey, ts2);
+        rowTally3.put("value", tallies2[0]);
+
+        tallied2.put(rowTally3);
+
+        JSONObject rowTally4 = new JSONObject();
+        rowTally4.put(FHAgent.timestampKey, ts2+ 2 *1000 );
+        rowTally4.put("value", tallies2[2]);
+
+        tallied2.put(rowTally4);
+
+        JSONObject rowTally5 = new JSONObject();
+        rowTally5.put(FHAgent.timestampKey, ts2+ 10 *1000 );
+        rowTally5.put("value", tallies2[10]);
+
+        tallied2.put(rowTally5);
+
+        for (Double dist: measurements1) {
             JSONObject row = new JSONObject();
 
             row.put(FHAgent.timestampKey, ts);
             row.put("value", dist);
 
-            avgDistMeasurements.put(row);
+            avgDistMeasurements1.put(row);
             ts += 1000;
         }
 
-        allReadings.put("avgDist",avgDistMeasurements);
-        expectedTally.put("occupiedState", tallied);
         
+        for (Double dist: measurements2) {
+            JSONObject row = new JSONObject();
+
+            row.put(FHAgent.timestampKey, ts2);
+            row.put("value", dist);
+
+            avgDistMeasurements2.put(row);
+            ts2 += 1000;
+        }
+
+
+        allReadings.put("avgDist1",avgDistMeasurements1);
+        JSONObject expected1 = new JSONObject();
+        expected1.put("occupiedState1", tallied1);
+        expectedTally.put("avgDist1", expected1);
+        
+        allReadings.put("avgDist2",avgDistMeasurements2);
+        JSONObject expected2 = new JSONObject();
+        expected2.put("occupiedState2", tallied2);
+        expectedTally.put("avgDist2", expected2);
+
     }
 
     @Test
@@ -231,13 +284,14 @@ public class FHAgentTest {
 
     @Test
     public void testTallyDist () throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        Method TallyDist = FHAgent.class.getDeclaredMethod("TallyDist", JSONObject.class);
+        Method TallyDist = FHAgent.class.getDeclaredMethod("TallyDist", JSONObject.class, String.class);
         TallyDist.setAccessible(true);
 
-        JSONObject actual = (JSONObject) TallyDist.invoke(testAgent, allReadings);
-        JSONAssert.assertEquals(expectedTally, actual, true);
-        //Assert.assertEquals(expected.get("ts"), actual.get("ts"));
-        //Assert.assertEquals(expected.get("value"), actual.get("value"));
+        for (String key : mockKeys){
+            JSONObject actual = (JSONObject) TallyDist.invoke(testAgent, allReadings, key);
+            JSONAssert.assertEquals(expectedTally.getJSONObject(key), actual, true);
+        }
+
     }
 
     @Test
@@ -263,7 +317,7 @@ public class FHAgentTest {
         //Mockito.doReturn(lastData).when(testAgent).getTS(Mockito.anyString());
         //Mockito.doReturn(lastData).when(mockTSClient).getTS(Mockito.anyString());
         // Run the update
-        testAgent.updateData(allReadings);
+        testAgent.updateData(allReadings, mockKeys);
         // Capture the arguments that the add data method was called with
         @SuppressWarnings("unchecked")
         ArgumentCaptor<TimeSeries<OffsetDateTime>> timeSeriesArgument = ArgumentCaptor.forClass(TimeSeries.class);
@@ -297,7 +351,7 @@ public class FHAgentTest {
         OffsetDateTime endTime = OffsetDateTime.parse(maxTime+"+00:00");
         Mockito.when(mockTSClient.getMaxTime(Mockito.anyString())).thenReturn(endTime.plusDays(1));
         // Run the update
-        testAgent.updateData(allReadings);
+        testAgent.updateData(allReadings, mockKeys);
         // Ensure that the update is never called
         Mockito.verify(mockTSClient, Mockito.never()).addTimeSeriesData(Mockito.any());
     }
