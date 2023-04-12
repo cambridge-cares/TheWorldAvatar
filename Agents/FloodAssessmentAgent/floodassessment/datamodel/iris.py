@@ -32,7 +32,7 @@ FLOOD_HAS_MONETARY_VALUE = FLOOD + 'hasMonetaryValue'
 FLOOD_HAS_TOTAL_MONETARY_VALUE = FLOOD + 'hasTotalMonetaryValue'
 FLOOD_AFFECTS = FLOOD + 'affects'
 FLOOD_POPULATION = FLOOD + 'Population'
-FLOOD_BUILDINGS = FLOOD + 'Buildings'
+FLOOD_BUILDING = FLOOD + 'Building'
 FLOOD_HAS_TOTAL_COUNT = FLOOD + 'hasTotalCount'
 # Flood concepts from ENVO (https://ontobee.org/ontology/ENVO)
 FLOOD_FLOOD = 'http://purl.obolibrary.org/obo/ENVO_01000710'
@@ -44,6 +44,8 @@ FLOOD_SEVERITY_SEVERE = FLOOD + 'SevereFloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc
 FLOOD_SEVERITY_WARNING = FLOOD + 'FloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b'            # Severity level 2
 FLOOD_SEVERITY_ALERT = FLOOD + 'FloodAlert_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b'                # Severity level 3
 FLOOD_SEVERITY_INACTIVE = FLOOD + 'InactiveFloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b'   # Severity level 4
+# RT (Environment Agency)
+RT_CURRENT_WARNING = RT + 'currentWarning'
 
 ###--- External IRIs ---###
 # Ontology of units of measure
@@ -57,10 +59,8 @@ OM_SYMBOL = OM + 'symbol'
 OM_GBP = OM + 'poundSterling'
 
 # OM / UOM unit symbols
-# NOTE: There are reported issues with encoding of special characters, i.e. Blazegraph
-#       claiming to use utf-8 encoding while actually using iso-8859-1
-#       --> PoundSterling displayed wrongly in GUI but corrected when retrieved in code
-# Details: https://github.com/blazegraph/database/issues/224
+# NOTE: There are reported issues with encoding of special characters in Blazegraph
+#       (likely related to py4jps/py4j interface)
 GBP_SYMBOL = '£'
 
 # Data types

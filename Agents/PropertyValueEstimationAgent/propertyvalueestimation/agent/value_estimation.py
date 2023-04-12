@@ -9,6 +9,7 @@
 
 import uuid
 import pandas as pd
+import traceback
 from rdflib import Graph
 
 from pyderivationagent import DerivationAgent
@@ -20,6 +21,7 @@ from propertyvalueestimation.datamodel.data import TIME_FORMAT_LONG, TIME_FORMAT
 from propertyvalueestimation.errorhandling.exceptions import TSException
 from propertyvalueestimation.kg_operations.kgclient import KGClient
 from propertyvalueestimation.kg_operations.tsclient import TSClient
+from propertyvalueestimation.utils.stackclients import PostGISClient, GeoserverClient
 
 
 class PropertyValueEstimationAgent(DerivationAgent):
@@ -30,6 +32,10 @@ class PropertyValueEstimationAgent(DerivationAgent):
 
         # Initialise the Sparql_client (with defaults specified in environment variables)
         self.sparql_client = self.get_sparql_client(KGClient)
+
+        # Initialise relevant Stack Clients with default parameters
+        self.postgis_client = PostGISClient()
+        self.geoserver_client = GeoserverClient()
         
 
     def agent_input_concepts(self) -> list:
@@ -144,60 +150,98 @@ class PropertyValueEstimationAgent(DerivationAgent):
             Graph to instantiate/update property market value
         """
 
-        # Initialise market value and return triples
+        # Initialise market value and return Graph
         market_value = None
         g = Graph()
 
-        # Prio 1: Check if transaction record and property price index are provided
-        # (i.e. market value assessment based on previous transaction)
-        if transaction_iri and prop_price_index_iri:
-            # Initialise TS client
-            ts_client = TSClient(kg_client=self.sparql_client)
-            # 1) Retrieve representative UK House Price Index and parse as Series (i.e. unwrap Java data types)
-            # UKHPI was set at a base of 100 in January 2015, and reflects the change in value of residential property since then
-            # (https://landregistry.data.gov.uk/app/ukhpi/doc)
-            try:
-                # Retrieve time series in try-with-resources block to ensure closure of RDB connection
-                with ts_client.connect() as conn:
-                    ts = ts_client.tsclient.getTimeSeries([prop_price_index_iri], conn)
-                dates = [d.toString() for d in ts.getTimes()]
-                values = [v for v in ts.getValues(prop_price_index_iri)]
-            except Exception as ex:
-                self.logger.error('Error retrieving/unwrapping Property Price Index time series')
-                raise TSException('Error retrieving/unwrapping Property Price Index time series') from ex
+        # Initialise property value estimate instance
+        market_value_iri = KB + 'AmountOfMoney_' + str(uuid.uuid4())
 
-            # Create UKHPI series with conditioned date index
-            ukhpi = pd.Series(index=dates, data=values)
-            ukhpi = ukhpi.astype(float)
-            ukhpi.index = pd.to_datetime(ukhpi.index, format=TIME_FORMAT_LONG)
-            ukhpi.sort_index(ascending=False, inplace=True)
-            ukhpi.index = ukhpi.index.strftime(TIME_FORMAT_SHORT)
+        try:
+            # Prio 1: Check if transaction record and property price index are provided
+            # (i.e. market value assessment based on previous transaction)
+            if transaction_iri and prop_price_index_iri:
+                # Initialise TS client
+                ts_client = TSClient(kg_client=self.sparql_client)
+                # 1) Retrieve representative UK House Price Index and parse as Series (i.e. unwrap Java data types)
+                # UKHPI was set at a base of 100 in January 2015, and reflects the change in value of residential property since then
+                # (https://landregistry.data.gov.uk/app/ukhpi/doc)
+                try:
+                    # Retrieve time series in try-with-resources block to ensure closure of RDB connection
+                    with ts_client.connect() as conn:
+                        ts = ts_client.tsclient.getTimeSeries([prop_price_index_iri], conn)
+                    dates = [d.toString() for d in ts.getTimes()]
+                    values = [v for v in ts.getValues(prop_price_index_iri)]
+                except Exception as ex:
+                    self.logger.error('Error retrieving/unwrapping Property Price Index time series')
+                    raise TSException('Error retrieving/unwrapping Property Price Index time series') from ex
 
-            # 2) Retrieve previous sales transaction details for previous transaction IRI
-            #    and adjust to current market value
-            res = self.sparql_client.get_transaction_details(transaction_iri)
-            ukhpi_now = ukhpi.iloc[0]
-            ukhpi_old = ukhpi[res['date']]
-            market_value = res['price'] * ukhpi_now / ukhpi_old
+                # Create UKHPI series with conditioned date index
+                ukhpi = pd.Series(index=dates, data=values)
+                ukhpi = ukhpi.astype(float)
+                ukhpi.index = pd.to_datetime(ukhpi.index, format=TIME_FORMAT_LONG)
+                ukhpi.sort_index(ascending=False, inplace=True)
+                ukhpi.index = ukhpi.index.strftime(TIME_FORMAT_SHORT)
 
-        # Prio 2: Otherwise assess market value based on FloorArea and AveragePricePerSqm
-        elif avgsqm_price_iri and floor_area_iri and not market_value:
-            # NOTE: To ensure availability of AvgSqmPrice (i.e. derivation being computed by
-            #       AvgSqmPrice Agent), AvgSqmPrice should be marked up as Synchronous Derivation
-            res = self.sparql_client.get_floor_area_and_avg_price(floor_area_iri)
-            market_value = res['floor_area'] * res['avg_price']
+                # 2) Retrieve previous sales transaction details for previous transaction IRI
+                #    and adjust to current market value
+                res = self.sparql_client.get_transaction_details(transaction_iri)
+                ukhpi_now = ukhpi.iloc[0]
+                ukhpi_old = ukhpi[res['date']]
+                market_value = res['price'] * ukhpi_now / ukhpi_old
+
+            # Prio 2: Otherwise assess market value based on FloorArea and AveragePricePerSqm
+            elif avgsqm_price_iri and floor_area_iri and not market_value:
+                # NOTE: To ensure availability of AvgSqmPrice (i.e. derivation being computed by
+                #       AvgSqmPrice Agent), AvgSqmPrice initially marked up as Synchronous Derivation
+                res = self.sparql_client.get_floor_area_and_avg_price(floor_area_iri)
+                # NOTE: This will cause an error if no AvgSqmPrice (i.e. actual numerical value)
+                #       (or floor area) is available
+                market_value = res['floor_area'] * res['avg_price']
+        
+        except Exception as ex:
+            # Catch and log exception, but do not re-raise and instantiate non-computable
+            # property estimate value instead
+            self.logger.error('Error estimating property market value: {}'.format(ex))
+            self.logger.error(traceback.format_exc())
 
         if market_value:
             # Round property market value to full kGBP
             market_value = round(market_value/1000)*1000
-            # Create instantiation/update triples
-            market_value_iri = KB + 'AmountOfMoney_' + str(uuid.uuid4())
             # Create rdflib graph with update triples 
             g = self.sparql_client.instantiate_property_value(graph=g,
                                                 property_iri=res['property_iri'],
                                                 property_value_iri=market_value_iri, 
                                                 property_value=market_value)
-        # Return graph with SPARQL update (empty for unavailable market value)
+        else:
+            if not res.get('property_iri'):
+                res = self.sparql_client.get_property_iri(tx_iri=transaction_iri, 
+                                                          floor_area_iri=floor_area_iri)
+            # In case PropertyValueEstimate cannot be assessed, instantiate AmountOfMoney
+            # (and attached Measure) instance with RDFS comment that value is not computable
+            # NOTE: This design is intended to ensure that no errors are experienced
+            # in case of non-computable values (i.e. when requested from downstream derivation)
+            g = self.sparql_client.instantiate_unavailable_property_value(graph=g,
+                                                property_iri=res['property_iri'],
+                                                property_value_iri=market_value_iri)
+
+        # Ensure latest property market values are reflected in PostGIS
+        # Check if table exists, if not create it
+        if not self.postgis_client.check_table_exists():
+            self.logger.info('Creating PostGIS table ...')
+            self.postgis_client.create_table()
+            # Create GeoServer workspace and virtual table layer
+            self.logger.info('Creating GeoServer layer ...')
+            self.geoserver_client.create_workspace()
+            self.geoserver_client.create_postgis_layer()
+
+        # Upload latest market value estimate to PostGIS (will be NULL if not computable)
+        # (overwrites previous value if available, otherwise creates new row)
+        self.logger.info('Uploading property values to PostGIS ...')
+        self.postgis_client.upload_property_value(building_iri=res['property_iri'],
+                                                  value_estimate=market_value)
+
+        # Return graph with SPARQL update
         return g
 
 
@@ -205,7 +249,6 @@ def default():
     """
         Instructional message at the app root.
     """
-    # TODO: Update path to main upon merging
     msg  = "This is an asynchronous agent to estimate the market value of a particular property (i.e. building, flat).<BR>"
     msg += "<BR>"
     msg += "For more information, please visit https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/PropertyValueEstimationAgent<BR>"
