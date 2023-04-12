@@ -33,6 +33,13 @@ public class BMSUpdateAgent {
     final String FAIL_TO_TOGGLE = "Fail to trigger ESPHomeAgent to toggle device status";
     final String FAIL_TO_PULL_DATA = "Fail to trigger ESPHomeUpdateAgent to pull data";
 
+    /**
+     * Change the temperature of a fan's set point in the knowledge graph.
+     *
+     * @param dataIRI The iri of the set point
+     * @param newTemperature The temperature
+     * @param rsClient The knowledge graph client
+     */
     public void setTemperatureInKg(String dataIRI, double newTemperature, RemoteStoreClient rsClient) {
         ModifyQuery modifyDataQuery = Queries.MODIFY();
         Variable temperatureVar = SparqlBuilder.var("temperature");
@@ -55,6 +62,13 @@ public class BMSUpdateAgent {
         }
     }
 
+    /**
+     * Get the temperature of the current set point in the knowledge graph.
+     *
+     * @param dataIRI The iri of the set point
+     * @param rsClient The knowledge graph client
+     * @return
+     */
     public double getTemperatureInKg(String dataIRI, RemoteStoreClient rsClient) {
         SelectQuery selectQuery = Queries.SELECT();
         Variable temperatureVar = SparqlBuilder.var("temperature");
@@ -71,6 +85,12 @@ public class BMSUpdateAgent {
         }
     }
 
+    /**
+     * Call ESPHomeAgent to compare the current temperature and the set point in the knowledge graph and turn on/off the fan.
+     *
+     * @param esphomeAgentToggle The url to ESPHomeAgent's toggle function.
+     * @return The status of the fan after toggling.
+     */
     public String toggleFan(String esphomeAgentToggle) {
         JSONObject queryJo = new JSONObject();
         queryJo.put("timeseriesDataClientProperties", "CLIENT_PROPERTIES");
@@ -87,6 +107,11 @@ public class BMSUpdateAgent {
         }
     }
 
+    /**
+     * Trigger the ESPHomeUpdateAgent to get fan status timeseries data from the ESPHome API to local postgres database.
+     *
+     * @param esphomeUpdateAgentRetrieve The url to ESPHomeUpdateAgent's retrieve function.
+     */
     public void updateStatusInDb(String esphomeUpdateAgentRetrieve) {
         JSONObject queryJo = new JSONObject();
         queryJo.put("agentProperties", "ESPHOME_UPDATE_AGENTPROPERTIES");
@@ -103,6 +128,12 @@ public class BMSUpdateAgent {
 
     }
 
+    /**
+     * Helper function that parse the ESPHomeAgent's return message to fan status message.
+     *
+     * @param response Response from ESPHomeAgent toggle
+     * @return Fan status message.
+     */
     private String parseFanStatusMessage(String response) {
         String statusString = new JSONObject(response).getJSONArray("message").getString(0).toLowerCase();
         if (statusString.contains("on state") || statusString.contains("turn on")) {

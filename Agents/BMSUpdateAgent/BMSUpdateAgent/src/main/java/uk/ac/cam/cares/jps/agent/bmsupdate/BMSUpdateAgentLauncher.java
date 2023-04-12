@@ -19,6 +19,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
+/**
+ * This class acts as the entry point of the agent that accepts parameter requests to specific routes and achieve its task.
+ *
+ * @author sandradeng20
+ */
 @WebServlet(urlPatterns = {"/set"})
 public class BMSUpdateAgentLauncher extends JPSAgent {
 
@@ -35,11 +40,23 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
     private String sparqlQueryEndpoint;
     private String sparqlUpdateEndpoint;
 
+    /**
+     * Update the temperature of the given set point iri.
+     *
+     * @param requestParams request parameters
+     * @return A JSONObject contains the fan status and the updated temperature.
+     */
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         return super.processRequestParameters(requestParams);
     }
 
+    /**
+     * Update the temperature of the given set point iri.
+     *
+     * @param requestParams request parameters
+     * @return A JSONObject contains the fan status and the updated temperature.
+     */
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
@@ -97,8 +114,14 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
         }
     }
 
+    /**
+     * Check whether the request contains all the required parameters.
+     *
+     * @param requestParams Request parameters parsed from the body of POST request
+     * @return validity of the request parameters
+     */
     @Override
-    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+    public boolean validateInput(JSONObject requestParams) {
         if (requestParams.isEmpty()) {
             LOGGER.error("The request param is empty");
             return false;
@@ -137,6 +160,12 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
         return true;
     }
 
+    /**
+     * Init variables with the client property file.
+     *
+     * @param filepath Path of the client property file.
+     * @throws IOException Throw exception when fail to read the property file.
+     */
     private void initProperties(String filepath) throws IOException {
         File file = new File(filepath);
         if (!file.exists()) {
