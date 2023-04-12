@@ -6,6 +6,18 @@ This project provides functionality to preprocess data required for instantiatin
 
 The `./Data/raw/` directory must contain all the required input files including `dictionary.csv`, `main_datamodel.ttl`, `sub_datamodel.ttl`, `priority_tags_in_ontology.csv`, `sub_network_connections_consolidated_wo_geodata.csv`, and `HALTUNGEN-ALLE-5-2022.xml`. Note that `main_datamodel.ttl`, `sub_datamodel.ttl`, and `sub_network_connections_consolidated_wo_geodata.csv` are created as output files by the scripts `instantiate_main_network.py`, `instantiate_sub_network.py`, and `assess_geospatial_sub_network.py` in a private git repository.
 
+`dictionary.csv` provides the translation from German words to English for each XML_Tag. 
+
+`main_datamodel.ttl` provides the information for the pipes in the main sewage network
+
+`sub_datamodel.ttl` provides the information for the pipes in the sub sewage network
+
+`priority_tags_in_ontology.csv` tells which XML_Tag will be taken for data instantiation.
+
+`sub_network_connections_consolidated_wo_geodata.csv` is the extracted information for the pipes in the sub sewage network in csv format from `sub_datamodel.ttl`.
+
+`HALTUNGEN-ALLE-5-2022.xml` contains the original raw data.
+
 The `./Data/results/` directory contains all the output files generated during the running of scripts. It is worth noting that the number of columns inside the CSV files should not exceed 7500, otherwise this can cause index-out-of-bound errors elsewhere. Therefore, such files are split into several smaller ones.
 
 Available scripts:
