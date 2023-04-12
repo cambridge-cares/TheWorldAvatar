@@ -234,6 +234,33 @@ public class HistoricalNTUEnergyAgent {
         entries.add("NYA_VA_DEGREE");
         entries.add("NYA_VM_KV");
 
+        entries.add("NEC_GQ_KVAR");
+        entries.add("NEC_GP_KW");
+        entries.add("CANTEEN_2_GQ_KVAR");
+        entries.add("CANTEEN_2_GP_KW");
+        entries.add("SPMS_GQ_KVAR");
+        entries.add("SPMS_GP_KW");
+        entries.add("RTP_GQ_KVAR");
+        entries.add("RTP_GP_KW");
+        entries.add("N1_3_GQ_KVAR");
+        entries.add("N1_3_GP_KW");
+        entries.add("N_2_GQ_KVAR");
+        entries.add("N_2_GP_KW");
+        entries.add("N_2_1_GQ_KVAR");
+        entries.add("N_2_1_GP_KW");
+        entries.add("SBS_GQ_KVAR");
+        entries.add("SBS_GP_KW");
+        entries.add("PIONEER_HALL_GQ_KVAR");
+        entries.add("PIONEER_HALL_GP_KW");
+        entries.add("THE_WAVE_GQ_KVAR");
+        entries.add("THE_WAVE_GP_KW");
+        entries.add("HALL_4_GQ_KVAR");
+        entries.add("HALL_4_GP_KW");
+        entries.add("EMB_GQ_KVAR");
+        entries.add("EMB_GP_KW");
+        entries.add("NYA_GQ_KVAR");
+        entries.add("NYA_GP_KW");
+
         // Add all entries to the hashmap (for later timeseries instantiation)
         for (String value : entries) {
             calculatedOptimEnergyMap.put(value, new ArrayList<>());

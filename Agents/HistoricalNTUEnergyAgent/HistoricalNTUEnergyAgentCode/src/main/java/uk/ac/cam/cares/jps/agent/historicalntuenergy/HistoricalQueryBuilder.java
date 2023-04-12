@@ -48,6 +48,7 @@ public class HistoricalQueryBuilder {
     public static final String voltageAngle = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#VoltageAngle";
     public static final String voltageMagnitude = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#VoltageMagnitude";
     public static final String SIDerivedUnit = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit";
+    public static final String photovoltaicGenerator = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhotovoltaicGenerator";
 
     /**
      * Model variables
@@ -64,6 +65,8 @@ public class HistoricalQueryBuilder {
     private static final String OntoCapeHasValue = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue";
     private static final String hasActivePowerAbsorbed = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerAbsorbed";
     private static final String hasReactivePowerAbsorbed = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasReactivePowerAbsorbed";
+    private static final String hasActivePowerGenerated = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerGenerated";
+    private static final String hasReactivePowerGenerated = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasReactivePowerGenerated";
     private static final String hasVoltageAngle = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasVoltageAngle";
     private static final String hasVoltageMagnitude = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasVoltageMagnitude";
 
@@ -75,6 +78,7 @@ public class HistoricalQueryBuilder {
     private static final String numericalValue = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue";
     private static final String hasUnitOfMeasure = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure";
     private static final String rdfsLabel = "http://www.w3.org/2000/01/rdf-schema#label";
+    private static final String contains = "http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#contains";
 
     /**
      * Individuals
@@ -323,6 +327,12 @@ public class HistoricalQueryBuilder {
             if (endIndex == -1) {
                 endIndex = IRI.indexOf("_VM_KV", firstUnderscoreIndex + 1);
             }
+            if (endIndex == -1) {
+                endIndex = IRI.indexOf("_GQ_KVAR", firstUnderscoreIndex + 1);
+            }
+            if (endIndex == -1) {
+                endIndex = IRI.indexOf("_GP_KW", firstUnderscoreIndex + 1);
+            }
             if (endIndex != -1) {
                 return IRI.substring(firstUnderscoreIndex + 1, endIndex);
             }
@@ -538,22 +548,48 @@ public class HistoricalQueryBuilder {
                 InsertDataQuery insertion = Queries.INSERT_DATA(isTypeMeasure);
                 kbClient.executeUpdate(insertion.getQueryString());
                 if(iri.contains("KW")){
-                    String absorbedActivePowerIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_AbsorbedActivePower";
-                    TriplePattern BNHasActivePowerAbsorbed = iri(busNodeIRI).has(iri(hasActivePowerAbsorbed), iri(absorbedActivePowerIRI));
-                    TriplePattern omHasUnit = iri(iri).has(iri(hasUnit), iri(kilowatt));
-                    TriplePattern APHasValue = iri(absorbedActivePowerIRI).has(iri(OMHasValue), iri(iri));
-                    TriplePattern typeAP = iri(absorbedActivePowerIRI).isA(iri(absorbedActivePower));
-                    InsertDataQuery insert = Queries.INSERT_DATA(omHasUnit, APHasValue, typeAP, BNHasActivePowerAbsorbed);
-                    kbClient.executeUpdate(insert.getQueryString());
+                    if(iri.contains("_GP_")) {
+                        String photovoltaicGeneratorIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_PhotovoltaicGenerator";
+                        TriplePattern BNContainsPhotovoltaicGenerator = iri(busNodeIRI).has(iri(contains), iri(photovoltaicGeneratorIRI));
+                        TriplePattern PGisType = iri(photovoltaicGeneratorIRI).isA(iri(photovoltaicGenerator));
+                        String generatedActivePowerIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_GeneratedActivePower";
+                        TriplePattern PGHasActivePowerGenerated = iri(photovoltaicGeneratorIRI).has(iri(hasActivePowerGenerated), iri(generatedActivePowerIRI));
+                        TriplePattern omHasUnit = iri(iri).has(iri(hasUnit), iri(kilowatt));
+                        TriplePattern APHasValue = iri(generatedActivePowerIRI).has(iri(OMHasValue), iri(iri));
+                        TriplePattern typeAP = iri(generatedActivePowerIRI).isA(iri(absorbedActivePower));
+                        InsertDataQuery insert = Queries.INSERT_DATA(omHasUnit, APHasValue, typeAP, BNContainsPhotovoltaicGenerator, PGisType, PGHasActivePowerGenerated);
+                        kbClient.executeUpdate(insert.getQueryString());
+                    }
+                    else{
+                        String absorbedActivePowerIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_AbsorbedActivePower";
+                        TriplePattern BNHasActivePowerAbsorbed = iri(busNodeIRI).has(iri(hasActivePowerAbsorbed), iri(absorbedActivePowerIRI));
+                        TriplePattern omHasUnit = iri(iri).has(iri(hasUnit), iri(kilowatt));
+                        TriplePattern APHasValue = iri(absorbedActivePowerIRI).has(iri(OMHasValue), iri(iri));
+                        TriplePattern typeAP = iri(absorbedActivePowerIRI).isA(iri(absorbedActivePower));
+                        InsertDataQuery insert = Queries.INSERT_DATA(omHasUnit, APHasValue, typeAP, BNHasActivePowerAbsorbed);
+                        kbClient.executeUpdate(insert.getQueryString());
+                    }
                 }
                 else if(iri.contains("KVAR")){
-                    String absorbedReactivePowerIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_AbsorbedReactivePower";
-                    TriplePattern BNHasReactivePowerAbsorbed = iri(busNodeIRI).has(iri(hasReactivePowerAbsorbed), iri(absorbedReactivePowerIRI));
-                    TriplePattern omHasUnit = iri(iri).has(iri(hasUnit), iri(kilovoltamperereactive));
-                    TriplePattern RAPHasValue = iri(absorbedReactivePowerIRI).has(iri(OMHasValue), iri(iri));
-                    TriplePattern typeRAP = iri(absorbedReactivePowerIRI).isA(iri(absorbedReactivePower));
-                    InsertDataQuery insert = Queries.INSERT_DATA(omHasUnit, RAPHasValue, typeRAP, BNHasReactivePowerAbsorbed);
-                    kbClient.executeUpdate(insert.getQueryString());
+                    if(iri.contains("_GQ_")){
+                        String photovoltaicGeneratorIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_PhotovoltaicGenerator";
+                        String generatedReactivePowerIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_GeneratedReactivePower";
+                        TriplePattern PGHasReactivePowerGenerated = iri(photovoltaicGeneratorIRI).has(iri(hasReactivePowerGenerated), iri(generatedReactivePowerIRI));
+                        TriplePattern omHasUnit = iri(iri).has(iri(hasUnit), iri(kilowatt));
+                        TriplePattern RPHasValue = iri(generatedReactivePowerIRI).has(iri(OMHasValue), iri(iri));
+                        TriplePattern typeAP = iri(generatedReactivePowerIRI).isA(iri(absorbedActivePower));
+                        InsertDataQuery insert = Queries.INSERT_DATA(omHasUnit, RPHasValue, typeAP, PGHasReactivePowerGenerated);
+                        kbClient.executeUpdate(insert.getQueryString());
+                    }
+                    else{
+                        String absorbedReactivePowerIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_AbsorbedReactivePower";
+                        TriplePattern BNHasReactivePowerAbsorbed = iri(busNodeIRI).has(iri(hasReactivePowerAbsorbed), iri(absorbedReactivePowerIRI));
+                        TriplePattern omHasUnit = iri(iri).has(iri(hasUnit), iri(kilovoltamperereactive));
+                        TriplePattern RAPHasValue = iri(absorbedReactivePowerIRI).has(iri(OMHasValue), iri(iri));
+                        TriplePattern typeRAP = iri(absorbedReactivePowerIRI).isA(iri(absorbedReactivePower));
+                        InsertDataQuery insert = Queries.INSERT_DATA(omHasUnit, RAPHasValue, typeRAP, BNHasReactivePowerAbsorbed);
+                        kbClient.executeUpdate(insert.getQueryString());
+                    }
                 }
                 else if(iri.contains("DEGREE")){
                     String voltageAngleIRI = PowsysPrefix + "BusNode_" + String.valueOf(busNum) + "_VoltageAngle";
