@@ -374,6 +374,7 @@ public class Aermod {
             throw new RuntimeException(e);
         } catch (JSONException e) {
             LOGGER.error("Failed to parse result from python service for aermod geojson");
+            LOGGER.error(outputFileURL);
             throw new RuntimeException(e);
         }
     }
@@ -454,8 +455,8 @@ public class Aermod {
 
         JSONObject elevationLayer = new JSONObject();
         elevationLayer.put("type", "raster");
-        elevationLayer.put("name", "Dispersion");
-        elevationLayer.put("source", "dispersion-source");
+        elevationLayer.put("name", "Elevation");
+        elevationLayer.put("source", "elevation-source");
         elevationLayer.put("source-layer", elevationLayerName);
         elevationLayer.put("minzoom", 4);
         elevationLayer.put("layout", new JSONObject().put("visibility", "visible"));

@@ -16,10 +16,10 @@ import json
 
 ROUTE = "/getElevationGeoJSON"
 
-get_aermod_geojson_bp = Blueprint('get_aermod_geojson_bp', __name__)
+get_elevation_geojson_bp = Blueprint('get_elevation_geojson_bp', __name__)
 logger = agentlogging.get_logger("dev")
 
-@get_aermod_geojson_bp.route(ROUTE, methods=['GET'])
+@get_elevation_geojson_bp.route(ROUTE, methods=['GET'])
 def api():
     logger.info("Received request to process receptor.dat file used as input to AERMOD")
     aermod_output_url = request.args["dispersionMatrix"]
@@ -32,10 +32,8 @@ def api():
 
 # This script is only valid for a 1 hour simulation because this file shows the maximum concentration at each receptor
 def get_aermod_geojson(aermod_output, srid):
-    aermod_output_buffer = StringIO(aermod_output)
-    with open(aermod_output_buffer) as file:
-        lines = [line.strip() for line in file if 'XYINC' in line or 'ELEV ' in line]
-
+    splitResult = aermod_output.splitlines()
+    lines = [line.strip() for line in splitResult if 'XYINC' in line or 'ELEV ' in line]
 
     xyinc = np.array(lines[0].split()[1:]).astype(float)
     nx = np.round(xyinc[1]).astype(int)
@@ -61,9 +59,20 @@ def get_aermod_geojson(aermod_output, srid):
             yv[i,j] = lat
 
     elevData = np.zeros((nx,ny))
-    for ind,line in enumerate(lines[1:]):
-        tmp = line.split()[4:]
-        elevData[ind] = np.array(tmp)
+    currentRow = 1
+    ind = 0
+    tmp2 = []
+    for line in lines[1:]:
+        tmp = line.split()[3:]
+        if (int(tmp[0]) == currentRow):
+            tmp2.extend(tmp[1:])
+        else:
+            elevData[ind] = np.array(tmp2).astype(float)
+            tmp2.clear()
+            tmp2.extend(tmp[1:])
+            ind += 1
+            currentRow = int(tmp[0])
+    elevData[ind] = np.array(tmp2).astype(float)
 
     fig,ax = plt.subplots()
     contour_level = 30
