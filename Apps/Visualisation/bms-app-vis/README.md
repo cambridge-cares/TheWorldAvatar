@@ -2,7 +2,7 @@
 
 This is a webapp project built with [DTVF](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/web/digital-twin-vis-framework). It uses the time series module from DTVF for lab equipment data visualisation and is optimised for mobile device. The web page is part of the BMS Visualisation App.
 
-<img src="visualisation.JPG" alt="Example of lab equipment data visualisation in BMS Visualisation App" width="40%"/>
+<img src="readme-visualisation.jpg" alt="Example of lab equipment data visualisation in BMS Visualisation App" width="40%"/>
 
 # Restrictions
 
