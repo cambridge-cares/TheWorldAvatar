@@ -27,7 +27,7 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
     private final String KEY_DATAIRI = "dataIRI";
     private final String KEY_TEMPERATURE = "temperature";
 
-    // TODO: if this agent is running in stack, then the properties file set in env var doesn't make much sense..
+    // TODO: update the way to get other agents and the blazegraph once they run in stack
     private final String KEY_CLIENT_PROPERTIES = "clientProperties";
 
     private String esphomeAgentToggle;
@@ -64,12 +64,12 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
             throw new JPSRuntimeException("Unable to read the client properties file.");
         }
 
-        RemoteStoreClient rsClient = setupKgConnection();
+        RemoteStoreClient rsClient = new RemoteStoreClient(sparqlQueryEndpoint, sparqlUpdateEndpoint);
 
         BMSUpdateAgent bmsUpdateAgent = new BMSUpdateAgent();
         double originalTemperature = Double.NEGATIVE_INFINITY;
         try {
-            originalTemperature = bmsUpdateAgent.getOriginalTemperature(dataIRI, rsClient);
+            originalTemperature = bmsUpdateAgent.getTemperatureInKg(dataIRI, rsClient);
             bmsUpdateAgent.setTemperatureInKg(dataIRI, temperature, rsClient);
 
             String fanStatus = bmsUpdateAgent.toggleFan(esphomeAgentToggle);
@@ -81,7 +81,7 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
             LOGGER.info("Query finished with result: " + result);
             return result;
         } catch (JPSRuntimeException e) {
-            String errorMessage = "error occur, trying to roll back the knowledge graph...";
+            String errorMessage = "Error occurred";
             if (e.getMessage().equals(bmsUpdateAgent.FAIL_TO_TOGGLE)) {
                 bmsUpdateAgent.setTemperatureInKg(dataIRI, originalTemperature, rsClient);
                 errorMessage = errorMessage + "; " + "Set point has been reset to " + originalTemperature;
@@ -92,7 +92,7 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
             }
 
             LOGGER.error(errorMessage);
-            result.put("Message", errorMessage);
+            result.put("message", errorMessage);
             return result;
         }
     }
@@ -104,7 +104,7 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
             return false;
         }
 
-        if (requestParams.getString(KEY_DATAIRI).isEmpty()) {
+        if (!requestParams.has(KEY_DATAIRI)) {
             LOGGER.error(KEY_DATAIRI + " is missing");
             return false;
         }
@@ -121,7 +121,7 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
             return false;
         }
 
-        if (requestParams.getString(KEY_CLIENT_PROPERTIES).isEmpty()) {
+        if (!requestParams.has(KEY_CLIENT_PROPERTIES)) {
             LOGGER.error(KEY_CLIENT_PROPERTIES + " is missing");
             return false;
         }
@@ -152,22 +152,22 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
             if (prop.containsKey("esphome.agent.toggle")) {
                 esphomeAgentToggle = prop.getProperty("esphome.agent.toggle");
             } else {
-                throw new JPSRuntimeException("Properties file is missing \"esphome.agent.toggle=<esphome_agent_toggle>\" ");
+                throw new JPSRuntimeException("Properties file is missing \"esphome.agent.toggle=<esphome_agent_toggle>\"");
             }
             if (prop.containsKey("esphome.update.agent.retrieve")) {
                 esphomeUpdateAgentRetrieve = prop.getProperty("esphome.update.agent.retrieve");
             } else {
-                throw new JPSRuntimeException("Properties file is missing \"esphome.update.agent.retrieve=<esphome_update_agent_retrieve>\" ");
+                throw new JPSRuntimeException("Properties file is missing \"esphome.update.agent.retrieve=<esphome_update_agent_retrieve>\"");
             }
             if (prop.containsKey("sparql.query.endpoint")) {
                 sparqlQueryEndpoint = prop.getProperty("sparql.query.endpoint");
             } else {
-                throw new JPSRuntimeException("Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\" ");
+                throw new JPSRuntimeException("Properties file is missing \"sparql.query.endpoint=<sparql_endpoint>\"");
             }
             if (prop.containsKey("sparql.update.endpoint")) {
                sparqlUpdateEndpoint = prop.getProperty("sparql.update.endpoint");
             } else {
-                throw new JPSRuntimeException("Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\" ");
+                throw new JPSRuntimeException("Properties file is missing \"sparql.update.endpoint=<sparql_endpoint>\"");
             }
 
             LOGGER.debug("Properties config: ");
@@ -177,15 +177,6 @@ public class BMSUpdateAgentLauncher extends JPSAgent {
             LOGGER.debug("sparqlUpdate: " + sparqlUpdateEndpoint);
         }
 
-    }
-
-    private RemoteStoreClient setupKgConnection () {
-        RemoteStoreClient rsClient = new RemoteStoreClient();
-
-        rsClient.setQueryEndpoint(sparqlQueryEndpoint);
-        rsClient.setUpdateEndpoint(sparqlUpdateEndpoint);
-
-        return rsClient;
     }
 
 

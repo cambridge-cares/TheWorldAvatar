@@ -55,7 +55,7 @@ public class BMSUpdateAgent {
         }
     }
 
-    public double getOriginalTemperature(String dataIRI, RemoteStoreClient rsClient) {
+    public double getTemperatureInKg(String dataIRI, RemoteStoreClient rsClient) {
         SelectQuery selectQuery = Queries.SELECT();
         Variable temperatureVar = SparqlBuilder.var("temperature");
         TriplePattern getTemperature = GraphPatterns.tp(iri(dataIRI), P_OM.iri("hasNumericalValue"), temperatureVar);
