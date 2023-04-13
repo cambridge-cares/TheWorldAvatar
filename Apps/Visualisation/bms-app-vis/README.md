@@ -9,19 +9,55 @@ It should be noted that this project doesn't use the Cesium module in DTVF, and 
 
 # Setup
 
-This project is designed to run in a docker container and needs a [Feature Info Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent), [Android Status Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1517-dev-android-status-agent/Agents/AndroidStatusAgent), blazegraph and postgis database running in a stack. The web page will send a request with the iri of an equipment to Feature Info Agent, and the agent will retrieve time series data with the blazegraph and postgis database. Therefore, for this web to display the graph, data should already exist in the blazegraph and postgis database running in the stack.
+This project is designed to run in a docker container and needs a [Feature Info Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent), [Android Status Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1517-dev-android-status-agent/Agents/AndroidStatusAgent), blazegraph and postgis database running in a stack. When the page is loaded, it will retrieve the equipment iri from Android Status Agent, then send this iri to Feature Info Agent, and the agent will get time series data and meta data from the blazegraph and postgis database. Therefore, for this web to display the graph, data should already exist in the blazegraph and postgis database running in the stack.
 
-## Setup Stack and Agents
+## Setup Feature Info Agent
+### 1) Add Scripts to FeatureInfoAgent
+Copy all `.sparql` files in `feature-info-agent-queries/` to `TheWorldAvatar/Agent/FeatureInfoAgent/queries`. 
 
-Please refer to [stack manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack), [Feature Info Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent#deploy-the-agent) and [Android Status Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1517-dev-android-status-agent/Agents/AndroidStatusAgent#1-setup) for setup instructions.
+Create `FeatureInfoAgent/queries/fia-config.json` if not exsits. Then append the queries section in `feature-info-agent-queries/fia-config.json` to `FeatureInfoAgent/queries/fia-config.json`.
+
+More information about FeatureInfoAgent configuration can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent#configuration).
+
+### 2) Add Config to Stack Manager
+Follow this [deployment step](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent#deploy-the-agent) to deploy the FeatureInfoAgent. It is recommended to copy the `.json` file and configure the `<STACK NAME.json>` in stack manager).
+
+If deploying with `.json` file, the stack-manager/inputs/config folder will have the following structure:
+```
+config/
+|_ services/
+   |_ feature-info-agent.json
+   |_ ...
+|_ <STACK NAME>.json
+```
+
+
+The `<STACK NAME>.json` will have the following content:
+```json
+{
+  "services": {
+    "includes": [
+      "feature-info-agent",
+      // ...
+  ],
+    "excludes": [
+      // ...
+  ]
+  }
+}
+```
+
+## Setup Stack and Other Agents
+
+Please refer to [Android Status Agent](https://github.com/cambridge-cares/TheWorldAvatar/tree/1517-dev-android-status-agent/Agents/AndroidStatusAgent#1-setup) and [stack manager](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack) for setup instructions.
 
 ## Setup BMS Visualisation
 
-### Config Stack Address
+### 1) Config Stack Address
 
 Modify the stack's address in [index.html](https://github.com/cambridge-cares/TheWorldAvatar/blob/1502-android-app-for-data-visualisation/Apps/Visualisation/bms-app-vis/webspace/index.html#L50).
 
-### Launch Container
+### 2) Launch Container
 
 Run the following command to build the image and launch the bms-app-vis container:
 ```
@@ -42,12 +78,9 @@ bms-app-vis
 ```
 
 # Usage
-When the web page is loaded in browser or app, it will first send a request to Android Status Agent for an equipment IRI, which is supposed to be set in the BMS Visualisation App. Then the web will send request to Feature Info Agent for meta data and time series data of the equipment IRI. And it will display the data.
-
-Therefore, to use the web page, Android Status Agent, Feature Info Agent, blazegraph and postgis (with data) need to be running.
 
 ## 1. Set Equipment IRI in Android Status Agent
-For test purpose, one can set the equipment IRI in Android Status Agent with the following command:
+The equipment IRI in Android Status Agent is supposed to be set in the BMS Visualisation App. However, for test purpose, one can set the equipment IRI in Android Status Agent with the following command:
 ```
 curl --location --request POST 'http://localhost:3838/android-status-agent/set?equipmentIRI=https://www.theworldavatar.com/kg/ontobms/WFH-04_8314e3b6-3866-4135-83e7-c0cdff48f44a'
 ```
