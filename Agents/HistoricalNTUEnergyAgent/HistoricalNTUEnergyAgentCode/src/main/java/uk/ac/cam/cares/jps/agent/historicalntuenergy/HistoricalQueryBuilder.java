@@ -482,7 +482,7 @@ public class HistoricalQueryBuilder {
             String buildingName = getBuildingNameFromBusNum(entry);
             String buildingIRI = PowsysPrefix + "NTU_Building_" + buildingName;
             String busNodeIRI = PowsysPrefix + "NTU_BusNode_" + buildingName + '_' +String.valueOf(entry);
-            TriplePattern BuildingHasBusNode = iri(buildingIRI).has(iri(hasBusNode), busNodeIRI);
+            TriplePattern BuildingHasBusNode = iri(buildingIRI).has(iri(hasBusNode), iri(busNodeIRI));
             TriplePattern BuildingisType = iri(buildingIRI).isA(iri(building));
             TriplePattern BuildingLabel = iri(buildingIRI).has(iri(rdfsLabel), buildingName);
             String busNodeModelIRI = PowsysPrefix + "NTU_BusNode_Model_" + buildingName + '_' +String.valueOf(entry) + "_Model";

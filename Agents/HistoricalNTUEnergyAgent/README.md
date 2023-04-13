@@ -122,7 +122,7 @@ which must have a 'scope' that [allows you to publish and install packages](http
 
 Then build image with:
 ```
-docker build .
+docker build -t historical-ntuenergy .
 ```
 The Dockerfile will automatically copy all properties files and mapping folder and set environment variables pointing
 to their location. Therefore, you do not need to shift the properties files and mapping folder nor add in environment variables manually.
