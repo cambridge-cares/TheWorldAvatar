@@ -43,11 +43,11 @@ The OPFAgent is accessible at `localhost:39999`, or `host.docker.internal:39999`
 ```
 POST http://localhost:39999/opf-agent/startsimulationOPF
 Content-Type: application/json
-{"electricalnetwork":"http://localhost:48888/ntuenergy","baseMVA":"1","time":"2020-01-01T01:00:00+00:00"}
+{"electricalnetwork":"http://localhost:48888/ntuenergy","baseMVA":"1","time":"2020-01-01T01:00:00+00:00","hasSolar":"false"}
 ```
 In curl syntax:
 ```
-curl -X POST --header "Content-Type: application/json" -d "{\"electricalnetwork\":\"http://localhost:48888/ntuenergy\",\"baseMVA\":\"1\",\"time\":\"2020-01-01T01:00:00+00:00\"}" http://localhost:39999/opf-agent/startsimulationOPF
+curl -X POST --header "Content-Type: application/json" -d "{\"electricalnetwork\":\"http://localhost:48888/ntuenergy\",\"baseMVA\":\"1\",\"time\":\"2020-01-01T01:00:00+00:00\",\"hasSolar\":\"false\"}" http://localhost:39999/opf-agent/startsimulationOPF
 ```
 
 ### Request content
@@ -63,3 +63,4 @@ The input JSON object should contain the following keys:
     where the label corresponds to the label uploaded to the router.
 - `baseMVA` the baseMVA of the power system
 - `time` the time point to run OPF analysis on, in the format of `yyyy-MM-ddTHH:mm:ss`
+- `hasSolar` boolean value indicating whether solar PVs are considered in this system, should be either `true` or `false`
