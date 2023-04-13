@@ -434,7 +434,7 @@
                                 {
                                     "id": "water-source",
                                     "type": "geojson",
-                                    "data": "http://kg.cmclinnovations.com:3839/geoserver/gHTiMMBB/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gHTiMMBB%3AWater&outputFormat=application%2Fjson",
+                                    "data": "http://kg.cmclinnovations.com:3839/geoserver/3LhiMsWN/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=3LhiMsWN%3AWater&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -534,7 +534,7 @@
                                 {
                                     "id": "sludge-source",
                                     "type": "geojson",
-                                    "data": "http://kg.cmclinnovations.com:3839/geoserver/gHTiMMBB/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gHTiMMBB%3ASludge&outputFormat=application%2Fjson",
+                                    "data": "http://kg.cmclinnovations.com:3839/geoserver/3LhiMsWN/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=3LhiMsWN%3ASludge&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -634,7 +634,7 @@
                                 {
                                     "id": "sewage-source",
                                     "type": "geojson",
-                                    "data": "http://kg.cmclinnovations.com:3839/geoserver/gHTiMMBB/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gHTiMMBB%3ASewage&outputFormat=application%2Fjson",
+                                    "data": "http://kg.cmclinnovations.com:3839/geoserver/3LhiMsWN/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=3LhiMsWN%3ASewage&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -1903,7 +1903,7 @@
                                 {
                                     "id": "primary-source",
                                     "type": "geojson",
-                                    "data": "http://kg.cmclinnovations.com:3838/geoserver/gHTiMMBB/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gHTiMMBB%3APrimary&outputFormat=application%2Fjson",
+                                    "data": "http://kg.cmclinnovations.com:3838/geoserver/3LhiMsWN/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=3LhiMsWN%3APrimary&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -2003,7 +2003,7 @@
                                 {
                                     "id": "secondary-source",
                                     "type": "geojson",
-                                    "data": "http://kg.cmclinnovations.com:3838/geoserver/gHTiMMBB/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=gHTiMMBB%3ASecondary&outputFormat=application%2Fjson",
+                                    "data": "http://kg.cmclinnovations.com:3838/geoserver/3LhiMsWN/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=3LhiMsWN%3ASecondary&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -2889,7 +2889,7 @@
                                             "id": "power-conns",
                                             "type": "vector",
                                             "tiles": [
-                                                "http://kg.cmclinnovations.com:3842/geoserver/gHTiMMBB/wms?service=WMS&version=1.1.0&request=GetMap&layers=gHTiMMBB%3APower&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                                                "http://kg.cmclinnovations.com:3842/geoserver/3LhiMsWN/wms?service=WMS&version=1.1.0&request=GetMap&layers=3LhiMsWN%3APower&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                                             ]
                                         }
                                     ],
@@ -3128,7 +3128,7 @@
                                     "id": "water-conns",
                                     "type": "vector",
                                     "tiles": [
-                                        "http://kg.cmclinnovations.com:3842/geoserver/gHTiMMBB/wms?service=WMS&version=1.1.0&request=GetMap&layers=gHTiMMBB%3AWater&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                                        "http://kg.cmclinnovations.com:3842/geoserver/3LhiMsWN/wms?service=WMS&version=1.1.0&request=GetMap&layers=3LhiMsWN%3AWater&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                                     ]
                                 }
                             ],
@@ -3237,7 +3237,7 @@
                                 {
                                     "id": "water-source",
                                     "type": "geojson",
-                                    "data": "http://kg.cmclinnovations.com:3839/geoserver/00A8b3m0/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=00A8b3m0%3AWater&outputFormat=application%2Fjson",
+                                    "data": "http://kg.cmclinnovations.com:3839/geoserver/TEqUNh39/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=TEqUNh39%3AWater&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -3337,7 +3337,7 @@
                                 {
                                     "id": "sludge-source",
                                     "type": "geojson",
-                                    "data": "http://kg.cmclinnovations.com:3839/geoserver/00A8b3m0/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=00A8b3m0%3ASludge&outputFormat=application%2Fjson",
+                                    "data": "http://kg.cmclinnovations.com:3839/geoserver/TEqUNh39/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=TEqUNh39%3ASludge&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -3437,7 +3437,7 @@
                                 {
                                     "id": "sewage-source",
                                     "type": "geojson",
-                                    "data": "http://kg.cmclinnovations.com:3839/geoserver/00A8b3m0/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=00A8b3m0%3ASewage&outputFormat=application%2Fjson",
+                                    "data": "http://kg.cmclinnovations.com:3839/geoserver/TEqUNh39/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=TEqUNh39%3ASewage&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -4706,7 +4706,7 @@
                                 {
                                     "id": "primary-source",
                                     "type": "geojson",
-                                    "data": "http://kg.cmclinnovations.com:3838/geoserver/00A8b3m0/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=00A8b3m0%3APrimary&outputFormat=application%2Fjson",
+                                    "data": "http://kg.cmclinnovations.com:3838/geoserver/TEqUNh39/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=TEqUNh39%3APrimary&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -4806,7 +4806,7 @@
                                 {
                                     "id": "secondary-source",
                                     "type": "geojson",
-                                    "data": "http://kg.cmclinnovations.com:3838/geoserver/00A8b3m0/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=00A8b3m0%3ASecondary&outputFormat=application%2Fjson",
+                                    "data": "http://kg.cmclinnovations.com:3838/geoserver/TEqUNh39/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=TEqUNh39%3ASecondary&outputFormat=application%2Fjson",
                                     "cluster": true,
                                     "clusterRadius": 30,
                                     "clusterMaxZoom": 11,
@@ -5692,7 +5692,7 @@
                                             "id": "power-conns",
                                             "type": "vector",
                                             "tiles": [
-                                                "http://kg.cmclinnovations.com:3842/geoserver/00A8b3m0/wms?service=WMS&version=1.1.0&request=GetMap&layers=00A8b3m0%3APower&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                                                "http://kg.cmclinnovations.com:3842/geoserver/TEqUNh39/wms?service=WMS&version=1.1.0&request=GetMap&layers=TEqUNh39%3APower&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                                             ]
                                         }
                                     ],
@@ -5931,7 +5931,7 @@
                                     "id": "water-conns",
                                     "type": "vector",
                                     "tiles": [
-                                        "http://kg.cmclinnovations.com:3842/geoserver/00A8b3m0/wms?service=WMS&version=1.1.0&request=GetMap&layers=00A8b3m0%3AWater&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
+                                        "http://kg.cmclinnovations.com:3842/geoserver/TEqUNh39/wms?service=WMS&version=1.1.0&request=GetMap&layers=TEqUNh39%3AWater&bbox={bbox-epsg-3857}&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile"
                                     ]
                                 }
                             ],
