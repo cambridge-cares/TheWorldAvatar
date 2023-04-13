@@ -37,14 +37,13 @@ public class SpatialLink {
             int srid3D = object3D.getEnvelope().getGeometry().getSrid();
             String coord3D = object3D.getEnvelope().getGeometry().getValue();
             Geometry envelope = createGeometry(coord3D);
+            double refAreaRation = 0;
             for (int j = 0; j < this.allObject2D.size(); j++) {
                 GeoObject2D object2D = this.allObject2D.get(j);
                 int srid2D = object2D.getGeometry2D().getGeometry().getSrid();
                 String geom2D = object2D.getGeometry2D().toString();
                 geom2D = geom2D.split(";")[1];
                 MultiPolygon polys2D = (MultiPolygon) reader.read(geom2D);
-//                Geometry polys2D = mergeMultiPolygon(multiP);
-//                System.out.println(polygon);
 
                 if(srid3D != srid2D){
                     Geometry transGeom3D = Transform(envelope, srid3D, srid2D);
@@ -54,22 +53,23 @@ public class SpatialLink {
                 }
 
                 if ((!polys2D.within(envelope)) || (!envelope.within(polys2D))){
-                    if(polys2D.intersects(envelope)){
-                        Geometry intersect = polys2D.intersection(envelope);
+                    if(envelope.intersects(polys2D)){
+                        Geometry intersect = envelope.intersection(polys2D);
                         double areaRatio = 100.0*intersect.getArea() / polys2D.getArea();
                         System.out.println("ratio: "+areaRatio + "%");
                         if(areaRatio>70){
-                            object3D.setName(object2D.getName());
+                            if((refAreaRation !=0 && refAreaRation<areaRatio) || refAreaRation==0){
+                                object3D.setName(object2D.getName());
+                                refAreaRation = areaRatio;
+                            }
                         }
                     }
                 }else{
                     object3D.setName(object2D.getName());
                 }
-
-                if (object3D.getName() != null){
-                    object3D.updateName(object3D);
-                }
-
+            }
+            if (object3D.getName() != null){
+                object3D.updateName(object3D);
             }
         }
 

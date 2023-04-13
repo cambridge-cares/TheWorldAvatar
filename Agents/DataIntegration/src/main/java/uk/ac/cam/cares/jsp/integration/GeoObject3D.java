@@ -64,13 +64,13 @@ public class GeoObject3D {
             String sql = "SELECT id, objectclass_id, name, envelope FROM cityobject";
             try (Statement stmt = conn.createStatement()) {
                 ResultSet result = stmt.executeQuery(sql);
-                GeoObject3D object3D = new GeoObject3D();
                 while (result.next()) {
+                    GeoObject3D object3D = new GeoObject3D();
                     object3D.setId(result.getInt("id"));
                     object3D.setObjectClassid(result.getInt("objectclass_id"));
                     object3D.setName(result.getString("name"));
                     object3D.setGeometry((PGgeometry)result.getObject("envelope"));
-
+                    object3D.setPostGISClient(postgresClient);
                     allObject3D.add(object3D);
                 }
                 return allObject3D;
@@ -89,7 +89,7 @@ public class GeoObject3D {
     public void updateName(GeoObject3D object3D){
         String upSql = "UPDATE cityobject SET ";
         if(object3D.name != null){
-            upSql = upSql + "name = " + object3D.name + "WHERE id = " + object3D.id + ";";
+            upSql = upSql + "name = '" + object3D.name + "' WHERE id = " + object3D.id + ";";
             try (Connection conn = postgresClient.getConnection()) {
                 try (Statement stmt = conn.createStatement()) {
                     stmt.executeUpdate(upSql);

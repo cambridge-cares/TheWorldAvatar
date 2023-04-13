@@ -74,6 +74,7 @@ public class GeoObject2D {
                     object2D.setGeometry2D((PGgeometry)result.getObject("wkb_geometry"));
                     object2D.setAddress(result.getString("addr_stree"));
                     object2D.setPostcode(result.getString("addr_postc"));
+                    object2D.setPostGISClient(postgresClient);
                     allObject2D.add(object2D);
                 }
                 return allObject2D;
