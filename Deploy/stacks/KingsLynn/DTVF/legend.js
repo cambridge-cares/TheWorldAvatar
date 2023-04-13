@@ -101,24 +101,24 @@ let staticHTML = `
         <div class="legend-lower" id="network-lower">
             <h4>Water Network:</h4>
             <div class="legend-entry">
-                <img src="data/icons/water-clean.png"/>
+                <img src="data/icons/water-clean-legend.png"/>
                 <p>Water Sites</p>
             </div>
             <div class="legend-entry">
-                <img src="data/icons/water-sewage.png"/>
+                <img src="data/icons/water-sewage-legend.png"/>
                 <p>Sewage Sites</p>
             </div>
             <div class="legend-entry">
-                <img src="data/icons/water-sludge.png"/>
+                <img src="data/icons/water-sludge-legend.png"/>
                 <p>Sludge Sites</p>
             </div>
             <h4>Power Network:</h4>
             <div class="legend-entry">
-                <img src="data/icons/power-primary.png"/>
+                <img src="data/icons/power-primary-legend.png"/>
                 <p>Primary Substations</p>
             </div>
             <div class="legend-entry">
-                <img src="data/icons/power-secondary.png"/>
+                <img src="data/icons/power-secondary-legend.png"/>
                 <p>Secondary Substations</p>
             </div>
             <h4>Status Indicators:</h4>

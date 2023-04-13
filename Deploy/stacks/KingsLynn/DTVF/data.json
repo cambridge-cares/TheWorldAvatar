@@ -214,7 +214,7 @@
                     "layout": {
                         "visibility": "visible",
                         "icon-image": "air_airquality", 
-                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.65],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true
                     }
@@ -230,7 +230,7 @@
                     "layout": {
                         "visibility": "visible",
                         "icon-image": "ukair",
-                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.75],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.65],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true,
                         "text-field": "{point_count_abbreviated}",
@@ -257,7 +257,7 @@
                             "forecast", "met_weather-for",
                             "met_weather"
                         ],
-                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.65],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true
                     }
@@ -273,7 +273,7 @@
                     "layout": {
                         "visibility": "visible",
                         "icon-image": "metoffice",
-                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.75],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.65],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true,
                         "text-field": "{point_count_abbreviated}",
@@ -303,7 +303,7 @@
                             "ea-wind", "ea_wind",
                             "floodmonitoring"
                         ],
-                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.75],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.5, 20, 0.65],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true
                     }
@@ -319,7 +319,7 @@
                     "layout": {
                         "visibility": "visible",
                         "icon-image": "floodmonitoring",
-                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.75],
+                        "icon-size": ["interpolate", ["linear"], ["zoom"], 12, 0.52, 20, 0.65],
                         "icon-allow-overlap": true,
                         "icon-ignore-placement": true,
                         "text-field": "{point_count_abbreviated}",
@@ -828,7 +828,7 @@
                                                     1.0
                                                 ]
                                             ],
-                                            0.55,
+                                            0.65,
                                             [
                                                 "interpolate",
                                                 [
@@ -892,9 +892,9 @@
                                                     ]
                                                 ],
                                                 0.0,
-                                                0.55,
+                                                0.5,
                                                 1.0,
-                                                0.55
+                                                0.65
                                             ]
                                         ]
                                     },
@@ -1020,7 +1020,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.45,
+                                        "icon-size": 0.55,
                                         "icon-image": [
                                             "case",
                                             [
@@ -1083,7 +1083,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.5,
+                                        "icon-size": 0.55,
                                         "icon-image": "water-clean",
                                         "text-anchor": "center",
                                         "text-allow-overlap": true,
@@ -1215,7 +1215,7 @@
                                                     1.0
                                                 ]
                                             ],
-                                            0.55,
+                                            0.65,
                                             [
                                                 "interpolate",
                                                 [
@@ -1279,9 +1279,9 @@
                                                     ]
                                                 ],
                                                 0.0,
-                                                0.55,
+                                                0.5,
                                                 1.0,
-                                                0.55
+                                                0.65
                                             ]
                                         ]
                                     },
@@ -1407,7 +1407,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.45,
+                                        "icon-size": 0.55,
                                         "icon-image": [
                                             "case",
                                             [
@@ -1470,7 +1470,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.5,
+                                        "icon-size": 0.55,
                                         "icon-image": "water-sludge",
                                         "text-anchor": "center",
                                         "text-allow-overlap": true,
@@ -1602,7 +1602,7 @@
                                                     1.0
                                                 ]
                                             ],
-                                            0.55,
+                                            0.65,
                                             [
                                                 "interpolate",
                                                 [
@@ -1666,9 +1666,9 @@
                                                     ]
                                                 ],
                                                 0.0,
-                                                0.55,
+                                                0.5,
                                                 1.0,
-                                                0.55
+                                                0.65
                                             ]
                                         ]
                                     },
@@ -1794,7 +1794,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.45,
+                                        "icon-size": 0.55,
                                         "icon-image": [
                                             "case",
                                             [
@@ -1857,7 +1857,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.5,
+                                        "icon-size": 0.55,
                                         "icon-image": "water-sewage",
                                         "text-anchor": "center",
                                         "text-allow-overlap": true,
@@ -2197,7 +2197,7 @@
                                                     1.0
                                                 ]
                                             ],
-                                            0.55,
+                                            0.65,
                                             [
                                                 "interpolate",
                                                 [
@@ -2261,9 +2261,9 @@
                                                     ]
                                                 ],
                                                 0.0,
-                                                0.55,
+                                                0.5,
                                                 1.0,
-                                                0.55
+                                                0.65
                                             ]
                                         ]
                                     },
@@ -2389,7 +2389,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.45,
+                                        "icon-size": 0.55,
                                         "icon-image": [
                                             "case",
                                             [
@@ -2452,7 +2452,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.5,
+                                        "icon-size": 0.55,
                                         "icon-image": "power-primary",
                                         "text-anchor": "center",
                                         "text-allow-overlap": true,
@@ -2584,7 +2584,7 @@
                                                     1.0
                                                 ]
                                             ],
-                                            0.55,
+                                            0.65,
                                             [
                                                 "interpolate",
                                                 [
@@ -2648,9 +2648,9 @@
                                                     ]
                                                 ],
                                                 0.0,
-                                                0.55,
+                                                0.5,
                                                 1.0,
-                                                0.55
+                                                0.65
                                             ]
                                         ]
                                     },
@@ -2776,7 +2776,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.45,
+                                        "icon-size": 0.55,
                                         "icon-image": [
                                             "case",
                                             [
@@ -2839,7 +2839,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.5,
+                                        "icon-size": 0.55,
                                         "icon-image": "power-secondary",
                                         "text-anchor": "center",
                                         "text-allow-overlap": true,
@@ -3631,7 +3631,7 @@
                                                     1.0
                                                 ]
                                             ],
-                                            0.55,
+                                            0.65,
                                             [
                                                 "interpolate",
                                                 [
@@ -3695,9 +3695,9 @@
                                                     ]
                                                 ],
                                                 0.0,
-                                                0.55,
+                                                0.5,
                                                 1.0,
-                                                0.55
+                                                0.65
                                             ]
                                         ]
                                     },
@@ -3823,7 +3823,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.45,
+                                        "icon-size": 0.55,
                                         "icon-image": [
                                             "case",
                                             [
@@ -3886,7 +3886,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.5,
+                                        "icon-size": 0.55,
                                         "icon-image": "water-clean",
                                         "text-anchor": "center",
                                         "text-allow-overlap": true,
@@ -4018,7 +4018,7 @@
                                                     1.0
                                                 ]
                                             ],
-                                            0.55,
+                                            0.65,
                                             [
                                                 "interpolate",
                                                 [
@@ -4082,9 +4082,9 @@
                                                     ]
                                                 ],
                                                 0.0,
-                                                0.55,
+                                                0.5,
                                                 1.0,
-                                                0.55
+                                                0.65
                                             ]
                                         ]
                                     },
@@ -4210,7 +4210,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.45,
+                                        "icon-size": 0.55,
                                         "icon-image": [
                                             "case",
                                             [
@@ -4273,7 +4273,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.5,
+                                        "icon-size": 0.55,
                                         "icon-image": "water-sludge",
                                         "text-anchor": "center",
                                         "text-allow-overlap": true,
@@ -4405,7 +4405,7 @@
                                                     1.0
                                                 ]
                                             ],
-                                            0.55,
+                                            0.65,
                                             [
                                                 "interpolate",
                                                 [
@@ -4469,9 +4469,9 @@
                                                     ]
                                                 ],
                                                 0.0,
-                                                0.55,
+                                                0.5,
                                                 1.0,
-                                                0.55
+                                                0.65
                                             ]
                                         ]
                                     },
@@ -4597,7 +4597,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.45,
+                                        "icon-size": 0.55,
                                         "icon-image": [
                                             "case",
                                             [
@@ -4660,7 +4660,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.5,
+                                        "icon-size": 0.55,
                                         "icon-image": "water-sewage",
                                         "text-anchor": "center",
                                         "text-allow-overlap": true,
@@ -5000,7 +5000,7 @@
                                                     1.0
                                                 ]
                                             ],
-                                            0.55,
+                                            0.65,
                                             [
                                                 "interpolate",
                                                 [
@@ -5064,9 +5064,9 @@
                                                     ]
                                                 ],
                                                 0.0,
-                                                0.55,
+                                                0.5,
                                                 1.0,
-                                                0.55
+                                                0.65
                                             ]
                                         ]
                                     },
@@ -5192,7 +5192,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.45,
+                                        "icon-size": 0.55,
                                         "icon-image": [
                                             "case",
                                             [
@@ -5255,7 +5255,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.5,
+                                        "icon-size": 0.55,
                                         "icon-image": "power-primary",
                                         "text-anchor": "center",
                                         "text-allow-overlap": true,
@@ -5387,7 +5387,7 @@
                                                     1.0
                                                 ]
                                             ],
-                                            0.55,
+                                            0.65,
                                             [
                                                 "interpolate",
                                                 [
@@ -5451,9 +5451,9 @@
                                                     ]
                                                 ],
                                                 0.0,
-                                                0.55,
+                                                0.5,
                                                 1.0,
-                                                0.55
+                                                0.65
                                             ]
                                         ]
                                     },
@@ -5579,7 +5579,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.45,
+                                        "icon-size": 0.55,
                                         "icon-image": [
                                             "case",
                                             [
@@ -5642,7 +5642,7 @@
                                         "symbol-z-order": "viewport-y",
                                         "icon-allow-overlap": false,
                                         "icon-ignore-placement": true,
-                                        "icon-size": 0.5,
+                                        "icon-size": 0.55,
                                         "icon-image": "power-secondary",
                                         "text-anchor": "center",
                                         "text-allow-overlap": true,
