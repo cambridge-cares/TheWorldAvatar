@@ -446,6 +446,7 @@ public class Aermod {
 
 
         JSONObject dispersionLayer = new JSONObject();
+        dispersionLayer.put("id", "dispersion-layer");
         dispersionLayer.put("type", "raster");
         dispersionLayer.put("name", "Dispersion");
         dispersionLayer.put("source", "dispersion-source");
@@ -454,6 +455,7 @@ public class Aermod {
         dispersionLayer.put("layout", new JSONObject().put("visibility", "visible"));
 
         JSONObject elevationLayer = new JSONObject();
+        elevationLayer.put("id", "elevation-layer");
         elevationLayer.put("type", "raster");
         elevationLayer.put("name", "Elevation");
         elevationLayer.put("source", "elevation-source");

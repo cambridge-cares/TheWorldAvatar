@@ -25,6 +25,8 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +34,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.io.IOUtils;
+import org.apache.jena.atlas.json.JSON;
+import org.apache.jena.atlas.json.io.parser.JSONParser;
 
 import com.cmclinnovations.stack.clients.gdal.GDALClient;
 import com.cmclinnovations.stack.clients.gdal.Ogr2OgrOptions;
@@ -44,9 +48,11 @@ public class Buildings {
 
     private static final Logger LOGGER = LogManager.getLogger(Buildings.class);
 
-    //TODO: The next 4 variables need to be updated with additional entries for locations other than Jurong Island.
+    // TODO: The next 4 variables need to be updated with additional entries for locations other than Jurong Island.
     // Use the full endpoint for the local blazegraph and only the namespace for TWA blazegraph.
-    public static String[] StackQueryEndpoint = {"jibusinessunits","pirmasensChemicalPlants"} ;
+    // If the emissions rates of one or more pollutant sources vary with time, the OCGML IRI and emissions rates of each pollutant 
+    // source may be obtained from an input json file instead of a blazegraph namespace. 
+    public static String[] StackQueryEndpoint = {"jibusinessunits","aermodInput.json"} ;
     public static String[] GeospatialQueryEndpoint = {"jriEPSG24500","pirmasensEPSG32633"} ;
     public static String[] DatabaseCRS = {"EPSG:24500","EPSG:32633"};
     public static int[] propertiesMethod = {1,2};
@@ -74,6 +80,11 @@ public class Buildings {
     public List<Double> StackEmissions = new ArrayList<>()  ;
     public List<Double> StackDiameter = new ArrayList<>()  ;
     public List<String> StackPropertiesOriginal = new ArrayList<>();
+    public List<List<Double>> StackEmissionsTimeSeries = new ArrayList<>();
+    public boolean timeDependentEmissions = false;
+    public List<String> timeStamps = new ArrayList<>();
+    public List<Double> receptorHeights = new ArrayList<>();
+    public List<Integer> sensorIndices = new ArrayList<>();
 
     /* Each element of BuildingProperties contains the (x,y) coordinates of the center of the base polygon of the building and the building height.
     Each element of BuildingVertices contains the coordinates of the vertices of the base polygon.
@@ -139,6 +150,8 @@ public class Buildings {
             "AERMOD will be run for ships only without buildings and plant items.");
         }  
         UTMCoordSys = "EPSG:" + srid;
+
+        if (StackQueryIRI.contains(".json")) timeDependentEmissions = true;
 
 
 
@@ -220,6 +233,11 @@ public class Buildings {
             }
             if (createAERMODSourceInput() != 0) {
                 LOGGER.error("Failed to create AERMOD sources input file, terminating");
+                return 1;
+            }
+
+            if (addAERMODReceptorInput() != 0) {
+                LOGGER.error("Failed to write additional receptor.dat files, terminating");
                 return 1;
             }
             
@@ -575,20 +593,73 @@ public class Buildings {
         // Populate a list of chemical plant items (StackIRIString) for which geometric properties will be queried
         // from OCGML. Also determine the pollutant emissions rate in tons/yr for each plant item.
 
-        // Query Individual CO2 Emissions of plant items
-        JSONArray StackIRIQueryResult = BuildingsQueryClient.StackQuery(StackQueryIRI);
-        List<String> StackIRIString = IntStream
-                .range(0,StackIRIQueryResult.length())
-                .mapToObj(i -> StackIRIQueryResult.getJSONObject(i).getString("IRI"))
-                .collect(Collectors.toList());
+        List<String> StackIRIString = new ArrayList<>();
+        List<Double> emissionsOfEveryStack = new ArrayList<>();
+        List<List<Double>> variableEmissions = new ArrayList<>();
+        
+        if (timeDependentEmissions) {
+            // Read emissions data from aermodInput.json
+            String jsonString = null;
 
-        List<Double> emissionsOfEveryStack = IntStream
-                .range(0,StackIRIQueryResult.length())
-                .mapToObj(i -> StackIRIQueryResult.getJSONObject(i).getDouble("emission"))
-                .collect(Collectors.toList());
+            try (InputStream is = getClass().getClassLoader().getResourceAsStream("aermodInput.json")) {
+                jsonString = IOUtils.toString(is, StandardCharsets.UTF_8);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } 
 
+            JSONObject obj = new JSONObject(jsonString);
+            JSONArray sourceInfo = obj.getJSONArray("sourceData");
 
-        // StackIRIString and emissionsOfEveryStack populated
+            for (int i = 0; i < sourceInfo.length(); i++) {
+                JSONObject sourceObj = sourceInfo.getJSONObject(i);
+                StackIRIString.add(sourceObj.getString("buildingIRI"));
+                JSONArray emissionValues = sourceObj.getJSONArray("Emissions");
+                List<Double> tmp = IntStream.range(0, emissionValues.length())
+                .mapToObj(j -> emissionValues.getDouble(j)).collect(Collectors.toList());
+                variableEmissions.add(tmp);
+                if (i == 0) {
+                    JSONArray tmps = sourceObj.getJSONArray("Timestamps");
+                    timeStamps = IntStream.range(0, tmps.length())
+                    .mapToObj(j -> tmps.getString(j)).collect(Collectors.toList());
+                }
+            }
+
+            JSONArray receptorFlagHeights = obj.getJSONArray("receptorHeights");
+            receptorHeights = IntStream.range(0, receptorFlagHeights.length())
+            .mapToObj(j -> receptorFlagHeights.getDouble(j)).collect(Collectors.toList());
+
+            int nz = receptorHeights.size();
+            JSONObject sensorLocations = obj.getJSONObject("sensorLocations");
+            JSONArray sensorIX = sensorLocations.getJSONArray("ix");
+            JSONArray sensorIY = sensorLocations.getJSONArray("iy");
+            JSONArray sensorIZ = sensorLocations.getJSONArray("iz");
+
+            for (int i = 0; i < sensorIX.length(); i++) {
+                int ix = sensorIX.getInt(i);
+                int iy = sensorIY.getInt(i);
+                int iz = sensorIZ.getInt(i);
+                int index = iz*nx*ny + iy*nx + ix;
+                sensorIndices.add(index);
+            }
+
+        } else {
+            // Query constant emissions values from blazegraph
+            JSONArray StackIRIQueryResult = BuildingsQueryClient.StackQuery(StackQueryIRI);
+            StackIRIString = IntStream
+                    .range(0,StackIRIQueryResult.length())
+                    .mapToObj(i -> StackIRIQueryResult.getJSONObject(i).getString("IRI"))
+                    .collect(Collectors.toList());
+    
+            emissionsOfEveryStack = IntStream
+                    .range(0,StackIRIQueryResult.length())
+                    .mapToObj(i -> StackIRIQueryResult.getJSONObject(i).getDouble("emission"))
+                    .collect(Collectors.toList());
+        }
+  
+
+        // StackIRIString and emissionsOfEveryStack or variableEmissions populated
 
         StackIRIString = StackIRIString.stream().map(i -> i.replace("cityobject","building")).collect(Collectors.toList());
         JSONArray StackGeometricQueryResult = BuildingsQueryClient.BuildingGeometricQuery2(GeospatialQueryIRI,StackIRIString);
@@ -727,10 +798,13 @@ public class Buildings {
 
                 // Search for IRI in StackIRIString
                 int ind = StackIRIString.indexOf(objectIRI);
-                Double emission = emissionsOfEveryStack.get(ind);
-                StackIRIQueryResult.getJSONObject(ind).getDouble("emission");
-                StackEmissions.add(emission);
-                StackDiameter.add(2*radius);
+                if (timeDependentEmissions) {
+                    List<Double> emissions = variableEmissions.get(ind);
+                    StackEmissionsTimeSeries.add(emissions);
+                } else {
+                    Double emission = emissionsOfEveryStack.get(ind);
+                    StackEmissions.add(emission);
+                }
             }
 
         }
@@ -1616,8 +1690,46 @@ public class Buildings {
 
             String stkId = "Stk" + (i + 1);
             sb.append(String.format("SO LOCATION %s POINT %f %f %f \n", stkId, StackEastUTM, StackNorthUTM, StackBaseElevation));
+            if (timeDependentEmissions) sb.append("SO HOUREMIS hourlyEmissions.dat " + stkId);
             sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f \n", stkId,
                     massFlowrateInGs, StackHeight, gasTemperatureKelvin, velocityms, Diameter));
+        }
+
+        StringBuilder sbe = new StringBuilder();
+
+        if (timeDependentEmissions) {
+            for (int i = 0; i < timeStamps.size(); i++) {
+
+                String line = "SO HOUREMIS ";
+                LocalDateTime ldt = LocalDateTime.parse(timeStamps.get(i));
+
+                int year = ldt.getYear();
+                int month = ldt.getMonthValue();
+                int day = ldt.getDayOfMonth();
+                int hour = ldt.getHour();
+
+                String ys = String.valueOf(year).substring(2);
+                String ms = String.valueOf(month);
+                /* May not be required
+                if (ms.substring(0,1).equals("0")) {
+                    ms = ms.substring(1);
+                }
+                */
+
+                line = line + ys + " " + month + " " + day + " " + hour;
+                line = line + " " + "stack_id " ;  
+
+                for (int j = 0; j < StackProperties.size(); j++) {
+                    String stkId = "Stk" + (j + 1);
+                    Double emission = StackEmissionsTimeSeries.get(j).get(i);
+                    double gasTemperatureKelvin = 533.15;
+                    double velocityms = 10.0;
+                    String newLine = line + " " + stkId + emission + " " + gasTemperatureKelvin + " " + velocityms;
+                    sbe.append(newLine);
+
+                }
+            }
+            writeToFile(aermodDirectory.resolve("hourlyEmissions.dat"), sbe.toString());
         }
 
         return writeToFile(aermodDirectory.resolve("plantSources.dat"),sb.toString());
@@ -1657,6 +1769,81 @@ public class Buildings {
         sb.append("RE GRIDCART POL1 END \n");
 
         return writeToFile(aermodDirectory.resolve("receptor.dat"),sb.toString());
+    }
+
+// This method adds additional receptor input files for the various user-specified flagpole heights.
+// Need to update the AERMOD main input files in addition to creating additional receptor files
+    public int addAERMODReceptorInput() {
+        // First read existing receptor.dat file containing information for ground level receptors.
+        String templateContent;
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("receptor.dat")) {
+            templateContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Failed to read weather_template.144 file");
+            return 1;
+        }
+
+        double eps = 1.0e-6;
+        int numberPerRow = 5;
+        int res = 0;
+
+        List<String> fileNames = new ArrayList<>();
+
+        for (int k = 0; k < receptorHeights.size(); k++) {
+            double height = receptorHeights.get(k);
+            String netid = "POL" + (k+1);
+            if (Math.abs(height) < eps) continue;
+
+            String line = "   GRIDCART " + netid + "     FLAG   " + "ROW_NUMBER  " ;
+
+            for (int i = 0; i < numberPerRow; i++) {
+                line += height ;
+                line += " ";
+            }          
+
+            StringBuilder sb = new StringBuilder();
+
+            for (int j = 0; j < ny; j++) {
+                String newLine = line.replace("ROW_NUMBER", String.valueOf(j+1));
+                for (int i = 0; i < nx/numberPerRow; i++) {
+                    sb.append(newLine);
+                }
+            }
+            sb.append("RE GRIDCART "+ netid + " END");
+            String newContent = templateContent.replace("RE GRIDCART POL1 END", sb.toString());
+            newContent = newContent.replaceAll("POL1", netid);
+            String fileName = "receptor_"+height+".dat";
+            fileNames.add(fileName);
+            int r1 = writeToFile(aermodDirectory.resolve(fileName), newContent);
+            res = Math.max(res,r1);
+        }
+
+        // Copy and update the main AERMOD input file
+
+        String replaceLine = "   INCLUDED receptor.dat";
+
+        StringBuilder sbf = new StringBuilder(replaceLine);
+
+        for (int i = 0; i < fileNames.size(); i++) {
+            String fileString = "   INCLUDED " + fileNames.get(i);
+            sbf.append(fileString);
+        }
+
+        String inputContent;
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("aermod_input.inp")) {
+            inputContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+            inputContent = inputContent.replace(replaceLine, sbf.toString());
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Failed to read aermod_input.inp file");
+            return 1;
+        }
+
+        int r2 = writeToFile(aermodDirectory.resolve("aermod_input.inp"), inputContent);
+        res = Math.max(res,r2);
+
+        return res;
     }
 
 }
