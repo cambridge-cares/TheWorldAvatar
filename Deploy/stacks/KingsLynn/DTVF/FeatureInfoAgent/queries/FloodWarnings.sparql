@@ -3,6 +3,7 @@ prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 prefix flood: <https://www.theworldavatar.com/kg/ontoflood/>
 prefix rt:    <http://environment.data.gov.uk/flood-monitoring/def/core/>
 prefix om:    <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+prefix xsd:   <http://www.w3.org/2001/XMLSchema#>
 
 SELECT ?label ?value ?unit
 WHERE {
