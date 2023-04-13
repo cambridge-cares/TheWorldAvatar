@@ -19,7 +19,6 @@ from Marie.Util.AgentTools.question_agent_matcher import QuestionAgentMatcher
 class AgentInterface():
 
     def __init__(self, tokenizer_name="bert-base-uncased"):
-        self.question = question
         self.tokenizer_name = tokenizer_name
         self.pce_nel = ChemicalNEL(dataset_name=os.path.join("ontoagent", "pceagent"), enable_class_ner=False)
         self.thermo_nel = ChemicalNEL(dataset_name=os.path.join("ontoagent", "thermoagent"), enable_class_ner=False)

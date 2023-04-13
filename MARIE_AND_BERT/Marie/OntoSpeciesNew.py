@@ -7,7 +7,7 @@ from Marie.Util.location import DATA_DIR
 
 class OntoSpeciesNew(QAEngineNumerical):
 
-    def __init__(self, dataset_dir, dataset_name, sub_ontology, ontology,
+    def __init__(self, dataset_dir='CrossGraph/ontospecies_new/base_full_no_pref_selected_role_limited_100', dataset_name='base_full_no_pref_selected_role_limited_100', sub_ontology='base_full_no_pref_selected_role_limited_100', ontology="ontospecies_new",
                  operator_dict={0: "smaller", 1: "larger", 2: "none"}):
         self.dataset_dir = dataset_dir
         self.ontology = ontology

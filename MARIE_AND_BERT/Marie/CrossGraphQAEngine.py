@@ -89,7 +89,7 @@ class CrossGraphQAEngine:
             elif domain == "ontomops":
                 self.engine_list[index] = OntoMoPsQAEngine()
             elif domain == "ontokin_reaction":
-                self.engine_list[index] = OntoSpeciesNew()
+                self.engine_list[index] = OntoKinReactionInterface()
             print(f"Engine for {domain} created")
 
     def create_triple_for_prediction(self, question, score_list, domain_list, target_list):
