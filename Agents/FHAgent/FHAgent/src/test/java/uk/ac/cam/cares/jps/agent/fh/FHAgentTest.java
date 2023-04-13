@@ -51,6 +51,7 @@ public class FHAgentTest {
 
     // Readings used by several tests
     JSONObject allReadings;
+    JSONObject timestampTestReading;
     JSONObject expectedTally;
 
     private void writePropertyFile(String filepath, List<String> properties) throws IOException {
@@ -110,11 +111,11 @@ public class FHAgentTest {
 
         Double[] measurements1 = {350.,   350.,  220.,  210., 170.,  175., 165., 150., 155., 150., 150., 165., 180., 350., 350.};
         //tally =               {0,      0,     0,     0,    0.35,  0.20, 0.35, 0.70, 1.15(on), 1.50, 1.85, 2.00, 1.65, 1.30, 1.05}
-        Boolean[] tallies1 =     {false, false, false, false, false, false, false, false, true, true, true, true, true, true, true};
+        Double[] tallies1 =     {0., 0., 0., 0., 0., 0., 0., 0., 1., 1., 1., 1., 1., 1., 1.};
 
         Double[] measurements2 = {150.,   150.,  150.,  150., 170., 175., 195., 210., 350., 350., 350., 350., 350., 350., 350.};
         //tally =                {0.35,    0.7,  1.05,  1.40, 1.75, 1.60, 1.45, 1.30, 1.15, 1.00, 0.85, 0.70, 0.55, 0.40, 0.25}
-        Boolean[] tallies2 =     {false, false,  true,  true, true, true, true, true, true, true, false, false, false, false, false};
+        Double[] tallies2 =     {0., 0.,  1.,  1., 1., 1., 1., 1., 1., 1., 0., 0., 0., 0., 0.};
 
         int onIndex = 8;
         long ts = 1234560000000L;
@@ -184,6 +185,9 @@ public class FHAgentTest {
         JSONObject expected2 = new JSONObject();
         expected2.put("occupiedState2", tallied2);
         expectedTally.put("avgDist2", expected2);
+
+        timestampTestReading = new JSONObject();
+        timestampTestReading.put("avgDist1",avgDistMeasurements1);
 
     }
 
@@ -342,7 +346,7 @@ public class FHAgentTest {
     @Test
     public void testUpdateDataPruneAll() {
         // Use a max time that is past max time of readings
-    	JSONArray tsAndValues = allReadings.getJSONArray("avgDist");
+    	JSONArray tsAndValues = allReadings.getJSONArray("avgDist1");
     	long timestamp = tsAndValues.getJSONObject(0).getLong("ts");
     	Date date = new java.util.Date(timestamp + 1234);
     	SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -388,19 +392,29 @@ public class FHAgentTest {
         Method jsonObjectToMap = FHAgent.class.getDeclaredMethod("jsonObjectToMap", JSONObject.class);
         jsonObjectToMap.setAccessible(true);
         // Transform the readings
-        @SuppressWarnings("unchecked")
-        Map<String, List<?>> readings = (Map<String, List<?>>) jsonObjectToMap.invoke(testAgent, allReadings);
-        // Check that all keys have a list of the same size as the nested JSON Array
-        for (String key: readings.keySet()) {
-        	JSONArray tsAndValues = allReadings.getJSONArray(key);
-            Assert.assertEquals(tsAndValues.length(), readings.get(key).size());
+        for(String key: mockKeys){
+            @SuppressWarnings("unchecked")
+            Map<String, List<?>> readings = (Map<String, List<?>>) jsonObjectToMap.invoke(testAgent, expectedTally.get(key));
+            
+            for (String keyReadings: readings.keySet()) {
+                JSONArray tsAndValues = expectedTally.getJSONObject(key).getJSONArray(keyReadings);
+                Assert.assertEquals(tsAndValues.length(), readings.get(keyReadings).size());
+
+                // Check that all keys have a list of the same size as the nested JSON Array
+                for(int ind = 0; ind < readings.get(keyReadings).size(); ind ++){
+                    Assert.assertEquals(readings.get(keyReadings).get(ind), expectedTally.getJSONObject(key).getJSONArray(keyReadings).getJSONObject(readings.get(keyReadings).size() -1 -ind).get("value"));
+                }
+            }
+            
+            
+
+            // Check that all keys from the JSON Object have a corresponding entry
+            for (Iterator<String> it = expectedTally.getJSONObject(key).keys(); it.hasNext();) {
+                String keyRead = it.next();
+                Assert.assertTrue(readings.containsKey(keyRead));
+            }
         }
-        Assert.assertEquals(readings.get("avgDist").get(0), allReadings.getJSONArray("avgDist").getJSONObject(0).get("value"));
-        // Check that all keys from the JSON Object have a corresponding entry
-        for (Iterator<String> it = allReadings.keys(); it.hasNext();) {
-            String key = it.next();
-            Assert.assertTrue(readings.containsKey(key));
-        }
+        
     }
 
     @Test
@@ -410,15 +424,15 @@ public class FHAgentTest {
         Method jsonObjectToMapForTimeStamp = FHAgent.class.getDeclaredMethod("jsonObjectToMapForTimeStamp", JSONObject.class);
         jsonObjectToMapForTimeStamp.setAccessible(true);
         // Transform the readings
+        
+        
         @SuppressWarnings("unchecked")
-        Map<String, List<?>> readings = (Map<String, List<?>>) jsonObjectToMapForTimeStamp.invoke(testAgent, allReadings);
+        Map<String, List<?>> readings = (Map<String, List<?>>) jsonObjectToMapForTimeStamp.invoke(testAgent, timestampTestReading);
         // Check that all keys have a list of the same size as the nested JSON Array
         Assert.assertTrue(readings.containsKey(FHAgent.timestampKey));
-        long ts = 1234560000000L;
+        long ts = 1234560000000L + 14 * 1000;
         
-        for (int i = 0; i< readings.size();i ++) {
-            
-            
+        for (int i = readings.size() - 1; i >= 0;i --) {
             Date date = new java.util.Date(ts);
             SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -426,8 +440,10 @@ public class FHAgentTest {
             
             Assert.assertTrue(readings.get(FHAgent.timestampKey).contains(ts01));
             //TODO get retrieve last element instead?
-            //Assert.assertEquals(ts01, readings.get(FHAgent.timestampKey).get(i));
+            Assert.assertEquals(ts01, readings.get(FHAgent.timestampKey).get(i));
+            ts -= 1000;
         }
+        
         
 
         //Assert.assertEquals(allReadings.getJSONArray(keys[0]).length(), readings.get(FHAgent.timestampKey).size());
@@ -440,7 +456,7 @@ public class FHAgentTest {
         // Create a folder inside the temporary folder in which the mapping files will be
         File mappingFolder= folder.newFolder("mappings_test");
         // Define three sets of mappings
-        String[] allTypesKeys = {"avgDist"};
+        String[] allTypesKeys = {"avgDist1", "avgDist2"};
        
         Map<String, String[]> keys = new HashMap<>();
         keys.put("general", allTypesKeys);

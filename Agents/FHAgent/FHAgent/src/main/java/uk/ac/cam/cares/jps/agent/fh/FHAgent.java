@@ -399,16 +399,16 @@ public class FHAgent{
                 for (int j = tsAndValue.length() - 1; j >= 0; j--) {
                 // Get the value and add it to the corresponding list
                 	JSONObject timeSeriesEntry = tsAndValue.getJSONObject(j);
-                	Object value = timeSeriesEntry.get("value");
+                    Double value;
                 //The values are of string type in the JSON Object, convert them to double
                 	try {
-                    	value = Double.valueOf(timeSeriesEntry.get("value").toString());
-                    	}
+                        value = timeSeriesEntry.getDouble("value");
+                    }
                 	catch (NumberFormatException e) {
                 		value = Double.NaN;
                 	}
                 	catch (NullPointerException e) {
-                		value = "NA";
+                		value = Double.NaN;
                 	}
                 // If the key is not present yet initialize the list
                 if (!readingsMap.containsKey(key)) {
@@ -586,7 +586,13 @@ public class FHAgent{
             if(col.isEmpty() || tallyLast != tallyLatest) {
                 JSONObject row = new JSONObject();
                 row.put("ts", timeStamp);
-                row.put("value", tallyLast);
+                if (tallyLast){
+                    row.put("value", 1.0);
+                }
+                else{
+                    row.put("value", 0.);
+                }
+                
                 col.put(row);
 
                 tallyLatest = tallyLast;
