@@ -84,7 +84,7 @@ def make_bim_tileset(bbox: List[str], building_iri: str):
 
 
 def test_gen_root_content_no_building_no_furniture_with_assets():
-    """Tests gen_root_content() when there are glTF files for assets but not building or furniture."""
+    """Tests gen_root_content() when there are geometry files for assets but not building or furniture."""
     # Arrange
     building_iri = "test_iri"
 
@@ -108,7 +108,7 @@ def test_gen_root_content_no_building_no_furniture_with_assets():
 
 
 def test_gen_root_content_no_building_no_furniture_no_assets():
-    """Tests gen_root_content() when there are no glTF files."""
+    """Tests gen_root_content() when there are no geometry files."""
     # Act
     actual = gen_root_content("test_iri", pd.DataFrame())
 
@@ -117,7 +117,7 @@ def test_gen_root_content_no_building_no_furniture_no_assets():
 
 
 def test_gen_root_content_only_building():
-    """Tests gen_root_content() when there is only glTF file for building."""
+    """Tests gen_root_content() when there is only geometry file for building."""
     # Arrange
     building_iri = "test_iri"
     expected = make_bim_tileset(C.sample_box_bbox, building_iri)
@@ -136,7 +136,7 @@ def test_gen_root_content_only_building():
 
 
 def test_gen_root_content_with_building_and_furniture():
-    """Tests gen_root_content() when there are glTF files for building and furniture."""
+    """Tests gen_root_content() when there are geometry files for building and furniture."""
     # Arrange
     building_iri = "test_iri"
     expected = make_bim_tileset(C.combined_bbox, building_iri)

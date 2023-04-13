@@ -77,7 +77,7 @@ def test_api_simple(init_assets, expected_assets, expected_bim_bbox, kg_client, 
     assert os.path.isfile(tileset_bim_file)
     assert_assets_present(expected_assets)
 
-    # Assert tileset content contains the assetUrl passed and gltf files
+    # Assert tileset content contains the assetUrl passed and geometry files
     tileset_content = read_json_file(tileset_bim_file)
     assert "root" in tileset_content
 
@@ -137,7 +137,7 @@ def test_api_complex(init_assets, expected_assets, expected_root_kvs, expected_c
     assert os.path.isfile(tileset_solar_file)
     assert_assets_present(expected_assets)
 
-    # Assert bim tileset content contains the assetUrl passed and gltf files
+    # Assert bim tileset content contains the assetUrl passed and geometry files
     content = read_json_file(tileset_bim_file)
     assert "root" in content
 
@@ -152,7 +152,7 @@ def test_api_complex(init_assets, expected_assets, expected_root_kvs, expected_c
     assert np.allclose(child_tile["boundingVolume"]["box"], expected_asset_bbox)
     assert child_tile["contents"] == expected_child_contents
 
-    # Assert solar tileset content contains the assetUrl passed and gltf files
+    # Assert solar tileset content contains the assetUrl passed and geometry files
     solar_content = read_json_file(tileset_solar_file)
     assert "root" in solar_content
 
@@ -209,7 +209,7 @@ def test_api_no_building_structure_with_assets(kg_client, gen_sample_ifc_file, f
     assert os.path.isfile(tileset_bim_file)
     assert_assets_present(expected_assets)
 
-    # Assert bim tileset content contains the assetUrl passed and gltf files
+    # Assert bim tileset content contains the assetUrl passed and geometry files
     content = read_json_file(tileset_bim_file)
     assert "root" in content
 

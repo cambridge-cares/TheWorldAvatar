@@ -1,7 +1,7 @@
 """
 # Author: qhouyee, picas9dan #
 
-This module provides helper functions to generate glTF models from the IFC file.
+This module provides helper functions to generate geometry outputs from the IFC file.
 """
 
 # Standard library imports
@@ -37,5 +37,5 @@ def exec_gltf_conversion(input_ifc: str, filename: str, options: List[str]):
 
     ifcconvert_command = ["./IfcConvert", "-q", input_ifc, glbpath] + options
 
-    logger.info(f"Converting {filename} to glTF...")
+    logger.info(f"Converting {filename} to geometry output...")
     run_shellcommand(ifcconvert_command)

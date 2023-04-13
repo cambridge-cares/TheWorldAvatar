@@ -2,7 +2,7 @@
 # Author: qhouyee, picas9dan #
 
 This is the submodule's entry function
-to split and convert the IFC model to glTF.
+to split and convert the IFC model to geometry outputs.
 """
 
 # Third-party imports
@@ -47,7 +47,7 @@ def conv2gltf(input_ifc: str, query_endpoint: str, update_endpoint: str):
         ifcconvert_options = ["--include", "attribute", "GlobalId"] + ifc_ids
         exec_gltf_conversion(input_ifc, filename, ifcconvert_options)
     
-    logger.info("Conversion to gltf completed...")
+    logger.info("Conversion to geometry outputs completed...")
 
     asset_data = metadata[~metadata["file"].isin(["furniture", "solarpanel", "sewagenetwork"])]
     building_iri = get_building_iri(query_endpoint, update_endpoint)

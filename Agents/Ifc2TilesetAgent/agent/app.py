@@ -76,7 +76,7 @@ def create_app():
             logger.error(error_msg)
             return jsonify({"data": error_msg}), 400
 
-        logger.info("Converting the model into glTF files...")
+        logger.info("Converting the model into geometry files...")
         asset_data, building_iri = conv2gltf(ifc_filepath, query_endpoint, update_endpoint)
 
         logger.info("Generating the tilesets...")

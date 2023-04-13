@@ -22,9 +22,9 @@ from .testutils import read_json
     "bbox, kwargs",
     [
         (list(range(12)), dict()),
-        (list(range(12)), dict(content={"uri": "./data/gltf/building.gltf"})),
+        (list(range(12)), dict(content={"uri": "./data/glb/building.glb"})),
         (None, dict()),
-        (None, dict(contents=[{"uri": "./data/gltf/building.gltf"}, {"uri": "./data/gltf/furniture.gltf"}]))
+        (None, dict(contents=[{"uri": "./data/glb/building.glb"}, {"uri": "./data/glb/furniture.glb"}]))
     ]
 )
 def test_make_root_tile(bbox, kwargs):
@@ -135,7 +135,7 @@ def test_jsonwriter():
 
 
 def test_gen_solarpanel_tileset_no_solarpanel():
-    """Tests gen_solarpanel_tileset() when there is no solarpanel glTF detected."""
+    """Tests gen_solarpanel_tileset() when there is no solarpanel geometry output detected."""
     # Act
     gen_solarpanel_tileset()
 
@@ -145,7 +145,7 @@ def test_gen_solarpanel_tileset_no_solarpanel():
 
 
 def test_gen_solarpanel_tileset():
-    """Tests gen_solarpanel_tileset() when there is a solarpanel glTF."""
+    """Tests gen_solarpanel_tileset() when there is a solarpanel geometry output."""
     # Arrange
     solarpanel_glb = os.path.join("data", "glb", "solarpanel.glb")
     m = C.sample_box_gen()
@@ -169,7 +169,7 @@ def test_gen_solarpanel_tileset():
 
 def test_gen_sewagenetwork_tileset_no_sewage():
     """
-    Tests gen_sewagenetwork_tileset() when there is no sewagenetwork.gltf detected
+    Tests gen_sewagenetwork_tileset() when there is no sewagenetwork geometry output detected
     """
     # Execute method
     gen_sewagenetwork_tileset()
@@ -178,7 +178,7 @@ def test_gen_sewagenetwork_tileset_no_sewage():
 
 
 def test_gen_sewagenetwork_tileset():
-    """Tests gen_sewagenetwork_tileset() when there is a sewagenetwork glTF."""
+    """Tests gen_sewagenetwork_tileset() when there is a sewagenetwork geometry output."""
     # Arrange
     sewage_glb = os.path.join("data", "glb", "sewagenetwork.glb")
     m = C.sample_cone_gen()

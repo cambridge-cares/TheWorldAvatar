@@ -2,7 +2,7 @@
 # Author: qhouyee, picas9dan #
 
 This is the submodule's entry function to
-generate the tilesets for the IFC file and its glTF models.
+generate the tilesets for the IFC file and its geometry outputs.
 """
 
 # Third-party imports

@@ -108,7 +108,7 @@ def append_tileset_assets(tileset: Optional[Tileset], asset_df: pd.DataFrame):
     if tileset is None or asset_df.empty:
         return
 
-    logger.info("Individual glTF assets detected. Attaching tileset with asset metadata...")
+    logger.info("Individual assets detected. Attaching tileset with asset metadata...")
 
     append_asset_metadata_schema(tileset)
     append_assets_to_tileset(tileset, asset_df)
