@@ -27,16 +27,18 @@ import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class acts as endpoint configuration. It fetches the blazegraph configuration from docker stack.
+ * This class takes reference from <a href="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_VIRTUALSENSOR/AermodAgent/src/main/java/com/cmclinnovations/aermod/EndpointConfig.java">...</a>
+ * and <a href="https://github.com/cambridge-cares/TheWorldAvatar/blob/main/Agents/FeatureInfoAgent/code/src/main/java/com/cmclinnovations/featureinfo/config/NamespaceGetter.java">...</a>
+ * It supports query from different namespaces.
+ *
+ * @author sandradeng20
+ */
 public class EndpointConfig {
     private List<String> kgurls;
     private String kguser;
     private String kgpassword;
-
-    private String ontopurl;
-
-    private String dburl;
-    private String dbuser;
-    private String dbpassword;
 
     private static final Logger LOGGER = LogManager.getLogger(EndpointConfig.class);
 
@@ -53,11 +55,24 @@ public class EndpointConfig {
         this.kgpassword = blazegraphEndpointConfig.getPassword();
     }
 
+    /**
+     * Construct AuthHeader for blazegraph request
+     * @param username blazegraph username
+     * @param password  blazegraph password
+     * @return AuthHeader
+     */
     private String getBasicAuthHeader(String username, String password) {
         String valueToEncode = username + ":" + password;
         return "Basic " + Base64.getEncoder().encodeToString(valueToEncode.getBytes());
     }
 
+    /**
+     * Restore xml structure from string
+     *
+     * @param xml xml in string
+     * @return xml document instance
+     * @throws Exception
+     */
     private Document loadXMLFromString(String xml) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -65,6 +80,13 @@ public class EndpointConfig {
         return builder.parse(is);
     }
 
+    /**
+     * Parse raw namespaces response to a list
+     * @param response raw namespaces response
+     * @param blazegraphEndpointConfig blazegraph endpoint config instance
+     * @return list of available namespace urls
+     * @throws Exception
+     */
     private List<String> parseResponse(String response, BlazegraphEndpointConfig blazegraphEndpointConfig) throws Exception {
         List<String> namespaces = new ArrayList<>();
 
@@ -88,6 +110,13 @@ public class EndpointConfig {
         return namespaces;
     }
 
+    /**
+     * Get all available namespaces' urls
+     *
+     * @param blazegraphEndpointConfig blazegraph endpoint config instance
+     * @return list of available namespace urls
+     * @throws Exception
+     */
     private List<String> getKgUrls(BlazegraphEndpointConfig blazegraphEndpointConfig) throws Exception {
 
         // Build the request URL
@@ -128,14 +157,26 @@ public class EndpointConfig {
         return parseResponse(response.body(), blazegraphEndpointConfig);
     }
 
+    /**
+     * Getter for kgurls
+     * @return kgurls
+     */
     public List<String> getKgurls() {
         return this.kgurls;
     }
 
+    /**
+     * Getter for kguser
+     * @return kguser
+     */
     public String getKguser() {
         return this.kguser;
     }
 
+    /**
+     * Getter for kgpassword
+     * @return kgpassword
+     */
     public String getKgpassword() {
         return this.kgpassword;
     }

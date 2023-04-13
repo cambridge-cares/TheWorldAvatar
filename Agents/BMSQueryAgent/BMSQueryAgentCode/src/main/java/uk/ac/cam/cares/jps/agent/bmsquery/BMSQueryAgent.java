@@ -24,6 +24,11 @@ import java.util.List;
 
 import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 
+/**
+ * This class contains the agent's main functionalities.
+ *
+ * @author sandradeng20
+ */
 public class BMSQueryAgent {
 
     private static final Logger LOGGER = LogManager.getLogger(BMSQueryAgent.class);
@@ -36,11 +41,20 @@ public class BMSQueryAgent {
     private final String BIM_STR = "http://www.theworldavatar.com/kg/ontobim/";
     private final Prefix P_BIM = SparqlBuilder.prefix("ontobim", iri(BIM_STR));
 
+    /**
+     * Setter for RemoteStoreClient and Knowledge graph namespace urls
+     * @param rsClient RemoteStoreClient instance
+     * @param kgUrls Knowledge graph namespace urls
+     */
     public void setRSClient(RemoteStoreClient rsClient, List<String> kgUrls) {
         this.rsClient = rsClient;
         this.kgUrls = kgUrls;
     }
 
+    /**
+     * Query buildings, facilities, rooms from blazegraph and keep the hierarchy of zones.
+     * @return JSONObject with zone hierarchy
+     */
     public JSONObject queryAllZones() {
         Variable building = SparqlBuilder.var("building");
         Variable facility = SparqlBuilder.var("facility");
@@ -89,6 +103,11 @@ public class BMSQueryAgent {
         return parseTableToJSONObj(jsonResult);
     }
 
+    /**
+     * Convert table like JSONArray data to zone hierarchy JSONObject
+     * @param ja JSONArray with table structure
+     * @return JSONObject with zone hierarchy
+     */
     private JSONObject parseTableToJSONObj(JSONArray ja) {
         JSONObject result = new JSONObject();
         result.put("buildings", new HashMap<>());
@@ -125,6 +144,11 @@ public class BMSQueryAgent {
         return result;
     }
 
+    /**
+     * Get all equipment instances in the given room
+     * @param roomStr Room IRI String
+     * @return all equipment instances in the room
+     */
     public JSONObject queryEquipmentInstances(String roomStr) {
         SelectQuery query = Queries.SELECT();
         Variable element = SparqlBuilder.var("iri");
@@ -156,8 +180,13 @@ public class BMSQueryAgent {
         return result;
     }
 
-    // CAUTION: the method assume @ is only for language specification in label
+    /**
+     * Parse the name of equipment instance
+     * @param response equipment instances
+     * @return equipment instances with more human-readable instance name
+     */
     private JSONArray parseLabel(JSONArray response) {
+        // CAUTION: the method assume @ is only for language specification in label
         for (int i = 0; i < response.length(); i++) {
             JSONObject jo = response.getJSONObject(i);
             String label = jo.getString("label");

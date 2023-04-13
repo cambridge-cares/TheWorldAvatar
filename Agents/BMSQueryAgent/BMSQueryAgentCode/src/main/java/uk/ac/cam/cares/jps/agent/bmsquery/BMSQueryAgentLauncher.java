@@ -19,6 +19,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+/**
+ * This class acts as the entry point of the agent that accepts parameter requests to specific routes.
+ * It processes requests, reads configurations of other clients, sets up the agent and calls functions in the agent to achieve its task.
+ *
+ * @author sandradeng20
+ */
 @Controller
 @WebServlet(urlPatterns = {"/status", "/retrieve/equipment", "/retrieve/zones"})
 public class BMSQueryAgentLauncher extends JPSAgent {
@@ -30,6 +36,11 @@ public class BMSQueryAgentLauncher extends JPSAgent {
     public static final String EMPTY_PARAMETER_ERROR_MSG = "Empty Request.";
     public static final String AGENT_Construction_ERROR_MSG = "The BMSQueryAgent could not be constructed.";
 
+    /**
+     * Servlet init.
+     *
+     * @throws ServletException
+     */
     @Override
     public void init() throws ServletException {
         super.init();
@@ -40,6 +51,19 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         LOGGER.fatal("This is a fatal message.");
     }
 
+    /**
+     * Handle GET request and route to different functions based on the path.
+     *
+     * @param request   an {@link HttpServletRequest} object that
+     *                  contains the request the client has made
+     *                  of the servlet
+     *
+     * @param response  an {@link HttpServletResponse} object that
+     *                  contains the response the servlet sends
+     *                  to the client
+     *
+     * @throws IOException
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/json");
@@ -89,7 +113,13 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         throw new JPSRuntimeException("Route: " + url + " does not exist");
     }
 
-    public boolean validateInput(HttpServletRequest request) throws BadRequestException {
+    /**
+     * Validate request params.
+     *
+     * @param request Http request
+     * @return Validity of the request params
+     */
+    public boolean validateInput(HttpServletRequest request) {
         LOGGER.info("Getting requestParams: " + request.getQueryString());
 
         if (request.getParameterMap().isEmpty()) {
@@ -106,6 +136,10 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         return true;
     }
 
+    /**
+     * Initialize agent and its remotestore client with EndpointConfig which get other agents' config from docker stack
+     * @return
+     */
     private BMSQueryAgent initializeAgent() {
         EndpointConfig endpointConfig = new EndpointConfig();
 
@@ -120,6 +154,10 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         return agent;
     }
 
+    /**
+     * Create BMSQueryAgent
+     * @return BMSQueryAgent instance
+     */
     private BMSQueryAgent createBMSQueryAgent() {
         BMSQueryAgent agent;
         try {
@@ -131,6 +169,11 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         return agent;
     }
 
+    /**
+     * Handle GET /status route and return the status of the agent.
+     * @param response Http response
+     * @throws IOException
+     */
     private void getStatus(HttpServletResponse response) throws IOException {
         LOGGER.info("Detected request to get agent status...");
 
