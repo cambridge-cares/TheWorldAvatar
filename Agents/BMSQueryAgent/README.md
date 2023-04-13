@@ -72,45 +72,7 @@ config/
 ```
 More information about adding custom containers to the stack can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#adding-custom-containers).
 
-
-## 1.2 (Optional) Config FeatureInfoAgent for Visualisation
-### 1) Add Scripts to FeatureInfoAgent
-Copy all `.sparql` files in `feature-info-agent-queries/` to `TheWorldAvatar/Agent/FeatureInfoAgent/queries`. 
-Then append the queries section in `feature-info-agent-queries/fia-config.json` to `FeatureInfoAgent/queries/fia-config.json`.
-
-More information about FeatureInfoAgent configuration can be found [here](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent#configuration).
-
-### 2) Add Config to Stack Manager
-Follow this [deployment step](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent#deploy-the-agent) to deploy the FeatureInfoAgent. It is recommended to copy the `json` file and configure the `<STACK NAME.json>` as in 1.1.1).
-
-If deploying with `.json` file, the stack-manager/inputs/config folder will have the following structure:
-```
-config/
-|_ services/
-   |_ bms-query-agent.json
-   |_ feature-info-agent.json
-   |_ ...
-|_ <STACK NAME>.json
-```
-
-
-The `<STACK NAME>.json` will have the following content:
-```json
-{
-  "services": {
-    "includes": [
-      "feature-info-agent",
-      "bms-query-agent",
-      // ...
-  ],
-    "excludes": [
-      // ...
-  ]
-  }
-}
-```
-
-## 1.3 Spin Up Stack
+## 1.2 Spin Up Stack
 Follow the [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#spinning-up-a-stack) to spin up the stack. 
 
 # 2. Usage
