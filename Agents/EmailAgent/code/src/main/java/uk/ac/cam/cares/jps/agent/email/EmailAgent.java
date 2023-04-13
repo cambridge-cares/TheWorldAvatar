@@ -1,7 +1,7 @@
 package uk.ac.cam.cares.jps.agent.email;
 
-import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_WHITE_IPS;
-import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_WHITE_ONLY;
+import static uk.ac.cam.cares.jps.agent.email.Config.KEY_WHITE_IPS;
+import static uk.ac.cam.cares.jps.agent.email.Config.KEY_WHITE_ONLY;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -49,15 +49,35 @@ public class EmailAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(EmailAgent.class);
 
     /**
+     * Config object.
+     */
+    private Config config;
+
+    /**
+     * Handles transmission of emails.
+     */
+    private Handler handler;
+
+    /**
      * Is the EmailAgent in a valid state.
      */
     private boolean validState = true;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public EmailAgent() {
         // Empty
+    }
+
+    /**
+     * Constructor, with instance overrides
+     * 
+     * @param config configuration object.
+     */
+    public EmailAgent(Config config, Handler handler) {
+        this.config = config;
+        this.handler = handler;
     }
 
     /**
@@ -76,10 +96,17 @@ public class EmailAgent extends JPSAgent {
         LOGGER.error("This is a test ERROR message");
         LOGGER.fatal("This is a test FATAL message");
 
-        // Read the properties file
         try {
-            EmailAgentConfiguration.readProperties();
-            LOGGER.debug("EmailAgent has been initialised.");
+            if(config == null) {
+                config = new Config();
+                config.readProperties();
+                LOGGER.debug("EmailAgent has been initialised.");
+            }
+
+            if(handler == null) {
+                handler = new Handler();
+                handler.setConfig(config);
+            }
 
         } catch (IOException ioException) {
             LOGGER.error("Could not read the required properties file!");
@@ -91,7 +118,7 @@ public class EmailAgent extends JPSAgent {
     }
 
     /**
-     * Processes incomung HTTP GET request.
+     * Processes incoming HTTP GET request.
      * 
      * Note that as the functionality of the agent is to request a job is performed, this should really be done
      * by using POST requests; however the JPS agent framework isn't configured well enough to handle this.
@@ -187,7 +214,7 @@ public class EmailAgent extends JPSAgent {
      */
     protected void sendRoute(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // Parse request as JSON
-        JSONObject requestParams = AgentCaller.readJsonParameter(request);
+        JSONObject requestParams = new JSONObject(request.getParameter("query"));
 
         // Check validity of request parameters
         if(!check(requestParams, response)) return;
@@ -202,11 +229,14 @@ public class EmailAgent extends JPSAgent {
             // Attempt to send email
             LOGGER.info("Submitting email request to remote SMTP server.");
             
-            EmailHandler.submitEmail(
+            handler.submitEmail(
                 requestParams.getString("subject"),
                 requestParams.getString("body"),
                 response
             );
+
+            response.setStatus(Response.Status.OK.getStatusCode());
+            response.getWriter().write("{\"description\":\"Request forwarded to remote SMTP server for delivery.\"}");
         }
     }
 
@@ -227,7 +257,7 @@ public class EmailAgent extends JPSAgent {
         }
 
         // Check if valid request parameters
-        if(requestParams.has("subject") && requestParams.getBoolean("body")) {
+        if(requestParams.has("subject") && requestParams.has("body")) {
             // Valid for a get/send request
             return true;
         } else {
@@ -246,11 +276,11 @@ public class EmailAgent extends JPSAgent {
      */
     private boolean validateRequest(HttpServletRequest request) {
         // Determine if the white list is enabled (default if not set should be false)
-        boolean whitelistOn = Boolean.parseBoolean(EmailAgentConfiguration.getProperty(KEY_WHITE_ONLY));
+        boolean whitelistOn = Boolean.parseBoolean(config.getProperty(KEY_WHITE_ONLY));
 
         if (whitelistOn) {
             // Get the allowed source IPs
-            String[] allowedIPs = EmailAgentConfiguration.getPropertyAsArray(KEY_WHITE_IPS, ",");
+            String[] allowedIPs = config.getPropertyAsArray(KEY_WHITE_IPS, ",");
             if (allowedIPs == null) return true;
 
             Set<String> allowedList = new HashSet<>(Arrays.asList(allowedIPs));

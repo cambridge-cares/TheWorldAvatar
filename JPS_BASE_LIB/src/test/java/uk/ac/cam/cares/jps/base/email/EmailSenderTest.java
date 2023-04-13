@@ -49,28 +49,28 @@ public class EmailSenderTest {
     @Test
     public void writeToFile() {
         // Initialise new EmailSender
-        EmailSender sender = new EmailSender();
+        EmailSender sender = new EmailSender("http://fake-website/email-agent/");
 
         // Use a junk environment variable so that the EmailSender cannot reach a remote
         // EmailAgent instance and falls back to creating a log file.
         try {
-            SystemLambda.withEnvironmentVariable("EMAIL_AGENT_URL", "foobar").execute(() -> {
-                // Email contents
-                String subject = "Test email from the EmailSender_Test.writeToFile() method.";
-                String body = "This test email should fail and get written to a local log file.";
 
-                // Attempt to send an email
-                Optional<Path> logFile = sender.sendEmail(subject, body);
+            // Email contents
+            String subject = "Test email from the EmailSender_Test.writeToFile() method.";
+            String body = "This test email should fail and get written to a local log file.";
 
-                // Should return a log file
-                Assertions.assertTrue(logFile.isPresent(), "Expected an log file to be returned!");
+            // Attempt to send an email
+            Optional<Path> logFile = sender.sendEmail(subject, body);
 
-                // Should exist on disk
-                Assertions.assertTrue(Files.exists(logFile.get()), "Expected to find log file on disk!");
+            // Should return a log file
+            Assertions.assertTrue(logFile.isPresent(), "Expected an log file to be returned!");
 
-                // Remove the generated log file
-                Assertions.assertTrue(Files.deleteIfExists(logFile.get()), "Could not delete the generated log file!");
-            });
+            // Should exist on disk
+            Assertions.assertTrue(Files.exists(logFile.get()), "Expected to find log file on disk!");
+
+            // Remove the generated log file
+            Assertions.assertTrue(Files.deleteIfExists(logFile.get()), "Could not delete the generated log file!");
+            
         } catch (Exception exception) {
             Assertions.fail("Could not mock environment variables for unit test!", exception);
         }

@@ -22,7 +22,7 @@ RUN sed -i "s|MASTER_PASSWORD|$(mvn --encrypt-master-password master_password)|"
 RUN sed -i "s|REPO_USERNAME|$(cat ../credentials/repo_username.txt)|;s|REPO_PASSWORD|$(cat ../credentials/repo_password.txt|xargs mvn --encrypt-password)|" settings.xml
 
 # Build the project
-WORKDIR /root/email-agent-code
+WORKDIR /root/code
 RUN mvn package
 
 
@@ -31,14 +31,14 @@ FROM tomcat:9.0.69-jdk17 as final
 WORKDIR /app
 
 # Copy in the properties file
-COPY ./email-agent-code/data/email-agent.properties /root/email-agent.properties
+COPY ./code/data/email-agent.properties /root/email-agent.properties
 
 # Set the required environment variable
 ENV EMAIL_AGENT_PROPERTIES="/root/email-agent.properties"
 
 # Copy the built WAR file
 # Note here that if the WAR version changes, you'll need to update this line
-COPY --from=build /root/email-agent-code/output/email_agent##1.0.1-SNAPSHOT.war $CATALINA_HOME/webapps/
+COPY --from=build /root/code/output/email_agent##1.0.1.war $CATALINA_HOME/webapps/
 
 # Expose port 8080
 EXPOSE 8080

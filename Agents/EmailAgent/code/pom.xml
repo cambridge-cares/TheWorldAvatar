@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.cam.cares.jps</groupId>
     <artifactId>email_agent</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <packaging>war</packaging>
 	
     <!-- Project properties -->
@@ -14,7 +14,7 @@
         <maven.compiler.release>17</maven.compiler.release>
         
         <!-- Version of the JPS Base Library to use, can be overridden by child projects. -->
-        <jps.base.version>1.35.0</jps.base.version>
+        <jps.base.version>1.35.1-SNAPSHOT</jps.base.version>
     </properties>
     
     <!-- Parent POM -->
@@ -173,12 +173,10 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
         </dependency>
-        
-        <!-- Used to mock environment variables in testing -->
         <dependency>
-            <groupId>com.github.stefanbirkner</groupId>
-            <artifactId>system-lambda</artifactId>
-            <version>1.2.0</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>4.8.1</version>
             <scope>test</scope>
         </dependency>
         

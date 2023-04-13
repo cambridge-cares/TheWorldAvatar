@@ -14,6 +14,9 @@ smtp.pass=MyEmailPassword
 # Enable SSL
 smtp.ssl.enable=true
 
+# Enable TLS
+smtp.starttls.enable=true
+
 # Enable authentication
 smtp.auth=true
 

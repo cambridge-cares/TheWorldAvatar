@@ -1,5 +1,13 @@
 package uk.ac.cam.cares.jps.agent.email;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
@@ -9,6 +17,7 @@ import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
 import uk.ac.cam.cares.jps.base.util.SysStreamHandler;
 
 /**
@@ -25,9 +34,12 @@ public class LoggingTest {
 
     /**
      * Checks to see that the root Log4J logger is configured as the properties files denotes.
+     * This should log to the console AND to a file in the ~/.jps/logs directory.
+     * 
+     * @throws IOException
      */
     @Test
-    public void checkLogging() {
+    public void checkLogging() throws IOException {
         LoggerContext loggerContext = (LoggerContext) LogManager.getContext();
         Assertions.assertNotNull(loggerContext, "Current LoggerContext is null.");
         
@@ -55,6 +67,18 @@ public class LoggingTest {
         LOGGER.fatal("This is a FATAL level test message, from the LoggingTest class.");
         System.out.println("This is a System.out test message, from the LoggingTest class.");
         System.err.println("This is a System.err test message, from the LoggingTest class.");
+
+        // Test that the log file exists
+        Path logFile = Paths.get(System.getProperty("user.home"), "/.jps/logs/jps.log");
+        Assertions.assertTrue(Files.exists(logFile), "Could not find expected log file on disk!");
+
+        // Check that the file has been modified within 30 seconds
+        BasicFileAttributes attrs = Files.readAttributes(logFile, BasicFileAttributes.class);
+        Instant modifiedTime = attrs.lastModifiedTime().toInstant();
+        Instant now = Instant.now();
+        long seconds = Math.abs(ChronoUnit.SECONDS.between(modifiedTime, now));
+
+        Assertions.assertTrue(seconds < 30, "Log file has not been updated in last 30 seconds!");
     }
 
 }

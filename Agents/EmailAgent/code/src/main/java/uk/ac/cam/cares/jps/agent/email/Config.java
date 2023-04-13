@@ -12,12 +12,12 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Michael Hillman (mdhillman<@>cmclinnovations.com)
  */
-public class EmailAgentConfiguration {
+public class Config {
 
     /**
      * Logger for error output.
      */
-    private static final Logger LOGGER = LogManager.getLogger(EmailAgentConfiguration.class);
+    private static final Logger LOGGER = LogManager.getLogger(Config.class);
 
     /**
      * Name of the environment variable pointing to the location of the properties file.
@@ -82,13 +82,20 @@ public class EmailAgentConfiguration {
     /**
      * Live properties object.
      */
-    private static Properties properties;
+    private Properties properties;
 
     /**
      * Constructor.
      */
-    private EmailAgentConfiguration() {
+    public Config() {
         // Empty
+    }
+
+    /**
+     * Uses the environment variable to get the location of the property file.
+     */
+    public String getPropertyFileLocation() {
+        return System.getenv(PROPERTIES_ENV);
     }
     
     /**
@@ -100,7 +107,7 @@ public class EmailAgentConfiguration {
      *
      * @throws IllegalStateException if properties has not been read
      */
-    static String getProperty(String key) {
+    public String getProperty(String key) {
         if (properties == null) {
             throw new IllegalStateException("Properties file has not been loaded!");
         }
@@ -119,7 +126,7 @@ public class EmailAgentConfiguration {
      *
      * @throws IllegalStateException if properties has not been read
      */
-    static String[] getPropertyAsArray(String key, String delimiter) {
+    public String[] getPropertyAsArray(String key, String delimiter) {
         if (properties == null) {
             throw new IllegalStateException("Properties file has not been loaded!");
         }
@@ -135,11 +142,11 @@ public class EmailAgentConfiguration {
      *
      * @throws IOException if properties file cannot be read.
      */
-    static void readProperties() throws IOException {
+    public void readProperties() throws IOException {
         properties = new Properties();
 
-        String propertyFileLocation = System.getenv(PROPERTIES_ENV);
-        LOGGER.info("Attempting to read properties file at: {}", propertyFileLocation);
+        String propertyFileLocation = getPropertyFileLocation();
+        LOGGER.info("Reading properties file at: {}", propertyFileLocation);
 
         try ( FileInputStream file = new FileInputStream(propertyFileLocation)) {
             properties.load(file);
@@ -148,7 +155,7 @@ public class EmailAgentConfiguration {
             boolean whitelistOn = Boolean.parseBoolean(getProperty(KEY_WHITE_ONLY));
 
             if (whitelistOn) {
-                String[] allowedIPs = EmailAgentConfiguration.getPropertyAsArray(KEY_WHITE_IPS, ",");
+                String[] allowedIPs = this.getPropertyAsArray(KEY_WHITE_IPS, ",");
 
                 if (allowedIPs != null) {
                     LOGGER.info("Whitelist enabled, only approving requests from local machine and following IPs...");
@@ -167,7 +174,7 @@ public class EmailAgentConfiguration {
      *
      * @throws IOException if properties file cannot be read.
      */
-    static void readProperties(String propertiesFile) throws IOException {
+    public void readProperties(String propertiesFile) throws IOException {
         properties = new Properties();
 
         try ( FileInputStream file = new FileInputStream(propertiesFile)) {

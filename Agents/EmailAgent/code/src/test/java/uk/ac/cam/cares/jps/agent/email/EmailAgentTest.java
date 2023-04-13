@@ -1,19 +1,34 @@
 package uk.ac.cam.cares.jps.agent.email;
 
-import uk.ac.cam.cares.jps.agent.email.mock.MockHttpServletRequest;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
+
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Enumeration;
+
+import javax.mail.Message;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Response;
+
+import org.apache.http.client.methods.HttpGet;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
+import org.springframework.mock.web.MockHttpServletResponse;
 
 /**
  * Tests the functionality of the EmailAgent class.
@@ -30,12 +45,17 @@ public class EmailAgentTest {
     /**
      * Sample request data (should be valid).
      */
-    private static JSONObject SAMPLE_REQUEST_GOOD;
+    private static String SAMPLE_REQUEST_GOOD;
 
     /**
      * Sample request data (should be invalid).
      */
-    private static JSONObject SAMPLE_REQUEST_BAD;
+    private static String SAMPLE_REQUEST_BAD;
+
+    /**
+     * Sample configuration object.
+     */
+    private static Config CONFIG;
 
     /**
      * Initialisation before any of the tests run.
@@ -44,12 +64,10 @@ public class EmailAgentTest {
     public static void setup() {
         // Read the JSON file mocking a HTTP request
         try {
-            String goodContent = Files.readString(Paths.get("./data/sample-request-good.json"));
-            SAMPLE_REQUEST_GOOD = new JSONObject(goodContent);
+            SAMPLE_REQUEST_GOOD = Files.readString(Paths.get("./data/sample-request-good.json"));
             Assertions.assertNotNull(SAMPLE_REQUEST_GOOD, "Could not read/parse sample JSON request!");
 
-            String badContent = Files.readString(Paths.get("./data/sample-request-bad.json"));
-            SAMPLE_REQUEST_BAD = new JSONObject(badContent);
+            SAMPLE_REQUEST_BAD = Files.readString(Paths.get("./data/sample-request-bad.json"));
             Assertions.assertNotNull(SAMPLE_REQUEST_BAD, "Could not read/parse sample JSON request!");
 
         } catch (IOException | JSONException exception) {
@@ -59,82 +77,189 @@ public class EmailAgentTest {
         // Read the properties file (developer expected to provide it at the following location, 
         // it should NOT be committed).
         try {
-            EmailAgentConfiguration.readProperties("./data/example-properties.txt");
+            CONFIG = spy(Config.class);
+            when(CONFIG.getPropertyFileLocation()).thenReturn("./data/example-properties.txt");
+            CONFIG.readProperties();
+
+            LOGGER.info("Finished performing test setup.");
         } catch (IOException ioException) {
             Assertions.fail("Could not read properties file!", ioException);
         }
     }
 
     /**
-     * Using the good sample request file and the properties file (to be provided by the developer),
-     * this attempts to send an email using the EmailHandler class.
-     *
-     * Note: This test has been disabled as it requires a properties file with real SMTP credentials
-     * to be present. At the time of writing, this is difficult to include in automated testing
-     * environments.
+     * Using a valid request format, this attempts to send an email using the 
+     * agent and expects an OK response.Note that this test utilises a mock Handler
+     * instance, so no actual email is transmitted.
      */
-    @Disabled
     @Test
     public void sendGoodTestEmail() {
-        LOGGER.debug("Running sendGoodTest()...");
+        LOGGER.debug("Running sendGoodTestEmail()...");
 
-        // New agent
-        EmailAgent agent = new EmailAgent();
+        try {
+            // Mock HTTP request
+            HttpServletRequest request = spy(HttpServletRequest.class);
+            when(request.getMethod()).thenReturn(HttpGet.METHOD_NAME);
+            when(request.getRequestURI()).thenReturn("http://fake-website.com/email-agent/send");
+            when(request.getRemoteAddr()).thenReturn("localhost");
+            when(request.getParameter(ArgumentMatchers.any())).thenReturn(SAMPLE_REQUEST_GOOD);
 
-        // Pass in request and get result
-        JSONObject result = agent.processRequestParameters(SAMPLE_REQUEST_GOOD, new MockHttpServletRequest("/send"));
+            // Mock HTTP response
+            HttpServletResponse response = spy(MockHttpServletResponse.class);
+            StringWriter strWriter = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(strWriter);
+            when(response.getWriter()).thenReturn(printWriter);
 
-        boolean hasStatus = !result.isNull("status");
-        Assertions.assertTrue(hasStatus, "Expected a 'status' field from JSON result!");
+            // Mock Handler (so no real emails are sent)
+            Handler handler = spy(Handler.class);
+            handler.setConfig(CONFIG);
 
-        String returnCode = result.get("status").toString();
-        Assertions.assertEquals("200", returnCode, "Expected JSON status to be '200'!");
+            doNothing().when(handler).sendEmail(
+                ArgumentMatchers.any(Message.class),
+                ArgumentMatchers.any(HttpServletResponse.class)
+            );
+
+            // Run agent
+            EmailAgent agent = new EmailAgent(CONFIG, handler);
+            agent.doGet(request, response);
+
+            // Check results
+            Assertions.assertEquals(
+                Response.Status.OK.getStatusCode(),
+                response.getStatus(), 
+                "Returned HTTP code did not match the expected value!"
+            );
+
+            Assertions.assertTrue(
+                strWriter.toString().contains("Request forwarded"),
+                "Response body did not contain expected string!"
+            );
+        } catch(Exception exception) {
+            Assertions.fail(exception);
+        }
     }
 
     /**
-     * Using the bad sample request file and the properties file (to be provided by the developer),
-     * this attempts to send an email using the EmailHandler class.
+     * Using an invalid request format, this attempts to send an email using the 
+     * agent and expects a BAD REQUEST response.
      */
     @Test
     public void sendBadTestEmail() {
         LOGGER.debug("Running sendBadTestEmail()...");
 
-        // New agent
-        EmailAgent agent = new EmailAgent();
+        try {
+            // Mock HTTP request
+            HttpServletRequest request = spy(HttpServletRequest.class);
+            when(request.getMethod()).thenReturn(HttpGet.METHOD_NAME);
+            when(request.getRequestURI()).thenReturn("http://fake-website.com/email-agent/send");
+            when(request.getRemoteAddr()).thenReturn("localhost");
+            when(request.getParameter("query")).thenReturn(SAMPLE_REQUEST_BAD);
 
-        // Note: This should really through a BadRequestException, but for some reason the JPS
-        // Base Library actually throws a RuntimeException
-        Assertions.assertThrows(RuntimeException.class, () -> {
-            // Pass in request and get result
-            agent.processRequestParameters(SAMPLE_REQUEST_BAD, new MockHttpServletRequest("/send"));
-            Assertions.fail("Bad request passed in, expected an Exception to be thrown!");
-        }, "Expected a BadRequestException to be thrown!");
+            // Mock HTTP response
+            HttpServletResponse response = spy(MockHttpServletResponse.class);
+            StringWriter strWriter = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(strWriter);
+            when(response.getWriter()).thenReturn(printWriter);
+
+            // Run agent
+            EmailAgent agent = new EmailAgent(CONFIG, null);
+            agent.doGet(request, response);
+
+            // Check results
+            Assertions.assertEquals(
+                Response.Status.BAD_REQUEST.getStatusCode(),
+                response.getStatus(), 
+                "Returned HTTP code did not match the expected value!"
+            );
+
+            Assertions.assertTrue(
+                strWriter.toString().contains("Must specify"),
+                "Response body did not contain expected string!"
+            );
+        } catch(Exception exception) {
+            Assertions.fail(exception);
+        }
     }
 
     /**
-     * Tests the ping functionality of the EmailAgent.
+     * Tests the ping functionality of the EmailAgent using "localhost" as the sender,
+     * should pass the whitelist test.
      */
     @Test
-    public void testStatus() {
-        LOGGER.debug("Running testStatus()...");
+    public void testStatusGood() {
+        LOGGER.debug("Running testStatusGood()...");
         
-        // New agent
-        EmailAgent agent = new EmailAgent();
+        try {
+            // Mock HTTP request
+            HttpServletRequest request = spy(HttpServletRequest.class);
+            when(request.getMethod()).thenReturn(HttpGet.METHOD_NAME);
+            when(request.getRequestURI()).thenReturn("http://fake-website.com/email-agent/status");
+            when(request.getRemoteAddr()).thenReturn("localhost");
 
-        // Ping request
-        JSONObject request = new JSONObject();
+            // Mock HTTP response
+            HttpServletResponse response = spy(MockHttpServletResponse.class);
+            StringWriter strWriter = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(strWriter);
+            when(response.getWriter()).thenReturn(printWriter);
+
+            // Run agent as if from HTTP
+            EmailAgent agent = new EmailAgent(CONFIG, null);
+            agent.doGet(request, response);
+            
+            Assertions.assertEquals(
+                Response.Status.OK.getStatusCode(),
+                response.getStatus(), 
+                "Returned HTTP code did not match the expected value!"
+            );
+
+            Assertions.assertTrue(
+                strWriter.toString().contains("Ready to serve"),
+                "Response body did not contain expected string!"
+            );
+        } catch(Exception exception) {
+            Assertions.fail(exception);
+        }
+    }
+
+    /**
+     * Tests the ping functionality of the EmailAgent using "69.69.69.69" as the sender,
+     * should fail the whitelist test.
+     */
+    @Test
+    public void testStatusBad() {
+        LOGGER.debug("Running testStatusBad()...");
         
-        // Pass in request and get result
-        JSONObject result = agent.processRequestParameters(request, new MockHttpServletRequest("/status"));
+        try {
+            // Mock HTTP request
+            HttpServletRequest request = spy(HttpServletRequest.class);
+            when(request.getMethod()).thenReturn(HttpGet.METHOD_NAME);
+            when(request.getRequestURI()).thenReturn("http://fake-website.com/email-agent/status");
+            when(request.getRemoteAddr()).thenReturn("69.69.69.69");
 
-        boolean hasStatus = !result.isNull("status");
-        Assertions.assertTrue(hasStatus, "Expected a 'status' field from JSON result!");
+            // Mock HTTP response
+            HttpServletResponse response = spy(MockHttpServletResponse.class);
+            StringWriter strWriter = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(strWriter);
+            when(response.getWriter()).thenReturn(printWriter);
 
-        String returnCode = result.get("status").toString();
-        Assertions.assertEquals("200", returnCode, "Expected JSON status to be '200'!");
+            // Run agent as if from HTTP
+            EmailAgent agent = new EmailAgent(CONFIG, null);
+            agent.doGet(request, response);
+            
+            // Check results
+            Assertions.assertEquals(
+                Response.Status.FORBIDDEN.getStatusCode(),
+                response.getStatus(), 
+                "Returned HTTP code did not match the expected value!"
+            );
 
-        boolean hasDescription = !result.isNull("description");
-        Assertions.assertTrue(hasDescription, "Expected a 'description' field from JSON result!");
+            Assertions.assertTrue(
+                strWriter.toString().contains("Unauthorised"),
+                "Response body did not contain expected string!"
+            );
+        } catch(Exception exception) {
+            Assertions.fail(exception);
+        }
     }
 
     /**

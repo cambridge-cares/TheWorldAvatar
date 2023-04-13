@@ -1,14 +1,14 @@
 package uk.ac.cam.cares.jps.agent.email;
 
-import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_FROM_ADDRESS;
-import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_AUTH;
-import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_HOST;
-import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_PASS;
-import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SMTP_PORT;
-import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SSL_ENABLE;
-import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_STARTTLS_ENABLE;
-import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_SUBJECT_PREFIX;
-import static uk.ac.cam.cares.jps.agent.email.EmailAgentConfiguration.KEY_TO_ADDRESS;
+import static uk.ac.cam.cares.jps.agent.email.Config.KEY_FROM_ADDRESS;
+import static uk.ac.cam.cares.jps.agent.email.Config.KEY_SMTP_AUTH;
+import static uk.ac.cam.cares.jps.agent.email.Config.KEY_SMTP_HOST;
+import static uk.ac.cam.cares.jps.agent.email.Config.KEY_SMTP_PASS;
+import static uk.ac.cam.cares.jps.agent.email.Config.KEY_SMTP_PORT;
+import static uk.ac.cam.cares.jps.agent.email.Config.KEY_SSL_ENABLE;
+import static uk.ac.cam.cares.jps.agent.email.Config.KEY_STARTTLS_ENABLE;
+import static uk.ac.cam.cares.jps.agent.email.Config.KEY_SUBJECT_PREFIX;
+import static uk.ac.cam.cares.jps.agent.email.Config.KEY_TO_ADDRESS;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -33,12 +33,12 @@ import org.apache.logging.log4j.Logger;
  *
  * @author Michael Hillman
  */
-public class EmailHandler {
+public class Handler {
 
     /**
      * Logger for error output.
      */
-    private static final Logger LOGGER = LogManager.getLogger(EmailHandler.class);
+    private static final Logger LOGGER = LogManager.getLogger(Handler.class);
 
     /**
      * Prefix for email body
@@ -53,10 +53,24 @@ public class EmailHandler {
     private static final String BODY_SUFFIX = "<br><br><hr><br></html>";
 
     /**
-     * Constructor
+     * Config object.
      */
-    private EmailHandler() {
+    private Config config;
+
+    /**
+     * Constructor.
+     */
+    public Handler() {
         // Empty
+    }
+
+    /**
+     * Sets the config object.
+     * 
+     * @param config config object.
+     */
+    public void setConfig(Config config) {
+        this.config = config;
     }
 
     /**
@@ -68,23 +82,23 @@ public class EmailHandler {
      * 
      * @throws IOException
      */
-    static void submitEmail(String subject, String body, HttpServletResponse response) throws IOException {
+    public void submitEmail(String subject, String body, HttpServletResponse response) throws IOException {
 
         // Load SMTP properites
         Properties mailProps = new Properties();
-        mailProps.put("mail.smtp.host", EmailAgentConfiguration.getProperty(KEY_SMTP_HOST));
-        mailProps.put("mail.smtp.port", EmailAgentConfiguration.getProperty(KEY_SMTP_PORT));
-        mailProps.put("mail.smtp.starttls.enable", EmailAgentConfiguration.getProperty(KEY_STARTTLS_ENABLE));
-        mailProps.put("mail.smtp.ssl.enable", EmailAgentConfiguration.getProperty(KEY_SSL_ENABLE));
-        mailProps.put("mail.smtp.auth", EmailAgentConfiguration.getProperty(KEY_SMTP_AUTH));
+        mailProps.put("mail.smtp.host", config.getProperty(KEY_SMTP_HOST));
+        mailProps.put("mail.smtp.port", config.getProperty(KEY_SMTP_PORT));
+        mailProps.put("mail.smtp.starttls.enable", config.getProperty(KEY_STARTTLS_ENABLE));
+        mailProps.put("mail.smtp.ssl.enable", config.getProperty(KEY_SSL_ENABLE));
+        mailProps.put("mail.smtp.auth", config.getProperty(KEY_SMTP_AUTH));
 
         // Create authenticated session
         Session mailSession = Session.getDefaultInstance(mailProps, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(
-                        EmailAgentConfiguration.getProperty(KEY_FROM_ADDRESS),
-                        EmailAgentConfiguration.getProperty(KEY_SMTP_PASS)
+                        config.getProperty(KEY_FROM_ADDRESS),
+                        config.getProperty(KEY_SMTP_PASS)
                 );
             }
         });
@@ -95,18 +109,18 @@ public class EmailHandler {
 
         try {
             // To address 
-            String toAddress = EmailAgentConfiguration.getProperty(KEY_TO_ADDRESS);
+            String toAddress = config.getProperty(KEY_TO_ADDRESS);
             String[] toAddresses = toAddress.split(",");
             for (String address : toAddresses) {
                 email.addRecipient(RecipientType.TO, new InternetAddress(address));
             }
 
             // From address
-            String fromAddress = EmailAgentConfiguration.getProperty(KEY_FROM_ADDRESS);
+            String fromAddress = config.getProperty(KEY_FROM_ADDRESS);
             email.setFrom(new InternetAddress(fromAddress));
 
             // Subject
-            String fullSubject = EmailAgentConfiguration.getProperty(KEY_SUBJECT_PREFIX) + " - " + subject;
+            String fullSubject = config.getProperty(KEY_SUBJECT_PREFIX) + " - " + subject;
             email.setSubject(fullSubject);
 
             // Body
@@ -133,7 +147,7 @@ public class EmailHandler {
      * 
      * @throws IOException
      */
-    private static void sendEmail(Message email, HttpServletResponse response) throws IOException {
+    public void sendEmail(Message email, HttpServletResponse response) throws IOException {
         try {
             LOGGER.info("Submitting email to remote SMTP server.");
             Transport.send(email);
