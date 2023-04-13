@@ -6,7 +6,6 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,8 +20,20 @@ public class AndroidStatusAgent extends JPSAgent{
     private String equipmentIRI = "";
     private final String EQUIPMENT_IRI_KEY = "equipmentIRI";
 
+    /**
+     * Handle the POST request to set the equipmentIRI. Expect the equipmentIRI in the request param instead of the body.
+     *
+     * @param request   an {@link HttpServletRequest} object that
+     *                  contains the request the client has made
+     *                  of the servlet
+     *
+     * @param response  an {@link HttpServletResponse} object that
+     *                  contains the response the servlet sends
+     *                  to the client
+     *
+     */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
         String datetime = dateFormat.format(new Date());
         LOGGER.info("POST Request received at: {}", datetime);
@@ -45,6 +56,12 @@ public class AndroidStatusAgent extends JPSAgent{
         throw new JPSRuntimeException("Unknown Path");
     }
 
+    /**
+     * Validate request params.
+     *
+     * @param request HTTP request
+     * @return whether the request params are valid.
+     */
     private boolean check(HttpServletRequest request) {
         if (request.getParameter(EQUIPMENT_IRI_KEY).isEmpty()) {
             LOGGER.error("equipmentIRI is missing");
@@ -54,6 +71,19 @@ public class AndroidStatusAgent extends JPSAgent{
         return true;
     }
 
+    /**
+     * Handle GET request to get equpmentIRI stored.
+     *
+     * @param request   an {@link HttpServletRequest} object that
+     *                  contains the request the client has made
+     *                  of the servlet
+     *
+     * @param response  an {@link HttpServletResponse} object that
+     *                  contains the response the servlet sends
+     *                  to the client
+     *
+     * @throws IOException exception may be thrown when writing response.
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setContentType("text/json");
