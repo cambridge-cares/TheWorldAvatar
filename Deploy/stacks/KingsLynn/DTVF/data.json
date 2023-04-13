@@ -2920,7 +2920,7 @@
                                             ],
                                             "paint": {
                                                 "line-color": "#F9D813",
-                                                "line-width": 2
+                                                "line-width": 3
                                             }
                                         },
                                         {
@@ -2954,7 +2954,7 @@
                                                 "icon-size": 0.2
                                             },
                                             "paint": {
-                                                "icon-color": "#F9D813"
+                                                "icon-color": "#000000"
                                             }
                                         },
                                         {
@@ -3033,7 +3033,7 @@
                                             ],
                                             "paint": {
                                                 "line-color": "#F9D813",
-                                                "line-width": 2
+                                                "line-width": 3
                                             }
                                         },
                                         {
@@ -3067,7 +3067,7 @@
                                                 "icon-size": 0.2
                                             },
                                             "paint": {
-                                                "icon-color": "#F9D813"
+                                                "icon-color": "#000000"
                                             }
                                         },
                                         {
@@ -3151,7 +3151,7 @@
                                     ],
                                     "paint": {
                                         "line-color": "#86C3EB",
-                                        "line-width": 2
+                                        "line-width": 3
                                     }
                                 },
                                 {
@@ -3177,7 +3177,7 @@
                                         "icon-size": 0.2
                                     },
                                     "paint": {
-                                        "icon-color": "#86C3EB"
+                                        "icon-color": "#000000"
                                     }
                                 },
                                 {
@@ -5723,7 +5723,7 @@
                                             ],
                                             "paint": {
                                                 "line-color": "#F9D813",
-                                                "line-width": 2
+                                                "line-width": 3
                                             }
                                         },
                                         {
@@ -5757,7 +5757,7 @@
                                                 "icon-size": 0.2
                                             },
                                             "paint": {
-                                                "icon-color": "#F9D813"
+                                                "icon-color": "#000000"
                                             }
                                         },
                                         {
@@ -5836,7 +5836,7 @@
                                             ],
                                             "paint": {
                                                 "line-color": "#F9D813",
-                                                "line-width": 2
+                                                "line-width": 3
                                             }
                                         },
                                         {
@@ -5870,7 +5870,7 @@
                                                 "icon-size": 0.2
                                             },
                                             "paint": {
-                                                "icon-color": "#F9D813"
+                                                "icon-color": "#000000"
                                             }
                                         },
                                         {
@@ -5954,7 +5954,7 @@
                                     ],
                                     "paint": {
                                         "line-color": "#86C3EB",
-                                        "line-width": 2
+                                        "line-width": 3
                                     }
                                 },
                                 {
@@ -5980,7 +5980,7 @@
                                         "icon-size": 0.2
                                     },
                                     "paint": {
-                                        "icon-color": "#86C3EB"
+                                        "icon-color": "#000000"
                                     }
                                 },
                                 {
