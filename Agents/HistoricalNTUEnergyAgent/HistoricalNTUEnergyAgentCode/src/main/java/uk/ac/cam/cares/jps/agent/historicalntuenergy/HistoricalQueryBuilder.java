@@ -45,6 +45,8 @@ public class HistoricalQueryBuilder {
     public static final String branch = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#UndergroundCable";
     public static final String absorbedActivePower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#AbsorbedActivePower";
     public static final String absorbedReactivePower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#AbsorbedReactivePower";
+    public static final String generatedActivePower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedActivePower";
+    public static final String generatedReactivePower = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedReactivePower";
     public static final String voltageAngle = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#VoltageAngle";
     public static final String voltageMagnitude = "http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#VoltageMagnitude";
     public static final String SIDerivedUnit = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit";
@@ -556,7 +558,7 @@ public class HistoricalQueryBuilder {
                         TriplePattern PGHasActivePowerGenerated = iri(photovoltaicGeneratorIRI).has(iri(hasActivePowerGenerated), iri(generatedActivePowerIRI));
                         TriplePattern omHasUnit = iri(iri).has(iri(hasUnit), iri(kilowatt));
                         TriplePattern APHasValue = iri(generatedActivePowerIRI).has(iri(OMHasValue), iri(iri));
-                        TriplePattern typeAP = iri(generatedActivePowerIRI).isA(iri(absorbedActivePower));
+                        TriplePattern typeAP = iri(generatedActivePowerIRI).isA(iri(generatedActivePower));
                         InsertDataQuery insert = Queries.INSERT_DATA(omHasUnit, APHasValue, typeAP, BNContainsPhotovoltaicGenerator, PGisType, PGHasActivePowerGenerated);
                         kbClient.executeUpdate(insert.getQueryString());
                     }
@@ -577,7 +579,7 @@ public class HistoricalQueryBuilder {
                         TriplePattern PGHasReactivePowerGenerated = iri(photovoltaicGeneratorIRI).has(iri(hasReactivePowerGenerated), iri(generatedReactivePowerIRI));
                         TriplePattern omHasUnit = iri(iri).has(iri(hasUnit), iri(kilowatt));
                         TriplePattern RPHasValue = iri(generatedReactivePowerIRI).has(iri(OMHasValue), iri(iri));
-                        TriplePattern typeAP = iri(generatedReactivePowerIRI).isA(iri(absorbedActivePower));
+                        TriplePattern typeAP = iri(generatedReactivePowerIRI).isA(iri(generatedReactivePower));
                         InsertDataQuery insert = Queries.INSERT_DATA(omHasUnit, RPHasValue, typeAP, PGHasReactivePowerGenerated);
                         kbClient.executeUpdate(insert.getQueryString());
                     }
