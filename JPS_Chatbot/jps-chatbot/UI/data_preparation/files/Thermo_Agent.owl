@@ -25,8 +25,8 @@
   <MSM.:hasOutput rdf:resource="#MessageContent_148bef5fc55527ef8df1117a2c01c07140a28f12"/>
   <MSM.:hasOutput rdf:resource="#MessageContent_f3109b16883d21984eac7c8dc3cacccf724ccf29"/>
   <MSM.:hasOutput rdf:resource="#MessageContent_f7c4e75626b617ef4b3da1a027b51950388741cc"/>
-  <MSM.:hasHttpUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#string"> http://127.0.0.1:5000/thermo_agent</MSM.:hasHttpUrl>
-  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; &lt;species&gt; at &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
+  <MSM.:hasHttpUrl rdf:datatype="http://www.w3.org/2001/XMLSchema#string"> http://127.0.0.1:5000/api/thermoagent/calculate </MSM.:hasHttpUrl>
+  <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;attribute&gt; of &lt;species&gt; at &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
   <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;species&gt; singlequotesign &lt;attribute&gt; at &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
   <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;species&gt; singlequotesign &lt;attribute&gt; at &lt;qualifier&gt; and &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
   <MSM.:hasQuestionTemplates rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&lt;species&gt; singlequotesign &lt;attribute&gt; under &lt;qualifier&gt;</MSM.:hasQuestionTemplates>
@@ -43,7 +43,7 @@
 <MSM.:MessagePart rdf:about="#MessagePart_50dcc71b410a9594e18703fb408f2d7d154714ef">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">species</MSM.:hasName>
-  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_species</MSM.:hasType>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>
   <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">species</MSM.:hasNerLabel>
 </MSM.:MessagePart>
@@ -57,7 +57,7 @@
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <MSM.:hasQualifier rdf:resource="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c"/>
   <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ThermalProperty</MSM.:hasName>
-  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_general_thermal_property</MSM.:hasType>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#ThermoProperty</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</MSM.:isArray>
   <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">attribute</MSM.:hasNerLabel>
 </MSM.:MessagePart>
@@ -65,7 +65,7 @@
 <MSM.:MessagePart rdf:about="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">temperature</MSM.:hasName>
-  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_temperature</MSM.:hasType>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Temperature</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>
   <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">temperature</MSM.:hasNerLabel>
 </MSM.:MessagePart>
@@ -79,7 +79,7 @@
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <MSM.:hasQualifier rdf:resource="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c"/>
   <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HeatCapacity</MSM.:hasName>
-  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_heat_capacity</MSM.:hasType>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#HeatCapacity</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</MSM.:isArray>
   <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">attribute</MSM.:hasNerLabel>
 </MSM.:MessagePart>
@@ -93,7 +93,7 @@
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <MSM.:hasQualifier rdf:resource="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c"/>
   <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HeatCapacityAtConstVolume</MSM.:hasName>
-  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_heat_capacity_at_constant_volume</MSM.:hasType>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#HeatCapacityAtConstantVolume</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>
   <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">attribute</MSM.:hasNerLabel>
 </MSM.:MessagePart>
@@ -107,7 +107,7 @@
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <MSM.:hasQualifier rdf:resource="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c"/>
   <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">HeatCapacityAtConstPressure</MSM.:hasName>
-  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_heat_capacity_at_constant_pressure</MSM.:hasType>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#HeatCapacityAtConstantPressure</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>
   <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">attribute</MSM.:hasNerLabel>
 </MSM.:MessagePart>
@@ -122,7 +122,7 @@
   <MSM.:hasQualifier rdf:resource="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c"/>
   <MSM.:hasQualifier rdf:resource="#MessagePart_1e2fe22c32abeabd8b1cf628c06d88abcf7cd4fa"/>
   <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">InternalEnergy</MSM.:hasName>
-  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_InternalEnergy</MSM.:hasType>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#InternalEnergy</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>
   <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">attribute</MSM.:hasNerLabel>
 </MSM.:MessagePart>
@@ -130,7 +130,7 @@
 <MSM.:MessagePart rdf:about="#MessagePart_1e2fe22c32abeabd8b1cf628c06d88abcf7cd4fa">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">pressure</MSM.:hasName>
-  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_pressure</MSM.:hasType>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Pressure</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>
   <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">pressure</MSM.:hasNerLabel>
 </MSM.:MessagePart>
@@ -144,7 +144,7 @@
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <MSM.:hasQualifier rdf:resource="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c"/>
   <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">enthalpy</MSM.:hasName>
-  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_enthalpy</MSM.:hasType>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Enthalpy</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>
   <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">attribute</MSM.:hasNerLabel>
 </MSM.:MessagePart>
@@ -159,7 +159,7 @@
   <MSM.:hasQualifier rdf:resource="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c"/>
   <MSM.:hasQualifier rdf:resource="#MessagePart_1e2fe22c32abeabd8b1cf628c06d88abcf7cd4fa"/>
   <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">entropy</MSM.:hasName>
-  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_entropy</MSM.:hasType>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Entropy</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>
   <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">attribute</MSM.:hasNerLabel>
 </MSM.:MessagePart>
@@ -174,7 +174,7 @@
   <MSM.:hasQualifier rdf:resource="#MessagePart_93cff7008e5dded0c442faecfff91ca5b4b8ef4c"/>
   <MSM.:hasQualifier rdf:resource="#MessagePart_1e2fe22c32abeabd8b1cf628c06d88abcf7cd4fa"/>
   <MSM.:hasName rdf:datatype="http://www.w3.org/2001/XMLSchema#string">GibbsEnergy</MSM.:hasName>
-  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://fake_concept_for_GibbsEnergy</MSM.:hasType>
+  <MSM.:hasType rdf:datatype="http://www.w3.org/2001/XMLSchema#string">http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#GibbsEnergy</MSM.:hasType>
   <MSM.:isArray rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</MSM.:isArray>
   <MSM.:hasNerLabel rdf:datatype="http://www.w3.org/2001/XMLSchema#string">attribute</MSM.:hasNerLabel>
 </MSM.:MessagePart>
