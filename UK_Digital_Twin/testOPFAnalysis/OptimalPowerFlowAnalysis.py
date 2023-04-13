@@ -187,7 +187,7 @@ class OptimalPowerFlowAnalysis:
             ## query the number of the bus under the topology node IRI, and the bus node IRI, branch node IRI and generator node IRI
             self.numOfBus, self.busNodeList = query_model.queryBusTopologicalInformation(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
             self.branchNodeList, self.branchVoltageLevel = query_model.queryELineTopologicalInformation(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400 or 275 
-            self.generatorNodeList = query_model.queryEGenInfo(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) #, eliminateClosedPlantIRIList) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10:Extant[if withRetrofit is set as 'True'] 11: samllerLAcode   
+            self.generatorNodeList = query_model.queryEGenInfo(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel, eliminateClosedPlantIRIList) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10:Extant[if withRetrofit is set as 'True'] 11: samllerLAcode   
             self.capa_demand_ratio = model_EGenABoxGeneration.demandAndCapacityRatioCalculator(self.generatorNodeList, topologyNodeIRI, startTime_of_EnergyConsumption)
             if withRetrofit is True:
                 for egen in self.generatorNodeList:
@@ -303,7 +303,6 @@ class OptimalPowerFlowAnalysis:
         self.weatherConditionName = None
         self.time_now = time.strftime("%Y%m%d-%H%M", time.localtime())
         self.localRootFilePath = '/mnt/d/wx243/FromTWA'
-        
         self.diagramPath = self.localRootFilePath + '/figFiles(LineChartANDHeatmapGrid)/' + self.time_now + '/'
         self.diagramPathParetoFront = self.localRootFilePath + '/ParetoFront/' + self.time_now + '/'
         self.diagramPathStack = self.localRootFilePath + '/figFiles(StackAreaGraph)/' + self.time_now + '/'
@@ -546,10 +545,7 @@ class OptimalPowerFlowAnalysis:
             clusteredSite[i]['Bus'] = busIRI
         self.retrofitListBeforeSelection = outliers + clusteredSite
         return
-        
-            ###########################NEW SITE SELECTION Pre-OPF#########################
-            ## pre-calculation of each site surrounding population density    
-         
+       
     """The SMR site selection algorithm"""   
     def siteSelector(self, numberOfSMRToBeIntroduced):
         self.numberOfSMRToBeIntroduced = numberOfSMRToBeIntroduced
@@ -588,16 +584,19 @@ class OptimalPowerFlowAnalysis:
                         save_history=True
                         )        
                         
-            print("Best solution found: %s" % res.X)
-            print("Function value: %s" % res.F)
+            # print("Best solution found: %s" % res.X)
+            # print("Function value: %s" % res.F)
 
             self.res = res
             self.X = res.X
             self.F = res.F
+
+            ## release the memory of res from the GA 
+            del res
             return
 
     """This method is used to pick up the optima from the pareto front according to the given weighter"""
-    def optimaPicker(self):
+    def optimaPicker(self, ifGenerateParetoFrontPDF):
         if self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0: 
             self.indexListOfSiteSelectionResults = []
             self.retrofittingCostList = []
@@ -615,69 +614,72 @@ class OptimalPowerFlowAnalysis:
                 weightNumpyMatrix[i, 1] = float(1 - self.weighterList[i])
 
             ## Normalisation the objective space: apply the ideal and nadir point method 
-            self.approx_ideal = self.F.min(axis = 0)
-            self.approx_nadir = self.F.max(axis = 0)
-            self.nF = (self.F - self.approx_ideal) / (self.approx_nadir - self.approx_ideal)
+            approx_ideal = self.F.min(axis = 0)
+            approx_nadir = self.F.max(axis = 0)
+            nF = (self.F - approx_ideal) / (approx_nadir - approx_ideal)
             ## Decomposition method called Augmented Scalarization Function (ASF),
             decomp = ASF()
             indexOfOptima = []
             for weights in weightNumpyMatrix:
                 print(weights)
-                i = decomp.do(self.nF, 1/weights).argmin()
+                i = decomp.do(nF, 1/weights).argmin()
                 indexOfOptima.append(i)
                 self.indexListOfSiteSelectionResults.append(numpy.where(self.X[i] == 1)[0])
                 self.retrofittingCostList.append(round(float(self.F[i, 0]), 2))
 
             ## Results diagram: Pareto Front, feasible points and optima 
-            #_X = numpy.row_stack([a.pop.get("X") for a in self.res.history])
-            _F = numpy.row_stack([a.pop.get("F") for a in self.res.history])
-            feasible = numpy.row_stack([a.pop.get("feasible") for a in self.res.history])[:, 0] 
-            ## Real feasible points
-            feasibleSolustions_F = _F[feasible]
-            ## Normalised feasible points
-            self.approx_ideal_feasibleNormalised = feasibleSolustions_F.min(axis = 0)
-            self.approx_nadir_feasibleNormalised = feasibleSolustions_F.max(axis = 0)
-            self.nF_feasibleNormalised = (self.F - self.approx_ideal_feasibleNormalised) / (self.approx_nadir_feasibleNormalised - self.approx_ideal_feasibleNormalised)
-            feasibleSolustions_F_feasibleNormalised = (feasibleSolustions_F - self.approx_ideal_feasibleNormalised) / (self.approx_nadir_feasibleNormalised - self.approx_ideal_feasibleNormalised)
+            if ifGenerateParetoFrontPDF is True:
+                _F = numpy.row_stack([a.pop.get("F") for a in self.res.history])
+                feasible = numpy.row_stack([a.pop.get("feasible") for a in self.res.history])[:, 0] 
+                ## Real feasible points
+                feasibleSolustions_F = _F[feasible]
+                ## Normalised feasible points
+                approx_ideal_feasibleNormalised = feasibleSolustions_F.min(axis = 0)
+                approx_nadir_feasibleNormalised = feasibleSolustions_F.max(axis = 0)
+                nF_feasibleNormalised = (self.F - approx_ideal_feasibleNormalised) / (approx_nadir_feasibleNormalised - approx_ideal_feasibleNormalised)
+                feasibleSolustions_F_feasibleNormalised = (feasibleSolustions_F - approx_ideal_feasibleNormalised) / (approx_nadir_feasibleNormalised - approx_ideal_feasibleNormalised)
 
-            plt.scatter(feasibleSolustions_F_feasibleNormalised[:, 0], feasibleSolustions_F_feasibleNormalised[:, 1], label='Normalised Feasible Solutions', alpha=0.3, s=20, facecolors='#728FCE', edgecolors='none')
-            plt.scatter(self.nF_feasibleNormalised[:, 0], self.nF_feasibleNormalised[:, 1], label= 'Normalised Pareto Front', alpha=0.7, s=30, facecolors='#FF8C00', edgecolors='none')
-            
-            # optima_label_list = ['weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2)) for i_ in range(len(indexOfOptima)) ]
-            optima_label_list = ['weight:' + str(round(weightNumpyMatrix[i_, 0], 2))  for i_ in range(len(indexOfOptima)) ]
-            
-            x_data = []
-            y_data = []
-            for i in indexOfOptima:
-                x_data.append(self.nF_feasibleNormalised[i, 0])
-                y_data.append(self.nF_feasibleNormalised[i, 1])
-                plt.scatter(self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1], marker="x", alpha=0.8, s=40, color = '#00A36C')
-            pointAndText = [plt.text(x_, y_, label, fontsize = 13) for x_, y_, label in zip(x_data, y_data, optima_label_list)]
-            adjust_text(pointAndText, only_move={'text': 'y'}, arrowprops=dict(arrowstyle='-', color='grey')) 
-            # for i in indexOfOptima:
-            #     i_ = indexOfOptima.index(i)
-            #     plt.scatter(self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1], marker="x", alpha=0.8, s=40, color = '#00A36C')# facecolors='#00A36C', edgecolors='none')
-            #     weightLabel = 'weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2))
-            #     plt.annotate(weightLabel, (self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1]), fontsize = 8, xycoords='data')    
-            ## plt.title("Normalised Objective Space")
-            plt.xlabel("Normalised SMR investment and risk cost (-)", fontsize = labelFontSize)
-            plt.ylabel("Normalised load-demand distance (-)", fontsize = labelFontSize) 
-            #plt.legend(fontsize = legendFontSize, loc='upper left', frameon=False)
-            plt.legend(
-                    loc="upper center", 
-                    fontsize = legendFontSize, 
-                    ncol=2, 
-                    bbox_to_anchor=(0.5, -0.16), 
-                    frameon=False)
-            plt.tight_layout()
-            self.mkdirParetoFrontFig()
-            plt.savefig(self.diagramPathParetoFront  + 'ParetoFront_SMR_%s.pdf' % str(self.numberOfSMRToBeIntroduced), dpi = 1200, bbox_inches='tight')
-            ## plt.show() ## show must come after the savefig
-            ##plt.close()
-            plt.clf()
-            plt.cla()
-            ##OLD METHOD FOR PLOTTING: plotting.plot(feasibleSolustions_F, self.F, optima, show=True, labels=["Feasible", "Pareto front", "Optima"])
+                plt.scatter(feasibleSolustions_F_feasibleNormalised[:, 0], feasibleSolustions_F_feasibleNormalised[:, 1], label='Normalised Feasible Solutions', alpha=0.3, s=20, facecolors='#728FCE', edgecolors='none')
+                plt.scatter(nF_feasibleNormalised[:, 0], nF_feasibleNormalised[:, 1], label= 'Normalised Pareto Front', alpha=0.7, s=30, facecolors='#FF8C00', edgecolors='none')
                 
+                # optima_label_list = ['weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2)) for i_ in range(len(indexOfOptima)) ]
+                optima_label_list = ['weight:' + str(round(weightNumpyMatrix[i_, 0], 2))  for i_ in range(len(indexOfOptima)) ]
+                
+                x_data = []
+                y_data = []
+                for i in indexOfOptima:
+                    x_data.append(nF_feasibleNormalised[i, 0])
+                    y_data.append(nF_feasibleNormalised[i, 1])
+                    plt.scatter(nF_feasibleNormalised[i, 0], nF_feasibleNormalised[i, 1], marker="x", alpha=0.8, s=40, color = '#00A36C')
+                pointAndText = [plt.text(x_, y_, label, fontsize = 13) for x_, y_, label in zip(x_data, y_data, optima_label_list)]
+                adjust_text(pointAndText, only_move={'text': 'y'}, arrowprops=dict(arrowstyle='-', color='grey')) 
+                # for i in indexOfOptima:
+                #     i_ = indexOfOptima.index(i)
+                #     plt.scatter(self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1], marker="x", alpha=0.8, s=40, color = '#00A36C')# facecolors='#00A36C', edgecolors='none')
+                #     weightLabel = 'weight:' + str(round(weightNumpyMatrix[i_, 0], 2)) + ',' + str(round(weightNumpyMatrix[i_, 1], 2))
+                #     plt.annotate(weightLabel, (self.nF_feasibleNormalised[i, 0], self.nF_feasibleNormalised[i, 1]), fontsize = 8, xycoords='data')    
+                ## plt.title("Normalised Objective Space")
+                plt.xlabel("Normalised SMR investment and risk cost (-)", fontsize = labelFontSize)
+                plt.ylabel("Normalised load-demand distance (-)", fontsize = labelFontSize) 
+                #plt.legend(fontsize = legendFontSize, loc='upper left', frameon=False)
+                plt.legend(
+                        loc="upper center", 
+                        fontsize = legendFontSize, 
+                        ncol=2, 
+                        bbox_to_anchor=(0.5, -0.16), 
+                        frameon=False)
+                plt.tight_layout()
+                self.mkdirParetoFrontFig()
+                plt.savefig(self.diagramPathParetoFront  + 'ParetoFront_SMR_%s.pdf' % str(self.numberOfSMRToBeIntroduced), dpi = 1200, bbox_inches='tight')
+                ## plt.show() ## show must come after the savefig
+                ##plt.close()
+                plt.clf()
+                plt.cla()
+                ##OLD METHOD FOR PLOTTING: plotting.plot(feasibleSolustions_F, self.F, optima, show=True, labels=["Feasible", "Pareto front", "Optima"])
+
+            ## delete the GA attributes to release more memory
+            del self.res, self.X, self.F
+            
             ##-- Create the SMR instances according to the site selection and the optima pick processing --##
             ## self.SMRList is a list of lists containing the SMR instances that are selected from different weighters
             self.SMRList = [] ## the length of the list of the self.SMRList should equal to the number of the weighters at the same weather condition and same carbon tax
@@ -1877,7 +1879,7 @@ class OptimalPowerFlowAnalysis:
                 lat = boundary.centroid.y
 
                 if sum_up > 0:
-                    output_regionalArea.append({'outputBreakdown': outPutData, 'percentageBreakdown': percentage, 'genTypeLabel': genTypeLabel, 'regionalAreaBoundary': boundary, 'centroid': [lat, lon], 'regionalLACode': Region_LACode})
+                    output_regionalArea.append({'outputBreakdown': outPutData, 'percentageBreakdown': percentage, 'genTypeLabel': genTypeLabel, 'regionalAreaBoundary': boundary, 'centroid': [lat, lon], 'RegionalLACode': Region_LACode})
                     # genTypeLabel_regionalArea.append(genTypeLabel)
 
             self.output_regionalAreaForEachWeight.append(output_regionalArea)
@@ -6397,6 +6399,7 @@ if __name__ == '__main__':
     "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_a8e65869-6bf1-4e79-81a9-972058834699",
     "http://www.theworldavatar.com/kb/ontoenergysystem/PowerPlant_4715ca1d-1ef0-4945-aef0-b4bc55e017e9"]
 
+    ## SMR site selection settings
     discountRate = 0.02
     bankRate = 0.0125
     projectLifeSpan = 40
@@ -6410,19 +6413,12 @@ if __name__ == '__main__':
     DecommissioningCostEstimatedLevel = 1
     slackFactor = 1.1
     safeDistance = 20
-    ## TODO: stop generating the JSON files
-    generateVisualisationJSON = False
-   
+    
+    ## GA settings
     pop_size = 1000
     n_offsprings = 1000
     numberOfGenerations = 350
-# ## TODO: for testing 
-    # pop_size = 500
-    # n_offsprings = 100
-    # numberOfGenerations = 100
 
-## TODO: change the picked weight 
-    pickedWeight = 0.85
     
     # ## Be careful with the NumberOfSMRUnitList: while study the impact of the weight, it will require more SMR unit number 
     # NumberOfSMRUnitList = [0, 10, 15, 20, 24, 28, 29, 30, 31, 35, 40, 46, 47, 50, 51, 52, 53]  #[0, 5, 10, 15, 24, 28, 29, 30, 40, 46, 47, 50, 51, 52, 53] 
@@ -6438,12 +6434,15 @@ if __name__ == '__main__':
     # weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
 
     ###FORTEST###
-    NumberOfSMRUnitList = [60]
+    NumberOfSMRUnitList = [10]
     weighterList = [1] # [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
     CarbonTaxForOPFList =  [0, 100, 150, 200]
     weatherConditionList = [[0.088, 0.033, "WLSL"]] # [0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
 
+    ## stop generating the JSON files
+    generateVisualisationJSON = False
     ifReadLocalResults = False
+    ifGenerateParetoFrontPDF = True
 
     ## rootPath = '/mnt/d/wx243/FromAW/npy/0405/'## root path for npu files store
     rootPath = '/mnt/d/wx243/FromTWA/npy/0411_fullList/'## root path for npu files store
@@ -6451,6 +6450,15 @@ if __name__ == '__main__':
     ## Specified net demanding results for GeoJSON creation 
     ifSpecifiedResultsForNetDemanding = True
     specifiedConfig = [[53, 60, "WLSL"]] #, [51, 60, "WHSH"]]
+
+    ## For stack fig of the energy breakdown
+    EnergyBreakDown_weightList = [0.85]
+
+    ## For weather impact line chart
+    pickedWeight = 0.85
+
+    ## cutter for the SMR list 
+    cutter = 5
 ############29 Bus model##################################################################################################################################################################
     testOPF_29BusModel = OptimalPowerFlowAnalysis(topologyNodeIRI_29Bus, eliminateClosedPlantIRIList, AgentIRI, "2017-01-31", slackBusNodeIRI_29Bus, loadAllocatorName_29Bus, 
         EBusModelVariableInitialisationMethodName_29Bus, ELineInitialisationMethodName_29Bus, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, 
@@ -6462,155 +6470,223 @@ if __name__ == '__main__':
     if not ifReadLocalResults:
         testOPF_29BusModel.powerPlantAndDemandingAreasMapper()
         testOPF_29BusModel.retrofitGeneratorInstanceFinder() ## determine the retrofitListBeforeSelection, population_list and weightedDemandingDistance_list
-        ## visulasitionOfCluster(testOPF_29BusModel.retrofitListBeforeSelection, 'clusterResults')
         testOPF_29BusModel.ModelPythonObjectInputInitialiser_BusAndBranch()
-        summary_eachSMRDesign = []
-        SMROutputAndOperationalRatio_eachSMRDesign = []
-        SMRInvestment_eachSMRDesign = []
-        ratio_eachSMRDesign = []
-        emission_eachSMRDesign = []
-        energyBreakdown_eachSMRDesign = []
-        netDemanding_smallArea_eachSMRDesign = [] 
-        netDemanding_regionalArea_eachSMRDesign = []
-        transmissionLoss_eachSMRDesign = []
-        energyBreakdown_smallArea_eachSMRDesign = []
-        energyBreakdown_regionalArea_eachSMRDesign = []
-        busRawResult_eachSMRDesign = []
-        branchRawResult_eachSMRDesign = []
-        genRawResult_eachSMRDesign = []
 
-        for numberOfSMRToBeIntroduced in NumberOfSMRUnitList:
-            print('===The number of SMR is: ', str(numberOfSMRToBeIntroduced))
-            testOPF_29BusModel.siteSelector(numberOfSMRToBeIntroduced)
-            testOPF_29BusModel.optimaPicker()
-            ##  testOPF_29BusModel.ModelPythonObjectInputInitialiser_BusAndBranch()
-            summary_eachCarbonTax = []
-            SMR_eachCarbonTax = []
-            SMRInvestment_eachCarbonTax = []
-            ratio_eachCarbonTax = []
-            emission_eachCarbonTax = []
-            energyBreakdown_eachCarbonTax = []
-            netDemanding_smallArea_eachCarbonTax = []
-            netDemanding_regionalArea_eachCarbonTax = []
-            transmissionLoss_eachCarbonTax = []
-            energyBreakdown_smallArea_eachCarbonTax = []
-            energyBreakdown_regionalArea_eachCarbonTax = []
-            busRawResult_eachCarbonTax = []
-            branchRawResult_eachCarbonTax = []
-            genRawResult_eachCarbonTax = []
+        ## cut the SMRNumberList
+        newSMRNumberList = []
+        numberOfSMRListChunk = math.ceil(len(NumberOfSMRUnitList) / cutter)
+        for i in range(int(numberOfSMRListChunk)):
+            if  (i + 1) * cutter < len(NumberOfSMRUnitList):
+                SMRListChunk = NumberOfSMRUnitList[i *cutter : (i + 1) * cutter]
+            else:
+                SMRListChunk = NumberOfSMRUnitList[i *cutter :]
+            newSMRNumberList.append(SMRListChunk)
+## TODO: re set the counter_smrChunk to 1 for the fresh run
+        counter_smrChunk = 2
 
-            for CarbonTaxForOPF in CarbonTaxForOPFList:
-                ## generatorNameList = []
-                ## before decommssion: find the potential decommssion power plant 
-                summary_eachWeather = []
-                ratio_eachWeather = []
-                SMR_eachWeather = []
-                SMRInvestment_eachWeather = []
-                emission_eachWeather = []
-                energyBreakdown_eachWeather = []
-                netDemanding_smallArea_eachWeather = []
-                netDemanding_regionalArea_eachWeather = []
-                transmissionLoss_eachWeather= []
-                energyBreakdown_smallArea_eachWeather = []
-                energyBreakdown_regionalArea_eachWeather = []
-                busRawResult_eachWeather = []
-                branchRawResult_eachWeather = []
-                genRawResult_eachWeather = []
+        for smrList in newSMRNumberList:
+            summary_eachSMRDesign = []
+            ratio_eachSMRDesign = []
+            SMROutputAndOperationalRatio_eachSMRDesign = []
+            SMRInvestment_eachSMRDesign = []
+            emission_eachSMRDesign = []
+            energyBreakdown_eachSMRDesign = []
+            netDemanding_smallArea_eachSMRDesign = [] 
+            netDemanding_regionalArea_eachSMRDesign = []
+            transmissionLoss_eachSMRDesign = []
+            energyBreakdown_smallArea_eachSMRDesign = []
+            energyBreakdown_regionalArea_eachSMRDesign = []
+            busRawResult_eachSMRDesign = []
+            branchRawResult_eachSMRDesign = []
+            genRawResult_eachSMRDesign = []
 
-                for weatherCondition in weatherConditionList:
-                    testOPF_29BusModel.ModelPythonObjectInputInitialiser_Generator(CarbonTaxForOPF, weatherCondition[0], weatherCondition[1], weatherCondition[2], False)
-                    testOPF_29BusModel.OPFModelInputFormatter()
-                    testOPF_29BusModel.OptimalPowerFlowAnalysisSimulation()
-                    testOPF_29BusModel.ModelOutputFormatter(generateVisualisationJSON) ## JSON file is generated at this step
-                    testOPF_29BusModel.CarbonEmissionCalculator()
-                    testOPF_29BusModel.netDemandingCalculator(ifReadLocalResults, [])
-                    testOPF_29BusModel.EnergyBreakdown_RegionAndSmallArea()
-                    ## generatorNameList.append(testOPF_29BusModel.GeneratorObjectList)
+            for numberOfSMRToBeIntroduced in smrList:
+                print('===The number of SMR is: ', str(numberOfSMRToBeIntroduced))
+                testOPF_29BusModel.siteSelector(numberOfSMRToBeIntroduced)
+                testOPF_29BusModel.optimaPicker(ifGenerateParetoFrontPDF)
+                ##  testOPF_29BusModel.ModelPythonObjectInputInitialiser_BusAndBranch()
+                summary_eachCarbonTax = []
+                SMR_eachCarbonTax = []
+                SMRInvestment_eachCarbonTax = []
+                ratio_eachCarbonTax = []
+                emission_eachCarbonTax = []
+                energyBreakdown_eachCarbonTax = []
+                netDemanding_smallArea_eachCarbonTax = []
+                netDemanding_regionalArea_eachCarbonTax = []
+                transmissionLoss_eachCarbonTax = []
+                energyBreakdown_smallArea_eachCarbonTax = []
+                energyBreakdown_regionalArea_eachCarbonTax = []
+                busRawResult_eachCarbonTax = []
+                branchRawResult_eachCarbonTax = []
+                genRawResult_eachCarbonTax = []
+
+                for CarbonTaxForOPF in CarbonTaxForOPFList:
+                    ## generatorNameList = []
+                    ## before decommssion: find the potential decommssion power plant 
+                    summary_eachWeather = []
+                    ratio_eachWeather = []
+                    SMR_eachWeather = []
+                    SMRInvestment_eachWeather = []
+                    emission_eachWeather = []
+                    energyBreakdown_eachWeather = []
+                    netDemanding_smallArea_eachWeather = []
+                    netDemanding_regionalArea_eachWeather = []
+                    transmissionLoss_eachWeather= []
+                    energyBreakdown_smallArea_eachWeather = []
+                    energyBreakdown_regionalArea_eachWeather = []
+                    busRawResult_eachWeather = []
+                    branchRawResult_eachWeather = []
+                    genRawResult_eachWeather = []
+
+                    for weatherCondition in weatherConditionList:
+                        testOPF_29BusModel.ModelPythonObjectInputInitialiser_Generator(CarbonTaxForOPF, weatherCondition[0], weatherCondition[1], weatherCondition[2], False)
+                        testOPF_29BusModel.OPFModelInputFormatter()
+                        testOPF_29BusModel.OptimalPowerFlowAnalysisSimulation()
+                        testOPF_29BusModel.ModelOutputFormatter(generateVisualisationJSON) ## JSON file is generated at this step
+                        testOPF_29BusModel.CarbonEmissionCalculator()
+                        testOPF_29BusModel.netDemandingCalculator(ifReadLocalResults, [])
+                        testOPF_29BusModel.EnergyBreakdown_RegionAndSmallArea()
+                        ## generatorNameList.append(testOPF_29BusModel.GeneratorObjectList)
+                        
+                        ###### re_totalCostAndTotalEmission = [testOPF_29BusModel.totalCostList, testOPF_29BusModel.totalCO2EmissionList]
+                        ###### re_OPEXRatio = [testOPF_29BusModel.OPEXRatioList, testOPF_29BusModel.annualisedOPEXList]
+                        ###### smr_outputAndRatio = [testOPF_29BusModel.SMRTotalOutputList, testOPF_29BusModel.SMRTotalOperationalRatioList]
+                        ###### _emission = [testOPF_29BusModel.annualisedTotalEmissionCostList, testOPF_29BusModel.emissionCostContributionList_OPEX, testOPF_29BusModel.emissionCostContributionList_TotalCost]
+                        
+                        summary_eachWeather.append([testOPF_29BusModel.totalCostList, testOPF_29BusModel.totalCO2EmissionList])
+                        del testOPF_29BusModel.totalCostList
+                        del testOPF_29BusModel.totalCO2EmissionList
+                        ratio_eachWeather.append([testOPF_29BusModel.OPEXRatioList, testOPF_29BusModel.annualisedOPEXList])
+                        del testOPF_29BusModel.OPEXRatioList
+                        del testOPF_29BusModel.annualisedOPEXList
+                        SMR_eachWeather.append([testOPF_29BusModel.SMRTotalOutputList, testOPF_29BusModel.SMRTotalOperationalRatioList])
+                        del testOPF_29BusModel.SMRTotalOutputList
+                        del testOPF_29BusModel.SMRTotalOperationalRatioList
+                        SMRInvestment_eachWeather.append(testOPF_29BusModel.SMRCostList)
+                        del testOPF_29BusModel.SMRCostList
+                        emission_eachWeather.append([testOPF_29BusModel.annualisedTotalEmissionCostList, testOPF_29BusModel.emissionCostContributionList_OPEX, testOPF_29BusModel.emissionCostContributionList_TotalCost])
+                        del testOPF_29BusModel.annualisedTotalEmissionCostList
+                        del testOPF_29BusModel.emissionCostContributionList_OPEX
+                        del testOPF_29BusModel.emissionCostContributionList_TotalCost
+                        ###### energyBreakdown_eachWeight = testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator()
+                        energyBreakdown_eachWeather.append(testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator())
+                        netDemanding_smallArea_eachWeather.append(testOPF_29BusModel.netDemandingList_smallAreaForEachWeight)
+                        del testOPF_29BusModel.netDemandingList_smallAreaForEachWeight
+                        netDemanding_regionalArea_eachWeather.append(testOPF_29BusModel.netDemandingList_regionalAreaForEachWeight)
+                        del testOPF_29BusModel.netDemandingList_regionalAreaForEachWeight
+                        transmissionLoss_eachWeather.append(testOPF_29BusModel.transmissionLoss)
+                        del testOPF_29BusModel.transmissionLoss
+                        energyBreakdown_smallArea_eachWeather.append(testOPF_29BusModel.output_smallAreaForEachWeight)
+                        del testOPF_29BusModel.output_smallAreaForEachWeight
+                        energyBreakdown_regionalArea_eachWeather.append(testOPF_29BusModel.output_regionalAreaForEachWeight) 
+                        del testOPF_29BusModel.output_regionalAreaForEachWeight
+                        ## Raw data recorder
+                        busRawResult_eachWeather.append(testOPF_29BusModel.busOutputRecoder)
+                        del testOPF_29BusModel.busOutputRecoder
+                        branchRawResult_eachWeather.append(testOPF_29BusModel.branchOutputRecoder)
+                        del testOPF_29BusModel.branchOutputRecoder
+                        genRawResult_eachWeather.append(testOPF_29BusModel.genOutputRecoder)
+                        del testOPF_29BusModel.genOutputRecoder
                     
-                    re_totalCostAndTotalEmission = [testOPF_29BusModel.totalCostList, testOPF_29BusModel.totalCO2EmissionList]
-                    re_OPEXRatio = [testOPF_29BusModel.OPEXRatioList, testOPF_29BusModel.annualisedOPEXList]
-                    smr_outputAndRatio = [testOPF_29BusModel.SMRTotalOutputList, testOPF_29BusModel.SMRTotalOperationalRatioList]
-                    re_emission = [testOPF_29BusModel.annualisedTotalEmissionCostList, testOPF_29BusModel.emissionCostContributionList_OPEX, testOPF_29BusModel.emissionCostContributionList_TotalCost]
-                    
-                    summary_eachWeather.append(re_totalCostAndTotalEmission)
-                    ratio_eachWeather.append(re_OPEXRatio)
-                    SMR_eachWeather.append(smr_outputAndRatio)
-                    SMRInvestment_eachWeather.append(testOPF_29BusModel.SMRCostList)
-                    emission_eachWeather.append(re_emission)
-                    energyBreakdown_eachWeight = testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator()
-                    energyBreakdown_eachWeather.append(energyBreakdown_eachWeight)
-                    netDemanding_smallArea_eachWeather.append(testOPF_29BusModel.netDemandingList_smallAreaForEachWeight)
-                    netDemanding_regionalArea_eachWeather.append(testOPF_29BusModel.netDemandingList_regionalAreaForEachWeight)
-                    transmissionLoss_eachWeather.append(testOPF_29BusModel.transmissionLoss)
-                    energyBreakdown_smallArea_eachWeather.append(testOPF_29BusModel.output_smallAreaForEachWeight)
-                    energyBreakdown_regionalArea_eachWeather.append(testOPF_29BusModel.output_regionalAreaForEachWeight) 
+                    summary_eachCarbonTax.append(summary_eachWeather)
+                    ratio_eachCarbonTax.append(ratio_eachWeather)
+                    SMR_eachCarbonTax.append(SMR_eachWeather)
+                    SMRInvestment_eachCarbonTax.append(SMRInvestment_eachWeather)
+                    emission_eachCarbonTax.append(emission_eachWeather)
+                    energyBreakdown_eachCarbonTax.append(energyBreakdown_eachWeather)
+                    netDemanding_smallArea_eachCarbonTax.append(netDemanding_smallArea_eachWeather)
+                    netDemanding_regionalArea_eachCarbonTax.append(netDemanding_regionalArea_eachWeather)
+                    transmissionLoss_eachCarbonTax.append(transmissionLoss_eachWeather)
+                    energyBreakdown_smallArea_eachCarbonTax.append(energyBreakdown_smallArea_eachWeather)
+                    energyBreakdown_regionalArea_eachCarbonTax.append(energyBreakdown_regionalArea_eachWeather)
                     ## Raw data recorder
-                    busRawResult_eachWeather.append(testOPF_29BusModel.busOutputRecoder)
-                    branchRawResult_eachWeather.append(testOPF_29BusModel.branchOutputRecoder)
-                    genRawResult_eachWeather.append(testOPF_29BusModel.genOutputRecoder)
-                 
-                summary_eachCarbonTax.append(summary_eachWeather)
-                ratio_eachCarbonTax.append(ratio_eachWeather)
-                SMR_eachCarbonTax.append(SMR_eachWeather)
-                SMRInvestment_eachCarbonTax.append(SMRInvestment_eachWeather)
-                emission_eachCarbonTax.append(emission_eachWeather)
-                energyBreakdown_eachCarbonTax.append(energyBreakdown_eachWeather)
-                netDemanding_smallArea_eachCarbonTax.append(netDemanding_smallArea_eachWeather)
-                netDemanding_regionalArea_eachCarbonTax.append(netDemanding_regionalArea_eachWeather)
-                transmissionLoss_eachCarbonTax.append(transmissionLoss_eachWeather)
-                energyBreakdown_smallArea_eachCarbonTax.append(energyBreakdown_smallArea_eachWeather)
-                energyBreakdown_regionalArea_eachCarbonTax.append(energyBreakdown_regionalArea_eachWeather)
+                    busRawResult_eachCarbonTax.append(busRawResult_eachWeather)
+                    branchRawResult_eachCarbonTax.append(branchRawResult_eachWeather)
+                    genRawResult_eachCarbonTax.append(genRawResult_eachWeather)
+
+                    del summary_eachWeather, ratio_eachWeather, SMR_eachWeather, SMRInvestment_eachWeather, emission_eachWeather, energyBreakdown_eachWeather, \
+                        netDemanding_smallArea_eachWeather, netDemanding_regionalArea_eachWeather, transmissionLoss_eachWeather, energyBreakdown_smallArea_eachWeather, energyBreakdown_regionalArea_eachWeather
+
+                summary_eachSMRDesign.append(summary_eachCarbonTax)
+                ratio_eachSMRDesign.append(ratio_eachCarbonTax)
+                SMROutputAndOperationalRatio_eachSMRDesign.append(SMR_eachCarbonTax)
+                SMRInvestment_eachSMRDesign.append(SMRInvestment_eachCarbonTax)
+                emission_eachSMRDesign.append(emission_eachCarbonTax)
+                energyBreakdown_eachSMRDesign.append(energyBreakdown_eachCarbonTax)
+                netDemanding_smallArea_eachSMRDesign.append(netDemanding_smallArea_eachCarbonTax)
+                netDemanding_regionalArea_eachSMRDesign.append(netDemanding_regionalArea_eachCarbonTax)
+                transmissionLoss_eachSMRDesign.append(transmissionLoss_eachCarbonTax)
+                energyBreakdown_smallArea_eachSMRDesign.append(energyBreakdown_smallArea_eachCarbonTax)
+                energyBreakdown_regionalArea_eachSMRDesign.append(energyBreakdown_regionalArea_eachCarbonTax)
                 ## Raw data recorder
-                busRawResult_eachCarbonTax.append(busRawResult_eachWeather)
-                branchRawResult_eachCarbonTax.append(branchRawResult_eachWeather)
-                genRawResult_eachCarbonTax.append(genRawResult_eachWeather)
+                busRawResult_eachSMRDesign.append(busRawResult_eachCarbonTax)
+                branchRawResult_eachSMRDesign.append(branchRawResult_eachCarbonTax)
+                genRawResult_eachSMRDesign.append(genRawResult_eachCarbonTax)
 
-            summary_eachSMRDesign.append(summary_eachCarbonTax)
-            ratio_eachSMRDesign.append(ratio_eachCarbonTax)
-            SMROutputAndOperationalRatio_eachSMRDesign.append(SMR_eachCarbonTax)
-            SMRInvestment_eachSMRDesign.append(SMRInvestment_eachCarbonTax)
-            emission_eachSMRDesign.append(emission_eachCarbonTax)
-            energyBreakdown_eachSMRDesign.append(energyBreakdown_eachCarbonTax)
-            netDemanding_smallArea_eachSMRDesign.append(netDemanding_smallArea_eachCarbonTax)
-            netDemanding_regionalArea_eachSMRDesign.append(netDemanding_regionalArea_eachCarbonTax)
-            transmissionLoss_eachSMRDesign.append(transmissionLoss_eachCarbonTax)
-            energyBreakdown_smallArea_eachSMRDesign.append(energyBreakdown_smallArea_eachCarbonTax)
-            energyBreakdown_regionalArea_eachSMRDesign.append(energyBreakdown_regionalArea_eachCarbonTax)
-            ## Raw data recorder
-            busRawResult_eachSMRDesign.append(busRawResult_eachCarbonTax)
-            branchRawResult_eachSMRDesign.append(branchRawResult_eachCarbonTax)
-            genRawResult_eachSMRDesign.append(genRawResult_eachCarbonTax)
+                del summary_eachCarbonTax, ratio_eachCarbonTax, SMR_eachCarbonTax, SMRInvestment_eachCarbonTax, emission_eachCarbonTax, energyBreakdown_eachCarbonTax, netDemanding_smallArea_eachCarbonTax, \
+                    netDemanding_regionalArea_eachCarbonTax, transmissionLoss_eachCarbonTax, energyBreakdown_smallArea_eachCarbonTax, energyBreakdown_regionalArea_eachCarbonTax
 
-        np_summary_eachSMRDesign = numpy.array(summary_eachSMRDesign)
-        np_OPEXratio_eachSMRDesign = numpy.array(ratio_eachSMRDesign)
-        np_SMROutputAndOperationalRatio_eachSMRDesign = numpy.array(SMROutputAndOperationalRatio_eachSMRDesign)
-        np_SMRInvestment_eachSMRDesign = numpy.array(SMRInvestment_eachSMRDesign)
-        np_emission_eachSMRDesign = numpy.array(emission_eachSMRDesign) 
-        np_energyBreakdown_eachSMRDesign = numpy.array(energyBreakdown_eachSMRDesign) 
-        np_netDemanding_smallArea_eachSMRDesign = numpy.array(netDemanding_smallArea_eachSMRDesign) 
-        np_netDemanding_regionalArea_eachSMRDesign = numpy.array(netDemanding_regionalArea_eachSMRDesign)
-        np_transmissionLoss_eachSMRDesign = numpy.array(transmissionLoss_eachSMRDesign)
-        np_energyBreakdown_smallArea_eachSMRDesign = numpy.array(energyBreakdown_smallArea_eachSMRDesign)
-        np_energyBreakdown_regionalArea_eachSMRDesign = numpy.array(energyBreakdown_regionalArea_eachSMRDesign)
-        
-        np_busRawResult_eachSMRDesign = numpy.array(busRawResult_eachSMRDesign)
-        np_branchRawResult_eachSMRDesign = numpy.array(branchRawResult_eachSMRDesign)
-        np_genRawResult_eachSMRDesign = numpy.array(genRawResult_eachSMRDesign)
+            if counter_smrChunk > 1:
+                summary_eachSMRDesign = (numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True)).tolist() + summary_eachSMRDesign 
+                ratio_eachSMRDesign = (numpy.load(rootPath +"np_OPEXratio_eachSMRDesign.npy", allow_pickle=True)).tolist() + ratio_eachSMRDesign
+                SMROutputAndOperationalRatio_eachSMRDesign = (numpy.load(rootPath +"np_SMROutputAndOperationalRatio_eachSMRDesign.npy", allow_pickle=True)).tolist() + SMROutputAndOperationalRatio_eachSMRDesign
+                SMRInvestment_eachSMRDesign = (numpy.load(rootPath +"np_SMRInvestment_eachSMRDesign.npy", allow_pickle=True)).tolist() + SMRInvestment_eachSMRDesign
+                emission_eachSMRDesign = (numpy.load(rootPath +"np_emission_eachSMRDesign.npy", allow_pickle=True)).tolist() + emission_eachSMRDesign
+                energyBreakdown_eachSMRDesign = (numpy.load(rootPath +"np_energyBreakdown_eachSMRDesign.npy", allow_pickle=True)).tolist() + energyBreakdown_eachSMRDesign
+                netDemanding_smallArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)).tolist() + netDemanding_smallArea_eachSMRDesign
+                netDemanding_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist() + netDemanding_regionalArea_eachSMRDesign
+                transmissionLoss_eachSMRDesign = (numpy.load(rootPath +"np_transmissionLoss_eachSMRDesign.npy", allow_pickle=True)).tolist() + transmissionLoss_eachSMRDesign
+                energyBreakdown_smallArea_eachSMRDesign = (numpy.load(rootPath +"np_energyBreakdown_smallArea_eachSMRDesign.npy", allow_pickle=True)).tolist() + energyBreakdown_smallArea_eachSMRDesign
+                energyBreakdown_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist() + energyBreakdown_regionalArea_eachSMRDesign
+                busRawResult_eachSMRDesign = (numpy.load(rootPath +"np_busRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist() + busRawResult_eachSMRDesign
+                branchRawResult_eachSMRDesign = (numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist() + branchRawResult_eachSMRDesign
+                genRawResult_eachSMRDesign = (numpy.load(rootPath +"np_genRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist() + genRawResult_eachSMRDesign
+            
+            ## convert into numpy list
+            # np_summary_eachSMRDesign = numpy.array(summary_eachSMRDesign)
+            # np_OPEXratio_eachSMRDesign = numpy.array(ratio_eachSMRDesign)
+            # np_SMROutputAndOperationalRatio_eachSMRDesign = numpy.array(SMROutputAndOperationalRatio_eachSMRDesign)
+            # np_SMRInvestment_eachSMRDesign = numpy.array(SMRInvestment_eachSMRDesign)
+            # np_emission_eachSMRDesign = numpy.array(emission_eachSMRDesign) 
+            # np_energyBreakdown_eachSMRDesign = numpy.array(energyBreakdown_eachSMRDesign) 
+            # np_netDemanding_smallArea_eachSMRDesign = numpy.array(netDemanding_smallArea_eachSMRDesign) 
+            # np_netDemanding_regionalArea_eachSMRDesign = numpy.array(netDemanding_regionalArea_eachSMRDesign)
+            # np_transmissionLoss_eachSMRDesign = numpy.array(transmissionLoss_eachSMRDesign)
+            # np_energyBreakdown_smallArea_eachSMRDesign = numpy.array(energyBreakdown_smallArea_eachSMRDesign)
+            # np_energyBreakdown_regionalArea_eachSMRDesign = numpy.array(energyBreakdown_regionalArea_eachSMRDesign)
+            # np_busRawResult_eachSMRDesign = numpy.array(busRawResult_eachSMRDesign)
+            # np_branchRawResult_eachSMRDesign = numpy.array(branchRawResult_eachSMRDesign)
+            # np_genRawResult_eachSMRDesign = numpy.array(genRawResult_eachSMRDesign)
+            
+            
+            ## save raw data file
+            numpy.save(rootPath + "np_genRawResult_eachSMRDesign.npy", numpy.array(genRawResult_eachSMRDesign))
+            del genRawResult_eachSMRDesign
+            numpy.save(rootPath + "np_branchRawResult_eachSMRDesign.npy", numpy.array(branchRawResult_eachSMRDesign))
+            del branchRawResult_eachSMRDesign
+            numpy.save(rootPath + "np_busRawResult_eachSMRDesign.npy", numpy.array(busRawResult_eachSMRDesign))
+            del busRawResult_eachSMRDesign
+            numpy.save(rootPath + "np_energyBreakdown_smallArea_eachSMRDesign.npy", numpy.array(energyBreakdown_smallArea_eachSMRDesign))
+            del energyBreakdown_smallArea_eachSMRDesign
+            numpy.save(rootPath + "np_energyBreakdown_regionalArea_eachSMRDesign.npy", numpy.array(energyBreakdown_regionalArea_eachSMRDesign))
+            del energyBreakdown_regionalArea_eachSMRDesign
+            numpy.save(rootPath + "np_netDemanding_smallArea_eachSMRDesign.npy", numpy.array(netDemanding_smallArea_eachSMRDesign))
+            del netDemanding_smallArea_eachSMRDesign
+            numpy.save(rootPath + "np_netDemanding_regionalArea_eachSMRDesign.npy", numpy.array(netDemanding_regionalArea_eachSMRDesign))
+            del netDemanding_regionalArea_eachSMRDesign
 
-        numpy.save(rootPath + "np_summary_eachSMRDesign.npy", np_summary_eachSMRDesign)
-        numpy.save(rootPath + "np_OPEXratio_eachSMRDesign.npy", np_OPEXratio_eachSMRDesign)
-        numpy.save(rootPath + "np_SMROutputAndOperationalRatio_eachSMRDesign.npy", np_SMROutputAndOperationalRatio_eachSMRDesign)
-        numpy.save(rootPath + "np_SMRInvestment_eachSMRDesign.npy", np_SMRInvestment_eachSMRDesign)
-        numpy.save(rootPath + "np_emission_eachSMRDesign.npy", np_emission_eachSMRDesign)
-        numpy.save(rootPath + "np_energyBreakdown_eachSMRDesign.npy", np_energyBreakdown_eachSMRDesign)
-        numpy.save(rootPath + "np_netDemanding_smallArea_eachSMRDesign.npy", np_netDemanding_smallArea_eachSMRDesign)
-        numpy.save(rootPath + "np_netDemanding_regionalArea_eachSMRDesign.npy", np_netDemanding_regionalArea_eachSMRDesign)
-        numpy.save(rootPath + "np_transmissionLoss_eachSMRDesign.npy", np_transmissionLoss_eachSMRDesign)
-        numpy.save(rootPath + "np_energyBreakdown_smallArea_eachSMRDesign.npy", np_energyBreakdown_smallArea_eachSMRDesign)
-        numpy.save(rootPath + "np_energyBreakdown_regionalArea_eachSMRDesign.npy", np_energyBreakdown_regionalArea_eachSMRDesign)
-        numpy.save(rootPath + "np_busRawResult_eachSMRDesign.npy", np_busRawResult_eachSMRDesign)
-        numpy.save(rootPath + "np_branchRawResult_eachSMRDesign.npy", np_branchRawResult_eachSMRDesign)
-        numpy.save(rootPath + "np_genRawResult_eachSMRDesign.npy", np_genRawResult_eachSMRDesign)
+            numpy.save(rootPath + "np_summary_eachSMRDesign.npy", numpy.array(summary_eachSMRDesign))
+            numpy.save(rootPath + "np_OPEXratio_eachSMRDesign.npy", numpy.array(ratio_eachSMRDesign))
+            numpy.save(rootPath + "np_SMROutputAndOperationalRatio_eachSMRDesign.npy", numpy.array(SMROutputAndOperationalRatio_eachSMRDesign))
+            numpy.save(rootPath + "np_SMRInvestment_eachSMRDesign.npy", numpy.array(SMRInvestment_eachSMRDesign))
+            numpy.save(rootPath + "np_emission_eachSMRDesign.npy", numpy.array(emission_eachSMRDesign))
+            numpy.save(rootPath + "np_energyBreakdown_eachSMRDesign.npy", numpy.array(energyBreakdown_eachSMRDesign) )
+            numpy.save(rootPath + "np_transmissionLoss_eachSMRDesign.npy", numpy.array(transmissionLoss_eachSMRDesign))
+
+            del summary_eachSMRDesign, ratio_eachSMRDesign, SMROutputAndOperationalRatio_eachSMRDesign, SMRInvestment_eachSMRDesign, emission_eachSMRDesign, energyBreakdown_eachSMRDesign, transmissionLoss_eachSMRDesign
+            
+            counter_smrChunk += 1   
+
     else:
         summary_eachSMRDesign = numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True) ## total cost and total emission
         OPEXratio_eachSMRDesign = numpy.load(rootPath + "np_OPEXratio_eachSMRDesign.npy", allow_pickle=True)
@@ -6655,7 +6731,7 @@ if __name__ == '__main__':
     ## testOPF_29BusModel.lineGraph_weightImpact(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
     ## testOPF_29BusModel.lineGraph_SMRImpactForCO2Emission(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
     testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForEachSMRDesign(energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
-    testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForOptimisedDesign(summary_eachSMRDesign, energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, [0])
+    testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForOptimisedDesign(summary_eachSMRDesign, energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, EnergyBreakDown_weightList)
 
     # netDemanding_smallArea_eachSMRDesign, netDemanding_regionalArea_eachSMRDesign = testOPF_29BusModel.netDemandingCalculator(ifReadLocalResults, genRawResult_eachSMRDesign)
 
