@@ -5,6 +5,8 @@ import time
 import torch
 from torch.nn.functional import one_hot
 from transformers import BertTokenizer
+
+from Marie.EntityLinking.IRILookup import IRILookup
 from Marie.PubchemEngine import PubChemQAEngine
 from Marie.OntoCompChem import OntoCompChemEngine
 from Marie.OntoSpecies import OntoSpeciesQAEngine
@@ -24,6 +26,9 @@ import threading
 
 def normalize_scores(self, scores_list):
     normalized_scores = {}
+    print("========================")
+    print("score_list", scores_list)
+    print("=======================")
     for domain in self.domain_list:
         scores = scores_list[domain]
         max_score = max(scores)
@@ -44,7 +49,7 @@ class CrossGraphQAEngine:
     def __init__(self):
         self.marie_logger = MarieLogger()
         self.nel = ChemicalNEL()
-
+        self.ner_lite = IRILookup(nel=self.nel)
         self.domain_encoding = {"pubchem": 0, "ontocompchem": 1, "ontospecies": 2,
                                 "ontokin": 3, "wikidata": 4, "ontospecies_new": 5,
                                 "ontoagent": 6, "ontomops": 7, "ontokin_reaction": 8}
@@ -73,21 +78,21 @@ class CrossGraphQAEngine:
         '''
         for domain, index in self.domain_encoding.items():
             if domain == "pubchem":
-                self.engine_list[index] = PubChemQAEngine()
+                self.engine_list[index] = PubChemQAEngine(nel=self.nel)
             elif domain == "ontocompchem":
-                self.engine_list[index] = OntoCompChemEngine()
+                self.engine_list[index] = OntoCompChemEngine(nel=self.nel)
             elif domain == "ontospecies":
-                self.engine_list[index] = OntoSpeciesQAEngine()
+                self.engine_list[index] = OntoSpeciesQAEngine(nel=self.nel)
             elif domain == "ontokin":
-                self.engine_list[index] = OntoKinQAEngine()
+                self.engine_list[index] = OntoKinQAEngine(nel=self.nel)
             elif domain == "wikidata":
-                self.engine_list[index] = WikidataEngine()
+                self.engine_list[index] = WikidataEngine(nel=self.nel)
             elif domain == "ontospecies_new":
-                self.engine_list[index] = OntoSpeciesNew()
+                self.engine_list[index] = OntoSpeciesNew(nel=self.nel)
             elif domain == "ontoagent":
-                self.engine_list[index] = AgentInterface()
+                self.engine_list[index] = AgentInterface(nel=self.nel)
             elif domain == "ontomops":
-                self.engine_list[index] = OntoMoPsQAEngine()
+                self.engine_list[index] = OntoMoPsQAEngine(nel=self.nel)
             elif domain == "ontokin_reaction":
                 self.engine_list[index] = OntoKinReactionInterface()
             print(f"Engine for {domain} created")
@@ -155,7 +160,7 @@ class CrossGraphQAEngine:
         stop_words = ["find", "all", "species", "what", "is", "the", "show", "me", "What", "Show"]
         tokens = [t for t in question.split(" ") if t.lower().strip() not in stop_words]
         question = " ".join(tokens)
-        mention = self.nel.get_mention(question)
+        mention = self.ner_lite.get_mention(question)
         if mention is not None:
             question = question.replace(mention, "")
 
@@ -163,17 +168,20 @@ class CrossGraphQAEngine:
             nonlocal score_list, label_list, target_list
             engine = self.engine_list[index]
 
-            print(f"======================== USING ENGINE {domain}============================")
+            self.marie_logger.debug(f"======================== USING ENGINE {domain}============================")
             # if domain == "wikidata":
+
             if domain in self.numerical_domain_list:
                 print("question given: ", question, "mention", mention)
-                labels, scores, targets, numerical_list, question_type = engine.run(question=question, mention=mention)
+                labels, scores, targets, numerical_list, question_type = engine.run(question=question)
                 # if question_type == "numerical":
                 if question_type in self.numerical_label_list:
                     return self.prepare_for_visualization(answer_list=labels, target_list=targets)
+                # else:
+                #     labels, scores, targets, numerical_list, question_ype = engine.run(question=question)
                 #     return labels, scores, targets
             else:
-                labels, scores, targets = engine.run(question=question, head=head, mention=mention)
+                labels, scores, targets = engine.run(question=question)
 
             length_diff = 5 - len(labels)
             scores = scores + [-999] * length_diff
