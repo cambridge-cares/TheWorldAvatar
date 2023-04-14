@@ -9,9 +9,8 @@
 from agent.utils.env_configs import DATABASE, NAMESPACE
 from agent.utils.javagateway import stackClientsGw
 
-from py4jps import agentlogging
-
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 

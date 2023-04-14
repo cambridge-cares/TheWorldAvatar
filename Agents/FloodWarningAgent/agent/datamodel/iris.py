@@ -2,6 +2,9 @@
 TBOX_URL = 'https://github.com/cambridge-cares/TheWorldAvatar/raw/main/JPS_Ontology/ontology/ontoflood/OntoFlood TBox.owl'
 ABOX_URL = 'https://github.com/cambridge-cares/TheWorldAvatar/raw/main/JPS_Ontology/ontology/ontoflood/OntoFlood ABox.owl'
 
+###--- Derivation Markup ---###
+DERIVATION_INSTANCE_BASE_URL = 'https://www.theworldavatar.com/kg/derivation/'
+
 ###--- Common Base URLs ---###
 # External ontologies
 RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
@@ -10,7 +13,7 @@ XSD = 'http://www.w3.org/2001/XMLSchema#'
 GEO = 'http://www.opengis.net/ont/geosparql#'
 OM = 'http://www.ontology-of-units-of-measure.org/resource/om-2/'
 OWL = 'http://www.w3.org/2002/07/owl#'
-TIME = 'https://www.w3.org/2006/time#'
+TIME = 'http://www.w3.org/2006/time#'
 RT = 'http://environment.data.gov.uk/flood-monitoring/def/core/'
 ENVO = 'http://purl.obolibrary.org/obo/'
 SOPH = 'http://sweetontology.net/phen/'
@@ -21,8 +24,9 @@ ONS2 = 'http://statistics.data.gov.uk/def/geography/collection/'
 ONS3 = 'http://publishmydata.com/def/ontology/foi/'
 # CoMo / CARES ontologies
 FLOOD = 'https://www.theworldavatar.com/kg/ontoflood/'
-BUILT = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
+OBE = 'https://www.theworldavatar.com/kg/ontobuiltenv/'
 TS = 'https://www.theworldavatar.com/kg/ontotimeseries/'
+DERIV = 'https://www.theworldavatar.com/kg/ontoderivation/'
 # Knowledge base
 KB = 'https://www.theworldavatar.com/kg/ontoflood/'
 
@@ -38,12 +42,10 @@ FLOOD_BUILDING = FLOOD + 'Building'
 FLOOD_COASTAL_WATER = FLOOD + 'CoastalWater'
 FLOOD_COMMERCIAL_AREA = FLOOD + 'CommercialArea'
 FLOOD_ENVIRONMENTAL_COMPONENT = FLOOD + 'EnvironmentalComponent'        
-#FLOOD_FLOODALERT = FLOOD + 'FloodAlert'
 FLOOD_FLOOD_ALERT_OR_WARNING_HISTORY = FLOOD + 'FloodAlertOrWarningHistory'
 FLOOD_FLOOD_DEPTH = FLOOD + 'FloodDepth'
 FLOOD_FLOOD_FORECAST = FLOOD + 'FloodForecast'
 FLOOD_FLOOD_SOURCE = FLOOD + 'FloodSource'
-#FLOOD_FLOODWARNING = FLOOD + 'FloodWarning'
 FLOOD_GROUNDWATER = FLOOD + 'GroundWater'
 FLOOD_HAS_ADMINISTRATIVE_DISTRICT = FLOOD + 'hasAdministrativeDistrict'  
 FLOOD_HAS_ALERT_OR_WARNING_HISTORY = FLOOD + 'hasAlertOrWarningHistory'    
@@ -68,16 +70,11 @@ FLOOD_HAS_TOTAL_AFFECTED_AREA = FLOOD + 'hasTotalAffectedArea'
 FLOOD_HAS_TOTAL_COUNT = FLOOD + 'hasTotalCount'
 FLOOD_HAS_TOTAL_MONETARY_VALUE = FLOOD + 'hasTotalMonetaryValue'
 FLOOD_HAS_WGS84_LATITUDE_LONGITUDE = FLOOD + 'hasWGS84LatitudeLongitude'  
-#FLOOD_HIGHLIKELIHOOD = FLOOD + 'HighLikelihood'
 FLOOD_IMPACT = FLOOD + 'Impact'
 FLOOD_INDUSTRIAL_AREA = FLOOD + 'IndustrialArea'
 FLOOD_INFRASTRUCTURE_COMPONENT = FLOOD + 'InfrastructureComponent'      
 FLOOD_LIKELIHOOD = FLOOD + 'Likelihood'
 FLOOD_LOCATION = FLOOD + 'Location'
-#FLOOD_LOWLIKELIHOOD = FLOOD + 'LowLikelihood'
-#FLOOD_MEDIUMLIKELIHOOD = FLOOD + 'MediumLikelihood'
-#FLOOD_MINIMALIMPACT = FLOOD + 'MinimalImpact'
-#FLOOD_MINORIMPACT = FLOOD + 'MinorImpact'
 FLOOD_MOBILITY_NETWORK = FLOOD + 'MobilityNetwork'
 FLOOD_NETWORK_INFRASTRUCTURE = FLOOD + 'NetworkInfrastructure'
 FLOOD_POPULATION = FLOOD + 'Population'
@@ -88,14 +85,9 @@ FLOOD_RESIDENTIAL_AREA = FLOOD + 'ResidentialArea'
 FLOOD_RESULTS_IN = FLOOD + 'resultsIn'
 FLOOD_RISK_LEVEL = FLOOD + 'RiskLevel'
 FLOOD_RIVER_WATER = FLOOD + 'RiverWater'
-#FLOOD_SEVEREFLOODWARNING = FLOOD + 'SevereFloodWarning'
-#FLOOD_SEVEREIMPACT = FLOOD + 'SevereImpact'
 FLOOD_SEVERITY = FLOOD + 'Severity'
-#FLOOD_SIGNIFICANTIMPACT = FLOOD + 'SignificantImpact'
 FLOOD_SURFACE_WATER = FLOOD + 'SurfaceWater'
 FLOOD_VEHICLE = FLOOD + 'Vehicle'
-#FLOOD_VERYLOWLIKELIHOOD = FLOOD + 'VeryLowLikelihood'
-#FLOOD_WARNINGNOLONGERINFORCE = FLOOD + 'WarningNoLongerInForce'
 FLOOD_WARNS_ABOUT = FLOOD + 'warnsAbout'
 FLOOD_WATER_VELOCITY = FLOOD + 'WaterVelocity'
 # RT (Environment Agency)
@@ -122,11 +114,20 @@ FLOOD_FLOOD_WARNING = FLOOD + 'FloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b
 FLOOD_FLOOD_ALERT = FLOOD + 'FloodAlert_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b'
 FLOOD_WARNING_NO_LONGER_IN_FORCE = FLOOD + 'InactiveFloodWarning_ca5e5580-7ab8-4e1c-9087-8cbc893d5c5b'
 
+# OntoBuiltEnv
+OBE_HASMARKETVALUE = OBE + 'hasMarketValue'
+
 # OntoTimeSeries
 TS_HAS_RDB = TS + 'hasRDB'
 TS_HAS_TIME_SERIES = TS + 'hasTimeSeries'
 TS_HAS_TIME_UNIT = TS + 'hasTimeUnit'
 TS_TIMESERIES = TS + 'TimeSeries'
+
+# Ontoderivation
+DERIV_BELONGS_TO = DERIV + 'belongsTo'
+DERIV_DERIVED_FROM = DERIV + 'isDerivedFrom'
+DERIV_DERIVED_USING = DERIV + 'isDerivedUsing' 
+DERIV_HAS_STATUS = DERIV + 'hasStatus' 
 
 # Time ontology
 TIME_HAS_BEGINNING = TIME + 'hasBeginning'
@@ -197,8 +198,7 @@ ONS_MEMBER_OF = ONS3 + 'memberOf'
 
 # OM / UOM unit symbols
 OM_GBP = OM + 'poundSterling'
-# NOTE: There are reported issues with encoding of special characters, i.e. Blazegraph
-#       claiming to use utf-8 encoding while actually using iso-8859-1
-#       --> PoundSterling displayed wrongly in GUI but correctly retrieved within code
-# Details: https://github.com/blazegraph/database/issues/224
+# NOTE: There are issues with encoding of special characters; hence, all units are
+#       "properly" uploaded to KG at agent startup and decoded when retrieved
+#       For details see: kgutils.initialise_kg.instantiate_all_units()
 GBP_SYMBOL = '£'

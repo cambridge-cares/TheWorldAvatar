@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+  epc_agent:
+    image: ghcr.io/cambridge-cares/epc_agent:1.2.0
+    environment:
+      - STACK_NAME=${STACK_NAME}
+      # Base64-encoded authentication token for EPC API (identifier composed of your email address and api-key)
+      # Obtained from https://epc.opendatacommunities.org/docs/api/domestic when signed in 
+      - ENCODED_AUTH=
+      # Table name in PostGIS, also Layer name in Geoserver
+      - LAYERNAME=buildings
+      # Target Blazegraph namespace
+      - NAMESPACE=kingslynn
+      # Specify PostGIS/PostgreSQL database name
+      # (default name "postgres" required for Ontop to work)
+      - DATABASE=postgres
+      - GEOSERVER_WORKSPACE=kingslynn
+      - ONTOP_FILE=/app/resources/ontop.obda
+      - OCGML_ENDPOINT=http://165.232.172.16:3838/blazegraph/namespace/ocgml/sparql
+    ports:
+      - "5007:5000"
+    volumes:
+      # Link container output directory to local directory to access output files
+      - ./data:/app/data
+      - logs:/root/.jps
+    configs:
+      - blazegraph
+      - geoserver
+      - ontop
+      - postgis
+    secrets:
+      - geoserver_password
+      - postgis_password
+
+volumes:
+  logs:
+    name: "logs"

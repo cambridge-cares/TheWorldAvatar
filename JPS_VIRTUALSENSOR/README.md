@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Prerequisites
 1) Make a copy of DispersionVis/indexTemplate.html and set its file name to be 'index.html'. Set Mapbox user and API key in DispersionVis/index.html
 2) Ship data needs to be present in ShipInputAgent/data. If the agent is being run for chemical plants instead of ships, 
@@ -7,43 +8,95 @@ it is still necessary to define one ship in a .json file in this folder. In this
 
 
 3) Set openweather API key in ../Agents/WeatherAgent, more details in that folder
+=======
+## Prerequisites
+
+1) Set Mapbox user and API key in `./DispersionVis/index.html`
+2) Ship data needs to be present in `./ShipInputAgent/data`
+3) Set openweather API key in `./stack-manager/inputs/config/services/weather-agent.json`
+4) Create two files called `postgis_password` and `geoserver_password` in the `./stack-manager/inputs/secrets/` directory. Populate the files with the intended passwords for PostGIS and GeoServer, respectively.
+>>>>>>> 98f150e6a0d8ce5d11fc6d3bb3d3577b08b6d15a
 
 4) Set the values of the following in the AermodAgent/docker-compose.yml file: NUMBER_SOURCES, NUMBER_BUILDINGS, INCLUDE_ELEVATION. Note that setting NUMBER_BUILDINGS to a value greater than 500 may result in the buildings pre-processor,  BPIPPRM, taking a long time to complete. The terrain pre-processor, AERMAP, may also take a long time to run for large numbers of receptors. As elevation data is an optional input for AERMOD, the user has the option of not running AERMAP by specifying INCLUDE_ELEVATION=false.
 
 5) Download the required elevation data files from https://www.eorc.jaxa.jp/ALOS/en/dataset/aw3d30/aw3d30_e.htm. It is necessary to register for a free account first. The data files required by AERMAP as input end in "_DSM.tif". Each such data file obtained from JAXA spans a region that is 1 degree by 1 degree in terms of longitude and latitude. The latitude and longitude corresponding to the corner of minimum longitude and latitude is included in the filename. For example, the file 'ALPSMLC30_N001E103_DSM.tif' contains the elevation data for all points whose longitude is between 103 and 104 degrees and whose latitude is between 1 and 2 degrees. If running AERMAP for a large region, it may be necessary to supply multiple elevation data files as input. Each data file should be placed in the directory JPS_VIRTUALSENSOR/AermodAgent/src/main/resources/. The name of each data file should be specified in a new line following the 'DATATYPE NED' line in aermap.inp as per the format 'DATAFILE NAME_DATA_FILE', where 'NAME_DATA_FILE' should be replaced by the actual filename.
 
 Stack needs to be up and running:
-1) Navigate to Deploy/stacks/dynamic/stack-manager, do all required setup as described by the README and execute (in a WSL terminal)
-```
-./stack.sh start ship-stack
-```
-
-2) execute
+1) execute
 ```
 ./startup.sh
 ```
 
-in this folder to spin up other required containers.
+in this folder to spin up pull docker images, spin up containers (using stack manager) and copy files into container volumes.
 
-- Initialise scope by:
+Make sure you have access to the CMCL Docker registry. You can test your access by runing 
+    ```console
+    docker login docker.cmclinnovations.com
+    ```
+If you are not already logged in then, when prompted, enter the username and password you were given.
+
+## Work example
+
+1) Initialise scope by:
 ```
-curl -X POST "http://localhost:8084/DispersionInteractor/InitialiseSimulation?ewkt=SRID=4326;POLYGON((-4.282264034358564%2050.26375198971232,-4.001705368451314%2050.26650880607838,-4.005497340234552%2050.44635115729881,-4.287117430213462%2050.44357678715814,-4.282264034358564%2050.26375198971232))&nx=400&ny=400"
+curl -X POST "http://localhost:3838/dispersion-interactor/InitialiseSimulation?ewkt=SRID=4326;POLYGON((-4.282264034358564%2050.26375198971232,-4.001705368451314%2050.26650880607838,-4.005497340234552%2050.44635115729881,-4.287117430213462%2050.44357678715814,-4.282264034358564%2050.26375198971232))&nx=400&ny=400"
 ```
 
 This request should return the IRI of the derivation, record this. Check the README of DispersionInteractor for more details.
 
-- Trigger ship input agent and update simulation time (input to dispersion derivation)
+2) Trigger ship input agent and update simulation time (input to dispersion derivation)
 ```
-curl -X POST http://localhost:8084/DispersionInteractor/UpdateShipsAndSimulationTime
-```
-
-- Finally trigger update for the dispersion derivation
-```
-curl -X POST "http://localhost:8084/DispersionInteractor/TriggerUpdateDispersion?derivation=PLACE_DERIVATION_IRI_HERE"
+curl -X POST http://localhost:3838/dispersion-interactor/UpdateShipsAndSimulationTime
 ```
 
-- Visualisation can be accessed on the browser at
+3) Finally trigger update for the dispersion derivation
 ```
+curl -X POST "http://localhost:3838/dispersion-interactor/TriggerUpdateDispersion?derivation=PLACE_DERIVATION_IRI_HERE"
+```
+
+4) Visualisation can be accessed on the browser at
+```
+<<<<<<< HEAD
 http://localhost:8090
 ```
 The updated version of the agent also displays the legend for the contour plot in the sidebar. It may be necessary to open an incognito browser window to view it. 
+=======
+http://localhost:3838/dispersion-vis/
+```
+
+To see results at a later simulation time, repeat steps 2-4.
+
+## Debugging in VSCode
+
+1) Create a copy of the JSON file of a container for debugging in `./stack-manager/inputs/config/services/`
+2) Add the following to environment variable specification (`Env`):
+
+```
+"JPDA_ADDRESS=0.0.0.0:5005",
+"JPDA_TRANSPORT=dt_socket",
+"DEBUG=ON"
+```
+
+3) Add the following as the child of `ServiceSpec`:
+
+```
+"EndpointSpec": {
+	"Ports": [
+		{
+			"Name": "web",
+			"Protocol": "tcp",
+			"TargetPort": "5005",
+			"PublishedPort": "5005"
+		}
+	]
+}
+```
+
+4) Update `ship-stack.json` accordingly.
+
+5) In the folder of the corresponding container, change the port of Reattach and Debug in `.vscode/launch.json` (`${input:debug.port.read}`) to match the `PublishedPort`.
+
+6) After starting the stack, run Reattach and Debug in VSCode.
+
+`./stack-manager/inputs/config/services/aermod-agent-debug.json` is included as an example.
+>>>>>>> 98f150e6a0d8ce5d11fc6d3bb3d3577b08b6d15a

@@ -27,6 +27,9 @@ configs:
   blazegraph:
     name: ${STACK_NAME}_blazegraph
     external: true
+  geoserver:
+    name: ${STACK_NAME}_geoserver
+    external: true
   postgis:
     name: ${STACK_NAME}_postgis
     external: true
@@ -38,6 +41,9 @@ networks:
     external: true
 
 secrets:
+  geoserver_password:
+    name: ${STACK_NAME}_geoserver_password
+    external: true
   postgis_password:
     name: ${STACK_NAME}_postgis_password
     external: true

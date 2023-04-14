@@ -1,5 +1,8 @@
 DATABASE='postgres'
 NAMESPACE='kb'
+LAYERNAME='test'
+GEOSERVER_WORKSPACE='test'
+BUILDINGS_TABLE='test'
 
 # Hostname to use for communication with test containers
 # For local agent test: 'localhost
