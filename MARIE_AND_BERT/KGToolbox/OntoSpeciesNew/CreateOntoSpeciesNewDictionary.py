@@ -36,7 +36,6 @@ WHERE {
       species:%s   os:hasSMILES ?smiles_node .
       ?formula_node os:value ?formula .
       ?smiles_node os:value ?smile .
-
     }
                                                                           
 }  

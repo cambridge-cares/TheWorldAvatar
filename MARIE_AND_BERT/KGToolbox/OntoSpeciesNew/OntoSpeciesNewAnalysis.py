@@ -34,7 +34,7 @@ class OntoSpeciesNewAnalyzer:
         self.ontology = "ontospecies_new"
         self.sub_ontology = sub_ontology
         self.full_dataset_dir = os.path.join(DATA_DIR, "CrossGraph", self.ontology)
-        self.sub_ontology_path = os.path.join(self.full_dataset_dir, self.sub_ontology)
+        self.sub_ontology_path = os.path.join(DATA_DIR, "CrossGraph", self.ontology, self.sub_ontology)
         self.use_hierarchy_triples = json.loads(open(f"{self.full_dataset_dir}/use_hierarchy_triples.json").read())
 
         self.preferred_use_list = \
@@ -55,7 +55,7 @@ class OntoSpeciesNewAnalyzer:
         self.selected_species = []
         self.file_creator = IntegratedTrainingFileCreator(sparql_namespace="copy_ontospecies_pubchem",
                                                           ontology=self.ontology,
-                                                          sub_ontology=sub_ontology, same_frac=1, other_frac=1)
+                                                          sub_ontology=sub_ontology, same_frac=1, other_frac=0.1)
 
         self.class_caching_dict_path = os.path.join(self.full_dataset_dir, "class_tree_dict.json")
         if os.path.exists(self.class_caching_dict_path):
@@ -79,10 +79,12 @@ class OntoSpeciesNewAnalyzer:
         self.species_role_dictionary, self.role_species_dictionary = self.get_roles_of_species()
         self.selected_role_list = list(set(self.role_species_dictionary.keys()))
         self.role_count_dict = dict(sorted(self.role_count_dict.items(), key=lambda k: k[1], reverse=True))
-        self.selected_inference_role_list = [r for r, l in list(set(self.role_count_dict.items())) if l > 5]
+        self.selected_inference_role_list = [r for r, l in list(set(self.role_count_dict.items())) ] # if l > 1]
         # self.selected_inference_role_list = [r for r in self.selected_inference_role_list if
         #                                      r not in self.duplicate_use_iri_mapping]
 
+        print("SELECTED SPECIES NUMBER", len(self.selected_species))
+        print("SELECTED SPECIES FOR INFERENCE NUMBER", len(self.selected_inference_species))
         print("2. DONE SPECIES ROLE QUERYING")
         print("3. STARTING SPECIES CLASS QUERYING")
         # do a filtering, return list of species ...
@@ -116,7 +118,7 @@ class OntoSpeciesNewAnalyzer:
         species_tmp = []
         for species in self.species_role_dictionary:
             roles = self.species_role_dictionary[species]
-            if len(roles) > 2:
+            if len(roles) > 0:
                 species_role_count_dict[species] = len(roles)
                 species_tmp.append(species)
             for role in roles:
@@ -130,7 +132,7 @@ class OntoSpeciesNewAnalyzer:
             counter += 1
             # print(f"{counter} out of {len(self.species_class_dict)}")
             classes = self.species_class_dict[species]
-            if len(classes) > 2:
+            if len(classes) > 0:
                 species_class_count_dict[species] = len(classes)
                 species_tmp.append(species)
 
@@ -148,7 +150,7 @@ class OntoSpeciesNewAnalyzer:
         selected_species = candidate_species_list
         # selected_species = random.sample(candidate_species_list, min(1000, len(candidate_species_list)))
         # selected_species = list(set(combined_count_dict.keys()))[0:1000]
-        selected_inference_species = random.sample(selected_species, 100)
+        selected_inference_species = random.sample(selected_species, 500)
         # selected_inference_species = selected_species[0:100]
         return selected_species, selected_inference_species, role_count_dict
 
@@ -477,7 +479,9 @@ class OntoSpeciesNewAnalyzer:
             f.write(json.dumps(self.use_label_dict))
             f.close()
 
+        print("SELECTED SPECIES NUMBER", len(self.selected_species))
+        print("SELECTED SPECIES FOR INFERENCE NUMBER", len(self.selected_inference_species))
 
 if __name__ == "__main__":
-    my_analyzer = OntoSpeciesNewAnalyzer(sub_ontology="base_full_no_pref_selected_role_final_100_1_1")
+    my_analyzer = OntoSpeciesNewAnalyzer(sub_ontology="full_500")
     my_analyzer.run()
