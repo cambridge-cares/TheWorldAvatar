@@ -5,7 +5,7 @@ from torch import nn, no_grad, unsqueeze
 from torch.nn.functional import one_hot
 from transformers import BertModel, BertTokenizer, AdamW
 
-from Marie.CandidateSelection.location import DATA_DIR,PRETRAIN
+from Marie.CandidateSelection.location import DATA_DIR
 from Marie.Util.location import PRETRAINED_DIR
 
 
