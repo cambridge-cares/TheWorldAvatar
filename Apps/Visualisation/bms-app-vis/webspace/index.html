@@ -1,8 +1,9 @@
+<!DOCTYPE html>
 <html>
 
 <head>
     <!-- ===== CUSTOMISABLE ===== -->
-    <title>DTVF v3.3.4</title>
+    <title>BMS Visualisation</title>
     <!-- ===== CUSTOMISABLE ===== -->
 
     <meta charset="utf-8">
@@ -32,7 +33,7 @@
         rel="stylesheet">
     <link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" rel="stylesheet">
     <!-- <link href="https://kg.cmclinnovations.com/cdn/dtvf/3.3.4/dtvf.min.css" rel="stylesheet" /> -->
-    <link href="dtvf_mobile.css" rel="stylesheet" />
+    <link href="./dtvf_mobile.css" rel="stylesheet"/>
 
     <!-- ===== CUSTOMISABLE ===== -->
     <!-- CSS files to provide styling specifically for this visualisation instance can go here. -->
@@ -41,16 +42,19 @@
 </head>
 
 <body>
-    <!-- <div id="equipmentSelectControlContainer"></div> -->
-    <p id="notAvailaleP" style="display: none;"> The visualisation for the item is not ready at this moment. </p>
+    <!-- TODO: still need to tune the performance of the loader-->
+    <div id="loaderAnimationWrapper"><div id="loaderAnimation"></div></div>
+    
+    <p id="notAvailaleP" style="display: none;  padding-top: 15px; padding-left: 10px; padding-right: 10px;"> The visualisation for this item is currently not available. </p>
     <div id="metaTimeContainer"></div>
 </body>
 
 <script>
     // var stack = "http://localhost:3838/";
-    var stack = "http://192.168.1.6:3838/";
+    var stack = "http://192.168.1.26:3838/";
 
     function visualiseTimeSeriesData(rawJSON) {
+        $("#loaderAnimationWrapper").hide();
         console.log("response received");
         let meta = rawJSON["meta"];
         let time = rawJSON["time"];
@@ -107,6 +111,7 @@
     }
 
     function getJSONFailure() {
+        $("#loaderAnimationWrapper").hide();
         $("#notAvailaleP").show();
         console.warn("Could not get valid response from the agent");
     }
