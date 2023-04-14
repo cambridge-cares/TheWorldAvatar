@@ -52,12 +52,12 @@ jobs:
       # Build the code without test
       - name: Build code (no tests)
         working-directory: ./JPS_BASE_LIB
-        run: mvn --batch-mode -DskipTests package
+        run: mvn -s settings.xml -DskipTests package
 
       # Run all tests (even if some fail)
       - name: Run all tests
         working-directory: ./JPS_BASE_LIB
-        run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
+        run: mvn -s settings.xml -Dmaven.test.failure.ignore=true test
         
       # Produce test report
       - name: Test report
