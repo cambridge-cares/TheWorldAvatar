@@ -20,7 +20,6 @@ import uk.ac.cam.cares.jps.base.email.EmailSender;
  *
  * @author Michael Hillman (mdhillman<@>cmclinnovations.com)
  */
-@TestMethodOrder(OrderAnnotation.class)
 public class SubmissionTest {
 
     /**
@@ -31,7 +30,7 @@ public class SubmissionTest {
     /**
      * Base URL of remote EmailAgent to use in test.
      */
-    private static final EMAIL_AGENT_URL = "http://fake-website.com/email-agent";
+    private static final String EMAIL_AGENT_URL = "http://fake-website.com/email-agent";
     
     /**
      * Attempts to contact a remote EmailAgent instance and submit a message.

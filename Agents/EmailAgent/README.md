@@ -18,6 +18,7 @@ Please note the caveats below before attempting to build the service using Docke
 * The service installed within the Docker image will be based on the current commit of this repository, please ensure it is the correct one.
 * The `docker build` command should be run from the `EmailAgent` directory; this is so that a copy of the `email-agent-code` directory can be copied into the final Image.
 
+Note: users are free to use the uploaded copy of the image form the TWA image registry, as the properties file containing SMTP server details should be stored in the `./code/data` folder, which is mounted to the image as a volume at runtime.
 
 ### Configuring Maven
 The Java code that this image is setup to build needs access to [TheWorldAvatar Maven Repository](https://maven.pkg.github.com/cambridge-cares/TheWorldAvatar/). To allow access to this repository, developers will need to provide their GitHub credentials in single-line text files at the following locations:
@@ -31,9 +32,9 @@ The `repo_username.txt` file should contain your GitHub username, and the `repo_
 
 
 ### Setting Properties
-This agent relies on the existence of a properties file that contains settings and credentials used to contact the SMTP server. Each developer is expected to create a new properties file with their settings and credentials before attempting to build the Image; this can be based on the example file within the `code/data` folder. Note, it is important that the properties file with these credentials is not committed to the GitHub repository.
+This agent relies on the existence of a properties file that contains settings and credentials used to contact the SMTP server. Each developer is expected to create a new properties file with their settings and credentials before attempting to build the Image; this can be based on the example file within the `./code/data` folder. Note, it is important that the properties file with these credentials is not committed to the GitHub repository.
 
-For the agent code to find the properties file, an environment variable named `EMAIL_AGENT_PROPERTIES` will be created with the location of the file. For the existing Docker configuration to pick up the developer's properties file, copy it into the image, and generate the appropriate environment variable, place the properties file at the following location:
+For the agent code to find the properties file, an environment variable named `EMAIL_AGENT_PROPERTIES` will be created with the location of the file. For the existing Docker configuration to pick up the developer's properties file, simply create your properties file at the following location before deplying the image:
 
 ```
 ./code/data/email-agent.properties
@@ -56,3 +57,5 @@ To make use of the Email Agent from your own code, follow the below steps:
 1. Ensure you're using the latest version of the JPS base library.
 2. Set the value of the `EMAIL_AGENT_URL` environment variable to the base URL of the remote EmailAgent.
 3. Use the `sendEmail(subject, body)` method of the `EmailSender` class in JPS Base Library to generate a notification email.
+
+For an example of this, or to quickly test that your remote EmailAgent is up and running, see the `SubmissionTest` class within the EmailAgent.

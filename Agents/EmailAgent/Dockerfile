@@ -30,12 +30,6 @@ RUN mvn package
 FROM tomcat:9.0.69-jdk17 as final
 WORKDIR /app
 
-# Copy in the properties file
-COPY ./code/data/email-agent.properties /root/email-agent.properties
-
-# Set the required environment variable
-ENV EMAIL_AGENT_PROPERTIES="/root/email-agent.properties"
-
 # Copy the built WAR file
 # Note here that if the WAR version changes, you'll need to update this line
 COPY --from=build /root/code/output/email_agent##1.0.1.war $CATALINA_HOME/webapps/

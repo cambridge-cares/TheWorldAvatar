@@ -14,7 +14,7 @@
         <maven.compiler.release>17</maven.compiler.release>
         
         <!-- Version of the JPS Base Library to use, can be overridden by child projects. -->
-        <jps.base.version>1.35.1-SNAPSHOT</jps.base.version>
+        <jps.base.version>1.35.1</jps.base.version>
     </properties>
     
     <!-- Parent POM -->
@@ -88,9 +88,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <!-- JUnit 5 requires Surefire version 2.22.0 or higher -->
                 <version>2.22.0</version>
-                <configuration>
-                    <skipTests>true</skipTests>
-                </configuration>
             </plugin>
             
             <!-- Used to build into a WAR file and ensures everything in ./WEB-INF
