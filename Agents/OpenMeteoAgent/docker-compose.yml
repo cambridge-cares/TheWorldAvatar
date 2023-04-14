@@ -25,7 +25,6 @@ services:
       - external_maven_repo_openmeteo:/root/.m2
     networks:
       - stack     
-    container_name: openmeteo_agent
     
 
 volumes:
