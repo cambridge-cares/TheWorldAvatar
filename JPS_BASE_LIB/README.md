@@ -1,12 +1,12 @@
 
 # JPS Base Library
 
-TBD
+To be written
 
 ## Requirements
 
-TBD
+To be written
 
 ## Usage
 
-TBD
+To be written
