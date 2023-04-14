@@ -11,6 +11,8 @@ public class EnvConfig {
     public static final String AERMOD_EXE = System.getenv("AERMOD_EXE");
     public static final String DATABASE = System.getenv("DATABASE");
     public static final String WEATHER_AGENT = System.getenv("WEATHER_AGENT");
+    public static final String OPENMETEO_AGENT_RUN = System.getenv("OPENMETEO_AGENT_RUN");
+    public static final String OPENMETEO_AGENT_DELETE = System.getenv("OPENMETEO_AGENT_DELETE");
     public static final String SIMULATION_DIR = System.getenv("SIMULATION_DIR");
     public static final String FILE_SERVER = System.getenv("FILE_SERVER_URL");
     public static final String GEOSERVER_WORKSPACE = System.getenv("GEOSERVER_WORKSPACE");

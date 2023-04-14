@@ -73,41 +73,54 @@ public class Aermod {
 
     int create144File(WeatherData weatherData) {
 
-        String windSpeed = String.valueOf(weatherData.getWindSpeedInKnots());
-        windSpeed=addLeadingZero(windSpeed,2);
-        if (windSpeed.length() != 2) {
-            LOGGER.error("Invalid wind speed value {}", windSpeed);
-            return 1;
-        }
+        int numberTimeSteps = weatherData.getNumberTimesteps();
+        List<Double> windSpeed = weatherData.getWindSpeedInKnots();
+        List<Long> windDirection = weatherData.getWindDirectionInTensOfDegrees();
+        List<Long> temperature = weatherData.getTemperatureInFahrenheit();
+        List<Long> humidity = weatherData.getHumidityAsPercentage();
+        List<Long> cloudCover = weatherData.getCloudCoverAsInteger();
 
-        String windDirection = String.valueOf(weatherData.getWindDirectionInTensOfDegrees());
-        windDirection=addLeadingZero(windDirection,2);
-        if (windDirection.length() != 2) {
-            LOGGER.error("Invalid wind direction value {}", windDirection);
-            return 1;
-        }
+        StringBuilder sb = new StringBuilder();
 
-        // unsure how strict the format is, just follow blindly at the moment
-        String temperature = String.valueOf(weatherData.getTemperatureInFahrenheit());
-        temperature=addLeadingZero(temperature,3);
-        if (temperature.length() < 3) {
-            temperature = "0" + temperature;
-        }
-        if (temperature.length() != 3) {
-            LOGGER.error("Invalid temperature value {}", temperature);
-            return 1;
-        }
+        for (int i = 0; i < numberTimeSteps; i++) {
+            String ws = String.valueOf(windSpeed.get(i));
+            ws = addLeadingZero(ws, 2);
+            if (ws.length() != 2) {
+                LOGGER.error("Invalid wind speed value {}", ws);
+                return 1;
+            }
 
-        String humidity = String.valueOf(weatherData.getHumidityAsPercentage());
-        humidity=addLeadingZero(humidity,3);
-        if (humidity.length() != 3) {
-            LOGGER.error("Invalid humidity value {}", humidity);
-            return 1;
-        }
+            String wd = String.valueOf(windDirection.get(i));
+            wd = addLeadingZero(wd, 2);
+            if (wd.length() != 2) {
+                LOGGER.error("Invalid wind direction value {}", windDirection);
+                return 1;
+            }
 
-        String cloudCover = String.valueOf(weatherData.getCloudCoverAsInteger());
-        if (cloudCover.length() != 1) {
-            LOGGER.error("Invalid cloud cover value {}", cloudCover);
+            String temp = String.valueOf(temperature.get(i));
+            temp = addLeadingZero(temp, 3);
+
+            if (temp.length() < 3) {
+                temp = "0" + temperature;
+            }
+
+            if (temp.length() != 3) {
+                LOGGER.error("Invalid temperature value {}", temperature);
+                return 1;
+            }
+
+            String hmd = String.valueOf(humidity.get(i));
+            hmd = addLeadingZero(hmd,3);
+            if (hmd.length() != 3) {
+                LOGGER.error("Invalid humidity value {}", hmd);
+                return 1;
+            }
+
+            String ccvr = String.valueOf(cloudCover.get(i));
+            if (ccvr.length() != 1) {
+                LOGGER.error("Invalid cloud cover value {}", ccvr);
+            }
+
         }
 
         String templateContent;

@@ -20,6 +20,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.locationtech.jts.geom.Polygon;
 
 import com.cmclinnovations.aermod.objects.Ship;
@@ -43,6 +44,9 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 public class AermodAgent extends DerivationAgent {
     private static final Logger LOGGER = LogManager.getLogger(AermodAgent.class);
     private QueryClient queryClient;
+    // hard-coded default values follow the ones in aermet_input.inp
+    private String StartDate = "2022-09-23";
+    private String EndDate = "2022-09-23";
 
     @Override
 	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {   
@@ -74,21 +78,22 @@ public class AermodAgent extends DerivationAgent {
         LOGGER.info("Querying emission values");
         queryClient.setEmissions(ships);
 
+        
+        /*The next two lines of code are for use with the Weather Agent. 
         // update weather station with simulation time
         updateWeatherStation(weatherStationIri, simulationTime);
 
         // get weather data from station
         WeatherData weatherData = queryClient.getWeatherData(weatherStationIri, simulationTime);
+        */
 
+        
         // making directory for simulation
         LOGGER.info("Creating directory for simulation files");
         Path simulationDirectory = Paths.get(EnvConfig.SIMULATION_DIR, UUID.randomUUID().toString());
 
         // create input files
         Aermod aermod = new Aermod(simulationDirectory);
-
-        aermod.create144File(weatherData);
-
 
         //compute srid
         int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180)/6);
@@ -122,6 +127,19 @@ public class AermodAgent extends DerivationAgent {
             bpi.createAERMODSourceInput();
             bpi.createAERMODReceptorInput(nx, ny);
         }
+
+        // Send POST request to OpenMeteo Agent to update OpenMeteo Station
+        if (bpi.timeStamps.size() > 0) {
+            StartDate = bpi.timeStamps.get(0);
+            EndDate = bpi.timeStamps.get(bpi.timeStamps.size()-1);
+        }
+        // TODO: Ensure that only the date portion of the timestamp is included in the request sent to the 
+        // OpenMeteo Agent. 
+        updateOpenMeteoStation(scope, StartDate, EndDate);
+        WeatherData weatherData = queryClient.getOpenMeteoData();
+        deleteOpenMeteoStation(scope);
+
+        aermod.create144File(weatherData);
 
 
         // run aermet (weather preprocessor)
@@ -265,4 +283,74 @@ public class AermodAgent extends DerivationAgent {
         queryClient = new QueryClient(storeClient, ontopStoreClient, rdbStoreClient);
         super.devClient = new DerivationClient(storeClient, QueryClient.PREFIX_DISP);
     }
+
+     /**
+     * Send PUT request to OpenMeteo Agent to create a weather station and instantiate the weather data at one hour intervals
+     * between the start and end dates. 
+     * @param polygon
+     * @return
+     */
+    void updateOpenMeteoStation(Polygon scope, String StartDate, String EndDate) {
+
+        double lat = scope.getCentroid().getCoordinate().getY();
+        double lon = scope.getCentroid().getCoordinate().getX();
+        
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            URIBuilder builder = new URIBuilder(EnvConfig.OPENMETEO_AGENT_RUN);
+            builder.addParameter("lon",String.valueOf(lon));
+            builder.addParameter("lat",String.valueOf(lat));
+            builder.addParameter("start_date", StartDate);
+            builder.addParameter("end_date", EndDate);
+            HttpPut httpPut = new HttpPut(builder.build());
+
+            CloseableHttpResponse response = httpClient.execute(httpPut);
+            if (response.getStatusLine().getStatusCode() != 200) {
+                LOGGER.fatal("Status code = {}", response.getStatusLine().getStatusCode());
+            }
+
+        } catch (URISyntaxException e) {
+            LOGGER.error("Failed to build URI for OpenMeteo agent post request");
+            LOGGER.error(e.getMessage());
+        } catch (IOException e) {
+            LOGGER.error("Http PUT request failed for OpenMeteo agent");
+            LOGGER.error(e.getMessage());
+        }
+
+    }
+
+      /**
+     * Send PUT request to OpenMeteo Agent to delete the weather station
+     * @param polygon
+     * @return
+     */
+    void deleteOpenMeteoStation(Polygon scope) {
+
+        double lat = scope.getCentroid().getCoordinate().getY();
+        double lon = scope.getCentroid().getCoordinate().getX();
+        
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
+            URIBuilder builder = new URIBuilder(EnvConfig.OPENMETEO_AGENT_DELETE);
+            builder.addParameter("lon",String.valueOf(lon));
+            builder.addParameter("lat",String.valueOf(lat));
+            HttpPut httpPut = new HttpPut(builder.build());
+
+            CloseableHttpResponse response = httpClient.execute(httpPut);
+            if (response.getStatusLine().getStatusCode() != 200) {
+                LOGGER.fatal("Status code = {}", response.getStatusLine().getStatusCode());
+            }
+        } catch (URISyntaxException e) {
+            LOGGER.error("Failed to build URI for OpenMeteo agent post request");
+            LOGGER.error(e.getMessage());
+        } catch (IOException e) {
+            LOGGER.error("Http PUT request failed for OpenMeteo agent");
+            LOGGER.error(e.getMessage());
+        }
+
+    }
+
+
+
+
+
+
 }
