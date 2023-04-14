@@ -147,7 +147,7 @@ public class DataBridgeAgent extends JPSAgent {
     protected JSONObject sqlRoute(String[] config) {
         JSONObject response = new JSONObject();
         LOGGER.debug("Creating the SQL connector..");
-        SqlBridge connector = new SqlBridge(config[0], config[1], config[2], config[3], config[4], config[5]);
+        SqlBridge connector = new SqlBridge(config);
         LOGGER.debug("Transfer data from source to target database...");
         connector.transfer();
         LOGGER.info("Data have been successfully transferred from " + config[0] + " to " + config[3]);
