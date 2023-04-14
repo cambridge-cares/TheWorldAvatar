@@ -1,6 +1,7 @@
 import torch
 import transformers
 import re
+from Marie.Util.location import PRETRAINED_DIR_CASED
 
 SPECIAL_SYM = "[,\'\[\]\{\}\(\)\-\]\*\+\-\_\.\/\:\>=]"
 stopwords = ['the', 'which', 'in', 'that', 'what']
@@ -12,7 +13,7 @@ class NerSMILE():
     def __init__(self, config):
         # config parameters
         # read model
-        model = transformers.BertForTokenClassification.from_pretrained('bert-base-cased', num_labels=7)
+        model = transformers.BertForTokenClassification.from_pretrained(PRETRAINED_DIR_CASED, local_files_only=True, num_labels=7)
         model = torch.nn.DataParallel(model)
         print("Loading NER model from: ", config['model_path'])
         model.load_state_dict(torch.load(config['model_path']), strict=False)
