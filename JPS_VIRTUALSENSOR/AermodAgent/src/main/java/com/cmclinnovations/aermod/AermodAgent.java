@@ -136,7 +136,7 @@ public class AermodAgent extends DerivationAgent {
             return;
         }
 
-        aermod.createAermodInputFile(scope, nx, ny, srid);
+        if (!bpi.aermodInputCreated) aermod.createAermodInputFile(scope, nx, ny, srid);
         aermod.runAermod();
         // Call Python Service to draw contour plot for pollution concentrations
         String outputFileURL = aermod.uploadToFileServer("1HR_PLOTFILE.DAT");

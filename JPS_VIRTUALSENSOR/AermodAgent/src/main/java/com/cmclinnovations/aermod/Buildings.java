@@ -104,6 +104,8 @@ public class Buildings {
     public Polygon scope;
     public int nx;
     public int ny;
+
+    public boolean aermodInputCreated = false;
     
 
     public void init(Path simulationDirectory, Polygon scope, int srid, int nx, int ny) throws ParseException {
@@ -1774,13 +1776,12 @@ public class Buildings {
 // This method adds additional receptor input files for the various user-specified flagpole heights.
 // Need to update the AERMOD main input files in addition to creating additional receptor files
     public int addAERMODReceptorInput() {
-        // First read existing receptor.dat file containing information for ground level receptors.
         String templateContent;
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("receptor.dat")) {
             templateContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
-            LOGGER.error("Failed to read weather_template.144 file");
+            LOGGER.error("Failed to read receptor.dat file");
             return 1;
         }
 
@@ -1841,6 +1842,7 @@ public class Buildings {
         }
 
         int r2 = writeToFile(aermodDirectory.resolve("aermod_input.inp"), inputContent);
+        if (r2 ==0) aermodInputCreated = true;
         res = Math.max(res,r2);
 
         return res;
