@@ -2,11 +2,9 @@ package uk.ac.cam.cares.jps.agent.email;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.junit.Ignore;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Disabled;
 import uk.ac.cam.cares.jps.base.email.EmailSender;
 
 /**
@@ -30,13 +28,13 @@ public class SubmissionTest {
     /**
      * Base URL of remote EmailAgent to use in test.
      */
-    private static final String EMAIL_AGENT_URL = "http://fake-website.com/email-agent";
+    private static final String EMAIL_AGENT_URL = "http://localhost:8080/email_agent";
     
     /**
      * Attempts to contact a remote EmailAgent instance and submit a message.
      */
     @Test
-    @Ignore("See class documentation")
+    @Disabled("See class documentation")
     public void submitJob() {
         // Configure a message
         String subject = "Testing the EmailAgent";
@@ -56,6 +54,23 @@ public class SubmissionTest {
             LOGGER.error("Could not contact remote EmailAgent!", exception);
         }
     }
+
+    /**
+     * Attempts to contact a remote EmailAgent instance and get the status
+     */
+    @Test
+    public void submitPing() {
+        // Use JPS base library code to submit job
+        EmailSender sender = new EmailSender(EMAIL_AGENT_URL);
+
+        try {
+            boolean reachable = sender.isReachable();
+            LOGGER.info("Pinged the remote EmailAgent, status was {}", reachable);
+        } catch(Exception exception) {
+            LOGGER.error("Could not contact remote EmailAgent!", exception);
+        }
+    }
+
 
 }
 // End of class.

@@ -9,5 +9,7 @@ services:
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
       EMAIL_AGENT_PROPERTIES: "/root/data/email-agent.properties"
+    ports:
+      - 8080:8080
     volumes:
       - ./code/data:/root/data

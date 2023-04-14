@@ -131,17 +131,15 @@ public class EmailSender {
             String submitURL = (emailAgentURL.endsWith("/")) ? emailAgentURL + "send" : emailAgentURL + "/send";
             String result = AgentCaller.executeGetWithURLAndJSON(submitURL, request.toString());
 
-            if (result.contains("200") && result.contains("success")) {
+            if (result.contains("Request forwarded")) {
                 // Success
-                LOGGER.info("EmailAgent reports successful request, will send email.");
+                LOGGER.info("EmailAgent reports successful request, check recipient mailbox.");
 
             } else {
                 // Failure
                 JSONObject resultJSON = new JSONObject(result);
-
                 LOGGER.warn("Remote EmailAgent instance reports issues, cannot send email!");
-                LOGGER.warn("    Status: {}", resultJSON.get("status"));
-                LOGGER.warn("    Description: {}", resultJSON.get("description"));
+                LOGGER.warn(resultJSON.get("description"));
             }
         } catch (Exception exception) {
             LOGGER.error("Exception when attempting to contact remote EmailAgent instance, will write to file instead.", exception);
@@ -180,14 +178,14 @@ public class EmailSender {
      *
      * @return remote EmailAgent is reachable.
      */
-    private boolean isReachable() {
+    public boolean isReachable() {
         try {
             // Make the HTTP request
             String statusURL = (emailAgentURL.endsWith("/")) ? emailAgentURL + "status" : emailAgentURL + "/status";
             String result = AgentCaller.executeGetWithURL(statusURL);
 
             // Check result contents
-            if (result.contains("200")) {
+            if (result.contains("Ready to serve")) {
                 return true;
             }
         } catch (Exception exception) {
