@@ -223,8 +223,6 @@ public class TBoxGeneration implements ITBoxGeneration {
 					List<String> parents = new ArrayList<String>();
 					parents.add(target);
 					childParentMap.put(source, parents);
-					System.out.println(childParentMap.keySet());
-					System.out.println(source);
 				}
 			}
 
