@@ -10,16 +10,12 @@ services:
         condition: none
     environment:
       - STACK_NAME=${STACK_NAME}
-<<<<<<< HEAD
       - PYTHON_SERVICE_URL=http://python-service:5000/getAermodGeoJSON
       - PYTHON_SERVICE_ELEVATION_URL=http://python-service:5000/getElevationGeoJSON
       - NUMBER_SOURCES=600
       - NUMBER_BUILDINGS=10
       - AERMAP_EXE=/root/aermod/aermap
       - BPIPPRM_EXE=/root/aermod/bpipprm
-=======
-      - PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000/getAermodGeoJSON
->>>>>>> 98f150e6a0d8ce5d11fc6d3bb3d3577b08b6d15a
       - AERMET_EXE=/root/aermod/aermet # need to match Dockerfile
       - AERMOD_EXE=/root/aermod/aermod # need to match Dockerfile
       - WEATHER_AGENT=http://${STACK_NAME}-weather-agent:8080/WeatherAgent/UpdateStation

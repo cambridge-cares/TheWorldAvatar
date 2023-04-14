@@ -3,11 +3,7 @@ version: "3.8"
 # All Services
 services:
   dispersion-vis:
-<<<<<<< HEAD
     image: ghcr.io/cambridge-cares/dispersion-vis:1.1.1-SNAPSHOT
-=======
-    image: ghcr.io/cambridge-cares/dtvf-base-image:latest
->>>>>>> 98f150e6a0d8ce5d11fc6d3bb3d3577b08b6d15a
     deploy:
       mode: replicated
       replicas: 1
