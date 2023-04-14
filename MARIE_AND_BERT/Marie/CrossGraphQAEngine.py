@@ -181,7 +181,7 @@ class CrossGraphQAEngine:
                 #     labels, scores, targets, numerical_list, question_ype = engine.run(question=question)
                 #     return labels, scores, targets
             else:
-                labels, scores, targets = engine.run(question=question)
+                labels, scores, targets = engine.run(question=question, mention=mention)
 
             length_diff = 5 - len(labels)
             scores = scores + [-999] * length_diff
