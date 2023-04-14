@@ -46,6 +46,7 @@ public class FHAgent{
      * A list of mappings between JSON keys and the corresponding IRI, contains one mapping per time series
      */
     private List<JSONKeyToIRIMapper> mappings;
+    private HashMap<String, JSONKeyToIRIMapper> varToMapping;
     /**
      * The prefix to use when no IRI exists for a JSON key originally
      */
@@ -152,6 +153,7 @@ public class FHAgent{
      */
     private void readMappings(String mappingFolder) throws IOException {
         mappings = new ArrayList<>();
+        varToMapping = new HashMap<>();
         File folder = new File(mappingFolder);
         File[] mappingFiles = folder.listFiles();
         // Make sure the folder exists and contains files
@@ -168,6 +170,11 @@ public class FHAgent{
                 mappings.add(mapper);
                 // Save the mappings back to the file to ensure using same IRIs next time
                 mapper.saveToFile(mappingFile.getAbsolutePath());
+                //Map variable name from mapping file to jsonKeyToIRIMapper
+                for(String key: mapper.getAllJSONKeys()) {
+                    varToMapping.put(key, mapper);
+                }
+
             }
         }
     }
@@ -445,7 +452,7 @@ public class FHAgent{
      * @param TimestampReadings The timestamps as map.
      * @return A list of time series objects (one per mapping) that can be used with the time series client.
      */
-    private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> Distance,
+    private List<TimeSeries<OffsetDateTime>> convertReadingsToTimeSeries(Map<String, List<?>> occupiedState,
                                                                         Map<String, List<?>> TimestampReadings
                                                                         )
             throws  NoSuchElementException {
@@ -455,17 +462,28 @@ public class FHAgent{
                 .map(timestamp -> (convertStringToOffsetDateTime(timestamp.toString()))).collect(Collectors.toList());
         // Construct a time series object for each mapping
         List<TimeSeries<OffsetDateTime>> timeSeries = new ArrayList<>();
-        for (JSONKeyToIRIMapper mapping: mappings) {
+        for(String key: occupiedState.keySet()){
             // Initialize the list of IRIs
             List<String> iris = new ArrayList<>();
             // Initialize the list of list of values
             List<List<?>> values = new ArrayList<>();
-            // Go through all keys in the mapping
+            try{
+                JSONKeyToIRIMapper mapping = varToMapping.get(key);
+                iris.add(mapping.getIRI(key));
+                values.add(occupiedState.get(key));
+            }
+            catch(Exception e) {
+                throw new NoSuchElementException("The key " + key + " is not contained in the mapping!");
+            }
+        
+            
+
+            /*
             for(String key: mapping.getAllJSONKeys()) {
                 // Add IRI
                 iris.add(mapping.getIRI(key));
-                if (Distance.containsKey(key)) {
-                    values.add(Distance.get(key));
+                if (occupiedState.containsKey(key)) {
+                    values.add(occupiedState.get(key));
                 }
                 // Will create a problem as length of iris and values do not match when creating the time series.
                 // Could add an empty list, but the length of the list needs to match length of times. So what values to
@@ -474,6 +492,7 @@ public class FHAgent{
                     throw new NoSuchElementException("The key " + key + " is not contained in the readings!");
                 }
             }
+            */
             List<OffsetDateTime> times = allTimestamps;
             // Create the time series object and add it to the list
             TimeSeries<OffsetDateTime> currentTimeSeries = new TimeSeries<>(times, iris, values);

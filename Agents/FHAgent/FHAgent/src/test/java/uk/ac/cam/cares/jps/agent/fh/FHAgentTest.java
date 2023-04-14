@@ -72,12 +72,16 @@ public class FHAgentTest {
         String folderName = "mappings";
         File mappingFolder = folder.newFolder(folderName);
         // Add mapping file into the empty folder
-        String mappingFile = Paths.get(mappingFolder.getAbsolutePath(), "example_mapping.properties").toString();
-        ArrayList<String> mappings = new ArrayList<>();
-        for (String key: keys) {
-            mappings.add(key + "=example:prefix/api_" + key);
-        }
-        writePropertyFile(mappingFile, mappings);
+        String mappingFile1 = Paths.get(mappingFolder.getAbsolutePath(), "example_mapping1.properties").toString();
+        ArrayList<String> mappings1 = new ArrayList<>();
+       
+        mappings1.add(keys[0] + "=example:prefix/api_" + keys[0]);
+        writePropertyFile(mappingFile1, mappings1);
+
+        String mappingFile2 = Paths.get(mappingFolder.getAbsolutePath(), "example_mapping2.properties").toString();
+        ArrayList<String> mappings2 = new ArrayList<>();
+        mappings2.add(keys[1] + "=example:prefix/api_" + keys[1]);
+        writePropertyFile(mappingFile2, mappings2);
         // Filepath for the properties file
         
         String propertiesFile = Paths.get(folder.getRoot().toString(), "agent.properties").toString();
@@ -329,12 +333,15 @@ public class FHAgentTest {
         Mockito.verify(mockTSClient, Mockito.times(testAgent.getNumberOfTimeSeries())).addTimeSeriesData(timeSeriesArgument.capture());
         // Ensure that the timeseries objects have the correct structure
         int numIRIs = 0;
-        
+        int[] argNum = {2,3};
+
+        int tsTestInd = 0;
         for(TimeSeries<OffsetDateTime> ts: timeSeriesArgument.getAllValues()) {
         	
             // Check that number of timestamps is correct
-            Assert.assertEquals(2, ts.getTimes().size());
+            Assert.assertEquals(argNum[tsTestInd], ts.getTimes().size());
             numIRIs = numIRIs + ts.getDataIRIs().size();
+            tsTestInd += 1;
         }
         // Number of unique keys in readings should match the number of IRIs
         Set<String> uniqueKeys = new HashSet<>(allReadings.keySet());
