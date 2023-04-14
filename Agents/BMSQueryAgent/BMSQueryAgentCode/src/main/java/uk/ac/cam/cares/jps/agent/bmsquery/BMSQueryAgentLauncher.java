@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
  *
  * @author sandradeng20
  */
-@Controller
 @WebServlet(urlPatterns = {"/status", "/retrieve/equipment", "/retrieve/zones"})
 public class BMSQueryAgentLauncher extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(BMSQueryAgentLauncher.class);
@@ -90,6 +89,7 @@ public class BMSQueryAgentLauncher extends JPSAgent {
                 // handle the case "retrieve/zones", return the list of zones (buildings, facilities, rooms)
                 JSONObject queryResult = agent.queryAllZones();
 
+                LOGGER.info("query for zones is completed");
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().write(queryResult.toString());
             } else if (url.contains("equipment")) {
@@ -104,6 +104,7 @@ public class BMSQueryAgentLauncher extends JPSAgent {
 
                 JSONObject queryResult = agent.queryEquipmentInstances(roomIRI);
 
+                LOGGER.info("query for equipment in " + roomIRI + " is completed");
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getWriter().write(queryResult.toString());
             }
