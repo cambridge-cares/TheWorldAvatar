@@ -9,6 +9,8 @@
 import os
 import sys
 
+from Marie.EntityLinking.IRILookup import IRILookup
+
 sys.path.append("")
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.Util.CommonTools import NumericalTools
@@ -18,10 +20,10 @@ from Marie.Util.AgentTools.question_agent_matcher import QuestionAgentMatcher
 
 class AgentInterface():
 
-    def __init__(self, tokenizer_name="bert-base-uncased"):
+    def __init__(self, tokenizer_name="bert-base-uncased", nel=None):
         self.tokenizer_name = tokenizer_name
-        self.pce_nel = ChemicalNEL(dataset_name=os.path.join("ontoagent", "pceagent"), enable_class_ner=False)
-        self.thermo_nel = ChemicalNEL(dataset_name=os.path.join("ontoagent", "thermoagent"), enable_class_ner=False)
+        self.pce_nel = IRILookup(dataset_name=os.path.join("ontoagent", "pceagent"), enable_class_ner=False, nel=nel)
+        self.thermo_nel = IRILookup(dataset_name=os.path.join("ontoagent", "thermoagent"), enable_class_ner=False, nel=nel)
         self.nel_dict = {"ontothermoagent": self.thermo_nel, "ontopceagent": self.pce_nel}
 
     def parse_species_iri_and_qualifier(self, question, agent_name):

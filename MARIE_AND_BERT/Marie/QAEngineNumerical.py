@@ -1,6 +1,8 @@
 import json
 import os, sys
 
+from Marie.EntityLinking.IRILookup import IRILookup
+
 sys.path.append("..")
 from torch import no_grad
 import torch
@@ -38,7 +40,7 @@ class QAEngineNumerical:
         question = " ".join(question_tokens)
         return question
 
-    def __init__(self, dataset_dir, dataset_name, embedding="transe", dim=20, dict_type="json", largest=False,
+    def __init__(self, dataset_dir, dataset_name, nel=None, embedding="transe", dim=20, dict_type="json", largest=False,
                  test=False, operator_dict=None, value_dict_name="wikidata_numerical_value_new.json",
                  seperated_model=False, mode="transe", enable_class_ner=False, ontology=None, operator_dim=3,
                  numerical_scale_factor=1.0, bert_tokenizer_name="bert-base-cased"):
@@ -70,10 +72,13 @@ class QAEngineNumerical:
         # ===============================================================================================
         self.operator_dict = operator_dict
         self.operator_dim = len(self.operator_dict)
+        if nel is None:
+            nel = ChemicalNEL()
+
         if self.enable_class_ner:
-            self.nel = ChemicalNEL(dataset_name=ontology, enable_class_ner=enable_class_ner)
+            self.nel = IRILookup(dataset_name=ontology, enable_class_ner=enable_class_ner, nel=nel)
         else:
-            self.nel = ChemicalNEL(dataset_name=dataset_name, enable_class_ner=enable_class_ner)
+            self.nel = IRILookup(dataset_name=dataset_name, enable_class_ner=enable_class_ner, nel=nel)
         self.nlp = NLPTools(tokenizer_name=bert_tokenizer_name)
         self.o_p_dict = FileLoader.create_o_p_dict(self.triples)
         if embedding == "transe":
@@ -308,9 +313,19 @@ class QAEngineNumerical:
 
     def answer_normal_question(self):
         print("=================== Processing NORMAL question ===========================")
-        mention = self.input_dict.mention[2]
+        print("======= INPUT DICT MENTION ======")
+        print("question:", self.input_dict.question)
+        print(self.input_dict.mention)
+        if isinstance(self.input_dict.mention, str):
+            mention = self.input_dict.mention
+        else:
+            mention = self.input_dict.mention[2]
         single_question_embedding = self.input_dict.single_question_embedding
         _, head, mention_str, head_key = self.nel.find_cid(mention)
+        print("mention:", mention)
+        print("head", head)
+        print("=================================")
+
         _, pred_p_idx = self.score_model.get_relation_prediction(question_embedding=single_question_embedding)
         pred_p_label = self.idx2rel[pred_p_idx]
         print("predicted relation label: ", pred_p_label)
@@ -323,8 +338,6 @@ class QAEngineNumerical:
         selected_candidates = []
 
         labels_top_k = [self.idx2entity[candidates[index]] for index in indices_top_k]
-
-
 
         scores_top_k = [scores[index].item() for index in indices_top_k]
         targets_top_k = [head_key] * len(scores_top_k)
@@ -396,7 +409,20 @@ class QAEngineNumerical:
         print(mention)
         self.input_dict.mention = mention
         self.input_dict.question = self.text_filtering(self.input_dict.question)
+        print("========== input dict question =======")
+        print(self.input_dict.question)
+        print(mention)
+        if isinstance(mention, str):
+            self.input_dict.question = self.input_dict.question.replace(mention, "")
+        else:
+            mention = mention[2]
+            self.input_dict.question = self.input_dict.question.replace(mention, "")
+        print("filtered question:", self.input_dict.question)
+        print("======================================")
+
         _, tokenized_question = self.nlp.tokenize_question(question=self.input_dict.question, repeat_num=1)
+        # replace mention
+
         single_question_embedding = self.score_model.get_question_embedding(question=tokenized_question)
         self.input_dict.single_question_embedding = single_question_embedding
         self.get_numerical_operator(tokenized_question=tokenized_question,

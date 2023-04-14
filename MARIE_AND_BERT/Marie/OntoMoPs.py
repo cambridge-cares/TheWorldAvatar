@@ -1,5 +1,7 @@
 import os, sys
 
+from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
+
 sys.path.append("..")
 from Marie.QAEngineNumerical import QAEngineNumerical
 from Marie.Util.location import DATA_DIR
@@ -7,14 +9,20 @@ from Marie.Util.location import DATA_DIR
 
 class OntoMoPsQAEngine(QAEngineNumerical):
 
-    def __init__(self, dataset_dir="CrossGraph/OntoMoPs/numerical_with_implicit", dataset_name='numerical_with_implicit', sub_ontology='numerical_with_implicit', ontology='OntoMoPs'):
+    def __init__(self, dataset_dir="CrossGraph/OntoMoPs/numerical_with_implicit",
+                 dataset_name='numerical_with_implicit',
+                 sub_ontology='numerical_with_implicit',
+                 ontology='OntoMoPs',
+                 nel = None):
         self.dataset_dir = dataset_dir
         self.ontology = ontology
         self.sub_ontology = sub_ontology
+
+
         super().__init__(dataset_dir, dataset_name, dim=50, test=False, value_dict_name="node_value_dict.json",
                          seperated_model=True, operator_dict={0: "smaller", 1: "larger", 2: "none"},
                          enable_class_ner=True, ontology=ontology,
-                         numerical_scale_factor=1000, mode="transr")
+                         numerical_scale_factor=1000, mode="transr", nel=nel)
 
 
 if __name__ == "__main__":

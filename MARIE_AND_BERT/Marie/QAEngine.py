@@ -2,6 +2,7 @@ import os
 import traceback
 import torch
 
+from Marie.EntityLinking.IRILookup import IRILookup
 from Marie.Util.CommonTools.NLPTools import NLPTools
 from Marie.Util.NHopExtractor import HopExtractor
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
@@ -12,7 +13,7 @@ from Marie.Util.CommonTools.FileLoader import FileLoader
 
 
 class QAEngine:
-    def __init__(self, dataset_dir, dataset_name, embedding="transe", dim=20, dict_type="json"):
+    def __init__(self, dataset_dir, dataset_name, embedding="transe", dim=20, dict_type="json", nel = None):
         self.marie_logger = MarieLogger()
         self.model_name = f"bert_{dataset_name}"
         self.dataset_dir = dataset_dir
@@ -20,7 +21,8 @@ class QAEngine:
         self.file_loader = FileLoader(full_dataset_dir=os.path.join(DATA_DIR, self.dataset_dir),
                                       dataset_name=self.dataset_name)
         self.subgraph_extractor = HopExtractor(dataset_dir=self.dataset_dir, dataset_name=self.dataset_name)
-        self.chemical_nel = ChemicalNEL(dataset_name=self.dataset_name)
+        # self.chemical_nel = ChemicalNEL(dataset_name=self.dataset_name)
+        self.chemical_nel = IRILookup(dataset_name=self.dataset_name, nel=nel)
         self.device = torch.device("cpu")
         '''Load pickles for idx - label and label - idx transformation '''
         # ============================= Load files ======================================================

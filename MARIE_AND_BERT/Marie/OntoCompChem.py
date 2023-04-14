@@ -3,6 +3,7 @@ import json
 import os,sys
 import traceback
 
+from Marie.EntityLinking.IRILookup import IRILookup
 from Marie.Util.CommonTools.NLPTools import NLPTools
 
 sys.path.append("..")
@@ -22,7 +23,8 @@ Use the comp-pubchem dictionary, retrieve
 
 
 class OntoCompChemEngine:
-    def __init__(self):
+    def __init__(self, nel=None):
+        self.nel = nel
         self.marie_logger = MarieLogger()
         self.nlp = NLPTools(tokenizer_name="bert-base-uncased")
         # self.tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
@@ -45,7 +47,8 @@ class OntoCompChemEngine:
         self.value_dictionary = json.loads(open(self.value_dictionary_path).read())
         model_path = os.path.join(self.dataset_dir, 'score_model_general')
         print("model path", model_path)
-        self.chemical_nel = ChemicalNEL(dataset_name="ontocompchem")
+        # self.chemical_nel = ChemicalNEL(dataset_name="ontocompchem")
+        self.chemical_nel = IRILookup(dataset_name="ontocompchem", enable_class_ner=False, nel=self.nel)
 
         # self.score_model.load_pretrained_model(model_path)
 
