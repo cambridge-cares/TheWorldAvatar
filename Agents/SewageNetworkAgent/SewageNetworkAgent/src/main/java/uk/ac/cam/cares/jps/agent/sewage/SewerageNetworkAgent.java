@@ -107,7 +107,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 			HGInstantiation(HG_Path_2);
 			HGInstantiation(HG_Path_3);
 			HGInstantiation(HG_Path_4);
-			HGInstantiation(HG_Path_5);
+		    HGInstantiation(HG_Path_5);
 			HGInstantiation(HG_Path_6);
 			KGInstantiation(KG_Path_0);
 			KGInstantiation(KG_Path_1);
@@ -227,7 +227,9 @@ public class SewerageNetworkAgent extends JPSAgent {
 			UpdateRequest ConstructionPropertiesHG_ur = ConstructionPropertiesHG_ub.buildRequest();
 			AccessAgentCaller.updateStore(sparqlendpoint, ConstructionPropertiesHG_ur.toString());
 
-
+            
+			if (HG003.equals("None")) {	
+			} else {
 			UpdateBuilder BranchConnectionHG_ub = 
 					new UpdateBuilder()
 					.addInsert(NodeFactory.createURI(KB + "BranchConnection" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "BranchConnection"))	
@@ -238,6 +240,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 			UpdateRequest BranchConnectionHG_ur = BranchConnectionHG_ub.buildRequest();
 			AccessAgentCaller.updateStore(sparqlendpoint, BranchConnectionHG_ur.toString());
 			omHasValue("DistanceOnMainPipe" + "BranchConnection" + HG_Instance_Name, "metre", HG007);
+			}
 
 
 			UpdateBuilder CrossSectionHG_ub = 
