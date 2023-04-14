@@ -27,7 +27,7 @@ class IntegratedTrainingFileCreator:
         self.endpoint_url = endpoint_url
         self.ontology = ontology
         self.sub_ontology = sub_ontology
-        self.full_dataset_dir = os.path.join(DATA_DIR, "../CrossGraph", self.ontology)
+        self.full_dataset_dir = os.path.join(DATA_DIR, "CrossGraph", self.ontology)
         self.sub_ontology_path = os.path.join(self.full_dataset_dir, self.sub_ontology)
         self.node_value_dict = node_value_dict
         self.cached_query_path = os.path.join(self.full_dataset_dir, "cached_query.json")
