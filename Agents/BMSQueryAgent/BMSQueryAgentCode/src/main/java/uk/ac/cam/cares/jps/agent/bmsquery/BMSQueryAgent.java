@@ -38,7 +38,7 @@ public class BMSQueryAgent {
     private final String BOT_STR = "https://w3id.org/bot#";
     private final Prefix P_BOT = SparqlBuilder.prefix("bot", iri(BOT_STR));
 
-    private final String BIM_STR = "http://www.theworldavatar.com/kg/ontobim/";
+    private final String BIM_STR = "https://www.theworldavatar.com/kg/ontobim/";
     private final Prefix P_BIM = SparqlBuilder.prefix("ontobim", iri(BIM_STR));
 
     /**
