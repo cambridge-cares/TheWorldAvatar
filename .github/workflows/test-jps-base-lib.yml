@@ -1,0 +1,68 @@
+#
+# Runs all the unit tests within the JPS Base Lib project.
+#
+# Author: Michael Hillman (mdhillman<@>cmclinnovations.com)
+#
+name: Run JPS Base Lib tests
+
+
+# Trigger this workflow during pull requests to the 'main'
+# branch, but ONLY when files within the library are changed.
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - JPS_BASE_LIB/**
+
+
+# Job definitions
+jobs:
+
+  # Single job to build the EmailAgent and run its tests
+  test-base-lib:
+  
+    # Run on latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
+      # Produce a valid 'settings.xml' file for Maven by
+      # running a script to inject the environment variables
+      # provided by GitHub secrets
+      - name: Set up Maven credentials
+        working-directory: ./.github/scripts
+        env:
+          MAVEN_USERNAME: ${{secrets.MAVEN_USERNAME}}
+          MAVEN_PASSWORD: ${{secrets.MAVEN_PASSWORD}}
+        run: |
+          chmod +x set-maven-credentials.sh
+          ./set-maven-credentials.sh ../../Agents/EmailAgent/email-agent-code
+          
+      # Set up JDK 11
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: "11"
+          distribution: "adopt"
+      
+      # Build the code without test
+      - name: Build code (no tests)
+        run: mvn --batch-mode -DskipTests package
+
+      # Run all tests (even if some fail)
+      - name: Run all tests
+        run: mvn --batch-mode -Dmaven.test.failure.ignore=true test
+        
+      # Produce test report
+      - name: Test report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: Test results
+          path: target/surefire-reports/*.xml
+          reporter: java-junit
+          fail-on-error: true
