@@ -5,7 +5,8 @@ from torch import nn, no_grad, unsqueeze
 from torch.nn.functional import one_hot
 from transformers import BertModel, BertTokenizer, AdamW
 
-from Marie.CandidateSelection.location import DATA_DIR
+from Marie.CandidateSelection.location import DATA_DIR,PRETRAIN
+from Marie.Util.location import PRETRAINED_DIR
 
 
 class CrossGraphAlignmentModel(nn.Module):
@@ -13,7 +14,8 @@ class CrossGraphAlignmentModel(nn.Module):
     def __init__(self, device, dim = 9):
         super(CrossGraphAlignmentModel, self).__init__()
         self.device = device
-        self.bert = BertModel.from_pretrained('bert-base-uncased')
+        self.bert = BertModel.from_pretrained(PRETRAINED_DIR,  local_files_only=True)
+        print('CrossGraphAlignment modelloaded')
         # self.bert_reduction_layer = nn.Linear(768, 512)
         self.bert_reduction_layer = nn.Linear(768, dim)
         # self.bert_reduction_layer_2 = nn.Linear(512, 5)
