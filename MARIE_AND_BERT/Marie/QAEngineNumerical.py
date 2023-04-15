@@ -55,6 +55,7 @@ class QAEngineNumerical:
         self.largest = largest
         self.dataset_dir = dataset_dir
         self.dataset_name = dataset_name
+        self.ontology = ontology
         self.model_name = f"bert_{self.dataset_name}"
         self.subgraph_extractor_numerical = HopExtractor(dataset_dir=self.dataset_dir, dataset_name=self.dataset_name,
                                                          numerical=True)
@@ -200,7 +201,10 @@ class QAEngineNumerical:
         self.marie_logger.info(f" - Head entity index {head_idx}")
         prediction_batch = {'single_question': question_embedding, 'e_h': head_entity_batch, 'e_t': candidate_entities}
         self.marie_logger.info(f" - Prediction batch is prepared")
-        return prediction_batch, candidates
+        if len(candidates) == 0:
+            return None, None
+        else:
+            return prediction_batch, candidates
 
     def prepare_multi_target_prediction_batch(self):
         # 1. for each instance_list element (e.g., Assembly model 1,2,3), get create a matrix (AM --rel--> MoPs )
@@ -332,6 +336,11 @@ class QAEngineNumerical:
         prediction_batch, candidates = self.prepare_prediction_batch(head=head,
                                                                      question_embedding=single_question_embedding,
                                                                      pred_p_label=pred_p_idx)
+
+        if candidates is None:
+            return None, None, None, None, "normal"
+
+
         scores, _ = self.score_model.get_scores(prediction_batch, mode=self.mode)
         _, indices_top_k = torch.topk(scores, k=min(5, len(scores)), largest=self.largest)
 
@@ -405,11 +414,11 @@ class QAEngineNumerical:
         """
         # TODO: 1. put the mechanism for question answering sequence on top
         # TODO: 2. wrap question answer mechanism into functions
+        print("========== input dict question =======")
         mention = self.nel.get_mention(self.input_dict.question)
         print(mention)
         self.input_dict.mention = mention
         self.input_dict.question = self.text_filtering(self.input_dict.question)
-        print("========== input dict question =======")
         print(self.input_dict.question)
         print(mention)
         if isinstance(mention, str):
@@ -444,7 +453,10 @@ class QAEngineNumerical:
             else:
 
                 if self.input_dict.numerical_operator == "none":
-                    return self.answer_normal_question()
+                    if self.ontology.lower() == "ontomops":
+                        return ["EMPTY"], [-999], ["EMPTY"], ["EMPTY"], "normal"
+                    else:
+                        return self.answer_normal_question()
                 else:
                     return None
 
@@ -473,8 +485,8 @@ class QAEngineNumerical:
         self.input_dict.question = question
         self.marie_logger.info("=============== new question ============")
         self.marie_logger.info(f"Received question: {question}")
-        # if mention is not None:
-        #    self.input_dict.mention = (mention)
+        if mention is not None and (mention != ""):
+            self.input_dict.mention = mention
 
         answer_list, score_list, target_list, numerical_list, answer_type = self.find_answers()
         if len(score_list) == 0:

@@ -1,5 +1,7 @@
 import json
-import os
+import os, sys
+
+sys.path.append("..")
 import time
 
 import torch
@@ -24,23 +26,6 @@ from Marie.WikidataEngine import WikidataEngine
 import threading
 
 
-def normalize_scores(self, scores_list):
-    normalized_scores = {}
-    print("========================")
-    print("score_list", scores_list)
-    print("=======================")
-    for domain in self.domain_list:
-        scores = scores_list[domain]
-        max_score = max(scores)
-        scores = [score / max_score for score in scores]
-        if len(scores) < 5:
-            diff = 5 - len(scores)
-            for i in range(diff):
-                scores.append(-999)
-        normalized_scores[domain] = scores
-    return normalized_scores
-
-
 class CrossGraphQAEngine:
     """
     The cross graph QA engine will answer question across domains
@@ -53,6 +38,8 @@ class CrossGraphQAEngine:
         self.domain_encoding = {"pubchem": 0, "ontocompchem": 1, "ontospecies": 2,
                                 "ontokin": 3, "wikidata": 4, "ontospecies_new": 5,
                                 "ontoagent": 6, "ontomops": 7, "ontokin_reaction": 8}
+
+        # self.domain_encoding = {"ontomops": 0}
         self.numerical_domain_list = ["wikidata", "ontospecies_new", "ontomops"]
         self.numerical_label_list = ["numerical", "multi-target"]
 
@@ -77,6 +64,9 @@ class CrossGraphQAEngine:
         Init all engines for each domain
         '''
         for domain, index in self.domain_encoding.items():
+            print("============== init engines ==============")
+            print("domain:", domain)
+            print("index: ", index)
             if domain == "pubchem":
                 self.engine_list[index] = PubChemQAEngine(nel=self.nel)
             elif domain == "ontocompchem":
@@ -97,26 +87,21 @@ class CrossGraphQAEngine:
                 self.engine_list[index] = OntoKinReactionInterface()
             print(f"Engine for {domain} created")
 
-    def create_triple_for_prediction(self, question, score_list, domain_list, target_list):
-        # try:
-        question = question.replace(" of ", " ")
-        question = question.replace("what is the ", " ").replace("what is ", " ")
-        target = target_list[0]
-        question = question.lower().replace(target.lower(), '')
-        score_list = torch.FloatTensor(score_list).reshape(1, -1).squeeze(0)
-        domain_list = torch.LongTensor(domain_list)
-        tokenized_question = self.tokenizer(question,
-                                            padding='max_length', max_length=self.max_length, truncation=True,
-                                            return_tensors="pt")
-        question_list = {}
-        for key in tokenized_question:
-            data = tokenized_question[key].repeat([1, len(score_list)])
-            question_list[key] = data
-
-        return question_list, score_list, domain_list
-
-    def adjust_scores(self, triple):
-        return self.score_adjust_model.predict(triple=triple)
+    def normalize_scores(self, scores_list):
+        normalized_scores = {}
+        print("========================")
+        print("score_list", scores_list)
+        print("=======================")
+        for domain in self.domain_list:
+            scores = scores_list[domain]
+            max_score = max(scores)
+            scores = [score / max_score for score in scores]
+            if len(scores) < 5:
+                diff = 5 - len(scores)
+                for i in range(diff):
+                    scores.append(-999)
+            normalized_scores[domain] = scores
+        return normalized_scores
 
     def prepare_for_visualization(self, answer_list, target_list):
         result = []
@@ -127,20 +112,25 @@ class CrossGraphQAEngine:
         return result
 
     def re_rank_answers(self, domain_list, score_list, answer_list, target_list):
-        values, indices = torch.topk(torch.FloatTensor(score_list), k=10, largest=True)
+        values, indices = torch.topk(torch.FloatTensor(score_list), k=min(10, len(score_list)), largest=True)
         re_ranked_labels = [answer_list[i] for i in indices]
         re_ranked_domain_list = [domain_list[i] for i in indices]
         re_ranked_engine_list = [self.engine_list[domain] for domain in re_ranked_domain_list]
         re_ranked_score_list = [float(v.item() / 2) for v in values]
         re_ranked_domain_list = [self.encoding_domain[d] for d in re_ranked_domain_list]
-        re_ranked_node_value_list = [engine.value_lookup(node) for engine, node in
-                                     zip(re_ranked_engine_list, re_ranked_labels)]
+        # re_ranked_node_value_list = [engine.value_lookup(node) for engine, node in
+        #                              zip(re_ranked_engine_list, re_ranked_labels)]
 
         result = []
 
-        for label, domain, score, value, target in zip(re_ranked_labels, re_ranked_domain_list, re_ranked_score_list,
-                                                       re_ranked_node_value_list, target_list):
-            row = {"node": label, "domain": domain, "score": score, "value": value, "target": target}
+        # for label, domain, score, value, target in zip(re_ranked_labels, re_ranked_domain_list, re_ranked_score_list,
+        #                                                re_ranked_node_value_list, target_list):
+        #     row = {"node": label, "domain": domain, "score": score, "value": value, "target": target}
+        #     result.append(row)
+
+        for label, domain, score, target in zip(re_ranked_labels, re_ranked_domain_list, re_ranked_score_list,
+                                                target_list):
+            row = {"node": label, "domain": domain, "score": score, "target": target}
             result.append(row)
 
         return result
@@ -161,27 +151,40 @@ class CrossGraphQAEngine:
         tokens = [t for t in question.split(" ") if t.lower().strip() not in stop_words]
         question = " ".join(tokens)
         mention = self.ner_lite.get_mention(question)
-        if mention is not None:
-            question = question.replace(mention, "")
 
-        def call_domain(domain, index, head=None):
+        # if mention is not None:
+        #     question = question.replace(mention, "")
+
+        def call_domain(domain, index, head, numerical_domain_list, numerical_label_list):
             nonlocal score_list, label_list, target_list
             engine = self.engine_list[index]
 
             self.marie_logger.debug(f"======================== USING ENGINE {domain}============================")
             # if domain == "wikidata":
+            print("======= numerical domain list =======")
+            print(numerical_domain_list)
+            print(numerical_label_list)
+            print("=====================================")
 
-            if domain in self.numerical_domain_list:
-                print("question given: ", question, "mention", mention)
-                labels, scores, targets, numerical_list, question_type = engine.run(question=question)
+            if domain in numerical_domain_list:
+                print("question given: ", question)
+                print("mention", mention)
+                results = engine.run(question=question, mention=mention)
+                labels, scores, targets, numerical_list, question_type = results
+
                 # if question_type == "numerical":
-                if question_type in self.numerical_label_list:
+                if question_type in numerical_label_list:
                     return self.prepare_for_visualization(answer_list=labels, target_list=targets)
                 # else:
                 #     labels, scores, targets, numerical_list, question_ype = engine.run(question=question)
                 #     return labels, scores, targets
             else:
-                labels, scores, targets = engine.run(question=question, mention=mention)
+                results = engine.run(question=question, mention=mention)
+                labels, scores, targets = results
+
+            print("========== ANSWERS RETURNED BY THE ENGINE =========")
+            print(results)
+            print("===================================================")
 
             length_diff = 5 - len(labels)
             scores = scores + [-999] * length_diff
@@ -198,7 +201,8 @@ class CrossGraphQAEngine:
                 head = heads[domain]
             else:
                 head = None
-            t = threading.Thread(target=call_domain, args=(domain, i, head))
+            t = threading.Thread(target=call_domain, args=(domain, i, head, self.numerical_domain_list,
+                                                           self.numerical_label_list))
             threads.append(t)
             t.start()
 
@@ -209,7 +213,7 @@ class CrossGraphQAEngine:
         score_factors = self.score_adjust_model.predict_domain(tokenized_question).squeeze()
         adjusted_score_list = []
 
-        normalized_score_list = normalize_scores(self, score_list)
+        normalized_score_list = self.normalize_scores(score_list)
         for score_factor, domain in zip(score_factors, self.domain_list):
             score = normalized_score_list[domain]
             if disable_alignment:
@@ -241,7 +245,7 @@ if __name__ == '__main__':
 
     my_qa_engine = CrossGraphQAEngine()
     START_TIME = time.time()
-    rst = my_qa_engine.run(question="Show me the melting point of CH4")
+    rst = my_qa_engine.run(question="Show me the melting point of tungsten")
     print(rst)
     print(f"TIME USED: {time.time() - START_TIME}")
     #

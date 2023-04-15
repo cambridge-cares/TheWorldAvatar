@@ -18,7 +18,7 @@ class OntoKinReactionInterface():
         request = LdfRequest(reactants, products)
         equations = request.get_equations()
 
-        return equations
+        return ["reactions"], [1], [equations]
 
 if __name__ == "__main__":
     my_ontokin = OntoKinReactionInterface()

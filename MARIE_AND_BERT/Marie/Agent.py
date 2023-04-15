@@ -8,6 +8,7 @@
 # agent invoker : agent_iri, qualifer, species_iri, requested output -> agent results after filtering (in case of thermo agent) -> agent inferface -> CrossGraphQAEngine
 import os
 import sys
+import time
 
 from Marie.EntityLinking.IRILookup import IRILookup
 
@@ -18,44 +19,53 @@ from Marie.Util.AgentTools.agent_invoker import AgentInvoker
 from Marie.Util.AgentTools.question_agent_matcher import QuestionAgentMatcher
 
 
-class AgentInterface():
+class AgentInterface:
 
     def __init__(self, tokenizer_name="bert-base-uncased", nel=None):
         self.tokenizer_name = tokenizer_name
+        self.my_matcher = QuestionAgentMatcher(tokenizer_name=self.tokenizer_name)
         self.pce_nel = IRILookup(dataset_name=os.path.join("ontoagent", "pceagent"), enable_class_ner=False, nel=nel)
-        self.thermo_nel = IRILookup(dataset_name=os.path.join("ontoagent", "thermoagent"), enable_class_ner=False, nel=nel)
+        self.thermo_nel = IRILookup(dataset_name=os.path.join("ontoagent", "thermoagent"), enable_class_ner=False,
+                                    nel=nel)
         self.nel_dict = {"ontothermoagent": self.thermo_nel, "ontopceagent": self.pce_nel}
+        self.available_agents = list(set(self.nel_dict.keys()))
 
     def parse_species_iri_and_qualifier(self, question, agent_name):
-        nel = self.nel_dict[agent_name]
-        mention = nel.get_mention(question=question)
-        species_iri = nel.find_cid(mention)[1]
+        print("========================= parse species iri and qualifier =======================")
+        print("agent name", agent_name)
+        agent_nel = self.nel_dict[agent_name]
+        mention = agent_nel.get_mention(question=question)
+        print("mention", mention)
+        species_iri = agent_nel.find_cid(mention)[1]
+        print("species iri", species_iri)
         return species_iri
 
-    def run(self, question):
+    def run(self, question, mention=None):
         # perform qualifier extraction and removal
         qualifier, filtered_question = NumericalTools.qualifier_value_extractor(question)
-        print("filtered question", filtered_question)
         # Perform question-agent matching
-        my_matcher = QuestionAgentMatcher(question=filtered_question, tokenizer_name=self.tokenizer_name)
         # The agent to be called and the output requested from that agent
-        agent, output = my_matcher.run()
+        agent, output = self.my_matcher.run(question=filtered_question)
 
         # Invoke the agent found
-        if (agent != None):
+        if (agent != None) and agent in self.available_agents:
             species_iri = self.parse_species_iri_and_qualifier(filtered_question, agent)
             my_invoker = AgentInvoker(agent=agent, output=output, species_iri=species_iri, qualifier=qualifier)
             if my_invoker.result is None:
                 print("Agent cannot be invoked")
-                return None
+                return ["EMPTY"], [-999], ["EMPTY"]
             else:
-                return my_invoker.result
+                # return my_invoker.result
+                return [agent], [1.0], [my_invoker.result]
         else:
-            return None
+            return ["EMPTY"], [-999], ["EMPTY"]
 
 
 if __name__ == "__main__":
+    cn = ChemicalNEL()
     question = "what is the enthalpy of C3H4O"
-    agentInterface = AgentInterface()
+    agentInterface = AgentInterface(nel=cn)
+    START_TIME = time.time()
     result = agentInterface.run(question)
     print(result)
+    print(time.time() - START_TIME)
