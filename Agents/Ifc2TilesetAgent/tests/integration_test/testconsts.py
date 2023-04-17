@@ -24,7 +24,7 @@ SUCCESSFUL_API_RESPONSE = "IFC model has successfully been converted. Please vis
 base_namespace = "http://www.example.org/test/"
 prefix = f"""\
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <https://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 PREFIX base: <{base_namespace}>
 PREFIX bot: <https://w3id.org/bot#>
 PREFIX ontobim: <https://www.theworldavatar.com/kg/ontobim/>

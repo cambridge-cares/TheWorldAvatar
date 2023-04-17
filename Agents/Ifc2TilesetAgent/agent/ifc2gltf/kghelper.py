@@ -21,7 +21,7 @@ def create_metadata_query():
     """Creates the SPARQL query for retrieving asset metadata."""
     return """\
 PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs:<https://www.w3.org/2000/01/rdf-schema#>
+PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
 PREFIX bot:<https://w3id.org/bot#>
 PREFIX ontobim:<https://www.theworldavatar.com/kg/ontobim/>
 PREFIX ontobuildingstructure:<https://www.theworldavatar.com/kg/ontobuildingstructure/>
