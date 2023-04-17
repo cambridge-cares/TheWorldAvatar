@@ -85,7 +85,7 @@ public class FHAgentTest {
         // Filepath for the properties file
         
         String propertiesFile = Paths.get(folder.getRoot().toString(), "agent.properties").toString();
-        writePropertyFile(propertiesFile, Arrays.asList(new String[]{"thingsboard.mappingfolder=TEST_MAPPINGS", "derivation.mapping=avgDist1:occupiedState1,avgDist2:occupiedState2"}));
+        writePropertyFile(propertiesFile, Arrays.asList(new String[]{"thingsboard.mappingfolder=TEST_MAPPINGS", "derivation.mapping=avgDist1:occupiedState1,avgDist2:occupiedState2", "threshold.tally = 170."}));
         // To create testAgent without an exception being thrown, SystemLambda is used to mock an environment variable
         // To mock the environment variable, a try catch need to be used
         try {
