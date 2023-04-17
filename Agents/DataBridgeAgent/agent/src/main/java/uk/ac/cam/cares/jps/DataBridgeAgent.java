@@ -18,6 +18,7 @@ public class DataBridgeAgent extends JPSAgent {
     private static final Logger LOGGER = LogManager.getLogger(DataBridgeAgent.class);
     // Agent starts off in valid state, and will be invalid when running into exceptions
     private static boolean VALID = true;
+    private static boolean AGENT_IN_STACK = false;
     private static final String INVALID_ROUTE_ERROR_MSG = "Invalid request type! Route ";
 
     /**
@@ -79,6 +80,7 @@ public class DataBridgeAgent extends JPSAgent {
             case "sql":
                 if (requestType.equals("GET")) {
                     String[] config = requestParams.has("database") ? ConfigStore.retrieveSQLConfig(requestParams.get("database").toString()) : ConfigStore.retrieveSQLConfig();
+                    AGENT_IN_STACK = requestParams.has("database") ? true : false;
                     jsonMessage = sqlRoute(config);
                 } else {
                     LOGGER.fatal(INVALID_ROUTE_ERROR_MSG + route + " can only accept GET request.");
@@ -145,13 +147,14 @@ public class DataBridgeAgent extends JPSAgent {
      * @return A response to the request called as a JSON Object.
      */
     protected JSONObject sqlRoute(String[] config) {
-        JSONObject response = new JSONObject();
         LOGGER.debug("Creating the SQL connector..");
         SqlBridge connector = new SqlBridge(config);
         LOGGER.debug("Transfer data from source to target database...");
-        connector.transfer();
+        JSONObject response = connector.transfer(AGENT_IN_STACK);
         LOGGER.info("Data have been successfully transferred from " + config[0] + " to " + config[3]);
-        response.put("Result", "Data have been successfully transferred from " + config[0] + " to " + config[3]);
+        if(response.isEmpty()){
+            response.put("Result", "Data have been successfully transferred from " + config[0] + " to " + config[3]);
+        }
         return response;
     }
 }

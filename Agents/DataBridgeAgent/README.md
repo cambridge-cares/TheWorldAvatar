@@ -77,6 +77,7 @@ curl -X GET localhost:3838/data-bridge-agent/sparql?namespace=kb
    - Execute the agent's task through an HTTP `GET` request. This route will transfer data between the specified source and target databases.
    - Before sending the request, please update the source database url, user, and password, in the `<root>/config/endpoint.properties`.
    - If transferring to any other database, please update the target jdbc url, user, and password, and send the simple `GET` request.
+     - The request will return a list of commands to be executed on a CLI to transfer between two remote endpoints.
    - If transferring within the same stack's database, please leave the target database fields empty, and send the `GET` request with the following parameter.
        - The `database` parameter refers to the target database name within the same stack.
 ```

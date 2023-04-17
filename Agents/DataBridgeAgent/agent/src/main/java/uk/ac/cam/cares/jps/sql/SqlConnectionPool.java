@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps;
+package uk.ac.cam.cares.jps.sql;
 
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -13,6 +13,7 @@ import java.sql.SQLException;
 public class SqlConnectionPool {
     private static HikariDataSource sourceDs;
     private static HikariDataSource targetDs;
+    private static String[] configs;
     private static final String JDBC_DRIVER = "org.postgresql.Driver";
     private static final int MAX_POOL_SIZE = 1;
 
@@ -36,6 +37,7 @@ public class SqlConnectionPool {
         targetDs.setJdbcUrl(config[3]);
         targetDs.setUsername(config[4]);
         targetDs.setPassword(config[5]);
+        configs = config;
     }
 
     /**
@@ -43,7 +45,7 @@ public class SqlConnectionPool {
      *
      * @return The source database connection.
      */
-    public static Connection getSourceConnection() throws SQLException {
+    public Connection getSourceConnection() throws SQLException {
         return sourceDs.getConnection();
     }
 
@@ -52,7 +54,11 @@ public class SqlConnectionPool {
      *
      * @return The target database connection.
      */
-    public static Connection getTargetConnection() throws SQLException {
+    public Connection getTargetConnection() throws SQLException {
         return targetDs.getConnection();
+    }
+
+    public String[] getConfigs() {
+        return configs;
     }
 }
