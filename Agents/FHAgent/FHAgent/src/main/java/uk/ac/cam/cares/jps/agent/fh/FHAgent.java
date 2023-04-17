@@ -80,7 +80,7 @@ public class FHAgent{
     public static final float tallyMin = 0;
     public static final float decreaseFactor = 0.15f;
     public static final float increaseFactor = 0.5f;
-    public static final Double Threshold = 170.; //cm
+    public static Double Threshold; //cm
 
 
     /**
@@ -128,6 +128,15 @@ public class FHAgent{
                 derivationMapping.put(mapping[0], mapping[1]);
 
             }
+
+            try{
+                Threshold = Double.parseDouble(prop.getProperty("threshold.tally"));
+            }
+
+            catch(Exception e){
+                throw new JPSRuntimeException("Error parsing tally threshold in properties file:" + e);
+            }
+            
         }
     }
 
