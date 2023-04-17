@@ -22,109 +22,117 @@
         android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title" />
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/app_bar"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginStart="@dimen/component_margin"
-        android:layout_marginEnd="@dimen/component_margin">
-        <TextView
-            android:id="@+id/building_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/building"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="@dimen/component_margin"
-            android:textSize="@dimen/title_font_size"
-            android:textColor="@color/black"/>
-        <Spinner
-            android:id="@+id/building_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/building_tv"
-            app:layout_constraintStart_toStartOf="parent"
-            android:spinnerMode="dropdown"
-            android:layout_marginTop="@dimen/component_margin_small"
-            android:textSize="@dimen/font_size"/>
-
-        <TextView
-            android:id="@+id/facility_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/facility"
-            app:layout_constraintTop_toBottomOf="@id/building_spinner"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="@dimen/component_margin"
-            android:textSize="@dimen/title_font_size"
-            android:textColor="@color/black"/>
-        <Spinner
-            android:id="@+id/facility_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/facility_tv"
-            android:spinnerMode="dropdown"
-            android:layout_marginTop="@dimen/component_margin_small"
-            android:textSize="@dimen/font_size"/>
-
-        <TextView
-            android:id="@+id/room_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/room"
-            app:layout_constraintTop_toBottomOf="@id/facility_spinner"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="@dimen/component_margin"
-            android:textSize="@dimen/title_font_size"
-            android:textColor="@color/black"/>
-        <Spinner
-            android:id="@+id/room_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/room_tv"
-            android:spinnerMode="dropdown"
-            android:layout_marginTop="@dimen/component_margin_small"
-            android:textSize="@dimen/font_size"/>
-
-        <TextView
-            android:id="@+id/equip_type_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/equipment_type"
-            app:layout_constraintTop_toBottomOf="@id/room_spinner"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="@dimen/component_margin"
-            android:textSize="@dimen/title_font_size"
-            android:textColor="@color/black"/>
-        <Spinner
-            android:id="@+id/equip_type_spinner"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/equip_type_tv"
-            android:spinnerMode="dropdown"
-            android:layout_marginTop="@dimen/component_margin_small"
-            android:textSize="@dimen/font_size"/>
-
-        <TextView
-            android:id="@+id/equip_instance_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/equipment"
-            app:layout_constraintTop_toBottomOf="@id/equip_type_spinner"
-            app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="@dimen/component_margin"
-            android:textSize="@dimen/title_font_size"
-            android:textColor="@color/black"/>
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/equip_instance_list"
+        app:layout_constraintBottom_toBottomOf="parent">
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@id/equip_instance_tv"
+            app:layout_constraintTop_toBottomOf="@id/app_bar"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginTop="@dimen/component_margin_small"/>
+            android:layout_marginStart="@dimen/component_margin"
+            android:layout_marginEnd="@dimen/component_margin">
+            <TextView
+                android:id="@+id/building_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/building"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="@dimen/component_margin"
+                android:textSize="@dimen/title_font_size"
+                android:textColor="@color/black"/>
+            <Spinner
+                android:id="@+id/building_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/building_tv"
+                app:layout_constraintStart_toStartOf="parent"
+                android:spinnerMode="dropdown"
+                android:layout_marginTop="@dimen/component_margin_small"
+                android:textSize="@dimen/font_size"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/facility_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/facility"
+                app:layout_constraintTop_toBottomOf="@id/building_spinner"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="@dimen/component_margin"
+                android:textSize="@dimen/title_font_size"
+                android:textColor="@color/black"/>
+            <Spinner
+                android:id="@+id/facility_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/facility_tv"
+                android:spinnerMode="dropdown"
+                android:layout_marginTop="@dimen/component_margin_small"
+                android:textSize="@dimen/font_size"/>
+
+            <TextView
+                android:id="@+id/room_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/room"
+                app:layout_constraintTop_toBottomOf="@id/facility_spinner"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="@dimen/component_margin"
+                android:textSize="@dimen/title_font_size"
+                android:textColor="@color/black"/>
+            <Spinner
+                android:id="@+id/room_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/room_tv"
+                android:spinnerMode="dropdown"
+                android:layout_marginTop="@dimen/component_margin_small"
+                android:textSize="@dimen/font_size"/>
+
+            <TextView
+                android:id="@+id/equip_type_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/equipment_type"
+                app:layout_constraintTop_toBottomOf="@id/room_spinner"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="@dimen/component_margin"
+                android:textSize="@dimen/title_font_size"
+                android:textColor="@color/black"/>
+            <Spinner
+                android:id="@+id/equip_type_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/equip_type_tv"
+                android:spinnerMode="dropdown"
+                android:layout_marginTop="@dimen/component_margin_small"
+                android:textSize="@dimen/font_size"/>
+
+            <TextView
+                android:id="@+id/equip_instance_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/equipment"
+                app:layout_constraintTop_toBottomOf="@id/equip_type_spinner"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginTop="@dimen/component_margin"
+                android:textSize="@dimen/title_font_size"
+                android:textColor="@color/black"/>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/equip_instance_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/equip_instance_tv"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_marginTop="@dimen/component_margin_small"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
