@@ -262,10 +262,10 @@ class QueryHandlerTest {
         expected.add("PREFIX  bot:  <https://w3id.org/bot#>");
         expected.add("PREFIX  bim:  <https://www.theworldavatar.com/kg/ontobim/>");
         expected.add("PREFIX  ifc:  <http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#>");
-        expected.add("PREFIX  rdfs: <https://www.w3.org/2000/01/rdf-schema#>");
+        expected.add("PREFIX  rdfs: <http://www.w3.org/2000/01/rdf-schema#>");
         expected.add("PREFIX  express: <https://w3id.org/express#>");
         expected.add("PREFIX  list: <https://w3id.org/list#>");
-        expected.add("PREFIX  om:   <https://www.ontology-of-units-of-measure.org/resource/om-2/>");
+        expected.add("PREFIX  om:   <http://www.ontology-of-units-of-measure.org/resource/om-2/>");
         expected.add("SELECT DISTINCT  *");
         expected.add("WHERE");
         return expected;
@@ -286,14 +286,6 @@ class QueryHandlerTest {
         SelectBuilder builder = new SelectBuilder();
         builder.addPrefix("bim", JunitTestUtils.bimUri);
         builder.addVar("?storey").addWhere("?storey", RDF.type, "bim:" + testClass);
-        return builder.buildString();
-    }
-
-    private String genSampleConstructQuery() {
-        ConstructBuilder builder = new ConstructBuilder();
-        builder.addPrefix("bim", JunitTestUtils.bimUri);
-        builder.addConstruct("?storey", RDF.type, "bim:" + testConstructClass)
-                .addWhere("?storey", RDF.type, "bim:" + testClass);
         return builder.buildString();
     }
 

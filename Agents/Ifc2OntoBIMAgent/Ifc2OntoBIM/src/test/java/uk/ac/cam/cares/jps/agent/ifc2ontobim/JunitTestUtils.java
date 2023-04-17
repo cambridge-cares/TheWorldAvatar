@@ -19,7 +19,7 @@ public class JunitTestUtils {
     public static final String listUri = "https://w3id.org/list#";
     public static final String omUri = "https://www.ontology-of-units-of-measure.org/resource/om-2/";
     public static final String rdfUri = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-    public static final String rdfsUri = "https://www.w3.org/2000/01/rdf-schema#";
+    public static final String rdfsUri = "http://www.w3.org/2000/01/rdf-schema#";
     public static final String IFC2X3_ID_PROPERTY = ifc2x3Uri + "globalId_IfcRoot";
     public static final String IFC2X3_NAME_PROPERTY = ifc2x3Uri + "name_IfcRoot";
     public static final String IFC2X3_HOST_ZONE_PROPERTY = ifc2x3Uri + "relatingStructure_IfcRelContainedInSpatialStructure";
@@ -33,6 +33,7 @@ public class JunitTestUtils {
     public static final Property hasContents = ResourceFactory.createProperty(JunitTestUtils.listUri + "hasContents");
     public static final Property hasNext = ResourceFactory.createProperty(JunitTestUtils.listUri + "hasNext");
     public static final Property RDF_TYPE = ResourceFactory.createProperty(rdfUri + "type");
+    public static final Property RDFS_LABEL = ResourceFactory.createProperty(rdfsUri + "label");
     public static final String LENGTH = "Length";
     public static final String LENGTH_CLASS = omUri + LENGTH;
     public static final String LENGTH_SYMBOL = "m";
@@ -45,7 +46,6 @@ public class JunitTestUtils {
 
     public static void doesExpectedListExist(List<String> expected, String result) {
         expected.forEach(statement -> {
-            System.out.println(statement);
             Matcher matcher = Pattern.compile(statement).matcher(result);
             assertTrue(matcher.find());
         });
@@ -53,7 +53,6 @@ public class JunitTestUtils {
 
     public static void doesExpectedListNotExist(List<String> expected, String result) {
         expected.forEach(statement -> {
-            System.out.println(statement);
             Matcher matcher = Pattern.compile(statement).matcher(result);
             assertFalse(matcher.find());
         });
@@ -62,7 +61,7 @@ public class JunitTestUtils {
     public static List<String> genExpectedUnitStatements(String baseUri) {
         List<String> expected = new ArrayList<>();
         expected.add(baseUri + LENGTH + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, " + LENGTH_CLASS);
-        expected.add(baseUri + LENGTH + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/2004/02/skos/core#notation, \"" + LENGTH_SYMBOL);
+        expected.add(baseUri + LENGTH + "_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, http://www.w3.org/2004/02/skos/core#notation, \"" + LENGTH_SYMBOL);
         return expected;
     }
 }

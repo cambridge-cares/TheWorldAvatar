@@ -75,10 +75,10 @@ class NamespaceMapperTest {
         results.add("<https://w3id.org/bot#>");
         results.add("<https://www.theworldavatar.com/kg/ontobim/>");
         results.add("<http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#>");
-        results.add("<https://www.w3.org/2000/01/rdf-schema#>");
+        results.add("<http://www.w3.org/2000/01/rdf-schema#>");
         results.add("<https://w3id.org/express#>");
         results.add("<https://w3id.org/list#>");
-        results.add("<https://www.ontology-of-units-of-measure.org/resource/om-2/>");
+        results.add("<http://www.ontology-of-units-of-measure.org/resource/om-2/>");
         results.add("<https://www.theworldavatar.com/kg/ontobuildingstructure/>");
         results.add("<https://www.theworldavatar.com/kg/ontobms/>");
         results.add("<https://www.theworldavatar.com/kg/ontodevice/>");

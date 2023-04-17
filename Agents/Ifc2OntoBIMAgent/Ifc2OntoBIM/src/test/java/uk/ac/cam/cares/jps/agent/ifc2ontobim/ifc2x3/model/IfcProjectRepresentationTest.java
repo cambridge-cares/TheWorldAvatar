@@ -90,7 +90,7 @@ class IfcProjectRepresentationTest {
 
     private List<String> genExpectedOptionalStatements() {
         java.util.List<java.lang.String> expected = new ArrayList<>();
-        expected.add(testBaseUri + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.w3.org/2000/01/rdf-schema#label, \"" + testName);
+        expected.add(testBaseUri + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, " + JunitTestUtils.RDFS_LABEL + ", \"" + testName);
         expected.add(testBaseUri + "IfcProjectRepresentation_[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}, https://www.theworldavatar.com/kg/ontobim/hasPhase, \"" + testPhase);
         return expected;
     }
