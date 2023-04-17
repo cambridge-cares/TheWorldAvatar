@@ -207,6 +207,15 @@ public class Buildings {
                     LOGGER.error("Failed to run AERMAP, terminating");
                     return 1;
                 }
+
+                if (createAERMAPVirtualSensorInputFiles() != 0) {
+                    LOGGER.error("Failed to create AERMAP input for virtual sensors, terminating");
+                }
+
+                if (runAERMAPforVirtualSensors() != 0) {
+                    LOGGER.error("Failed to run AERMAP for virtual sensors, terminating");
+                }
+
                 if (processAERMAPOutput() != 0) {
                     LOGGER.error("Failed to process AERMAP output, terminating");
                     return 1;
@@ -219,6 +228,11 @@ public class Buildings {
                 }
                 
                 if (createAERMODReceptorInput(nx,ny) != 0) {
+                    LOGGER.error("Failed to create AERMOD receptor input file, terminating");
+                    return 1;
+                }
+
+                if (createAERMODVirtualReceptorInput() != 0) {
                     LOGGER.error("Failed to create AERMOD receptor input file, terminating");
                     return 1;
                 }
@@ -1399,6 +1413,34 @@ public class Buildings {
 
     }
 
+    // This method should only be called if AERMAP was not run. 
+    public int createAERMODVirtualReceptorInput() {
+
+  
+        // Write out receptor data for virtual sensors.
+
+        StringBuilder sb = new StringBuilder();
+
+        List<List<Double>> inputCoordinates = new ArrayList<>();
+        List<Double> sensorZ = new ArrayList<>();
+
+        for (int i = 0; i < sensorProperties.size(); i++) {
+            inputCoordinates.add(Arrays.asList(sensorProperties.get(i).get(0),sensorProperties.get(i).get(1)));
+            sensorZ.add(sensorProperties.get(i).get(2));
+        }
+
+        List<List<Double>> outputCoordinates = convertCoordinates(inputCoordinates, "EPSG:4326", UTMCoordSys);
+
+        String prefix = "RE DISCCART ";
+        for (int i = 0; i < outputCoordinates.size(); i++) {
+            List<Double> outCoord = outputCoordinates.get(i);
+            String line = prefix + outCoord.get(0) + " " +  outCoord.get(1) + " " + 0.0 + " " + sensorZ.get(i);
+            sb.append(line + " \n");
+        }
+
+        return writeToFile(aermodDirectory.resolve("virtualReceptors.dat"), sb.toString());
+
+    }
 
 
     public int createAERMAPSourceInput() {
@@ -1531,6 +1573,47 @@ public class Buildings {
         }
 
         return 0;
+    }
+
+    public int runAERMAPforVirtualSensors() {
+
+        try {
+            Process process = Runtime.getRuntime().exec(new String[]{EnvConfig.AERMAP_EXE, "aermapVirtualSensor.inp"}, null, aermapDirectory.toFile());
+             
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+
+            // Read the output from the command
+            LOGGER.info("Here is the standard output of AERMAP for virtual sensors:\n");
+            String s = null;
+            while ((s = stdInput.readLine()) != null) {
+                LOGGER.info(s);
+            }
+
+            // Read any errors from the attempted command
+            LOGGER.info("Here is the standard error of AERMAP (if any) for virtual sensors:\n");
+            while ((s = stdError.readLine()) != null) {
+                LOGGER.info(s);
+            }
+
+            if (process.waitFor() != 0) {
+                return 1;
+            }
+            
+        } catch (IOException e) {
+            LOGGER.error("Error executing aermap for virtual sensors");
+            LOGGER.error(e.getMessage());
+            return 1;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.error("Error executing aermap for virtual sensors");
+            LOGGER.error(e.getMessage());
+            return 1;
+        }
+
+        return 0;
+
     }
 
     public int processAERMAPOutput() {

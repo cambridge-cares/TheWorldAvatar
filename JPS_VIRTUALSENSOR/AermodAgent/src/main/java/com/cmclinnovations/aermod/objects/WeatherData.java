@@ -1,4 +1,5 @@
 package com.cmclinnovations.aermod.objects;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,7 +59,7 @@ public class WeatherData {
      */
     public List<Long> getCloudCoverAsInteger() {
 
-        List<Long> res;
+        List<Long> res = new ArrayList<>();
         for (int i = 0; i < cloudCover.size(); i++) {
             double clcvr = cloudCover.get(i);
             long roundedValue = Math.round(clcvr/10);
@@ -68,7 +69,7 @@ public class WeatherData {
             if (roundedValue > 10) {
                 throw new RuntimeException("Invalid cloud cover value "+ cloudCover);
             }
-            res.add(clcvr);
+            res.add(roundedValue);
         }
  
         return res;
