@@ -184,7 +184,7 @@ public class FHAgentLauncher extends JPSAgent {
         LOGGER.info(String.format("Retrieved %d electrical, temperature and humdity readings.",
                 Distance.length()));
         jsonMessage.accumulate("Result", "Retrieved " + Distance.length() +  
-        		" electrical, temperature and humdity readings.");
+        		" electrical, temperature and humdity readings." + Distance.toString());
         // If readings are not empty there is new data
         if(!Distance.isEmpty()) {
             // Update the data

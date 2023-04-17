@@ -240,7 +240,7 @@ public class FHAgent{
         for (String key: keys){
             try{
                 JSONObject latestOccState = TallyDist(Distance, key);
-
+                LOGGER.debug("latestOccState for key " + key + ":" + latestOccState);
                 Map<String, List<?>> timeStampReadingsMap = jsonObjectToMapForTimeStamp(latestOccState);
                 Map<String, List<?>> OccupiedStateMap = jsonObjectToMap(latestOccState);
                 
@@ -270,6 +270,7 @@ public class FHAgent{
                             // If the new data overlaps with existing timestamps, prune the new ones
                             if (startCurrentTime.isBefore(endDataTime)) {
                                 ts = pruneTimeSeries(ts, endDataTime);
+                                LOGGER.debug("Pruning TS for key " + key);
                             }
                         }
                         // Only update if there actually is data
@@ -286,7 +287,10 @@ public class FHAgent{
 
                                 tsClient.addTimeSeriesData(ts);
                                 LOGGER.debug(String.format("Time series updated for following IRIs: %s", String.join(", ", ts.getDataIRIs())));
-                            
+                                for(String iri : ts.getDataIRIs()){
+                                    LOGGER.debug("Value in TS IRI" + iri +  ": " + ts.getValuesAsString(iri));
+                                }
+                                
                         } catch (Exception e) {
                             throw new JPSRuntimeException("Could not add timeseries data!" + e);
                         }
