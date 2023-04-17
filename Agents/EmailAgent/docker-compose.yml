@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+
+  email-agent:
+    image: docker.cmclinnovations.com/email-agent:1.0.1
+    container_name: email-agent
+    build: .
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+      EMAIL_AGENT_PROPERTIES: "/root/data/email-agent.properties"
+    ports:
+      - 8080:8080
+    volumes:
+      - ./code/data:/root/data
