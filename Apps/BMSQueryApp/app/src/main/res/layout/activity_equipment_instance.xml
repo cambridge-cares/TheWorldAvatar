@@ -15,18 +15,18 @@
         android:id="@+id/app_bar">
         <ImageButton
             android:id="@+id/return_button"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:background="@drawable/baseline_keyboard_backspace_24"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/instance_title"
             android:layout_marginStart="@dimen/component_margin_small"
-            android:layout_marginTop="5dp"
             />
 
         <TextView
             android:id="@+id/instance_title"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:minHeight="?actionBarSize"
@@ -35,7 +35,17 @@
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
             app:layout_constraintStart_toEndOf="@id/return_button"
+            app:layout_constraintEnd_toStartOf="@id/placeholder_view"
             app:layout_constraintTop_toTopOf="parent"/>
+
+        <View
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginEnd="@dimen/component_margin_small"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/instance_title"
+            android:id="@+id/placeholder_view"/>
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
