@@ -81,10 +81,14 @@ public class Buildings {
     public List<Double> StackDiameter = new ArrayList<>()  ;
     public List<String> StackPropertiesOriginal = new ArrayList<>();
     public List<List<Double>> StackEmissionsTimeSeries = new ArrayList<>();
-    public boolean timeDependentEmissions = false;
+    public boolean queryEmissionsData = false;
     public List<String> timeStamps = new ArrayList<>();
     public List<Double> receptorHeights = new ArrayList<>();
-    public List<Integer> sensorIndices = new ArrayList<>();
+    public List<Double> sensorLongitude = new ArrayList<>();
+    public List<Double> sensorLatitude = new ArrayList<>();
+    public List<Double> sensorHeight = new ArrayList<>();
+    public List<List<Double>> sensorProperties = new ArrayList<>();
+    
 
     /* Each element of BuildingProperties contains the (x,y) coordinates of the center of the base polygon of the building and the building height.
     Each element of BuildingVertices contains the coordinates of the vertices of the base polygon.
@@ -153,8 +157,10 @@ public class Buildings {
         }  
         UTMCoordSys = "EPSG:" + srid;
 
-        if (StackQueryIRI.contains(".json")) timeDependentEmissions = true;
+        if (StackQueryIRI.contains(".json")) queryEmissionsData = true;
 
+        // First value hard-coded in timestamps. The date follows that specified in aermet.inp and raob_soundings15747.FSL.
+        timeStamps.add("2022-09-23 00:00:00");
 
 
     }
@@ -596,10 +602,10 @@ public class Buildings {
         // from OCGML. Also determine the pollutant emissions rate in tons/yr for each plant item.
 
         List<String> StackIRIString = new ArrayList<>();
-        List<Double> emissionsOfEveryStack = new ArrayList<>();
-        List<List<Double>> variableEmissions = new ArrayList<>();
+        List<List<Double>> emissionsOfEveryStack = new ArrayList<>();
+
         
-        if (timeDependentEmissions) {
+        if (queryEmissionsData) {
             // Read emissions data from aermodInput.json
             String jsonString = null;
 
@@ -620,7 +626,7 @@ public class Buildings {
                 JSONArray emissionValues = sourceObj.getJSONArray("Emissions");
                 List<Double> tmp = IntStream.range(0, emissionValues.length())
                 .mapToObj(j -> emissionValues.getDouble(j)).collect(Collectors.toList());
-                variableEmissions.add(tmp);
+                emissionsOfEveryStack.add(tmp);
                 if (i == 0) {
                     JSONArray tmps = sourceObj.getJSONArray("Timestamps");
                     timeStamps = IntStream.range(0, tmps.length())
@@ -632,18 +638,16 @@ public class Buildings {
             receptorHeights = IntStream.range(0, receptorFlagHeights.length())
             .mapToObj(j -> receptorFlagHeights.getDouble(j)).collect(Collectors.toList());
 
-            int nz = receptorHeights.size();
             JSONObject sensorLocations = obj.getJSONObject("sensorLocations");
-            JSONArray sensorIX = sensorLocations.getJSONArray("ix");
-            JSONArray sensorIY = sensorLocations.getJSONArray("iy");
-            JSONArray sensorIZ = sensorLocations.getJSONArray("iz");
+            JSONArray sensorX = sensorLocations.getJSONArray("Longitude");
+            JSONArray sensorY = sensorLocations.getJSONArray("Latitude");
+            JSONArray sensorH = sensorLocations.getJSONArray("Height");
 
-            for (int i = 0; i < sensorIX.length(); i++) {
-                int ix = sensorIX.getInt(i);
-                int iy = sensorIY.getInt(i);
-                int iz = sensorIZ.getInt(i);
-                int index = iz*nx*ny + iy*nx + ix;
-                sensorIndices.add(index);
+            for (int i = 0; i < sensorX.length(); i++) {
+                sensorLongitude.add(sensorX.getDouble(i));
+                sensorLatitude.add(sensorY.getDouble(i));
+                sensorHeight.add(sensorH.getDouble(i));
+                sensorProperties.add(Arrays.asList(sensorX.getDouble(i),sensorY.getDouble(i),sensorH.getDouble(i)));
             }
 
         } else {
@@ -654,14 +658,18 @@ public class Buildings {
                     .mapToObj(i -> StackIRIQueryResult.getJSONObject(i).getString("IRI"))
                     .collect(Collectors.toList());
     
-            emissionsOfEveryStack = IntStream
+            List<Double> tmp = IntStream
                     .range(0,StackIRIQueryResult.length())
                     .mapToObj(i -> StackIRIQueryResult.getJSONObject(i).getDouble("emission"))
                     .collect(Collectors.toList());
+            for (int i = 0; i < tmp.size(); i++){
+                List<Double> tmp2 = Arrays.asList(tmp.get(i));
+                emissionsOfEveryStack.add(tmp2);
+            }
         }
   
 
-        // StackIRIString and emissionsOfEveryStack or variableEmissions populated
+        // StackIRIString and emissionsOfEveryStack populated
 
         StackIRIString = StackIRIString.stream().map(i -> i.replace("cityobject","building")).collect(Collectors.toList());
         JSONArray StackGeometricQueryResult = BuildingsQueryClient.BuildingGeometricQuery2(GeospatialQueryIRI,StackIRIString);
@@ -694,9 +702,6 @@ public class Buildings {
 
             JSONArray groundSurfaces = new JSONArray();
 
-            double minZ = 0.0;
-            double maxZ = 0.0;
-            double minAveZ = 0.0;
             double StackEastUTM = 0.0;
             double StackNorthUTM = 0.0;
             boolean includeObject = true;
@@ -800,13 +805,9 @@ public class Buildings {
 
                 // Search for IRI in StackIRIString
                 int ind = StackIRIString.indexOf(objectIRI);
-                if (timeDependentEmissions) {
-                    List<Double> emissions = variableEmissions.get(ind);
-                    StackEmissionsTimeSeries.add(emissions);
-                } else {
-                    Double emission = emissionsOfEveryStack.get(ind);
-                    StackEmissions.add(emission);
-                }
+                List<Double> emissions = emissionsOfEveryStack.get(ind);
+                StackEmissionsTimeSeries.add(emissions);
+
             }
 
         }
@@ -1010,10 +1011,15 @@ public class Buildings {
                 .mapToObj(i -> StackIRIQueryResult.getJSONObject(i).getString("IRI"))
                 .collect(Collectors.toList());
 
-        List<Double> emissionsOfEveryStack = IntStream
+        List<List<Double>> emissionsOfEveryStack = new ArrayList<>();
+        List<Double> tmp = IntStream
                 .range(0,StackIRIQueryResult.length())
                 .mapToObj(i -> StackIRIQueryResult.getJSONObject(i).getDouble("emission"))
                 .collect(Collectors.toList());
+        for (int i = 0; i < tmp.size(); i++){
+            List<Double> tmp2 = Arrays.asList(tmp.get(i));
+            emissionsOfEveryStack.add(tmp2);
+        }
 
 
         // StackIRIString and emissionsOfEveryStack populated
@@ -1132,11 +1138,11 @@ public class Buildings {
                 StringBuffer averageCoordinate = new StringBuffer();
                 averageCoordinate.append(StackEastUTM).append("#").append(StackNorthUTM).append("#").append(height);
                 StackProperties.add(averageCoordinate.toString());
+
                 // Search for IRI in StackIRIString
                 int ind = StackIRIString.indexOf(objectIRI);
-                Double emission = emissionsOfEveryStack.get(ind);
-                StackIRIQueryResult.getJSONObject(ind).getDouble("emission");
-                StackEmissions.add(emission);
+                List<Double> emissions = emissionsOfEveryStack.get(ind);
+                StackEmissionsTimeSeries.add(emissions);
                 StackDiameter.add(2*radius);
             }
 
@@ -1348,6 +1354,51 @@ public class Buildings {
         }
         return writeToFile(aermapDirectory.resolve("aermap.inp"), templateContent);
     }
+
+    public int createAERMAPVirtualSensorInputFiles() {
+
+        // Update ANCHORXY option in aermapVirtualSensor.inp
+        int centreZoneNumber = (int) Math.ceil((scope.getCentroid().getCoordinate().getX() + 180)/6);
+        String templateContent;
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("aermapVirtualSensor.inp")) {
+            templateContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+            String simGrid = String.format("%f %f %f %f %d %d", 0.0, 0.0, 0.0, 0.0, centreZoneNumber, 0);
+            templateContent = templateContent.replace("REPLACED_BY_AERMOD_AGENT", simGrid);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Failed to read aermapVirtualSensor.inp file");
+            return 1;
+        }
+        int res = writeToFile(aermapDirectory.resolve("aermapVirtualSensor.inp"), templateContent);
+        if (res > 0) return res;
+
+        // Write out receptor data for virtual sensors.
+
+        StringBuilder sb = new StringBuilder();
+
+        List<List<Double>> inputCoordinates = new ArrayList<>();
+        List<Double> sensorZ = new ArrayList<>();
+
+        for (int i = 0; i < sensorProperties.size(); i++) {
+            inputCoordinates.add(Arrays.asList(sensorProperties.get(i).get(0),sensorProperties.get(i).get(1)));
+            sensorZ.add(sensorProperties.get(i).get(2));
+        }
+
+        List<List<Double>> outputCoordinates = convertCoordinates(inputCoordinates, "EPSG:4326", UTMCoordSys);
+
+        String prefix = "RE DISCCART ";
+        for (int i = 0; i < outputCoordinates.size(); i++) {
+            List<Double> outCoord = outputCoordinates.get(i);
+            String line = prefix + outCoord.get(0) + " " +  outCoord.get(1) + " " + 0.0 + " " + sensorZ.get(i);
+            sb.append(line + " \n");
+        }
+
+        return writeToFile(aermapDirectory.resolve("aermapVirtualReceptors.dat"), sb.toString());
+
+
+
+    }
+
 
 
     public int createAERMAPSourceInput() {
@@ -1692,47 +1743,45 @@ public class Buildings {
 
             String stkId = "Stk" + (i + 1);
             sb.append(String.format("SO LOCATION %s POINT %f %f %f \n", stkId, StackEastUTM, StackNorthUTM, StackBaseElevation));
-            if (timeDependentEmissions) sb.append("SO HOUREMIS hourlyEmissions.dat " + stkId);
+            sb.append("SO HOUREMIS hourlyEmissions.dat " + stkId);
             sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f \n", stkId,
                     massFlowrateInGs, StackHeight, gasTemperatureKelvin, velocityms, Diameter));
         }
 
         StringBuilder sbe = new StringBuilder();
 
-        if (timeDependentEmissions) {
-            for (int i = 0; i < timeStamps.size(); i++) {
+        for (int i = 0; i < timeStamps.size(); i++) {
 
-                String line = "SO HOUREMIS ";
-                LocalDateTime ldt = LocalDateTime.parse(timeStamps.get(i));
+            String line = "SO HOUREMIS ";
+            LocalDateTime ldt = LocalDateTime.parse(timeStamps.get(i));
 
-                int year = ldt.getYear();
-                int month = ldt.getMonthValue();
-                int day = ldt.getDayOfMonth();
-                int hour = ldt.getHour();
+            int year = ldt.getYear();
+            int month = ldt.getMonthValue();
+            int day = ldt.getDayOfMonth();
+            int hour = ldt.getHour();
 
-                String ys = String.valueOf(year).substring(2);
-                String ms = String.valueOf(month);
-                /* May not be required
-                if (ms.substring(0,1).equals("0")) {
-                    ms = ms.substring(1);
-                }
-                */
-
-                line = line + ys + " " + month + " " + day + " " + hour;
-                line = line + " " + "stack_id " ;  
-
-                for (int j = 0; j < StackProperties.size(); j++) {
-                    String stkId = "Stk" + (j + 1);
-                    Double emission = StackEmissionsTimeSeries.get(j).get(i);
-                    double gasTemperatureKelvin = 533.15;
-                    double velocityms = 10.0;
-                    String newLine = line + " " + stkId + emission + " " + gasTemperatureKelvin + " " + velocityms;
-                    sbe.append(newLine);
-
-                }
+            String ys = String.valueOf(year).substring(2);
+            String ms = String.valueOf(month);
+            /* May not be required
+            if (ms.substring(0,1).equals("0")) {
+                ms = ms.substring(1);
             }
-            writeToFile(aermodDirectory.resolve("hourlyEmissions.dat"), sbe.toString());
+            */
+
+            line = line + ys + " " + month + " " + day + " " + hour;
+            line = line + " " + "stack_id " ;  
+
+            for (int j = 0; j < StackProperties.size(); j++) {
+                String stkId = "Stk" + (j + 1);
+                Double emission = StackEmissionsTimeSeries.get(j).get(i);
+                double gasTemperatureKelvin = 533.15;
+                double velocityms = 10.0;
+                String newLine = line + " " + stkId + emission + " " + gasTemperatureKelvin + " " + velocityms;
+                sbe.append(newLine);
+
+            }
         }
+        writeToFile(aermodDirectory.resolve("hourlyEmissions.dat"), sbe.toString());
 
         return writeToFile(aermodDirectory.resolve("plantSources.dat"),sb.toString());
 
@@ -1832,16 +1881,16 @@ public class Buildings {
         }
 
         String inputContent;
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("aermod_input.inp")) {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("aermod.inp")) {
             inputContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
             inputContent = inputContent.replace(replaceLine, sbf.toString());
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
-            LOGGER.error("Failed to read aermod_input.inp file");
+            LOGGER.error("Failed to read aermod.inp file");
             return 1;
         }
 
-        int r2 = writeToFile(aermodDirectory.resolve("aermod_input.inp"), inputContent);
+        int r2 = writeToFile(aermodDirectory.resolve("aermod.inp"), inputContent);
         if (r2 ==0) aermodInputCreated = true;
         res = Math.max(res,r2);
 

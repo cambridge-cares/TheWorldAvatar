@@ -1,0 +1,17 @@
+                                                                                                                                    
+CO STARTING                                                                                                                         
+   TITLEONE A Simple Example Problem for the AERMAP preprocessor
+   DATATYPE NED
+   DATAFILE PirmasensElevation.tif
+   ANCHORXY REPLACED_BY_AERMOD_AGENT
+   RUNORNOT  RUN
+CO FINISHED                                                                                                                         
+                                                                                                                       
+                                                                                                                                                                                                                                                           
+RE STARTING
+   INCLUDED aermapVirtualReceptors.dat 
+RE FINISHED                                                                                                                                                                                                                   
+                                                                                                                                  
+OU STARTING                                                                                                                         
+   RECEPTOR ../aermod/virtualReceptors.dat                                                                                         
+OU FINISHED

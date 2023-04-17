@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 
 
 public class WeatherData {
+    public List<String> timeStamps;
     // comments on the right indicates unit stored in KG
     private List<Double> temperature; // celcius
     private List<Double> humidity; // fraction

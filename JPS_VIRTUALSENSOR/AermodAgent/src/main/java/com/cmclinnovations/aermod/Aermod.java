@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
@@ -43,6 +44,7 @@ import org.locationtech.jts.geom.Polygon;
 import com.cmclinnovations.aermod.objects.Ship;
 import com.cmclinnovations.aermod.objects.WeatherData;
 
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 public class Aermod {
@@ -50,7 +52,7 @@ public class Aermod {
     private Path aermetDirectory;
     private Path aermodDirectory;
     private Path simulationDirectory;
-    private static final String AERMET_INPUT = "aermet_input.inp";
+    private static final String AERMET_INPUT = "aermet.inp";
 
     public Aermod(Path simulationDirectory) {
         this.simulationDirectory = simulationDirectory;
@@ -73,16 +75,36 @@ public class Aermod {
 
     int create144File(WeatherData weatherData) {
 
-        int numberTimeSteps = weatherData.getNumberTimesteps();
+        List<String> timeStamps = weatherData.timeStamps;
+
         List<Double> windSpeed = weatherData.getWindSpeedInKnots();
         List<Long> windDirection = weatherData.getWindDirectionInTensOfDegrees();
         List<Long> temperature = weatherData.getTemperatureInFahrenheit();
         List<Long> humidity = weatherData.getHumidityAsPercentage();
         List<Long> cloudCover = weatherData.getCloudCoverAsInteger();
 
+
+        String templateLine;
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("weather_template.144")) {
+            templateLine = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            LOGGER.error("Failed to read weather_template.144 file");
+            return 1;
+        }
+
         StringBuilder sb = new StringBuilder();
 
-        for (int i = 0; i < numberTimeSteps; i++) {
+        for (int i = 0; i < timeStamps.size(); i++) {
+
+            LocalDateTime ldt = LocalDateTime.parse(timeStamps.get(i));
+            String dateTime = String.valueOf(ldt.getYear()).substring(2) + ldt.getMonthValue() + ldt.getDayOfMonth() + ldt.getHour();
+
+            if (dateTime.length() != 8) {
+                throw new JPSRuntimeException("dateTime is not in a format compatible with CD_144. " + dateTime);
+            }
+
+
             String ws = String.valueOf(windSpeed.get(i));
             ws = addLeadingZero(ws, 2);
             if (ws.length() != 2) {
@@ -121,21 +143,12 @@ public class Aermod {
                 LOGGER.error("Invalid cloud cover value {}", ccvr);
             }
 
+            String dataLine = templateLine.replace("yyddmmhh",dateTime).replace("WS", ws).replace("WD", wd).replace("TEM", temp)
+            .replace("HUM", hmd).replace("C", ccvr);
+            sb.append(dataLine + " \n");
         }
-
-        String templateContent;
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("weather_template.144")) {
-            templateContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-
-            templateContent = templateContent.replace("WS", windSpeed).replace("WD", windDirection).replace("TEM", temperature)
-            .replace("HUM", humidity).replace("C", cloudCover);
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage());
-            LOGGER.error("Failed to read weather_template.144 file");
-            return 1;
-        }
-
-        return writeToFile(aermetDirectory.resolve("weather_template.144"), templateContent);
+ 
+        return writeToFile(aermetDirectory.resolve("weather_template.144"), sb.toString());
     }
 
     public int createAermetInput(Polygon scope) {
@@ -187,7 +200,7 @@ public class Aermod {
                 .append("   SECTOR 1 0 360 \n")
                 .append("   SITE_CHAR 1 1 0.16 2.0 1.5 \n");
 
-        return writeToFile(aermetDirectory.resolve("aermet_input.inp"),sb.toString());
+        return writeToFile(aermetDirectory.resolve("aermet.inp"),sb.toString());
 
     }
 
@@ -306,22 +319,22 @@ public class Aermod {
         double dx = (xMax - xMin) / nx;
         
         String templateContent;
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("aermod_input.inp")) {
+        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("aermod.inp")) {
             templateContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
             String simGrid = String.format("%f %d %f %f %d %f", xMin, nx, dx, yMin, ny, dy);
             templateContent = templateContent.replace("REPLACED_BY_AERMOD_AGENT", simGrid);
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
-            LOGGER.error("Failed to read aermod_input.inp file");
+            LOGGER.error("Failed to read aermod.inp file");
             return 1;
         }
 
-        return writeToFile(aermodDirectory.resolve("aermod_input.inp"), templateContent);
+        return writeToFile(aermodDirectory.resolve("aermod.inp"), templateContent);
     }
 
-    int runAermod() {
+    int runAermod(String aermodInputFile) {
         try {
-            Process process = Runtime.getRuntime().exec(new String[]{EnvConfig.AERMOD_EXE, "aermod_input.inp"}, null, aermodDirectory.toFile());
+            Process process = Runtime.getRuntime().exec(new String[]{EnvConfig.AERMOD_EXE, aermodInputFile}, null, aermodDirectory.toFile());
             if (process.waitFor() != 0) {
                 return 1;
             }

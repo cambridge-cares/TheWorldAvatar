@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -44,9 +45,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 public class AermodAgent extends DerivationAgent {
     private static final Logger LOGGER = LogManager.getLogger(AermodAgent.class);
     private QueryClient queryClient;
-    // hard-coded default values follow the ones in aermet_input.inp
-    private String StartDate = "2022-09-23";
-    private String EndDate = "2022-09-23";
 
     @Override
 	public void processRequestParameters(DerivationInputs derivationInputs, DerivationOutputs derivationOutputs) {   
@@ -129,16 +127,20 @@ public class AermodAgent extends DerivationAgent {
         }
 
         // Send POST request to OpenMeteo Agent to update OpenMeteo Station
-        if (bpi.timeStamps.size() > 0) {
-            StartDate = bpi.timeStamps.get(0);
-            EndDate = bpi.timeStamps.get(bpi.timeStamps.size()-1);
-        }
-        // TODO: Ensure that only the date portion of the timestamp is included in the request sent to the 
-        // OpenMeteo Agent. 
-        updateOpenMeteoStation(scope, StartDate, EndDate);
-        WeatherData weatherData = queryClient.getOpenMeteoData();
+
+        double lat = scope.getCentroid().getCoordinate().getY();
+        double lon = scope.getCentroid().getCoordinate().getX();
+        String StartTS = bpi.timeStamps.get(0);
+        String EndTS = bpi.timeStamps.get(bpi.timeStamps.size()-1);
+        LocalDateTime ldt = LocalDateTime.parse(StartTS);
+        String StartDate = ldt.getYear() + "-" + ldt.getMonthValue() + "-" + ldt.getDayOfMonth();
+        ldt = LocalDateTime.parse(EndTS);
+        String EndDate = ldt.getYear() + "-" + ldt.getMonthValue() + "-" + ldt.getDayOfMonth();
+        updateOpenMeteoStation(lat, lon, StartDate, EndDate);
+        WeatherData weatherData = queryClient.getOpenMeteoData(lat, lon);
         deleteOpenMeteoStation(scope);
 
+        weatherData.timeStamps = bpi.timeStamps;
         aermod.create144File(weatherData);
 
 
@@ -155,9 +157,10 @@ public class AermodAgent extends DerivationAgent {
         }
 
         if (!bpi.aermodInputCreated) aermod.createAermodInputFile(scope, nx, ny, srid);
-        aermod.runAermod();
+        aermod.runAermod("aermod.inp");
+        aermod.runAermod("aermodVirtualSensor.inp");
         // Call Python Service to draw contour plot for pollution concentrations
-        String outputFileURL = aermod.uploadToFileServer("1HR_PLOTFILE.DAT");
+        String outputFileURL = aermod.uploadToFileServer("averageConcentration.dat");
         JSONObject geoJSON = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid);
 
         String outFileURL = aermod.uploadToFileServer("receptor.dat");
@@ -290,10 +293,7 @@ public class AermodAgent extends DerivationAgent {
      * @param polygon
      * @return
      */
-    void updateOpenMeteoStation(Polygon scope, String StartDate, String EndDate) {
-
-        double lat = scope.getCentroid().getCoordinate().getY();
-        double lon = scope.getCentroid().getCoordinate().getX();
+    void updateOpenMeteoStation(double lat, double lon, String StartDate, String EndDate) {
         
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             URIBuilder builder = new URIBuilder(EnvConfig.OPENMETEO_AGENT_RUN);

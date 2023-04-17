@@ -12,6 +12,7 @@ import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
+import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.json.JSONArray;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
@@ -37,6 +38,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,6 +101,7 @@ public class QueryClient {
 
     // Location type
     private static final Iri LOCATION = P_DISP.iri("Location");
+    private static final Iri OBSERVATION_LOCATION = P_OM.iri("hasObservationLocation");
 
     // outputs (belongsTo)
     private static final String DISPERSION_MATRIX = PREFIX_DISP + "DispersionMatrix";
@@ -321,6 +324,78 @@ public class QueryClient {
         return derivations;
     }
 
+       // SPARQL query for weather data instantiated by OpenMeteo agent as a timeseries. Each parameter has a single value.
+       WeatherData getOpenMeteoData(double lat, double lon) {
+        SelectQuery query = Queries.SELECT();
+
+        Variable weatherType = query.var();
+        Variable quantity = query.var();
+        Variable measure = query.var();
+        Variable weatherUnit = query.var();
+        Variable station = query.var();
+
+        String coordinate = lat + "#" + lon;
+
+        // RDF types for weather data
+        List<String> weatherTypeList = List.of(CLOUD_COVER, AIR_TEMPERATURE, RELATIVE_HUMIDITY, WIND_SPEED, WIND_DIRECTION);
+
+        ValuesPattern<Iri> vp = new ValuesPattern<>(weatherType, weatherTypeList.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
+
+        GraphPattern gp = GraphPatterns.and(station.has(RDF.TYPE,iri(REPORTING_STATION)).andHas(REPORTS, quantity).andHas(OBSERVATION_LOCATION, coordinate),
+        quantity.isA(weatherType).andHas(HAS_VALUE, measure), measure.has(HAS_UNIT, weatherUnit));
+
+        query.prefix(P_OM, P_EMS).where(gp,vp);
+
+        Map<String, String> typeToMeasureMap = new HashMap<>();
+        JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+        for (int i = 0; i < queryResult.length(); i++) {
+            String measureIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
+            String weatherTypeIri = queryResult.getJSONObject(i).getString(weatherType.getQueryString().substring(1));
+
+            typeToMeasureMap.put(weatherTypeIri, measureIri);
+        }
+
+        TimeSeries<Instant> ts;
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            ts = tsClientInstant.getTimeSeriesWithinBounds(typeToMeasureMap.values().stream().collect(Collectors.toList()), null, null, conn);
+        } catch (SQLException e) {
+            String errmsg = "Failed to obtain time series from weather station instantiated by OpenMeteo Agent.";
+            LOGGER.fatal(errmsg);
+            throw new RuntimeException(errmsg, e);
+        }
+
+        WeatherData weatherData = new WeatherData();
+        weatherTypeList.stream().forEach(type -> {
+            List<Double> value = ts.getValuesAsDouble(typeToMeasureMap.get(type));
+            switch (type) {
+                case CLOUD_COVER:
+                    weatherData.setCloudCoverInPercentage(value);
+                    break;
+                case AIR_TEMPERATURE:
+                    weatherData.setTemperatureInCelcius(value);
+                    break;
+                case RELATIVE_HUMIDITY:
+                    weatherData.setHumidityInPercentage(value);
+                    break;
+                case WIND_SPEED:
+                    weatherData.setWindSpeedInMetreSecond(value);
+                    break;
+                case WIND_DIRECTION:
+                    weatherData.setWindDirectionInDegrees(value);
+                    break;
+                default:
+                    LOGGER.error("Unknown weather RDF type: <{}>", type);
+            }
+        });
+        return weatherData;
+    }
+
+
+
+
+
+
+    // SPARQL query for weather data instantiated by weather agent as a timeseries. Each parameter has a single value.
     WeatherData getWeatherData(String station, long timestamp) {
         SelectQuery query = Queries.SELECT();
 
@@ -363,7 +438,8 @@ public class QueryClient {
 
         WeatherData weatherData = new WeatherData();
         weatherTypeList.stream().forEach(type -> {
-            double value = ts.getValuesAsDouble(typeToMeasureMap.get(type)).get(0);
+            double val = ts.getValuesAsDouble(typeToMeasureMap.get(type)).get(0);
+            List<Double> value = Arrays.asList(val);
             switch (type) {
                 case CLOUD_COVER:
                     weatherData.setCloudCoverInPercentage(value);

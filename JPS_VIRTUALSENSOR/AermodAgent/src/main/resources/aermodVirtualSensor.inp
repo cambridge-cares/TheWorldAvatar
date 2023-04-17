@@ -1,15 +1,12 @@
 ****************************************
-** AERMOD TEST CASE
-** TESTING AERMOD WITH FLAT TERRAIN 
-** AND BUILDING IN CHANGI
-** NORTH INDUSTRIAL ESTATE
+** AERMOD RUN
 ****************************************
 
 ** AERMOD Control Pathway
 CO STARTING
    TITLEONE SG Test Run Building
    MODELOPT DFAULT CONC 
-   AVERTIME 1  3  
+   AVERTIME 1  
    POLLUTID SO2
    FLAGPOLE 0.0  
    RUNORNOT RUN
@@ -26,7 +23,7 @@ SO FINISHED
 
 ** AERMOD Receptor Pathway
 RE STARTING
-   INCLUDED receptor.dat
+   INCLUDED virtualReceptors.dat
 RE FINISHED
 
 ** AERMOD Meteorology Pathway
@@ -40,8 +37,6 @@ ME FINISHED
 
 **AERMOD Output Pathway
 OU STARTING
-   RECTABLE  ALLAVE  FIRST-THIRD
-   PLOTFILE  1  ALL   FIRST  1HR_PLOTFILE.DAT
-   POSTFILE  1  ALL   PLOT   POSTFILE.DAT
+   POSTFILE  1  ALL   PLOT   virtualSensorConcentrations.dat
    FILEFORM EXP
 OU FINISHED
