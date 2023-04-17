@@ -3,10 +3,34 @@
     "queries": [
         {
             "class": "https://www.theworldavatar.com/kg/ontobms/WalkInFumeHood",
-            "metaFile": "walkinfumehood_meta.sparql",
-            "timeFile": "walkinfumehood_time.sparql",
+            "metaFile": "fumehood_meta.sparql",
+            "timeFile": "fumehood_time.sparql",
             "timeLimit": -1,
             "databaseName": "bms"
+        }, {
+            "class": "https://www.theworldavatar.com/kg/ontobms/FumeHood",
+            "metaFile": "fumehood_meta.sparql",
+            "timeFile": "fumehood_time.sparql",
+            "timeLimit": -1,
+            "databaseName": "bms"
+        }, {
+            "class": "https://www.theworldavatar.com/kg/ontodevice/SmartSensor",
+            "metaFile": "smartsensor_meta.sparql",
+            "timeFile": "smartsensor_time.sparql",
+            "timeLimit": -1,
+            "databaseName": "thingsboard"
+        }, {
+            "class": "https://www.theworldavatar.com/kg/ontodevice/Fridge",
+            "metaFile": "fridge_meta.sparql",
+            "timeFile": "fridge_time.sparql",
+            "timeLimit": -1,
+            "databaseName": "thingsboard"
+        }, {
+            "class": "https://www.theworldavatar.com/kg/ontolab/ChemicalContainer",
+            "metaFile": "chemicalcontainer_meta.sparql",
+            "timeFile": "chemicalcontainer_time.sparql",
+            "timeLimit": -1,
+            "databaseName": "RFID"
         }
     ]
 }
