@@ -392,7 +392,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 				decideToAddTypeOfLogicalFormula(objectProperty, rangeClass, quantifier, singleDomain, range);			
 			}
 		} else if (domain.contains("INTERSECTION")) {
-			for (String singleDomain : domain.split("singleDomain")) {
+			for (String singleDomain : domain.split("INTERSECTION")) {
 				decideToAddTypeOfLogicalFormula(objectProperty, rangeClass, quantifier, singleDomain, range);			
 			}
 		} else {
@@ -985,23 +985,23 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 */
 	private void addUnionOfRange(OWLObjectProperty objectProperty, String[] ranges, String quantifier) throws JPSRuntimeException{
 		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
+		// Defined counter to check how many domains are in the same relation
+		// as their ancestors.
+		int counter = 0;
 		for(String range: ranges){
-			// If the range class and any of its ancestors do not participate in
-			// the same relation, the range is included in the ontological model
-			if(!isRangeParentInSameRelation(range.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
-				owlClassExpressions.add(createClass(range));
+			// Checks if the domain class and any of its ancestors participate
+			// in the same relation
+			if(isRangeParentInSameRelation(range.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
+				counter++;
 			}
-			// If the range class and any of its ancestors participate in the
-			// same relation but the quantifier is not specified, the range is
-			// included in the ontological model
-			else if (quantifier == null || quantifier.equals("")) {
-				owlClassExpressions.add(createClass(range));
-			} else {
-				// If the range class and any of its ancestors participate in the
-				// same relation and the quantifier is specified, the range is
-				// not included in the ontological model, so it returns from here
-				return;
-			}
+			owlClassExpressions.add(createClass(range));
+		}
+		
+		// Checks if the quantifier is provided and all range classes and
+		// any of their ancestors participate in the same relation to decide
+		// whether to create the range or not
+		if ((quantifier != null && !quantifier.equals("")) && counter==ranges.length) {
+			return;
 		}
 		manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLObjectPropertyRangeAxiom(objectProperty, dataFactory.getOWLObjectUnionOf(owlClassExpressions))));
@@ -1050,23 +1050,23 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 */
 	private void addIntersectionOfRange(OWLObjectProperty objectProperty, String[] ranges, String quantifier) throws JPSRuntimeException{
 		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
+		// Defined counter to check how many domains are in the same relation
+		// as their ancestors.
+		int counter = 0;
 		for(String range: ranges){
-			// If the range class and any of its ancestors do not participate in
-			// the same relation, the range is included in the ontological model
-			if(!isRangeParentInSameRelation(range.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
-				owlClassExpressions.add(createClass(range));
+			// Checks if the domain class and any of its ancestors participate
+			// in the same relation
+			if(isRangeParentInSameRelation(range.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
+				counter++;
 			}
-			// If the range class and any of its ancestors participate in the
-			// same relation but the quantifier is not specified, the range is
-			// included in the ontological model
-			else if (quantifier == null || quantifier.equals("")) {
-				owlClassExpressions.add(createClass(range));
-			} else {
-				// If the range class and any of its ancestors participate in the
-				// same relation and the quantifier is specified, the range is
-				// not included in the ontological model, so it returns from here
-				return;
-			}
+			owlClassExpressions.add(createClass(range));
+		}
+		
+		// Checks if the quantifier is provided and all range classes and
+		// any of their ancestors participate in the same relation to decide
+		// whether to create the range or not
+		if ((quantifier != null && !quantifier.equals("")) && counter == ranges.length) {
+			return;
 		}
 		manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLObjectPropertyRangeAxiom(objectProperty, dataFactory.getOWLObjectIntersectionOf(owlClassExpressions))));
@@ -1082,23 +1082,23 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 */
 	private void addUnionOfDomain(OWLObjectProperty objectProperty, String[] domains, String quantifier) throws JPSRuntimeException{
 		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
+		// Defined counter to check how many domains are in the same relation
+		// as their ancestors.
+		int counter = 0;
 		for(String domain: domains){
-			// If the domain class and any of its ancestors do not participate in
-			// the same relation, the domain is included in the ontological model
-			if(!isDomainsParentInSameRelation(domain.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
-				owlClassExpressions.add(createClass(domain));
+			// Checks if the domain class and any of its ancestors participate
+			// in the same relation
+			if(isDomainsParentInSameRelation(domain.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
+				counter++;
 			}
-			// If the domain class and any of its ancestors participate in the
-			// same relation but the quantifier is not specified, the domain is
-			// included in the ontological model
-			else if (quantifier == null || quantifier.equals("")) {
-				owlClassExpressions.add(createClass(domain));
-			} else {
-				// If the domain class and any of its ancestors participate in the
-				// same relation and the quantifier is specified, the domain is
-				// not included in the ontological model, so it returns from here
-				return;
-			}
+			owlClassExpressions.add(createClass(domain));
+		}
+		
+		// Checks if the quantifier is provided and all domain classes and
+		// any of their ancestors participate in the same relation to decide
+		// whether to create the domain or not
+		if ((quantifier != null && !quantifier.equals("")) && counter==domains.length) {
+			return;
 		}
 		manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty, dataFactory.getOWLObjectUnionOf(owlClassExpressions))));
@@ -1153,23 +1153,23 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 */
 	private void addIntersectionOfDomain(OWLObjectProperty objectProperty, String[] domains, String quantifier) throws JPSRuntimeException{
 		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
+		// Defined counter to check how many domains are in the same relation
+		// as their ancestors.
+		int counter = 0;
 		for(String domain: domains){
-			// If the domain class and any of its ancestors do not participate in
-			// the same relation, the domain is included in the ontological model
-			if(!isDomainsParentInSameRelation(domain.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
-				owlClassExpressions.add(createClass(domain));
+			// Checks if the domain class and any of its ancestors participate
+			// in the same relation
+			if(isDomainsParentInSameRelation(domain.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
+				counter++;
 			}
-			// If the domain class and any of its ancestors participate in the
-			// same relation and the quantifier is not specified, the domain is
-			// included in the ontological model
-			else if (quantifier == null || quantifier.equals("")) {
-				owlClassExpressions.add(createClass(domain));
-			} else {
-				// If the domain class and any of its ancestors participate in the
-				// same relation and the quantifier is specified, the domain is
-				// not included in the ontological model, so it returns from here
-				return;
-			}
+			owlClassExpressions.add(createClass(domain));
+		}
+		
+		// Checks if the quantifier is provided and all domain classes and
+		// any of their ancestors participate in the same relation to decide
+		// whether to create the domain or not
+		if ((quantifier != null && !quantifier.equals("")) && counter==domains.length) {
+			return;
 		}
 		manager.applyChange(new AddAxiom(ontology,
 					dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty, dataFactory.getOWLObjectIntersectionOf(owlClassExpressions))));
