@@ -152,7 +152,7 @@ def test_gen_tilesets_3_assets():
     sewage_json_filepath = os.path.join("data", "tileset_sewage.json")
 
     expected_child_node = {
-        "boundingVolume": {"box": [0, 0, 1.5, 10, 0, 0, 0, 10, 0, 0, 0, 1.5]},
+        "boundingVolume": {"box": [0, 0, 1.5, 15, 0, 0, 0, 15, 0, 0, 0, 1.5]},
         "geometricError": 50,
         "contents": gen_sample_asset_contents(test_range)
     }

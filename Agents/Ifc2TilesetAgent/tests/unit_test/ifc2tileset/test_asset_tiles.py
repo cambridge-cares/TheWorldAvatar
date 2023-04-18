@@ -81,7 +81,7 @@ def test_append_assets_to_tile_node():
         m.export(file)
 
     expected_child_node = {
-        "boundingVolume": {"box": [0, 0, 3,  10, 0, 0, 0, 10, 0, 0, 0, 3]},
+        "boundingVolume": {"box": [0, 0, 3, 15, 0, 0, 0, 15, 0, 0, 0, 3]},
         "geometricError": 50,
         "contents": gen_sample_asset_contents(test_range)
     }
@@ -119,7 +119,7 @@ def test_append_assets_less_than_six_assets():
         m.export(file)
 
     expected_child_node = {
-        "boundingVolume": {"box": [0, 0, 2, 10, 0, 0, 0, 10, 0, 0, 0, 2]},
+        "boundingVolume": {"box": [0, 0, 2, 15, 0, 0, 0, 15, 0, 0, 0, 2]},
         "geometricError": 50,
         "contents": gen_sample_asset_contents(test_range)
     }
@@ -153,15 +153,15 @@ def test_append_assets_more_than_six_assets():
     asset_contents = gen_sample_asset_contents(test_range)
     expected_fields_of_child_nodes = [
         {
-            "boundingVolume": {"box": [0, 0, 3, 10, 0, 0, 0, 10, 0, 0, 0, 3]},
+            "boundingVolume": {"box": [0, 0, 3, 15, 0, 0, 0, 15, 0, 0, 0, 3]},
             "contents": asset_contents[: 6]
         },
         {
-            "boundingVolume": {"box": [0, 0, 9, 10, 0, 0, 0, 10, 0, 0, 0, 3]},
+            "boundingVolume": {"box": [0, 0, 9, 15, 0, 0, 0, 15, 0, 0, 0, 3]},
             "contents": asset_contents[6: 12]
         },
         {
-            "boundingVolume": {"box": [0, 0, 13, 10, 0, 0, 0, 10, 0, 0, 0, 1]},
+            "boundingVolume": {"box": [0, 0, 13, 15, 0, 0, 0, 15, 0, 0, 0, 1]},
             "contents": asset_contents[12:]
         }
     ]
@@ -201,11 +201,11 @@ def test_append_tileset_assets():
     asset_contents = gen_sample_asset_contents(test_range)
     expected_fields_of_child_nodes = [
         {
-            "boundingVolume": {"box": [0, 0, 3, 10, 0, 0, 0, 10, 0, 0, 0, 3]},
+            "boundingVolume": {"box": [0, 0, 3, 15, 0, 0, 0, 15, 0, 0, 0, 3]},
             "contents": asset_contents[: 6]
         },
         {
-            "boundingVolume": {"box": [0, 0, 7, 10, 0, 0, 0, 10, 0, 0, 0, 1]},
+            "boundingVolume": {"box": [0, 0, 7, 15, 0, 0, 0, 15, 0, 0, 0, 1]},
             "contents": asset_contents[6:]
         }
     ]

@@ -67,7 +67,10 @@ def append_assets_to_tile(tile: Tile, asset_df: pd.DataFrame):
         }
 
     contents: List[Content] = asset_df.apply(_asset_data_to_tileset_content, axis=1).tolist()
-    bbox = compute_bbox([f"./data/glb/{file}.glb" for file in asset_df["file"]])
+
+    # Add an offset of 5m in the x- and y-directions to ensure non-negligible bounding box volume in the case of
+    # small-sized assets
+    bbox = compute_bbox([f"./data/glb/{file}.glb" for file in asset_df["file"]], offset=5)
 
     tile["children"] = [{
         "boundingVolume": {"box": bbox},

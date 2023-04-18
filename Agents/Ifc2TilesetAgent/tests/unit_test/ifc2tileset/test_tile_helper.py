@@ -104,7 +104,8 @@ def test_compute_bbox_single_mesh(mesh_gen, expected, tmp_path):
     assert np.allclose(expected, actual)
 
 
-def test_compute_bbox_multi_mesh(tmp_path):
+@pytest.mark.parametrize("offset", [0, 5])
+def test_compute_bbox_multi_mesh(offset, tmp_path):
     # Arrange
     glb_path1 = tmp_path / "sample1.glb"
     glb_path2 = tmp_path / "sample2.glb"
@@ -112,6 +113,10 @@ def test_compute_bbox_multi_mesh(tmp_path):
     m2 = C.sample_cone_gen()
     m1.export(glb_path1)
     m2.export(glb_path2)
+
+    expected = list(C.combined_bbox)
+    expected[4] += offset
+    expected[8] += offset
 
     # Act
     actual = compute_bbox([glb_path1, glb_path2])

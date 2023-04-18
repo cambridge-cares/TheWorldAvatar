@@ -71,13 +71,14 @@ def y_up_to_z_up(x_min: float, y_min: float, z_min: float, x_max: float, y_max: 
 PathLike = Union[str, bytes, os.PathLike]
 
 
-def compute_bbox(gltf: Union[PathLike, Iterable[PathLike]]):
+def compute_bbox(gltf: Union[PathLike, Iterable[PathLike]], offset: float = 0):
     """Computes Next tileset bbox for a given glTF/glb file(s).
 
     The y-up coordinate system of glTF will be transformed to the z-up system of Next tileset.
 
     Args:
         gltf: A path or a list of paths to glTF/glb file(s).
+        offset: Amount of x- and y-offsets.
 
     Returns:
         A 12-element list that represents Next tileset's boundingVolume.box property.
@@ -93,6 +94,11 @@ def compute_bbox(gltf: Union[PathLike, Iterable[PathLike]]):
 
     # Converts the y-up coordinate system of glTF to the z-up coordinate of Next tileset
     x_min, y_min, z_min, x_max, y_max, z_max = y_up_to_z_up(*mins, *maxs)
+
+    x_min -= offset
+    y_min -= offset
+    x_max += offset
+    y_max += offset
 
     return [
         (x_min + x_max) / 2, (y_min + y_max) / 2, (z_min + z_max) / 2,
