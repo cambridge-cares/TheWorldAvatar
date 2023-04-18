@@ -103,6 +103,11 @@ public class HistoricalQueryBuilder {
     HashMap<String, Integer> NTUBuildingToBusNum = new HashMap<>();
 
     /**
+     * Building abbreviations to full name mapping
+     */
+    HashMap<String, String> BuildingAbbrevToName = new HashMap<>();
+
+    /**
      * Branch-related parameters stored in a hashmap
      */
     HashMap<String, List<String>> branchParams = new HashMap<String, List<String>>();
@@ -151,6 +156,23 @@ public class HistoricalQueryBuilder {
         NTUBuildingToBusNum.put("PIONEER_HALL", 13);
         NTUBuildingToBusNum.put("NEC", 14);
         NTUBuildingToBusNum.put("THE_WAVE", 15);
+
+        // Specifies the relationship between building abbreviations and full names
+        BuildingAbbrevToName.put("GENERATOR_NODE", "Generator Node");
+        BuildingAbbrevToName.put("N1_3", "Block N1.3");
+        BuildingAbbrevToName.put("NYA", "Nanyang Auditorium");
+        BuildingAbbrevToName.put("CANTEEN_2", "Canteen 2");
+        BuildingAbbrevToName.put("CONNECTION_NODE", "Connection Node");
+        BuildingAbbrevToName.put("SBS", "School of Biological Sciences");
+        BuildingAbbrevToName.put("EMB", "Experimental Medicine Building");
+        BuildingAbbrevToName.put("RTP", "Research Techno Plaza");
+        BuildingAbbrevToName.put("N_2", "Block N2");
+        BuildingAbbrevToName.put("N_2_1", "Block N2.1");
+        BuildingAbbrevToName.put("SPMS", "School of Physical and Mathematical Sciences");
+        BuildingAbbrevToName.put("HALL_4", "Hall of Residence 4");
+        BuildingAbbrevToName.put("PIONEER_HALL", "Pioneer Hall");
+        BuildingAbbrevToName.put("NEC", "Nanyang Executive Centre");
+        BuildingAbbrevToName.put("THE_WAVE", "The Wave");
 
         // Specifies the bus node parameters
         // This can be improved by importing a data file
@@ -484,7 +506,8 @@ public class HistoricalQueryBuilder {
             String busNodeIRI = PowsysPrefix + "NTU_BusNode_" + buildingName + '_' +String.valueOf(entry);
             TriplePattern BuildingHasBusNode = iri(buildingIRI).has(iri(hasBusNode), iri(busNodeIRI));
             TriplePattern BuildingisType = iri(buildingIRI).isA(iri(building));
-            TriplePattern BuildingLabel = iri(buildingIRI).has(iri(rdfsLabel), buildingName);
+            String buildingFullName = BuildingAbbrevToName.get(buildingName);
+            TriplePattern BuildingLabel = iri(buildingIRI).has(iri(rdfsLabel), buildingFullName);
             String busNodeModelIRI = PowsysPrefix + "NTU_BusNode_Model_" + buildingName + '_' +String.valueOf(entry) + "_Model";
             TriplePattern PSHasBusNode = iri(powerSystemIRI).has(iri(hasSubSystem), iri(busNodeIRI));
             TriplePattern BusNodeIsType = iri(busNodeIRI).isA(iri(busNode));
