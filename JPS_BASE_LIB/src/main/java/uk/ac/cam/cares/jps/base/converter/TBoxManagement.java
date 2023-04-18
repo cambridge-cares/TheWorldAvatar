@@ -796,9 +796,8 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 				break;
 			}
 		}
-
-		addDomain(objectProperty, domain, quantifier);
-		addRange(objectProperty, range, quantifier);
+		addDomain(objectProperty, domain, range, quantifier);
+		addRange(objectProperty, domain, range, quantifier);
 		OWLObjectProperty parentProperty = null;
 		if (targetName != null && !targetName.isEmpty() && relation!=null && !relation.isEmpty()) {
 			// Creates the target property.
@@ -839,17 +838,18 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param domain
+	 * @param range
 	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addDomain(OWLObjectProperty objectProperty, String domain, String quantifier)
+	private void addDomain(OWLObjectProperty objectProperty, String domain, String range, String quantifier)
 			throws JPSRuntimeException {
 		if (domain == null || domain.isEmpty()) {
 			return;
 		}
 
 		if (domain.contains("UNION")) {
-			addUnionOfDomain(objectProperty, domain.split("UNION"), quantifier);
+			addUnionOfDomain(objectProperty, domain.split("UNION"), range, quantifier);
 		} else if (domain.contains("INTERSECTION")) {
 			addIntersectionOfDomain(objectProperty, domain.split("INTERSECTION"), quantifier);
 		} else {
@@ -879,11 +879,12 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * Adds the range(s) to the current object property.
 	 * 
 	 * @param objectProperty
+	 * @param domain
 	 * @param range
 	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addRange(OWLObjectProperty objectProperty, String range, String quantifier)
+	private void addRange(OWLObjectProperty objectProperty, String domain, String range, String quantifier)
 			throws JPSRuntimeException {
 		if (range == null || range.isEmpty()) {
 			return;
@@ -1077,31 +1078,88 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 	 * 
 	 * @param objectProperty
 	 * @param domains
+	 * @param range
 	 * @param quantifier
 	 * @throws JPSRuntimeException
 	 */
-	private void addUnionOfDomain(OWLObjectProperty objectProperty, String[] domains, String quantifier) throws JPSRuntimeException{
-		Set<OWLClassExpression> owlClassExpressions = new HashSet<>();
+	private void addUnionOfDomain(OWLObjectProperty objectProperty, String[] domains, String range, String quantifier) throws JPSRuntimeException{
+		Set<OWLClassExpression> owlClassExpressionsForDomain = new HashSet<>();
+		Set<OWLClassExpression> owlClassExpressionsForRange = new HashSet<>();
 		// Defined counter to check how many domains are in the same relation
 		// as their ancestors.
-		int counter = 0;
+		int counterDomain = 0;
 		for(String domain: domains){
 			// Checks if the domain class and any of its ancestors participate
 			// in the same relation
 			if(isDomainsParentInSameRelation(domain.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
-				counter++;
+				counterDomain++;
 			}
-			owlClassExpressions.add(createClass(domain));
+			owlClassExpressionsForDomain.add(createClass(domain));
+		}
+		// Defined counter to check how many ranges are in the same relation
+		// as their ancestors.
+		int counterRange = 0;
+		if(range.contains("UNION")) {
+			for(String singleRange: range.split("UNION")){
+				// Checks if the range class and any of its ancestors participate
+				// in the same relation
+				if(isRangeParentInSameRelation(singleRange.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
+					counterRange++;
+				}
+				owlClassExpressionsForRange.add(createClass(singleRange));
+			}			
+		} else if(range.contains("INTERSECTION")) {
+			for(String singleRange: range.split("INTERSECTION")){
+				// Checks if the range class and any of its ancestors participate
+				// in the same relation
+				if(isRangeParentInSameRelation(singleRange.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
+					counterRange++;
+				}
+				owlClassExpressionsForRange.add(createClass(singleRange));
+			}			
+		} else {
+			// Checks if the range class and any of its ancestors participate
+			// in the same relation
+			if(isRangeParentInSameRelation(range.replaceAll("\\s+", "").toLowerCase(), objectProperty.getIRI().getShortForm().toLowerCase())) {
+				counterRange++;
+			}
+			owlClassExpressionsForRange.add(createClass(range));
 		}
 		
 		// Checks if the quantifier is provided and all domain classes and
 		// any of their ancestors participate in the same relation to decide
 		// whether to create the domain or not
-		if ((quantifier != null && !quantifier.equals("")) && counter==domains.length) {
+		if ((quantifier != null && !quantifier.equals("")) 
+				&& counterDomain > 0 
+				&& counterDomain == domains.length 
+				&& counterRange > 0
+				&& counterRange == owlClassExpressionsForRange.size()) {
 			return;
 		}
 		manager.applyChange(new AddAxiom(ontology,
-					dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty, dataFactory.getOWLObjectUnionOf(owlClassExpressions))));
+					dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty, dataFactory.getOWLObjectUnionOf(owlClassExpressionsForDomain))));
+	}
+	
+//	private boolean isDomainRangeInSameRelationAsAncestors(String domain, String relation, String range){
+//		Set<String> domainAncestors = getDomainsAncestorsInSameRelation(domain, relation);
+//		Set<String> rangeAncestors = getRangesAncestorsInSameRelation(range, relation);
+//		if ((!domain.contains("UNION") || domain.contains("INTERSECTION") && (!range.contains("UNION") || range.contains("INTERSECTION")){
+//			
+//		}
+//	}
+	
+	private Set<String> getDomainsAncestorsInSameRelation(String domain, String relation) {
+		Set<String> ancestors = new HashSet<String>();
+		Set<String> ancestorsInSameRelation = new HashSet<String>();
+		ancestors = getAncestors(domain, ancestors);
+		if(childParentMap.containsKey(domain)) {
+			for(String ancestor: ancestors) {
+				if(domainRelationMap.containsKey(ancestor) && domainRelationMap.get(ancestor).contains(relation)) {
+					ancestorsInSameRelation.add(ancestor);
+				}
+			}
+		}
+		return ancestorsInSameRelation;
 	}
 	
 	private boolean isDomainsParentInSameRelation(String domain, String relation) {
@@ -1117,6 +1175,20 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		return false;
 	}
 
+	private Set<String> getRangesAncestorsInSameRelation(String range, String relation) {
+		Set<String> ancestors = new HashSet<String>();
+		Set<String> ancestorsInSameRelation = new HashSet<String>();
+		ancestors = getAncestors(range, ancestors);
+		if (childParentMap.containsKey(range)) {
+			for(String ancestor: ancestors) {
+				if(rangeRelationMap.containsKey(ancestor) && rangeRelationMap.get(ancestor).contains(relation)) {
+					ancestorsInSameRelation.add(ancestor);
+				}
+			}
+		}
+		return ancestorsInSameRelation;
+	}
+	
 	private boolean isRangeParentInSameRelation(String range, String relation) {
 		Set<String> ancestors = new HashSet<String>();
 		ancestors = getAncestors(range, ancestors);
