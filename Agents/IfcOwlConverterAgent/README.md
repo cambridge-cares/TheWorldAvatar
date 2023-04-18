@@ -69,7 +69,7 @@ docker-compose up -d
 Place your IFC file(s) into the `<root>/data/` directory. This is directly linked to the relevant directory in a Docker container. The agent is able to convert multiple IFC files at once. 
 
 ##### 2.3.2 POST Request Parameters
-The agent currently accepts one parameters. 
+The agent currently accepts one parameter. 
 1. Base URI - Mandatory
 
 This sets the base URI for all instances. Examples of valid URIs include `http://www.theworldavatar.com/ifc/` and  `https://www.theworldavatar.com/bim#`.
