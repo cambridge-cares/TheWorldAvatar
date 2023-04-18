@@ -98,18 +98,10 @@ class TransEAScoreModel(nn.Module):
     def triple_distance_transR(self, head, tail, projected_rel, relation_idx):
         b_size = len(head)
         relation_idx = [relation_idx] * b_size
-        print("in model, predicted relation label", relation_idx)
         # reshape the proj_mat according to the batch_size
         projected_rel = torch.tensor(self.rel_embedding.iloc[relation_idx].values).to(self.device)
         proj_mat = torch.tensor(self.proj_matrix.iloc[relation_idx].values).to(self.device)
-        print("head shape", head.shape)
-        print("tail shape", tail.shape)
-        print("relation idx", relation_idx)
-        print("proj mat shape", proj_mat.shape)
-        print("dim", self.dim)
-        print("b_size", b_size)
         proj_mat = proj_mat.view(b_size, self.dim, self.dim).to(self.device)
-
         # project e_h and e_t with proj_mat
         projected_e_h = self.project(ent=head, proj_mat=proj_mat).to(self.device)
         projected_e_t = self.project(ent=tail, proj_mat=proj_mat).to(self.device)

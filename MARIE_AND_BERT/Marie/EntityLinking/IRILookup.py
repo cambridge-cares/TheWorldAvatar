@@ -29,7 +29,7 @@ class IRILookup:
         self.nel = nel
         self.marie_logger = MarieLogger()
         self.enable_class_ner = enable_class_ner
-        if enable_class_ner:
+        if enable_class_ner and (dataset_name is not None):
             print("DATASET NAME", dataset_name)
             print(f"Loading dictionaries from {os.path.join(DICTIONARY_DIR, dataset_name)}")
             self.name_list = json.loads(open(os.path.join(DICTIONARY_DIR, dataset_name, 'name_list.json')).read())
@@ -108,7 +108,7 @@ class IRILookup:
         if "find" not in question:
             question = f"find all {question}"
         else:
-            question = question.replace("find", "find all")
+            question = question.replace("find all", "find").replace("find", "find all")
 
         question = question.replace("degrees", "")
         # remove numbers from the question

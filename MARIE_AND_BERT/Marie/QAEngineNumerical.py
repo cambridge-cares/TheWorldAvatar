@@ -150,7 +150,10 @@ class QAEngineNumerical:
         :return: heads that fulfill the numerical condition given
         """
         if self.enable_class_ner:
-            heads = self.all_heads_indices[self.input_dict.target]
+            try:
+                heads = self.all_heads_indices[self.input_dict.target]
+            except:
+                heads = self.all_heads_indices
         else:
             heads = self.all_heads_indices
         predicted_attr = self.score_model.get_attribute_prediction(self.input_dict.single_question_embedding)
@@ -416,7 +419,7 @@ class QAEngineNumerical:
         # TODO: 2. wrap question answer mechanism into functions
         print("========== input dict question =======")
         mention = self.nel.get_mention(self.input_dict.question)
-        print(mention)
+        # print(mention)
         self.input_dict.mention = mention
         self.input_dict.question = self.text_filtering(self.input_dict.question)
         print(self.input_dict.question)
@@ -425,7 +428,8 @@ class QAEngineNumerical:
             self.input_dict.question = self.input_dict.question.replace(mention, "")
         else:
             mention = mention[2]
-            self.input_dict.question = self.input_dict.question.replace(mention, "")
+            if mention:
+                self.input_dict.question = self.input_dict.question.replace(mention, "")
         print("filtered question:", self.input_dict.question)
         print("======================================")
 
@@ -458,7 +462,7 @@ class QAEngineNumerical:
                     else:
                         return self.answer_normal_question()
                 else:
-                    return None
+                    return ["EMPTY"], [-999], ["EMPTY"], ["EMPTY"], "normal"
 
             # return self.answer_numerical_question()
 
@@ -491,7 +495,6 @@ class QAEngineNumerical:
         answer_list, score_list, target_list, numerical_list, answer_type = self.find_answers()
         if len(score_list) == 0:
             return [], [], [], [], "normal"
-
         max_score = max(score_list)
         score_list = [(max_score + 1 - s) for s in score_list]
         return answer_list, score_list, target_list, numerical_list, answer_type
