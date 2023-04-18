@@ -106,6 +106,17 @@
             <artifactId>gt-epsg-extension</artifactId>
             <version>20.1</version>
         </dependency>
+        <dependency>
+            <groupId>uk.ac.cam.cares.jps</groupId>
+            <artifactId>jps-base-lib</artifactId>
+            <version>1.33.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.intuit.fuzzymatcher</groupId>
+            <artifactId>fuzzy-matcher</artifactId>
+            <version>1.2.0</version>
+        </dependency>
     </dependencies>
 
 </project>

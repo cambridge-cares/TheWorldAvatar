@@ -57,7 +57,7 @@ public class SpatialLink {
                         Geometry intersect = envelope.intersection(polys2D);
                         double areaRatio = 100.0*intersect.getArea() / polys2D.getArea();
                         System.out.println("ratio: "+areaRatio + "%");
-                        if(areaRatio>70){
+                        if(areaRatio>60){
                             if((refAreaRation !=0 && refAreaRation<areaRatio) || refAreaRation==0){
                                 object3D.setName(object2D.getName());
                                 refAreaRation = areaRatio;
@@ -173,41 +173,6 @@ public class SpatialLink {
             e.printStackTrace();
         }
         return targetGeometry;
-    }
-
-    public Geometry mergeMultiPolygon(MultiPolygon multiPolygon){
-        GeometryFactory factory = new GeometryFactory();
-        ArrayList<Polygon> polygons = new ArrayList<>();
-        int num = multiPolygon.getNumGeometries();
-        for (int i = 0; i < num; i++) {
-            Polygon polygon = (Polygon)multiPolygon.getGeometryN(i);
-            polygons.add(polygon);
-        }
-
-        GeometryCollection geometryCollection1 = (GeometryCollection) factory.buildGeometry(polygons);
-        Geometry pMerge1 = geometryCollection1.union();
-
-        pMerge1 = deflate(pMerge1);
-
-        return pMerge1;
-    }
-
-    private Geometry deflate(Geometry geom) {
-        BufferParameters bufferParameters = new BufferParameters();
-        bufferParameters.setEndCapStyle(BufferParameters.CAP_ROUND);
-        bufferParameters.setJoinStyle(BufferParameters.JOIN_MITRE);
-        Geometry buffered = BufferOp.bufferOp(geom, -.0001, bufferParameters);
-        buffered.setUserData(geom.getUserData());
-        return buffered;
-    }
-
-    private Geometry inflate(Geometry geom) {
-        BufferParameters bufferParameters = new BufferParameters();
-        bufferParameters.setEndCapStyle(BufferParameters.CAP_ROUND);
-        bufferParameters.setJoinStyle(BufferParameters.JOIN_MITRE);
-        Geometry buffered = BufferOp.bufferOp(geom, .0001, bufferParameters);
-        buffered.setUserData(geom.getUserData());
-        return buffered;
     }
 
     public Coordinate[] getReversedCoordinates(Geometry geometry) {
