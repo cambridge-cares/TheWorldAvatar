@@ -15,17 +15,15 @@ from Marie.Util.CommonTools.NLPTools import NLPTools
 
 class QuestionAgentMatcher():
 
-    def __init__(self, question, tokenizer_name="bert-base-uncased"):
+    def __init__(self, tokenizer_name="bert-base-uncased"):
 
         # Use TransERelPredictionModel to obtain the embedding of the relation in the given question
-        my_model = TransERelPredictionModel(device=torch.device("cpu"),
+        self.my_model = TransERelPredictionModel(device=torch.device("cpu"),
                                             dataset_dir=os.path.join(DATA_DIR, "CrossGraph/agents"), dim=40,
                                             mode="agent")
-        my_model.load_model("bert_ontoagent")
-        nlp_tool = NLPTools(tokenizer_name=tokenizer_name)
-        _, tokenzied_question = nlp_tool.tokenize_question(question=question, repeat_num=0)
-        output_emb = my_model.predict(question=tokenzied_question)
-        self.question_rel_embedding = output_emb.view(-1).tolist()
+        self.my_model.load_model("bert_ontoagent")
+        self.nlp_tool = NLPTools(tokenizer_name=tokenizer_name)
+
 
         # List of all agents
         self.agents = ['ontothermoagent', 'ontopceagent', 'chem1agent', 'chem2agent', 'chem3agent', 'NotAnAgent']
@@ -43,11 +41,16 @@ class QuestionAgentMatcher():
         agent_ent_embedding = pd.read_csv(os.path.join(agent_dataset_dir, 'ent_embedding.tsv'), sep='\t',
                                           header=None)
         agent_file_loader = FileLoader(full_dataset_dir=agent_dataset_dir)
-        agent_entity2idx, agent_idx2entity, agent_rel2idx, agent_idx2rel = agent_file_loader.load_index_files()
-        self.question_entity_embedding = agent_ent_embedding.iloc[agent_entity2idx[self.agent_input]]
+        self.agent_entity2idx, agent_idx2entity, agent_rel2idx, agent_idx2rel = agent_file_loader.load_index_files()
+        self.question_entity_embedding = agent_ent_embedding.iloc[self.agent_entity2idx[self.agent_input]]
 
-    def run(self):
-        question_matrix = torch.Tensor(np.array([self.question_entity_embedding, self.question_rel_embedding]))
+    def run(self, question):
+
+        _, tokenzied_question = self.nlp_tool.tokenize_question(question=question, repeat_num=0)
+        output_emb = self.my_model.predict(question=tokenzied_question)
+        question_rel_embedding = output_emb.view(-1).tolist()
+
+        question_matrix = torch.Tensor(np.array([self.question_entity_embedding, question_rel_embedding]))
         agent_scores = {}
         for agent in self.agents:
             agent_matrices = self.agent_matrices[agent]
@@ -84,8 +87,8 @@ if __name__ == '__main__':
     # agents = ['ontopceagent', 'ontothermoagent', 'chem1agent', 'chem2agent', 'chem3agent']
     # question = "What reaction produces H2 + OH"
     question = "What is the molecular weight of ch4"
-    my_matcher = QuestionAgentMatcher(question=question)
-    agent, output = my_matcher.run()
+    my_matcher = QuestionAgentMatcher()
+    agent, output = my_matcher.run(question=question)
     print("Output: ", output)
     print("Agent : ", agent)
 
