@@ -13,7 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>11</maven.compiler.release>
-        <jps.base.version>1.21.1</jps.base.version>
+        <jps.base.version>1.35.1</jps.base.version>
         <jena.version>4.1.0</jena.version>
         <!-- Artifact ID used to download Log4J2 config (for runtime) -->
         <log.artifact>java-logging-dev</log.artifact>
