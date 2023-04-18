@@ -51,7 +51,7 @@ class AccessAgentIntegrationTest {
 	//////////////////////////////////////////////////
 	
 	static final String ACCESS_AGENT_IMAGE ="ghcr.io/cambridge-cares/access-agent:"+ACCESS_AGENT_VERSION; 
-	static final String BLAZEGRAPH_IMAGE = "docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"; 
+	static final String BLAZEGRAPH_IMAGE = "ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"; 
 	static final int BLAZEGRAPH_INTERNAL_PORT = 9999;
 	static final String TEST_NAMESPACE = "kb";
 	
