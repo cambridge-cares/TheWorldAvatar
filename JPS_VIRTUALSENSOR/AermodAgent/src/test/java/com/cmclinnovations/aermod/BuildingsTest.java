@@ -21,7 +21,7 @@ import java.util.List;
 
 public class BuildingsTest {
 
-    String simulationDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\33\\";
+    String simulationDirectory = "C:\\Users\\KNAG01\\Dropbox (Cambridge CARES)\\IRP3 CAPRICORN shared folder\\KNAGARAJAN\\Projects\\Dispersion\\Data\\36\\";
 
     //    Polygons defining rectangular regions in EPSG:4326/WGS84 coordinates.
     // wkt is for Jurong Island while wkt2 is for Pirmasens.
@@ -79,6 +79,8 @@ public class BuildingsTest {
         Assertions.assertEquals(res3,0);
         int res2 = bp.createAERMODSourceInput();
         Assertions.assertEquals(res2,0);
+        int res5 = bp.addAERMODReceptorInput();
+        Assertions.assertEquals(res5, 0);
 
         
 

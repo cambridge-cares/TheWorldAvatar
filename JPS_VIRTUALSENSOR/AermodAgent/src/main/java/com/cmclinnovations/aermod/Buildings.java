@@ -27,10 +27,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.apache.commons.io.IOUtils;
@@ -821,6 +823,7 @@ public class Buildings {
                 int ind = StackIRIString.indexOf(objectIRI);
                 List<Double> emissions = emissionsOfEveryStack.get(ind);
                 StackEmissionsTimeSeries.add(emissions);
+                StackDiameter.add(2*radius);
 
             }
 
@@ -1804,8 +1807,8 @@ public class Buildings {
             double StackNorthUTM = Double.parseDouble(avecoord[1]);
             double StackHeight = Double.parseDouble(avecoord[2]);
             double StackBaseElevation = Double.parseDouble(avecoord[3]);            
-            double massFlowrateInTonYr = StackEmissions.get(i);
-            massFlowrateInTonYr = 195.0;
+            // This emissions value is overwritten by the one specified in the hourlyEmissions.dat file. 
+            double massFlowrateInTonYr = 195.0;
             double massFlowrateInGs = massFlowrateInTonYr * 1000 * 1000 / (365 * 24 * 60 * 60);
             double gasTemperatureKelvin = 533.15;
             double Diameter = StackDiameter.get(i);
@@ -1836,7 +1839,7 @@ public class Buildings {
         for (int i = 0; i < timeStamps.size(); i++) {
 
             String line = "SO HOUREMIS ";
-            LocalDateTime ldt = LocalDateTime.parse(timeStamps.get(i));
+            LocalDateTime ldt = LocalDateTime.parse(timeStamps.get(i),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
             int year = ldt.getYear();
             int month = ldt.getMonthValue();
@@ -1852,15 +1855,14 @@ public class Buildings {
             */
 
             line = line + ys + " " + month + " " + day + " " + hour;
-            line = line + " " + "stack_id " ;  
 
             for (int j = 0; j < StackProperties.size(); j++) {
                 String stkId = "Stk" + (j + 1);
                 Double emission = StackEmissionsTimeSeries.get(j).get(i);
                 double gasTemperatureKelvin = 533.15;
                 double velocityms = 10.0;
-                String newLine = line + " " + stkId + emission + " " + gasTemperatureKelvin + " " + velocityms;
-                sbe.append(newLine);
+                String newLine = line + " " + stkId + " " + emission + " " + gasTemperatureKelvin + " " + velocityms;
+                sbe.append(newLine + "\n");
 
             }
         }
@@ -1909,7 +1911,7 @@ public class Buildings {
 // Need to update the AERMOD main input files in addition to creating additional receptor files
     public int addAERMODReceptorInput() {
         String templateContent;
-        try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("receptor.dat")) {
+        try (InputStream inputStream = new FileInputStream(aermodDirectory.resolve("receptor.dat").toFile())) {
             templateContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
@@ -1939,14 +1941,14 @@ public class Buildings {
 
             for (int j = 0; j < ny; j++) {
                 String newLine = line.replace("ROW_NUMBER", String.valueOf(j+1));
-                for (int i = 0; i < nx/numberPerRow; i++) {
-                    sb.append(newLine);
+                for (int i = 0; i < (nx/numberPerRow); i++) {
+                    sb.append(newLine + "\n");
                 }
             }
             sb.append("RE GRIDCART "+ netid + " END");
             String newContent = templateContent.replace("RE GRIDCART POL1 END", sb.toString());
             newContent = newContent.replaceAll("POL1", netid);
-            String fileName = "receptor_"+height+".dat";
+            String fileName = "receptor_"+ height + ".dat";
             fileNames.add(fileName);
             int r1 = writeToFile(aermodDirectory.resolve(fileName), newContent);
             res = Math.max(res,r1);
@@ -1956,17 +1958,17 @@ public class Buildings {
 
         String replaceLine = "   INCLUDED receptor.dat";
 
-        StringBuilder sbf = new StringBuilder(replaceLine);
+        StringBuilder sbf = new StringBuilder(replaceLine + " \n");
 
         for (int i = 0; i < fileNames.size(); i++) {
             String fileString = "   INCLUDED " + fileNames.get(i);
-            sbf.append(fileString);
+            sbf.append(fileString + " \n");
         }
 
         String inputContent;
         try (InputStream inputStream = getClass().getClassLoader().getResourceAsStream("aermod.inp")) {
             inputContent = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-            inputContent = inputContent.replace(replaceLine, sbf.toString());
+            inputContent = inputContent.replace(replaceLine, sbf.toString().stripTrailing());
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
             LOGGER.error("Failed to read aermod.inp file");

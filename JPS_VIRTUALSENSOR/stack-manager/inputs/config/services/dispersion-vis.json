@@ -3,7 +3,7 @@
         "Name": "dispersion-vis",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/dtvf-base-image:latest",
+                "Image": "ghcr.io/cambridge-cares/dispersion-vis:1.1.1-SNAPSHOT",
                 "Mounts": [
                     {
                         "Type": "volume",

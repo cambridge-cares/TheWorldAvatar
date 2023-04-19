@@ -3,7 +3,7 @@
         "Name": "python-service",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "docker.cmclinnovations.com/python-service:1.0.1"
+                "Image": "ghcr.io/cambridge-cares/python-service:1.1.1-SNAPSHOT"
             }
         }
     },

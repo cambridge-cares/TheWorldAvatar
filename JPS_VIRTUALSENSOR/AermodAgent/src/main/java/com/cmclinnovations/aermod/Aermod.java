@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
@@ -97,7 +98,7 @@ public class Aermod {
 
         for (int i = 0; i < timeStamps.size(); i++) {
 
-            LocalDateTime ldt = LocalDateTime.parse(timeStamps.get(i));
+            LocalDateTime ldt = LocalDateTime.parse(timeStamps.get(i),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             String dateTime = String.valueOf(ldt.getYear()).substring(2) + ldt.getMonthValue() + ldt.getDayOfMonth() + ldt.getHour();
 
             if (dateTime.length() != 8) {
