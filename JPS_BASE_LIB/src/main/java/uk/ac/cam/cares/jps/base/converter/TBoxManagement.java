@@ -1011,6 +1011,13 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		return dataFactory.getOWLObjectIntersectionOf(owlClassExpressions);
 	}
 
+	/**
+	 * Assesses if the domain class and its ancestors participate in the same relation.
+	 * 
+	 * @param domain
+	 * @param relation
+	 * @return
+	 */
 	private boolean isDomainsParentInSameRelation(String domain, String relation) {
 		Set<String> ancestors = new HashSet<String>();
 		ancestors = getAncestors(domain, ancestors);
@@ -1024,6 +1031,13 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		return false;
 	}
 	
+	/**
+	 * Assesses if the range class and its ancestors participate in the same relation.
+	 * 
+	 * @param range
+	 * @param relation
+	 * @return
+	 */
 	private boolean isRangeParentInSameRelation(String range, String relation) {
 		Set<String> ancestors = new HashSet<String>();
 		ancestors = getAncestors(range, ancestors);
@@ -1037,7 +1051,14 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		return false;
 	}
 
-	
+	/**
+	 * Traverses through the @see TBoxGeneration#childParentMap and 
+	 * produces the list ancestors.
+	 * 
+	 * @param ontologyClass
+	 * @param ancestors
+	 * @return
+	 */
 	private Set<String> getAncestors(String ontologyClass, Set<String> ancestors) {
 		if (childParentMap.containsKey(ontologyClass)) {
 			for (String parent : childParentMap.get(ontologyClass)) {

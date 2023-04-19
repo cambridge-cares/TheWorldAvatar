@@ -174,7 +174,7 @@ public class TBoxGeneration implements ITBoxGeneration {
 		int rowCount = 0;
 		for (List<String> singleLine : brSourceCtml) {
 			rowCount++;
-			// Creates the mapping between a class and its parents
+			// Reading different inputs provided in the CSV file. 
 			String source = singleLine.get(tBoxConfig.getIndexOfSourceColumn());
 			String type = singleLine.get(tBoxConfig.getIndexOfTypeColumn());
 			String target = singleLine.get(tBoxConfig.getIndexOfTargetColumn());
@@ -227,6 +227,7 @@ public class TBoxGeneration implements ITBoxGeneration {
 								+ rowCount + " of the following CSV file: " + csvFileNamePlusPath);
 			}
 			
+			// Checks if the same class appears more than once in a complex domain
 			if(domain != null && !domain.trim().isEmpty()) {
 				String[] domains = new String[] {};
 				if(domain.contains("UNION")) {
@@ -247,7 +248,8 @@ public class TBoxGeneration implements ITBoxGeneration {
 									+ rowCount + " of the following CSV file: " + csvFileNamePlusPath);
 				}
 			}
-
+			
+			// Checks if the same class appears more than once in a complex range
 			if(range != null && !range.trim().isEmpty()) {
 				String[] ranges = new String[] {};
 				if(range.contains("UNION")) {
@@ -269,6 +271,7 @@ public class TBoxGeneration implements ITBoxGeneration {
 				}
 			}
 			
+			// Creates the mapping between a child and its direct parents.
 			source = source.replaceAll("\\s+", "").toLowerCase();
 			type = type.trim().toLowerCase();
 			target = target.replaceAll("\\s+", "").toLowerCase();
