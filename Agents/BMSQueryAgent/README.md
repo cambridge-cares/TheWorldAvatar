@@ -23,13 +23,10 @@ A successful setup will result in 9 containers (optional 10):
 
 For the BMSQueryAgent to return results, it is assumed that there is already knowledge graph in the Blazegraph.
 
-[comment]: # (TODO: fix the app's name and ref link once done with the app dev )
-
 BMSQueryAgent does not depend on [FeatureInfoAgent](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Agents/FeatureInfoAgent), but they are used together to create time series visualisation in the [BMS Query App](https://github.com/cambridge-cares/TheWorldAvatar/tree/1502-android-app-for-data-visualisation/Apps/BMSQueryApp).
 
 ## 1.1 Config BMSQueryAgent in Stack
 ### 1) Build Docker Image
-[comment]: # (TODO: the image is supposed to be pushed to the registry)
 The BMSQueryAgent is set up to use the Maven repository. You'll need to provide your credentials in single-word text files located like this:
 ```
 ./credentials/
@@ -41,7 +38,7 @@ which must have a 'scope' that [allows you to publish and install packages](http
 
 Then build image with:
 ```
-docker build . -t bms-query-agent:1.0.0-SNAPSHOT
+docker build . -t bms-query-agent:1.0.0
 ```
 
 ### 2) Add Config to Stack Manager
