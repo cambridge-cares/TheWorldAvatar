@@ -23,8 +23,8 @@ public class GeoObject3D {
 
     public GeoObject3D () {}
     public GeoObject3D(String name, int id, int objectClassid, PGgeometry geometry){
-        this.id = id;
         this.name = name;
+        this.id = id;
         this.objectClassid = objectClassid;
         this.geometry = geometry;
     }
@@ -32,6 +32,8 @@ public class GeoObject3D {
     public String getName(){
         return this.name;
     }
+
+    public int getId() {return this.id;}
 
     public PGgeometry getEnvelope(){
         return this.geometry;

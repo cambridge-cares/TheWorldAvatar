@@ -6,6 +6,8 @@ import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.InsertDataQuery;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
@@ -37,8 +39,10 @@ public class KGObjects {
     RemoteStoreClient kgClient;
     private String objectIri;
     private String objectName;
-    private int geoObjectId;
-    static Iri hasOntoCityGML = p_powsys.iri("hasOntoCityGML");
+    private String geoObjectId;
+    static String envOnto = "http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl";
+    static Prefix p_env = SparqlBuilder.prefix("env",iri(envOnto));
+    static Iri hasOntoCityGML = p_env.iri("hasOntoCityGMLRepresentation");
     static Iri busNode = p_j1.iri("BusNode");
     static Iri hasBusNode = p_powsys.iri("hasBusNode");
     public static final String RDFS_URL = "http://www.w3.org/2000/01/rdf-schema#";
@@ -46,13 +50,33 @@ public class KGObjects {
     static Iri labels = rdfs.iri("label");
 
     KGObjects(){}
-    KGObjects(RemoteStoreClient kgClient, String objectIri, String objectName, int geoObjectId){
-        this.kgClient = kgClient;
-        this.objectIri = objectIri;
+    KGObjects(RemoteStoreClient kgClient, String objectIri, String objectName, String geoObjectId){
         this.objectName = objectName;
+        this.objectIri = objectIri;
         this.geoObjectId = geoObjectId;
+        this.kgClient = kgClient;
     }
 
+    public String getObjectIri () {
+        return this.objectIri;
+    }
+
+    public String getObjectName () {return this.objectName;}
+    public String getGeoObjectId () {return this.geoObjectId;}
+    public void setObjectId (String objectId) {
+        this.geoObjectId = objectId;
+    }
+
+    public void updateOntoCityGML () {
+        if(this.getGeoObjectId() != null){
+            InsertDataQuery modify = Queries.INSERT_DATA();
+            Iri buildingIri = iri(this.getObjectIri());
+            modify.insertData(buildingIri.has(hasOntoCityGML, this.getGeoObjectId()));
+            modify.prefix(p_env);
+            this.kgClient.executeUpdate(modify.getQueryString());
+        }
+
+    }
     public List<KGObjects> getAllObjects() throws SQLException {
         PreparedStatement psQuery = null;
         ResultSet rs = null;

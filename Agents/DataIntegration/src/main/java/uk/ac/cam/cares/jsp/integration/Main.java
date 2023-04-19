@@ -17,13 +17,14 @@ public class Main {
         String dbuser = "postgres";
         String dbpassword = "123456";
         String queryEndpoint = "http://157.245.193.188:48083/blazegraph/namespace/ntuenergy/sparql";
+        String updateEndpoint = "http://157.245.193.188:48083/blazegraph/namespace/ntuenergy/sparql";
         GeoObject3D object3D = new GeoObject3D();
         GeoObject2D object2D = new GeoObject2D();
         PostgresClient conn2 = new PostgresClient(dburl2D, dbuser, dbpassword);
         PostgresClient conn3 = new PostgresClient(dburl3D, dbuser, dbpassword);
         try {
-            RemoteStoreClient kgClient = new RemoteStoreClient(queryEndpoint);
-            KGObjects kgObjects = new KGObjects(kgClient, null, null, 0);
+            RemoteStoreClient kgClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
+            KGObjects kgObjects = new KGObjects(kgClient, null, null, null);
             List<KGObjects> allObjects = new ArrayList<>();
             allObjects = kgObjects.getAllObjects();
 //            conn2.getConnection();
@@ -31,10 +32,13 @@ public class Main {
 //            object2D.setPostGISClient(conn2);
 //            List<GeoObject2D> allObject2D = object2D.getObject2D();
 //            System.out.println(allObject2D.size());
-//            conn3.getConnection();
-//            object3D.setPostGISClient(conn3);
-//            List<GeoObject3D> allObject3D = object3D.getObject3D();
-//            System.out.println(allObject3D.size());
+            conn3.getConnection();
+            object3D.setPostGISClient(conn3);
+            List<GeoObject3D> allObject3D = object3D.getObject3D();
+            System.out.println(allObject3D.size());
+
+            BuildingLink buildingLink = new BuildingLink();
+            buildingLink.fuzzyMatch(allObject3D,allObjects);
 //
 //            SpatialLink spLink = new SpatialLink();
 //            spLink.allObject2D = allObject2D;
