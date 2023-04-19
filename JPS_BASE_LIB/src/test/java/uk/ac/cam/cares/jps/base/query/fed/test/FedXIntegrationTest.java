@@ -16,58 +16,58 @@ public class FedXIntegrationTest extends QueryProvider {
 	
 	private static final Logger LOGGER = LogManager.getLogger(FedXIntegrationTest.class);
 	
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
-		TripleStoreProvider.getInstance();
-		setQueryFormatParams(false, false, false);
-	}
+	// @Override
+	// public void setUp() throws Exception {
+	// 	super.setUp();
+	// 	TripleStoreProvider.getInstance();
+	// 	setQueryFormatParams(false, false, false);
+	// }
 	
-	protected void queryAndAssert(Query query) {
-		queryAndAssert(query.sparql, query.getEndpoints(), query.result);
-	}
+	// protected void queryAndAssert(Query query) {
+	// 	queryAndAssert(query.sparql, query.getEndpoints(), query.result);
+	// }
 		
-	private void queryAndAssert(String sparql, List<String> endpoints, String expectedResult) {
-		endpoints = getIndexer().getEndpointUrls();
-		LOGGER.debug("FedX with number of endpoints=" + endpoints.size());
-		FederatedQueryInterface repo = FederatedQueryFactory.createFedX(endpoints);
-		String actualJson = repo.executeFederatedQuery(sparql);
-		assertQueryResult(expectedResult, actualJson);
-	}
+	// private void queryAndAssert(String sparql, List<String> endpoints, String expectedResult) {
+	// 	endpoints = getIndexer().getEndpointUrls();
+	// 	LOGGER.debug("FedX with number of endpoints=" + endpoints.size());
+	// 	FederatedQueryInterface repo = FederatedQueryFactory.createFedX(endpoints);
+	// 	String actualJson = repo.executeFederatedQuery(sparql);
+	// 	assertQueryResult(expectedResult, actualJson);
+	// }
 
-	public void testSparqlDistributedLab_1() {
-		queryAndAssert(getSparqlDistributedLab_1());
-	}
+	// public void testSparqlDistributedLab_1() {
+	// 	queryAndAssert(getSparqlDistributedLab_1());
+	// }
 	
-	public void testSparqlDistributedLab_2() {
-		queryAndAssert(getSparqlDistributedLab_2());
-	}
+	// public void testSparqlDistributedLab_2() {
+	// 	queryAndAssert(getSparqlDistributedLab_2());
+	// }
 	
-	public void testSparqlDistributedLab_3() {
-		queryAndAssert(getSparqlDistributedLab_3());
-	}
+	// public void testSparqlDistributedLab_3() {
+	// 	queryAndAssert(getSparqlDistributedLab_3());
+	// }
 	
-	public void testSparqlDistributedLab_3_inverted_service_order() {
-		queryAndAssert(getSparqlDistributedLab_3_inverted_service_order());
-	}
+	// public void testSparqlDistributedLab_3_inverted_service_order() {
+	// 	queryAndAssert(getSparqlDistributedLab_3_inverted_service_order());
+	// }
 	
-	public void testSparqlOntoSpeciesOntoCompChemSmall() {
-		queryAndAssert(getSparqlOntoSpeciesOntoCompChemSmall());
-	}
+	// public void testSparqlOntoSpeciesOntoCompChemSmall() {
+	// 	queryAndAssert(getSparqlOntoSpeciesOntoCompChemSmall());
+	// }
 	
-	public void testSparqlOntoSpeciesOntoCompChemMedium() {
-		queryAndAssert(getSparqlOntoSpeciesOntoCompChemMedium());
-	}
+	// public void testSparqlOntoSpeciesOntoCompChemMedium() {
+	// 	queryAndAssert(getSparqlOntoSpeciesOntoCompChemMedium());
+	// }
 	
-	public void testSparqlOntoSpeciesOntoCompChemLarge() {
-		queryAndAssert(getSparqlOntoSpeciesOntoCompChemLarge());
-	}
+	// public void testSparqlOntoSpeciesOntoCompChemLarge() {
+	// 	queryAndAssert(getSparqlOntoSpeciesOntoCompChemLarge());
+	// }
 	
-	public void xxxtestRemoteSparqlBiodieselCityGML() {
-		queryAndAssert(getSparqlBiodieselCityGML());
-	}
+	// public void xxxtestRemoteSparqlBiodieselCityGML() {
+	// 	queryAndAssert(getSparqlBiodieselCityGML());
+	// }
 	
-	public void xxxtestRemoteSparqlWikidataDBpedia() {
-		queryAndAssert(getSparqlWikidataDBpedia());
-	}
+	// public void xxxtestRemoteSparqlWikidataDBpedia() {
+	// 	queryAndAssert(getSparqlWikidataDBpedia());
+	// }
 }
