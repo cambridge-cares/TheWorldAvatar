@@ -1,5 +1,4 @@
 # BMSUpdateAgent
-[comment]: # (TODO: update the description if functionalities increased)
 BMSUpdateAgent is an agent designed to change the setpoints of lab equipment, so they can be switched on or off. 
 This agent corporates with ESPHomeAgent and ESPHomeUpdateAgent.
 It first takes value from user and writes to the knowledge graph, which is listened by ESPHomeAgent. After changing the setpoint in the knowledge graph, this agent triggers ESPHomeAgent to check for the condition changes and toggle the state of devices accordingly. 
@@ -23,7 +22,6 @@ Replace the hosts for ESPHomeAgent, ESPHomeUpdateAgent and the blazegraph that E
 Replace the `<WORK_DIR>` in the `Mounts` section of `stack-manager-input-config-service/bms-update-agent.json`
 
 ### 2) Build Image
-[comment]: # (TODO: the image is supposed to be pushed to the registry)
 The BMSUpdateAgent is set up to use the Maven repository. You'll need to provide your credentials in single-word text files located like this:
 ```
 ./credentials/
@@ -35,7 +33,7 @@ which must have a 'scope' that [allows you to publish and install packages](http
 
 Then build image with:
 ```
-docker build . -t bms-update-agent:1.0.0-SNAPSHOT
+docker build . -t bms-update-agent:1.0.0
 ```
 
 ### 3) Add Agent Config to Stack Manager
