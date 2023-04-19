@@ -18,6 +18,8 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -279,6 +281,8 @@ public class HttpTest extends TestCase {
 
 	}
 
+    @Test
+    @Ignore("Needs updates, unit tests should not rely on external resources")
 	public void testExecute() throws NoSuchMethodException, SecurityException, MalformedURLException {
 		Http http = new Http();
 		assertNotNull(http.getClass().getDeclaredMethod("execute", HttpRequestBase.class));
@@ -305,6 +309,8 @@ public class HttpTest extends TestCase {
 
 	}
 
+    @Test
+    @Ignore("Needs updates, unit tests should not rely on external resources")
 	public void testGet() {
 
 		HttpGet request = Http.get(urlCRUD + "get", accept);
@@ -331,6 +337,8 @@ public class HttpTest extends TestCase {
 
 	}
 
+    @Test
+    @Ignore("Needs updates, unit tests should not rely on external resources")
 	public void testPut() {
 
 		HttpPut request = Http.put(urlCRUD + "put", queryString, contentType, accept, new TestObject());
@@ -345,6 +353,8 @@ public class HttpTest extends TestCase {
 
 	}
 
+    @Test
+    @Ignore("Needs updates, unit tests should not rely on external resources")
 	public void testPost() {
 
 		JSONObject params = new JSONObject(queryJsonString);
@@ -361,12 +371,16 @@ public class HttpTest extends TestCase {
 
 	}
 
+    @Test
+    @Ignore("Needs updates, unit tests should not rely on external resources")
 	public void testDelete() {
 		HttpDelete request = Http.delete(urlCRUD + "delete", (Object) null);
 
 		assertEquals(request.toString().substring(0, 6), "DELETE");
 	}
 
+    @Test
+    @Ignore("Needs updates, unit tests should not rely on external resources")
 	public void testPutOrPost() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		Http http = new Http();
 		assertNotNull(http.getClass().getDeclaredMethod("putOrPost", HttpEntityEnclosingRequestBase.class, String.class,

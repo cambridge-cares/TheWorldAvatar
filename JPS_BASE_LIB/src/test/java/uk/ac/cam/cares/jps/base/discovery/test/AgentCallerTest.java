@@ -19,6 +19,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONObject;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.MockedStatic;
@@ -95,6 +96,7 @@ public class AgentCallerTest {
 
 
     @Test
+    @Ignore("Needs updates, unit tests should not rely on external resources")
     public void testexecuteGetWithURL() {
         String url = "https://httpbin.org/anything" ;
         String res = AgentCaller.executeGetWithURL(url);
@@ -103,6 +105,7 @@ public class AgentCallerTest {
     }
 
     @Test
+    @Ignore("Needs updates, unit tests should not rely on external resources")
     public void testexecuteGetWithURLAndJSON() {
         String url = "https://httpbin.org/anything" ;
         JSONObject json = new JSONObject();
@@ -214,6 +217,7 @@ public class AgentCallerTest {
     }
 
     @Test
+    @Ignore("Needs updates, unit tests should not rely on external resources")
     public void testExecuteGet() {
         HttpGet request = new HttpGet("https://httpbin.org/get");
         String res = AgentCaller.executeGet(request);

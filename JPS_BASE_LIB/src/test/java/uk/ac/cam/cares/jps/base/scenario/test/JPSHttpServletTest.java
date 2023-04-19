@@ -1,22 +1,14 @@
 package uk.ac.cam.cares.jps.base.scenario.test;
 
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.logging.log4j.Logger;
-import org.json.JSONObject;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.jupiter.api.AfterEach;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
-import uk.ac.cam.cares.jps.base.scenario.JPSContext;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.CALLS_REAL_METHODS;
+import static org.mockito.Mockito.mock;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
@@ -25,9 +17,25 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.CALLS_REAL_METHODS;
-import static org.mockito.Mockito.mock;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.Response;
+
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 
 
@@ -343,10 +351,8 @@ public class JPSHttpServletTest {
 
     }
 
-
-
-
     @Test
+    @Ignore("Needs updates, unit tests should not rely on external resources")
     public void testExecute() throws ClassNotFoundException, NoSuchMethodException,
             InvocationTargetException, IllegalAccessException {
 
