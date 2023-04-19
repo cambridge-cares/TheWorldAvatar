@@ -207,20 +207,7 @@ public class OpenMeteoAgent extends JPSAgent {
 
                 String stationIRI = getStation(latitude, longitude);
 
-                WhereBuilder wb = new WhereBuilder()
-                        .addPrefix("ontoems", ontoemsURI)
-                        .addPrefix("ontotimeseries", ontotimeseriesURI)
-                        .addPrefix("om", omURI);
-
-                addTimeSeriesWhere(wb, stationIRI);
-
-                SelectBuilder sb = new SelectBuilder()
-                        .addVar("timeseries")
-                        .addVar("quantity")
-                        .addVar("measure")
-                        .addWhere(wb);
-
-                JSONArray queryResults = this.queryStore(route, sb.build().toString());
+                JSONArray queryResults = getWeatherIRI(stationIRI);
 
                 tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
 
@@ -433,10 +420,10 @@ public class OpenMeteoAgent extends JPSAgent {
     /**
      * Creates SPARQL update according to the ontoems ontology
      * @param builder where builder
-     * @param station reporting station iri
-     * @param quantity quantity iri
+     * @param station reporting station IRI
+     * @param quantity quantity IRI
      * @param type type of quantity
-     * @param measure measure iri
+     * @param measure measure IRI
      * @param unit unit of quantity
      */
     public void createUpdate(WhereBuilder builder, String station, String quantity, String type, String measure, String unit) {
@@ -448,21 +435,22 @@ public class OpenMeteoAgent extends JPSAgent {
     }
 
     /**
-     * Creates query for getting the quantity, measure, and time series iri related to the reporting station iri
+     * Creates query for the quantity IRI, quantity type, measure IRI, and time series IRI related to the reporting station IRI
      * @param builder where builder
-     * @param station reporting station iri
+     * @param station reporting station IRI
      */
-    public void addTimeSeriesWhere(WhereBuilder builder, String station) {
+    public void addWeatherWhere(WhereBuilder builder, String station) {
         builder.addWhere(NodeFactory.createURI(station), "ontoems:reports", "?quantity")
+                .addWhere("?quantity", "rdf:type", "?weatherParameter")
                 .addWhere("?quantity", "om:hasValue", "?measure")
                 .addWhere("?measure", "ontotimeseries:hasTimeSeries", "?timeseries");
     }
 
     /**
-     * Queries for the OntoEMS:ReportingStation iri with the given lat, lon coordinate
+     * Queries for the OntoEMS:ReportingStation IRI with the given lat, lon coordinate
      * @param lat latitude of the reporting station
      * @param lon longitude of the reporting station
-     * @return reporting station iri at the given coordinate if it exists
+     * @return reporting station IRI at the given coordinate if it exists
      */
     public String getStation(Double lat, Double lon) {
         String coordinate = lat + "placeHolder" + lon;
@@ -493,8 +481,32 @@ public class OpenMeteoAgent extends JPSAgent {
     }
 
     /**
-     * Deletes all triples related to the given iri
-     * @param iri iri to delete
+     * Queries for and returns the quantity IRI, quantity type, measure IRI, and time series IRI related to stationIRI
+     * @param stationIRI IRI of weather station
+     * @return query result for quantity IRI, quantity type, measure IRI, and time series IRI related to stationIRI
+     */
+    public JSONArray getWeatherIRI(String stationIRI) {
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("ontoems", ontoemsURI)
+                .addPrefix("ontotimeseries", ontotimeseriesURI)
+                .addPrefix("om", omURI)
+                .addPrefix("rdf", rdfURI);
+
+        addWeatherWhere(wb, stationIRI);
+
+        SelectBuilder sb = new SelectBuilder()
+                .addVar("timeseries")
+                .addVar("quantity")
+                .addVar("measure")
+                .addVar("weatherParameter")
+                .addWhere(wb);
+
+        return this.queryStore(route, sb.build().toString());
+    }
+
+    /**
+     * Deletes all triples related to the given IRI
+     * @param iri IRI to delete
      */
     public void deleteIRI(String iri){
         UpdateBuilder db = new UpdateBuilder()
