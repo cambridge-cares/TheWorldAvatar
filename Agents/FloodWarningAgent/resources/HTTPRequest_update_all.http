@@ -1,5 +1,5 @@
 // This is an example HTTP request to update all flood warnings i.e. assimilate all 
 // current flood warnings and alerts from Environment Agency Real Time flood-monitoring API
 
-POST http://localhost:5007/floodwarnings/update/all
+POST http://localhost:5009/floodwarnings/update/all
 Content-Type: application/json

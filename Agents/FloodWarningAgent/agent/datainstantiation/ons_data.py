@@ -16,9 +16,8 @@ from agent.datamodel.data_mapping import *
 from agent.errorhandling.exceptions import APIException
 from agent.kgutils.querytemplates import ons_county
 
-from py4jps import agentlogging
-
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 

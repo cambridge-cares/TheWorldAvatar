@@ -3,13 +3,14 @@
 # Date: 12 Feb 2023                            #
 ################################################
 
+import os
 from flask import Blueprint, request, jsonify
 
 from agent.datainstantiation.warnings import update_warnings
-
-from py4jps import agentlogging
+from agent.errorhandling.exceptions import InvalidInput
 
 # Initialise logger
+from py4jps import agentlogging
 logger = agentlogging.get_logger("prod")
 
 
@@ -22,13 +23,29 @@ inputtasks_bp = Blueprint(
 # (i.e. instantiate missing ones, update existing ones, and archive outdated ones)
 @inputtasks_bp.route('/floodwarnings/update/all', methods=['POST'])
 def api_update_all_warnings():
+    #
     # Check arguments (query parameters)
-    if len(request.args) > 0:
-        logger.warning('Query parameters provided, although not required. \
-                        Provided arguments will be neglected.')
+    #
+    inputs = { 'mock_api': None }
+    # Get received 'query' JSON object which holds all parameters
+    try:
+        query = request.json['query']
+    except Exception as ex:
+        logger.info('No "query" parameters provided, querying all flood warnings from EA API.')
+        query = {}
+    
+    if query:
+        # Retrieve mock API .json path
+        try:
+            inputs['mock_api'] = str(query['file_path'])
+            if not os.path.isfile(inputs['mock_api']):
+                raise InvalidInput('Specified file path does not exist.')
+        except Exception as ex:
+            logger.error('Unable to retrieve mock API .json path: ' + str(ex))
+            raise InvalidInput('Unable to retrieve mock API .json path.') from ex
     try:
         # Instantiate flood warnings
-        response = update_warnings()
+        response = update_warnings(**inputs)
         return_dict = {'Instantiated areas': response[0],
                        'Instantiated warnings': response[1],
                        'Updated warnings': response[2],

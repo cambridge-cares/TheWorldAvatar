@@ -10,9 +10,8 @@
 import os
 import warnings
 
-from py4jps import agentlogging
-
 # Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
+from py4jps import agentlogging
 logger = agentlogging.get_logger('prod')
 
 
@@ -22,7 +21,7 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DATABASE, NAMESPACE
+    global DATABASE, NAMESPACE, LAYERNAME, GEOSERVER_WORKSPACE, BUILDINGS_TABLE
 
     # Retrieve PostgreSQL/PostGIS database name
     DATABASE = os.getenv('DATABASE')
@@ -44,6 +43,35 @@ def retrieve_settings():
     if NAMESPACE == '':
         logger.error('No "NAMESPACE" value has been provided in environment variables.')
         raise ValueError('No "NAMESPACE" value has been provided in environment variables.')
+
+    # Retrieve target PostGIS table name for latest property value estimations information
+    # PostGIS table and Geoserver layer will have same name
+    LAYERNAME = os.getenv('LAYERNAME')
+    if LAYERNAME is None:
+        logger.error('"LAYERNAME" is missing in environment variables.')
+        raise ValueError('"LAYERNAME" is missing in environment variables.')
+    if LAYERNAME == '':
+        logger.error('No "LAYERNAME" value has been provided in environment variables.')
+        raise ValueError('No "LAYERNAME" value has been provided in environment variables.')
+
+    # Retrieve Geoserver workspace name
+    GEOSERVER_WORKSPACE = os.getenv('GEOSERVER_WORKSPACE')
+    if GEOSERVER_WORKSPACE is None:
+        logger.error('"GEOSERVER_WORKSPACE" name is missing in environment variables.')
+        raise ValueError('"GEOSERVER_WORKSPACE" name is missing in environment variables.')
+    if GEOSERVER_WORKSPACE == '':
+        logger.error('No "GEOSERVER_WORKSPACE" value has been provided in environment variables.')
+        raise ValueError('No "GEOSERVER_WORKSPACE" value has been provided in environment variables.')
+    
+    # Retrieve PostGIS table name holding the (previously instantiated) geospatial 
+    # building information (i.e. building footprint polygons) 
+    BUILDINGS_TABLE = os.getenv('BUILDINGS_TABLE')
+    if BUILDINGS_TABLE is None:
+        logger.error('"BUILDINGS_TABLE" is missing in environment variables.')
+        raise ValueError('"BUILDINGS_TABLE" is missing in environment variables.')
+    if BUILDINGS_TABLE == '':
+        logger.error('No "BUILDINGS_TABLE" value has been provided in environment variables.')
+        raise ValueError('No "BUILDINGS_TABLE" value has been provided in environment variables.')
 
 
 # Run when module is imported

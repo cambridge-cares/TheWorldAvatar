@@ -471,7 +471,7 @@ def instantiate_epc_data_for_all_postcodes(epc_endpoint=None,
     pure_inputs = [iri for r in res for iri in list(r.values())]
     pure_inputs = list(set(pure_inputs))
     #NOTE: As of pyderivationagent (1.3.0), a timestamp will be automatically added to 
-    # pure inputs at the initiL markup of THE derivation instance
+    # pure inputs at the initial markup of THE derivation instance
     # The 'updateTimestamps(List<String>)' method updates all instantiated timestamps 
     # for IRIs in list (i.e. only updates timestamp for those instances which already 
     # have timestamp attached, otherwise nothing happens)
