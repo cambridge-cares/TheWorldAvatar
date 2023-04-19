@@ -95,27 +95,27 @@ public class AgentCallerTest {
     }
 
 
-    @Test
-    @Ignore("Needs updates, unit tests should not rely on external resources")
-    public void testexecuteGetWithURL() {
-        String url = "https://httpbin.org/anything" ;
-        String res = AgentCaller.executeGetWithURL(url);
-        assertNotNull(res);
-        assertTrue(res.length() > 0);
-    }
+    // @Test
+    // @Ignore("Needs updates, unit tests should not rely on external resources")
+    // public void testexecuteGetWithURL() {
+    //     String url = "https://httpbin.org/anything" ;
+    //     String res = AgentCaller.executeGetWithURL(url);
+    //     assertNotNull(res);
+    //     assertTrue(res.length() > 0);
+    // }
 
-    @Test
-    @Ignore("Needs updates, unit tests should not rely on external resources")
-    public void testexecuteGetWithURLAndJSON() {
-        String url = "https://httpbin.org/anything" ;
-        JSONObject json = new JSONObject();
+    // @Test
+    // @Ignore("Needs updates, unit tests should not rely on external resources")
+    // public void testexecuteGetWithURLAndJSON() {
+    //     String url = "https://httpbin.org/anything" ;
+    //     JSONObject json = new JSONObject();
 
-        json.put("test1", "value1");
-        String strjson = json.toString();
-        String res = AgentCaller.executeGetWithURLAndJSON(url, strjson);
-        assertNotNull(res);
-        assertTrue(res.length() > 0);
-    }
+    //     json.put("test1", "value1");
+    //     String strjson = json.toString();
+    //     String res = AgentCaller.executeGetWithURLAndJSON(url, strjson);
+    //     assertNotNull(res);
+    //     assertTrue(res.length() > 0);
+    // }
 
     @Test
     public void testcreateURIWithURLandJSON() {
@@ -216,14 +216,14 @@ public class AgentCallerTest {
         assertNotNull(json);
     }
 
-    @Test
-    @Ignore("Needs updates, unit tests should not rely on external resources")
-    public void testExecuteGet() {
-        HttpGet request = new HttpGet("https://httpbin.org/get");
-        String res = AgentCaller.executeGet(request);
-        assertNotNull(res);
-        assertTrue(res.length() > 0);
-    }
+    // @Test
+    // @Ignore("Needs updates, unit tests should not rely on external resources")
+    // public void testExecuteGet() {
+    //     HttpGet request = new HttpGet("https://httpbin.org/get");
+    //     String res = AgentCaller.executeGet(request);
+    //     assertNotNull(res);
+    //     assertTrue(res.length() > 0);
+    // }
 
 
     @Test

@@ -351,34 +351,34 @@ public class JPSHttpServletTest {
 
     }
 
-    @Test
-    @Ignore("Needs updates, unit tests should not rely on external resources")
-    public void testExecute() throws ClassNotFoundException, NoSuchMethodException,
-            InvocationTargetException, IllegalAccessException {
+    // @Test
+    // @Ignore("Needs updates, unit tests should not rely on external resources")
+    // public void disabled_testExecute() throws ClassNotFoundException, NoSuchMethodException,
+    //         InvocationTargetException, IllegalAccessException {
 
-        Class<?> TargetClass = Class.forName("uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet");
-        Method method = TargetClass.getDeclaredMethod("execute",String.class,String.class,String.class) ;
-        JPSHttpServlet jhs = mock(JPSHttpServlet.class,CALLS_REAL_METHODS);
-        method.setAccessible(true);
+    //     Class<?> TargetClass = Class.forName("uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet");
+    //     Method method = TargetClass.getDeclaredMethod("execute",String.class,String.class,String.class) ;
+    //     JPSHttpServlet jhs = mock(JPSHttpServlet.class,CALLS_REAL_METHODS);
+    //     method.setAccessible(true);
 
-        String path = "https://httpbin.org/anything" ;
-        String jsonInput = "json" ;
+    //     String path = "https://httpbin.org/anything" ;
+    //     String jsonInput = "json" ;
 
-        String res = (String) method.invoke(jhs,path,jsonInput,HttpGet.METHOD_NAME);
-        assertNotNull(res);
-        assertTrue(res.length() > 0);
+    //     String res = (String) method.invoke(jhs,path,jsonInput,HttpGet.METHOD_NAME);
+    //     assertNotNull(res);
+    //     assertTrue(res.length() > 0);
 
-        res = (String) method.invoke(jhs,path,jsonInput,HttpPost.METHOD_NAME);
-        assertNotNull(res);
-        assertTrue(res.length() > 0);
+    //     res = (String) method.invoke(jhs,path,jsonInput,HttpPost.METHOD_NAME);
+    //     assertNotNull(res);
+    //     assertTrue(res.length() > 0);
 
-        String finalPath = path;
-        // It has been verified that the InvocationTargetException is caused by an IllegalStateException thrown by
-        // the execute method of the JPSHttpServlet class.
-        assertThrows(InvocationTargetException.class,
-                ()-> {method.invoke(jhs, finalPath,jsonInput,"invalidMethod") ;}) ;
+    //     String finalPath = path;
+    //     // It has been verified that the InvocationTargetException is caused by an IllegalStateException thrown by
+    //     // the execute method of the JPSHttpServlet class.
+    //     assertThrows(InvocationTargetException.class,
+    //             ()-> {method.invoke(jhs, finalPath,jsonInput,"invalidMethod") ;}) ;
 
-    }
+    // }
 
 
     @Test

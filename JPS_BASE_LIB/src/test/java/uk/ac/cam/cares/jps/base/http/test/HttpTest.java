@@ -281,149 +281,149 @@ public class HttpTest extends TestCase {
 
 	}
 
-    @Test
-    @Ignore("Needs updates, unit tests should not rely on external resources")
-	public void testExecute() throws NoSuchMethodException, SecurityException, MalformedURLException {
-		Http http = new Http();
-		assertNotNull(http.getClass().getDeclaredMethod("execute", HttpRequestBase.class));
-		HttpRequestBase hrb = null;
+    // @Test
+    // @Ignore("Needs updates, unit tests should not rely on external resources")
+	// public void disabled_testExecute() throws NoSuchMethodException, SecurityException, MalformedURLException {
+	// 	Http http = new Http();
+	// 	assertNotNull(http.getClass().getDeclaredMethod("execute", HttpRequestBase.class));
+	// 	HttpRequestBase hrb = null;
 
-		try {
-			Http.execute(hrb);
-		} catch (Exception e) {
-			assertEquals(e.getMessage(), "HTTP request may not be null");
-		}
+	// 	try {
+	// 		Http.execute(hrb);
+	// 	} catch (Exception e) {
+	// 		assertEquals(e.getMessage(), "HTTP request may not be null");
+	// 	}
 		
-		try {
-			hrb = new HttpGet(url);
-			Http.execute(hrb);
-		} catch (Exception e) {
-			assertTrue(e.getMessage().contains("response with status = 404"));
-		}
+	// 	try {
+	// 		hrb = new HttpGet(url);
+	// 		Http.execute(hrb);
+	// 	} catch (Exception e) {
+	// 		assertTrue(e.getMessage().contains("response with status = 404"));
+	// 	}
 		
-		hrb = Http.get(urlCRUD + "get", accept);
-		Http.execute(hrb);
-		assertNotNull(Http.execute(hrb));
-		JSONObject jo = new JSONObject(Http.execute(hrb));
-		assertEquals(jo.get("url"), "http://httpbin.org/get");
+	// 	hrb = Http.get(urlCRUD + "get", accept);
+	// 	Http.execute(hrb);
+	// 	assertNotNull(Http.execute(hrb));
+	// 	JSONObject jo = new JSONObject(Http.execute(hrb));
+	// 	assertEquals(jo.get("url"), "http://httpbin.org/get");
 
-	}
+	// }
 
-    @Test
-    @Ignore("Needs updates, unit tests should not rely on external resources")
-	public void testGet() {
+    // @Test
+    // @Ignore("Needs updates, unit tests should not rely on external resources")
+	// public void disabled_testGet() {
 
-		HttpGet request = Http.get(urlCRUD + "get", accept);
+	// 	HttpGet request = Http.get(urlCRUD + "get", accept);
 		
-		assertEquals(request.toString().substring(0, 3), "GET");
+	// 	assertEquals(request.toString().substring(0, 3), "GET");
 
-		JSONObject jo = new JSONObject(Http.execute(request));
-		JSONObject headers = (JSONObject) jo.get("headers");
+	// 	JSONObject jo = new JSONObject(Http.execute(request));
+	// 	JSONObject headers = (JSONObject) jo.get("headers");
 
-		assertEquals(headers.get("Accept"), accept);
-		assertEquals(headers.get("Host"), "httpbin.org");
+	// 	assertEquals(headers.get("Accept"), accept);
+	// 	assertEquals(headers.get("Host"), "httpbin.org");
 
-		request = Http.get(urlCRUD + "get", null);
-		jo = new JSONObject(Http.execute(request));
-		headers = (JSONObject) jo.get("headers");
+	// 	request = Http.get(urlCRUD + "get", null);
+	// 	jo = new JSONObject(Http.execute(request));
+	// 	headers = (JSONObject) jo.get("headers");
 
-		try {
-			headers.get("Accept");
-		} catch (Exception e) {
-			assertTrue(e instanceof JSONException);
-			assertEquals(e.getMessage(), "JSONObject[\"Accept\"] not found.");
-		}
-		assertEquals(headers.get("Host"), "httpbin.org");
+	// 	try {
+	// 		headers.get("Accept");
+	// 	} catch (Exception e) {
+	// 		assertTrue(e instanceof JSONException);
+	// 		assertEquals(e.getMessage(), "JSONObject[\"Accept\"] not found.");
+	// 	}
+	// 	assertEquals(headers.get("Host"), "httpbin.org");
 
-	}
+	// }
 
-    @Test
-    @Ignore("Needs updates, unit tests should not rely on external resources")
-	public void testPut() {
+    // @Test
+    // @Ignore("Needs updates, unit tests should not rely on external resources")
+	// public void disabled_testPut() {
 
-		HttpPut request = Http.put(urlCRUD + "put", queryString, contentType, accept, new TestObject());
+	// 	HttpPut request = Http.put(urlCRUD + "put", queryString, contentType, accept, new TestObject());
 
-		assertEquals(request.toString().substring(0, 3), "PUT");
+	// 	assertEquals(request.toString().substring(0, 3), "PUT");
 
-		JSONObject jo = new JSONObject(Http.execute(request));
-		JSONObject headers = (JSONObject) jo.get("headers");
+	// 	JSONObject jo = new JSONObject(Http.execute(request));
+	// 	JSONObject headers = (JSONObject) jo.get("headers");
 
-		assertEquals(jo.get("form").toString(), queryJsonString);
-		assertEquals(headers.get("Accept"), accept);
+	// 	assertEquals(jo.get("form").toString(), queryJsonString);
+	// 	assertEquals(headers.get("Accept"), accept);
 
-	}
+	// }
 
-    @Test
-    @Ignore("Needs updates, unit tests should not rely on external resources")
-	public void testPost() {
+    // @Test
+    // @Ignore("Needs updates, unit tests should not rely on external resources")
+	// public void disabled_testPost() {
 
-		JSONObject params = new JSONObject(queryJsonString);
+	// 	JSONObject params = new JSONObject(queryJsonString);
 
-		HttpPost request = Http.post(urlCRUD + "post", queryString, contentType, accept, params);
+	// 	HttpPost request = Http.post(urlCRUD + "post", queryString, contentType, accept, params);
 
-		assertEquals(request.toString().substring(0, 4), "POST");
+	// 	assertEquals(request.toString().substring(0, 4), "POST");
 
-		JSONObject jo = new JSONObject(Http.execute(request));
-		JSONObject headers = (JSONObject) jo.get("headers");
+	// 	JSONObject jo = new JSONObject(Http.execute(request));
+	// 	JSONObject headers = (JSONObject) jo.get("headers");
 
-		assertEquals(jo.get("form").toString(), queryJsonString);
-		assertEquals(headers.get("Accept"), accept);
+	// 	assertEquals(jo.get("form").toString(), queryJsonString);
+	// 	assertEquals(headers.get("Accept"), accept);
 
-	}
+	// }
 
-    @Test
-    @Ignore("Needs updates, unit tests should not rely on external resources")
-	public void testDelete() {
-		HttpDelete request = Http.delete(urlCRUD + "delete", (Object) null);
+    // @Test
+    // @Ignore("Needs updates, unit tests should not rely on external resources")
+	// public void disabled_testDelete() {
+	// 	HttpDelete request = Http.delete(urlCRUD + "delete", (Object) null);
 
-		assertEquals(request.toString().substring(0, 6), "DELETE");
-	}
+	// 	assertEquals(request.toString().substring(0, 6), "DELETE");
+	// }
 
-    @Test
-    @Ignore("Needs updates, unit tests should not rely on external resources")
-	public void testPutOrPost() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Http http = new Http();
-		assertNotNull(http.getClass().getDeclaredMethod("putOrPost", HttpEntityEnclosingRequestBase.class, String.class,
-				Object.class, String.class, String.class, Object[].class));
-		Method putOrPost = http.getClass().getDeclaredMethod("putOrPost", HttpEntityEnclosingRequestBase.class, String.class,
-				Object.class, String.class, String.class, Object[].class);
-		putOrPost.setAccessible(true);
-		String testUrl = urlCRUD;
-		String body = null;
-		String contentType = null;
-		String accept = null;
-		Object obj = null;
-		HttpEntityEnclosingRequestBase heerb = Http.put(testUrl + "put", body, contentType, accept, obj);
+//     @Test
+//     @Ignore("Needs updates, unit tests should not rely on external resources")
+// 	public void disabled_testPutOrPost() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+// 		Http http = new Http();
+// 		assertNotNull(http.getClass().getDeclaredMethod("putOrPost", HttpEntityEnclosingRequestBase.class, String.class,
+// 				Object.class, String.class, String.class, Object[].class));
+// 		Method putOrPost = http.getClass().getDeclaredMethod("putOrPost", HttpEntityEnclosingRequestBase.class, String.class,
+// 				Object.class, String.class, String.class, Object[].class);
+// 		putOrPost.setAccessible(true);
+// 		String testUrl = urlCRUD;
+// 		String body = null;
+// 		String contentType = null;
+// 		String accept = null;
+// 		Object obj = null;
+// 		HttpEntityEnclosingRequestBase heerb = Http.put(testUrl + "put", body, contentType, accept, obj);
 		
-		heerb = Http.put(testUrl + "put", body, contentType, accept, obj);
-		String putRequest = "PUT http://httpbin.org/ HTTP/1.1";
-		assertEquals(putOrPost.invoke(http, heerb, testUrl, body, contentType, accept, new Object[] {obj}).toString(), putRequest);
+// 		heerb = Http.put(testUrl + "put", body, contentType, accept, obj);
+// 		String putRequest = "PUT http://httpbin.org/ HTTP/1.1";
+// 		assertEquals(putOrPost.invoke(http, heerb, testUrl, body, contentType, accept, new Object[] {obj}).toString(), putRequest);
 		
-		JSONObject params = new JSONObject(queryJsonString);
-		heerb = Http.post(urlCRUD + "post", queryString, contentType, accept, params);
-		String postRequest = "POST http://httpbin.org/ HTTP/1.1";
-		assertEquals(putOrPost.invoke(http, heerb, testUrl, body, contentType, accept, new Object[] {obj}).toString(), postRequest);
+// 		JSONObject params = new JSONObject(queryJsonString);
+// 		heerb = Http.post(urlCRUD + "post", queryString, contentType, accept, params);
+// 		String postRequest = "POST http://httpbin.org/ HTTP/1.1";
+// 		assertEquals(putOrPost.invoke(http, heerb, testUrl, body, contentType, accept, new Object[] {obj}).toString(), postRequest);
 		
-		body = this.body;
-		contentType = this.contentType;
-		accept = this.accept;
-		obj = new TestObject();
-		heerb = Http.put(testUrl + "put", body, contentType, accept, obj);
-		putRequest = "PUT http://httpbin.org/?query=%7B%22key%22%3A%22key_0%22%2C%22value%22%3A%22value_0%22%7D HTTP/1.1";
-		assertEquals(putOrPost.invoke(http, heerb, testUrl, body, contentType, accept, new Object[] {obj}).toString(), putRequest);
-		heerb = Http.post(urlCRUD + "post", queryString, contentType, accept, params);
-		postRequest = "POST http://httpbin.org/?query=%7B%22key%22%3A%22key_0%22%2C%22value%22%3A%22value_0%22%7D HTTP/1.1";
-		assertEquals(putOrPost.invoke(http, heerb, testUrl, body, contentType, accept, new Object[] {obj}).toString(), postRequest);
+// 		body = this.body;
+// 		contentType = this.contentType;
+// 		accept = this.accept;
+// 		obj = new TestObject();
+// 		heerb = Http.put(testUrl + "put", body, contentType, accept, obj);
+// 		putRequest = "PUT http://httpbin.org/?query=%7B%22key%22%3A%22key_0%22%2C%22value%22%3A%22value_0%22%7D HTTP/1.1";
+// 		assertEquals(putOrPost.invoke(http, heerb, testUrl, body, contentType, accept, new Object[] {obj}).toString(), putRequest);
+// 		heerb = Http.post(urlCRUD + "post", queryString, contentType, accept, params);
+// 		postRequest = "POST http://httpbin.org/?query=%7B%22key%22%3A%22key_0%22%2C%22value%22%3A%22value_0%22%7D HTTP/1.1";
+// 		assertEquals(putOrPost.invoke(http, heerb, testUrl, body, contentType, accept, new Object[] {obj}).toString(), postRequest);
 		
-		try {
-			String key = "host";
-			heerb = Http.put(key, body, contentType, accept, obj);
-			putOrPost.invoke(obj, http, heerb, testUrl, body, contentType, accept, new Object[] {obj});
-		} catch (Exception e) {
-			assertTrue(e instanceof StringIndexOutOfBoundsException);
-//			assertEquals(e.getMessage(), "String index out of range: -1");
-		}
+// 		try {
+// 			String key = "host";
+// 			heerb = Http.put(key, body, contentType, accept, obj);
+// 			putOrPost.invoke(obj, http, heerb, testUrl, body, contentType, accept, new Object[] {obj});
+// 		} catch (Exception e) {
+// 			assertTrue(e instanceof StringIndexOutOfBoundsException);
+// //			assertEquals(e.getMessage(), "String index out of range: -1");
+// 		}
 	
-	}
+// 	}
 
 }
