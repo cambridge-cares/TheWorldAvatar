@@ -106,6 +106,8 @@ public class Simulation {
                 return new HDMR(request, inputFile, modsBackend, inputMetaData);
             case "MOOonly":
                 return new MOOonly(request, inputFile, modsBackend, inputMetaData);
+            case "MCDM":
+                return new MCDM(request, inputFile, modsBackend, inputMetaData);
             case "Evaluate":
                 return new Evaluate(request, inputFile, modsBackend, inputMetaData);
             case "Sensitivity":
