@@ -1,6 +1,6 @@
 {
     "ServiceSpec": {
-        "Name": "openmeteo_agent",
+        "Name": "openmeteo-agent",
         "TaskTemplate": {
             "ContainerSpec": {
                 "Image": "ghcr.io/cambridge-cares/openmeteo_agent:1.0.0",

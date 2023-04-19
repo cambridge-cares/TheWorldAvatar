@@ -19,8 +19,8 @@ services:
       - AERMET_EXE=/root/aermod/aermet # need to match Dockerfile
       - AERMOD_EXE=/root/aermod/aermod # need to match Dockerfile
       - WEATHER_AGENT=http://${STACK_NAME}-weather-agent:8080/WeatherAgent/UpdateStation
-      - OPENMETEO_AGENT_RUN=http://${STACK_NAME}-openmeteo_agent:8080/openmeteo_agent/run
-      - OPENMETEO_AGENT_DELETE=http://${STACK_NAME}-openmeteo_agent:8080/openmeteo_agent/delete
+      - OPENMETEO_AGENT_RUN=http://${STACK_NAME}-openmeteo-agent:8080/openmeteo-agent/run
+      - OPENMETEO_AGENT_DELETE=http://${STACK_NAME}-openmeteo-agent:8080/openmeteo-agent/delete
       - DATABASE=postgres
       - GEOSERVER_WORKSPACE=dispersion
       - DISPERSION_LAYER=dispersion_layer
