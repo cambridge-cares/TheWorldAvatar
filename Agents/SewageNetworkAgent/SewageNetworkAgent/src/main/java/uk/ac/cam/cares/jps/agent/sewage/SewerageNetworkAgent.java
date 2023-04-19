@@ -539,7 +539,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 			AccessAgentCaller.updateStore(sparqlendpoint, CoverKG_ur.toString());
 
 
-			UpdateBuilder LocationKG_ub = 
+			UpdateBuilder LocationKG1_ub = 
 					new UpdateBuilder()
 					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(dul + "hasLocation"), NodeFactory.createURI(KB + "Location" + KG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "location"))
@@ -547,25 +547,29 @@ public class SewerageNetworkAgent extends JPSAgent {
 					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "isInFloodplane"), KG406)
 					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "isAssociatedWith"), NodeFactory.createURI(KB + "AssociatedInfrastructure" + KG404))
 					.addInsert(NodeFactory.createURI(KB + "AssociatedInfrastructure" + KG404), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "AssociatedInfrastructure")) 	
+					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "hasPointDesignation"), KG_GP001);			
+			UpdateRequest LocationKG1_ur = LocationKG1_ub.buildRequest();
+			AccessAgentCaller.updateStore(sparqlendpoint, LocationKG1_ur.toString()); 	
+			
+			
+			if (!KG_GP003B.equals("None") && !KG_GP004B.equals("None") && !KG_GP007B.equals("None")) {	
+			UpdateBuilder LocationKG2_ub = 
+				   new UpdateBuilder()
 					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinates"), NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "GeoCoordinates"))    
-					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name), NodeFactory.createURI(OS + "hasPositionAccuracy"), KG_GP008A)
 					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name), NodeFactory.createURI(OS + "hasPositionAccuracy"), KG_GP008B)
 					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinateReference"), KG_GP002)
-					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name), NodeFactory.createURI(ogc + "asWKT"), "POINT("+KG_GP003A+","+KG_GP004A+")^^ogc:wktLiteral")
 					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name), NodeFactory.createURI(ogc + "asWKT"), "POINT("+KG_GP003B+","+KG_GP004B+")^^ogc:wktLiteral")  
-					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "hasPointDesignation"), KG_GP001)
 					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "hasElevation"), NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name))	
 					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "elevation"))   
 					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name), NodeFactory.createURI(OS + "hasElevationReference"), KG_GP010)
-					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAccuracy"), KG_GP009A)		
 					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAccuracy"), KG_GP009B)
 					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAboveSeaLevel"), NodeFactory.createURI(KB + "ElevationAboveSeaLevel" + KG_Instance_Name))
 					.addInsert(NodeFactory.createURI(KB + "ElevationAboveSeaLevel" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT));
-			UpdateRequest LocationKG_ur = LocationKG_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, LocationKG_ur.toString()); 	
-			omHasValue("ElevationAboveSeaLevel" + KG_Instance_Name, "metre", KG_GP007A);	
+			UpdateRequest LocationKG2_ur = LocationKG2_ub.buildRequest();
+			AccessAgentCaller.updateStore(sparqlendpoint, LocationKG2_ur.toString()); 	
 			omHasValue("ElevationAboveSeaLevel" + KG_Instance_Name, "metre", KG_GP007B);	
+			} else {}			
 		}
 
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y \"None\"} where {?x ?y \"None\"}"); 
@@ -629,7 +633,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialMasonry>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialMasonry>}");
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialMasonry> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialMasonry> ?y ?z}"); 
 	    AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPolyvinylChloride>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPolyvinylChloride>}");
-	    AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialPolyvinylChloride> ?y ?z} where {https://www.theworldavatar.com/kb/ontosewage/MaterialPolyvinylChloride<> ?y ?z}"); 		
+	    AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialPolyvinylChloride> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialPolyvinylChloride> ?y ?z}"); 		
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialDuctileCastIron>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialDuctileCastIron>}");
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialDuctileCastIron> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialDuctileCastIron> ?y ?z}"); 	    
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialKgDrainagePipes>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialKgDrainagePipes>}");
@@ -744,7 +748,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureOther> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureOther> ?y ?z}");	
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsagem>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsagem>}");
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsagem> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsagem> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y https://www.theworldavatar.com/kb/ontosewage/SewerageUsages<>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsages>}");
+		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsages>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsages>}");
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsages> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsages> ?y ?z}");	
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageFictitiousAttitude>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageFictitiousAttitude>}");
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageFictitiousAttitude> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageFictitiousAttitude> ?y ?z}");	
@@ -801,7 +805,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeConcealedManhole>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeConcealedManhole>}");
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeConcealedManhole> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeConcealedManhole> ?y ?z}"); 		
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypePumpingStation>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypePumpingStation>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypePumpingStation> ?y ?z} where {https://www.theworldavatar.com/kb/ontosewage/StructureTypePumpingStation<> ?y ?z}"); 		
+		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypePumpingStation> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypePumpingStation> ?y ?z}"); 		
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutletStructure>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutletStructure>}");
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutletStructure> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutletStructure> ?y ?z}"); 	
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutlet>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutlet>}");
@@ -855,7 +859,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassConical>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassConical>}");
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ClassConical> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ClassConical> ?y ?z}"); 		
 		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/Classunknown>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/Classunknown>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/Classunknown> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/Classunknown> ?y ?z}"); 
+		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/Classunknown> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/Classunknown> ?y ?z}");	 
 	}
 
 	
