@@ -2,12 +2,7 @@ version: "3.8"
 
 services:
   bms-query-agent:
-    image: bms-query-agent:1.0.0-SNAPSHOT
+    image: bms-query-agent:1.0.0
     build: .
     configs:
       - blazegraph
-
-#    container_name: bms-query-agent
-#    pull_policy: if_not_present
-#    ports:
-#      - "48086:8080"
