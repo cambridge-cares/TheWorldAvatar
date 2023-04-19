@@ -19,5 +19,17 @@
 	"ea_temperature": "data/icons/ea_temperature.png",
 	"ea_water-level": "data/icons/ea_water-level.png",
 	"ea_wind": "data/icons/ea_wind.png",
-	"air_airquality": "data/icons/air_airquality.png"
+	"air_airquality": "data/icons/air_airquality.png",
+
+	"power-primary": "data/icons/power-primary.png",
+	"power-secondary": "data/icons/power-secondary.png",
+
+    "water-clean": "data/icons/water-clean.png",
+	"water-sewage": "data/icons/water-sewage.png",
+	"water-sludge": "data/icons/water-sludge.png",
+
+    "circle": "data/icons/circle-sdf.png",
+    "octagon": "data/icons/octagon-sdf.png",
+    "square": "data/icons/square-sdf.png",
+    "arrow": "data/icons/arrow-sdf.png"
 }
