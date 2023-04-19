@@ -3,8 +3,8 @@ package com.cmclinnovations.mods.modssimpleagent.simulations;
 import java.io.IOException;
 
 import com.cmclinnovations.mods.modssimpleagent.BackendInputFile;
-import com.cmclinnovations.mods.modssimpleagent.MoDSBackend;
 import com.cmclinnovations.mods.modssimpleagent.FileGenerator.FileGenerationException;
+import com.cmclinnovations.mods.modssimpleagent.MoDSBackend;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
 
@@ -25,5 +25,10 @@ public class MCDM extends Simulation {
     protected void generateFiles() throws FileGenerationException {
         generateDataAlgFiles();
         super.generateFiles();
+    }
+
+    @Override
+    public Request getResults() {
+        return getMCDMResults();
     }
 }
