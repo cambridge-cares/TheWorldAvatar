@@ -272,32 +272,26 @@ public class Simulation {
     }
 
     protected final void generateDataAlgFiles() throws FileGenerationException {
-        Path dataAlgPath;
-        try {
-            dataAlgPath = modsBackend.createSubDir(DATA_ALGORITHM_NAME);
-
-            new CSVDataSeparateFiles(getRequest().getInputs(),
-                    DATA_ALGORITHM_NAME + "_" + Variable.SUBTYPE_PREFIX,
-                    getFullCaseName(DEFAULT_CASEGROUP_NAME, DEFAULT_CASE_NAME) + "_")
-                    .marshal(dataAlgPath);
-        } catch (IOException ex) {
-            throw new FileGenerationException(
-                    "Failed to create subdirectory for algorithm '" + DATA_ALGORITHM_NAME + "'.", ex);
-        }
+        generateAlgorithmFiles(getRequest().getInputs(), DATA_ALGORITHM_NAME);
     }
 
     protected final void generateSamplingAlgDataFiles() throws FileGenerationException {
-        Path samplingAlgDataPath;
-        try {
-            samplingAlgDataPath = modsBackend.createSubDir(SAMPLING_ALGORITHM_FILE_NAME);
+        generateAlgorithmFiles(getRequest().getInputs(), SAMPLING_ALGORITHM_FILE_NAME);
+    }
 
-            new CSVDataSeparateFiles(getRequest().getInputs(),
-                    SAMPLING_ALGORITHM_FILE_NAME + "_" + Variable.SUBTYPE_PREFIX,
-                    getFullCaseName(DEFAULT_CASEGROUP_NAME, DEFAULT_CASE_NAME) + "_")
-                    .marshal(samplingAlgDataPath);
+    protected final void generateMOOAlgDataFiles() throws FileGenerationException {
+        generateAlgorithmFiles(getRequest().getInputs(), DEFAULT_MOO_ALGORITHM_NAME);
+    }
+
+    private final void generateAlgorithmFiles(Data data, String algorithmFileName) throws FileGenerationException {
+        try {
+            Path algorithmPath = modsBackend.createSubDir(algorithmFileName);
+
+            new CSVDataSeparateFiles(data, algorithmFileName + "_" + Variable.SUBTYPE_PREFIX,
+                    getFullCaseName(DEFAULT_CASEGROUP_NAME, DEFAULT_CASE_NAME) + "_").marshal(algorithmPath);
         } catch (IOException ex) {
             throw new FileGenerationException(
-                    "Failed to create subdirectory for algorithm '" + SAMPLING_ALGORITHM_FILE_NAME + "'.", ex);
+                    "Failed to create subdirectory for algorithm '" + algorithmFileName + "'.", ex);
         }
     }
 
