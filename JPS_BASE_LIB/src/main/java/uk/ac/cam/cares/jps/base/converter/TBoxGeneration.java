@@ -6,8 +6,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.filechooser.FileFilter;
 
@@ -177,40 +179,96 @@ public class TBoxGeneration implements ITBoxGeneration {
 			String type = singleLine.get(tBoxConfig.getIndexOfTypeColumn());
 			String target = singleLine.get(tBoxConfig.getIndexOfTargetColumn());
 			String relation = singleLine.get(tBoxConfig.getIndexOfRelationColumn());
+			String domain = singleLine.get(tBoxConfig.getIndexOfDomainColumn());
+			String range = singleLine.get(tBoxConfig.getIndexOfRangeColumn());
+
 			if (type == null || type.trim().equals("")) {
-				logger.error("The ontology was not created as the Type is null or empty in the CSV file in row: "
+				logger.error("The ontology was not created as the Type is null or empty in row "
 						+ rowCount + " of the following CSV file: " + csvFileNamePlusPath);
 				throw new JPSRuntimeException(
-						"The ontology was not created as the Type is null or empty in the CSV file in row: " + rowCount
+						"The ontology was not created as the Type is null or empty in row " + rowCount
 								+ " of the following CSV file: " + csvFileNamePlusPath);
 			}
+			
 			if (source == null || source.trim().equals("")) {
-				logger.error("The ontology was not created as the Source is null or empty in the CSV file in row: "
+				logger.error("The ontology was not created as the Source is null or empty in row "
 						+ rowCount + " of the following CSV file: " + csvFileNamePlusPath);
 				throw new JPSRuntimeException(
-						"The ontology was not created as the Source is null or empty in the CSV file in row: "
+						"The ontology was not created as the Source is null or empty in row "
 								+ rowCount + " of the following CSV file: " + csvFileNamePlusPath);
 			}
+			
 			if (relation != null && relation.equalsIgnoreCase(tBoxConfig.getIsARelation())
 					&& (target == null || target.trim().equals(""))) {
 				logger.error(
-						"The ontology was not created as the IS-A Relation is provided, but the Target is empty in the CSV file in row: "
+						"The ontology was not created as the IS-A Relation is provided, but the Target is null or empty in row "
 								+ rowCount + " of the following CSV file: " + csvFileNamePlusPath);
 				throw new JPSRuntimeException(
-						"The ontology was not created as the IS-A Relation is provided, but the Target is empty in the CSV file in row: "
+						"The ontology was not created as the IS-A Relation is provided, but the Target is null or empty in row "
 								+ rowCount + " of the following CSV file: " + csvFileNamePlusPath);
 			}
 
 			if (relation != null && relation.equalsIgnoreCase(tBoxConfig.getEquivalentToRelation())
 					&& (target == null || target.trim().equals(""))) {
 				logger.error(
-						"The ontology was not created as the EQUIVALENT-TO Relation is provided, but the Target is empty in the CSV file in row: "
+						"The ontology was not created as the EQUIVALENT-TO Relation is provided, but the Target is null or empty in row "
 								+ rowCount + " of the following CSV file: " + csvFileNamePlusPath);
 				throw new JPSRuntimeException(
-						"The ontology was not created as the EQUIVALENT-TO Relation is provided, but the Target is empty in the CSV file in row: "
+						"The ontology was not created as the EQUIVALENT-TO Relation is provided, but the Target is null or empty in row "
 								+ rowCount + " of the following CSV file: " + csvFileNamePlusPath);
 			}
 
+			if (target != null && !target.trim().isEmpty() && (relation == null || relation.trim().isEmpty())) {
+				logger.error(
+						"The ontology was not created as the Target is provided, but the Relation is null or empty in row "
+								+ rowCount + " of the following CSV file: " + csvFileNamePlusPath);
+				throw new JPSRuntimeException(
+						"The ontology was not created as the Target is provided, but the Relation is null or empty in row "
+								+ rowCount + " of the following CSV file: " + csvFileNamePlusPath);
+			}
+			
+			if(domain != null && !domain.trim().isEmpty()) {
+				String[] domains = new String[] {};
+				if(domain.contains("UNION")) {
+					domains = domain.split("UNION");
+				} else if (domain.contains("INTERSECTION")) {
+					domains = domain.split("INTERSECTION");
+				}
+				Set<String> domainSet = new HashSet<>();
+				for(String singleDomain: domains) {
+					domainSet.add(singleDomain.trim());
+				}
+				if (domainSet.size() != domains.length) {
+					logger.error(
+							"The ontology was not created as the Domain is provided, but the same class is repeated in the Domain in row "
+									+ rowCount + " of the following CSV file: " + csvFileNamePlusPath);
+					throw new JPSRuntimeException(
+							"The ontology was not created as the Domain is provided, but the same class is repeated in the Domain in row "
+									+ rowCount + " of the following CSV file: " + csvFileNamePlusPath);
+				}
+			}
+
+			if(range != null && !range.trim().isEmpty()) {
+				String[] ranges = new String[] {};
+				if(range.contains("UNION")) {
+					ranges = range.split("UNION");
+				} else if (range.contains("INTERSECTION")) {
+					ranges = range.split("INTERSECTION");
+				}
+				Set<String> rangeSet = new HashSet<>();
+				for(String singleRange: ranges) {
+					rangeSet.add(singleRange.trim());
+				}
+				if (rangeSet.size() != ranges.length) {
+					logger.error(
+							"The ontology was not created as the Range is provided, but the same class is repeated in the Range in row "
+									+ rowCount + " of the following CSV file: " + csvFileNamePlusPath);
+					throw new JPSRuntimeException(
+							"The ontology was not created as the Range is provided, but the same class is repeated in the Range in row "
+									+ rowCount + " of the following CSV file: " + csvFileNamePlusPath);
+				}
+			}
+			
 			source = source.replaceAll("\\s+", "").toLowerCase();
 			type = type.trim().toLowerCase();
 			target = target.replaceAll("\\s+", "").toLowerCase();
@@ -227,7 +285,6 @@ public class TBoxGeneration implements ITBoxGeneration {
 			}
 
 			// Creates the mapping between a domain class and relations associated with it.
-			String domain = singleLine.get(tBoxConfig.getIndexOfDomainColumn());
 			if (singleLine.size() > tBoxConfig.getIndexOfDomainColumn() && domain != null
 					&& !domain.trim().equals("")) {
 				String[] domainClasses = null;
@@ -253,7 +310,6 @@ public class TBoxGeneration implements ITBoxGeneration {
 			}
 
 			// Creates the mapping between a range class and relations associated with it.
-			String range = singleLine.get(tBoxConfig.getIndexOfRangeColumn());
 			if (singleLine.size() > tBoxConfig.getIndexOfRangeColumn() && range != null && !range.equals("")) {
 				String[] rangeClasses = null;
 				if (range.contains("UNION")) {
