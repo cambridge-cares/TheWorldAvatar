@@ -393,6 +393,8 @@ public class JPSHttpServletTest {
     @Test
     public void testdisableScenario() throws ClassNotFoundException, InvocationTargetException,
             NoSuchMethodException, IllegalAccessException {
+
+        JPSContext.removeJPSContext();        
         assertNull(JPSContext.getJpsContext());
         assertNull(JPSContext.get(JPSConstants.SCENARIO_URL)) ;
         assertNull(JPSContext.get(JPSConstants.SCENARIO_USE_CASE_URL)) ;
