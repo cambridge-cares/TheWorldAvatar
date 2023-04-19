@@ -7,7 +7,7 @@
 
   <groupId>uk.ac.cam.cares.jps</groupId>
   <artifactId>bms-update-agent</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
   <packaging>war</packaging>
 
   <properties>
