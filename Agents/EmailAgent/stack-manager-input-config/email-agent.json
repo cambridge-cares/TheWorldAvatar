@@ -1,20 +1,13 @@
 {
-    "type": "feature-info-agent",
+    "type": "email-agent",
     "ServiceSpec": {
-        "Name": "feature-info-agent",
+        "Name": email-agent",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ghcr.io/cambridge-cares/feature-info-agent:2.0.1",
+                "Image": "ghcr.io/cambridge-cares/feature-info-agent:1.0.1",
                 "Env": [
                     "LOG4J_FORMAT_MSG_NO_LOOKUPS=true",
                     "FIA_CONFIG_FILE=/app/queries/fia-config.json"
-                ],
-                "Mounts": [
-                    {
-                        "Type": "bind",
-                        "Source": "/home/caresuser/TWA-git/Agents/FeatureInfoAgent/queries",
-                        "Target": "/app/queries"
-                    }
                 ],
                 "Configs": [
                     {
@@ -37,8 +30,8 @@
     },
     "endpoints": {
         "rest": {
-            "url": "http://localhost:8080/feature-info-agent/",
-            "externalPath": "/feature-info-agent/"
+            "url": "http://localhost:8080/email-agent/",
+            "externalPath": "/email-agent/"
         }
     }
 }
