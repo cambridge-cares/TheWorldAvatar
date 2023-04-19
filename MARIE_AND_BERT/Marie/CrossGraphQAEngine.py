@@ -184,7 +184,7 @@ class CrossGraphQAEngine:
                         got_numerical_values = True
                         numerical_domain = domain
                 else:
-                    results = engine.run(question=question, mention=mention)
+                    results = engine.run(question=question)
                     labels, scores, targets = results
                 length_diff = 5 - len(labels)
                 scores = scores + [-999] * length_diff
@@ -247,13 +247,23 @@ if __name__ == '__main__':
 
     my_qa_engine = CrossGraphQAEngine()
 
+    text = "what is the charge of CH4"
+    rst = my_qa_engine.run(question=text)
+    print(rst)
+    print("==============================================================================")
     text = "find all species with molecular weight more than 100"
-    while text != "quit":
-        START_TIME = time.time()
-        rst = my_qa_engine.run(question=text)
-        print(rst)
-        print(f"TIME USED: {time.time() - START_TIME}")
-        text = input("Question: ")
+    rst = my_qa_engine.run(question=text)
+    print(rst)
+
+
+
+
+    # while text != "quit":
+    #     START_TIME = time.time()
+    #     rst = my_qa_engine.run(question=text)
+    #     print(rst)
+    #     print(f"TIME USED: {time.time() - START_TIME}")
+    #     text = input("Question: ")
 
     #
     # START_TIME = time.time()
