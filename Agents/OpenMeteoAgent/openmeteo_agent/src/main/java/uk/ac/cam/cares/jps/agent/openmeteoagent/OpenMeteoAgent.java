@@ -138,61 +138,14 @@ public class OpenMeteoAgent extends JPSAgent {
                 List<OffsetDateTime> timesList = getTimesList(weatherData, API_TIME, timezone);
                 Map<String, List<Object>> parsedData = parseWeatherData(weatherData, weatherUnit);
 
-                String stationIRI = createStation(latitude, longitude, elevation);
+                String stationIRI = getStation(latitude, longitude);
 
-                WhereBuilder wb = new WhereBuilder()
-                        .addPrefix("ontoems", ontoemsURI)
-                        .addPrefix("om", omURI)
-                        .addPrefix("rdf", rdfURI);
-
-                wb.addWhere(NodeFactory.createURI(stationIRI), "rdf:type", "ontoems:" + STATION);
-
-                String apiParam;
-                String ontoemsClass;
-                String quantityIRI;
-                String measureIRI;
-
-                List<List<String>> dataIRIs = new ArrayList<>();
-                List<String> dataIRI;
-                List<TimeSeriesClient.Type> tsTypes = new ArrayList<>();
-                List<Duration> durations = new ArrayList<>();
-                List<ChronoUnit> units = new ArrayList<>();
                 List<TimeSeries<OffsetDateTime>> tsList = new ArrayList<>();
-                List<Double> value;
 
-                for (var entry : api_ontoems.entrySet()) {
-                    apiParam = entry.getKey();
-
-                    if (parsedData.containsKey(apiParam)) {
-                        List<Object> data = parsedData.get(apiParam);
-                        ontoemsClass = entry.getValue();
-                        quantityIRI = ontoemsURI + ontoemsClass + "Quantity_" + UUID.randomUUID();
-                        measureIRI = ontoemsURI + ontoemsClass + "_" + UUID.randomUUID();
-                        createUpdate(wb, stationIRI, quantityIRI, "ontoems:" + ontoemsClass, measureIRI, (String) data.get(0));
-                        dataIRI = Arrays.asList(measureIRI);
-                        dataIRIs.add(dataIRI);
-                        value = (List<Double>) data.get(1);
-                        tsList.add(new TimeSeries<>(timesList, dataIRI, List.of(value)));
-                        tsTypes.add(api_timeseries.get(apiParam));
-                        if (api_timeseries.get(apiParam) == TimeSeriesClient.Type.AVERAGE) {
-                            durations.add(Duration.ofHours(1));
-                            units.add(ChronoUnit.HOURS);
-                        } else {
-                            durations.add(null);
-                            units.add(null);
-                        }
-                    }
+                if (stationIRI.isEmpty()) {
+                    stationIRI = createStation(latitude, longitude, elevation);
+                    instantiateWeather(stationIRI, parsedData, timesList, tsList);
                 }
-
-                List<List<Class<?>>> dataClass = Collections.nCopies(dataIRIs.size(), Arrays.asList(Double.class));
-                List<String> timeUnit = Collections.nCopies(dataIRIs.size(), OffsetDateTime.class.getSimpleName());
-
-                UpdateBuilder ub = new UpdateBuilder()
-                        .addInsert(wb);
-
-                this.updateStore(route, ub.buildRequest().toString());
-
-                createTimeSeries(dataIRIs, dataClass, timeUnit, tsTypes, durations, units);
 
                 try (Connection conn = rdbStoreClient.getConnection()) {
                     tsClient.bulkaddTimeSeriesData(tsList, conn);
@@ -206,6 +159,10 @@ public class OpenMeteoAgent extends JPSAgent {
                 longitude = requestParams.getDouble(KEY_LONG);
 
                 String stationIRI = getStation(latitude, longitude);
+
+                if (stationIRI.isEmpty()) {
+                    throw new JPSRuntimeException("No reporting station found at the given coordinate.");
+                }
 
                 JSONArray queryResults = getWeatherIRI(stationIRI);
 
@@ -473,7 +430,7 @@ public class OpenMeteoAgent extends JPSAgent {
         JSONArray queryResult = this.queryStore(route, queryString);
 
         if (queryResult.isEmpty()){
-            throw new JPSRuntimeException("No reporting station found at the given coordinate.");
+            return "";
         }
         else{
             return queryResult.getJSONObject(0).getString("station");
@@ -606,5 +563,73 @@ public class OpenMeteoAgent extends JPSAgent {
         }
 
         return  timesList;
+    }
+
+    /**
+     * Instantiates weather data as time series
+     * @param stationIRI IRI of weather station
+     * @param parsedData weather data
+     * @param timesList list of timestamps of parsedData
+     * @param tsList list to store TimeSeries
+     */
+    private void instantiateWeather(String stationIRI,  Map<String, List<Object>> parsedData, List<OffsetDateTime> timesList,  List<TimeSeries<OffsetDateTime>> tsList) {
+        WhereBuilder wb = new WhereBuilder()
+                .addPrefix("ontoems", ontoemsURI)
+                .addPrefix("om", omURI)
+                .addPrefix("rdf", rdfURI);
+
+        wb.addWhere(NodeFactory.createURI(stationIRI), "rdf:type", "ontoems:" + STATION);
+
+        String apiParam;
+        String ontoemsClass;
+        String quantityIRI;
+        String measureIRI;
+
+        List<List<String>> dataIRIs = new ArrayList<>();
+        List<String> dataIRI;
+        List<TimeSeriesClient.Type> tsTypes = new ArrayList<>();
+        List<Duration> durations = new ArrayList<>();
+        List<ChronoUnit> units = new ArrayList<>();
+        List<Double> value;
+
+        for (var entry : api_ontoems.entrySet()) {
+            apiParam = entry.getKey();
+
+            if (parsedData.containsKey(apiParam)) {
+                List<Object> data = parsedData.get(apiParam);
+                ontoemsClass = entry.getValue();
+                quantityIRI = ontoemsURI + ontoemsClass + "Quantity_" + UUID.randomUUID();
+                measureIRI = ontoemsURI + ontoemsClass + "_" + UUID.randomUUID();
+
+                // SPARQL update for weather triples
+                createUpdate(wb, stationIRI, quantityIRI, "ontoems:" + ontoemsClass, measureIRI, (String) data.get(0));
+
+                // store time series information
+                dataIRI = Arrays.asList(measureIRI);
+                dataIRIs.add(dataIRI);
+                value = (List<Double>) data.get(1);
+                tsList.add(new TimeSeries<>(timesList, dataIRI, List.of(value)));
+                tsTypes.add(api_timeseries.get(apiParam));
+                if (api_timeseries.get(apiParam) == TimeSeriesClient.Type.AVERAGE) {
+                    durations.add(Duration.ofHours(1));
+                    units.add(ChronoUnit.HOURS);
+                } else {
+                    durations.add(null);
+                    units.add(null);
+                }
+            }
+        }
+
+        List<List<Class<?>>> dataClass = Collections.nCopies(dataIRIs.size(), Arrays.asList(Double.class));
+        List<String> timeUnit = Collections.nCopies(dataIRIs.size(), OffsetDateTime.class.getSimpleName());
+
+        UpdateBuilder ub = new UpdateBuilder()
+                .addInsert(wb);
+
+        // instantiate weather triples
+        this.updateStore(route, ub.buildRequest().toString());
+
+        // create time series for weather data
+        createTimeSeries(dataIRIs, dataClass, timeUnit, tsTypes, durations, units);
     }
 }
