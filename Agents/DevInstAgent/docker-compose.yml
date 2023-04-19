@@ -1,0 +1,10 @@
+version: "1.0"
+
+services:
+  rfid-update-agent:
+    image: dev-inst-agent:1.0.0
+    build: .
+    container_name: dev-inst-agent
+    pull_policy: if_not_present
+    ports:
+      - "1017:8080"
