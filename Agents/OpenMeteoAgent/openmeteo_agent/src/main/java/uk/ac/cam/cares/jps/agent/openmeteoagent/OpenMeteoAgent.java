@@ -6,6 +6,7 @@ import javax.ws.rs.BadRequestException;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import org.apache.commons.lang.StringUtils;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
@@ -126,8 +127,8 @@ public class OpenMeteoAgent extends JPSAgent {
     public JSONObject processRequestParameters(JSONObject requestParams) {
         if (validateInput(requestParams)) {
             if (requestParams.getString("requestUrl").contains(URI_RUN)) {
-                latitude = requestParams.getDouble(KEY_LAT);
-                longitude = requestParams.getDouble(KEY_LONG);
+                latitude = Double.parseDouble(requestParams.getString(KEY_LAT));
+                longitude = Double.parseDouble(requestParams.getString(KEY_LONG));
                 JSONObject response = getWeatherData(latitude, longitude, requestParams.getString(KEY_START), requestParams.getString(KEY_END));
 
                 String timezone = response.getString(API_TIMEZONE);
@@ -180,8 +181,8 @@ public class OpenMeteoAgent extends JPSAgent {
                 requestParams.append(KEY_STATION, stationIRI);
             }
             else if (requestParams.getString("requestUrl").contains(URI_DELETE)) {
-                latitude = requestParams.getDouble(KEY_LAT);
-                longitude = requestParams.getDouble(KEY_LONG);
+                latitude = Double.parseDouble(requestParams.getString(KEY_LAT));
+                longitude = Double.parseDouble(requestParams.getString(KEY_LONG));
 
                 String stationIRI = getStation(latitude, longitude);
 
@@ -237,7 +238,7 @@ public class OpenMeteoAgent extends JPSAgent {
         try{
             // check latitude and longitude are provided, and are numbers
             validate = !requestParams.get(KEY_LAT).equals(null) && ! requestParams.get(KEY_LONG).equals(null)
-                    && !(requestParams.get(KEY_LAT) instanceof String) && !(requestParams.get(KEY_LONG) instanceof String);
+                    && !StringUtils.isNumeric(requestParams.getString(KEY_LAT)) && !StringUtils.isNumeric(requestParams.getString(KEY_LONG));
 
             if (requestParams.getString("requestUrl").contains(URI_RUN)){
                 validate = !requestParams.getString(KEY_START).isEmpty() && !requestParams.getString(KEY_END).isEmpty()
@@ -250,7 +251,7 @@ public class OpenMeteoAgent extends JPSAgent {
                 Date now = new Date();
 
                 // start date cannot be later than end date, and end date cannot be later than the date at the time of the incoming request
-                validate = validate && start.before(end)
+                validate = validate && !end.before(start)
                         && (end.before(now) || end.equals(now));
             }
         }
