@@ -324,8 +324,9 @@ public class QueryClient {
         return derivations;
     }
 
-       // SPARQL query for weather data instantiated by OpenMeteo agent as a timeseries. Each parameter has a single value.
-       WeatherData getOpenMeteoData(double lat, double lon) {
+       // SPARQL query for weather data instantiated by OpenMeteo agent as a timeseries. Each parameter has multiple values.
+       // The weather data is stored as one timeseries per parameter. Hence, the values for each parameter are in separate postgres tables.
+       WeatherData getOpenMeteoData(String stationIRI) {
         SelectQuery query = Queries.SELECT();
 
         Variable weatherType = query.var();
@@ -334,59 +335,55 @@ public class QueryClient {
         Variable weatherUnit = query.var();
         Variable station = query.var();
 
-        String coordinate = lat + "#" + lon;
 
         // RDF types for weather data
         List<String> weatherTypeList = List.of(CLOUD_COVER, AIR_TEMPERATURE, RELATIVE_HUMIDITY, WIND_SPEED, WIND_DIRECTION);
 
         ValuesPattern<Iri> vp = new ValuesPattern<>(weatherType, weatherTypeList.stream().map(Rdf::iri).collect(Collectors.toList()), Iri.class);
 
-        GraphPattern gp = GraphPatterns.and(station.has(RDF.TYPE,iri(REPORTING_STATION)).andHas(REPORTS, quantity).andHas(OBSERVATION_LOCATION, coordinate),
+        GraphPattern gp = GraphPatterns.and(iri(stationIRI).has(RDF.TYPE,iri(REPORTING_STATION)).andHas(REPORTS, quantity),
         quantity.isA(weatherType).andHas(HAS_VALUE, measure), measure.has(HAS_UNIT, weatherUnit));
 
         query.prefix(P_OM, P_EMS).where(gp,vp);
 
-        Map<String, String> typeToMeasureMap = new HashMap<>();
         JSONArray queryResult = storeClient.executeQuery(query.getQueryString());
+        WeatherData weatherData = new WeatherData();
+
+
         for (int i = 0; i < queryResult.length(); i++) {
             String measureIri = queryResult.getJSONObject(i).getString(measure.getQueryString().substring(1));
             String weatherTypeIri = queryResult.getJSONObject(i).getString(weatherType.getQueryString().substring(1));
-
-            typeToMeasureMap.put(weatherTypeIri, measureIri);
-        }
-
-        TimeSeries<Instant> ts;
-        try (Connection conn = rdbStoreClient.getConnection()) {
-            ts = tsClientInstant.getTimeSeriesWithinBounds(typeToMeasureMap.values().stream().collect(Collectors.toList()), null, null, conn);
-        } catch (SQLException e) {
-            String errmsg = "Failed to obtain time series from weather station instantiated by OpenMeteo Agent.";
-            LOGGER.fatal(errmsg);
-            throw new RuntimeException(errmsg, e);
-        }
-
-        WeatherData weatherData = new WeatherData();
-        weatherTypeList.stream().forEach(type -> {
-            List<Double> value = ts.getValuesAsDouble(typeToMeasureMap.get(type));
-            switch (type) {
+            TimeSeries<Instant> ts;
+            try (Connection conn = rdbStoreClient.getConnection()) {
+                ts = tsClientInstant.getTimeSeriesWithinBounds(Arrays.asList(measureIri), null, null, conn);
+            } catch (SQLException e) {
+                String errmsg = "Failed to obtain time series from weather station instantiated by OpenMeteo Agent.";
+                LOGGER.fatal(errmsg);
+                throw new RuntimeException(errmsg, e);
+            }
+            List<Double> values = ts.getValuesAsDouble(measureIri);
+            switch (weatherTypeIri) {
                 case CLOUD_COVER:
-                    weatherData.setCloudCoverInPercentage(value);
+                    weatherData.setCloudCoverInPercentage(values);
                     break;
                 case AIR_TEMPERATURE:
-                    weatherData.setTemperatureInCelcius(value);
+                    weatherData.setTemperatureInCelcius(values);
                     break;
                 case RELATIVE_HUMIDITY:
-                    weatherData.setHumidityInPercentage(value);
+                    weatherData.setHumidityInPercentage(values);
                     break;
                 case WIND_SPEED:
-                    weatherData.setWindSpeedInMetreSecond(value);
+                    weatherData.setWindSpeedInMetreSecond(values);
                     break;
                 case WIND_DIRECTION:
-                    weatherData.setWindDirectionInDegrees(value);
+                    weatherData.setWindDirectionInDegrees(values);
                     break;
                 default:
-                    LOGGER.error("Unknown weather RDF type: <{}>", type);
+                    LOGGER.info("Unknown weather RDF type: <{}>", weatherTypeIri);
             }
-        });
+
+        }
+
         return weatherData;
     }
 

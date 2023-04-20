@@ -78,7 +78,7 @@ public class Aermod {
 
         List<String> timeStamps = weatherData.timeStamps;
 
-        List<Double> windSpeed = weatherData.getWindSpeedInKnots();
+        List<Long> windSpeed = weatherData.getWindSpeedInKnots();
         List<Long> windDirection = weatherData.getWindDirectionInTensOfDegrees();
         List<Long> temperature = weatherData.getTemperatureInFahrenheit();
         List<Long> humidity = weatherData.getHumidityAsPercentage();
@@ -99,10 +99,13 @@ public class Aermod {
         for (int i = 0; i < timeStamps.size(); i++) {
 
             LocalDateTime ldt = LocalDateTime.parse(timeStamps.get(i),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-            String dateTime = String.valueOf(ldt.getYear()).substring(2) + ldt.getMonthValue() + ldt.getDayOfMonth() + ldt.getHour();
+            String dateTime = String.valueOf(ldt.getYear()).substring(2) + 
+            addLeadingZero(String.valueOf(ldt.getMonthValue()),2) + 
+            addLeadingZero(String.valueOf(ldt.getDayOfMonth()),2) + 
+            addLeadingZero(String.valueOf(ldt.getHour()),2);
 
             if (dateTime.length() != 8) {
-                throw new JPSRuntimeException("dateTime is not in a format compatible with CD_144. " + dateTime);
+                throw new JPSRuntimeException("dateTime is not in a format compatible with CD-144. " + dateTime);
             }
 
 

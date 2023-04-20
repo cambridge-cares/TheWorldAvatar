@@ -43,9 +43,9 @@ public class WeatherData {
         List<Long> res = temperature.stream().map(x -> Math.round((x * 1.8) + 32)).collect(Collectors.toList());
         return res;
     }    
-    public List<Double> getWindSpeedInKnots() {
+    public List<Long> getWindSpeedInKnots() {
         // Conversion factor obtained from Google
-        return windSpeed.stream().map(x -> x * 1.943844).collect(Collectors.toList());
+        return windSpeed.stream().map(x -> Math.round(x * 1.943844)).collect(Collectors.toList());
     }
     public List<Long> getHumidityAsPercentage() {
         return humidity.stream().map(x -> Math.round(x)).collect(Collectors.toList());

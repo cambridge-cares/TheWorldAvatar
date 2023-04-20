@@ -134,11 +134,11 @@ public class AermodAgent extends DerivationAgent {
         String StartTS = bpi.timeStamps.get(0);
         String EndTS = bpi.timeStamps.get(bpi.timeStamps.size()-1);
         LocalDateTime ldt = LocalDateTime.parse(StartTS,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String StartDate = ldt.getYear() + "-" + ldt.getMonthValue() + "-" + ldt.getDayOfMonth();
+        String StartDate = ldt.getYear() + "-" + getDayMonthAsTwoDigitString(ldt.getMonthValue()) + "-" + getDayMonthAsTwoDigitString(ldt.getDayOfMonth());
         ldt = LocalDateTime.parse(EndTS,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        String EndDate = ldt.getYear() + "-" + ldt.getMonthValue() + "-" + ldt.getDayOfMonth();
-        updateOpenMeteoStation(lat, lon, StartDate, EndDate);
-        WeatherData weatherData = queryClient.getOpenMeteoData(lat, lon);
+        String EndDate = ldt.getYear() + "-" + getDayMonthAsTwoDigitString(ldt.getMonthValue()) + "-" + getDayMonthAsTwoDigitString(ldt.getDayOfMonth());
+        String stationIRI = updateOpenMeteoStation(lat, lon, StartDate, EndDate);
+        WeatherData weatherData = queryClient.getOpenMeteoData(stationIRI);
         deleteOpenMeteoStation(scope);
 
         weatherData.timeStamps = bpi.timeStamps;
@@ -292,14 +292,16 @@ public class AermodAgent extends DerivationAgent {
      * Send PUT request to OpenMeteo Agent to create a weather station and instantiate the weather data at one hour intervals
      * between the start and end dates. 
      * @param polygon
-     * @return
+     * @return stationIRI 
      */
-    void updateOpenMeteoStation(double lat, double lon, String StartDate, String EndDate) {
+    String updateOpenMeteoStation(double lat, double lon, String StartDate, String EndDate) {
+
+        String stationIRI = null;
         
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             URIBuilder builder = new URIBuilder(EnvConfig.OPENMETEO_AGENT_RUN);
-            builder.addParameter("lon",String.valueOf(lon));
-            builder.addParameter("lat",String.valueOf(lat));
+            builder.addParameter("longitude",String.valueOf(lon));
+            builder.addParameter("latitude",String.valueOf(lat));
             builder.addParameter("start_date", StartDate);
             builder.addParameter("end_date", EndDate);
             HttpPut httpPut = new HttpPut(builder.build());
@@ -309,6 +311,10 @@ public class AermodAgent extends DerivationAgent {
                 LOGGER.fatal("Status code = {}", response.getStatusLine().getStatusCode());
             }
 
+            JSONTokener tokener = new JSONTokener(response.getEntity().getContent());
+            JSONObject json = new JSONObject(tokener);
+            stationIRI = json.getString("station");
+
         } catch (URISyntaxException e) {
             LOGGER.error("Failed to build URI for OpenMeteo agent post request");
             LOGGER.error(e.getMessage());
@@ -317,6 +323,14 @@ public class AermodAgent extends DerivationAgent {
             LOGGER.error(e.getMessage());
         }
 
+        return stationIRI;
+
+    }
+
+    private String getDayMonthAsTwoDigitString(int day) {
+        String dayString = String.valueOf(day);
+        if (day < 10) dayString = "0" + dayString;
+        return dayString ;
     }
 
       /**
@@ -331,8 +345,8 @@ public class AermodAgent extends DerivationAgent {
         
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             URIBuilder builder = new URIBuilder(EnvConfig.OPENMETEO_AGENT_DELETE);
-            builder.addParameter("lon",String.valueOf(lon));
-            builder.addParameter("lat",String.valueOf(lat));
+            builder.addParameter("longitude",String.valueOf(lon));
+            builder.addParameter("latitude",String.valueOf(lat));
             HttpPut httpPut = new HttpPut(builder.build());
 
             CloseableHttpResponse response = httpClient.execute(httpPut);

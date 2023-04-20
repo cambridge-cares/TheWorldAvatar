@@ -122,10 +122,14 @@ public class OpenMeteoAgent extends JPSAgent {
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
+
+        JSONObject responseParams = new JSONObject();
+
+
         if (validateInput(requestParams)) {
             if (requestParams.getString("requestUrl").contains(URI_RUN)) {
-                latitude = requestParams.getDouble(KEY_LAT);
-                longitude = requestParams.getDouble(KEY_LONG);
+                latitude = Double.parseDouble(requestParams.getString(KEY_LAT));
+                longitude =  Double.parseDouble(requestParams.getString(KEY_LONG));
                 JSONObject response = getWeatherData(latitude, longitude, requestParams.getString(KEY_START), requestParams.getString(KEY_END));
 
                 String timezone = response.getString(API_TIMEZONE);
@@ -139,6 +143,8 @@ public class OpenMeteoAgent extends JPSAgent {
                 Map<String, List<Object>> parsedData = parseWeatherData(weatherData, weatherUnit);
 
                 String stationIRI = createStation(latitude, longitude, elevation);
+
+                responseParams.put("station", stationIRI);
 
                 WhereBuilder wb = new WhereBuilder()
                         .addPrefix("ontoems", ontoemsURI)
@@ -190,7 +196,7 @@ public class OpenMeteoAgent extends JPSAgent {
                 UpdateBuilder ub = new UpdateBuilder()
                         .addInsert(wb);
 
-                this.updateStore(route, ub.buildRequest().toString());
+                storeClient.executeUpdate( ub.buildRequest().toString());
 
                 createTimeSeries(dataIRIs, dataClass, timeUnit, tsTypes, durations, units);
 
@@ -207,6 +213,8 @@ public class OpenMeteoAgent extends JPSAgent {
 
                 String stationIRI = getStation(latitude, longitude);
 
+                responseParams.put("station",stationIRI);
+
                 WhereBuilder wb = new WhereBuilder()
                         .addPrefix("ontoems", ontoemsURI)
                         .addPrefix("ontotimeseries", ontotimeseriesURI)
@@ -220,7 +228,7 @@ public class OpenMeteoAgent extends JPSAgent {
                         .addVar("measure")
                         .addWhere(wb);
 
-                JSONArray queryResults = this.queryStore(route, sb.build().toString());
+                JSONArray queryResults = storeClient.executeQuery( sb.build().toString());
 
                 tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
 
@@ -239,13 +247,15 @@ public class OpenMeteoAgent extends JPSAgent {
                 deleteIRI(stationIRI);
             }
         }
-        return requestParams;
+        return responseParams;
     }
 
     /**
      * Gets variables from config.properties
      */
     private void readConfig() {
+
+        EndpointConfig endpointConfig = new EndpointConfig(); 
         ResourceBundle config = ResourceBundle.getBundle("config");
         ontoemsURI = config.getString("uri.ontology.ontoems");
         ontotimeseriesURI = config.getString("uri.ontology.ontotimeseries");
@@ -253,7 +263,7 @@ public class OpenMeteoAgent extends JPSAgent {
         rdfURI = config.getString("uri.ontology.rdf");
         geospatialLiterals = config.getString("uri.geospatial.literals");
         route = config.getString("route.uri");
-        rdbStoreClient = new RemoteRDBStoreClient(config.getString("db.url"), config.getString("db.user"), config.getString("db.password"));
+        rdbStoreClient = new RemoteRDBStoreClient(endpointConfig.getDburl(), endpointConfig.getDbuser(), endpointConfig.getDbpassword());
     }
 
     /**
@@ -267,8 +277,7 @@ public class OpenMeteoAgent extends JPSAgent {
 
         try{
             // check latitude and longitude are provided, and are numbers
-            validate = !requestParams.get(KEY_LAT).equals(null) && ! requestParams.get(KEY_LONG).equals(null)
-                    && !(requestParams.get(KEY_LAT) instanceof String) && !(requestParams.get(KEY_LONG) instanceof String);
+            validate = !requestParams.get(KEY_LAT).equals(null) && ! requestParams.get(KEY_LONG).equals(null);
 
             if (requestParams.getString("requestUrl").contains(URI_RUN)){
                 validate = !requestParams.getString(KEY_START).isEmpty() && !requestParams.getString(KEY_END).isEmpty()
@@ -281,7 +290,7 @@ public class OpenMeteoAgent extends JPSAgent {
                 Date now = new Date();
 
                 // start date cannot be later than end date, and end date cannot be later than the date at the time of the incoming request
-                validate = validate && start.before(end)
+                validate = validate && !end.before(start)
                         && (end.before(now) || end.equals(now));
             }
         }
@@ -425,7 +434,7 @@ public class OpenMeteoAgent extends JPSAgent {
         String queryString = ub.buildRequest().toString().replace("placeHolder", "#");
         queryString = queryString.replace(lon + "\"", lon + "\"^^<" + geospatialLiterals + ">");
 
-        this.updateStore(route, queryString);
+        storeClient.executeUpdate(queryString);
 
         return stationIRI;
     }
@@ -482,7 +491,7 @@ public class OpenMeteoAgent extends JPSAgent {
         String queryString = sb.build().toString().replace("placeHolder", "#");
         queryString = queryString.replace(lon + "\"", lon + "\"^^<" + geospatialLiterals + ">");
 
-        JSONArray queryResult = this.queryStore(route, queryString);
+        JSONArray queryResult = storeClient.executeQuery(queryString);
 
         if (queryResult.isEmpty()){
             throw new JPSRuntimeException("No reporting station found at the given coordinate.");
@@ -506,8 +515,8 @@ public class OpenMeteoAgent extends JPSAgent {
         db.addDeleteQuads(db.buildDeleteWhere().getQuads());
         db1.addDeleteQuads(db1.buildDeleteWhere().getQuads());
 
-        this.updateStore(route, db.buildRequest().toString());
-        this.updateStore(route, db1.buildRequest().toString());
+        storeClient.executeUpdate(db.buildRequest().toString());
+        storeClient.executeUpdate(db1.buildRequest().toString());
     }
 
     /**
@@ -553,17 +562,19 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param route access agent route
      */
     private void setStoreClient(String route) {
-        JSONObject queryResult = this.getEndpoints(route);
+        // JSONObject queryResult = this.getEndpoints(route);
 
-        String queryEndpoint = queryResult.getString(JPSConstants.QUERY_ENDPOINT);
-        String updateEndpoint = queryResult.getString(JPSConstants.UPDATE_ENDPOINT);
+        // String queryEndpoint = queryResult.getString(JPSConstants.QUERY_ENDPOINT);
+        // String updateEndpoint = queryResult.getString(JPSConstants.UPDATE_ENDPOINT);
 
-        if (!isDockerized()){
-            queryEndpoint = queryEndpoint.replace("host.docker.internal", "localhost");
-            updateEndpoint = updateEndpoint.replace("host.docker.internal", "localhost");
-        }
+        // if (!isDockerized()){
+        //     queryEndpoint = queryEndpoint.replace("host.docker.internal", "localhost");
+        //     updateEndpoint = updateEndpoint.replace("host.docker.internal", "localhost");
+        // }
 
-        storeClient = new RemoteStoreClient(queryEndpoint, updateEndpoint);
+        EndpointConfig endpointConfig = new EndpointConfig(); 
+
+        storeClient = new RemoteStoreClient(endpointConfig.getKgurl(), endpointConfig.getKgurl());
     }
 
     /**

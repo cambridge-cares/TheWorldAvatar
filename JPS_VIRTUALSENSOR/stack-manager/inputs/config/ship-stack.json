@@ -6,7 +6,7 @@
 			"ship-input-agent",
 			"dispersion-interactor",
 			"dispersion-vis",
-			"aermod-agent",
+			"aermod-agent-debug",
 			"python-service",
 			"emissions-agent",
 			"openmeteo-agent"
