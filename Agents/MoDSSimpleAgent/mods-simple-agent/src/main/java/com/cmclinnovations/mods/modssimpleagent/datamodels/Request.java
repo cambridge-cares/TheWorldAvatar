@@ -3,6 +3,7 @@ package com.cmclinnovations.mods.modssimpleagent.datamodels;
 import java.util.List;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -75,6 +76,7 @@ public class Request {
         return getAlgorithms().stream().filter(alg -> alg.getType().equals(algType)).findFirst().orElseThrow();
     }
 
+    @JsonIgnore
     public String getSurrogateToLoad() {
         return getAlgorithms().stream().map(Algorithm::getSurrogateToLoad).filter(Objects::nonNull).findFirst()
                 .orElse(null);
