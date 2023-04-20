@@ -16,7 +16,6 @@ A successful setup will result in 9 containers:
 
 ## 1.1 Config BMSQueryAgent in Stack
 ### 1) Build Docker Image
-[comment]: # (TODO: the image is supposed to be pushed to the registry)
 The AndroidStatusAgent is set up to use the Maven repository. You'll need to provide your credentials in single-word text files located like this:
 ```
 ./credentials/
