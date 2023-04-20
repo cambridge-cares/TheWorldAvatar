@@ -1,14 +1,12 @@
 package uk.ac.cam.cares.jps.agent.bmsquery;
 
 import org.apache.commons.collections.map.HashedMap;
+import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -18,31 +16,21 @@ public class BMSQueryAgentLauncherTest {
     BMSQueryAgentLauncher launcher;
 
     @Before
-    public void setup() throws IOException {
+    public void setup() {
         launcher = new BMSQueryAgentLauncher();
     }
 
     @Test
-    public void testDoGet_Status() throws IOException {
+    public void testProcessRequestParameters_Status() {
         HttpServletRequest request = mock(HttpServletRequest.class);
-        HttpServletResponse response = mock(HttpServletResponse.class);
-
         when(request.getRequestURI()).thenReturn("http://localhost:3838/bms-query-agent/status");
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = new PrintWriter(stringWriter);
-        when(response.getWriter()).thenReturn(writer);
 
-
-        launcher.doGet(request, response);
-        writer.flush();
-        assertEquals("{\"description\":\"BMSQueryAgent is ready.\"}" , stringWriter.toString());
-
+        JSONObject result = launcher.processRequestParameters(new JSONObject(), request);
+        assertEquals("BMSQueryAgent is ready." , result.getString("description"));
     }
 
-
-
     @Test
-    public void testValidateInput_ValidParameters() throws Exception {
+    public void testValidateInput_ValidParameters() {
         HttpServletRequest request = mock(HttpServletRequest.class);
 
         HashedMap paramMap = new HashedMap() ;

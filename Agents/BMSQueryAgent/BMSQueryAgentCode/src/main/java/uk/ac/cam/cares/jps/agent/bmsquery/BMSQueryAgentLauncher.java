@@ -3,7 +3,6 @@ package uk.ac.cam.cares.jps.agent.bmsquery;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
-import org.springframework.stereotype.Controller;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
@@ -11,10 +10,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.BadRequestException;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -52,24 +47,12 @@ public class BMSQueryAgentLauncher extends JPSAgent {
 
     /**
      * Handle GET request and route to different functions based on the path.
-     *
-     * @param request   an {@link HttpServletRequest} object that
-     *                  contains the request the client has made
-     *                  of the servlet
-     *
-     * @param response  an {@link HttpServletResponse} object that
-     *                  contains the response the servlet sends
-     *                  to the client
-     *
-     * @throws IOException
+     * @param requestParams Parameters sent with HTTP request
+     * @param request HTTPServletRequest instance
+     * @return result of the request
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/json");
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "GET,PUT,OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Origin, Content-Type, Accept, Accept-Language, Origin, User-Agent");
-
+    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
         String datetime = dateFormat.format(new Date());
         LOGGER.info("Request received at: {}", datetime);
@@ -78,8 +61,7 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         if (url.contains("?")) url = url.split(Pattern.quote("?"))[0];
 
         if (url.contains("status")) {
-            getStatus(response);
-            return;
+            return getStatus();
         }
 
         if (url.contains("retrieve")) {
@@ -90,8 +72,7 @@ public class BMSQueryAgentLauncher extends JPSAgent {
                 JSONObject queryResult = agent.queryAllZones();
 
                 LOGGER.info("query for zones is completed");
-                response.setStatus(HttpServletResponse.SC_OK);
-                response.getWriter().write(queryResult.toString());
+                return queryResult;
             } else if (url.contains("equipment")) {
                 // handle the case "retrieve/equipment", return the list of equipments in a given room
 
@@ -105,10 +86,8 @@ public class BMSQueryAgentLauncher extends JPSAgent {
                 JSONObject queryResult = agent.queryEquipmentInstances(roomIRI);
 
                 LOGGER.info("query for equipment in " + roomIRI + " is completed");
-                response.setStatus(HttpServletResponse.SC_OK);
-                response.getWriter().write(queryResult.toString());
+                return queryResult;
             }
-            return;
         }
 
         throw new JPSRuntimeException("Route: " + url + " does not exist");
@@ -172,14 +151,13 @@ public class BMSQueryAgentLauncher extends JPSAgent {
 
     /**
      * Handle GET /status route and return the status of the agent.
-     * @param response Http response
-     * @throws IOException
+     * @return Status of the agent
      */
-    private void getStatus(HttpServletResponse response) throws IOException {
+    private JSONObject getStatus() {
         LOGGER.info("Detected request to get agent status...");
-
-        response.setStatus(Response.Status.OK.getStatusCode());
-        response.getWriter().write("{\"description\":\"BMSQueryAgent is ready.\"}");
+        JSONObject result = new JSONObject();
+        result.put("description", "BMSQueryAgent is ready.");
+        return result;
     }
 
 }
