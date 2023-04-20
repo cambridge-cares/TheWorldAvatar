@@ -28,7 +28,7 @@ public class MCDM extends Simulation {
     }
 
     @Override
-    public Request getResults() {
+    public Request getResponse() {
         return getMCDMResults();
     }
 }

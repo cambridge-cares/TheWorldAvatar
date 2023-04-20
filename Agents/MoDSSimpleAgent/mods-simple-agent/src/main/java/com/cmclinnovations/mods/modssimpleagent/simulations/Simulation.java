@@ -420,6 +420,10 @@ public class Simulation {
     }
 
     public Request getResponse() {
+        return getDefaultResponse();
+    }
+
+    public Request getDefaultResponse() {
         return new Request(getJobID(), request.getSimulationType());
     }
 
@@ -537,7 +541,7 @@ public class Simulation {
                 Streams.zip(allVarNames.stream(), points.stream(), DataColumn::new)
                         .collect(Collectors.toList()));
 
-        Request results = getResponse();
+        Request results = getDefaultResponse();
         results.setOutputs(values);
 
         return results;
