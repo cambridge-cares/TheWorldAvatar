@@ -365,33 +365,27 @@ public class Simulation {
     }
 
     public static void load(Request request, MoDSBackend modsBackend) {
-        for (Algorithm algorithm : request.getAlgorithms()) {
-            if (algorithm.getSurrogateToLoad() != null) {
-                try {
-                    Path surrogateDirectory = getSurrogateDirectory(modsBackend);
-                    Path loadDirectory = getLoadDirectory(algorithm);
+        if (request.getSurrogateToLoad() != null) {
+            try {
+                Path surrogateDirectory = getSurrogateDirectory(modsBackend);
+                Path loadDirectory = SURROGATE_SAVE_DIRECTORY_PATH.resolve(request.getSurrogateToLoad())
+                        .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
 
-                    if (!Files.exists(loadDirectory)) {
-                        throw new IOException(
-                                "File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
-                    }
-
-                    copyDirectory(loadDirectory, surrogateDirectory);
-
-                    LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
-                            surrogateDirectory.toAbsolutePath());
-
-                } catch (IOException ex) {
-                    throw new ResponseStatusException(HttpStatus.NO_CONTENT,
-                            "Job '" + modsBackend.getJobID() + "' failed to load.", ex);
+                if (!Files.exists(loadDirectory)) {
+                    throw new IOException(
+                            "File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
                 }
+
+                copyDirectory(loadDirectory, surrogateDirectory);
+
+                LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
+                        surrogateDirectory.toAbsolutePath());
+
+            } catch (IOException ex) {
+                throw new ResponseStatusException(HttpStatus.NO_CONTENT,
+                        "Job '" + modsBackend.getJobID() + "' failed to load.", ex);
             }
         }
-    }
-
-    private static Path getLoadDirectory(Algorithm algorithm) {
-        return SURROGATE_SAVE_DIRECTORY_PATH.resolve(algorithm.getSurrogateToLoad())
-                .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
 
     }
 

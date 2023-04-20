@@ -38,15 +38,7 @@ public class InputMetaData {
         List<Double> means = new ArrayList<>();
         List<String> scaling = new ArrayList<>();
 
-        Algorithm algorithm;
-
-        try {
-            algorithm = request.getAlgorithmOfType("GenSurrogateAlg");
-        } catch (NoSuchElementException ex) {
-            throw new IOException("No algorithm of type GenSurrogateAlg provided.", ex);
-        }
-
-        if (algorithm.getSurrogateToLoad() != null) {
+        if (request.getSurrogateToLoad() != null) {
             Path path = Simulation.getSurrogateDirectory(modsBackend).resolve(DEFAULT_INPUT_INFO_FILE_NAME);
 
             if (!Files.exists(path)) {

@@ -73,4 +73,9 @@ public class Request {
     public Algorithm getAlgorithmOfType(String algType) {
         return getAlgorithms().stream().filter(alg -> alg.getType().equals(algType)).findFirst().orElseThrow();
     }
+
+    public String getSurrogateToLoad() {
+        return getAlgorithms().stream().map(Algorithm::getSurrogateToLoad).filter(surr -> surr != null).findFirst()
+                .orElse(null);
+    }
 }
