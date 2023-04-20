@@ -47,10 +47,12 @@ public class OpenMeteoAgent extends JPSAgent {
     public static final String URI_RUN = "/run";
     public static final String URI_DELETE = "/delete";
 
-    private static final String KEY_LAT = "latitude";
-    private static final String KEY_LONG = "longitude";
-    private static final String KEY_START = "start_date";
-    private static final String KEY_END = "end_date";
+    public static final String KEY_LAT = "latitude";
+    public static final String KEY_LONG = "longitude";
+    public static final String KEY_START = "start_date";
+    public static final String KEY_END = "end_date";
+
+    public static final String KEY_STATION = "stationIRI";
 
     private static final String API_URL = "https://archive-api.open-meteo.com/v1/archive";
     private static final String API_HOURLY = "hourly";
@@ -174,6 +176,8 @@ public class OpenMeteoAgent extends JPSAgent {
                     e.printStackTrace();
                     throw new JPSRuntimeException(e);
                 }
+
+                requestParams.append(KEY_STATION, stationIRI);
             }
             else if (requestParams.getString("requestUrl").contains(URI_DELETE)) {
                 latitude = requestParams.getDouble(KEY_LAT);
