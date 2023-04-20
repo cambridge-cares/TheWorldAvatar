@@ -98,15 +98,15 @@ public class OpenMeteoAgent extends JPSAgent {
     private static final String OM_WM = "om:wattPerSquareMetre";
     private List<String> API_PARAMETERS = Arrays.asList(API_PARAMETER_TEMP, API_PARAMETER_HUMIDITY, API_PARAMETER_DEWPOINT, API_PARAMETER_PRESSURE, API_PARAMETER_RAIN, API_PARAMETER_SNOW, API_PARAMETER_CLOUD, API_PARAMETER_DNI, API_PARAMETER_DHI, API_PARAMETER_WINDSPEED, API_PARAMETER_WINDDIRECTION);
     private List<String> ontoems_conecpts = Arrays.asList(ONTOEMS_TEMP, ONTOEMS_HUMIDITY, ONTOEMS_DEWPOINT, ONTOEMS_PRESSURE, ONTOEMS_RAIN, ONTOEMS_SNOW, ONTOEMS_CLOUD, ONTOEMS_DNI, ONTOEMS_DHI, ONTOEMS_WINDSPEED, ONTOEMS_WINDDIRECTION);
-    private Map<String, String> api_ontoems = IntStream.range(0, API_PARAMETERS.size()).boxed()
-            .collect(Collectors.toMap(API_PARAMETERS::get, ontoems_conecpts::get));
+    private Map<String, String> ontoems_api = IntStream.range(0, API_PARAMETERS.size()).boxed()
+            .collect(Collectors.toMap(ontoems_conecpts::get, API_PARAMETERS::get));
     private Map<String, TimeSeriesClient.Type> api_timeseries = new HashMap<>();
     private Double latitude;
     private Double longitude;
     private Double elevation;
     private RemoteRDBStoreClient rdbStoreClient;
     private RemoteStoreClient storeClient;
-    private TimeSeriesClient tsClient;
+    private TimeSeriesClient<OffsetDateTime> tsClient;
     private String route;
 
     public OpenMeteoAgent() {
@@ -142,9 +142,30 @@ public class OpenMeteoAgent extends JPSAgent {
 
                 List<TimeSeries<OffsetDateTime>> tsList = new ArrayList<>();
 
+                tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
+
                 if (stationIRI.isEmpty()) {
                     stationIRI = createStation(latitude, longitude, elevation);
                     instantiateWeather(stationIRI, parsedData, timesList, tsList);
+                }
+                else {
+                    JSONArray queryResults = getWeatherIRI(stationIRI);
+                    try (Connection conn = rdbStoreClient.getConnection()) {
+                        for (int i = 0; i < queryResults.length(); i++) {
+                            // delete old time series history
+                            OffsetDateTime min = tsClient.getMinTime(queryResults.getJSONObject(i).getString("measure"), conn);
+                            OffsetDateTime max = tsClient.getMaxTime(queryResults.getJSONObject(i).getString("measure"), conn);
+                            tsClient.deleteTimeSeriesHistory(queryResults.getJSONObject(i).getString("measure"), min, max, conn);
+
+                            // new time series
+                            List<String> dataIRI = Arrays.asList(queryResults.getJSONObject(i).getString("measure"));
+                            String apiParam = ontoems_api.get(queryResults.getJSONObject(i).getString("weatherParameter").split(ontoemsURI)[1]);
+                            tsList.add(new TimeSeries<>(timesList, dataIRI, List.of((List<Double>) parsedData.get(apiParam).get(1))));
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        throw new JPSRuntimeException(e);
+                    }
                 }
 
                 try (Connection conn = rdbStoreClient.getConnection()) {
@@ -592,12 +613,12 @@ public class OpenMeteoAgent extends JPSAgent {
         List<ChronoUnit> units = new ArrayList<>();
         List<Double> value;
 
-        for (var entry : api_ontoems.entrySet()) {
-            apiParam = entry.getKey();
+        for (var entry : ontoems_api.entrySet()) {
+            apiParam = entry.getValue();
 
             if (parsedData.containsKey(apiParam)) {
                 List<Object> data = parsedData.get(apiParam);
-                ontoemsClass = entry.getValue();
+                ontoemsClass = entry.getKey();
                 quantityIRI = ontoemsURI + ontoemsClass + "Quantity_" + UUID.randomUUID();
                 measureIRI = ontoemsURI + ontoemsClass + "_" + UUID.randomUUID();
 
