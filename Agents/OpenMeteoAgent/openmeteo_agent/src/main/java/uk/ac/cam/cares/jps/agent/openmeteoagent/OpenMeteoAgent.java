@@ -325,7 +325,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param weatherUnit JSONObject containing the units of the weather data retrieved by the API
      * @return a Map object with the key being the API weather parameters, and the values being the corresponding units ontology and the corresponding data parsed to a list
      */
-    public  Map<String, List<Object>> parseWeatherData(JSONObject weatherData, JSONObject weatherUnit) {
+    private  Map<String, List<Object>> parseWeatherData(JSONObject weatherData, JSONObject weatherUnit) {
         Map<String, List<Object>> data = new HashMap<>();
         List<Object> temp;
         JSONArray tempJSONArray;
@@ -375,7 +375,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param ele observation elevation of OntoEMS:ReportingStation instance
      * @return OntoEMS:ReportingStation instance IRI
      */
-    public String createStation(Double lat, Double lon, Double ele) {
+    private String createStation(Double lat, Double lon, Double ele) {
         String stationIRI = ontoemsURI + STATION + "_" + UUID.randomUUID();
 
         String coordinate = lat + "placeHolder" + lon;
@@ -408,7 +408,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param measure measure IRI
      * @param unit unit of quantity
      */
-    public void createUpdate(WhereBuilder builder, String station, String quantity, String type, String measure, String unit) {
+    private void createUpdate(WhereBuilder builder, String station, String quantity, String type, String measure, String unit) {
         builder.addWhere(NodeFactory.createURI(station),  "ontoems:reports", NodeFactory.createURI(quantity))
                 .addWhere(NodeFactory.createURI(quantity), "rdf:type", type)
                 .addWhere(NodeFactory.createURI(quantity), "om:hasValue", NodeFactory.createURI(measure))
@@ -421,7 +421,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param builder where builder
      * @param station reporting station IRI
      */
-    public void addWeatherWhere(WhereBuilder builder, String station) {
+    private void addWeatherWhere(WhereBuilder builder, String station) {
         builder.addWhere(NodeFactory.createURI(station), "ontoems:reports", "?quantity")
                 .addWhere("?quantity", "rdf:type", "?weatherParameter")
                 .addWhere("?quantity", "om:hasValue", "?measure")
@@ -434,7 +434,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param lon longitude of the reporting station
      * @return reporting station IRI at the given coordinate if it exists
      */
-    public String getStation(Double lat, Double lon) {
+    private String getStation(Double lat, Double lon) {
         String coordinate = lat + "placeHolder" + lon;
 
         WhereBuilder wb = new WhereBuilder()
@@ -467,7 +467,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param stationIRI IRI of weather station
      * @return query result for quantity IRI, quantity type, measure IRI, and time series IRI related to stationIRI
      */
-    public JSONArray getWeatherIRI(String stationIRI) {
+    private JSONArray getWeatherIRI(String stationIRI) {
         WhereBuilder wb = new WhereBuilder()
                 .addPrefix("ontoems", ontoemsURI)
                 .addPrefix("ontotimeseries", ontotimeseriesURI)
@@ -490,7 +490,7 @@ public class OpenMeteoAgent extends JPSAgent {
      * Deletes all triples related to the given IRI
      * @param iri IRI to delete
      */
-    public void deleteIRI(String iri){
+    private void deleteIRI(String iri){
         UpdateBuilder db = new UpdateBuilder()
                 .addWhere(NodeFactory.createURI(iri), "?p", "?o");
 
@@ -514,8 +514,6 @@ public class OpenMeteoAgent extends JPSAgent {
      * @param units temporal unit of the averaging period for time series of TimeSeriesClient.Type.AVERAGE
      */
     private void createTimeSeries(List<List<String>> dataIRI, List<List<Class<?>>> dataClass, List<String> timeUnit, List<TimeSeriesClient.Type> type, List<Duration> durations, List<ChronoUnit> units) {
-        tsClient = new TimeSeriesClient<>(storeClient, OffsetDateTime.class);
-
         try(Connection conn = rdbStoreClient.getConnection()){
             tsClient.bulkInitTimeSeries(dataIRI, dataClass, timeUnit, conn, type, durations, units);
         }
