@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobim/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">11 April 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">20 April 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Building Information Modelling ontology (OntoBIM) is an ontology developed to represent the detailed information and spatial relationships of buildings and their components (walls, doors, roofs, furniture, equipment) that is available in the Industry Foundation Classes (IFC) data schema. Information about their individual characteristics such as material, readings, and dimensions is combined from IFC or other data sources.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.2</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -29,83 +29,10 @@
     
 
 
-    <!-- https://w3id.org/bot#adjacentZone -->
-
-
-    <owl:ObjectProperty rdf:about="https://w3id.org/bot#adjacentZone">
-        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
-        <rdfs:range rdf:resource="https://w3id.org/bot#Zone"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relationship between two zones that share a common interface, but do not intersect.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">adjacent zone</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://w3id.org/bot#containsZone -->
 
 
-    <owl:ObjectProperty rdf:about="https://w3id.org/bot#containsZone">
-        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
-        <rdfs:range rdf:resource="https://w3id.org/bot#Zone"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relationship to the subzones of a major zone. A space zone could for instance be contained in a storey zone which is further contained in a building zone. bot:containsZone is a transitive property. This implies that in the previous example a bot:containsZone relationship holds between the space zone and the building zone.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">contains zone</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://w3id.org/bot#hasBuilding -->
-
-
-    <owl:ObjectProperty rdf:about="https://w3id.org/bot#hasBuilding">
-        <rdfs:subPropertyOf rdf:resource="https://w3id.org/bot#containsZone"/>
-        <rdfs:domain rdf:resource="https://w3id.org/bot#Site"/>
-        <rdfs:range rdf:resource="https://w3id.org/bot#Building"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relation to buildings contained in a zone. The typical domains of bot:hasBuilding are instances of bot:Site.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has building</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://w3id.org/bot#hasElement -->
-
-
-    <owl:ObjectProperty rdf:about="https://w3id.org/bot#hasElement">
-        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
-        <rdfs:range rdf:resource="https://w3id.org/bot#Element"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Links a Zone to an Element that is either contained in, adjacent to or intersecting with the Zone. The intended use of this relationship is not to be stated explicitly, but to be inferred from its sub-properties. It will, for example, allow one to query for all the doors of a building given that they have an adjacency to spaces of the building.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has element</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://w3id.org/bot#hasStorey -->
-
-
-    <owl:ObjectProperty rdf:about="https://w3id.org/bot#hasStorey">
-        <rdfs:subPropertyOf rdf:resource="https://w3id.org/bot#containsZone"/>
-        <rdfs:domain rdf:resource="https://w3id.org/bot#Building"/>
-        <rdfs:range rdf:resource="https://w3id.org/bot#Storey"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relation to storeys contained in a zone. The typical domains of bot:hasStorey are instances of bot:Building.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has storey</rdfs:label>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://w3id.org/bot#intersectsZone -->
-
-
-    <owl:ObjectProperty rdf:about="https://w3id.org/bot#intersectsZone">
-        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
-        <rdfs:range rdf:resource="https://w3id.org/bot#Zone"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Relationship between two zones whose 3D extent intersect. For example, a stairwell intersects different storeys.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">intersects zone</rdfs:label>
-    </owl:ObjectProperty>
+    <owl:ObjectProperty rdf:about="https://w3id.org/bot#containsZone"/>
     
 
 
@@ -1196,28 +1123,14 @@
     <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#AREA -->
 
 
-    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#AREA">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#IfcBooleanOperator -->
-
-
-    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#IfcBooleanOperator">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ifc Boolean Operator</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#AREA"/>
     
 
 
     <!-- https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#IfcGeometricProjectionEnum -->
 
 
-    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#IfcGeometricProjectionEnum">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL</rdfs:isDefinedBy>
-    </owl:Class>
+    <owl:Class rdf:about="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#IfcGeometricProjectionEnum"/>
     
 
 
@@ -1226,15 +1139,12 @@
 
     <owl:Class rdf:about="https://w3id.org/bot#Building">
         <owl:equivalentClass rdf:resource="https://www.purl.org/oema/infrastructure/Building"/>
-        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Zone"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation"/>
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontobim/IfcBuildingRepresentation"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Building</rdfs:label>
     </owl:Class>
     
 
@@ -1249,8 +1159,6 @@
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontobim/IfcModelRepresentation"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Element</rdfs:label>
     </owl:Class>
     
 
@@ -1259,15 +1167,12 @@
 
 
     <owl:Class rdf:about="https://w3id.org/bot#Site">
-        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Zone"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation"/>
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontobim/IfcSiteRepresentation"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Site</rdfs:label>
     </owl:Class>
     
 
@@ -1276,15 +1181,12 @@
 
 
     <owl:Class rdf:about="https://w3id.org/bot#Storey">
-        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Zone"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation"/>
                 <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontobim/IfcStoreyRepresentation"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Storey</rdfs:label>
     </owl:Class>
     
 
@@ -1292,10 +1194,7 @@
     <!-- https://w3id.org/bot#Zone -->
 
 
-    <owl:Class rdf:about="https://w3id.org/bot#Zone">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://w3id.org/bot#</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Zone</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="https://w3id.org/bot#Zone"/>
     
 
 
@@ -1322,57 +1221,10 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/BuildingStructureComponent -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/BuildingStructureComponent">
-        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobuildingstructure</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Building Structure Component</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontodevice/Device -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Device">
-        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodevice/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Device</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontolab/ChemicalContainer -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer">
-        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Chemical Container</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontolab/Laboratory -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Laboratory">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobim/Facility"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Laboratory</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoubemmp/UtilitiesConsumption -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/UtilitiesConsumption">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Utilities Consumption</rdfs:label>
-    </owl:Class>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/UtilitiesConsumption"/>
     
 
 
