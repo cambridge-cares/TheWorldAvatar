@@ -3,6 +3,10 @@ package com.cmclinnovations.mods.modssimpleagent.simulations;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.cmclinnovations.mods.api.MoDSAPI;
 import com.cmclinnovations.mods.modssimpleagent.BackendInputFile;
 import com.cmclinnovations.mods.modssimpleagent.FileGenerator.FileGenerationException;
 import com.cmclinnovations.mods.modssimpleagent.MoDSBackend;
@@ -39,6 +43,13 @@ class MOOonly extends Simulation {
 
     @Override
     public Request getResults() {
+        String simDir = getModsBackend().getSimDir().toString();
+        if (!MoDSAPI.hasAlgorithmGeneratedOutputFiles(simDir, DEFAULT_MOO_ALGORITHM_NAME)) {
+            throw new ResponseStatusException(
+                    HttpStatus.NO_CONTENT,
+                    "The multi-objective optimisation job with job '" + getModsBackend().getJobID()
+                            + "' has not finished yet, has not been run, or has failed to run correctly.");
+        }
         return getMCDMResults();
     }
 }

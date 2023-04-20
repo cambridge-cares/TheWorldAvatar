@@ -486,13 +486,6 @@ public class Simulation {
 
         String simDir = getModsBackend().getSimDir().toString();
 
-        if (!MoDSAPI.hasAlgorithmGeneratedOutputFiles(simDir, DEFAULT_MOO_ALGORITHM_NAME)) {
-            throw new ResponseStatusException(
-                    HttpStatus.NO_CONTENT,
-                    "The multi-objective optimisation job with job '" + getModsBackend().getJobID()
-                            + "' has not finished yet, has not been run, or has failed to run correctly.");
-        }
-
         List<Variable> variables = getPrimaryAlgorithm().getVariables();
 
         List<String> outputVarNames = MoDSAPI.getReducedYVarIDs(simDir, DEFAULT_MOO_ALGORITHM_NAME).stream()
