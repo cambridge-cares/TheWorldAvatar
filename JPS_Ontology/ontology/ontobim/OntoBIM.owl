@@ -310,6 +310,25 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobim/hasIfcRepresentation">
+        <rdfs:domain>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://w3id.org/bot#Building"/>
+                    <rdf:Description rdf:about="https://w3id.org/bot#Element"/>
+                    <rdf:Description rdf:about="https://w3id.org/bot#Site"/>
+                    <rdf:Description rdf:about="https://w3id.org/bot#Storey"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/Room"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:domain>
+        <rdfs:range>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/IfcAbstractRepresentation"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobim/IfcModelRepresentation"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:range>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a zone or element within a building to their representation in the IFC schema.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has IFC representation of</rdfs:label>
