@@ -1,5 +1,11 @@
 package uk.ac.cam.cares.jsp.integration;
-
+/**
+ * Set name of geoobject (3D model) based on reference data (2D geospatial data with metatdata)
+ * All data in different database of PostgreSQL
+ * Parameter: database names of 3D model and reference data
+ * @author Jingya yan
+ *
+ */
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.geotools.geometry.jts.JTSFactoryFinder;
@@ -8,16 +14,20 @@ import org.geotools.geometry.jts.JTS;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
-import org.locationtech.jts.operation.buffer.BufferOp;
-import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
-
-public class SpatialLink {
+@WebServlet(urlPatterns = {"/SpatialLink"})
+public class SpatialLink extends HttpServlet {
 
     private static final Logger LOGGER = LogManager.getLogger(SpatialLink.class);
     private PostgresClient postgresClient;
@@ -27,6 +37,40 @@ public class SpatialLink {
 
     public SpatialLink() {}
 
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        new Config().initProperties();
+        LOGGER.info("Received POST request to build spatial linking");
+        LOGGER.info("Received request: " + req);
+
+        String db3d;
+        String db2d;
+        GeoObject3D object3D = new GeoObject3D();
+        GeoObject2D object2D = new GeoObject2D();
+
+        try {
+            db3d = req.getParameter("db3d");
+            db2d = req.getParameter("db2d");
+        } catch (Exception e) {
+            LOGGER.error("Error parsing input, make sure database names are specified as parameters");
+            LOGGER.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+        PostgresClient conn2 = new PostgresClient(Config.dburl + "/" + db2d, Config.dbuser, Config.dbpassword);
+        PostgresClient conn3 = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
+
+        object2D.setPostGISClient(conn2);
+        this.allObject2D = object2D.getObject2D();
+        object3D.setPostGISClient(conn3);
+        this.allObject3D = object3D.getObject3D();
+        try {
+            findMatchedObjects();
+        } catch (ParseException | FactoryException | TransformException e) {
+            throw new RuntimeException(e);
+        }
+
+
+    }
     public void findMatchedObjects() throws ParseException, FactoryException, TransformException {
 
         GeometryFactory geometryFactory = JTSFactoryFinder.getGeometryFactory();
