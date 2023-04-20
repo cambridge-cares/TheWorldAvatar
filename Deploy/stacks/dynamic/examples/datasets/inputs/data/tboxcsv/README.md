@@ -1,0 +1,1 @@
+This example has been tested with the [land use ontology](../../../../../../../JPS_Ontology/KBTemplates/TBox/ontolanduse.csv) but should work with any of the [TBox CSV files](../../../../../../../JPS_Ontology/KBTemplates/TBox/).

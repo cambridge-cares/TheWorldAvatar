@@ -59,7 +59,7 @@ class Manager {
     constructor(mapProvider: MapProvider) {
         Manager.PROVIDER = mapProvider;
         this.controlHandler = new ControlHandler();
-        this.panelHandler = new PanelHandler();
+        this.panelHandler = new PanelHandler(this);
 
         // Initialise the map handler instance
         switch(mapProvider) {
@@ -293,11 +293,8 @@ class Manager {
             this.panelHandler.setContent(
                 "<div class='description'>No data is available for this location.</div>"
             );
-        } else {
-            // Simulate click on meta button
-            if(metaTreeButton !== null) metaTreeButton.click();
-        }
-
+        } 
+        
         // Simulate click on general tab
         // @ts-ignore
         $("#sidePanelInner").tabs("option", "active", 0);

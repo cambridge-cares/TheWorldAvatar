@@ -1,0 +1,16 @@
+{
+    "ServiceSpec": {
+        "Name": "python-service",
+        "TaskTemplate": {
+            "ContainerSpec": {
+                "Image": "docker.cmclinnovations.com/python-service:1.0.1"
+            }
+        }
+    },
+    "endpoints": {
+        "ui": {
+            "url": "http://localhost:5000/",
+            "externalPath": "/python-service/"
+        }
+    }
+}

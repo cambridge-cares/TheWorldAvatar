@@ -103,7 +103,7 @@ DATES = dates.strftime('%Y-%m').tolist()
 DATES = [d+'-01' for d in DATES]
 
 # Expected number of triples
-TBOX_TRIPLES = 23
+TBOX_TRIPLES = 25
 ABOX_TRIPLES = 48
 TS_TRIPLES = 4
 TIME_TRIPLES_PER_PURE_INPUT = 6
@@ -111,7 +111,10 @@ DERIV_STATUS_TRIPLES = 2        # derivation status triples
 AGENT_SERVICE_TRIPLES = 5       # agent service triples
 DERIV_INPUT_TRIPLES = 2 + 4*3   # triples for derivation input message
 DERIV_OUTPUT_TRIPLES = 5        # triples for derivation output message
-MARKET_VALUE_TRIPLES = 7        # triples added by `instantiate_property_value`
+MARKET_VALUE_COMPUTABLE = 6     # triples added by successful property value estimation
+                                # i.e. kgclient.instantiate_property_value
+MARKET_VALUE_NONCOMPUTABLE = 5  # triples added by unsuccessful property value estimation
+                                # i.e. kgclient.instantiate_property_value
 
 
 # ----------------------------------------------------------------------------------
@@ -315,8 +318,8 @@ def get_marketvalue_details(sparql_client, market_value_iri):
                              <{OM_HAS_VALUE}> ?measure ; 
                              <{ONTODERIVATION_BELONGSTO}>/<{ONTODERIVATION_ISDERIVEDFROM}> ?input_iri . 
         ?measure <{RDF_TYPE}> <{OM_MEASURE}> ; 
-                 <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?unit ; 
-                 <{OM_NUM_VALUE}> ?value . 
+        OPTIONAL {{ ?measure <{OM_HAS_UNIT}>/<{OM_SYMBOL}> ?unit ; 
+                             <{OM_NUM_VALUE}> ?value . }}
         ?input_iri <{RDF_TYPE}> ?input_type . 
         }}
         """
@@ -328,9 +331,11 @@ def get_marketvalue_details(sparql_client, market_value_iri):
         key = set([x['input_type'] for x in response])
         inputs = {k: [x['input_iri'] for x in response if x['input_type'] == k] for k in key}
         # Market Value and monetary unit
-        market_value = list(set([float(x['value']) for x in response]))
+        market_value = list(set([x.get('value') for x in response]))
+        market_value = [float(x) for x in market_value if x]
         # NOTE: Fix encoding issue with pound sterling
-        unit = list(set([str(x['unit']).encode('ISO-8859-1').decode('utf-8') for x in response]))
+        unit = list(set([x.get('unit') for x in response]))
+        unit = [str(x).encode('ISO-8859-1').decode('utf-8') for x in unit if x]
         return inputs, market_value, unit
 
 
@@ -352,6 +357,25 @@ def get_derivation_status(sparql_client, derivation_iri):
     else:
         response = response[0]
         return str(response['exception'])
+    
+
+def get_avgprice_and_measure(sparql_client, deriv_inputs):
+    # Returns Measure instance associated with AverageSquareMetrePrice
+    # as well as the numerical value of the measure
+
+    query = f"""
+        SELECT ?measure_iri ?num_value
+        WHERE {{
+        VALUES ?price_iri {{ <{'> <'.join(deriv_inputs)}> }} 
+        ?price_iri <{RDF_TYPE}> <{OBE_AVERAGE_SM_PRICE}> ; 
+                   <{OM_HAS_VALUE}> ?measure_iri . 
+        ?measure_iri <{OM_NUM_VALUE}> ?num_value .
+        }}
+        """
+    response = sparql_client.performQuery(query)
+    measure = response[0].get('measure_iri')
+    val = float(response[0].get('num_value'))
+    return measure, val
 
 
 # method adopted from https://github.com/pytest-dev/pytest/issues/5502#issuecomment-647157873

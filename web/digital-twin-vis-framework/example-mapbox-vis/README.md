@@ -22,7 +22,7 @@ Configuration for the visualisation is provided via a number of local JSON files
   - This required file contains a hierarchal specification of data groups. Each group can either house sub-groups, or individual data sources and layers for display. The structure of these groups defines the layer selection tree to the left of the visualisation. The required format for this file is listed below.
 
 - `icons.json`:
-  - This optional file is used to list any image files required by the mapping library. Each image is specified with a unique name and a URL to the image file (which can be local or remote).
+  - This optional file is used to list any image files required by the mapping library. Each image is specified with a unique name and a URL to the image file (which can be local or remote). Adding "-sdf" to the icon's file name will ensure that the DTVF registers the image as an [SDF icon](https://docs.mapbox.com/help/troubleshooting/using-recolorable-images-in-mapbox-maps/) within Mapbox, enabling dynamic color changing (providing that the icon has been setup correctly).
 
 - `links.json`:
   - This optional file is used to provide links to additional resources; if present these are shown in the side panel of the visualisation.
@@ -122,9 +122,9 @@ In most deployed visualisations, an online stack of microservices will provide d
 
 ## Building the Image
 
-The `docker` folder contains the required files to build a Docker Image for the example visualisation; the `Dockerfile` file contains the instructions to build an Image. Please note the caveats below before attempting to build the service using Docker:
+The `docker` folder contains the required files to build a Docker Image for the example visualisation. This uses the `dtvf-base-image` image as a base then adds the contents of the `webspace` directory to a volume mounted at `/var/www/html` within the container.
 
-- The example visualisation installed within the Docker image will be based on the current commit of this repository, please ensure it is the correct one.
+- Files to be hosted must be contained within the `webspace` directory.
 - A valid Mapbox API token must be provided in your `index.html` file.
 - A connection to the internet is required to contact remote resources and use the mapping libraries.
 

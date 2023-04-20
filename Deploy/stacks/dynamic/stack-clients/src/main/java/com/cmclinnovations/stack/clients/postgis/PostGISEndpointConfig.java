@@ -14,6 +14,7 @@ public class PostGISEndpointConfig extends PasswordEndpointConfig {
     private final String username;
 
     private final String jdbcURL;
+    private final String sqlAlchemyURL;
     private final String jdbcDriver;
     private final String jdbcDriverURL;
 
@@ -27,8 +28,10 @@ public class PostGISEndpointConfig extends PasswordEndpointConfig {
         this.port = port;
         this.username = username;
 
-        // By default assume PostgreSQL, calculate jdbcURL when requested
+        // By default assume PostgreSQL, calculate jdbcURL & sqlAlchemyURL when
+        // requested
         this.jdbcURL = null;
+        this.sqlAlchemyURL = null;
         this.jdbcDriver = "org.postgresql.Driver";
         this.jdbcDriverURL = "https://jdbc.postgresql.org/download/postgresql-42.3.6.jar";
     }
@@ -53,6 +56,17 @@ public class PostGISEndpointConfig extends PasswordEndpointConfig {
             return "jdbc:postgresql://" + hostName + ":" + port + "/" + database;
         } else {
             return jdbcURL;
+        }
+    }
+
+    public String getSQLALchemyURL(String database) { // TODO: Combine with getJdbcURL
+        if (null == sqlAlchemyURL) {
+            Objects.requireNonNull(database,
+                    "If a 'sqlAlchemyURL' is not explicitly specified then a database name must be in the code.");
+            // By default assume PostgreSQL
+            return "postgresql://" + username + ":" + getPassword() + "@" + hostName + ":" + port + "/" + database;
+        } else {
+            return sqlAlchemyURL;
         }
     }
 

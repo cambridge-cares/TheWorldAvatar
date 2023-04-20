@@ -24,6 +24,10 @@ FC_COLLECTION_OPTION = "Collection Option"
 FC_START_VIAL_OVERRIDE = "Start Vial Override"
 FC_MANUAL_COLLECT = "Manual Collect"
 FC_MANUAL_DIVERT = "Manual Divert"
+FC_DO_NOT_COLLECT = "DO NOT COLLECT"
+FC_CLEANING_FLOW_RATE = "CLEANING FLOW RATE (ml/min)"
+FC_NUMBER_OF_COLLECTIONS = "NUMBER OF COLLECTIONS"
+FC_MANUAL_CLEAN = "MANUAL CLEAN (ml)"
 
 # Mapping int value returned by FlowCommander.GetState(fc) to the actual state
 # TODO double check if any other possible state
@@ -33,6 +37,7 @@ MAPPING_VAPOURTEC_STATE = {
     0: ONTOVAPOURTEC_IDLE,
     1: ONTOVAPOURTEC_INITIALISING,
     2: ONTOVAPOURTEC_RUNNINGREACTION,
+    3: ONTOVAPOURTEC_CLEANINGREACTION,
     4: ONTOVAPOURTEC_FINALCLEANING,
 }
 
@@ -49,7 +54,14 @@ MAPPING_DECIMAL_PLACE_CONSTRAINT = {
     FC_MANUAL_DIVERT: 2,
 }
 
-def create_exp_run_csv(folder_path: str, rxnexp: ReactionExperiment, list_equip_settings: List[EquipmentSettings]) -> str:
+def create_exp_run_csv(
+    folder_path: str,
+    rxnexp: ReactionExperiment,
+    list_equip_settings: List[EquipmentSettings],
+    rs_400: VapourtecRS400,
+    start_vial_override: int=None,
+    do_not_collect: bool=False,
+) -> str:
     """
         This function creates the experiment run file to be digested by Vapourtec FlowCommander.
 
@@ -57,13 +69,24 @@ def create_exp_run_csv(folder_path: str, rxnexp: ReactionExperiment, list_equip_
             list_equip_settings - list of ontolab.EquipmentSettings instances
     """
 
-    # TODO complete the collection settings part
-    fc_header = np.array(([[FC_WHOLE_PEAK], ["TRUE"]]))
-    fc_header = np.hstack((fc_header, np.array(([[FC_AUTO_COLLECTION], ["TRUE"]]))))
-    # fc_header = np.hstack((fc_header, np.array(([[FC_START_VIAL_OVERRIDE], []])))) # set up with AutoSampler settings?
-    # fc_header = np.hstack((fc_header, np.array(([[FC_MANUAL_COLLECT], []]))))
-    # fc_header = np.hstack((fc_header, np.array(([[FC_MANUAL_DIVERT], []]))))
+    # collection settings
+    fc_header = np.array(([[FC_WHOLE_PEAK], ["FALSE"]]))
+    if do_not_collect:
+        # TODO [future work] add more options for manual cleaning, currently relies on final cleaning by vapourtec itself
+        fc_header = np.hstack((fc_header, np.array(([[FC_DO_NOT_COLLECT], ["TRUE"]]))))
+        fc_header = np.hstack((fc_header, np.array(([[FC_CLEANING_FLOW_RATE], ["0.1"]]))))
+        fc_header = np.hstack((fc_header, np.array(([[FC_MANUAL_CLEAN], ["0"]]))))
+    else:
+        if start_vial_override is not None:
+            fc_header = np.hstack((fc_header, np.array(([[FC_AUTO_COLLECTION], ["FALSE"]]))))
+            fc_header = np.concatenate((fc_header, [[FC_START_VIAL_OVERRIDE], [start_vial_override]]))
+            # TODO [future work] add more options for manual collection/divert
+            # fc_header = np.hstack((fc_header, np.array(([[FC_MANUAL_COLLECT], []]))))
+            # fc_header = np.hstack((fc_header, np.array(([[FC_MANUAL_DIVERT], []]))))
+        else:
+            fc_header = np.hstack((fc_header, np.array(([[FC_AUTO_COLLECTION], ["TRUE"]]))))
 
+    iterated_pump = []
     for equip_settings in list_equip_settings:
         if isinstance(equip_settings, ReactorSettings):
             fc_header = np.hstack((fc_header, np.array(([[FC_REACTOR_TEMPERATURE + equip_settings.specifies.locationID],
@@ -73,16 +96,23 @@ def create_exp_run_csv(folder_path: str, rxnexp: ReactionExperiment, list_equip_
         elif isinstance(equip_settings, PumpSettings):
             fc_header = np.hstack((fc_header, np.array(([[FC_STOICHIOMETRIC_RATIO + equip_settings.specifies.locationID],
                         [round_setting_value(FC_STOICHIOMETRIC_RATIO, equip_settings.hasStoichiometryRatioSetting.hasQuantity.hasValue.hasNumericalValue)]]))))
-            fc_header = np.hstack((fc_header, np.array(([[FC_AUTOSAMPLER_SITE + equip_settings.specifies.locationID],
-                        [int(equip_settings.pumpsLiquidFrom.locationID)]]))))
-            fc_header = np.hstack((fc_header, np.array(([[FC_REAGENT_CONC + equip_settings.specifies.locationID],
-                        [round_setting_value(FC_REAGENT_CONC, get_reagent_conc_of_chem_solution(rxnexp, equip_settings.pumpsLiquidFrom.holds.isFilledWith))]]))))
+            # autosampler information is only needed if pumpsLiquidFrom AutoSamplerSite
+            if equip_settings.pumpsLiquidFrom is not None and isinstance(equip_settings.pumpsLiquidFrom, AutoSamplerSite):
+                fc_header = np.hstack((fc_header, np.array(([[FC_AUTOSAMPLER_SITE + equip_settings.specifies.locationID],
+                            [int(equip_settings.pumpsLiquidFrom.locationID)]]))))
+                fc_header = np.hstack((fc_header, np.array(([[FC_REAGENT_CONC + equip_settings.specifies.locationID],
+                            [round_setting_value(FC_REAGENT_CONC, get_reagent_conc_of_chem_solution(rxnexp, equip_settings.pumpsLiquidFrom.holds.isFilledWith))]]))))
             if equip_settings.hasSampleLoopVolumeSetting is not None:
                 # TODO need to check about the units
                 fc_header = np.hstack((fc_header, np.array(([[FC_REAGENT_USE],
                             [round_setting_value(FC_REAGENT_USE, equip_settings.hasSampleLoopVolumeSetting.hasQuantity.hasValue.hasNumericalValue)]]))))
+            iterated_pump.append(equip_settings.specifies.locationID)
         else:
             raise Exception("EquipmentSettings is not supported for Vapourtec module: %s" % str(equip_settings))
+    # for the pumps that are not iterated, set the stoichiometric ratio to 0
+    for pump in rs_400.get_r2_pumps():
+        if pump.locationID not in iterated_pump:
+            fc_header = np.hstack((fc_header, np.array(([[FC_STOICHIOMETRIC_RATIO + pump.locationID], ["0"]]))))
 
     # Output the settings to a csv file, and return the file path
     # NOTE the file line ending is Windows-style to let the FlowCommander to read the file

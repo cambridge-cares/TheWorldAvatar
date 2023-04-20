@@ -2,11 +2,6 @@ from vapourtecagent.agent import VapourtecAgent
 from vapourtecagent.agent import default
 from vapourtecagent.conf import config_vapourtec_agent
 
-import logging
-
-# Avoid unnecessary logging information from py4j package
-logging.getLogger("py4j").setLevel(logging.INFO)
-
 
 def create_app():
     vapourtec_agent_config = config_vapourtec_agent()
@@ -31,7 +26,13 @@ def create_app():
         fs_user=vapourtec_agent_config.FILE_SERVER_USERNAME,
         fs_password=vapourtec_agent_config.FILE_SERVER_PASSWORD,
         agent_endpoint=vapourtec_agent_config.ONTOAGENT_OPERATION_HTTP_URL,
-        # logger_name='prod'
+        logger_name='prod',
+        max_thread_monitor_async_derivations=vapourtec_agent_config.MAX_THREAD_MONITOR_ASYNC_DERIVATIONS,
+        email_recipient=vapourtec_agent_config.EMAIL_RECIPIENT,
+        email_subject_prefix=vapourtec_agent_config.EMAIL_SUBJECT_PREFIX,
+        email_username=vapourtec_agent_config.EMAIL_USERNAME,
+        email_auth_json_path=vapourtec_agent_config.EMAIL_AUTH_JSON_PATH,
+        email_start_end_async_derivations=vapourtec_agent_config.EMAIL_START_END_ASYNC_DERIVATIONS,
     )
 
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
