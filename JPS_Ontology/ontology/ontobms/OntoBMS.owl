@@ -375,13 +375,6 @@
     
 
 
-    <!-- https://saref.etsi.org/saref4bldg/SolarDevice -->
-
-
-    <owl:Class rdf:about="https://saref.etsi.org/saref4bldg/SolarDevice"/>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontobms/AirHandlingUnit -->
 
 
@@ -654,18 +647,6 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A separate space provided for air circulation for heating, ventilation, and air-conditioning.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Plenum</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/SolarPanel -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/SolarPanel">
-        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/saref4bldg/SolarDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solar panels capture sunlight as a source of radiant energy, which is converted into electric energy in the form of direct current (DC) electricity.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solar panel</rdfs:label>
     </owl:Class>
     
 
