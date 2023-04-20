@@ -125,6 +125,14 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
+        <configuration>
+          <webResources>
+            <resource>
+              <directory>src/main/webapp/WEB-INF</directory>
+              <targetPath>src/main/webapp/WEB-INF</targetPath>
+            </resource>
+          </webResources>
+        </configuration>
       </plugin>
 
       <!-- Downloads and extracts ZIP archives from Maven repository -->

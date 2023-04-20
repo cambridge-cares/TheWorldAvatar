@@ -9,6 +9,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,92 +22,48 @@ public class AndroidStatusAgent extends JPSAgent{
     private final String EQUIPMENT_IRI_KEY = "equipmentIRI";
 
     /**
-     * Handle the POST request to set the equipmentIRI. Expect the equipmentIRI in the request param instead of the body.
-     *
-     * @param request   an {@link HttpServletRequest} object that
-     *                  contains the request the client has made
-     *                  of the servlet
-     *
-     * @param response  an {@link HttpServletResponse} object that
-     *                  contains the response the servlet sends
-     *                  to the client
-     *
+     * Handle the POST and GET requests and route to specific handling logic based on the path.
+     * @param requestParams Parameters sent in the request. Only /set expects a parameter equipmentIRI
+     * @param request HttpServletRequest instance
+     * @return result in JSONObject format.
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
+    public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
         String datetime = dateFormat.format(new Date());
-        LOGGER.info("POST Request received at: {}", datetime);
+        LOGGER.info("Request received at: {}", datetime);
 
         String url = request.getRequestURI();
         if (url.contains("?")) url = url.split(Pattern.quote("?"))[0];
 
         if (url.contains("set")) {
-            if (!check(request)) {
+            if (!validateInput(requestParams)) {
                 throw new JPSRuntimeException("Unable to validate request sent to the agent.");
             }
 
-            this.equipmentIRI = request.getParameter(EQUIPMENT_IRI_KEY);
+            this.equipmentIRI = requestParams.getString(EQUIPMENT_IRI_KEY);
             LOGGER.info("Successfully set equipment iri to " + equipmentIRI);
 
-            response.setStatus(HttpServletResponse.SC_OK);
-            return;
+            JSONObject response = new JSONObject();
+            response.put("message", "Successfully set equipment iri to " + equipmentIRI);
+            return response;
+        } else if (url.contains("get")) {
+            JSONObject result = new JSONObject();
+            result.put("equipmentIRI", equipmentIRI);
+            LOGGER.info("Return: " + result);
+            return result;
         }
 
         throw new JPSRuntimeException("Unknown Path");
     }
 
-    /**
-     * Validate request params.
-     *
-     * @param request HTTP request
-     * @return whether the request params are valid.
-     */
-    private boolean check(HttpServletRequest request) {
-        if (request.getParameter(EQUIPMENT_IRI_KEY).isEmpty()) {
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (!requestParams.has(EQUIPMENT_IRI_KEY)) {
             LOGGER.error("equipmentIRI is missing");
             return false;
         }
 
         return true;
-    }
-
-    /**
-     * Handle GET request to get equpmentIRI stored.
-     *
-     * @param request   an {@link HttpServletRequest} object that
-     *                  contains the request the client has made
-     *                  of the servlet
-     *
-     * @param response  an {@link HttpServletResponse} object that
-     *                  contains the response the servlet sends
-     *                  to the client
-     *
-     * @throws IOException exception may be thrown when writing response.
-     */
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("text/json");
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "GET,PUT,OPTIONS");
-        response.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Origin, Content-Type, Accept, Accept-Language, Origin, User-Agent");
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSS");
-        String datetime = dateFormat.format(new Date());
-        LOGGER.info("GET Request received at: {}", datetime);
-
-        String url = request.getRequestURI();
-        if (url.contains("?")) url = url.split(Pattern.quote("?"))[0];
-
-        if (url.contains("get")) {
-            JSONObject result = new JSONObject();
-            result.put("equipmentIRI", equipmentIRI);
-            response.setStatus(HttpServletResponse.SC_OK);
-            response.getWriter().write(result.toString());
-            LOGGER.info("Return: " + result);
-            return;
-        }
-
-        throw new JPSRuntimeException("Unknown Path");
     }
 }

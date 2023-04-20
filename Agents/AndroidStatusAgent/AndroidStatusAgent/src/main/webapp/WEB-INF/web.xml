@@ -1,15 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" metadata-complete="false" version="3.1">
-<display-name>android-status-agent</display-name>
-<description>An agent used to log the status of user inputs in android app.</description>
+<web-app>
+  <filter>
+    <filter-name>CorsFilter</filter-name>
+    <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+    <init-param>
+      <param-name>cors.allowed.origins</param-name>
+      <param-value>*</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.allowed.methods</param-name>
+      <param-value>GET,POST,HEAD,OPTIONS</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.exposed.headers</param-name>
+      <param-value>Access-Control-Allow-Origin</param-value>
+    </init-param>
+  </filter>
 
-<servlet>
-  <servlet-name>AndroidStatusAgent</servlet-name>
-  <servlet-class>uk.ac.cam.cares.jps</servlet-class>
-</servlet>
+  <filter-mapping>
+    <filter-name>CorsFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
 
-<servlet-mapping>
-  <servlet-name>AndroidStatusAgent</servlet-name>
-  <url-pattern>/</url-pattern>
-</servlet-mapping>
+  <servlet>
+    <servlet-name>AndroidStatusAgent</servlet-name>
+    <servlet-class>uk.ac.cam.cares.jps</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>AndroidStatusAgent</servlet-name>
+    <url-pattern>/</url-pattern>
+  </servlet-mapping>
 </web-app>
+
