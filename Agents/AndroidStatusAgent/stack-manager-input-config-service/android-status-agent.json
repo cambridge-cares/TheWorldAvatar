@@ -3,7 +3,7 @@
     "Name": "android-status-agent",
     "TaskTemplate": {
       "ContainerSpec": {
-        "Image": "android-status-agent:1.0.0-SANPSHOT"
+        "Image": "android-status-agent:1.0.0"
       }
     }
   },
