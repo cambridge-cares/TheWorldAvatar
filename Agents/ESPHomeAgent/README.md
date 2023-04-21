@@ -141,11 +141,18 @@ To build and start the agent, open up the command prompt in the same directory a
 docker-compose up -d
 ```
 
-The agent is reachable at "esphome-agent/toggle" on localhost port 1011.
+#### Stack deployment
+
+If you want to spin up this agent as part of a stack, instead of `docker-compose up -d`, do the following:
+- Copy the contents of `config/client.properties_stack` into `config/client.properties` and copy the contents of `config/esphome-client.properties_stack` into `config/esphome-client.properties`, inserting the name of your stack.
+- Build the image via `docker-compose build`. Do not start the container.
+- Copy the `json` file from the `stack-manager-input-config` folder into `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/services/`.
+- Create TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/<STACK NAME>.json manually if it doesn't exist. If it exists already, append the agent to the json file (Read [Stack configuration](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#stack-configuration)).
+- Start the stack manager as usual. This should start the container.
 
 
 #### Run the agent
-To run the agent, a POST request must be sent to http://localhost:1011/esphome-agent/toggle with a correct JSON Object.
+If the agent is outside of the stack, a POST request must be sent to http://localhost:1011/esphome-agent/toggle with a correct JSON Object.
 Follow the request shown below.
 
 ```
@@ -153,6 +160,23 @@ POST http://localhost:1011/esphome-agent/toggle
 Content-Type: application/json
 {"timeseriesDataClientProperties":"CLIENT_PROPERTIES","esphomeStatusClientProperties":"ESPHOME_CLIENT_PROPERTIES","esphomeAPIProperties":"API_PROPERTIES"}
 ```
+In curl syntax:
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"timeseriesDataClientProperties\":\"CLIENT_PROPERTIES\",\"esphomeStatusClientProperties\":\"ESPHOME_CLIENT_PROPERTIES\",\"esphomeAPIProperties\":\"API_PROPERTIES\"}" http://localhost:1011/esphome-agent/toggle
+```
+
+If the agent is in the stack, a POST request must be sent to http://localhost:3838/esphome-agent/toggle with a correct JSON Object.
+Follow the request shown below.
+```
+POST http://localhost:3838/esphome-agent/toggle
+Content-Type: application/json
+{"timeseriesDataClientProperties":"CLIENT_PROPERTIES","esphomeStatusClientProperties":"ESPHOME_CLIENT_PROPERTIES","esphomeAPIProperties":"API_PROPERTIES"}
+```
+In curl syntax:
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"timeseriesDataClientProperties\":\"CLIENT_PROPERTIES\",\"esphomeStatusClientProperties\":\"ESPHOME_CLIENT_PROPERTIES\",\"esphomeAPIProperties\":\"API_PROPERTIES\"}" http://localhost:3838/esphome-agent/toggle
+```
+
 
 If the agent run successfully, either one of the four responses below will be returned as a JSONObject.
 
