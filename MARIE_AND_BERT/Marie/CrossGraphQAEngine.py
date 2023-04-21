@@ -40,14 +40,14 @@ class CrossGraphQAEngine:
                                 "ontokin": 3, "wikidata": 4, "ontospecies_new": 5,
                                 "ontoagent": 6, "ontomops": 7, "ontokin_reaction": 8}
 
-        # self.domain_encoding = {"ontokin_reaction": 0}
+        # self.domain_encoding = {"ontoagent": 0}
 
         self.got_numerical_values = False
         self.numerical_domain_list = ["wikidata", "ontospecies_new", "ontomops"]
         self.numerical_label_list = ["numerical", "multi-target"]
 
         self.encoding_domain = {v: k for k, v in self.domain_encoding.items()}
-        self.domain_list = self.domain_encoding.keys()
+        self.domain_list = list(self.domain_encoding.keys())
         print(self.domain_list)
         self.engine_list = [None] * len(self.domain_list)
         self.lock = threading.Lock()
@@ -61,7 +61,7 @@ class CrossGraphQAEngine:
                                                                         'cross_graph_model_with_all_9'),
                                                            map_location=self.device))
         self.stop_words = ["find", "all", "species", "what", "is", "the", "show", "me", "and", "as", "product"
-                          , "products", "reactant", "reactants"]
+            , "products", "reactant", "reactants"]
         self.init_engines()
 
     def init_engines(self):
@@ -136,16 +136,28 @@ class CrossGraphQAEngine:
 
         for label, domain, score, target in zip(re_ranked_labels, re_ranked_domain_list, re_ranked_score_list,
                                                 target_list):
-            row = {"node": label, "domain": domain, "score": score, "target": target}
-            result.append(row)
+
+            if "EMPTY" not in label:
+                row = {"node": label, "domain": domain, "score": score, "target": target}
+                result.append(row)
 
         return result
 
     def filter_for_cross_graph(self, question):
         tokens = question.strip().lower().split(" ")
-        tokens = [t for t in tokens if t in self.stop_words]
+        tokens = [t for t in tokens if t not in self.stop_words]
         return " ".join(tokens)
 
+    def get_domain_list(self, question):
+        question = self.filter_for_cross_graph(question)
+        predicted_domain_labels = []
+        _, tokenized_q = self.nlp.tokenize_question(question, 1)
+        pred_domain_list = self.score_adjust_model.predict_domain([tokenized_q])[0]
+        for idx, domain in enumerate(pred_domain_list):
+            if domain == 1:
+                predicted_domain_labels.append(self.domain_list[idx])
+
+        return predicted_domain_labels
 
     def run(self, question, disable_alignment: bool = False, heads={}):
         """
@@ -155,6 +167,8 @@ class CrossGraphQAEngine:
         :param heads: IRI of the head entity before cross-ontology translation, always in the form of CID (pubchem ID)
         :return: the re-ranked list of answer labels according to the adjusted scores
         """
+        # lets get the domain list in advance first, then selectively call the engines to shorten the response time
+
         score_list = {}
         label_list = {}
         domain_list = []
@@ -163,46 +177,56 @@ class CrossGraphQAEngine:
         numerical_domain = None
 
         #
-        stop_words = []
-        tokens = [t for t in question.split(" ") if t.lower().strip() not in stop_words]
-        question = " ".join(tokens)
+        # stop_words = []
+        # tokens = [t for t in question.split(" ") if t.lower().strip() not in stop_words]
+        # question = " ".join(tokens)
 
         # mention = self.ner_lite.get_mention(question)
 
         # if mention is not None:
         #     question = question.replace(mention, "")
+        domain_list_for_question = self.get_domain_list(question)
+
+        # print("predicted domain for this question:", domain_list_for_question)
 
         def call_domain(domain, index, head, numerical_domain_list, numerical_label_list):
             nonlocal score_list, label_list, target_list, got_numerical_values, numerical_domain
-            if not got_numerical_values:
-                engine = self.engine_list[index]
+            if domain in domain_list_for_question:
+                if not got_numerical_values:
+                    engine = self.engine_list[index]
 
-                self.marie_logger.debug(f"======================== USING ENGINE {domain}============================")
+                    self.marie_logger.debug(
+                        f"======================== USING ENGINE {domain}============================")
 
-                if domain == "ontoagent":
-                    results = engine.run(question=question)
-                    labels, scores, targets = results
-                    print("=============== RESULT FROM AGENT ============")
-                    print(results)
+                    if domain == "ontoagent":
+                        results = engine.run(question=question)
+                        labels, scores, targets = results
+                        print("=============== RESULT FROM AGENT ============")
+                        print(results)
 
-                elif domain in numerical_domain_list:
-                    results = engine.run(question=question)
-                    labels, scores, targets, numerical_list, question_type = results
-                    # if question_type == "numerical":
-                    if question_type in numerical_label_list and (len(labels) > 0):
-                        got_numerical_values = True
-                        numerical_domain = domain
-                else:
-                    results = engine.run(question=question)
-                    labels, scores, targets = results
-                length_diff = 5 - len(labels)
-                scores = scores + [-999] * length_diff
-                labels = labels + ["EMPTY SLOT"] * length_diff
-                targets = targets + ["EMPTY SLOT"] * length_diff
-                with self.lock:
-                    score_list[domain] = scores
-                    label_list[domain] = labels
-                    target_list[domain] = targets
+                    elif domain in numerical_domain_list:
+                        results = engine.run(question=question)
+                        labels, scores, targets, numerical_list, question_type = results
+                        # if question_type == "numerical":
+                        if question_type in numerical_label_list and (len(labels) > 0):
+                            got_numerical_values = True
+                            numerical_domain = domain
+                    else:
+                        results = engine.run(question=question)
+                        labels, scores, targets = results
+                    length_diff = 5 - len(labels)
+                    scores = scores + [-999] * length_diff
+                    labels = labels + ["EMPTY SLOT"] * length_diff
+                    targets = targets + ["EMPTY SLOT"] * length_diff
+                    with self.lock:
+                        score_list[domain] = scores
+                        label_list[domain] = labels
+                        target_list[domain] = targets
+
+            else:
+                score_list[domain] = [-999] * 5
+                label_list[domain] = ["EMPTY SLOT"] * 5
+                target_list[domain] = ["EMPTY SLOT"] * 5
 
         threads = []
         for i, domain in enumerate(self.domain_list):
@@ -223,7 +247,6 @@ class CrossGraphQAEngine:
                                                   answer_list=label_list[numerical_domain])
         else:
             question_for_cross_graph = self.filter_for_cross_graph(question)
-
             tokenized_question = self.nlp.tokenize_question(question_for_cross_graph, 1)
             score_factors = self.score_adjust_model.predict_domain(tokenized_question).squeeze()
             adjusted_score_list = []
@@ -265,11 +288,13 @@ if __name__ == '__main__':
     # text = "find all species with molecular weight more than 100"
     # rst = my_qa_engine.run(question=text)
     # print(rst)
+
+    START_TIME = time.time()
     print("==============================================================================")
     text = "heat capacity of C3H4O"
     rst = my_qa_engine.run(question=text)
     print(rst)
-
+    print(f"TIME USED: {time.time() - START_TIME}")
     # while text != "quit":
     #     START_TIME = time.time()
     #     rst = my_qa_engine.run(question=text)
