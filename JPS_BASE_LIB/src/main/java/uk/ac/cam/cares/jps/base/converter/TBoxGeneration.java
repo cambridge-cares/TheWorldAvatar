@@ -67,6 +67,22 @@ public class TBoxGeneration implements ITBoxGeneration {
 	 */
 	public static Map<String, List<String>> rangeRelationMap = new HashMap<String, List<String>>();
 
+	/**
+	 * Stores the mapping between a relation and its domain consisting of
+	 * union of classes, for example, A UNION B UNION C. This mapping will
+	 * help find the subclass of relationship between a subset appearing
+	 * as the domain (e.g., A or A U B) and the superset.
+	 */
+	public static Map<String, List<String>> relationUnionOfDomainClassMap = new HashMap<String, List<String>>();
+
+	/**
+	 * Stores the mapping between a relation and its range consisting of
+	 * union of classes, for example, X UNION Y UNION Z. This mapping will
+	 * help find the subclass of relationship between a subset appearing
+	 * as the domain (e.g., X or X U Y) and the superset.
+	 */
+	public static Map<String, List<String>> relationUnionOfRangeClassMap = new HashMap<String, List<String>>();
+	
 	public static void main(String[] args) {
 		File folder = Dialogs.selectFileDialog(new File(System.getProperty("user.home")),
 				new FileFilter[] { new ExtensionFileFilter("Comma-separated Value", "csv") }, false);
@@ -287,17 +303,29 @@ public class TBoxGeneration implements ITBoxGeneration {
 				}
 			}
 
-			// Creates the mapping between a domain class and relations associated with it.
+			// Creates the following two mappings:
+			// - a relation and its domain consisting of union of classes
+			// - a single domain class and its relations 
 			if (singleLine.size() > tBoxConfig.getIndexOfDomainColumn() && domain != null
 					&& !domain.trim().equals("")) {
 				String[] domainClasses = null;
 				if (domain.contains("UNION")) {
 					domainClasses = domain.split("UNION");
+					// Creates the mapping between a relation and its domain
+					// consisting of disjunction of classes.
+					if (relationUnionOfDomainClassMap.containsKey(source)) {
+						relationUnionOfDomainClassMap.get(source).add(domain);
+					} else {
+						List<String> complexDomain = new ArrayList<>();
+						complexDomain.add(domain);
+						relationUnionOfDomainClassMap.put(source, complexDomain);
+					}
 				} else if (domain.contains("INTERSECTION")) {
 					domainClasses = domain.split("INTERSECTION");
 				} else {
 					domainClasses = new String[] { domain };
 				}
+				// Creates the mapping between a domain class and relations associated with it.
 				if (domainClasses != null) {
 					for (String domainClass : domainClasses) {
 						domainClass = domainClass.replaceAll("\\s+", "").toLowerCase();
@@ -312,16 +340,28 @@ public class TBoxGeneration implements ITBoxGeneration {
 				}
 			}
 
-			// Creates the mapping between a range class and relations associated with it.
+			// Creates the following two mappings:
+			// - a relation and its range consisting of union of classes
+			// - a single range class and its relations 
 			if (singleLine.size() > tBoxConfig.getIndexOfRangeColumn() && range != null && !range.equals("")) {
 				String[] rangeClasses = null;
 				if (range.contains("UNION")) {
 					rangeClasses = range.split("UNION");
+					// Creates the mapping between a relation and its range
+					// consisting of disjunction of classes.
+					if (relationUnionOfRangeClassMap.containsKey(source)) {
+						relationUnionOfRangeClassMap.get(source).add(range);
+					} else {
+						List<String> complexDomain = new ArrayList<>();
+						complexDomain.add(range);
+						relationUnionOfRangeClassMap.put(source, complexDomain);
+					}
 				} else if (range.contains("INTERSECTION")) {
 					rangeClasses = range.split("INTERSECTION");
 				} else {
 					rangeClasses = new String[] { range };
 				}
+				// Creates the mapping between a range class and relations associated with it.
 				if (rangeClasses != null) {
 					for (String rangeClass : rangeClasses) {
 						rangeClass = rangeClass.replaceAll("\\s+", "").toLowerCase();

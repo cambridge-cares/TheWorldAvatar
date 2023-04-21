@@ -11,6 +11,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.jena.ontology.ObjectProperty;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AddImport;
@@ -896,13 +897,16 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 		// Checks if the quantifier is provided and all domain and range
 		// classes and any of their ancestors participate in the same relation
 		// to decide whether to create the domain and range or not
-		if ((quantifier != null && !quantifier.equals("")) 
-				&& counterDomain > 0 
-				&& counterDomain == owlClassExpressionsForDomain.size()
-				&& counterRange > 0
-				&& counterRange == owlClassExpressionsForRange.size()) {
+		if ((quantifier != null && !quantifier.equals(""))
+				&& ((counterDomain > 0
+				&& counterDomain == owlClassExpressionsForDomain.size())
+				|| isDomainsLogicalParentsInSameRelation(objectProperty, domain))
+				&& ((counterRange > 0
+				&& counterRange == owlClassExpressionsForRange.size())
+				|| isRangesLogicalParentsInSameRelation(objectProperty, range))){
 			return;
 		}
+
 		// Defines the domain for the object property
 		if (domain != null && !domain.isEmpty()) {
 			if (domain.contains("UNION")) {
@@ -916,6 +920,7 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 						dataFactory.getOWLObjectPropertyDomainAxiom(objectProperty, createClass(domain))));
 			}
 		}
+		
 		// Defines the range for the object property
 		if (range != null && !range.isEmpty()) {
 			if (range.contains("UNION")) {
@@ -930,6 +935,79 @@ public class TBoxManagement extends TBoxGeneration implements ITBoxManagement{
 			}
 		}
 	}
+	
+	/**
+	 * This method helps identify the logical subclass of relationship between
+	 * the domain and other domains of the object property. If the domain is A
+	 * or A UNION B, and another domain is A UNION B UNION C, this method will
+	 * conclude that the former domain is a subclass of the latter.
+	 * 
+	 * @param objectProperty
+	 * @param domain
+	 * @return
+	 */
+	private boolean isDomainsLogicalParentsInSameRelation(OWLObjectProperty objectProperty, String domain) {
+		String relation = objectProperty.getIRI().getShortForm().toLowerCase();
+		boolean isDomainsLogicalParentInSameRelation = false;
+		// Detects the subclass of relationship between the domain and all
+		// the other domains of the relation.  
+		if (relationUnionOfDomainClassMap.containsKey(relation)) {
+			List<String> complexDomains = relationUnionOfDomainClassMap.get(relation);
+			int nOfMatchedAtomicDomain = 0;
+				for(String complexDomain: complexDomains) {
+					for(String atomicDomain: domain.split("UNION")) {
+						for(String complexDomainPart: complexDomain.split("UNION")) {
+							if (atomicDomain.trim().equalsIgnoreCase(complexDomainPart.trim())) {
+								nOfMatchedAtomicDomain++;
+								break;
+							}
+						}
+					}
+					if(nOfMatchedAtomicDomain == domain.split("UNION").length
+							&& complexDomain.split("UNION").length > nOfMatchedAtomicDomain) {
+						return true;
+					}
+			}
+		}
+		return isDomainsLogicalParentInSameRelation;
+	}
+
+	/**
+	 * This method helps identify the logical subclass of relationship between
+	 * the range and other ranges of the object property. If the range is A
+	 * or A UNION B, and another range is A UNION B UNION C, this method will
+	 * conclude that the former range is a subclass of the latter. 
+	 * 
+	 * @param objectProperty
+	 * @param range
+	 * @return
+	 */
+	private boolean isRangesLogicalParentsInSameRelation(OWLObjectProperty objectProperty, String range) {
+		String relation = objectProperty.getIRI().getShortForm().toLowerCase();
+		boolean isRangesLogicalParentInSameRelation = false;
+		// Detects the subclass of relationship between the range and all
+		// the other ranges of the relation.  
+		if(relationUnionOfRangeClassMap.containsKey(relation)) {
+			List<String> complexRanges = relationUnionOfRangeClassMap.get(relation);
+			int nOfMatchedAtomicRange = 0;
+				for(String complexRange: complexRanges) {
+					for(String atomicRange: range.split("UNION")) {
+						for(String complexRangePart: complexRange.split("UNION")) {
+							if (atomicRange.trim().equalsIgnoreCase(complexRangePart.trim())) {
+								nOfMatchedAtomicRange++;
+								break;
+							}
+						}
+					}
+					if(nOfMatchedAtomicRange == range.split("UNION").length
+							&& complexRange.split("UNION").length > nOfMatchedAtomicRange) {
+						return true;
+					}
+			}			
+		}
+		return isRangesLogicalParentInSameRelation;
+	}
+
 	
 	/**
 	 * Adds the range to the current data property.
