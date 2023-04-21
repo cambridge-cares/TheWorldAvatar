@@ -200,7 +200,8 @@ def queryWithinRegion(LACode:str, ONS_Endpoint):
             ?area <http://publishmydata.com/def/ontology/foi/code> "%s" .
             ?area foi:within+ ?Region .
             ?Region ons:status "live" .
-            ?Region ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> .
+            ?Region ons_entity:code/rdfs:label "E12" .
+            ### ?Region ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> .
             ?Region <http://publishmydata.com/def/ontology/foi/code> ?LACode_Region .
             }
             """%LACode
@@ -300,12 +301,7 @@ def queryifWithin(LACode_toBeCheck, givenLACode, ONS_Endpoint_label):
     res = json.loads(performQuery(endPointIRI, queryStr))  
     print('...queryifWithin is done...')
     res = res[0]['ASK']
-    return res
-
-if __name__ == '__main__':
-    onsEndpoint = "http://statistics.data.gov.uk/sparql.json"
-    res = queryifWithin('E12000007', 'K03000001', 'ons')
-    print(res)   
+    return res 
 
 def queryEnglandAndWalesAndScotlandBounderies(ONS_Endpoint_label):
     queryStr = """
@@ -351,101 +347,6 @@ def queryEnglandAndWalesAndScotlandBounderies(ONS_Endpoint_label):
       elif "S92000003" in str(r['area']):
           ScotlandBound = r['Geo_InfoList']
     return EngAndWalesBound, EngBound, WalesBound, ScotlandBound           
-    
-###########################ENDENDEND#################################################################################################
-
-#####*****************************TEST*****************************####
-# # The query for the Region Boundaries returned from ONS
-# def queryRegionBoundaries_testJSON(ONS_Endpoint_label):
-#     queryStr_england_region = """
-#     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-#     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-#     PREFIX ons: <http://statistics.data.gov.uk/def/statistical-geography#>
-#     PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
-#     PREFIX ons_geosparql: <http://www.opengis.net/ont/geosparql#>
-#     SELECT DISTINCT ?LACode_area (GROUP_CONCAT(?areaBoundary;SEPARATOR = '***') AS ?Geo_InfoList)
-#     WHERE
-#     {
-#     ?area ons:status "live" .
-#     ?area rdf:type ons:Statistical-Geography .
-#     ?area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> .
-#     ?area <http://publishmydata.com/def/ontology/foi/code> ?LACode_area .
-#     ?area ons_geosparql:hasGeometry ?geometry .
-#     ?geometry ons_geosparql:asWKT ?areaBoundary .
-#     } GROUP BY ?LACode_area
-#     """
-#     # Due to the limitation of the returned result exerted on the ONS endpoint, the query has to be splited into two parts
-#     queryStr_SWN = """
-#     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-#     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-#     PREFIX ons: <http://statistics.data.gov.uk/def/statistical-geography#>
-#     PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
-#     PREFIX ons_geosparql: <http://www.opengis.net/ont/geosparql#>
-#     SELECT DISTINCT ?LACode_area (GROUP_CONCAT(?areaBoundary;SEPARATOR = '***') AS ?Geo_InfoList)
-#     WHERE
-#     {
-#     ?area ons:status "live" .
-#     ?area rdf:type ons:Statistical-Geography .
-#     { ?area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/W92> .} UNION 
-#     { ?area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/S92> .} UNION
-#     { ?area ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/N92> .} 
-   
-#     ?area <http://publishmydata.com/def/ontology/foi/code> ?LACode_area .
-#     ?area ons_geosparql:hasGeometry ?geometry .
-#     ?geometry ons_geosparql:asWKT ?areaBoundary .
-#     } GROUP BY ?LACode_area   
-#     """
-#     print('remoteQuery Region Boundaries')
-#     res_england_region = json.loads(performQuery(ONS_Endpoint_label, queryStr_england_region))
-#     res_SWN = json.loads(performQuery(ONS_Endpoint_label, queryStr_SWN))
-#     print('queryRegionBoundaries is done')
-#     for swn in res_SWN:
-#         res_england_region.append(swn)
-    
-#     if len(res_england_region) != 12:
-#         raise Exception('The number of the region should be 12 in total but the number of queried is ' + str(len(res)))
-#     # clear the symbols in the query results
-#     for r in res_england_region:
-#       for key in r.keys():
-#           if '\"^^' in  r[key] :
-#             r[key] = (r[key].split('\"^^')[0]).replace('\"','') 
-            
-#     # Check the availability of the geometry of each area
-#     for r in res_england_region:
-#       if len(r["Geo_InfoList"]) == 0: 
-#           raise Exception('There is one place does not have geometry information which is', r["LACode_area"], ', please check the query string and the place status in ONS.')
-#       elif "***" in r['Geo_InfoList']:
-#           r['Geo_InfoList'] = r['Geo_InfoList'].split("***")[0]
-#       r['Geo_InfoList'] = geojson.dumps(mapping(loads(r['Geo_InfoList']))) 
-#       r['Geo_InfoList'] = ast.literal_eval(r['Geo_InfoList'])
-#     return res_england_region
-
-# """Only query the boundary of the Cardiff from ONS"""
-# def queryCardiffBound(ons_label):
-#     queryStr = """
-#     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-#     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-#     PREFIX ons: <http://statistics.data.gov.uk/def/statistical-geography#>
-#     PREFIX ons_entity: <http://statistics.data.gov.uk/def/statistical-entity#>
-#     PREFIX ons_geosparql: <http://www.opengis.net/ont/geosparql#>
-#     SELECT DISTINCT ?areaBoundary 
-#     WHERE
-#     {
-#     ?area rdf:type ons:Statistical-Geography .
-#     ?area <http://publishmydata.com/def/ontology/foi/code> 'W06000015' .
-#     ?area ons_geosparql:hasGeometry ?geometry .
-#     ?geometry ons_geosparql:asWKT ?areaBoundary .
-#     } 
-#     """
-    
-#     res = json.loads(performQuery(ons_label, queryStr))
-#     cardiffBound = res[0]
-#     cardiffBound['areaBoundary'] = loads(cardiffBound['areaBoundary']) #
-#     return cardiffBound['areaBoundary'] 
-
-#####*****************************TEST ENDS*****************************####
-
-
 
 if __name__ == '__main__':
     # sl_pp = "C:\\Users\\wx243\\Desktop\\KGB\\My project\\1 Ongoing\\4 UK Digital Twin\\A_Box\\UK_Power_Plant\\Sleepycat_UKpp"
@@ -459,7 +360,7 @@ if __name__ == '__main__':
     # print(res)
     # res = queryPowerPlantAttributes('ukdigitaltwin_test2')
     # res = queryGBOrNIBoundary('ons')
-    res = queryWithinRegion('W92000004', 'ons')
+    res = queryWithinRegion('E07000066', 'ons')
     # res = queryCardiffBound('ons')
     # res = queryifWithin('E12000007', 'K03000001', 'ons')
     # res = queryElectricitySystemIRI('ukdigitaltwin_test2', 'Great_Britain')
