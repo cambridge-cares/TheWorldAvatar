@@ -79,7 +79,7 @@ public class TBoxGeneration implements ITBoxGeneration {
 	 * Stores the mapping between a relation and its range consisting of
 	 * union of classes, for example, X UNION Y UNION Z. This mapping will
 	 * help find the subclass of relationship between a subset appearing
-	 * as the domain (e.g., X or X U Y) and the superset.
+	 * as the range (e.g., X or X U Y) and the superset.
 	 */
 	public static Map<String, List<String>> relationUnionOfRangeClassMap = new HashMap<String, List<String>>();
 	
