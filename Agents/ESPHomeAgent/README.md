@@ -149,7 +149,7 @@ If you want to spin up this agent as part of a stack, instead of `docker-compose
 - Copy the contents of `config/client.properties_stack` into `config/client.properties` and copy the contents of `config/esphome-client.properties_stack` into `config/esphome-client.properties`, inserting the name of your stack.
 - Build the image via `docker-compose build`. Do not start the container.
 - Copy the `json` file from the `stack-manager-input-config` folder into `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/services/`.
-- Create TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/<STACK NAME>.json manually if it doesn't exist. If it exists already, append the agent to the json file (Read [Stack configuration](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#stack-configuration)).
+- Go to the stack manager folder by following this route: `TheWorldAvatar/Deploy/dynamic/stack-manager/`, check whether there is a `<STACK NAME>.json` under the sub folder `/inputs/config/` and create one if it doesn't exist. If it exists already, append the agent to the json file. (Read [Stack configuration](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#stack-configuration) for more information.)
 - Start the stack manager as usual. This should start the container.
 
 
