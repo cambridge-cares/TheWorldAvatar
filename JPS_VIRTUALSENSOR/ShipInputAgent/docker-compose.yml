@@ -15,9 +15,9 @@ services:
       - LAST_READ_FILE=/misc/last_read_file # stores the last read json file, so that the agent chooses the next following file correctly
       - TIME_OFFSET_FILE=/misc/time_offset_file # when files in the data folder are exhausted, a time offset is added and the data is cycled through again
       - GEOSERVER_WORKSPACE=dispersion
-      - EMISSIONS_AGENT_URL=http://emissions-agent:8080/EmissionsAgent/
+      - EMISSIONS_AGENT_URL=http://${STACK_NAME}-emissions-agent:8080/EmissionsAgent/
       - EMISSIONS_AGENT_IRI=http://theworldavatar.com/kg/dispersion/EmissionsAgent
-      - PYTHON_SERVICE_URL=http://${STACK_NAME}_python-service:5000
+      - PYTHON_SERVICE_URL=http://${STACK_NAME}-python-service:5000
       - PARALLELISE_CALCULATIONS=true
     configs:
       - postgis
@@ -38,6 +38,6 @@ services:
 
 volumes:
   logs:
-    name: "logs"
+    name: "${STACK_NAME}_logs"
   misc:
     name: "misc"
