@@ -57,12 +57,12 @@ docker-compose up -d
 
 ## Agent Endpoints 
 
-The agent is reachable at two endpoints: run endpoint (http://localhost:10101/openmeteo_agent/run), where the agent will instantiate the weather data retrieved with the Open-Meteo API for the user specified coordinate and time; delete endpoint (http://localhost:10101/openmeteo_agent/delete), where the agent will delete the instantiated weather triples at the user specified coordinate.
+The agent accepts POST requests and is reachable at two endpoints: run endpoint (http://localhost:10101/openmeteo_agent/run), where the agent will instantiate the weather data retrieved with the Open-Meteo API for the user specified coordinate and time; delete endpoint (http://localhost:10101/openmeteo_agent/delete), where the agent will delete the instantiated weather triples at the user specified coordinate.
 
 ### 1. Run Endpoint
 Available at http://localhost:10101/openmeteo_agent/run
 
-The run endpoint accepts the following request parameters:
+The run endpoint accepts the following POST request parameters:
 - ```latitude```: the latitude of the weather station in WGS84
 - ```longitude```: the longitude of the weather station in WGS84
 - ```start_date```: the start date of the historic weather data wanted in "yyyy-mm-dd" as a string
@@ -89,7 +89,7 @@ After receiving the above request, the agent will instantiate a weather station 
 ### 2. Delete Endpoint
 Available at http://localhost:10101/openmeteo_agent/delete
 
-The delete endpoint accepts the following request parameters:
+The delete endpoint accepts the following POST request parameters:
 - ```latitude```: the latitude of the weather station in WGS84
 - ```longitude```: the longitude of the weather station in WGS84
 

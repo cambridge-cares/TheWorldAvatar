@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.agent.openmeteoagent;
 
 import org.apache.jena.arq.querybuilder.WhereBuilder;
+import org.apache.zookeeper.Op;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -13,16 +14,15 @@ import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.HttpMethod;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -58,17 +58,6 @@ public class OpenMeteoAgentTest {
             Method processRequestParameters = agent.getClass().getDeclaredMethod("processRequestParameters", JSONObject.class);
             assertNotNull(processRequestParameters);
 
-            Field uri_run = agent.getClass().getDeclaredField("URI_RUN");
-            assertNotNull(uri_run);
-            uri_run.setAccessible(true);
-            Field key_lat = agent.getClass().getDeclaredField("KEY_LAT");
-            assertNotNull(key_lat);
-            Field key_long = agent.getClass().getDeclaredField("KEY_LONG");
-            assertNotNull(key_long);
-            Field key_start = agent.getClass().getDeclaredField("KEY_START");
-            assertNotNull(key_start);
-            Field key_end = agent.getClass().getDeclaredField("KEY_END");
-            assertNotNull(key_end);
             Field api_hourly = agent.getClass().getDeclaredField("API_HOURLY");
             assertNotNull(api_hourly);
             api_hourly.setAccessible(true);
@@ -103,11 +92,12 @@ public class OpenMeteoAgentTest {
             doReturn(mockConn).when(mockRDBStoreClient).getConnection();
 
             JSONObject testRequestParams = new JSONObject()
-                    .put("requestUrl", uri_run.get(agent).toString())
-                    .put(key_lat.get(agent).toString(), 1.00)
-                    .put(key_long.get(agent).toString(), 2.00)
-                    .put(key_start.get(agent).toString(), "2021-01-01")
-                    .put(key_end.get(agent).toString(), "2021-01-02");
+                    .put(OpenMeteoAgent.KEY_REQ_URL, OpenMeteoAgent.URI_RUN)
+                    .put(OpenMeteoAgent.KEY_REQ_METHOD, HttpMethod.POST)
+                    .put(OpenMeteoAgent.KEY_LAT, "1.00")
+                    .put(OpenMeteoAgent.KEY_LON, "2.00")
+                    .put(OpenMeteoAgent.KEY_START, "2021-01-01")
+                    .put(OpenMeteoAgent.KEY_END, "2021-01-02");
 
             List<Double> testData = new ArrayList<>();
             testData.add(1.0);
@@ -158,11 +148,8 @@ public class OpenMeteoAgentTest {
             verify(agent, times(1)).getWeatherData(anyDouble(), anyDouble(), anyString(), anyString());
 
             // Test processRequestParameters(JSONObject.class) with URI_DELETE endpoint
-            Field uri_delete = agent.getClass().getDeclaredField("URI_DELETE");
-            assertNotNull(uri_delete);
-            uri_delete.setAccessible(true);
 
-            testRequestParams.put("requestUrl", uri_delete.get(agent).toString());
+            testRequestParams.put(OpenMeteoAgent.KEY_REQ_URL, OpenMeteoAgent.URI_DELETE);
 
             JSONArray testQueryResults = new JSONArray()
                     .put(new JSONObject().put("timeseries", "ts").put("measure", "ms").put("quantity", "qt"))
@@ -189,17 +176,6 @@ public class OpenMeteoAgentTest {
             Method validateInput = agent.getClass().getMethod("validateInput", JSONObject.class);
             assertNotNull(validateInput);
 
-            Field key_lat = agent.getClass().getDeclaredField("KEY_LAT");
-            key_lat.setAccessible(true);
-            Field key_long = agent.getClass().getDeclaredField("KEY_LONG");
-            key_long.setAccessible(true);
-            Field key_start = agent.getClass().getDeclaredField("KEY_START");
-            key_start.setAccessible(true);
-            Field key_end = agent.getClass().getDeclaredField("KEY_END");
-            key_end.setAccessible(true);
-            Field uri_run = agent.getClass().getDeclaredField("URI_RUN");
-            uri_run.setAccessible(true);
-
             JSONObject testJSON = new JSONObject();
 
             try {
@@ -209,11 +185,11 @@ public class OpenMeteoAgentTest {
                 assertEquals(((InvocationTargetException) e).getTargetException().getClass(), BadRequestException.class);
             }
 
-            testJSON.put("requestUrl", uri_run.get(agent).toString());
-            testJSON.put(key_lat.get(agent).toString(), 1.0);
-            testJSON.put(key_long.get(agent).toString(), 1.0);
-            testJSON.put(key_start.get(agent).toString(), "2021-01-02");
-            testJSON.put(key_end.get(agent).toString(), "2021-01-01");
+            testJSON.put(OpenMeteoAgent.KEY_REQ_URL, OpenMeteoAgent.URI_RUN);
+            testJSON.put(OpenMeteoAgent.KEY_LAT, "1.0");
+            testJSON.put(OpenMeteoAgent.KEY_LON, "1.0");
+            testJSON.put(OpenMeteoAgent.KEY_START, "2021-01-02");
+            testJSON.put(OpenMeteoAgent.KEY_END, "2021-01-01");
 
             try {
                 validateInput.invoke(agent, testJSON);
@@ -222,7 +198,8 @@ public class OpenMeteoAgentTest {
                 assertEquals(((InvocationTargetException) e).getTargetException().getClass(), BadRequestException.class);
             }
 
-            testJSON.put(key_end.get(agent).toString(), "2021-01-03");
+            testJSON.put(OpenMeteoAgent.KEY_END, "2021-01-03");
+            testJSON.put(OpenMeteoAgent.KEY_REQ_METHOD, HttpMethod.POST);
 
             assertTrue((Boolean) validateInput.invoke(agent, testJSON));
         }

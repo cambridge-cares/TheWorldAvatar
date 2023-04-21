@@ -3,10 +3,10 @@ package uk.ac.cam.cares.jps.agent.openmeteoagent;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
+import javax.ws.rs.HttpMethod;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import org.apache.commons.lang.StringUtils;
 import org.apache.jena.arq.querybuilder.SelectBuilder;
 import org.apache.jena.arq.querybuilder.UpdateBuilder;
 import org.apache.jena.arq.querybuilder.WhereBuilder;
@@ -45,11 +45,14 @@ import java.util.stream.IntStream;
                 OpenMeteoAgent.URI_DELETE
         })
 public class OpenMeteoAgent extends JPSAgent {
+    public static final String KEY_REQ_METHOD = "method";
+    public static final String KEY_REQ_URL = "requestUrl";
+
     public static final String URI_RUN = "/run";
     public static final String URI_DELETE = "/delete";
 
     public static final String KEY_LAT = "latitude";
-    public static final String KEY_LONG = "longitude";
+    public static final String KEY_LON = "longitude";
     public static final String KEY_START = "start_date";
     public static final String KEY_END = "end_date";
 
@@ -126,9 +129,9 @@ public class OpenMeteoAgent extends JPSAgent {
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
         if (validateInput(requestParams)) {
-            if (requestParams.getString("requestUrl").contains(URI_RUN)) {
+            if (requestParams.getString(KEY_REQ_URL).contains(URI_RUN)) {
                 latitude = Double.parseDouble(requestParams.getString(KEY_LAT));
-                longitude = Double.parseDouble(requestParams.getString(KEY_LONG));
+                longitude = Double.parseDouble(requestParams.getString(KEY_LON));
                 JSONObject response = getWeatherData(latitude, longitude, requestParams.getString(KEY_START), requestParams.getString(KEY_END));
 
                 String timezone = response.getString(API_TIMEZONE);
@@ -180,9 +183,9 @@ public class OpenMeteoAgent extends JPSAgent {
 
                 requestParams.append(KEY_STATION, stationIRI);
             }
-            else if (requestParams.getString("requestUrl").contains(URI_DELETE)) {
+            else if (requestParams.getString(KEY_REQ_URL).contains(URI_DELETE)) {
                 latitude = Double.parseDouble(requestParams.getString(KEY_LAT));
-                longitude = Double.parseDouble(requestParams.getString(KEY_LONG));
+                longitude = Double.parseDouble(requestParams.getString(KEY_LON));
 
                 String stationIRI = getStation(latitude, longitude);
 
@@ -233,26 +236,28 @@ public class OpenMeteoAgent extends JPSAgent {
      */
     @Override
     public boolean validateInput(JSONObject requestParams) {
-        boolean validate;
+        boolean validate = false;
 
-        try{
-            // check latitude and longitude are provided, and are numbers
-            validate = !requestParams.get(KEY_LAT).equals(null) && ! requestParams.get(KEY_LONG).equals(null)
-                    && !StringUtils.isNumeric(requestParams.getString(KEY_LAT)) && !StringUtils.isNumeric(requestParams.getString(KEY_LONG));
+        try {
+            if (requestParams.get(KEY_REQ_METHOD).equals(HttpMethod.POST)) {
+                // check latitude and longitude are provided, and are numbers
+                validate = !requestParams.get(KEY_LAT).equals(null) && !requestParams.get(KEY_LON).equals(null)
+                        && isNumber(requestParams.getString(KEY_LAT)) && isNumber(requestParams.getString(KEY_LON));
 
-            if (requestParams.getString("requestUrl").contains(URI_RUN)){
-                validate = !requestParams.getString(KEY_START).isEmpty() && !requestParams.getString(KEY_END).isEmpty()
-                        && validateDate(requestParams.getString(KEY_START))
-                        && validateDate(requestParams.getString(KEY_END));
+                if (requestParams.getString(KEY_REQ_URL).contains(URI_RUN)) {
+                    validate = validate &&!requestParams.getString(KEY_START).isEmpty() && !requestParams.getString(KEY_END).isEmpty()
+                            && validateDate(requestParams.getString(KEY_START))
+                            && validateDate(requestParams.getString(KEY_END));
 
-                SimpleDateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
-                Date start = ymd.parse(requestParams.getString(KEY_START));
-                Date end = ymd.parse(requestParams.getString(KEY_END));
-                Date now = new Date();
+                    SimpleDateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
+                    Date start = ymd.parse(requestParams.getString(KEY_START));
+                    Date end = ymd.parse(requestParams.getString(KEY_END));
+                    Date now = new Date();
 
-                // start date cannot be later than end date, and end date cannot be later than the date at the time of the incoming request
-                validate = validate && !end.before(start)
-                        && (end.before(now) || end.equals(now));
+                    // start date cannot be later than end date, and end date cannot be later than the date at the time of the incoming request
+                    validate = validate && !end.before(start)
+                            && (end.before(now) || end.equals(now));
+                }
             }
         }
         catch (Exception e){
@@ -291,7 +296,7 @@ public class OpenMeteoAgent extends JPSAgent {
      */
     public JSONObject getWeatherData(Double latitude, Double longitude, String startDate, String endDate) {
         String query = KEY_LAT + "=" + latitude + "&";
-        query = query + KEY_LONG + "=" + longitude + "&";
+        query = query + KEY_LON + "=" + longitude + "&";
         query = query + KEY_START + "=" + startDate + "&";
         query = query + KEY_END + "=" + endDate + "&" + API_TIMEZONE + "=auto&" + API_WINDSPEED_UNIT +"&" + API_HOURLY + "=";
 
@@ -655,5 +660,20 @@ public class OpenMeteoAgent extends JPSAgent {
 
         // create time series for weather data
         createTimeSeries(dataIRIs, dataClass, timeUnit, tsTypes, durations, units);
+    }
+
+    /**
+     * Checks if a string is able to be parsable as a number
+     * @param number string to check
+     * @return boolean value of check
+     */
+    public boolean isNumber(String number) {
+        try{
+            Double.parseDouble(number);
+            return true;
+        }
+        catch (Exception e){
+            return false;
+        }
     }
 }
