@@ -42,7 +42,7 @@ docker build . -t bms-query-agent:1.0.0
 ```
 
 ### 2) Add Config to Stack Manager
-Copy `stack-manager-input-config-service/bms-query-agent.json` to `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/services/`.
+Copy `stack-manager-input-config-service/bms-query-agent.json` to `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/services/`.
 
 Create `TheWorldAvatar/Deploy/stacks/dynamic/stack-manager/inputs/config/<STACK NAME>.json` manually if it doesn't exist. If it exists already, append the agent to the file as follows:
 ```json
