@@ -12,27 +12,22 @@ from PIL import Image
 import nltk.tag, nltk.data
 import nltk
 class Parsing():
-    def __init__(self, question):
-        self.question = question
+    def __init__(self):
+        # self.question = question
         # stop_words = set(stopwords.words('english'))
         self.stop_words = ["what", "is", "the", "list", "of", "are", "with", "a", "one", "does", "do", "species", "after", ",", "show"]
         self.stemmer = PorterStemmer()
         nltk.download('maxent_treebank_pos_tagger')
         tagger_path = r'taggers/maxent_treebank_pos_tagger/english.pickle'
         default_tagger = nltk.data.load(tagger_path)
+
+
         model = {'reaction': 'TARGET', 'mechanism': 'TARGET', 'products': 'PRODUCT_INDICATOR',
                 'product': 'PRODUCT_INDICATOR', 'reactants': 'REACTANT_INDICATOR', 'reactant': 'REACTANT_INDICATOR',
                 'form': 'PRD', 'forms': 'PRD', 'formed': 'PRD', 'give': 'PRD', 'gives': 'PRD',
                 'produce': 'PRD', 'produces': 'PRD', 'ADD': 'ADD', 'reaction_rate': 'REL', 'reversible': 'REL',
                 'contains': 'REL', 'react': 'ADD', 'combin': 'ADD', 'compris':'PRD', 'produc': 'PRD', 'split': 'SPLIT'}
         self.tagger = nltk.tag.UnigramTagger(model=model, backoff=default_tagger)
-        # reaction_pattern = """NP: {<NNP><NN>|<NN><NNP>|<NN>*<NNP>*}
-        #     PRD: {<PRD>}
-        #     CLASS: {<WP><NP>|<TARGET>}
-        #     REACTION: {<NP><ADD><NP>|<NP>}
-        #     REACTION_PART: {<REAC_C><PRD><REAC_C>}
-        #     REL: {<REL>}
-        #     IN: {<IN>}"""
 
 
         self.reaction_pattern = """
@@ -73,7 +68,7 @@ class Parsing():
         NPChunker = nltk.RegexpParser(self.reaction_pattern)
         # NPChunker = nltk.RegexpParser(pattern)
         result = NPChunker.parse(sentence)
-        result.set_label(self.question.replace(" ", "_"))
+        # result.set_label(self.question.replace(" ", "_"))
 
         reactants = []
         products = []
@@ -144,7 +139,7 @@ if __name__=="__main__":
     breaking_questions =  breaking_questions + reaction_questions
     
     for sentence in breaking_questions.split('\n'):
-        my_parser = Parsing(sentence)
+        my_parser = Parsing()
         print(sentence)
         t = my_parser.token_and_tag(sentence)
         my_parser.parsing(t)
