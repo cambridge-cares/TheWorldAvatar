@@ -36,11 +36,11 @@ class CrossGraphQAEngine:
         self.nel = ChemicalNEL()
         # self.ner_lite = IRILookup(nel=self.nel, enable_class_ner=True)
 
-
         self.domain_encoding = {"pubchem": 0, "ontocompchem": 1, "ontospecies": 2,
                                 "ontokin": 3, "wikidata": 4, "ontospecies_new": 5,
                                 "ontoagent": 6, "ontomops": 7, "ontokin_reaction": 8}
-        # self.domain_encoding = {"wikidata": 0}
+
+        # self.domain_encoding = {"ontokin_reaction": 0}
 
         self.got_numerical_values = False
         self.numerical_domain_list = ["wikidata", "ontospecies_new", "ontomops"]
@@ -60,6 +60,8 @@ class CrossGraphQAEngine:
         self.score_adjust_model.load_state_dict(torch.load(os.path.join(self.dataset_path,
                                                                         'cross_graph_model_with_all_9'),
                                                            map_location=self.device))
+        self.stop_words = ["find", "all", "species", "what", "is", "the", "show", "me", "and", "as", "product"
+                          , "products", "reactant", "reactants"]
         self.init_engines()
 
     def init_engines(self):
@@ -120,7 +122,7 @@ class CrossGraphQAEngine:
         re_ranked_labels = [answer_list[i] for i in indices]
         re_ranked_domain_list = [domain_list[i] for i in indices]
         re_ranked_engine_list = [self.engine_list[domain] for domain in re_ranked_domain_list]
-        re_ranked_score_list = [float(v.item() / 2) for v in values]
+        re_ranked_score_list = [float(v.item()) for v in values]
         re_ranked_domain_list = [self.encoding_domain[d] for d in re_ranked_domain_list]
         # re_ranked_node_value_list = [engine.value_lookup(node) for engine, node in
         #                              zip(re_ranked_engine_list, re_ranked_labels)]
@@ -139,6 +141,12 @@ class CrossGraphQAEngine:
 
         return result
 
+    def filter_for_cross_graph(self, question):
+        tokens = question.strip().lower().split(" ")
+        tokens = [t for t in tokens if t in self.stop_words]
+        return " ".join(tokens)
+
+
     def run(self, question, disable_alignment: bool = False, heads={}):
         """
         The main interface for the integrated QA engine
@@ -154,7 +162,7 @@ class CrossGraphQAEngine:
         got_numerical_values = False
         numerical_domain = None
 
-        # stop_words = ["find", "all", "species", "what", "is", "the", "show", "me", "What", "Show"]
+        #
         stop_words = []
         tokens = [t for t in question.split(" ") if t.lower().strip() not in stop_words]
         question = " ".join(tokens)
@@ -173,6 +181,7 @@ class CrossGraphQAEngine:
 
                 if domain == "ontoagent":
                     results = engine.run(question=question)
+                    labels, scores, targets = results
                     print("=============== RESULT FROM AGENT ============")
                     print(results)
 
@@ -213,7 +222,9 @@ class CrossGraphQAEngine:
             return self.prepare_for_visualization(target_list=target_list[numerical_domain],
                                                   answer_list=label_list[numerical_domain])
         else:
-            tokenized_question = self.nlp.tokenize_question(question, 1)
+            question_for_cross_graph = self.filter_for_cross_graph(question)
+
+            tokenized_question = self.nlp.tokenize_question(question_for_cross_graph, 1)
             score_factors = self.score_adjust_model.predict_domain(tokenized_question).squeeze()
             adjusted_score_list = []
             normalized_score_list = self.normalize_scores(score_list)
@@ -247,16 +258,17 @@ if __name__ == '__main__':
 
     my_qa_engine = CrossGraphQAEngine()
 
-    text = "what is the charge of CH4"
-    rst = my_qa_engine.run(question=text)
-    print(rst)
+    # text = "what is the charge of CH4"
+    # rst = my_qa_engine.run(question=text)
+    # print(rst)
+    # print("==============================================================================")
+    # text = "find all species with molecular weight more than 100"
+    # rst = my_qa_engine.run(question=text)
+    # print(rst)
     print("==============================================================================")
-    text = "find all species with molecular weight more than 100"
+    text = "heat capacity of C3H4O"
     rst = my_qa_engine.run(question=text)
     print(rst)
-
-
-
 
     # while text != "quit":
     #     START_TIME = time.time()

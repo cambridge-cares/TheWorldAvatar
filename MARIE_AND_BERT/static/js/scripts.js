@@ -231,7 +231,7 @@ function makeRequest(question, type, resultType, successFunction, promises) {
 		dataType: resultType,
 		timeout: (10000 * 60),
 		success: function (data) {
-
+			console.log("data received ", data)
 			successFunction(data);
 			asking--;
 		},
@@ -258,7 +258,7 @@ function makeRequest(question, type, resultType, successFunction, promises) {
 */
 
 function handleResults(rawResult){
-
+	console.log("raw result in handle results", rawResult)
 	if(rawResult === null || rawResult === undefined || rawResult === "null") {
 		let msg = "<span style=\"color: red; padding-left: 15px;\">The World Avatar failed to provide an answer.</span>";
 		let chatbotResults = document.getElementById("chatbot-results");
@@ -271,12 +271,20 @@ function handleResults(rawResult){
 	// 3. call processChatbotResults or process matrix data accordingly
 	var jsonData = null;
 	jsonData = convertToJSONResults(rawResult);
+	console.log("jsonData", jsonData)
+	// split the results, all the rows with domain "ontoagent" goes somewhere else
+
+
 	if ('attribute' in jsonData || 'multiple_results' in jsonData) {
         process_matrix_data(jsonData);
     }
     else{
         processChatbotResults(jsonData);
     }
+
+
+
+
 }
 
 
@@ -697,7 +705,7 @@ function convertToJSONResults(rawResults) {
             console.log('Type of the object is ', typeof(jsonData))
 		} catch (err1) {
             console.log('err1')
-
+			console.log("rawResults in err1", rawResults)
 			try {
 				jsonData = JSON.parse(JSON.stringify(rawResults));
                 return jsonData;
