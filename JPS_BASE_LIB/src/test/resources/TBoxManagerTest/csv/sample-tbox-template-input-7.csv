@@ -6,9 +6,9 @@ TestTBox,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,http://www.theworldavat
 A,Class,,,,,,Comment for A,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,A
 B,Class,A,IS-A,,,,Comment for B,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,B
 C,Class,B,IS-A,,,,Comment for C,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,C
-D,Class,,,,,,Comment for D,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,D
+D,Class,A,IS-A,,,,Comment for D,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,D
 E,Class,,,,,,Comment for E,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,E
-F,Class,,,,,,Comment for F,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,F
+F,Class,A,IS-A,,,,Comment for F,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,F
 G,Class,,,,,,Comment for G,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,G
 H,Class,,,,,,Comment for H,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,H
 I,Class,,,,,,Comment for I,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,I
