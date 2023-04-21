@@ -136,7 +136,9 @@ http://<IP address>:<port number>/<label>
 ```
 More information can be found in the `Dockerfile` in the same directory as this README section.
 
-To build and start the agent, open up the command prompt in the same directory as this README, run
+#### Agent deployment out of the stack
+
+To build and start the agent out of the stack, open up the command prompt in the same directory as this README, run
 ```
 docker-compose up -d
 ```
