@@ -20,7 +20,8 @@ class IntegratedTrainingFileCreator:
             count_dict[key] = 1
 
     def __init__(self, sparql_namespace, ontology, sub_ontology,
-                 endpoint_url="http://www.theworldavatar.com/blazegraph", other_frac=0.0, same_frac=1.0, node_value_dict =None):
+                 endpoint_url="http://www.theworldavatar.com/blazegraph", other_frac=0.0, same_frac=1.0,
+                 node_value_dict=None):
         self.other_frac = other_frac
         self.same_frac = same_frac
         self.sparql_namespace = sparql_namespace
@@ -35,7 +36,6 @@ class IntegratedTrainingFileCreator:
             self.cached_query = json.loads(open(self.cached_query_path).read())
         else:
             self.cached_query = {}
-
 
     def query_blazegraph(self, query):
         # print(f"Querying {self.endpoint_url}")
@@ -74,7 +74,7 @@ class IntegratedTrainingFileCreator:
 
         return singular_triples, non_singular_triples
 
-    def create_supporting_files_for_embedding(self, inference_target_dictionary=None, node_value_dict = None):
+    def create_supporting_files_for_embedding(self, inference_target_dictionary=None, node_value_dict=None):
         ontology = f"{self.ontology}/{self.sub_ontology}"
         MakeIndex.create_indexing(self.sub_ontology, data_dir=f'CrossGraph/{ontology}')
         my_extractor = HopExtractor(dataset_dir=self.sub_ontology_path, dataset_name=self.sub_ontology)

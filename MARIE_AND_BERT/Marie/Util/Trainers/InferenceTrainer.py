@@ -439,7 +439,7 @@ if __name__ == "__main__":
     if args.ontology:
         ontology = args.ontology
 
-    sub_ontology = None
+    sub_ontology = "full_500"
     if args.sub_ontology:
         sub_ontology = args.sub_ontology
 

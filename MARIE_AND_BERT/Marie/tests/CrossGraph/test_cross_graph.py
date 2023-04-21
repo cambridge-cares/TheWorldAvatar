@@ -22,8 +22,8 @@ class TestCrossGraph(unittest.TestCase):
         my_alignment_model = CrossGraphAlignmentModel(device="cpu")
         dataset_path = os.path.join(DATA_DIR, "CrossGraph/cross_graph_model_with_all_9")
         my_alignment_model.load_state_dict(torch.load(dataset_path, map_location="cpu"))
-        questions = ["molar mass",
-                     "boiling point",
+        questions = ["molar mass of benzene",
+                     "boiling point of CH4",
                      "geometry",
                      "vapour pressure",
                      "chemical structure",
@@ -32,11 +32,12 @@ class TestCrossGraph(unittest.TestCase):
                      "flash point",
                      "location discovery",
                      "reactions",
-                     "heat capacity",
+                     "heat capacity of C34CD",
                      "mops with assembly model",
                      "cbu with shape",
                      "logs",
-                     "logp"]
+                     "logp",
+                     "reactions H2 O2"]
 
 
         for q in questions:

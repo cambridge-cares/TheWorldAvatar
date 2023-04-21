@@ -6,6 +6,9 @@ import sys
 
 from pykg2vec.common import KGEArgParser
 from pykg2vec.utils.bayesian_optimizer import BaysOptimizer
+from pykg2vec.models.pointwise import Complex
+from pykg2vec.utils.trainer import Trainer
+from pykg2vec.utils.evaluator import Evaluator
 
 
 def main():

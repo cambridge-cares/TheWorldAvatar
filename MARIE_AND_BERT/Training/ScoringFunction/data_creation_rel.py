@@ -6,8 +6,6 @@ import pandas as pd
 import csv
 import os
 import pickle
-import random
-from pprint import pprint
 from Marie.Util.location import DATA_DIR
 
 ent_label_path = os.path.join(DATA_DIR, r'ent_labels.tsv')
@@ -34,7 +32,6 @@ for row in input_file:
     short_iupac_names = []
     formula_list = []
     inchi_standard_list = []
-
     iupac_name = row['iupac_name']
     formula = row['molecular_formula']
     inchi_standard = row['inchi_standard']
@@ -43,12 +40,10 @@ for row in input_file:
     if len(iupac_name) < 20:
         short_iupac_names.append(row['iupac_name'])
     formula_list.append(formula)
-
     name_list_for_one_species = short_iupac_names + formula_list
     name_list_for_one_species = [n for n in name_list_for_one_species if n.strip() != '']
     species_name_mapping[CID] = name_list_for_one_species
 
-# stop_list = ['count_def_atom_stereo', 'count_undef_atom_setereo', 'count_def_bond_stereo', 'count_undef_bond_setereo']
 stop_list = []
 how_many_relations = []
 normal_relations = []
@@ -131,9 +126,3 @@ df_cross_score = pd.DataFrame(questions_for_cross_graph_training)
 df_cross_score.columns = ['question', 'head', 'domain', 'answer']
 
 df_cross_score.to_csv(cross_score_file_name, sep='\t')
-
-# with open('pubchem_cross_score', "w", newline='') as the_file:
-#     csv.register_dialect("custom", delimiter="\t", skipinitialspace=True)
-#     writer = csv.writer(the_file, dialect="custom")
-#     for tup in all_question:
-#         writer.writerow(tup)

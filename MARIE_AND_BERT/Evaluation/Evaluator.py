@@ -7,7 +7,7 @@ sys.path.append("..")
 
 # from Marie.CrossGraphQAEngine import CrossGraphQAEngine
 # from Marie.OntoSpecies import OntoSpeciesQAEngine
-# from Marie.PubChem import PubChemEngine
+from Marie.PubchemEngine import PubChemQAEngine
 # from Marie.OntoCompChem import OntoCompChemEngine
 # from Marie.Ontokin import OntoKinQAEngine
 # from Marie.CrossGraphQAEngine import CrossGraphQAEngine
@@ -30,7 +30,7 @@ class Evaluator:
 
     def __init__(self):
         self.dataset_dir = os.path.join(DATA_DIR, 'CrossGraph')
-        # self.pubchem_engine = PubChemEngine()
+        self.pubchem_engine = PubChemQAEngine()
         # self.ontospecies_engine = OntoSpeciesQAEngine()
         # self.ontocompchem_engine = OntoCompChemEngine()
         # self.ontokin_engine = OntoKinQAEngine()
@@ -326,7 +326,9 @@ class Evaluator:
             question, head, domain, answer, mention, rel = row
             print(f"========== Evaluating {question} - Number: {total_counter} out of {len(df_test)} ==============")
             try:
-                answer_list, score_list, target_list = engine.selected_ontology_questions(question)
+                # answer_list, score_list, target_list = engine.selected_ontology_questions(question)
+                answer_list, score_list, target_list = engine.run(question, mention=mention)
+
                 target = target_list[0]
                 print("target", target)
                 print("mention", mention)
@@ -376,6 +378,6 @@ class Evaluator:
 
 if __name__ == "__main__":
     my_evaluator = Evaluator()
-    my_evaluator.test_numerical()
-    # my_evaluator.test_1_to_1(ontology="ontospecies", engine=my_evaluator.ontospecies_engine)
+    # my_evaluator.test_numerical()
+    my_evaluator.test_1_to_1(ontology="pubchem", engine=my_evaluator.pubchem_engine)
     # my_evaluator.test_cross_graph()

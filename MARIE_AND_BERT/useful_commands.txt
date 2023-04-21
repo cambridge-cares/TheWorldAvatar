@@ -21,6 +21,8 @@ pykg2vec-train -mn TransE -ds pubchem_mini -dsp ./DATA/pubchem_mini_full
 
 pykg2vec-train -mn Complex -ds ontocompchem_calculation -dsp ./archived/ontocompchem_calculation -l 5000 -device cuda -ngr 1 -lr 0.001
 pykg2vec-train -mn Complex -ds ontocompchem_calculation -dsp ./archived/ontocompchem_calculation -l 5000 -device cuda -ngr 1 -lr 0.001
+pykg2vec-train -mn Complex -ds wikidata_c -dsp ./DATA/wikidata_c -l 500 -device cuda -ngr 10 -lr 0.2 -lmda = 0.00001
+pykg2vec-train -mn Complex -ds ontocompchem_calculation -dsp ./archived/ontocompchem_calculation -l 5000 -device cuda -ngr 1 -lr 0.001
 
 
 
