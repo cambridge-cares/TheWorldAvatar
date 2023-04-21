@@ -134,22 +134,46 @@ Modify `api.properties` and `client.properties` in the `config` folder according
 ESPHOME_UPDATE_AGENT_MAPPINGS automatically to point towards the location of the mapping folder. The Dockerfile will copy all 3 properties files and mapping folder and set environment variables pointing 
 to their location thus you do not need to shift the properties files and mapping folder nor add in environment variables manually.
 
-To build and start the agent, open up the command prompt in the same directory as this README, run
+#### Agent deployment out of the stack
+
+To build and start the agent out of the stack, open up the command prompt in the same directory as this README, run
 ```
 docker-compose up -d
 ```
 
-The agent is reachable at "esphome-update-agent/retrieve" on localhost port 1012.
+#### Stack deployment
+
+If you want to spin up this agent as part of a stack, instead of `docker-compose up -d`, do the following:
+- Copy the contents of `config/client.properties_stack` into `config/client.properties`, inserting the name of your stack.
+- Build the image via `docker-compose build`. Do not start the container.
+- Copy the `json` file from the `stack-manager-input-config` folder into `TheWorldAvatar/Deploy/dynamic/stack-manager/inputs/config/services/`.
+- Go to the stack manager folder by following this route: `TheWorldAvatar/Deploy/dynamic/stack-manager/`, check whether there is a `<STACK NAME>.json` under the sub folder `/inputs/config/` and create one if it doesn't exist. If it exists already, append the agent to the json file. (Read [Stack configuration](https://github.com/cambridge-cares/TheWorldAvatar/tree/main/Deploy/stacks/dynamic/stack-manager#stack-configuration) for more information.)
+- Start the stack manager as usual. This should start the container.
 
 
 #### Run the agent
-To run the agent, a POST request must be sent to http://localhost:1012/esphome-update-agent/retrieve with a correct JSON Object.
+If the agent is outside of the stack, a POST request must be sent to http://localhost:1012/esphome-update-agent/retrieve with a correct JSON Object.
 Follow the request shown below.
 
 ```
 POST http://localhost:1012/esphome-update-agent/retrieve
 Content-Type: application/json
 {"agentProperties":"ESPHOME_UPDATE_AGENTPROPERTIES","apiProperties":"ESPHOME_UPDATE_APIPROPERTIES","clientProperties":"ESPHOME_UPDATE_CLIENTPROPERTIES"}
+```
+In curl syntax:
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"ESPHOME_UPDATE_AGENTPROPERTIES\",\"apiProperties\":\"ESPHOME_UPDATE_APIPROPERTIES\",\"clientProperties\":\"ESPHOME_UPDATE_CLIENTPROPERTIES\"}" http://localhost:1012/esphome-update-agent/retrieve
+```
+If the agent is in the stack, a POST request must be sent to http://localhost:3838/esphome-update-agent/retrieve with a correct JSON Object.
+Follow the request shown below.
+```
+POST http://localhost:3838/esphome-update-agent/retrieve
+Content-Type: application/json
+{"agentProperties":"ESPHOME_UPDATE_AGENTPROPERTIES","apiProperties":"ESPHOME_UPDATE_APIPROPERTIES","clientProperties":"ESPHOME_UPDATE_CLIENTPROPERTIES"}
+```
+In curl syntax:
+```
+curl -X POST --header "Content-Type: application/json" -d "{\"agentProperties\":\"ESPHOME_UPDATE_AGENTPROPERTIES\",\"apiProperties\":\"ESPHOME_UPDATE_APIPROPERTIES\",\"clientProperties\":\"ESPHOME_UPDATE_CLIENTPROPERTIES\"}" http://localhost:3838/esphome-update-agent/retrieve
 ```
 
 If the agent run successfully, you should see a JSON Object returned back that is similar to the one shown below.
