@@ -178,7 +178,19 @@ public class TimeHandler {
 
         try {
             // Run matching query
-            JSONArray jsonResult = this.rsClient.executeFederatedQuery(getEndpointURLs(), query);
+            JSONArray jsonResult = null;
+            
+            if(this.getEndpointURLs().size() == 1) {
+                LOGGER.info("Getting measurement IRIs with non-federated query.");
+                this.rsClient.setQueryEndpoint(this.getEndpointURLs().get(0));
+                jsonResult = this.rsClient.executeQuery(query);
+
+            } else {
+                LOGGER.info("Getting measurement IRIs with federated query.");
+                jsonResult = this.rsClient.executeFederatedQuery(getEndpointURLs(), query);
+            }
+            
+            
             if(jsonResult == null || jsonResult.length() == 0) {
                 LOGGER.warn("No results regarding measurements, maybe this IRI has none?");
                 return null;
