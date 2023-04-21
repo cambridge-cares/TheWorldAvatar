@@ -37,7 +37,7 @@ IfcSiteRepresentation,Class,IfcAbstractRepresentation,IS-A,,,,Defines the abstra
 IfcBuildingRepresentation,Class,IfcAbstractRepresentation,IS-A,,,,Defines the abstract representation of the building in an IFC model.,https://www.theworldavatar.com/kg/ontobim/,Ifc Building Representation
 IfcStoreyRepresentation,Class,IfcAbstractRepresentation,IS-A,,,,Defines the abstract representation of the storey in an IFC model.,https://www.theworldavatar.com/kg/ontobim/,Ifc Storey Representation
 IfcRoomRepresentation,Class,IfcAbstractRepresentation,IS-A,,,,Defines the abstract representation of the room in an IFC model.,https://www.theworldavatar.com/kg/ontobim/,Ifc Room Representation
-IfcModelRepresentation,Class,IfcAbstractRepresentation,,,,,Defines the geometric representation of an element as an IFC model.,https://www.theworldavatar.com/kg/ontobim/,Ifc Model Representation
+IfcModelRepresentation,Class,,,,,,Defines the geometric representation of an element as an IFC model.,https://www.theworldavatar.com/kg/ontobim/,Ifc Model Representation
 hasBaseSurface,Object Property,,,HalfSpaceSolid,SurfacePlane,,A relationship that defines the surface defining side for a half space solid.,https://www.theworldavatar.com/kg/ontobim/,has base surface
 hasBooleanOperator ,Object Property,,,BooleanClippingResult,IfcBooleanOperator,,Defines the operator type for boolean operations.,https://www.theworldavatar.com/kg/ontobim/,has boolean operator
 hasBounds,Object Property,,,Face,FaceOuterBound,,A relationship that defines the boundaries of a face.,https://www.theworldavatar.com/kg/ontobim/,has bounds
