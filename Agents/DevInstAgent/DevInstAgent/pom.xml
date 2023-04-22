@@ -193,6 +193,13 @@
             <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
+        <!-- For making queries-->
+        <dependency>
+            <groupId>org.eclipse.rdf4j</groupId>
+            <artifactId>rdf4j-sparqlbuilder</artifactId>
+            <version>3.4.3</version>
+        </dependency>
+
 
     </dependencies>
 
