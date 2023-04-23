@@ -7,6 +7,7 @@ class NLPTools:
         self.tokenizer = BertTokenizer.from_pretrained(tokenizer_name)
         self.max_length = 12
         self.device = torch.device("cpu")
+        self.nel_stop_words = ["find", "all", "list"]
 
     def tokenize_question(self, question, repeat_num):
         """
@@ -28,3 +29,8 @@ class NLPTools:
             return _question.upper().replace(_head_entity.upper(), '').strip().lower()
         except AttributeError:
             return _question.strip().lower()
+
+    def filter_stop_words_for_nel(self, question):
+        tokens = question.lower().split(" ")
+        tokens = [t for t in tokens if t.lower() not in self.nel_stop_words]
+        return " ".join(tokens).strip()

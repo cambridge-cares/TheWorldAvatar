@@ -14,9 +14,6 @@ import re
 from Marie.EntityLinking.Inference import BertNEL
 
 
-
-
-
 class ChemicalNEL:
     """
 

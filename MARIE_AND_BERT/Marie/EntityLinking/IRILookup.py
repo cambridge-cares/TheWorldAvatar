@@ -8,6 +8,7 @@ import fuzzyset
 
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.Util.CommonTools import NumericalTools
+from Marie.Util.CommonTools.NLPTools import NLPTools
 from Marie.Util.Logging import MarieLogger
 from Marie.Util.location import DICTIONARY_DIR
 
@@ -27,6 +28,7 @@ class IRILookup:
 
     def __init__(self, dataset_name=None, enable_class_ner=False, nel=None):
         self.nel = nel
+        self.nlp_tool = NLPTools()
         self.marie_logger = MarieLogger()
         self.enable_class_ner = enable_class_ner
         if enable_class_ner and (dataset_name is not None):
@@ -94,9 +96,7 @@ class IRILookup:
     def get_mention_without_class(self, question):
         question = question.replace("'s", " of ")
         results, smiles_string = self.nel.ner.find_cid(question)  # [2]
-        print("results", results)
-        print("smiles_string", smiles_string)
-        smiles_string = results[2]
+        # smiles_string = results[2]
         if smiles_string is None:
             smiles_string = results[2]
             if smiles_string == "species":
@@ -105,10 +105,12 @@ class IRILookup:
         return smiles_string
 
     def get_mention(self, question):
-        if "find" not in question:
-            question = f"find all {question}"
-        else:
-            question = question.replace("find all", "find").replace("find", "find all")
+        question = self.nlp_tool.filter_stop_words_for_nel(question)
+        if self.enable_class_ner:
+            if "find" not in question:
+                question = f"find all {question}"
+            else:
+                question = question.replace("find all", "find").replace("find", "find all")
 
         question = question.replace("degrees", "")
         # remove numbers from the question
