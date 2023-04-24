@@ -2,20 +2,17 @@ package com.cmclinnovations.mods.modssimpleagent.datamodels;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 
 public class Algorithm {
 
     private final String name;
     private final String type;
-    @JsonInclude(Include.NON_NULL)
     private final List<Variable> variables;
-    @JsonInclude(Include.NON_NULL)
-    private final int maxNumberOfResults;
-    @JsonInclude(Include.NON_NULL)
+    @JsonSetter(nulls = Nulls.SKIP)
+    private int maxNumberOfResults = Integer.MAX_VALUE;
     private final String surrogateToLoad;
-    @JsonInclude(Include.NON_NULL)
     private final Boolean saveSurrogate;
 
     private Algorithm() {
@@ -24,7 +21,6 @@ public class Algorithm {
         this.variables = null;
         this.surrogateToLoad = null;
         this.saveSurrogate = null;
-        this.maxNumberOfResults = Integer.MAX_VALUE;
     }
 
     public String getName() {
