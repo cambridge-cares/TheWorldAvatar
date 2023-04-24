@@ -14,9 +14,7 @@
      xmlns:skos="http://www.w3.org/2004/02/skos/core#"
      xmlns:terms="http://purl.org/dc/terms/"
      xmlns:OntoSpecies="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#">
-    <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontomatpassport">
-        <owl:imports rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2"/>
-    </owl:Ontology>
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontomatpassport"/>
     
 
 
@@ -1561,8 +1559,8 @@
         <rdfs:label xml:lang="en">Decomposability</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Density">
-        <rdfs:label xml:lang="en">Density</rdfs:label>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
+        <rdfs:label xml:lang="en">Density</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Dimension">
         <rdfs:label xml:lang="en">Dimension</rdfs:label>
@@ -1618,8 +1616,8 @@
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#TemporalProperty">
-        <rdfs:label xml:lang="en">Temporal property</rdfs:label>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
+        <rdfs:label xml:lang="en">Temporal property</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#TensileStrength">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
@@ -1657,8 +1655,8 @@
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">9</hasGUIPosition>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasGTIN">
-        <rdfs:label xml:lang="en">GTIN</rdfs:label>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">7</hasGUIPosition>
+        <rdfs:label xml:lang="en">GTIN</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasImage">
         <rdfs:label xml:lang="en">Image</rdfs:label>
