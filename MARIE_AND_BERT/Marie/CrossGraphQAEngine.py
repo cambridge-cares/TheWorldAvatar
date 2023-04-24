@@ -26,6 +26,33 @@ from Marie.WikidataEngine import WikidataEngine
 import threading
 
 
+def remove_mention(question, mention):
+    stop_words = ["what", "is", "are", "the", "more", "less", "than", "species", "find", "all", "over", "under", "of"]
+    flag_words = ["mops", "cbu", "assembly model"]
+    if "mops" not in question:
+        stop_words += ["with"]
+    tokens = [t for t in question.split(" ") if t.lower() not in stop_words]
+    question = " ".join(tokens).strip()
+
+    for flag_word in flag_words:
+        if flag_word in question:
+            return question
+
+    if "reaction" not in question.lower():
+        question = question.lower().replace(mention, "")
+        tokens = [t for t in question.split(" ") if t.lower() not in stop_words]
+        question = " ".join(tokens).strip()
+        return question
+    else:
+        return "reaction"
+
+
+def filter_for_mention(question):
+    question = question.lower()
+    if "what" not in question:
+        question = f"what is the {question}"
+    return question.strip()
+
 class CrossGraphQAEngine:
     """
     The cross graph QA engine will answer question across domains
@@ -34,7 +61,7 @@ class CrossGraphQAEngine:
     def __init__(self):
         self.marie_logger = MarieLogger()
         self.nel = ChemicalNEL()
-        # self.ner_lite = IRILookup(nel=self.nel, enable_class_ner=True)
+        self.ner_lite = IRILookup(nel=self.nel, enable_class_ner=False)
 
         self.domain_encoding = {"pubchem": 0, "ontocompchem": 1, "ontospecies": 2,
                                 "ontokin": 3, "wikidata": 4, "ontospecies_new": 5,
@@ -124,15 +151,10 @@ class CrossGraphQAEngine:
         re_ranked_engine_list = [self.engine_list[domain] for domain in re_ranked_domain_list]
         re_ranked_score_list = [float(v.item()) for v in values]
         re_ranked_domain_list = [self.encoding_domain[d] for d in re_ranked_domain_list]
-        # re_ranked_node_value_list = [engine.value_lookup(node) for engine, node in
-        #                              zip(re_ranked_engine_list, re_ranked_labels)]
 
         result = []
 
-        # for label, domain, score, value, target in zip(re_ranked_labels, re_ranked_domain_list, re_ranked_score_list,
-        #                                                re_ranked_node_value_list, target_list):
-        #     row = {"node": label, "domain": domain, "score": score, "value": value, "target": target}
-        #     result.append(row)
+
 
         for label, domain, score, target in zip(re_ranked_labels, re_ranked_domain_list, re_ranked_score_list,
                                                 target_list):
@@ -143,13 +165,18 @@ class CrossGraphQAEngine:
 
         return result
 
-    def filter_for_cross_graph(self, question):
-        tokens = question.strip().lower().split(" ")
-        tokens = [t for t in tokens if t not in self.stop_words]
-        return " ".join(tokens)
+    # def filter_for_cross_graph(self, question):
+    #     tokens = question.strip().lower().split(" ")
+    #     tokens = [t for t in tokens if t not in self.stop_words]
+    #     return " ".join(tokens)
 
     def get_domain_list(self, question):
-        question = self.filter_for_cross_graph(question)
+
+        question = filter_for_mention(question)
+        mention = self.ner_lite.get_mention(question)
+        question = remove_mention(question, mention=mention)
+
+        # question = self.filter_for_cross_graph(question)
         predicted_domain_labels = []
         _, tokenized_q = self.nlp.tokenize_question(question, 1)
         pred_domain_list = self.score_adjust_model.predict_domain([tokenized_q])[0]
@@ -157,7 +184,7 @@ class CrossGraphQAEngine:
             if domain == 1:
                 predicted_domain_labels.append(self.domain_list[idx])
 
-        return predicted_domain_labels
+        return predicted_domain_labels, pred_domain_list
 
     def run(self, question, disable_alignment: bool = False, heads={}):
         """
@@ -185,7 +212,7 @@ class CrossGraphQAEngine:
 
         # if mention is not None:
         #     question = question.replace(mention, "")
-        domain_list_for_question = self.get_domain_list(question)
+        domain_list_for_question, score_factors = self.get_domain_list(question)
 
         # print("predicted domain for this question:", domain_list_for_question)
 
@@ -246,9 +273,10 @@ class CrossGraphQAEngine:
             return self.prepare_for_visualization(target_list=target_list[numerical_domain],
                                                   answer_list=label_list[numerical_domain])
         else:
-            question_for_cross_graph = self.filter_for_cross_graph(question)
-            tokenized_question = self.nlp.tokenize_question(question_for_cross_graph, 1)
-            score_factors = self.score_adjust_model.predict_domain(tokenized_question).squeeze()
+            # question_for_cross_graph = self.filter_for_cross_graph(question)
+            # tokenized_question = self.nlp.tokenize_question(question_for_cross_graph, 1)
+            # score_factors = self.score_adjust_model.predict_domain(tokenized_question).squeeze()
+            # score_factors = score_factor
             adjusted_score_list = []
             normalized_score_list = self.normalize_scores(score_list)
             for score_factor, domain in zip(score_factors, self.domain_list):
