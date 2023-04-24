@@ -26,23 +26,23 @@ from Marie.WikidataEngine import WikidataEngine
 import threading
 
 
-def remove_mention(question, mention):
+def remove_mention(q_with_mention, mention):
     stop_words = ["what", "is", "are", "the", "more", "less", "than", "species", "find", "all", "over", "under", "of"]
     flag_words = ["mops", "cbu", "assembly model"]
-    if "mops" not in question:
+    if "mops" not in q_with_mention:
         stop_words += ["with"]
-    tokens = [t for t in question.split(" ") if t.lower() not in stop_words]
-    question = " ".join(tokens).strip()
+    tokens = [t for t in q_with_mention.split(" ") if t.lower() not in stop_words]
+    q_with_mention = " ".join(tokens).strip()
 
     for flag_word in flag_words:
-        if flag_word in question:
-            return question
+        if flag_word in q_with_mention:
+            return q_with_mention
 
-    if "reaction" not in question.lower():
-        question = question.lower().replace(mention, "")
-        tokens = [t for t in question.split(" ") if t.lower() not in stop_words]
-        question = " ".join(tokens).strip()
-        return question
+    if "reaction" not in q_with_mention.lower():
+        q_with_mention = q_with_mention.lower().replace(mention, "")
+        tokens = [t for t in q_with_mention.split(" ") if t.lower() not in stop_words]
+        q_with_mention = " ".join(tokens).strip()
+        return q_with_mention
     else:
         return "reaction"
 
@@ -52,6 +52,7 @@ def filter_for_mention(question):
     if "what" not in question:
         question = f"what is the {question}"
     return question.strip()
+
 
 class CrossGraphQAEngine:
     """
@@ -154,8 +155,6 @@ class CrossGraphQAEngine:
 
         result = []
 
-
-
         for label, domain, score, target in zip(re_ranked_labels, re_ranked_domain_list, re_ranked_score_list,
                                                 target_list):
 
@@ -170,15 +169,15 @@ class CrossGraphQAEngine:
     #     tokens = [t for t in tokens if t not in self.stop_words]
     #     return " ".join(tokens)
 
-    def get_domain_list(self, question):
+    def get_domain_list(self, q):
 
-        question = filter_for_mention(question)
-        mention = self.ner_lite.get_mention(question)
-        question = remove_mention(question, mention=mention)
+        q = filter_for_mention(q)
+        mention = self.ner_lite.get_mention(q)
+        q = remove_mention(q, mention=mention)
 
         # question = self.filter_for_cross_graph(question)
         predicted_domain_labels = []
-        _, tokenized_q = self.nlp.tokenize_question(question, 1)
+        _, tokenized_q = self.nlp.tokenize_question(q, 1)
         pred_domain_list = self.score_adjust_model.predict_domain([tokenized_q])[0]
         for idx, domain in enumerate(pred_domain_list):
             if domain == 1:
@@ -186,7 +185,7 @@ class CrossGraphQAEngine:
 
         return predicted_domain_labels, pred_domain_list
 
-    def run(self, question, disable_alignment: bool = False, heads={}):
+    def run(self, orignal_question, disable_alignment: bool = False, heads={}):
         """
         The main interface for the integrated QA engine
         :param disable_alignment: whether run for test purpose, if true, score alignment will be disabled
@@ -212,7 +211,7 @@ class CrossGraphQAEngine:
 
         # if mention is not None:
         #     question = question.replace(mention, "")
-        domain_list_for_question, score_factors = self.get_domain_list(question)
+        domain_list_for_question, score_factors = self.get_domain_list(orignal_question)
 
         # print("predicted domain for this question:", domain_list_for_question)
 
@@ -226,20 +225,20 @@ class CrossGraphQAEngine:
                         f"======================== USING ENGINE {domain}============================")
 
                     if domain == "ontoagent":
-                        results = engine.run(question=question)
+                        results = engine.run(question=orignal_question)
                         labels, scores, targets = results
                         print("=============== RESULT FROM AGENT ============")
                         print(results)
 
                     elif domain in numerical_domain_list:
-                        results = engine.run(question=question)
+                        results = engine.run(question=orignal_question)
                         labels, scores, targets, numerical_list, question_type = results
                         # if question_type == "numerical":
                         if question_type in numerical_label_list and (len(labels) > 0):
                             got_numerical_values = True
                             numerical_domain = domain
                     else:
-                        results = engine.run(question=question)
+                        results = engine.run(question=orignal_question)
                         labels, scores, targets = results
                     length_diff = 5 - len(labels)
                     scores = scores + [-999] * length_diff
@@ -316,18 +315,30 @@ if __name__ == '__main__':
     # text = "find all species with molecular weight more than 100"
     # rst = my_qa_engine.run(question=text)
     # print(rst)
-    question_list = ["Topological Polar Surface Area of methane?", "heat capacity of C3H4O"]
+    # question_list = ["find reactions with O2 as reactant", "Topological Polar Surface Area of methane?",
+    #                  "heat capacity of C3H4O"]
+    question_string = """List the Chemical Building Units with 2-linear as the Generic Building Unit
+Give the assembly model types that can be created with [(C4H2S)(CO2)2] as the CBU
+List the MOPs with assembly model (3-planar)4(3-pyramidal)4(Td)
+List the Chemical Building Units with 2-linear as the Generic Building Unit
+List the Chemical Building Units with 2-bent as the Generic Building Unit
+Give the MOPs which are triangular
+Give the MOPs which are Anticuboctahedron shaped
+List the MOPs with (3-pyramidal)8(2-bent)12(Cs) as the assembly model
+Show all the MOPs which have Cuboctahedron shape
+MoPs with molecular weight more than 10000
+what is c9h16's molecular weight"""
+
+
+    question_list = question_string.split("\n")
     for question in question_list:
+        question = question.strip()
         START_TIME = time.time()
         print("==============================================================================")
-#         text = "heat capacity of C3H4O"
-        rst = my_qa_engine.run(question=question)
+        #         text = "heat capacity of C3H4O"
+        rst = my_qa_engine.run(orignal_question=question)
         print(rst)
         print(f"TIME USED: {time.time() - START_TIME}")
-
-
-
-
 
     # while text != "quit":
     #     START_TIME = time.time()

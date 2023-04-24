@@ -253,10 +253,11 @@ class QAEngineNumerical:
             triple_string = f"{head}_{pred_p_idx}_{tail}"
             triple_exist = self.subgraph_extractor.check_triple_existence(triple_string)
             if triple_exist:
-                targets_top_k.append(tail)
-                scores_top_k.append(score)
+                targets_top_k.append(self.idx2entity[tail.item()])
+                scores_top_k.append(score.item())
 
-        labels_top_k = [self.idx2entity[t.item()] for t in targets_top_k]
+        # labels_top_k = [self.idx2entity[t.item()] for t in targets_top_k]
+        labels_top_k = targets_top_k
         numerical_top_k = ["EMPTY"] * len(labels_top_k)
 
         return labels_top_k, scores_top_k, targets_top_k, numerical_top_k, "multi-target"
