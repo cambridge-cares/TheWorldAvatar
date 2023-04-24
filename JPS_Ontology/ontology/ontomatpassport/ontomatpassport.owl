@@ -14,7 +14,9 @@
      xmlns:skos="http://www.w3.org/2004/02/skos/core#"
      xmlns:terms="http://purl.org/dc/terms/"
      xmlns:OntoSpecies="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#">
-    <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontomatpassport"/>
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/kg/ontomatpassport">
+        <owl:imports rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2"/>
+    </owl:Ontology>
     
 
 
@@ -362,7 +364,7 @@
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#isHazardous">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#HealthAndSafetyHazard"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#RecycledContent"/>
         <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
     </owl:DatatypeProperty>
     
@@ -477,15 +479,7 @@
     <!-- http://www.theworldavatar.com/kg/ontomatpassport#ChemicalCompositionalProperty -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ChemicalCompositionalProperty">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ChemicalProperty"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport#ChemicalProperty -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ChemicalProperty">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#CompositionalProperty"/>
     </owl:Class>
     
 
@@ -495,6 +489,16 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Component">
         <rdfs:comment xml:lang="en">Part of a bigger whole that can be a system or a product of composite nature.</rdfs:comment>
         <rdfs:label xml:lang="en">Component</rdfs:label>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/kg/ontomatpassport#CompositionalProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#CompositionalProperty">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</hasGUIPosition>
+        <rdfs:label xml:lang="en">Compositional property</rdfs:label>
     </owl:Class>
     
 
@@ -583,14 +587,6 @@
     
 
 
-    <!-- http://www.theworldavatar.com/kg/ontomatpassport#HealthAndSafetyHazard -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#HealthAndSafetyHazard">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ChemicalProperty"/>
-    </owl:Class>
-    
-
-
     <!-- http://www.theworldavatar.com/kg/ontomatpassport#Height -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Height">
@@ -603,7 +599,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Ingredient">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#ChemicalProperty"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#CompositionalProperty"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
@@ -619,7 +615,19 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/gram"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
                 <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/kilogram"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasUnit"/>
+                <owl:hasValue rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/milligram"/>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -658,6 +666,7 @@
 
     <owl:Class rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#RecycledContent">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/kg/ontomatpassport#CompositionalProperty"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/hasValue"/>
@@ -1543,10 +1552,6 @@
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Chemical composition</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ChemicalProperty">
-        <rdfs:label xml:lang="en">Chemical property</rdfs:label>
-        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</hasGUIPosition>
-    </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#CompressiveStrength">
         <rdfs:label xml:lang="en">Compressive strength</rdfs:label>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
@@ -1556,8 +1561,8 @@
         <rdfs:label xml:lang="en">Decomposability</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Density">
-        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
         <rdfs:label xml:lang="en">Density</rdfs:label>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Dimension">
         <rdfs:label xml:lang="en">Dimension</rdfs:label>
@@ -1570,16 +1575,12 @@
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
         <rdfs:label xml:lang="en">Expected lifetime</rdfs:label>
     </rdf:Description>
-    <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#HealthAndSafetyHazard">
-        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
-        <rdfs:label xml:lang="en">Health and safety hazard</rdfs:label>
-    </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Height">
-        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Height</rdfs:label>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Ingredient">
-        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">4</hasGUIPosition>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">2</hasGUIPosition>
         <rdfs:label xml:lang="en">Ingredient</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#Length">
@@ -1617,8 +1618,8 @@
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#TemporalProperty">
-        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
         <rdfs:label xml:lang="en">Temporal property</rdfs:label>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">3</hasGUIPosition>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#TensileStrength">
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">1</hasGUIPosition>
@@ -1648,16 +1649,16 @@
         <rdfs:label xml:lang="en">Country</rdfs:label>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasEAN">
-        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">8</hasGUIPosition>
         <rdfs:label xml:lang="en">EAN</rdfs:label>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">8</hasGUIPosition>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasFunctionality">
         <rdfs:label xml:lang="en">Functionality</rdfs:label>
         <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">9</hasGUIPosition>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasGTIN">
-        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">7</hasGUIPosition>
         <rdfs:label xml:lang="en">GTIN</rdfs:label>
+        <hasGUIPosition rdf:datatype="http://www.w3.org/2001/XMLSchema#int">7</hasGUIPosition>
     </rdf:Description>
     <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#hasImage">
         <rdfs:label xml:lang="en">Image</rdfs:label>
@@ -1743,7 +1744,7 @@
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
             <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#BiologicalProperty"/>
-            <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ChemicalProperty"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#CompositionalProperty"/>
             <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#TemporalProperty"/>
             <rdf:Description rdf:about="http://www.theworldavatar.com/kg/ontomatpassport#ThermalProperty"/>
             <rdf:Description rdf:about="https://w3id.org/mdo/core/PhysicalProperty"/>
