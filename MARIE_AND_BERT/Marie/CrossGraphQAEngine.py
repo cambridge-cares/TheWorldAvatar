@@ -58,7 +58,7 @@ class CrossGraphQAEngine:
         self.dataset_path = os.path.join(DATA_DIR, 'CrossGraph')
         self.score_adjust_model = CrossGraphAlignmentModel(device=self.device).to(self.device)
         self.score_adjust_model.load_state_dict(torch.load(os.path.join(self.dataset_path,
-                                                                        'cross_graph_model_with_all_9'),
+                                                                        'cross_graph_model_with_all_9_updated'),
                                                            map_location=self.device))
         self.stop_words = ["find", "all", "species", "what", "is", "the", "show", "me", "and", "as", "product"
             , "products", "reactant", "reactants"]
@@ -288,13 +288,19 @@ if __name__ == '__main__':
     # text = "find all species with molecular weight more than 100"
     # rst = my_qa_engine.run(question=text)
     # print(rst)
+    question_list = ["Topological Polar Surface Area of methane?", "heat capacity of C3H4O"]
+    for question in question_list:
+        START_TIME = time.time()
+        print("==============================================================================")
+#         text = "heat capacity of C3H4O"
+        rst = my_qa_engine.run(question=question)
+        print(rst)
+        print(f"TIME USED: {time.time() - START_TIME}")
 
-    START_TIME = time.time()
-    print("==============================================================================")
-    text = "heat capacity of C3H4O"
-    rst = my_qa_engine.run(question=text)
-    print(rst)
-    print(f"TIME USED: {time.time() - START_TIME}")
+
+
+
+
     # while text != "quit":
     #     START_TIME = time.time()
     #     rst = my_qa_engine.run(question=text)
