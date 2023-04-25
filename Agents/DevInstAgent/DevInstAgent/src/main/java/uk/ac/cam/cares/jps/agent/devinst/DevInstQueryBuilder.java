@@ -57,7 +57,7 @@ public class DevInstQueryBuilder {
     
 
     private static Map<String, Iri> Measurement_UUID_Map; //Can one sensor have more than one measurement type?
-    private static Map<String, List<String>> DerivedToRawMap = new HashMap<>();
+    private static Map<String, List<Iri>> DerivedToRawMap = new HashMap<>();
     private static Map<String, Iri> Derived_UUID_Map = new HashMap<>();
     private static Map<String, Iri> DerivedType_UUID_Map = new HashMap<>();
     private static Map<String, String> DerivedToUnitMap;
@@ -148,8 +148,8 @@ public class DevInstQueryBuilder {
                 String SensorCompType_String = Sensor.getString("type");
                 //TODO Check IRIMAp first, then if its null, default to oontodevice
                 SensorTypeMap.put(SensorName, SensorCompType_String);
-                Iri SensorType_IRI = iri(IRIMap.getString(Sensor.getString("type")));
-                SensorTypeIRIMap.put(SensorName, SensorType_IRI);
+                Iri SensorType_IRI = iri(IRIMap.getString(SensorCompType_String));
+                SensorTypeIRIMap.put(SensorCompType_String, SensorType_IRI);
 
                 String unit = Sensor.getJSONObject("output").getString("unit");
                 MeasurementToUnitMap.put(Measurement_UUID_String, unit);
@@ -164,14 +164,17 @@ public class DevInstQueryBuilder {
         for(String derivVarKey : Derivation.keySet()){
             JSONObject deriv = Derivation.getJSONObject(derivVarKey);
 
-            Iri derivVar_IRI = iri(IRIMap.getString(derivVarKey));
+            Iri derivVar_IRI = P_DEV.iri(genUUID(derivVarKey));
             Derived_UUID_Map.put(derivVarKey, derivVar_IRI);
 
-            JSONArray derivFromArray = deriv.getJSONArray("derivedFrom");
-            List<String> derivFromList = new ArrayList<String>();
+            //Takes in SensorComp names instead as its 1:1 correspondene with the measured var.
+            //This is to take into account of multiple sensorComp with the same measured var name.
+            JSONArray derivFromArray = deriv.getJSONArray("derivedFromSensor");
+            List<Iri> derivFromList = new ArrayList<Iri>();
             for(int i = 0; i < derivFromArray.length(); i ++){
                 String varName = derivFromArray.getString(i);
-                derivFromList.add(varName);
+                Iri measurementIRI = Measurement_UUID_Map.get(varName);
+                derivFromList.add(measurementIRI);
                 
 
             }

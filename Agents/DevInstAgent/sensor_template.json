@@ -43,13 +43,13 @@
 
         "derivation" :{
             "derivVar1":{
-                "derivedFrom":[],
+                "derivedFromSensor":[],
                 "derviedBy":null,
                 "type": null,
                 "unit" : null   
             },
             "derivVar2":{
-                "derivedFrom":[],
+                "derivedFromSensor":[],
                 "derviedBy":null,
                 "type": null,
                 "unit" : null   
