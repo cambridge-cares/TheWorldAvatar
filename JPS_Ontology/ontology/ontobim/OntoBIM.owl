@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <rdf:RDF xmlns="https://www.theworldavatar.com/kg/ontobim/"
      xml:base="https://www.theworldavatar.com/kg/ontobim/"
-     xmlns:ontoBIM="https://www.theworldavatar.com/kg/ontobim/"
+     xmlns:ontobim="https://www.theworldavatar.com/kg/ontobim/"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontobim/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">20 April 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">25 April 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The Building Information Modelling ontology (OntoBIM) is an ontology developed to represent the detailed information and spatial relationships of buildings and their components (walls, doors, roofs, furniture, equipment) that is available in the Industry Foundation Classes (IFC) data schema. Information about their individual characteristics such as material, readings, and dimensions is combined from IFC or other data sources.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.2</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -33,19 +33,6 @@
 
 
     <owl:ObjectProperty rdf:about="https://w3id.org/bot#containsZone"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/consumesUtilities -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/consumesUtilities">
-        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
-        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/UtilitiesConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a facility and its consumed utilities</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">consumes utilities</rdfs:label>
-    </owl:ObjectProperty>
     
 
 
@@ -279,6 +266,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobim/hasFirstOperand">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobim/BooleanClippingResult"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/GeometricRepresentation"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the first operand/geometry of the boolean clipping operation. This is usually a swept area solid or another boolean clipping result.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has first operand</rdfs:label>
@@ -340,6 +329,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobim/hasLocalOrigin">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobim/CartesianTransformationOperator"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/CartesianPoint"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the required translation origin, specified as a cartesian point. The actual translation transform the geometric origin to the local origin.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has local origin</rdfs:label>
@@ -390,6 +381,8 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobim/hasParentContext">
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/GeometricRepresentationContext"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the parent and child context to share their contextual attributes.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has parent context</rdfs:label>
@@ -414,6 +407,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobim/hasProfileType">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobim/RectangleProfileDefinition"/>
+        <rdfs:range rdf:resource="https://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#AREA"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines that profile type of a profile definition of a surface.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has profile type</rdfs:label>
@@ -464,6 +459,8 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobim/hasRefLatitude">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontobim/hasCompoundPlaneAngle"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobim/IfcSiteRepresentation"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/CompoundPlaneAngle"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the site of a model and its world latitude with respect to the world geodetic system WGS84..</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has reference latitude</rdfs:label>
@@ -476,6 +473,8 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobim/hasRefLongitude">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontobim/hasCompoundPlaneAngle"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobim/IfcSiteRepresentation"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/CompoundPlaneAngle"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between the site of a model and its world longtitude with respect to the world geodetic system WGS84..</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has reference longitude</rdfs:label>
@@ -579,6 +578,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobim/hasSecondOperand">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobim/BooleanClippingResult"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/GeometricRepresentation"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that defines the second operand/geometry of the boolean clipping operation. This is usually a half space solid.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has second operand</rdfs:label>
@@ -590,6 +591,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobim/hasSourcePlacement">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/LocalPlacement"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the source placement of an existing geometric representation for an element&amp;apos;s model representaion. This relationship must be used alongside the &amp;quot;hasTargetPlacement&amp;quot; property. The target placement is linked to a transformation operator which will transform the source placement into the right location for this instance.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has source placement</rdfs:label>
@@ -601,6 +604,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobim/hasStartingVertex">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobim/Polyline"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/LineVertex"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that indicates the starting vertex for a line.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has starting vertex</rdfs:label>
@@ -612,6 +617,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobim/hasSubContext">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/GeometricRepresentationSubContext"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the the representation context for which the different subtypes of model representation are valid</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has subcontext</rdfs:label>
@@ -623,6 +630,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobim/hasTargetPlacement">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobim/ModelRepresentation3D"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/CartesianTransformationOperator"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship defining the target placement of an existing geometric representation source for an element&amp;apos;s model representaion. This relationship must be used alongside the &amp;quot;hasSourcePlacement&amp;quot; property. The target placement is linked to a transformation operator which will transform the source placement into the right location for this instance.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has target placement</rdfs:label>
@@ -668,6 +677,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobim/hasTrueNorth">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobim/GeometricRepresentationContext"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/DirectionVector"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Defines the direction of the geometric representation context&amp;apos;s true north relative to the underlying coordinate system as established by the attribute WorldCoordinateSystem.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has true north</rdfs:label>
@@ -692,9 +703,24 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontobim/hasWorldCoordinateSystem">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontobim/GeometricRepresentationContext"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontobim/LocalPlacement"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Establishes the engineering coordinate system for all representation contexts used by the project.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">has world coordinate system</rdfs:label>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/consumesUtilities -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/consumesUtilities">
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/UtilitiesConsumption"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a facility and its consumed utilities</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">consumes utilities</rdfs:label>
     </owl:ObjectProperty>
     
 
@@ -1240,13 +1266,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/UtilitiesConsumption -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/UtilitiesConsumption"/>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontobim/BooleanClippingResult -->
 
 
@@ -1749,6 +1768,13 @@
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobim/</rdfs:isDefinedBy>
         <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Topological Representation</rdfs:label>
     </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/UtilitiesConsumption -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/UtilitiesConsumption"/>
     
 
 
