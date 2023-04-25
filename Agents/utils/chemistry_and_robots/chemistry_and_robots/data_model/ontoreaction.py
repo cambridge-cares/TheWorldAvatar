@@ -339,7 +339,7 @@ class ReactionCondition(BaseOntology):
     objPropWithExp: List[str]
     hasValue: OM_Measure
     positionalID: Optional[str] = None
-    translateToParameterSetting: Optional[str] # NOTE here we put str to simplify the implementation, should be ontolab.ParameterSetting
+    translateToParameterSetting: Optional[str] # NOTE this doesn't belong to ontology, we just put it here for testing purpose
     # instead of the actual class, str is used to host the instance IRI of OntoReaction:InputChemical for simplicity
     # StoichiometryRatio indicatesMultiplicityOf InputChemical
     indicatesMultiplicityOf: Optional[str] = None

@@ -25,8 +25,6 @@ class ParameterSetting(BaseOntology):
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
         # <paramSetting> <OntoLab:hasQuantity> <quantity>
         g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_HASQUANTITY), quantity_iri))
-        # <quantity> <OntoLab:translatesToParameterSetting> <paramSetting>
-        g.add((quantity_iri, URIRef(ONTOLAB_TRANSLATESTOPARAMETERSETTING), URIRef(self.instance_iri)))
 
         return g
 

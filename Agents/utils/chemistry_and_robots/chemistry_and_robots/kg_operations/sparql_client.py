@@ -858,7 +858,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     ?subo rdfs:subPropertyOf* <{ONTOREACTION_HASREACTIONCONDITION}> . ?rxn ?subo ?condition .
                     ?condition rdf:type ?clz . FILTER(?clz != owl:Thing && ?clz != owl:NamedIndividual && ?clz != <{ONTOREACTION_REACTIONCONDITION}>) .
                     ?condition <{OM_HASVALUE}> ?measure . ?measure <{OM_HASUNIT}> ?unit; <{OM_HASNUMERICALVALUE}> ?val .
-                    OPTIONAL {{ ?condition <{ONTOLAB_TRANSLATESTOPARAMETERSETTING}> ?parameter_setting . }} .
+                    OPTIONAL {{ ?parameter_setting <{ONTOLAB_HASQUANTITY}> ?condition . }} .
                     OPTIONAL {{ ?condition <{ONTODOE_POSITIONALID}> ?id . }} .
                     OPTIONAL {{ ?condition <{ONTOREACTION_INDICATESMULTIPLICITYOF}> ?multi . }} .
                     OPTIONAL {{ ?condition <{ONTOREACTION_INDICATESUSAGEOF}> ?usage . }} .
