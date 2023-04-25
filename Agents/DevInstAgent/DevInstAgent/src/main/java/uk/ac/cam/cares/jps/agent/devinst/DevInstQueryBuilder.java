@@ -51,14 +51,13 @@ public class DevInstQueryBuilder {
     private static String sensLabel;
     private static Iri SmartSensor_UUID;
     private static Iri MicroController_UUID;
-    private static Map<String, Iri> Sensor_UUID_Map;
-    private static Map<String, Iri> SensorComp_UUID_Map; //Is This neccesarry?
+    private static Map<String, Iri> Sensor_UUID_Map = new HashMap<>();
+    private static Map<String, Iri> SensorComp_UUID_Map = new HashMap<>(); //Is This neccesarry?
     
 
     private static Map<String, Iri> Measurement_UUID_Map; //Can one sensor have more than one measurement type?
-    private static Map<String, String[]> RawToDerivedMap;
-    private static Map<String, String[]> DerivedToRawMap;
-    private static Map<String, Iri> Derived_UUID_Map;
+    private static Map<String, List<String>> DerivedToRawMap = new HashMap<>();
+    private static Map<String, Iri> Derived_UUID_Map = new HashMap<>();
 
     //TODO Implement iterator(?) for Composition sensor and measurement units
     //TODO This includes changing the tmeplate .json file, add unts, unitsIRI, sensorType, sensorTypeIRI
@@ -77,7 +76,7 @@ public class DevInstQueryBuilder {
 
     //properties
     private static final Iri consistsOf = P_SAREF.iri("consistsOf");
-    private static final Iri sendsSignalTo = P_DEV.iri("sendsSingalTo");
+    private static final Iri sendsSignalTo = P_DEV.iri("sendsSignalTo");
     private static final Iri measures = P_DEV.iri("measures");
     private static final Iri hasTimeSeries = P_TS.iri("hasTimeSeries");
     private static final Iri belongsTo = P_DERIV.iri("belongsTo");
@@ -95,14 +94,87 @@ public class DevInstQueryBuilder {
 
     void InsertDevice(JSONObject desc) {
         //Get data from descriptor
-        
+        parseJSON(desc);
+
         //Write query
 
         //Update DB
         
     }
 
-    
+    void parseJSON (JSONObject desc) {
+        JSONObject MicroController = desc.getJSONObject("MicroController");
+        JSONObject IRIMap = desc.getJSONObject("IRIMapper");
+        
+        //smartSensor data
+        sensLabel = MicroController.getString("label");
+        
+        String SmartSensor_UUID_String = IRIMap.getString(MicroController.getString("name"));
+        SmartSensor_UUID = P_DEV.iri(SmartSensor_UUID_String);
+
+        String MicroController_UUID_String = IRIMap.getString(MicroController.getString("type"));
+        SmartSensor_UUID = P_DEV.iri(MicroController_UUID_String);
+
+        JSONObject MainSensorMap = desc.getJSONObject("MainSensorMap");
+        JSONObject Derivation = desc.getJSONObject("derivation");
+        for (String MainSensorName : MainSensorMap.keySet()) {
+            String MainSensor_UUID_String = IRIMap.getString(MainSensorName);
+            Iri MainSensor_UUID = P_DEV.iri(MainSensor_UUID_String);
+            Sensor_UUID_Map.put(MainSensorName, MainSensor_UUID);
+
+            JSONObject MainSensor = MainSensorMap.getJSONObject(MainSensorName);
+            for(String SensorName: MainSensor.keySet()){
+                JSONObject Sensor = MainSensor.getJSONObject(SensorName);
+
+                String Sensor_UUID_String = Sensor.getString("name");
+                //TODO Check IRIMAp first, then if its null, default to oontodevice
+                //Iri Sensor_UUID = P_DEV.iri(Sensor_UUID_String);
+                Iri Sensor_UUID = iri(IRIMap.getString(Sensor_UUID_String));
+                SensorComp_UUID_Map.put(Sensor.getString("name"), Sensor_UUID);
+                
+                String Measurement_UUID_String = Sensor.getJSONObject("output").getString("fieldname");
+                Iri Measurement_UUID = iri(IRIMap.getString(Measurement_UUID_String));
+                Measurement_UUID_Map.put(Measurement_UUID_String, Measurement_UUID);
+
+                String SensorCompType_String = Sensor.getString("type");
+                SensorTypeMap.put(Sensor.getString("name"), SensorCompType_String);
+                Iri SensorType_IRI = iri(IRIMap.getString(Sensor.getString("type")));
+                SensorTypeIRIMap.put(Sensor.getString("name"), SensorType_IRI);
+
+                String unit = Sensor.getJSONObject("output").getString("unit");
+                MeasurementToUnitMap.put(Measurement_UUID_String, unit);
+                Iri unit_IRI = iri(IRIMap.getString(unit));
+                UnitIRIMap.put(unit, unit_IRI);
+
+            }
+
+            for(String derivVarKey : Derivation.keySet()){
+                JSONObject deriv = Derivation.getJSONObject(derivVarKey);
+
+                Iri derivVar_IRI = iri(IRIMap.getString(derivVarKey));
+                Derived_UUID_Map.put(derivVarKey, derivVar_IRI);
+
+                JSONArray derivFromArray = deriv.getJSONArray("derivedFrom");
+                List<String> derivFromList = new ArrayList<String>();
+                for(int i = 0; i < derivFromArray.length(); i ++){
+                    String varName = derivFromArray.getString(i);
+                    derivFromList.add(varName);
+                    
+
+                }
+                DerivedToRawMap.put(derivVarKey, derivFromList);
+
+            }
+        
+        }
+
+
+
+
+    }
+
+    //TODO Make UUID generator method
+    //TODO Add UUID to IRI strings
 
 
 
