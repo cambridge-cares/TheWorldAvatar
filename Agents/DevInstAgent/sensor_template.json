@@ -18,6 +18,7 @@
                         "datatype" : null,
                         "fieldname" : null,
                         "defval" :null,
+                        "type": null,
                         "unit" : null
                     }
                 },
@@ -35,6 +36,7 @@
                         "datatype" : null,
                         "fieldname" : null,
                         "defval" :null,
+                        "type": null,
                         "unit" : null
                     }
                 }
@@ -45,11 +47,13 @@
             "derivVar1":{
                 "derivedFrom":[],
                 "derviedBy":null,
+                "type": null,
                 "unit" : null   
             },
             "derivVar2":{
                 "derivedFrom":[],
                 "derviedBy":null,
+                "type": null,
                 "unit" : null   
             }
             
