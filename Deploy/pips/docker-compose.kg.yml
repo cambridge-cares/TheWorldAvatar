@@ -4,7 +4,7 @@ name: pips-kg
 services:
   # Blazegraph
   blazegraph:
-    image: docker.cmclinnovations.com/blazegraph:1.1.0-510-SNAPSHOT
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
     container_name: "blazegraph_pips"
     ports:
       - 48082:8080
@@ -16,7 +16,7 @@ services:
 
   # File server
   fileserver:
-    image: docker.cmclinnovations.com/fileserver:1.1.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/fileserver:1.1.0
     container_name: "fileserver_pips"
     ports:
       - 48086:8080
