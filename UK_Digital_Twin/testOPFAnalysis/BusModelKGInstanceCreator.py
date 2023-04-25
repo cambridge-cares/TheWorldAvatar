@@ -73,6 +73,15 @@ userSpecified = False
 
 def BusModelKGInstanceCreator(ObjectSet, BusObjectNameList, numOfBus, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, \
     AgentIRI, derivationClient, updateEndpointIRI, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
+    """T-Box URI"""
+    if urllib.request.urlopen("http://www.theworldavatar.com/ontology/").getcode() == 200:
+        ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
+        ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
+        ontocape_mathematical_model     = owlready2.get_ontology(t_box.ontocape_mathematical_model).load()
+        ontopowsys_PowerSystemModel     = owlready2.get_ontology(t_box.ontopowsys_PowerSystemModel).load()
+        ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
+    else:
+        print('---THE WORLD AVATAR NOT FOUND---')
     ## Set up the default storage path
     store = LocalGraphStore(storeType)
     print('################START BusModelKGInstanceCreator#################')
