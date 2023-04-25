@@ -1,66 +1,42 @@
-This agent is able to run MoDS to perform multi-objective optimisation (MOO) and multi-criteria decision making (MCDM).
-To submit a job to be run on the CMCL knowledge graph server via curl or a web browser use this URL https://kg.cmclinnovations.com/mods-agent/request, with a "query" parameter with a value (URL-encoded if working through a browser) similar to the following JSON object:
-```JSON
-{
-	"SimulationType": "MOO",
-	"Algorithms": [{
-			"name": "algorithm1",
-			"type": "MOO",
-			"maxNumberOfResults": 10,
-			"variables": [{
-					"name": "var1",
-					"type": "input"
-				}, {
-					"name": "var2",
-					"type": "input"
-				}, {
-					"name": "var3",
-					"type": "input"
-				}, {
-					"name": "var4",
-					"type": "output",
-					"objective": "Maximise",
-					"minimum": 0.5,
-					"weight": 0.5
-				}, {
-					"name": "var5",
-					"type": "output",
-					"objective": "Minimise",
-					"maximum": 1.5,
-					"weight": 0.1
-				}, {
-					"name": "var6",
-					"type": "output",
-					"objective": "Maximise",
-					"minimum": 2.5,
-					"weight": 0.7
-				}
-			]
-		}
-	],
-	"Inputs": [{
-			"name": "var1",
-			"values": ["0.1", "0.3", "0.6", "0.1", "0.2"]
-		}, {
-			"name": "var2",
-			"values": ["0.4", "0.9", "0.0", "0.1", "0.8"]
-		}, {
-			"name": "var3",
-			"values": ["0.5", "0.1", "0.2", "0.3", "0.5"]
-		}, {
-			"name": "var4",
-			"values": ["0.1", "0.9", "0.1", "0.7", "0.1"]
-		}, {
-			"name": "var5",
-			"values": ["1.2", "2.0", "1.0", "1.6", "1.7"]
-		}, {
-			"name": "var6",
-			"values": ["2.5", "3.0", "1.2", "2.1", "4.0"]
-		}
-	]
-}
+# MoDS Simple Agent
+This agent is able to access a limited amount of the functionality of [the Model Development Suite (MoDS)](https://cmclinnovations.com/solutions/products/mods/). 
+
+## Deployment
+This agent is currently deployed at `https://kg.cmclinnovations.com/mods-agent` however if you require local deployment you can follow the following instructions. 
+
+Login to the CMCL Docker registry using the following command.
+```bash
+docker login docker.cmclinnovations.com
+```
+To deploy the MoDS Simple Agent a `.lic` licence file is required to be placed in the [`secrets`](./secrets/) directory. 
+Running the following command will spin up the MoDS Simple Agent at port `58085`. 
+```bash
+docker compose up -d
 ```
 
-The above example can be run by clicking on [this link](https://kg.cmclinnovations.com/mods-agent/request?query=%7B%22SimulationType%22%3A%22MOO%22%2C%22Algorithms%22%3A%5B%7B%22name%22%3A%22algorithm1%22%2C%22type%22%3A%22MOO%22%2C%22maxNumberOfResults%22%3A10%2C%22variables%22%3A%5B%7B%22name%22%3A%22var1%22%2C%22type%22%3A%22input%22%7D%2C%7B%22name%22%3A%22var2%22%2C%22type%22%3A%22input%22%7D%2C%7B%22name%22%3A%22var3%22%2C%22type%22%3A%22input%22%7D%2C%7B%22name%22%3A%22var4%22%2C%22type%22%3A%22output%22%2C%22objective%22%3A%22Maximise%22%2C%22minimum%22%3A0.5%2C%22weight%22%3A0.5%7D%2C%7B%22name%22%3A%22var5%22%2C%22type%22%3A%22output%22%2C%22objective%22%3A%22Minimise%22%2C%22maximum%22%3A1.5%2C%22weight%22%3A0.1%7D%2C%7B%22name%22%3A%22var6%22%2C%22type%22%3A%22output%22%2C%22objective%22%3A%22Maximise%22%2C%22minimum%22%3A2.5%2C%22weight%22%3A0.7%7D%5D%7D%5D%2C%22Inputs%22%3A%5B%7B%22name%22%3A%22var1%22%2C%22values%22%3A%5B%220.1%22%2C%220.3%22%2C%220.6%22%2C%220.1%22%2C%220.2%22%5D%7D%2C%7B%22name%22%3A%22var2%22%2C%22values%22%3A%5B%220.4%22%2C%220.9%22%2C%220.0%22%2C%220.1%22%2C%220.8%22%5D%7D%2C%7B%22name%22%3A%22var3%22%2C%22values%22%3A%5B%220.5%22%2C%220.1%22%2C%220.2%22%2C%220.3%22%2C%220.5%22%5D%7D%2C%7B%22name%22%3A%22var4%22%2C%22values%22%3A%5B%220.1%22%2C%220.9%22%2C%220.1%22%2C%220.7%22%2C%220.1%22%5D%7D%2C%7B%22name%22%3A%22var5%22%2C%22values%22%3A%5B%221.2%22%2C%222.0%22%2C%221.0%22%2C%221.6%22%2C%221.7%22%5D%7D%2C%7B%22name%22%3A%22var6%22%2C%22values%22%3A%5B%222.5%22%2C%223.0%22%2C%221.2%22%2C%222.1%22%2C%224.0%22%5D%7D%5D%7D).
+## Usage
+Example input files can be found in the [`examples`](./examples) directory.
+To submit a job via curl or a web browser use https://kg.cmclinnovations.com/mods-agent/request (remote on KG server) or http://localhost:58085/request (local), with a "`query`" parameter with a value (URL-encoded if working through a browser) similar to these input files.
+For example click [here](https://kg.cmclinnovations.com/mods-agent/request?query=%7B%22SimulationType%22%3A%22MOOonly%22%2C%22Algorithms%22%3A%5B%7B%22name%22%3A%22algorithm1%22%2C%22type%22%3A%22GenSurrogateAlg%22%2C%22surrogateToLoad%22%3A%22example-surrogate%22%7D%2C%7B%22name%22%3A%22algorithm2%22%2C%22type%22%3A%22MOO%22%2C%22maxNumberOfResults%22%3A10%2C%22variables%22%3A%5B%7B%22name%22%3A%22var1%22%2C%22type%22%3A%22input%22%7D%2C%7B%22name%22%3A%22var2%22%2C%22type%22%3A%22input%22%7D%2C%7B%22name%22%3A%22var3%22%2C%22type%22%3A%22input%22%7D%2C%7B%22name%22%3A%22var4%22%2C%22type%22%3A%22output%22%2C%22objective%22%3A%22Maximise%22%2C%22minimum%22%3A0.5%2C%22weight%22%3A0.5%7D%2C%7B%22name%22%3A%22var5%22%2C%22type%22%3A%22output%22%2C%22objective%22%3A%22Minimise%22%2C%22maximum%22%3A1.5%2C%22weight%22%3A0.1%7D%2C%7B%22name%22%3A%22var6%22%2C%22type%22%3A%22output%22%2C%22objective%22%3A%22Maximise%22%2C%22minimum%22%3A2.5%2C%22weight%22%3A0.7%7D%5D%7D%5D%7D) to run a the job specified in the [multi-objective optimisation with pregenerated surrogate example](./examples/MOOonly.json).
 
-The JSON object returned by this query (URL-encoded if working through a browser) can then be passed as the "query" parameter to this URL https://kg.cmclinnovations.com/mods-agent/output/request.
+Some `SimulationType`s will be returned the results of the simulation immediately in a JSON object.
+- Multi-Criteria Decision Making (`MCDM`)
+- Sensitivity Analysis (`Sensitivity`)
+
+Others will return only return a the "jobID" and the "SimulationType" in a JSON object and run asynchronously.
+- High-Dimensional Model Representation Surrogate Generation (`HDMR`)
+- Surrogate Generation and Multi-Objective Optimisation (`MOO`)
+- Multi-Objective Optimisation with a pregenerated saved surrogate (`MOOonly`)
+- Evaluation of a pregenerated saved surrogate (`Evaluate`)
+The JSON object returned by this query (URL-encoded if working through a browser) can then be passed as the "`query`" parameter to this URL https://kg.cmclinnovations.com/mods-agent/output/request (remote on KG server) or http://localhost:58085/output/request (local) to retrieve the results when the simulation is complete.
+
+The MoDS Simple Agent supports the loading and saving of surrogates generated.
+In the examples an "`example-surrogate`" is loaded using `"surrogateToLoad": "example-surrogate"`. 
+This field can be replace with the `jobID` of a previous job where `"saveSurrogate": true`. 
+
+## Development
+Add the following files to the [`credentials`](./credentials/) directory.
+- `cmcl_repo_username.txt` username for logging into container repo `docker.cmclinnovations.com`
+- `cmcl_repo_password.txt` password (or preferably token) for container repo `docker.cmclinnovations.com`
+- `wa_repo_username.txt` username for into [TWA repo](https://github.com/cambridge-cares/TheWorldAvatar)
+- `wa_repo_password.txt` password (or preferably token) for [TWA repo](https://github.com/cambridge-cares/TheWorldAvatar)
