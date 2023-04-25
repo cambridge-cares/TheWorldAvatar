@@ -9,9 +9,9 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/"
      xmlns:ontodoe="https://www.theworldavatar.com/kg/ontodoe/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodoe/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">27 March 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">25 April 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for design of experiment.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.8</owl:versionInfo>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.9</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -45,6 +45,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/hasDesignVariable">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodoe/Domain"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodoe/DesignVariable"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a domain and the design variable it consists of. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -67,6 +69,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/hasDomain">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodoe/DesignOfExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodoe/Domain"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a design of experiment exercise and the domain where it is constrained.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -89,6 +93,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/hasSystemResponse">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodoe/DesignOfExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodoe/SystemResponse"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a design of experiment exercise and the system response it collects. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -99,16 +105,30 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/proposesNewExperiment">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodoe/DesignOfExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a design of experiment exercise and the new experiment it defines. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontodoe/refersTo -->
+    <!-- https://www.theworldavatar.com/kg/ontodoe/refersToExperiment -->
 
 
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/refersTo">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/refersToExperiment">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodoe/HistoricalData"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between previous experiment records/future experiment conditions and the reaction experiment it refers to. </rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodoe/refersToQuantity -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/refersToQuantity">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
@@ -118,8 +138,8 @@
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a continuous variable/a system response/a fixed parameter in a design of experiment exercise and the dimensional quantity it refers to. </rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between previous experiment records/future experiment conditions and the reaction experiment it refers to. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -129,6 +149,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/usesStrategy">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodoe/DesignOfExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodoe/Strategy"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a design of experiment exercise and the strategy it uses. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -139,6 +161,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/utilisesHistoricalData">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodoe/DesignOfExperiment"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodoe/HistoricalData"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a design of experiment exercise and any historical data it utilised. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -358,7 +382,7 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodoe/DesignVariable"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/refersTo"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/refersToQuantity"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
             </owl:Restriction>
@@ -394,12 +418,6 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodoe/DesignOfExperiment">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/proposesNewExperiment"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionExperiment"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/hasSystemResponse"/>
@@ -467,7 +485,7 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodoe/FixedParameter">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/refersTo"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/refersToQuantity"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
             </owl:Restriction>
@@ -482,12 +500,6 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodoe/HistoricalData">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/refersTo"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A complete recording of controlled experimental trails done in the past. </rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
     </owl:Class>
@@ -532,7 +544,7 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodoe/SystemResponse">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/refersTo"/>
+                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontodoe/refersToQuantity"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
             </owl:Restriction>
