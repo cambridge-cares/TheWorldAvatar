@@ -43,7 +43,7 @@ public class ThingsBoardInputAgentIntegrationTest {
     // Create Docker container with Blazegraph image from CMCL registry (image uses port 9999)
     // For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
     @Container
-    private final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+    private final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"))
             .withExposedPorts(9999);
     // Create Docker container with postgres 13.3 image from Docker Hub
     @Container

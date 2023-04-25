@@ -13,10 +13,9 @@ logging.getLogger("py4j").setLevel(logging.INFO)
 
 @pytest.fixture(scope="module")
 def initialise_triple_store():
-    # NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
     # For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
     blazegraph = DockerContainer(
-        'docker.cmclinnovations.com/blazegraph_for_tests:1.0.0')
+        'ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0')
     # the port is set as 9999 to match with the value set in the docker image
     blazegraph.with_exposed_ports(9999)
 
