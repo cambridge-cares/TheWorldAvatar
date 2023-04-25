@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 19 Jan 2023          #
+# Last Update Date: 25 April 2023        #
 ##########################################
 
 import math
@@ -50,12 +50,12 @@ colourHEXList_9ClasswithElimination = [## eliminate the first 2 colours
     '#00441b']
 
 colourHEXList_11class = [ ## eliminate the first colour, 6class
-    '#a50f15',
-    '#de2d26',
+    '#de2d26', # '#a50f15',
     '#fb6a4a',
     '#fc9272',
+    '#FEEAE2',
     '#fcbba1',
-    '#ffffff', ## white, for the middle is the middle is given
+    '#EEF8EC', # '#ffffff', ## white, for the middle is the middle is given
     '#c7e9c0',
     '#a1d99b',
     '#74c476',
@@ -121,7 +121,7 @@ def sequentialHEXColourCodePicker(dataValue, upperBound, lowerBound, middle = No
         if not (middle >= lowerBound and middle <= upperBound):
             raise ValueError('Invalid middle number is given. Middle should be between upper and lower bounds.')
         elif round(dataValue) == round(middle):
-            return '#ffffff'
+            return '#EEF8EC'
         else:
             if (upperBound - middle) >= (middle - lowerBound):
                 interval = round((upperBound - middle) / dividend, 2)
@@ -129,9 +129,9 @@ def sequentialHEXColourCodePicker(dataValue, upperBound, lowerBound, middle = No
                 interval = round((middle - lowerBound) / dividend, 2)
 
             if dataValue > middle:
-                index = colourHEXList.index('#ffffff') - math.ceil((dataValue - middle) / interval)
+                index = colourHEXList.index('#EEF8EC') - math.ceil((dataValue - middle) / interval)
             else: 
-                index = colourHEXList.index('#ffffff')  +  math.ceil((middle - dataValue) / interval)
+                index = colourHEXList.index('#EEF8EC')  +  math.ceil((middle - dataValue) / interval) - 1
            
             if index == -1:
                 index = 0
@@ -183,6 +183,7 @@ def createColourBarLegend(filepath, upperBound, lowerBound, lebel:str, fileName:
             interval = round((middle - lowerBound) / dividend, 2)
 
         bounds = []
+        upperBound = math.ceil((upperBound - middle) / interval) * interval
         for i in range(len(cmap_list) + 1):
             if i == 0:
                 bounds.append(upperBound)
@@ -199,6 +200,7 @@ def createColourBarLegend(filepath, upperBound, lowerBound, lebel:str, fileName:
                 bounds.append(lowerBound)
             else: 
                 bounds.append(round(lowerBound + (i * interval), 2))
+        cmap = mpl.colors.ListedColormap(colourHEXList)
     elif colourClassNumber == 7:
         colourHEXList = colourHEXListForBranch_7class
         dividend = 8
@@ -209,10 +211,10 @@ def createColourBarLegend(filepath, upperBound, lowerBound, lebel:str, fileName:
                 bounds.append(lowerBound)
             else: 
                 bounds.append(round(lowerBound + (i * interval), 2))
+        cmap = mpl.colors.ListedColormap(colourHEXList)
     else:
         raise ValueError('Invalid colourClassNumber. colourClassNumber should be either 11, 8 or 7, while picking 11, the middle should be specified.')
     
-    cmap = mpl.colors.ListedColormap(colourHEXList)
     norm = mpl.colors.BoundaryNorm(bounds, cmap.N)
     cb2 = mpl.colorbar.ColorbarBase(ax, 
                                     cmap = cmap,
@@ -230,4 +232,4 @@ def createColourBarLegend(filepath, upperBound, lowerBound, lebel:str, fileName:
 
 if __name__ == '__main__': 
     ## print(sequentialHEXColourCodePicker(6.1, 6, 0, None, 7))
-    createColourBarLegend('', 6, 0, 'Net demanding (GWh/yr)', 'legend-netDemanding', None, 8)
+    createColourBarLegend('/mnt/d/wx243/FromTWA/', 5000, -40000, 'Net demanding (GWh/yr)', 'legend-netDemanding', 0, 11)
