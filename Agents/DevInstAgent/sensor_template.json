@@ -6,7 +6,6 @@
         "MainSensorMap":{
             "MainSensor1":{
                 "sensor1": {
-                    "name": null,
                     "type": null,
                     "ext_lib":[],
                     "description":"",
@@ -24,7 +23,6 @@
                 },
     
                 "sensor2": {
-                    "name": null,
                     "type": null,
                     "ext_lib":[],
                     "description":"",
