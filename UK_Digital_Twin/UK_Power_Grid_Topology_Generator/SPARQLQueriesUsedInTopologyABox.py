@@ -200,8 +200,8 @@ def queryWithinRegion(LACode:str, ONS_Endpoint):
             ?area <http://publishmydata.com/def/ontology/foi/code> "%s" .
             ?area foi:within+ ?Region .
             ?Region ons:status "live" .
-            ?Region ons_entity:code/rdfs:label "E12" .
-            ### ?Region ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> .
+            ## ?Region ons_entity:code/rdfs:label "E12" .
+            ?Region ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> .
             ?Region <http://publishmydata.com/def/ontology/foi/code> ?LACode_Region .
             }
             """%LACode
@@ -212,6 +212,11 @@ def queryWithinRegion(LACode:str, ONS_Endpoint):
             print('...HTTP GET WithinRegion of a given LA code...')
             r = requests.get(getString, timeout=60)
             RegionOrCountry = json.loads(r.text)['results']['bindings'][0]['LACode_Region']['value']
+            # RegionOrCountry = json.loads(r.text)['results']['bindings']
+            # for result in RegionOrCountry:
+            #     if result['LACode_Region']['value'][:3] == 'E12':
+            #         RegionOrCountry = result['LACode_Region']['value']
+            #         break
             print('...HTTP GET queryWithinRegion is done...')
             if int(r.status_code) != 200:
                 # raise Exception('The within region of the given LA code cannot be found, please check if the given LA code is in the hierarchy.')
