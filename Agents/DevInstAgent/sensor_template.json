@@ -1,0 +1,63 @@
+{   "MicroController":{
+        "type": null,
+        "name": null,
+        "label" :null,
+
+        "MainSensorMap":{
+            "MainSensor1":{
+                "sensor1": {
+                    "name": null,
+                    "type": null,
+                    "ext_lib":[],
+                    "description":"",
+                    "pin":[
+                        {"pinnum":null, "pintype":null, "label": null, "isIO": false},
+                        {"pinnum":null, "pintype":null, "label": null, "isIO": false}
+                    ],
+                    "output" : {
+                        "datatype" : null,
+                        "fieldname" : null,
+                        "defval" :null,
+                        "unit" : null
+                    }
+                },
+    
+                "sensor2": {
+                    "name": null,
+                    "type": null,
+                    "ext_lib":[],
+                    "description":"",
+                    "pin":[
+                        {"pinnum":null, "pintype":null, "label": null, "isIO": false},
+                        {"pinnum":null, "pintype":null, "label": null, "isIO": false}
+                    ],
+                    "output" : {
+                        "datatype" : null,
+                        "fieldname" : null,
+                        "defval" :null,
+                        "unit" : null
+                    }
+                }
+            }
+        },
+
+        "derivation" :{
+            "derivVar1":{
+                "derivedFrom":[],
+                "derviedBy":null,
+                "unit" : null   
+            },
+            "derivVar2":{
+                "derivedFrom":[],
+                "derviedBy":null,
+                "unit" : null   
+            }
+            
+        }
+    },
+    "IRIMapper":{
+        "id1":null,
+        "id2":null,
+        "id3":"iri1"
+    }
+}
