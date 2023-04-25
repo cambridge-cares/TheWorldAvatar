@@ -105,7 +105,7 @@ exp6:InputChemical_3
 
 exp6:StoiRatio_1
     rdf:type OntoRxn:StoichiometryRatio;
-    OntoDoE:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
     om:hasPhenomenon exp6:RxnExp_1;
     OntoRxn:indicatesMultiplicityOf exp6:InputChemical_1;
     om:hasValue exp6:StoiRatio_1_Measure_1;
@@ -119,7 +119,7 @@ exp6:StoiRatio_1_Measure_1
 
 exp6:StoiRatio_2
     rdf:type OntoRxn:StoichiometryRatio;
-    OntoDoE:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3"^^xsd:string;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3"^^xsd:string;
     om:hasPhenomenon exp6:RxnExp_1;
     OntoRxn:indicatesMultiplicityOf exp6:InputChemical_2;
     om:hasValue exp6:StoiRatio_2_Measure_1;
@@ -147,7 +147,7 @@ exp6:StoiRatio_3_Measure_1
 
 exp6:RxnScale_1
     rdf:type OntoRxn:ReactionScale;
-    OntoDoE:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
+    OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
     om:hasPhenomenon exp6:RxnExp_1;
     OntoRxn:indicatesUsageOf exp6:InputChemical_1;
     om:hasValue exp6:RxnScale_1_Measure_1;

@@ -32,7 +32,7 @@ INPUTCHEMICAL_1 = InputChemical(
                         numericalValue=0.5
                     )
                 ),
-                representsOccurenceOf='http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'
+                representsOccurenceOf='http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'
             ),
             OntoCAPE_PhaseComponent(
                 instance_iri='https://www.example.com/triplestore/ontorxn/SinglePhase/PhaseComponent_6',
@@ -50,7 +50,7 @@ INPUTCHEMICAL_1 = InputChemical(
                         numericalValue=18.1
                     )
                 ),
-                representsOccurenceOf='http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb'
+                representsOccurenceOf='http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb'
             )
         ],
         has_composition=OntoCAPE_Composition(
@@ -113,7 +113,7 @@ INPUTCHEMICAL_2 = InputChemical(
                         hasUnitOfMeasure='http://www.ontology-of-units-of-measure.org/resource/om-2/molePerLitre', numericalValue=6.73
                     )
                 ),
-                representsOccurenceOf='http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3'
+                representsOccurenceOf='http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3'
             ), OntoCAPE_PhaseComponent(
                 instance_iri='https://www.example.com/triplestore/ontorxn/SinglePhase/PhaseComponent_6_2',
                 clz='http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent',
@@ -130,7 +130,7 @@ INPUTCHEMICAL_2 = InputChemical(
                         numericalValue=9.6
                     )
                 ),
-                representsOccurenceOf='http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb'
+                representsOccurenceOf='http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb'
             )
         ],
         has_composition=OntoCAPE_Composition(
@@ -214,7 +214,7 @@ INPUTCHEMICAL_3 = InputChemical(
                         numericalValue=17.1
                     )
                 ),
-                representsOccurenceOf='http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983'
+                representsOccurenceOf='http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983'
             )
         ], has_composition=OntoCAPE_Composition(
             instance_iri='https://www.example.com/triplestore/ontorxn/SinglePhase/Composition_3',
@@ -292,7 +292,7 @@ AUTOSAMPLERSITE_1 = AutoSamplerSite(
                                     numericalValue=0.5
                                 )
                             ),
-                            representsOccurenceOf='http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'),
+                            representsOccurenceOf='http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'),
                         OntoCAPE_PhaseComponent(
                             instance_iri='http://example.com/blazegraph/namespace/testlab/dummy_lab/PhaseComponent_6',
                             clz='http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#PhaseComponent',
@@ -309,7 +309,7 @@ AUTOSAMPLERSITE_1 = AutoSamplerSite(
                                     numericalValue=18.1
                                 )
                             ),
-                            representsOccurenceOf='http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb'
+                            representsOccurenceOf='http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb'
                         )
                     ],
                     has_composition=OntoCAPE_Composition(
@@ -404,21 +404,21 @@ def test_equal_single_phase(input_chemical, autosamplersite, desired_result):
 @pytest.mark.parametrize(
     "chemical,chemical_species,desired_result",
     [
-        (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',True),
-        (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',True),
-        (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',False),
+        (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',True),
+        (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',True),
+        (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',False),
         (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202',False),
-        (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983',False),
-        (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',False),
-        (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',True),
-        (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',True),
+        (INPUTCHEMICAL_1,'http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983',False),
+        (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',False),
+        (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',True),
+        (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',True),
         (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202',False),
-        (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983',False),
-        (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',False),
-        (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',False),
-        (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',False),
+        (INPUTCHEMICAL_2,'http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983',False),
+        (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',False),
+        (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',False),
+        (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',False),
         (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202',True),
-        (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983',True),
+        (INPUTCHEMICAL_3,'http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983',True),
     ],
 )
 def test_contains_chemical_species(chemical, chemical_species, desired_result):

@@ -38,7 +38,7 @@
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionScale_12f103bd-5831-4538-80f1-e9f1b67ccf3b> a ns2:ReactionScale ;
     ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> ;
     ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_596b84d2-03d7-4715-9f00-56c45017cd19> ;
-    ns3:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b" ;
+    ns3:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b" ;
     ns2:indicatesUsageOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1> .
 
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionTemperature_ccb93a20-fea9-4179-a3c2-067e31989adf> a ns2:ReactionTemperature ;
@@ -54,13 +54,13 @@
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_866bfdf2-0d32-40da-8fcb-f89669cf1d31> a ns2:StoichiometryRatio ;
     ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> ;
     ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_740fa259-0149-4f49-99e7-95fbcff8c7e7> ;
-    ns3:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3" ;
+    ns3:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3" ;
     ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2> .
 
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_8ae63d49-d3e5-469c-a85a-e7799ddf1807> a ns2:StoichiometryRatio ;
     ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> ;
     ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_02c2c471-cf86-4b6c-b41a-aa8cde84b457> ;
-    ns3:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b" ;
+    ns3:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b" ;
     ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1> .
 
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_c242fa46-e60c-481c-8dc2-741f69386f25> a ns2:StoichiometryRatio ;
@@ -124,7 +124,7 @@
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionScale_340aac69-106c-4894-94b9-a7c489b5c597> a ns2:ReactionScale ;
     ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> ;
     ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_b8517bf9-6de4-4312-804e-90f6fa9ffd93> ;
-    ns3:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b" ;
+    ns3:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b" ;
     ns2:indicatesUsageOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1> .
 
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionTemperature_9809328d-1e34-4b5f-87aa-67e4accb75bd> a ns2:ReactionTemperature ;
@@ -146,13 +146,13 @@
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_58691e29-9d69-41ad-ab5f-8fd9b35f5e0c> a ns2:StoichiometryRatio ;
     ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> ;
     ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_f2fbbd93-35b7-47d3-8bd6-446bac0b470b> ;
-    ns3:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b" ;
+    ns3:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b" ;
     ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1> .
 
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_6a845185-032d-41d8-86ff-6a9952418063> a ns2:StoichiometryRatio ;
     ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> ;
     ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_3d89e7e7-f7a4-45ff-b4aa-6c982ff28cf7> ;
-    ns3:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3" ;
+    ns3:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3" ;
     ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2> .
 
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> a ns2:ReactionVariation ;
@@ -210,7 +210,7 @@
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionScale_2845e69e-1441-4758-9803-f038744cea8a> a ns2:ReactionScale ;
     ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> ;
     ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_9054ddbe-c176-493a-b5f1-149e8a2068b1> ;
-    ns3:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b" ;
+    ns3:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b" ;
     ns2:indicatesUsageOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1> .
 
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionTemperature_867f1bd9-0c7b-41d1-adc6-44738631a568> a ns2:ReactionTemperature ;
@@ -232,13 +232,13 @@
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_9968472e-74b9-4925-b5cc-63220f4be1a9> a ns2:StoichiometryRatio ;
     ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> ;
     ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_04daf6e1-2fe9-48cc-8096-ec383adf2bf3> ;
-    ns3:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b" ;
+    ns3:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b" ;
     ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_1> .
 
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/StoichiometryRatio_fb5fecbb-3de2-4d98-b96c-38a3d033ca2d> a ns2:StoichiometryRatio ;
     ns1:hasPhenomenon <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> ;
     ns1:hasValue <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/Measure_686ffd08-02bb-4c8f-86bc-72433bd6ce1a> ;
-    ns3:positionalID "http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3" ;
+    ns3:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3" ;
     ns2:indicatesMultiplicityOf <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/InputChemical_2> .
 
 <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> a ns2:ReactionVariation ;
