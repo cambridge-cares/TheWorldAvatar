@@ -4,7 +4,7 @@
 @prefix ontohplc:            <https://www.theworldavatar.com/kg/ontohplc/> .
 @prefix rdf:                 <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd:                 <http://www.w3.org/2001/XMLSchema#> .
-@prefix :                    <http://www.theworldavatar.com/resource/agents/Service__PostProc#> .
+@prefix :                    <https://www.theworldavatar.com/kg/agents/Service__PostProc#> .
 
 :Service
     rdf:type ontoagent:Service;

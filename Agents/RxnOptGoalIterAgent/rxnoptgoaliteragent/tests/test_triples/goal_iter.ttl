@@ -5,9 +5,9 @@
 @prefix om:             <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
 @prefix ontorxn:         <https://www.theworldavatar.com/kg/ontoreaction/> .
 @prefix ontogoal:        <https://www.theworldavatar.com/kg/ontogoal/> .
-@prefix :                <http://www.example.com/triplestore/ontogoal/rxnopt/> .
+@prefix :                <https://www.example.com/triplestore/ontogoal/rxnopt/> .
 
-@prefix rxnopt:          <http://www.theworldavatar.com/resource/plans/RxnOpt/> .
+@prefix rxnopt:          <https://www.theworldavatar.com/kg/plans/RxnOpt/> .
 
 :GoalSet_1
     a ontogoal:GoalSet;

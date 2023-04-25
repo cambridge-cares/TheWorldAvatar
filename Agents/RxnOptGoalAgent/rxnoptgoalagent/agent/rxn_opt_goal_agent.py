@@ -408,13 +408,13 @@ class RxnOptGoalAgent(ABC):
                     # the cycleAllowance will be updated depending on how many ROGI derivation is to be updated
                     # example SPARQL update with sub query:
                     # DELETE {
-                    # <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://www.theworldavatar.com/kg/ontogoal/cycleAllowance> ?cycle_allowance.
+                    # <https://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://www.theworldavatar.com/kg/ontogoal/cycleAllowance> ?cycle_allowance.
                     # }
                     # INSERT {
                     # <http://a_rogi_derivation_up_to_date> <https://www.theworldavatar.com/kg/ontoderivation/isDerivedFrom> ?rxn_exp.
                     # <http://another_rogi_derivation_up_to_date> <https://www.theworldavatar.com/kg/ontoderivation/isDerivedFrom> ?rxn_exp.
                     # <http://another_rogi_derivation_STILL_IN_PROGRESS> <https://www.theworldavatar.com/kg/ontoderivation/isDerivedFrom> ?rxn_exp.
-                    # <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://www.theworldavatar.com/kg/ontogoal/cycleAllowance> ?cycle_allowance_update.
+                    # <https://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://www.theworldavatar.com/kg/ontogoal/cycleAllowance> ?cycle_allowance_update.
                     # }
                     # WHERE {
                     # SELECT DISTINCT ?rxn_exp ?cycle_allowance ?cycle_allowance_update
@@ -423,7 +423,7 @@ class RxnOptGoalAgent(ABC):
                     #     ?result <https://www.theworldavatar.com/kg/ontoderivation/belongsTo> ?rogi_derivation;
                     #             <https://www.theworldavatar.com/kg/ontogoal/refersTo> ?pi.
                     #     ?pi ^<https://www.theworldavatar.com/kg/ontoreaction/hasPerformanceIndicator> ?rxn_exp.
-                    #     <http://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://www.theworldavatar.com/kg/ontogoal/cycleAllowance> ?cycle_allowance.
+                    #     <https://www.theworldavatar.com/triplestore/repository/Restriction_8be831da-8566-48cd-9966-24ea96101c44> <https://www.theworldavatar.com/kg/ontogoal/cycleAllowance> ?cycle_allowance.
                     #     BIND (?cycle_allowance -2 AS ?cycle_allowance_update)
                     # }
                     # }
@@ -500,7 +500,7 @@ class RxnOptGoalAgent(ABC):
             _goal_set_iri = self.current_active_goal_set
         else:
             return f"""No GoalSet IRI is provided. Nor is any GoalSet currently running.
-                       Please provide a GoalSet IRI in the URL, e.g. <br><br> {request.base_url}?goal_set=http://www.theworldavatar.com/GoalSet/GoalSet_1"""
+                       Please provide a GoalSet IRI in the URL, e.g. <br><br> {request.base_url}?goal_set=https://www.theworldavatar.com/GoalSet/GoalSet_1"""
 
         # get the goal set instance
         goal_set_instance = self.sparql_client.get_goal_set_instance(_goal_set_iri)

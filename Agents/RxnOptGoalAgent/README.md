@@ -63,7 +63,7 @@ Once all the inputs are filled, the user can click the `Submit` button to fire t
     "first_goal_desires": "https://www.theworldavatar.com/kg/ontogoal/desiresGreaterThan",
     "first_goal_num_val": 99,
     "first_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/percent",
-    "rxn_opt_goal_plan": "http://www.theworldavatar.com/resource/plans/RxnOpt/rxnoptplan",
+    "rxn_opt_goal_plan": "https://www.theworldavatar.com/kg/plans/RxnOpt/rxnoptplan",
     "second_goal_clz": "https://www.theworldavatar.com/kg/ontoreaction/RunMaterialCost",
     "second_goal_desires": "https://www.theworldavatar.com/kg/ontogoal/desiresLessThan",
     "second_goal_num_val": 0.001,
@@ -80,10 +80,10 @@ At the backend, ROG agent creates an instance of [`OntoGoal:GoalSet`](https://ww
 ```json
 {
     "Created a RxnOptGoalIter (ROGI) Derivation": [
-        "http://www.theworldavatar.com/triplestore/repository/DerivationAsyn_a649298f-4af2-438e-8eec-dedfd235e213",
-        "http://www.theworldavatar.com/triplestore/repository/DerivationAsyn_a2753927-0e73-4756-aa92-77aa43e5b5ce"
+        "https://www.theworldavatar.com/triplestore/repository/DerivationAsyn_a649298f-4af2-438e-8eec-dedfd235e213",
+        "https://www.theworldavatar.com/triplestore/repository/DerivationAsyn_a2753927-0e73-4756-aa92-77aa43e5b5ce"
     ],
-    "https://www.theworldavatar.com/kg/ontogoal/GoalSet": "http://www.theworldavatar.com/triplestore/repository/GoalSet_93547e14-ec9a-409b-97e1-7b47ce0a8146"
+    "https://www.theworldavatar.com/kg/ontogoal/GoalSet": "https://www.theworldavatar.com/triplestore/repository/GoalSet_93547e14-ec9a-409b-97e1-7b47ce0a8146"
 }
 ```
 
@@ -93,13 +93,13 @@ You may want to take a note of the created GoalSet IRI for later visualising the
 A webpage is also provided to visualise the progress of goal iteration. The route URL will plot the progress if a GoalSet is currently active. However, a message like below will be returned if no results were obtained yet.
 
 ```
-The current active GoalSet IRI http://www.theworldavatar.com/triplestore/repository/GoalSet_93547e14-ec9a-409b-97e1-7b47ce0a8146 is not iterated for the first time yet. Please wait for the first iteration to finish and try again.
+The current active GoalSet IRI https://www.theworldavatar.com/triplestore/repository/GoalSet_93547e14-ec9a-409b-97e1-7b47ce0a8146 is not iterated for the first time yet. Please wait for the first iteration to finish and try again.
 ```
 
 If no instance of GoalSet is active, something similar to below will be returned with the default visualisation route.
 
 ```
-No GoalSet IRI is provided. Nor is any GoalSet currently running. Please provide a GoalSet IRI in the URL, e.g. http://localhost:5000/goal/result?goal_set=http://www.theworldavatar.com/GoalSet/GoalSet_1
+No GoalSet IRI is provided. Nor is any GoalSet currently running. Please provide a GoalSet IRI in the URL, e.g. http://localhost:5000/goal/result?goal_set=https://www.theworldavatar.com/GoalSet/GoalSet_1
 ```
 
 As explained in the above message, besides the current active GoalSet, one can always provide a previous active GoalSet IRI in the HTTP request to retrieve its results.
@@ -116,7 +116,7 @@ If the GoalSet is reactivated successfully, you will see something like below:
 ```json
 {
     "status": "success",
-    "message": "GoalSet <http://www.theworldavatar.com/triplestore/repository/GoalSet_93547e14-ec9a-409b-97e1-7b47ce0a8146> is reactivated."
+    "message": "GoalSet <https://www.theworldavatar.com/triplestore/repository/GoalSet_93547e14-ec9a-409b-97e1-7b47ce0a8146> is reactivated."
 }
 ```
 

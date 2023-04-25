@@ -4,7 +4,7 @@
 @prefix saref:             <https://saref.etsi.org/core/> .
 @prefix om:             <http://www.ontology-of-units-of-measure.org/resource/om-2/> .
 @prefix ontogoal:        <https://www.theworldavatar.com/kg/ontogoal/> .
-@prefix :                <http://www.theworldavatar.com/resource/plans/RxnOpt/> .
+@prefix :                <https://www.theworldavatar.com/kg/plans/RxnOpt/> .
 
 :rxnoptplan
     a ontogoal:RxnOptPlan;
@@ -16,16 +16,16 @@
 :doe
     a ontogoal:DesignOfExperiment;
     ontogoal:hasNextStep :schedule_exe;
-    ontogoal:canBePerformedBy <http://www.theworldavatar.com/resource/agents/Service__DoE/Service>;
+    ontogoal:canBePerformedBy <https://www.theworldavatar.com/kg/agents/Service__DoE/Service>;
 .
 
 :schedule_exe
     a ontogoal:RxnExpExecution;
     ontogoal:hasNextStep :postpro;
-    ontogoal:canBePerformedBy <http://www.theworldavatar.com/resource/agents/Service__VapourtecSchedule/Service>;
+    ontogoal:canBePerformedBy <https://www.theworldavatar.com/kg/agents/Service__VapourtecSchedule/Service>;
 .
 
 :postpro
     a ontogoal:PostProcessing;
-    ontogoal:canBePerformedBy <http://www.theworldavatar.com/resource/agents/Service__HPLC_PostPro/Service>;
+    ontogoal:canBePerformedBy <https://www.theworldavatar.com/kg/agents/Service__HPLC_PostPro/Service>;
 .

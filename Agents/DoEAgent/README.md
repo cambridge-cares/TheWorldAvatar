@@ -83,7 +83,7 @@ The script then writes below derivation related triples:
 <derivation> <OntoDerivation:isDerivedFrom> <https://www.example.com/triplestore/ontodoe/DoE_1/DoE_1>
 
 # agent related
-<derivation> <OntoDerivation:isDerivedUsing> <http://www.theworldavatar.com/resource/agents/Service__DoE#Service>
+<derivation> <OntoDerivation:isDerivedUsing> <https://www.theworldavatar.com/kg/agents/Service__DoE#Service>
 
 # timestamp of derivation
 <derivation> <time:hasTime> <time>

@@ -170,8 +170,8 @@ def clear_loggers():
 
 class TargetIRIs(Enum):
     CHEMICAL_REACTION_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ChemRxn_1/'
-    DUMMY_VAPOURTEC_EXECUTION_AGENT_SERVICE_IRI = 'http://www.theworldavatar.com/resource/agents/Service__Execution#Service' # same as in rxn_queue_test.ttl
-    DUMMY_LAB_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/'
+    DUMMY_VAPOURTEC_EXECUTION_AGENT_SERVICE_IRI = 'https://www.theworldavatar.com/kg/agents/Service__Execution#Service' # same as in rxn_queue_test.ttl
+    DUMMY_LAB_BASE_IRI = 'https://example.com/blazegraph/namespace/testlab/dummy_lab/'
     DUMMY_LAB_IRI = DUMMY_LAB_BASE_IRI + 'Laboratory_Dummy'
     AUTOMATEDRXNPLATFORM_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'AutomatedRxnPlatform_Dummy'
     VAPOURTECRS400_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecRS400_Dummy'
@@ -451,13 +451,13 @@ class TargetIRIs(Enum):
     # LIST_VAPR4_ANOTHER_DUMMY_CONDUCTED_RXN_EXP = [EXAMPLE_RXN_EXP_3_IRI, EXAMPLE_RXN_EXP_4_IRI, EXAMPLE_RXN_EXP_5_IRI]
     LIST_DUMMY_R2PUMPS = [VAPOURTECR2PUMP_1_DUMMY_IRI, VAPOURTECR2PUMP_2_DUMMY_IRI, VAPOURTECR2PUMP_3_DUMMY_IRI, VAPOURTECR2PUMP_4_DUMMY_IRI]
     LIST_DUMMY_R4REACTORS = [VAPOURTECR4REACTOR_DUMMY_IRI, VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI]
-    RXN_EXP_QUEUE_1 = 'http://example.com/blazegraph/namespace/test_temp/exp_1'
-    RXN_EXP_QUEUE_2 = 'http://example.com/blazegraph/namespace/test_temp/exp_2'
-    RXN_EXP_QUEUE_3 = 'http://example.com/blazegraph/namespace/test_temp/exp_3'
-    RXN_EXP_QUEUE_4 = 'http://example.com/blazegraph/namespace/test_temp/exp_4'
-    RXN_EXP_QUEUE_5 = 'http://example.com/blazegraph/namespace/test_temp/exp_5'
-    RXN_EXP_QUEUE_6 = 'http://example.com/blazegraph/namespace/test_temp/exp_6'
-    RXN_EXP_QUEUE_7 = 'http://example.com/blazegraph/namespace/test_temp/exp_7'
+    RXN_EXP_QUEUE_1 = 'https://example.com/blazegraph/namespace/test_temp/exp_1'
+    RXN_EXP_QUEUE_2 = 'https://example.com/blazegraph/namespace/test_temp/exp_2'
+    RXN_EXP_QUEUE_3 = 'https://example.com/blazegraph/namespace/test_temp/exp_3'
+    RXN_EXP_QUEUE_4 = 'https://example.com/blazegraph/namespace/test_temp/exp_4'
+    RXN_EXP_QUEUE_5 = 'https://example.com/blazegraph/namespace/test_temp/exp_5'
+    RXN_EXP_QUEUE_6 = 'https://example.com/blazegraph/namespace/test_temp/exp_6'
+    RXN_EXP_QUEUE_7 = 'https://example.com/blazegraph/namespace/test_temp/exp_7'
     RXN_EXP_1_PRIOR = []
     RXN_EXP_2_PRIOR = [RXN_EXP_QUEUE_1]
     RXN_EXP_3_PRIOR = [RXN_EXP_QUEUE_1, RXN_EXP_QUEUE_2]
@@ -523,7 +523,7 @@ class TargetIRIs(Enum):
     DOE_TEMPLATE_IRI = DOE_TEMPLATE_BASE_IRI + 'DoE_1'
     DOE_TEMPLATE_DOMAIN_IRI = DOE_TEMPLATE_BASE_IRI + 'Domain_1'
 
-    DUMMY_LAB_FOR_POST_PROC_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/'
+    DUMMY_LAB_FOR_POST_PROC_BASE_IRI = 'https://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/'
     HPLC_1_POST_PROC_IRI = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_1'
     HPLC_2_POST_PROC_IRI = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_2'
     CHEMICAL_AMOUNT_1_POST_PROC_IRI = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalAmount_1_1'

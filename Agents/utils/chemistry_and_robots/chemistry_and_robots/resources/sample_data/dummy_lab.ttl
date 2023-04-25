@@ -15,7 +15,7 @@
 @prefix ontohplc:        <https://www.theworldavatar.com/kg/ontohplc/> .
 @prefix ontobpr:        <https://www.theworldavatar.com/kg/ontobpr/> .
 @prefix OntoLab:        <https://www.theworldavatar.com/kg/ontolab/> .
-@prefix :                <http://example.com/blazegraph/namespace/testlab/dummy_lab/> .
+@prefix :                <https://example.com/blazegraph/namespace/testlab/dummy_lab/> .
 
 @prefix exp1:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/> .
 @prefix exp2:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_2/> .
