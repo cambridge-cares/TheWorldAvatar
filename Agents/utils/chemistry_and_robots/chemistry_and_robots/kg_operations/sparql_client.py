@@ -1607,8 +1607,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def identify_rxn_exp_when_uploading_hplc_report(self, hplc_digital_twin: str, hplc_remote_file_path: str) -> str:
         hplc_digital_twin = trimIRI(hplc_digital_twin)
-        query = """SELECT DISTINCT ?rxn_exp WHERE {<%s> ^<%s>/<%s>+/<%s>/<%s> ?rxn_exp.}""" % (
-            hplc_digital_twin, SAREF_CONSISTSOF, SAREF_CONSISTSOF, ONTOLAB_ISSPECIFIEDBY, ONTOLAB_WASGENERATEDFOR)
+        query = """SELECT DISTINCT ?rxn_exp WHERE {<%s> ^<%s>/<%s>+/^<%s>/<%s> ?rxn_exp.}""" % (
+            hplc_digital_twin, SAREF_CONSISTSOF, SAREF_CONSISTSOF, ONTOLAB_SPECIFIES, ONTOLAB_WASGENERATEDFOR)
         response = self.performQuery(query)
         rxn_exp = [list(res.values())[0] for res in response]
         if len(rxn_exp) > 1:
@@ -2328,8 +2328,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def release_vapourtec_rs400_settings(self, vapourtec_rs400_iri: str):
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
-        update = """DELETE {?hardware <%s> ?settings. ?settings <%s> ?hardware.} WHERE {<%s> <%s>* ?hardware. ?hardware <%s> ?settings.}""" % (
-                ONTOLAB_ISSPECIFIEDBY, ONTOLAB_SPECIFIES, vapourtec_rs400_iri, SAREF_CONSISTSOF, ONTOLAB_ISSPECIFIEDBY
+        update = """DELETE {?settings <%s> ?hardware.} WHERE {<%s> <%s>* ?hardware. ?settings <%s> ?hardware.}""" % (
+                ONTOLAB_SPECIFIES, vapourtec_rs400_iri, SAREF_CONSISTSOF, ONTOLAB_SPECIFIES
             )
         self.performUpdate(update)
 

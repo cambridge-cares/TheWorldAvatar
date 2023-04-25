@@ -1021,20 +1021,20 @@ def test_release_vapourtec_rs400_settings(initialise_triples):
     sparql_client = initialise_triples
 
     vapourtec_rs400_iri = TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value
-    assert not sparql_client.performQuery("""ASK {<%s> <%s>* ?hardware. ?hardware <%s> ?settings.}""" % (
-        vapourtec_rs400_iri, onto.SAREF_CONSISTSOF, onto.ONTOLAB_ISSPECIFIEDBY))[0]['ASK']
+    assert not sparql_client.performQuery("""ASK {<%s> <%s>* ?hardware. ?settings <%s> ?hardware.}""" % (
+        vapourtec_rs400_iri, onto.SAREF_CONSISTSOF, onto.ONTOLAB_SPECIFIES))[0]['ASK']
 
     setting_iri = "http://"+str(uuid.uuid4())
     sparql_client.performUpdate("""
-        INSERT {?hardware <%s> <%s>. <%s> <%s> ?hardware.} WHERE {<%s> <%s>* ?hardware.}""" % (
-            onto.ONTOLAB_ISSPECIFIEDBY, setting_iri, setting_iri, onto.ONTOLAB_SPECIFIES,
+        INSERT {<%s> <%s> ?hardware.} WHERE {<%s> <%s>* ?hardware.}""" % (
+            setting_iri, onto.ONTOLAB_SPECIFIES,
             vapourtec_rs400_iri, onto.SAREF_CONSISTSOF))
-    assert sparql_client.performQuery("""ASK {<%s> <%s>* ?hardware. ?hardware <%s> ?settings.}""" % (
-        vapourtec_rs400_iri, onto.SAREF_CONSISTSOF, onto.ONTOLAB_ISSPECIFIEDBY))[0]['ASK']
+    assert sparql_client.performQuery("""ASK {<%s> <%s>* ?hardware. ?settings <%s> ?hardware.}""" % (
+        vapourtec_rs400_iri, onto.SAREF_CONSISTSOF, onto.ONTOLAB_SPECIFIES))[0]['ASK']
 
     sparql_client.release_vapourtec_rs400_settings(vapourtec_rs400_iri=vapourtec_rs400_iri)
-    assert not sparql_client.performQuery("""ASK {<%s> <%s>* ?hardware. ?hardware <%s> ?settings.}""" % (
-        vapourtec_rs400_iri, onto.SAREF_CONSISTSOF, onto.ONTOLAB_ISSPECIFIEDBY))[0]['ASK']
+    assert not sparql_client.performQuery("""ASK {<%s> <%s>* ?hardware. ?settings <%s> ?hardware.}""" % (
+        vapourtec_rs400_iri, onto.SAREF_CONSISTSOF, onto.ONTOLAB_SPECIFIES))[0]['ASK']
 
 def test_upload_and_get_vapourtec_input_file(initialise_triples, generate_random_download_path):
     """Integration test for upload_vapourtec_input_file_to_kg and test_get_vapourtec_input_file."""

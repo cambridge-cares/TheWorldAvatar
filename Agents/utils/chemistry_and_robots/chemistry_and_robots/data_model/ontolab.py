@@ -80,8 +80,6 @@ class EquipmentSettings(BaseOntology):
         if configure_digital_twin:
             # <equip_settings> <OntoLab:specifies> <lab_equipment>
             g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_SPECIFIES), URIRef(self.specifies.instance_iri)))
-            # <lab_equipment> <OntoLab:isSpecifiedBy> <equip_settings>
-            g.add((URIRef(self.specifies.instance_iri), URIRef(ONTOLAB_ISSPECIFIEDBY), URIRef(self.instance_iri)))
 
         return g
 
@@ -103,7 +101,6 @@ class LabEquipment(Saref_Device):
     isContainedIn: Union[str, Laboratory] # NOTE here str is provided as an optional as it seems impossible to circular reference at instance level
     hasPowerSupply: Union[str, PowerSupply] # NOTE TODO [future work] here str is provided as an optional to simplify the implementation
     consistsOf: Optional[List[LabEquipment]] = None
-    isSpecifiedBy: Optional[EquipmentSettings] = None
     # TODO [future work] add support for hasHeight, hasLength, hasPrice, hasWeight, and hasWidth
     isManagedBy: Optional[str] # NOTE here str is provided, this should refer to the iri of agent service
 
