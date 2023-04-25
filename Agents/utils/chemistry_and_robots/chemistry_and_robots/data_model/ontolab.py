@@ -73,8 +73,6 @@ class EquipmentSettings(BaseOntology):
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
         # <equip_settings> <OntoLab:wasGeneratedFor> <rxnexp>
         g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_WASGENERATEDFOR), URIRef(self.wasGeneratedFor)))
-        # <reactionExperiment> <OntoReaction:hasEquipmentSettings> <reactorSetting>
-        g.add((URIRef(self.wasGeneratedFor), URIRef(ONTOREACTION_HASEQUIPMENTSETTINGS), URIRef(self.instance_iri)))
 
         # NOTE the links between <equip_settings> and <lab_equipment> are optional depends on if one want to configure the digital twin
         if configure_digital_twin:
