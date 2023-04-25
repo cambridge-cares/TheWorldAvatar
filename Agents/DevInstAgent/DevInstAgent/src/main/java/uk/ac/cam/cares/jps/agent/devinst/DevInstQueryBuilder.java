@@ -131,25 +131,25 @@ public class DevInstQueryBuilder {
             for(String SensorName: MainSensor.keySet()){
                 JSONObject Sensor = MainSensor.getJSONObject(SensorName);
 
-                String Sensor_UUID_String = Sensor.getString("name");
+                //String Sensor_UUID_String = Sensor.getString("name");
                 //TODO Check IRIMAp first, then if its null, default to oontodevice
                 //Iri Sensor_UUID = P_DEV.iri(Sensor_UUID_String);
-                Iri Sensor_UUID = P_DEV.iri(genUUID(Sensor_UUID_String));
-                SensorComp_UUID_Map.put(Sensor.getString("name"), Sensor_UUID);
+                Iri Sensor_UUID = P_DEV.iri(genUUID(SensorName));
+                SensorComp_UUID_Map.put(SensorName, Sensor_UUID);
                 
                 String Measurement_UUID_String = Sensor.getJSONObject("output").getString("fieldname");
                 Iri Measurement_UUID = P_DEV.iri(genUUID(Measurement_UUID_String));
-                Measurement_UUID_Map.put(Measurement_UUID_String, Measurement_UUID);
+                Measurement_UUID_Map.put(SensorName, Measurement_UUID);
 
                 String MeasurementType_UUID_String = Sensor.getJSONObject("output").getString("type");
                 Iri MeasurementType_UUID = iri(IRIMap.getString(MeasurementType_UUID_String));
-                MeasurementTypeMap.put(MeasurementType_UUID_String, MeasurementType_UUID);
+                MeasurementTypeMap.put(SensorName, MeasurementType_UUID);
 
                 String SensorCompType_String = Sensor.getString("type");
                 //TODO Check IRIMAp first, then if its null, default to oontodevice
-                SensorTypeMap.put(Sensor.getString("name"), SensorCompType_String);
+                SensorTypeMap.put(SensorName, SensorCompType_String);
                 Iri SensorType_IRI = iri(IRIMap.getString(Sensor.getString("type")));
-                SensorTypeIRIMap.put(Sensor.getString("name"), SensorType_IRI);
+                SensorTypeIRIMap.put(SensorName, SensorType_IRI);
 
                 String unit = Sensor.getJSONObject("output").getString("unit");
                 MeasurementToUnitMap.put(Measurement_UUID_String, unit);
