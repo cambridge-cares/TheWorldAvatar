@@ -1,6 +1,6 @@
 ##########################################
 # Author: Wanni Xie (wx243@cam.ac.uk)    #
-# Last Update Date: 12 April 2023        #
+# Last Update Date: 25 April 2023        #
 ##########################################
 
 """
@@ -26,10 +26,9 @@ from UK_Digital_Twin_Package import BranchPropertyInitialisation as BPI
 from UK_Digital_Twin_Package import EndPointConfigAndBlazegraphRepoLabel as endpointList
 import UK_Power_Grid_Model_Generator.SPARQLQueryUsedInModel as query_model
 from UK_Power_Grid_Model_Generator.costFunctionParameterInitialiser import costFuncPara
-from UK_Power_Grid_Model_Generator import model_EBusABoxGeneration, model_EGenABoxGeneration #, model_ELineABoxGeneration
-from BusModelKGInstanceCreator import BusModelKGInstanceCreator
-from BranchModelKGInstanceCreator import BranchModelKGInstanceCreator
-from GeneratorModelKGInstanceCreator import GeneratorModelKGInstanceCreator
+from UK_Power_Grid_Model_Generator.model_EBusABoxGeneration import addUpConsumptionForAggregatedBus
+from UK_Power_Grid_Model_Generator.model_EGenABoxGeneration import demandAndCapacityRatioCalculator, initialiseEGenModelVar
+## TODO: uncomment the model_EBusABoxGeneration, model_EGenABoxGeneration
 import UK_Power_Grid_Model_Generator.initialiseEBusModelVariable as InitialiseEbus
 from UK_Digital_Twin_Package import UKDigitalTwinTBox as T_BOX
 from UK_Digital_Twin_Package import UKPowerPlant as UKpp
@@ -188,7 +187,7 @@ class OptimalPowerFlowAnalysis:
             self.numOfBus, self.busNodeList = query_model.queryBusTopologicalInformation(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?BusNodeIRI ?BusLatLon ?GenerationLinkedToBusNode
             self.branchNodeList, self.branchVoltageLevel = query_model.queryELineTopologicalInformation(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel) ## ?ELineNode ?From_Bus ?To_Bus ?Value_Length_ELine ?Num_OHL_400 or 275 
             self.generatorNodeList = query_model.queryEGenInfo(topologyNodeIRI, self.queryUKDigitalTwinEndpointLabel, eliminateClosedPlantIRIList) ## 0?PowerGeneratorIRI 1?FixedMO 2?VarMO 3?FuelCost 4?CO2EmissionFactor 5?Bus 6?Capacity 7?PrimaryFuel 8?Latlon 9?PowerPlant_LACode 10:Extant[if withRetrofit is set as 'True'] 11: samllerLAcode   
-            self.capa_demand_ratio = model_EGenABoxGeneration.demandAndCapacityRatioCalculator(self.generatorNodeList, topologyNodeIRI, startTime_of_EnergyConsumption)
+            self.capa_demand_ratio = demandAndCapacityRatioCalculator(self.generatorNodeList, topologyNodeIRI, startTime_of_EnergyConsumption)
             if withRetrofit is True:
                 for egen in self.generatorNodeList:
                     egen.append("Extant")
@@ -317,6 +316,8 @@ class OptimalPowerFlowAnalysis:
     def powerPlantAndDemandingAreasMapper(self):
         for demanding in self.demandingAreaList:
             Area_LACode = str(demanding['Area_LACode'])
+
+            print(self.demandingAreaList.index(demanding))
 
             ## Find the official region of the demanding area
             if 'Official_region' in demanding.keys():
@@ -545,7 +546,7 @@ class OptimalPowerFlowAnalysis:
             clusteredSite[i]['Bus'] = busIRI
         self.retrofitListBeforeSelection = outliers + clusteredSite
         return
-       
+        
     """The SMR site selection algorithm"""   
     def siteSelector(self, numberOfSMRToBeIntroduced):
         self.numberOfSMRToBeIntroduced = numberOfSMRToBeIntroduced
@@ -567,19 +568,19 @@ class OptimalPowerFlowAnalysis:
             siteSelector = sp_pymoo.siteSelector(numberOfSMRToBeIntroduced, self.geospatialQueryEndpointLabel, self.retrofitListBeforeSelection, self.discountRate, self.projectLifeSpan, self.SMRCapitalCost,
             self.MonetaryValuePerHumanLife, self.NeighbourhoodRadiusForSMRUnitOf1MW, self.ProbabilityOfReactorFailure, self.SMRCapability, self.bankRate,
             self.maxmumSMRUnitAtOneSite, self.SMRIntergratedDiscount, self.startTime_of_EnergyConsumption, self.population_list, self.weightedDemandingDistance_list, contradictedPairs)
-            ## Selecte the Genetic Algorithm NSGA2
+            ## Selecte the Genetic Algorithm NSGA2, Non-dominated Sorting Genetic Algorithm II
             algorithm = NSGA2(
                 pop_size = self.pop_size, ## the initial population size 
                 n_offsprings = self.n_offsprings, ## the number of the offspring of each generation 
                 sampling=IntegerRandomSampling(),
-                crossover=SBX(prob=1.0, eta=3.0, vtype=float, repair=RoundingRepair()),
-                mutation=PM(prob=1.0, eta=3.0, vtype=float, repair=RoundingRepair()),
+                crossover=SBX(prob=0.5, eta=3.0, vtype=float, repair=RoundingRepair()),
+                mutation=PM(prob=1, eta=3.0, vtype=float, repair=RoundingRepair()),
                 eliminate_duplicates=True)
 
             res = minimize(siteSelector,
                         algorithm,
                         ('n_gen', int(self.numberOfGenerations)),
-                        seed=1,
+                        seed = 1,
                         verbose=True,
                         save_history=True
                         )        
@@ -842,7 +843,7 @@ class OptimalPowerFlowAnalysis:
             EBus_Load_List, self.demandingAreaList, aggregatedBusFlag = allocator(self.busNodeList, self.startTime_of_EnergyConsumption, self.numOfBus, self.demandingAreaList, "BusLatLon") # busNodeList[0]: EquipmentConnection_EBus, busNodeList[1]: v_TotalELecConsumption 
         ##The sum up of the load of the aggegated bus is done in the loadAllocatorName
         if aggregatedBusFlag == True:
-            EBus_Load_List = model_EBusABoxGeneration.addUpConsumptionForAggregatedBus(EBus_Load_List) # sum up the demand of an AggregatedBus
+            EBus_Load_List = addUpConsumptionForAggregatedBus(EBus_Load_List) # sum up the demand of an AggregatedBus
         
         self.busNodeList = EBus_Load_List
         
@@ -903,7 +904,7 @@ class OptimalPowerFlowAnalysis:
 
                 uk_egen_OPF_model = costFuncPara(uk_egen_OPF_model, egen)
                 ###add EGen model parametor###
-                self.ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_OPF_model, egen, self.OrderedBusNodeIRIList, self.capa_demand_ratio, windOutputRatio, solarOutputRatio)
+                self.ObjectSet[objectName] = initialiseEGenModelVar(uk_egen_OPF_model, egen, self.OrderedBusNodeIRIList, self.capa_demand_ratio, windOutputRatio, solarOutputRatio)
                 GeneratorObjectList_EachWeight.append(objectName)
             self.GeneratorObjectList.append(GeneratorObjectList_EachWeight)
 
@@ -924,7 +925,7 @@ class OptimalPowerFlowAnalysis:
                     egen_re = [newGeneratorNodeIRI, float(factorArray[1]), float(factorArray[2]), float(factorArray[3]), float(factorArray[4]), egen_re["Bus"], egen_re["Capacity"], self.newGeneratorType] ## ?PowerGenerator ?FixedMO ?VarMO ?FuelCost ?CO2EmissionFactor ?Bus ?Capacity ?fuel type
                     uk_egen_re_OPF_model = costFuncPara(uk_egen_re_OPF_model, egen_re)
                     ###add EGen model parametor###
-                    self.ObjectSet[objectName] = model_EGenABoxGeneration.initialiseEGenModelVar(uk_egen_re_OPF_model, egen_re, self.OrderedBusNodeIRIList, self.capa_demand_ratio, windOutputRatio, solarOutputRatio)
+                    self.ObjectSet[objectName] = initialiseEGenModelVar(uk_egen_re_OPF_model, egen_re, self.OrderedBusNodeIRIList, self.capa_demand_ratio, windOutputRatio, solarOutputRatio)
                     SMRSiteObjectList_EachWeight.append(objectName)
             self.SMRSiteObjectList.append(SMRSiteObjectList_EachWeight) ## if the number of the SMR is 0, the SMRSiteObjectList_EachWeight is [] and appended to the SMRSiteObjectList    
         return    
@@ -1072,10 +1073,28 @@ class OptimalPowerFlowAnalysis:
         self.OPEXRatioList = []
         
         # set up numerical method: Newton's Method
-        ppopt = ppoption(OUT_ALL = 0, VERBOSE = 2) 
+        '''VERBOSE, amount of progress info printed:
+        0 - print no progress info,
+        1 - print a little progress info,
+        2 - print a lot of progress info,
+        3 - print all progress info'''
+
+        '''OPF_ALG, algorithm to use for OPF:
+        0 - choose best default solver available in the
+        following order, 500, 540, 520 then 100/200
+        Otherwise the first digit specifies the problem
+        formulation and the second specifies the solver,
+        as follows, (see the User's Manual for more details)
+        500 - generalized formulation, MINOS,
+        540 - generalized formulation, MIPS
+        primal/dual interior point method,
+        545 - generalized formulation (except CCV), SC-MIPS
+        step-controlled primal/dual interior point method'''
+        ppopt = ppoption(OUT_ALL = 0, VERBOSE = 3, PDIPM_GRADTOL= 5e-5, SCPDIPM_RED_IT = 10, OPF_IGNORE_ANG_LIM = True, OPF_ALG = 0)  # 'scpdipm_red_it', 20,
+        ## iteration number, objective function value, step size, feasibility condition, gradient condition, complementarity condition, and cost condition. 
         
-        for ppc in self.ppc_List: ## the length of the ppc_List should equal to the number of the weights
-            i = self.ppc_List.index(ppc)
+        for i, ppc in enumerate(self.ppc_List): ## the length of the ppc_List should equal to the number of the weights
+            # i = self.ppc_List.index(ppc)
             ##-- starts opf analysis --##
             results = runopf(ppc, ppopt)
             self.resultsList.append(results)
@@ -1107,13 +1126,20 @@ class OptimalPowerFlowAnalysis:
             print("***Annualised OPEX cost (£): ", annualisedOPEX) ## calculated from OPF, OPEX 
             if self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0: 
                 print("***RetrofittingCost (CAPEX) cost (£): ", self.retrofittingCostList[i]) ## calculated from site selection, CAPEX
-            ## print("***Percentage of OPEX: ", percentageOfOPEX, "and the percentage of CAPEX is: ", percentageOfCAPEX)
+            # print("***Percentage of OPEX: ", percentageOfOPEX, "and the percentage of CAPEX is: ", percentageOfCAPEX)
 
             ConvergeFlag = results["success"]
             if ConvergeFlag is True:
                 print('-----The OPF model is converged.-----')
             else:
+
                 print('!!!!!!The OPF model is diverged!!!!!')
+
+            print("***The SMR number is: %s ***"%str(self.numberOfSMRToBeIntroduced))
+            print("***The carbon tax is: %s ***"%str(self.CarbonTaxForOPF))
+            print("***The weather condition is: %s ***"%str(self.weatherConditionName))
+            print("***The weight is: %s ***"%str(self.weighterList[i]))
+
 
             if not (self.withRetrofit is True and self.numberOfSMRToBeIntroduced > 0):
                 for i in range(len(self.ppc_List) - 1):
@@ -1570,6 +1596,9 @@ class OptimalPowerFlowAnalysis:
         create KG representation for all model objects
         
         """
+        from BusModelKGInstanceCreator import BusModelKGInstanceCreator
+        from BranchModelKGInstanceCreator import BranchModelKGInstanceCreator
+        from GeneratorModelKGInstanceCreator import GeneratorModelKGInstanceCreator
         ## create the power system model node IRI
         self.powerSystemModelIRI = UK_PG.ontopowsys_namespace + UK_PG.powerSystemModelKey + str(uuid.uuid4())
         ## create the timeStamp, e.x. 2022-06-15T16:24:29.371941+00:00
@@ -2082,7 +2111,6 @@ class OptimalPowerFlowAnalysis:
 
     """This method is to generate the JSON file for creating the visualisation of the net demanding of the small areas"""
     ## This method can be run after the calculation of the simulation, like the other fig creator functions  
-    ## TODO: change the colour picker
     def GeoJSONCreator_netDemandingForSmallArea(self, demandingDataList, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResults:bool, specifiedConfigList:list):  
         ##check the storage path
         self.mkdirNetDemandingJSON('SmallAreaNetDemanding/')
@@ -2098,6 +2126,20 @@ class OptimalPowerFlowAnalysis:
                             totalDemanding += demainding_eachsmallArea['netDemanding']
         upperbound = round(float(max(netDemanding)), 2)
         lowerbound = round(float(min(netDemanding)), 2)
+
+        counter =  0
+        while upperbound > 10:
+            upperbound = upperbound / 10
+            counter +=  1
+        upperbound = math.ceil(upperbound) * (10**counter)
+
+        counter =  0
+        abs_lowerbound = abs(lowerbound)
+        while abs_lowerbound > 10:
+            abs_lowerbound = abs_lowerbound / 10
+            counter +=  1
+        abs_lowerbound = math.ceil(abs_lowerbound) * (10**counter)
+        lowerbound = - abs_lowerbound
 
         if lowerbound >= 0 or upperbound <= 0:
             raise ValueError('Unusual lowerbound or upperbound. Lowerbound should be nagitive numbers and the upper bound should be positive.')
@@ -2146,7 +2188,7 @@ class OptimalPowerFlowAnalysis:
                                 "smallArea_LACode": "%s",
                                 "netDemanding": "%s",
                                 "fill": "%s",
-                                "fill-opacity": 0.9,
+                                "fill-opacity": 1,
                                 "stroke-width" : 0.2,
                                 "stroke-opacity" : 0.9
                                 },
@@ -2202,7 +2244,7 @@ class OptimalPowerFlowAnalysis:
                             "smallArea_LACode": "%s",
                             "netDemanding": "%s",
                             "fill": "%s",
-                            "fill-opacity": 0.9,
+                            "fill-opacity": 1,
                             "stroke-width" : 0.2,
                             "stroke-opacity" : 0.9
                             },
@@ -2245,7 +2287,7 @@ class OptimalPowerFlowAnalysis:
                                     "smallArea_LACode": "%s",
                                     "netDemanding": "%s",
                                     "fill": "%s",
-                                    "fill-opacity": 0.9,
+                                    "fill-opacity": 1,
                                     "stroke-width" : 0.2,
                                     "stroke-opacity" : 0.9
                                     },
@@ -2286,6 +2328,21 @@ class OptimalPowerFlowAnalysis:
         upperbound = round(float(max(netDemanding)), 2)
         lowerbound = round(float(min(netDemanding)), 2)
 
+        ## Round the upper and lower bounds
+        counter =  0
+        while upperbound > 10:
+            upperbound = upperbound / 10
+            counter +=  1
+        upperbound = math.ceil(upperbound) * (10**counter)
+
+        counter =  0
+        abs_lowerbound = abs(lowerbound)
+        while abs_lowerbound > 10:
+            abs_lowerbound = abs_lowerbound / 10
+            counter +=  1
+        abs_lowerbound = math.ceil(abs_lowerbound) * (10**counter)
+        lowerbound = - abs_lowerbound
+
         if lowerbound >= 0 or upperbound <= 0:
             raise ValueError('Unusual lowerbound or upperbound. Lowerbound should be nagitive numbers and the upper bound should be positive.')
 
@@ -2325,7 +2382,7 @@ class OptimalPowerFlowAnalysis:
                                 "features": ["""
                             # iterating over features (rows in results array)
                             for demanding in demanding_eachWeight:
-                                boundary =  ast.literal_eval(geojson.dumps(mapping(demanding ['regionalBoundery'])))
+                                boundary =  ast.literal_eval(geojson.dumps(mapping(demanding['regionalBoundery'])))
                                 # creating point feature 
                                 feature = """{
                                     "type": "Feature",
@@ -2333,7 +2390,7 @@ class OptimalPowerFlowAnalysis:
                                     "regionalArea_LACode": "%s",
                                     "netDemanding": "%s",
                                     "fill": "%s",
-                                    "fill-opacity": 0.9,
+                                    "fill-opacity": 1,
                                     "stroke-width" : 0.2,
                                     "stroke-opacity" : 0.9
                                     },
@@ -2389,7 +2446,7 @@ class OptimalPowerFlowAnalysis:
                             "regionalArea_LACode": "%s",
                             "netDemanding": "%s",
                             "fill": "%s",
-                            "fill-opacity": 0.9,
+                            "fill-opacity": 1,
                             "stroke-width" : 0.2,
                             "stroke-opacity" : 0.9
                             },
@@ -2432,7 +2489,7 @@ class OptimalPowerFlowAnalysis:
                                     "regionalArea_LACode": "%s",
                                     "netDemanding": "%s",
                                     "fill": "%s",
-                                    "fill-opacity": 0.9,
+                                    "fill-opacity": 1,
                                     "stroke-width" : 0.2,
                                     "stroke-opacity" : 0.9
                                     },
@@ -3127,7 +3184,7 @@ class OptimalPowerFlowAnalysis:
                                 "totalOutput": %s,
                                 "color": "%s",
                                 "fill": "%s",
-                                "fill-opacity": 0.6,
+                                "fill-opacity": 1,
                                 "stroke-width" : 0.2,
                                 "stroke-opacity" : 0.7
                                 },
@@ -3191,7 +3248,7 @@ class OptimalPowerFlowAnalysis:
                             "totalOutput": %s,
                             "color": "%s",
                             "fill": "%s",
-                            "fill-opacity": 0.6,
+                            "fill-opacity": 1,
                             "stroke-width" : 0.2,
                             "stroke-opacity" : 0.7
                             },
@@ -3242,7 +3299,7 @@ class OptimalPowerFlowAnalysis:
                                     "totalOutput": %s,
                                     "color": "%s",
                                     "fill": "%s",
-                                    "fill-opacity": 0.6,
+                                    "fill-opacity": 1,
                                     "stroke-width" : 0.2,
                                     "stroke-opacity" : 0.7
                                     },
@@ -3432,7 +3489,7 @@ class OptimalPowerFlowAnalysis:
                                     "majorEnergySource": "%s",
                                     "color": "%s",
                                     "fill": "%s",
-                                    "fill-opacity": 0.6,
+                                    "fill-opacity": 1,
                                     "stroke-width" : 0.2,
                                     "stroke-opacity" : 0.7,
                                     "height": %s,
@@ -3453,7 +3510,7 @@ class OptimalPowerFlowAnalysis:
                                     "majorEnergySource": "%s",
                                     "color": "%s",
                                     "fill": "%s",
-                                    "fill-opacity": 0.8,
+                                    "fill-opacity": 1,
                                     "stroke-width" : 0.2,
                                     "stroke-opacity" : 0.7,
                                     "height": %s,
@@ -3476,7 +3533,7 @@ class OptimalPowerFlowAnalysis:
                                     "energySource": "%s",
                                     "color": "%s",
                                     "fill": "%s",
-                                    "fill-opacity": 0.5,
+                                    "fill-opacity": 1,
                                     "stroke-width" : 0.2,
                                     "stroke-opacity" : 0.7,
                                     "height": %s,
@@ -3667,7 +3724,7 @@ class OptimalPowerFlowAnalysis:
                                 "majorEnergySource": "%s",
                                 "color": "%s",
                                 "fill": "%s",
-                                "fill-opacity": 0.6,
+                                "fill-opacity": 1,
                                 "stroke-width" : 0.2,
                                 "stroke-opacity" : 0.7,
                                 "height": %s,
@@ -3688,7 +3745,7 @@ class OptimalPowerFlowAnalysis:
                                 "majorEnergySource": "%s",
                                 "color": "%s",
                                 "fill": "%s",
-                                "fill-opacity": 0.8,
+                                "fill-opacity": 1,
                                 "stroke-width" : 0.2,
                                 "stroke-opacity" : 0.7,
                                 "height": %s,
@@ -3711,7 +3768,7 @@ class OptimalPowerFlowAnalysis:
                                 "energySource": "%s",
                                 "color": "%s",
                                 "fill": "%s",
-                                "fill-opacity": 0.5,
+                                "fill-opacity": 1,
                                 "stroke-width" : 0.2,
                                 "stroke-opacity" : 0.7,
                                 "height": %s,
@@ -3888,7 +3945,7 @@ class OptimalPowerFlowAnalysis:
                                         "majorEnergySource": "%s",
                                         "color": "%s",
                                         "fill": "%s",
-                                        "fill-opacity": 0.6,
+                                        "fill-opacity": 1,
                                         "stroke-width" : 0.2,
                                         "stroke-opacity" : 0.7,
                                         "height": %s,
@@ -3909,7 +3966,7 @@ class OptimalPowerFlowAnalysis:
                                         "majorEnergySource": "%s",
                                         "color": "%s",
                                         "fill": "%s",
-                                        "fill-opacity": 0.8,
+                                        "fill-opacity": 1,
                                         "stroke-width" : 0.2,
                                         "stroke-opacity" : 0.7,
                                         "height": %s,
@@ -3932,7 +3989,7 @@ class OptimalPowerFlowAnalysis:
                                         "energySource": "%s",
                                         "color": "%s",
                                         "fill": "%s",
-                                        "fill-opacity": 0.5,
+                                        "fill-opacity": 1,
                                         "stroke-width" : 0.2,
                                         "stroke-opacity" : 0.7,
                                         "height": %s,
@@ -4075,7 +4132,7 @@ class OptimalPowerFlowAnalysis:
                                             "output": "%s",
                                             "energySource": "Wind",
                                             "color": "#13bef2",
-                                            "fill-opacity": 0.6,
+                                            "fill-opacity": 1,
                                             "stroke-width" : 0.2,
                                             "stroke-opacity" : 0.7,
                                             "height": %s,
@@ -4096,7 +4153,7 @@ class OptimalPowerFlowAnalysis:
                                             "output": "%s",
                                             "energySource": "Solar",
                                             "color": "#ffcc33",
-                                            "fill-opacity": 0.6,
+                                            "fill-opacity": 1,
                                             "stroke-width" : 0.2,
                                             "stroke-opacity" : 0.7,
                                             "height": %s,
@@ -4117,7 +4174,7 @@ class OptimalPowerFlowAnalysis:
                                             "output": "%s",
                                             "energySource": "Natural Gas",
                                             "color": "#1B2631",
-                                            "fill-opacity": 0.6,
+                                            "fill-opacity": 1,
                                             "stroke-width" : 0.2,
                                             "stroke-opacity" : 0.7,
                                             "height": %s,
@@ -4138,7 +4195,7 @@ class OptimalPowerFlowAnalysis:
                                             "output": "%s",
                                             "energySource": "Coal",
                                             "color": "#873600",
-                                            "fill-opacity": 0.6,
+                                            "fill-opacity": 1,
                                             "stroke-width" : 0.2,
                                             "stroke-opacity" : 0.7,
                                             "height": %s,
@@ -4159,7 +4216,7 @@ class OptimalPowerFlowAnalysis:
                                             "output": "%s",
                                             "energySource": "Oil",
                                             "color": "#99A3A4",
-                                            "fill-opacity": 0.6,
+                                            "fill-opacity": 1,
                                             "stroke-width" : 0.2,
                                             "stroke-opacity" : 0.7,
                                             "height": %s,
@@ -4180,7 +4237,7 @@ class OptimalPowerFlowAnalysis:
                                             "output": "%s",
                                             "energySource": "Conventional Nuclear",
                                             "color": "#cc3300",
-                                            "fill-opacity": 0.6,
+                                            "fill-opacity": 1,
                                             "stroke-width" : 0.2,
                                             "stroke-opacity" : 0.7,
                                             "height": %s,
@@ -4201,7 +4258,7 @@ class OptimalPowerFlowAnalysis:
                                             "output": "%s",
                                             "energySource": "SMR",
                                             "color": "#1e8700",
-                                            "fill-opacity": 0.6,
+                                            "fill-opacity": 1,
                                             "stroke-width" : 0.2,
                                             "stroke-opacity" : 0.7,
                                             "height": %s,
@@ -4222,7 +4279,7 @@ class OptimalPowerFlowAnalysis:
                                             "output": "%s",
                                             "energySource": "Hydro",
                                             "color": "#3b3bff",
-                                            "fill-opacity": 0.6,
+                                            "fill-opacity": 1,
                                             "stroke-width" : 0.2,
                                             "stroke-opacity" : 0.7,
                                             "height": %s,
@@ -4243,7 +4300,7 @@ class OptimalPowerFlowAnalysis:
                                             "output": "%s",
                                             "energySource": "Others",
                                             "color": "#2d37bc",
-                                            "fill-opacity": 0.6,
+                                            "fill-opacity": 1,
                                             "stroke-width" : 0.2,
                                             "stroke-opacity" : 0.7,
                                             "height": %s,
@@ -4373,7 +4430,7 @@ class OptimalPowerFlowAnalysis:
                                         "output": "%s",
                                         "energySource": "Wind",
                                         "color": "#13bef2",
-                                        "fill-opacity": 0.6,
+                                        "fill-opacity": 1,
                                         "stroke-width" : 0.2,
                                         "stroke-opacity" : 0.7,
                                         "height": %s,
@@ -4394,7 +4451,7 @@ class OptimalPowerFlowAnalysis:
                                         "output": "%s",
                                         "energySource": "Solar",
                                         "color": "#ffcc33",
-                                        "fill-opacity": 0.6,
+                                        "fill-opacity": 1,
                                         "stroke-width" : 0.2,
                                         "stroke-opacity" : 0.7,
                                         "height": %s,
@@ -4415,7 +4472,7 @@ class OptimalPowerFlowAnalysis:
                                         "output": "%s",
                                         "energySource": "Natural Gas",
                                         "color": "#1B2631",
-                                        "fill-opacity": 0.6,
+                                        "fill-opacity": 1,
                                         "stroke-width" : 0.2,
                                         "stroke-opacity" : 0.7,
                                         "height": %s,
@@ -4436,7 +4493,7 @@ class OptimalPowerFlowAnalysis:
                                         "output": "%s",
                                         "energySource": "Coal",
                                         "color": "#873600",
-                                        "fill-opacity": 0.6,
+                                        "fill-opacity": 1,
                                         "stroke-width" : 0.2,
                                         "stroke-opacity" : 0.7,
                                         "height": %s,
@@ -4457,7 +4514,7 @@ class OptimalPowerFlowAnalysis:
                                         "output": "%s",
                                         "energySource": "Oil",
                                         "color": "#99A3A4",
-                                        "fill-opacity": 0.6,
+                                        "fill-opacity": 1,
                                         "stroke-width" : 0.2,
                                         "stroke-opacity" : 0.7,
                                         "height": %s,
@@ -4478,7 +4535,7 @@ class OptimalPowerFlowAnalysis:
                                         "output": "%s",
                                         "energySource": "Conventional Nuclear",
                                         "color": "#cc3300",
-                                        "fill-opacity": 0.6,
+                                        "fill-opacity": 1,
                                         "stroke-width" : 0.2,
                                         "stroke-opacity" : 0.7,
                                         "height": %s,
@@ -4499,7 +4556,7 @@ class OptimalPowerFlowAnalysis:
                                         "output": "%s",
                                         "energySource": "SMR",
                                         "color": "#1e8700",
-                                        "fill-opacity": 0.6,
+                                        "fill-opacity": 1,
                                         "stroke-width" : 0.2,
                                         "stroke-opacity" : 0.7,
                                         "height": %s,
@@ -4520,7 +4577,7 @@ class OptimalPowerFlowAnalysis:
                                         "output": "%s",
                                         "energySource": "Hydro",
                                         "color": "#3b3bff",
-                                        "fill-opacity": 0.6,
+                                        "fill-opacity": 1,
                                         "stroke-width" : 0.2,
                                         "stroke-opacity" : 0.7,
                                         "height": %s,
@@ -4541,7 +4598,7 @@ class OptimalPowerFlowAnalysis:
                                         "output": "%s",
                                         "energySource": "Others",
                                         "color": "#2d37bc",
-                                        "fill-opacity": 0.6,
+                                        "fill-opacity": 1,
                                         "stroke-width" : 0.2,
                                         "stroke-opacity" : 0.7,
                                         "height": %s,
@@ -4658,7 +4715,7 @@ class OptimalPowerFlowAnalysis:
                                                 "output": "%s",
                                                 "energySource": "Wind",
                                                 "color": "#13bef2",
-                                                "fill-opacity": 0.6,
+                                                "fill-opacity": 1,
                                                 "stroke-width" : 0.2,
                                                 "stroke-opacity" : 0.7,
                                                 "height": %s,
@@ -4679,7 +4736,7 @@ class OptimalPowerFlowAnalysis:
                                                 "output": "%s",
                                                 "energySource": "Solar",
                                                 "color": "#ffcc33",
-                                                "fill-opacity": 0.6,
+                                                "fill-opacity": 1,
                                                 "stroke-width" : 0.2,
                                                 "stroke-opacity" : 0.7,
                                                 "height": %s,
@@ -4700,7 +4757,7 @@ class OptimalPowerFlowAnalysis:
                                                 "output": "%s",
                                                 "energySource": "Natural Gas",
                                                 "color": "#1B2631",
-                                                "fill-opacity": 0.6,
+                                                "fill-opacity": 1,
                                                 "stroke-width" : 0.2,
                                                 "stroke-opacity" : 0.7,
                                                 "height": %s,
@@ -4721,7 +4778,7 @@ class OptimalPowerFlowAnalysis:
                                                 "output": "%s",
                                                 "energySource": "Coal",
                                                 "color": "#873600",
-                                                "fill-opacity": 0.6,
+                                                "fill-opacity": 1,
                                                 "stroke-width" : 0.2,
                                                 "stroke-opacity" : 0.7,
                                                 "height": %s,
@@ -4742,7 +4799,7 @@ class OptimalPowerFlowAnalysis:
                                                 "output": "%s",
                                                 "energySource": "Oil",
                                                 "color": "#99A3A4",
-                                                "fill-opacity": 0.6,
+                                                "fill-opacity": 1,
                                                 "stroke-width" : 0.2,
                                                 "stroke-opacity" : 0.7,
                                                 "height": %s,
@@ -4763,7 +4820,7 @@ class OptimalPowerFlowAnalysis:
                                                 "output": "%s",
                                                 "energySource": "Conventional Nuclear",
                                                 "color": "#cc3300",
-                                                "fill-opacity": 0.6,
+                                                "fill-opacity": 1,
                                                 "stroke-width" : 0.2,
                                                 "stroke-opacity" : 0.7,
                                                 "height": %s,
@@ -4784,7 +4841,7 @@ class OptimalPowerFlowAnalysis:
                                                 "output": "%s",
                                                 "energySource": "SMR",
                                                 "color": "#1e8700",
-                                                "fill-opacity": 0.6,
+                                                "fill-opacity": 1,
                                                 "stroke-width" : 0.2,
                                                 "stroke-opacity" : 0.7,
                                                 "height": %s,
@@ -4805,7 +4862,7 @@ class OptimalPowerFlowAnalysis:
                                                 "output": "%s",
                                                 "energySource": "Hydro",
                                                 "color": "#3b3bff",
-                                                "fill-opacity": 0.6,
+                                                "fill-opacity": 1,
                                                 "stroke-width" : 0.2,
                                                 "stroke-opacity" : 0.7,
                                                 "height": %s,
@@ -4826,7 +4883,7 @@ class OptimalPowerFlowAnalysis:
                                                 "output": "%s",
                                                 "energySource": "Others",
                                                 "color": "#2d37bc",
-                                                "fill-opacity": 0.6,
+                                                "fill-opacity": 1,
                                                 "stroke-width" : 0.2,
                                                 "stroke-opacity" : 0.7,
                                                 "height": %s,
@@ -5305,58 +5362,58 @@ class OptimalPowerFlowAnalysis:
                         emissionCostOPEXRatio = results_sameCarbonTaxAndSameWeather[1]
                         emissionCostTotalCostRatio = results_sameCarbonTaxAndSameWeather[2]
                         matrix_emissionCostAtEachWeight[i,j] = emissionCost[m]
-                        matrix_emissionCostAtEachWeight_Annotation[i,j] = emissionCost[m] / 1E8
+                        matrix_emissionCostAtEachWeight_Annotation[i,j] = emissionCost[m] / 1E10
                         matrix_emissionCostOPEXRatioAtEachWeight[i,j] = emissionCostOPEXRatio[m]
                         matrix_emissionCostTotalCostRatioAtEachWeight[i,j] = emissionCostTotalCostRatio[m]
                         
-            ## Draw the heatmap of emission cost
-            cmap = seaborn.diverging_palette(200,20,sep=20,as_cmap=True)
-            seaborn.heatmap(matrix_emissionCostAtEachWeight, linewidth=0.004, cmap=cmap, annot=matrix_emissionCostAtEachWeight_Annotation, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7}, vmin=0, vmax=5E8)
-            title = "Emission cost at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
-            plt.title(title)
-            plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
-            plt.ylabel("SMR Number", fontsize = labelFontSize) 
-            plt.tight_layout()
-            label_png = 'EmissionCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-            ## label_svg = 'SMROutput_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
-            self.mkdirFig('Heatmap_CO2Emission/')
-            plt.savefig(self.diagramPath + label_png, dpi = 1200, bbox_inches='tight')
-            # plt.show()
-            # plt.close()
-            plt.clf()
-            plt.cla()
+                ## Draw the heatmap of emission cost
+                cmap = seaborn.diverging_palette(200,20,sep=20,as_cmap=True)
+                seaborn.heatmap(matrix_emissionCostAtEachWeight, linewidth=0.004, cmap=cmap, annot=matrix_emissionCostAtEachWeight_Annotation, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7}, vmin=0, vmax=2E10)
+                title = "Emission cost at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
+                plt.title(title)
+                plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
+                plt.ylabel("SMR Number", fontsize = labelFontSize) 
+                plt.tight_layout()
+                label_png = 'EmissionCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
+                ## label_svg = 'SMROutput_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
+                self.mkdirFig('Heatmap_CO2Emission/')
+                plt.savefig(self.diagramPath + 'Heatmap_CO2Emission/' + label_png, dpi = 1200, bbox_inches='tight')
+                # plt.show()
+                # plt.close()
+                plt.clf()
+                plt.cla()
 
-            ## Draw the heatmap of emission cost and OPEX ratio
-            seaborn.heatmap(matrix_emissionCostOPEXRatioAtEachWeight, linewidth=0.004, cmap="crest", annot = matrix_emissionCostOPEXRatioAtEachWeight, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
-            title = "Emission cost and OPEX ratio at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
-            plt.title(title, fontsize = 11)
-            plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
-            plt.ylabel("SMR Number", fontsize = labelFontSize) 
-            plt.tight_layout()
-            label_png = 'emissionCostOPEXRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-            ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
-            self.mkdirFig('Heatmap_CO2Emission/')
-            plt.savefig(self.diagramPath + label_png, dpi = 1200, bbox_inches='tight')
-            # plt.show()
-            # plt.close()
-            plt.clf()
-            plt.cla()
+                ## Draw the heatmap of emission cost and OPEX ratio
+                seaborn.heatmap(matrix_emissionCostOPEXRatioAtEachWeight, linewidth=0.004, cmap="crest", annot = matrix_emissionCostOPEXRatioAtEachWeight, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
+                title = "Emission cost and OPEX ratio at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
+                plt.title(title, fontsize = 11)
+                plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
+                plt.ylabel("SMR Number", fontsize = labelFontSize) 
+                plt.tight_layout()
+                label_png = 'emissionCostOPEXRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
+                ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
+                self.mkdirFig('Heatmap_CO2Emission/')
+                plt.savefig(self.diagramPath + 'Heatmap_CO2Emission/' + label_png, dpi = 1200, bbox_inches='tight')
+                # plt.show()
+                # plt.close()
+                plt.clf()
+                plt.cla()
 
-            ## Draw the heatmap of emission cost and total cost ratio
-            seaborn.heatmap(matrix_emissionCostTotalCostRatioAtEachWeight, linewidth=0.004, cmap="crest", annot = matrix_emissionCostTotalCostRatioAtEachWeight, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
-            title = "Emission cost and total cost ratio at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
-            plt.title(title,fontsize = 10)
-            plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
-            plt.ylabel("SMR Number", fontsize = labelFontSize) 
-            plt.tight_layout()
-            label_png = 'emissionCostTotalCostRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-            ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
-            self.mkdirFig('Heatmap_CO2Emission/')
-            plt.savefig(self.diagramPath + label_png, dpi = 1200, bbox_inches='tight')
-            # plt.show()
-            # plt.close()
-            plt.clf()
-            plt.cla()
+                ## Draw the heatmap of emission cost and total cost ratio
+                seaborn.heatmap(matrix_emissionCostTotalCostRatioAtEachWeight, linewidth=0.004, cmap="crest", annot = matrix_emissionCostTotalCostRatioAtEachWeight, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7.5}, vmin=0, vmax=1)
+                title = "Emission cost and total cost ratio at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
+                plt.title(title,fontsize = 10)
+                plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
+                plt.ylabel("SMR Number", fontsize = labelFontSize) 
+                plt.tight_layout()
+                label_png = 'emissionCostTotalCostRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
+                ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
+                self.mkdirFig('Heatmap_CO2Emission/')
+                plt.savefig(self.diagramPath + 'Heatmap_CO2Emission/' + label_png, dpi = 1200, bbox_inches='tight')
+                # plt.show()
+                # plt.close()
+                plt.clf()
+                plt.cla()
         return
 
     """This method is used to create sub cost heatmap"""
@@ -5365,6 +5422,9 @@ class OptimalPowerFlowAnalysis:
     def dataHeatmapCreator_SubCost(self, totalCostList, OPEXCost, emissionCost, SMRInvestment, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList):
         rowNum = len(NumberOfSMRUnitList)
         colNum = len(CarbonTaxForOPFList)
+
+        if rowNum != len(totalCostList) or colNum != len(totalCostList[0]):
+            raise ValueError('Please check the input SMR number list and the Carbon tax list and make sure they are matched with the processing reuslts.')
 
         ## colour pattern, "crest" was used at the first time
         ## cmap = seaborn.cubehelix_palette(as_cmap=True, start=1.5, rot=-0.75, dark= 0.3)
@@ -5390,20 +5450,19 @@ class OptimalPowerFlowAnalysis:
                         matrix_RiskCost[i,j] = round(totalCost - OPEX_withEmission - SMRInvestment[i][j][k][m], 2) 
 
                         matrix_pureOPEX_annotation[i,j] = matrix_pureOPEX[i,j] / 1E10
-                        matrix_capex_annotation[i,j] = matrix_pureOPEX[i,j] / 1E9
+                        matrix_capex_annotation[i,j] = matrix_capex[i,j] / 1E10
                         matrix_SMRCost_annotation[i,j] = matrix_SMRCost[i,j] / 1E9
                         matrix_RiskCost_annotation[i,j] = matrix_RiskCost[i,j] / 1E8
                         
                 ## Draw the heatmap of pure OPEX
                 cmap = seaborn.diverging_palette(200,20,sep=20,as_cmap=True)
-                seaborn.heatmap(matrix_pureOPEX, linewidth=0.004, cmap=cmap, annot=matrix_pureOPEX_annotation, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7}, vmin=0, vmax=1.2E10)
+                seaborn.heatmap(matrix_pureOPEX, linewidth=0.004, cmap="crest", annot=matrix_pureOPEX_annotation, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7}, vmin=0, vmax=1.2E10)
                 title = "Pure OPEX at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
                 plt.title(title)
                 plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
                 plt.ylabel("SMR Number", fontsize = labelFontSize) 
                 plt.tight_layout()
                 label_png = 'PureOPEX_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-                ## label_svg = 'SMROutput_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
                 self.mkdirFig('Heatmap_pureOPEX/')
                 plt.savefig(self.diagramPath + 'Heatmap_pureOPEX/' + label_png, dpi = 1200, bbox_inches='tight')
                 # plt.show()
@@ -5412,14 +5471,13 @@ class OptimalPowerFlowAnalysis:
                 plt.cla()
 
                 ## Draw the heatmap of CAPEX
-                seaborn.heatmap(matrix_capex, linewidth=0.004, cmap="crest", annot = matrix_capex_annotation, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7}, vmin=0, vmax=4E9)
+                seaborn.heatmap(matrix_capex, linewidth=0.004, cmap="crest", annot = matrix_capex_annotation, fmt=".2f", square = False, xticklabels = CarbonTaxForOPFList, yticklabels = NumberOfSMRUnitList, center = 0.9, annot_kws={'size':7}, vmin=0, vmax=1.2E10)
                 title = "CAPEX at weather condition " + weatherConditionList[k][2] + " (weight = " + str(round(self.weighterList[m], 2)) + ")"
                 plt.title(title, fontsize = 11)
                 plt.xlabel("Carbon tax (£)", fontsize = labelFontSize)
                 plt.ylabel("SMR Number", fontsize = labelFontSize) 
                 plt.tight_layout()
                 label_png = 'CAPEX_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-                ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
                 self.mkdirFig('Heatmap_CAPEX/')
                 plt.savefig(self.diagramPath + 'Heatmap_CAPEX/' + label_png, dpi = 1200, bbox_inches='tight')
                 # plt.show()
@@ -5435,7 +5493,6 @@ class OptimalPowerFlowAnalysis:
                 plt.ylabel("SMR Number", fontsize = labelFontSize) 
                 plt.tight_layout()
                 label_png = 'SMRInvestment_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-                ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
                 self.mkdirFig('Heatmap_SMRInvestment/')
                 plt.savefig(self.diagramPath + 'Heatmap_SMRInvestment/' + label_png, dpi = 1200, bbox_inches='tight')
                 # plt.show()
@@ -5451,7 +5508,6 @@ class OptimalPowerFlowAnalysis:
                 plt.ylabel("SMR Number", fontsize = labelFontSize) 
                 plt.tight_layout()
                 label_png = 'RiskCost_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.pdf'
-                ## label_svg = 'SMROperationalRatio_Heatmap_' + str(weatherConditionList[k][2]) + '_weight_' + str(round(self.weighterList[m], 2)) + '.svg'
                 self.mkdirFig('Heatmap_RiskCost/')
                 plt.savefig(self.diagramPath + 'Heatmap_RiskCost/' + label_png, dpi = 1200, bbox_inches='tight')
                 # plt.show()
@@ -5557,6 +5613,8 @@ class OptimalPowerFlowAnalysis:
     """Create the multiple lines diagram reflecting the weather condition impact under the same weight 0.5"""
     def lineGraph_weatherImpact(self, pickedWeight, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList):     
        
+       ##FIXME: remove the last 3 carbon tax
+        CarbonTaxForOPFList = CarbonTaxForOPFList[:-3]
         ## will generate 3 figs and each fig has 8 lines (SMR diagram only has 4 lines and the rest: 4 lines for 4 weather condition and 4 line for their corresponding base cases.)
         if not pickedWeight in self.weighterList:
             raiseExceptions("The given weight is not in the list!")
@@ -5675,13 +5733,13 @@ class OptimalPowerFlowAnalysis:
         ## vertical line
         ax1.vlines(10, 0, 55, color = '#808080', alpha=0.5, linestyle = lineStyleList[1]) 
         ax2.vlines(10, 0, 55, color = '#808080', alpha=0, linestyle = lineStyleList[1])
-        ax1.vlines(60, 0, 55, color = '#808080', alpha=0.5, linestyle = lineStyleList[1])
-        ax2.vlines(60, 0, 55, color = '#808080', alpha=0, linestyle = lineStyleList[1])
+        ax1.vlines(40, 0, 55, color = '#808080', alpha=0.5, linestyle = lineStyleList[1])
+        ax2.vlines(40, 0, 55, color = '#808080', alpha=0, linestyle = lineStyleList[1])
         
         ## label the zones 
         plt.annotate('(a)', (-6, 35), fontsize = annotateSize, xycoords='data', color='#636363')  
-        plt.annotate('(b)', (27, 35), fontsize = annotateSize, xycoords='data', color='#636363') 
-        plt.annotate('(c)', (70, 35), fontsize = annotateSize, xycoords='data', color='#636363') 
+        plt.annotate('(b)', (20, 35), fontsize = annotateSize, xycoords='data', color='#636363') 
+        plt.annotate('(c)', (60, 35), fontsize = annotateSize, xycoords='data', color='#636363') 
 
         ## set legend
         pos = ax1.get_position() 
@@ -5746,13 +5804,13 @@ class OptimalPowerFlowAnalysis:
         
         ## vertical line
         ax1.vlines(10, 1E10, 2.5E10, color = '#808080', alpha=0.5, linestyle = lineStyleList[1]) 
-        ax1.vlines(60, 1E10, 2.5E10, color = '#808080', alpha=0.5, linestyle = lineStyleList[1])
+        ax1.vlines(40, 1E10, 2.5E10, color = '#808080', alpha=0.5, linestyle = lineStyleList[1])
         ax2.vlines(10, 1E10, 2.5E10, color = '#808080', alpha=0, linestyle = lineStyleList[1])
-        ax2.vlines(60, 1E10, 2.5E10, color = '#808080', alpha=0, linestyle = lineStyleList[1])
+        ax2.vlines(40, 1E10, 2.5E10, color = '#808080', alpha=0, linestyle = lineStyleList[1])
 
         ## label the zones 
         plt.annotate('(a)', (-6, 2E10), fontsize = annotateSize, xycoords='data', color='#636363')  
-        plt.annotate('(b)', (27, 2E10), fontsize = annotateSize, xycoords='data', color='#636363') 
+        plt.annotate('(b)', (22, 2E10), fontsize = annotateSize, xycoords='data', color='#636363') 
         plt.annotate('(c)', (100, 2E10), fontsize = annotateSize, xycoords='data', color='#636363') 
 
         pos = ax1.get_position()
@@ -5813,13 +5871,13 @@ class OptimalPowerFlowAnalysis:
             # adjust_text(pointAndText, only_move={'text': 'y'}) # , arrowprops=dict(arrowstyle='-', color='grey')
         
         ax1.vlines(10, 0, 5000, color = '#808080', alpha=0.5, linestyle = lineStyleList[1]) ## vertical line
-        ax1.vlines(60, 0, 5000, color = '#808080', alpha=0.5, linestyle = lineStyleList[1])
+        ax1.vlines(40, 0, 5000, color = '#808080', alpha=0.5, linestyle = lineStyleList[1])
         ax2.vlines(10, 0, 5000, color = '#808080', alpha=0, linestyle = lineStyleList[1])
-        ax2.vlines(60, 0, 5000, color = '#808080', alpha=0, linestyle = lineStyleList[1])
+        ax2.vlines(40, 0, 5000, color = '#808080', alpha=0, linestyle = lineStyleList[1])
 
-        plt.annotate('(a)', (-6, 4000), fontsize = annotateSize, xycoords='data', color='#636363')  ## label the zones 
-        plt.annotate('(b)', (17, 4000), fontsize = annotateSize, xycoords='data', color='#636363') 
-        plt.annotate('(c)', (46, 4000), fontsize = annotateSize, xycoords='data', color='#636363') 
+        plt.annotate('(a)', (-6, 3500), fontsize = annotateSize, xycoords='data', color='#636363')  ## label the zones 
+        plt.annotate('(b)', (17, 3500), fontsize = annotateSize, xycoords='data', color='#636363') 
+        plt.annotate('(c)', (46, 3500), fontsize = annotateSize, xycoords='data', color='#636363') 
 
         pos = ax1.get_position() ## set up the legend position
         ax1.set_position([pos.x0, pos.y0, pos.width, pos.height * 0.85])
@@ -5843,9 +5901,8 @@ class OptimalPowerFlowAnalysis:
 
     """Create the multiple lines diagram reflecting the weight impact under different weather conditions"""
     def lineGraph_weightImpact(self, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList):
-        ## delete the carbon tax £300
-        if CarbonTaxForOPFList[-1] == 300: 
-            CarbonTaxForOPFList = CarbonTaxForOPFList[:-1] 
+        ##FIXME: remove the last 3 carbon tax
+        CarbonTaxForOPFList = CarbonTaxForOPFList[:-3]
         
         ## 3 (smr, cost, co2) * 4 (weather condotions) figs in total: each fig has 6 lines (1 base line 5 lines for different weight)    
         if len(summary_eachSMRDesign) != len(NumberOfSMRUnitList):
@@ -6093,6 +6150,9 @@ class OptimalPowerFlowAnalysis:
 
     """Multiple line chart demonstrate the carbon emission reduction due to both the carbon tax and SMR introduction under the same weather"""
     def lineGraph_SMRImpactForCO2Emission(self, summary_eachSMRDesign:list, NumberOfSMRUnitList:list, CarbonTaxForOPFList:list, weatherConditionList:list):    
+        ##FIXME: remove the last 3 carbon tax
+        CarbonTaxForOPFList = CarbonTaxForOPFList[:-3]
+        
         if len(summary_eachSMRDesign) != len(NumberOfSMRUnitList):
             raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
         
@@ -6148,15 +6208,20 @@ class OptimalPowerFlowAnalysis:
                     ax2.plot(CarbonTaxForOPFList, CO2Emission_sameWeatherSameWeight[i], color = colors[i], alpha=0) 
                     ay1.plot(CarbonTaxForOPFList, CO2Emission_sameWeatherSameWeight[i], color = colors[i], alpha=0) 
                 ## ax1.legend(fontsize = legendFontSize, loc='upper left')
-                if weatherConditionList[w][2] in ['WHSH', 'WLSL']:
-                    ncol_legend = 5
-                else:
-                    ncol_legend = 4
+                if weatherConditionList[w][2] in ['WHSH']:
+                    anchor = (0.5, 0.08)
+                elif weatherConditionList[w][2] in ['WHSL']:
+                    anchor = (0.5, 0.10)
+                elif weatherConditionList[w][2] in ['WLSL']:
+                    anchor = (0.5, 0.20)
+                elif weatherConditionList[w][2] in ['WLSH']:
+                    anchor = (0.5, 0.14)
+                
                 ax1.legend(
                     loc="upper center",
                     fontsize = legendFontSize,
-                    ncol = ncol_legend,
-                    bbox_to_anchor=(0.5, 0.075),
+                    ncol = 4,
+                    bbox_to_anchor = anchor,
                     frameon=False,
                     bbox_transform=fig.transFigure 
                 )   
@@ -6171,6 +6236,9 @@ class OptimalPowerFlowAnalysis:
 
     """Energy breakdown graph for each SMR design vs carbon tax"""
     def stackAreaGraph_EnergyBreakDownForEachSMRDesign(self, energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList):
+        ##FIXME: remove the last 3 carbon tax
+        CarbonTaxForOPFList = CarbonTaxForOPFList[:-3]
+        
         if len(energyBreakdown_eachSMRDesign) != len(NumberOfSMRUnitList):
             raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
         ## set up the clourmap
@@ -6236,6 +6304,9 @@ class OptimalPowerFlowAnalysis:
 
     """Energy breakdown graph for optimised SMR design vs carbon tax at each weight level"""
     def stackAreaGraph_EnergyBreakDownForOptimisedDesign(self, summary_eachSMRDesign, energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, pickedWeightList):
+        ##FIXME: remove the last 3 carbon tax
+        CarbonTaxForOPFList = CarbonTaxForOPFList[:-3]
+        
         if len(energyBreakdown_eachSMRDesign) != len(NumberOfSMRUnitList):
             raiseExceptions("The length of the result list should equal to the number of the SMR list number!")
         ## set up the clourmap
@@ -6415,50 +6486,43 @@ if __name__ == '__main__':
     safeDistance = 20
     
     ## GA settings
-    pop_size = 1000
-    n_offsprings = 1000
-    numberOfGenerations = 350
-
-    
-    # ## Be careful with the NumberOfSMRUnitList: while study the impact of the weight, it will require more SMR unit number 
-    # NumberOfSMRUnitList = [0, 10, 15, 20, 24, 28, 29, 30, 31, 35, 40, 46, 47, 50, 51, 52, 53]  #[0, 5, 10, 15, 24, 28, 29, 30, 40, 46, 47, 50, 51, 52, 53] 
-    # weighterList = [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
-    # CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 70, 80, 100, 120, 160, 200, 300]
-    # weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
+    pop_size = 500 ## 10 times if the decision variables
+    n_offsprings = 1000 ## 1000 ## 1-2 offspring of the parent generation
+    numberOfGenerations = 600 ## 400
 
     ## Be careful with the NumberOfSMRUnitList: while study the impact of the weight, it will require more SMR unit number 
     ## New list after changing the population data and remove the closed power plant 
-    # NumberOfSMRUnitList =[0, 10, 15, 20, 24, 27, 28, 31, 32, 35, 37, 40, 46, 47, 50, 51, 52, 53, 54, 55, 57, 58, 60] #[0, 10, 15, 20, 24, 27, 28, 31, 32, 35, 37, 40,] #[0, 10, 15, 20, 24, 27, 28, 31, 32, 35, 37, 40] #, #[0, 5, 10, 25, 30, 40, 46, 48, 52] #[0, 1, 5, 10, 15, 20, 22, 24, 25, 28, 30, 35, 40, 45, 47, 50, 54, 60]
-    # weighterList = [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
-    # CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 80, 100, 150, 200, 250, 300, 350]
-    # weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
+    NumberOfSMRUnitList = [0, 10, 15, 20, 24, 26, 27, 28, 31, 32, 35, 37, 40, 46, 47, 50, 51, 52, 53, 54,  55, 57, 58] #[0, 10, 15, 20, 24, 27, 28, 31, 32, 35, 37, 40,] #[0, 10, 15, 20, 24, 27, 28, 31, 32, 35, 37, 40] #, #[0, 5, 10, 25, 30, 40, 46, 48, 52] #[0, 1, 5, 10, 15, 20, 22, 24, 25, 28, 30, 35, 40, 45, 47, 50, 54, 60]
+    weighterList = [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
+    CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 80, 100, 150, 200, 250, 300, 350]
+    weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
 
-    ###FORTEST###
-    NumberOfSMRUnitList = [10]
-    weighterList = [1] # [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
-    CarbonTaxForOPFList =  [0, 100, 150, 200]
-    weatherConditionList = [[0.088, 0.033, "WLSL"]] # [0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
+    ##FORTEST###
+    # NumberOfSMRUnitList = [27,37,46]
+    # weighterList =[0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
+    # CarbonTaxForOPFList = [0, 5, 10, 20, 40, 60, 80, 100, 150, 200, 250, 300, 350]
+    # weatherConditionList = [[0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]] # [0.67, 0.74, "WHSH"], [0.088, 0.74, "WLSH"], [0.67, 0.033, "WHSL"], [0.088, 0.033, "WLSL"]]
 
     ## stop generating the JSON files
-    generateVisualisationJSON = False
-    ifReadLocalResults = False
+    generateVisualisationJSON = True
+    ifReadLocalResults = True
     ifGenerateParetoFrontPDF = True
 
-    ## rootPath = '/mnt/d/wx243/FromAW/npy/0405/'## root path for npu files store
-    rootPath = '/mnt/d/wx243/FromTWA/npy/0411_fullList/'## root path for npu files store
+    rootPath = '/mnt/d/wx243/FromTWA/npy/0421/'## root path for npu files store
 
     ## Specified net demanding results for GeoJSON creation 
     ifSpecifiedResultsForNetDemanding = True
-    specifiedConfig = [[53, 60, "WLSL"]] #, [51, 60, "WHSH"]]
+    specifiedConfig = [[26, 100, "WHSH"], [32, 100, "WHSL"], [50, 100, "WLSH"], [55, 100, "WLSL"] ]
 
     ## For stack fig of the energy breakdown
-    EnergyBreakDown_weightList = [0.85]
+    EnergyBreakDown_weightList = [0, 0.25, 0.5, 0.75, 0.85, 0.9, 1]
 
     ## For weather impact line chart
     pickedWeight = 0.85
 
     ## cutter for the SMR list 
     cutter = 5
+    counter_smrChunk = 1
 ############29 Bus model##################################################################################################################################################################
     testOPF_29BusModel = OptimalPowerFlowAnalysis(topologyNodeIRI_29Bus, eliminateClosedPlantIRIList, AgentIRI, "2017-01-31", slackBusNodeIRI_29Bus, loadAllocatorName_29Bus, 
         EBusModelVariableInitialisationMethodName_29Bus, ELineInitialisationMethodName_29Bus, piecewiseOrPolynomial, pointsOfPiecewiseOrcostFuncOrder, 
@@ -6480,10 +6544,7 @@ if __name__ == '__main__':
                 SMRListChunk = NumberOfSMRUnitList[i *cutter : (i + 1) * cutter]
             else:
                 SMRListChunk = NumberOfSMRUnitList[i *cutter :]
-            newSMRNumberList.append(SMRListChunk)
-## TODO: re set the counter_smrChunk to 1 for the fresh run
-        counter_smrChunk = 2
-
+            newSMRNumberList.append(SMRListChunk)     
         for smrList in newSMRNumberList:
             summary_eachSMRDesign = []
             ratio_eachSMRDesign = []
@@ -6504,7 +6565,7 @@ if __name__ == '__main__':
                 print('===The number of SMR is: ', str(numberOfSMRToBeIntroduced))
                 testOPF_29BusModel.siteSelector(numberOfSMRToBeIntroduced)
                 testOPF_29BusModel.optimaPicker(ifGenerateParetoFrontPDF)
-                ##  testOPF_29BusModel.ModelPythonObjectInputInitialiser_BusAndBranch()
+
                 summary_eachCarbonTax = []
                 SMR_eachCarbonTax = []
                 SMRInvestment_eachCarbonTax = []
@@ -6521,8 +6582,6 @@ if __name__ == '__main__':
                 genRawResult_eachCarbonTax = []
 
                 for CarbonTaxForOPF in CarbonTaxForOPFList:
-                    ## generatorNameList = []
-                    ## before decommssion: find the potential decommssion power plant 
                     summary_eachWeather = []
                     ratio_eachWeather = []
                     SMR_eachWeather = []
@@ -6546,13 +6605,7 @@ if __name__ == '__main__':
                         testOPF_29BusModel.CarbonEmissionCalculator()
                         testOPF_29BusModel.netDemandingCalculator(ifReadLocalResults, [])
                         testOPF_29BusModel.EnergyBreakdown_RegionAndSmallArea()
-                        ## generatorNameList.append(testOPF_29BusModel.GeneratorObjectList)
-                        
-                        ###### re_totalCostAndTotalEmission = [testOPF_29BusModel.totalCostList, testOPF_29BusModel.totalCO2EmissionList]
-                        ###### re_OPEXRatio = [testOPF_29BusModel.OPEXRatioList, testOPF_29BusModel.annualisedOPEXList]
-                        ###### smr_outputAndRatio = [testOPF_29BusModel.SMRTotalOutputList, testOPF_29BusModel.SMRTotalOperationalRatioList]
-                        ###### _emission = [testOPF_29BusModel.annualisedTotalEmissionCostList, testOPF_29BusModel.emissionCostContributionList_OPEX, testOPF_29BusModel.emissionCostContributionList_TotalCost]
-                        
+                       
                         summary_eachWeather.append([testOPF_29BusModel.totalCostList, testOPF_29BusModel.totalCO2EmissionList])
                         del testOPF_29BusModel.totalCostList
                         del testOPF_29BusModel.totalCO2EmissionList
@@ -6568,7 +6621,7 @@ if __name__ == '__main__':
                         del testOPF_29BusModel.annualisedTotalEmissionCostList
                         del testOPF_29BusModel.emissionCostContributionList_OPEX
                         del testOPF_29BusModel.emissionCostContributionList_TotalCost
-                        ###### energyBreakdown_eachWeight = testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator()
+                      
                         energyBreakdown_eachWeather.append(testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator())
                         netDemanding_smallArea_eachWeather.append(testOPF_29BusModel.netDemandingList_smallAreaForEachWeight)
                         del testOPF_29BusModel.netDemandingList_smallAreaForEachWeight
@@ -6640,28 +6693,11 @@ if __name__ == '__main__':
                 energyBreakdown_regionalArea_eachSMRDesign = (numpy.load(rootPath +"np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)).tolist() + energyBreakdown_regionalArea_eachSMRDesign
                 busRawResult_eachSMRDesign = (numpy.load(rootPath +"np_busRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist() + busRawResult_eachSMRDesign
                 branchRawResult_eachSMRDesign = (numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist() + branchRawResult_eachSMRDesign
-                genRawResult_eachSMRDesign = (numpy.load(rootPath +"np_genRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist() + genRawResult_eachSMRDesign
-            
-            ## convert into numpy list
-            # np_summary_eachSMRDesign = numpy.array(summary_eachSMRDesign)
-            # np_OPEXratio_eachSMRDesign = numpy.array(ratio_eachSMRDesign)
-            # np_SMROutputAndOperationalRatio_eachSMRDesign = numpy.array(SMROutputAndOperationalRatio_eachSMRDesign)
-            # np_SMRInvestment_eachSMRDesign = numpy.array(SMRInvestment_eachSMRDesign)
-            # np_emission_eachSMRDesign = numpy.array(emission_eachSMRDesign) 
-            # np_energyBreakdown_eachSMRDesign = numpy.array(energyBreakdown_eachSMRDesign) 
-            # np_netDemanding_smallArea_eachSMRDesign = numpy.array(netDemanding_smallArea_eachSMRDesign) 
-            # np_netDemanding_regionalArea_eachSMRDesign = numpy.array(netDemanding_regionalArea_eachSMRDesign)
-            # np_transmissionLoss_eachSMRDesign = numpy.array(transmissionLoss_eachSMRDesign)
-            # np_energyBreakdown_smallArea_eachSMRDesign = numpy.array(energyBreakdown_smallArea_eachSMRDesign)
-            # np_energyBreakdown_regionalArea_eachSMRDesign = numpy.array(energyBreakdown_regionalArea_eachSMRDesign)
-            # np_busRawResult_eachSMRDesign = numpy.array(busRawResult_eachSMRDesign)
-            # np_branchRawResult_eachSMRDesign = numpy.array(branchRawResult_eachSMRDesign)
-            # np_genRawResult_eachSMRDesign = numpy.array(genRawResult_eachSMRDesign)
-            
+                ##genRawResult_eachSMRDesign = (numpy.load(rootPath +"np_genRawResult_eachSMRDesign.npy", allow_pickle=True)).tolist() + genRawResult_eachSMRDesign
             
             ## save raw data file
-            numpy.save(rootPath + "np_genRawResult_eachSMRDesign.npy", numpy.array(genRawResult_eachSMRDesign))
-            del genRawResult_eachSMRDesign
+            # numpy.save(rootPath + "np_genRawResult_eachSMRDesign.npy", numpy.array(genRawResult_eachSMRDesign))
+            # del genRawResult_eachSMRDesign
             numpy.save(rootPath + "np_branchRawResult_eachSMRDesign.npy", numpy.array(branchRawResult_eachSMRDesign))
             del branchRawResult_eachSMRDesign
             numpy.save(rootPath + "np_busRawResult_eachSMRDesign.npy", numpy.array(busRawResult_eachSMRDesign))
@@ -6688,29 +6724,30 @@ if __name__ == '__main__':
             counter_smrChunk += 1   
 
     else:
-        summary_eachSMRDesign = numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True) ## total cost and total emission
-        OPEXratio_eachSMRDesign = numpy.load(rootPath + "np_OPEXratio_eachSMRDesign.npy", allow_pickle=True)
-        SMRInvestment_eachSMRDesign = numpy.load(rootPath + "np_SMRInvestment_eachSMRDesign.npy", allow_pickle=True)
-        # SMROutputAndOperationalRatio_eachSMRDesign = numpy.load(rootPath +"np_SMROutputAndOperationalRatio_eachSMRDesign.npy", allow_pickle=True)
-        emission_eachSMRDesign = numpy.load(rootPath +"np_emission_eachSMRDesign.npy", allow_pickle=True)
-        energyBreakdown_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_eachSMRDesign.npy", allow_pickle=True)
-        # netDemanding_smallArea_eachSMRDesign = numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)
+        # summary_eachSMRDesign = numpy.load(rootPath + "np_summary_eachSMRDesign.npy", allow_pickle=True) ## total cost and total emission
+        # OPEXratio_eachSMRDesign = numpy.load(rootPath + "np_OPEXratio_eachSMRDesign.npy", allow_pickle=True)
+        # SMRInvestment_eachSMRDesign = numpy.load(rootPath + "np_SMRInvestment_eachSMRDesign.npy", allow_pickle=True)
+        # # SMROutputAndOperationalRatio_eachSMRDesign = numpy.load(rootPath +"np_SMROutputAndOperationalRatio_eachSMRDesign.npy", allow_pickle=True)
+        # emission_eachSMRDesign = numpy.load(rootPath +"np_emission_eachSMRDesign.npy", allow_pickle=True)
+        # energyBreakdown_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_eachSMRDesign.npy", allow_pickle=True)
+        netDemanding_smallArea_eachSMRDesign = numpy.load(rootPath +"np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)
         # netDemanding_regionalArea_eachSMRDesign = numpy.load(rootPath +"np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)
-        # transmissionLoss_eachSMRDesign = numpy.load(rootPath +"np_transmissionLoss_eachSMRDesign.npy", allow_pickle=True)    
+        # # transmissionLoss_eachSMRDesign = numpy.load(rootPath +"np_transmissionLoss_eachSMRDesign.npy", allow_pickle=True)    
         # energyBreakdown_smallArea_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_smallArea_eachSMRDesign.npy", allow_pickle=True)
         # energyBreakdown_regionalArea_eachSMRDesign = numpy.load(rootPath +"np_energyBreakdown_regionalArea_eachSMRDesign.npy", allow_pickle=True)
         # busRawResult_eachSMRDesign = numpy.load(rootPath +"np_busRawResult_eachSMRDesign.npy", allow_pickle=True)
         # branchRawResult_eachSMRDesign = numpy.load(rootPath +"np_branchRawResult_eachSMRDesign.npy", allow_pickle=True)
         # genRawResult_eachSMRDesign = numpy.load(rootPath +"np_genRawResult_eachSMRDesign.npy", allow_pickle=True)
 
-        summary_eachSMRDesign = summary_eachSMRDesign.tolist()
-        OPEXratio_eachSMRDesign = OPEXratio_eachSMRDesign.tolist() 
-        # SMROutputAndOperationalRatio_eachSMRDesign = SMROutputAndOperationalRatio_eachSMRDesign.tolist()
-        SMRInvestment_eachSMRDesign = SMRInvestment_eachSMRDesign.tolist()
-        emission_eachSMRDesign = emission_eachSMRDesign.tolist()
-        energyBreakdown_eachSMRDesign = energyBreakdown_eachSMRDesign.tolist() 
-        # netDemanding_smallArea_eachSMRDesign = netDemanding_smallArea_eachSMRDesign.tolist()
-        # netDemanding_regionalArea_eachSMRDesign = netDemanding_regionalArea_eachSMRDesign.tolist() bgc 
+        # summary_eachSMRDesign = summary_eachSMRDesign.tolist()
+        # OPEXratio_eachSMRDesign = OPEXratio_eachSMRDesign.tolist() 
+        # # SMROutputAndOperationalRatio_eachSMRDesign = SMROutputAndOperationalRatio_eachSMRDesign.tolist()
+        # SMRInvestment_eachSMRDesign = SMRInvestment_eachSMRDesign.tolist()
+        # emission_eachSMRDesign = emission_eachSMRDesign.tolist()
+        # energyBreakdown_eachSMRDesign = energyBreakdown_eachSMRDesign.tolist()
+
+        netDemanding_smallArea_eachSMRDesign = netDemanding_smallArea_eachSMRDesign.tolist()
+        # netDemanding_regionalArea_eachSMRDesign = netDemanding_regionalArea_eachSMRDesign.tolist() 
         # transmissionLoss_eachSMRDesign = transmissionLoss_eachSMRDesign.tolist()
         # energyBreakdown_smallArea_eachSMRDesign = energyBreakdown_smallArea_eachSMRDesign.tolist()
         # energyBreakdown_regionalArea_eachSMRDesign = energyBreakdown_regionalArea_eachSMRDesign.tolist()
@@ -6718,65 +6755,29 @@ if __name__ == '__main__':
         # branchRawResult_eachSMRDesign = branchRawResult_eachSMRDesign.tolist()
         # genRawResult_eachSMRDesign = genRawResult_eachSMRDesign.tolist()
 
-
+    """The reusult data heatmap"""
     ######## testOPF_29BusModel.resultsSheetCreator(NumberOfSMRUnitList, weatherConditionList, CarbonTaxForOPFList, summary_eachSMRDesign)
-    ## testOPF_29BusModel.dataHeatmapCreator_totalCostAndEmission(summary_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
+    # testOPF_29BusModel.dataHeatmapCreator_totalCostAndEmission(summary_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
     ######## testOPF_29BusModel.dataHeatmapCreator_SMROutputAndOperationalRatio(SMROutputAndOperationalRatio_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
-    ## testOPF_29BusModel.dataHeatmapCreator_CO2Emission(emission_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
-    ## testOPF_29BusModel.dataHeatmapCreator_SubCost(summary_eachSMRDesign, OPEXratio_eachSMRDesign, emission_eachSMRDesign, SMRInvestment_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)
+    # testOPF_29BusModel.dataHeatmapCreator_CO2Emission(emission_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)   
+    # testOPF_29BusModel.dataHeatmapCreator_SubCost(summary_eachSMRDesign, OPEXratio_eachSMRDesign, emission_eachSMRDesign, SMRInvestment_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)
         
 
-    ##-- The line charts showing the procesed results --##
-    ## testOPF_29BusModel.lineGraph_weatherImpact(pickedWeight, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)    
-    ## testOPF_29BusModel.lineGraph_weightImpact(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
-    ## testOPF_29BusModel.lineGraph_SMRImpactForCO2Emission(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
-    testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForEachSMRDesign(energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
-    testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForOptimisedDesign(summary_eachSMRDesign, energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, EnergyBreakDown_weightList)
+    """The line charts and stack area graph"""
+    # testOPF_29BusModel.lineGraph_weatherImpact(pickedWeight, summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)    
+    # testOPF_29BusModel.lineGraph_weightImpact(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
+    # testOPF_29BusModel.lineGraph_SMRImpactForCO2Emission(summary_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
+    # testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForEachSMRDesign(energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList)
+    # testOPF_29BusModel.stackAreaGraph_EnergyBreakDownForOptimisedDesign(summary_eachSMRDesign, energyBreakdown_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, EnergyBreakDown_weightList)
 
-    # netDemanding_smallArea_eachSMRDesign, netDemanding_regionalArea_eachSMRDesign = testOPF_29BusModel.netDemandingCalculator(ifReadLocalResults, genRawResult_eachSMRDesign)
-
-    # np_netDemanding_smallArea_eachSMRDesign = numpy.array(netDemanding_smallArea_eachSMRDesign) 
-    # np_netDemanding_regionalArea_eachSMRDesign = numpy.array(netDemanding_regionalArea_eachSMRDesign)
-    # numpy.save("np_netDemanding_smallArea_eachSMRDesign.npy", np_netDemanding_smallArea_eachSMRDesign)
-    # numpy.save("np_netDemanding_regionalArea_eachSMRDesign.npy", np_netDemanding_regionalArea_eachSMRDesign)
-    # netDemanding_smallArea_eachSMRDesign = numpy.load("np_netDemanding_smallArea_eachSMRDesign.npy", allow_pickle=True)
-    # netDemanding_regionalArea_eachSMRDesign = numpy.load("np_netDemanding_regionalArea_eachSMRDesign.npy", allow_pickle=True)
-    # netDemanding_smallArea_eachSMRDesign = netDemanding_smallArea_eachSMRDesign.tolist()
-    # netDemanding_regionalArea_eachSMRDesign = netDemanding_regionalArea_eachSMRDesign.tolist()
-
+    """WITH SPECIFIED CONFIGRATION""" 
     testOPF_29BusModel.GeoJSONCreator_netDemandingForSmallArea(netDemanding_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
-    # testOPF_29BusModel.GeoJSONCreator_netDemandingForRegionalArea(netDemanding_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
+    ## testOPF_29BusModel.GeoJSONCreator_netDemandingForRegionalArea(netDemanding_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
     # testOPF_29BusModel.EnergySupplyBreakDownPieChartCreator_RegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
     # testOPF_29BusModel.GeoJSONCreator_branchGrid(branchRawResult_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
-    # testOPF_29BusModel.GeoJSONCreator_majorEnergySourceForSmallArea(energyBreakdown_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
-    # testOPF_29BusModel.GeoJSONCreator_outputOfDifferentEnergySourceForSmallArea(energyBreakdown_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
-    testOPF_29BusModel.GeoJSONCreator_totalOutputOfRegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
-
-
-    # #testOPF_29BusModel.dataHeatmapCreator_OPEXRatio(ratio_eachSMRDesign, CarbonTaxForOPFList, NumberOfSMRUnitList, weatherConditionList)         
-            # ## find the decommssioned power plant
-            # testOPF_29BusModel.decommissionPowerPlantDecider(numberOfSMRToBeIntroduced, slackFactor, generatorNameList)   
-
-            # ## after decommssion
-            # for weatherCondition in weatherConditionList:
-            #     testOPF_29BusModel.ModelPythonObjectInputInitialiser_Generator(CarbonTaxForOPF, True, weatherCondition[0], weatherCondition[1], weatherCondition[2], True)
-            #     testOPF_29BusModel.OPFModelInputFormatter()
-            #     testOPF_29BusModel.OptimalPowerFlowAnalysisSimulation()
-            #     testOPF_29BusModel.ModelOutputFormatter()
-            #     testOPF_29BusModel.CarbonEmissionCalculator()
-            #     generatorNameList.append(testOPF_29BusModel.GeneratorObjectList)
-                
-            #     re = [weighter, CarbonTaxForOPF, weatherCondition, testOPF_29BusModel.totalCost, testOPF_29BusModel.annualisedOPEX, testOPF_29BusModel.retrofittingCost, str(testOPF_29BusModel.totalCO2Emission) + "\n"]
-            #     summary_afterdecommission.append(re)
-
-        # fileName_beforeDecommission = 'Results_SMR_' + str(numberOfSMRToBeIntroduced) + '_beforeDecommission.csv'
-        # fileName_afterDecommission = 'Results_SMR_' + str(numberOfSMRToBeIntroduced) + 'weight_' + str(weighterList[0]) + '_afterDecommission.csv'
-        # with open(fileName_beforeDecommission, 'w') as f:
-        #             write = csv.writer(f)
-        #             write.writerow(summary_beforedecommission)
-        # with open(fileName_afterDecommission, 'w') as f:
-        #             write = csv.writer(f)
-        #             write.writerow(summary_afterdecommission)
+    #'''' testOPF_29BusModel.GeoJSONCreator_majorEnergySourceForSmallArea(energyBreakdown_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
+    #'''' testOPF_29BusModel.GeoJSONCreator_outputOfDifferentEnergySourceForSmallArea(energyBreakdown_smallArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
+    # testOPF_29BusModel.GeoJSONCreator_totalOutputOfRegionalAreas(energyBreakdown_regionalArea_eachSMRDesign, NumberOfSMRUnitList, CarbonTaxForOPFList, weatherConditionList, ifSpecifiedResultsForNetDemanding, specifiedConfig)
     print('Terminal')
 
 #     # print("*****This are EBus results*****")
