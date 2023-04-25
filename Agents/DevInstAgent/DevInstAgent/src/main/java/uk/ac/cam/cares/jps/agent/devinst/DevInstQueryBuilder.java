@@ -60,6 +60,7 @@ public class DevInstQueryBuilder {
     private static Map<String, List<Iri>> DerivedToRawMap = new HashMap<>();
     private static Map<String, Iri> Derived_UUID_Map = new HashMap<>();
     private static Map<String, Iri> DerivedType_UUID_Map = new HashMap<>();
+    private static Map<String, Iri> DerivationWithTimeSeries_UUID_Map = new HashMap<>();
     private static Map<String, String> DerivedToUnitMap;
 
     //TODO Implement iterator(?) for Composition sensor and measurement units
@@ -190,7 +191,10 @@ public class DevInstQueryBuilder {
             Iri unit_IRI = iri(IRIMap.getString(derivVarUnit));
             UnitIRIMap.put(derivVarUnit, unit_IRI);
 
-
+            String derivationWithTimeSeries = derivVarKey + "DerivationWithTimeSeries";
+            String derivationWithTimeSeries_UUID_String = genUUID(derivationWithTimeSeries);
+            Iri derivationWithTimeSeries_UUID = P_DEV.iri(derivationWithTimeSeries_UUID_String);
+            DerivationWithTimeSeries_UUID_Map.put(derivVarKey, derivationWithTimeSeries_UUID);
 
         }
 
