@@ -109,16 +109,15 @@ public class DevInstQueryBuilder {
         //smartSensor data
         sensLabel = MicroController.getString("label");
         
-        String SmartSensor_UUID_String = IRIMap.getString(MicroController.getString("name"));
+        String SmartSensor_UUID_String = genUUID(IRIMap.getString(MicroController.getString("name")));
         SmartSensor_UUID = P_DEV.iri(SmartSensor_UUID_String);
 
-        String MicroController_UUID_String = IRIMap.getString(MicroController.getString("type"));
-        SmartSensor_UUID = P_DEV.iri(MicroController_UUID_String);
+        String MicroController_UUID_String = genUUID(IRIMap.getString(MicroController.getString("type")));
+        MicroController_UUID = P_DEV.iri(MicroController_UUID_String);
 
         JSONObject MainSensorMap = desc.getJSONObject("MainSensorMap");
-        JSONObject Derivation = desc.getJSONObject("derivation");
         for (String MainSensorName : MainSensorMap.keySet()) {
-            String MainSensor_UUID_String = IRIMap.getString(MainSensorName);
+            String MainSensor_UUID_String = genUUID(MainSensorName);
             Iri MainSensor_UUID = P_DEV.iri(MainSensor_UUID_String);
             Sensor_UUID_Map.put(MainSensorName, MainSensor_UUID);
 
@@ -129,43 +128,45 @@ public class DevInstQueryBuilder {
                 String Sensor_UUID_String = Sensor.getString("name");
                 //TODO Check IRIMAp first, then if its null, default to oontodevice
                 //Iri Sensor_UUID = P_DEV.iri(Sensor_UUID_String);
-                Iri Sensor_UUID = iri(IRIMap.getString(Sensor_UUID_String));
+                Iri Sensor_UUID = P_DEV.iri(genUUID(Sensor_UUID_String));
                 SensorComp_UUID_Map.put(Sensor.getString("name"), Sensor_UUID);
                 
-                String Measurement_UUID_String = Sensor.getJSONObject("output").getString("fieldname");
-                Iri Measurement_UUID = iri(IRIMap.getString(Measurement_UUID_String));
+                String Measurement_UUID_String = genUUID(Sensor.getJSONObject("output").getString("fieldname"));
+                Iri Measurement_UUID = P_DEV.iri(Measurement_UUID_String);
                 Measurement_UUID_Map.put(Measurement_UUID_String, Measurement_UUID);
 
                 String SensorCompType_String = Sensor.getString("type");
+                //TODO Check IRIMAp first, then if its null, default to oontodevice
                 SensorTypeMap.put(Sensor.getString("name"), SensorCompType_String);
                 Iri SensorType_IRI = iri(IRIMap.getString(Sensor.getString("type")));
                 SensorTypeIRIMap.put(Sensor.getString("name"), SensorType_IRI);
 
                 String unit = Sensor.getJSONObject("output").getString("unit");
                 MeasurementToUnitMap.put(Measurement_UUID_String, unit);
+                //TODO Check IRIMAp first, then if its null, default to oontodevice OR OM
                 Iri unit_IRI = iri(IRIMap.getString(unit));
                 UnitIRIMap.put(unit, unit_IRI);
 
             }
+        }
 
-            for(String derivVarKey : Derivation.keySet()){
-                JSONObject deriv = Derivation.getJSONObject(derivVarKey);
+        JSONObject Derivation = desc.getJSONObject("derivation");
+        for(String derivVarKey : Derivation.keySet()){
+            JSONObject deriv = Derivation.getJSONObject(derivVarKey);
 
-                Iri derivVar_IRI = iri(IRIMap.getString(derivVarKey));
-                Derived_UUID_Map.put(derivVarKey, derivVar_IRI);
+            Iri derivVar_IRI = iri(IRIMap.getString(derivVarKey));
+            Derived_UUID_Map.put(derivVarKey, derivVar_IRI);
 
-                JSONArray derivFromArray = deriv.getJSONArray("derivedFrom");
-                List<String> derivFromList = new ArrayList<String>();
-                for(int i = 0; i < derivFromArray.length(); i ++){
-                    String varName = derivFromArray.getString(i);
-                    derivFromList.add(varName);
-                    
-
-                }
-                DerivedToRawMap.put(derivVarKey, derivFromList);
+            JSONArray derivFromArray = deriv.getJSONArray("derivedFrom");
+            List<String> derivFromList = new ArrayList<String>();
+            for(int i = 0; i < derivFromArray.length(); i ++){
+                String varName = derivFromArray.getString(i);
+                derivFromList.add(varName);
+                
 
             }
-        
+            DerivedToRawMap.put(derivVarKey, derivFromList);
+
         }
 
 
@@ -175,6 +176,11 @@ public class DevInstQueryBuilder {
 
     //TODO Make UUID generator method
     //TODO Add UUID to IRI strings
+
+    String genUUID(String name){
+
+        return UUID.randomUUID() + name;
+    }
 
 
 
