@@ -37,7 +37,8 @@ class TestCrossGraph(unittest.TestCase):
                      "cbu with shape",
                      "logs",
                      "logp",
-                     "reactions H2 O2"]
+                     "reactions H2 O2",
+                     "mops with cuboctahedron shape"]
 
 
         for q in questions:
