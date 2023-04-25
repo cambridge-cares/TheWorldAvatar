@@ -27,7 +27,8 @@ import threading
 
 
 def remove_mention(q_with_mention, mention):
-    stop_words = ["what", "is", "are", "the", "more", "less", "than", "species", "find", "all", "over", "under", "of"]
+
+    stop_words = ["what", "is", "are", "the", "more", "less", "than", "species", "find", "all", "over", "under", "of", "show"]
     flag_words = ["mops", "cbu", "assembly model"]
     if "mops" not in q_with_mention:
         stop_words += ["with"]
@@ -201,7 +202,7 @@ class CrossGraphQAEngine:
         target_list = {}
         got_numerical_values = False
         numerical_domain = None
-
+        orignal_question = orignal_question.replace("'s", " of ")
         #
         # stop_words = []
         # tokens = [t for t in question.split(" ") if t.lower().strip() not in stop_words]
@@ -315,22 +316,22 @@ if __name__ == '__main__':
     # text = "find all species with molecular weight more than 100"
     # rst = my_qa_engine.run(question=text)
     # print(rst)
-    # question_list = ["find reactions with O2 as reactant", "Topological Polar Surface Area of methane?",
-    #                  "heat capacity of C3H4O"]
-    question_string = """List the Chemical Building Units with 2-linear as the Generic Building Unit
-Give the assembly model types that can be created with [(C4H2S)(CO2)2] as the CBU
-List the MOPs with assembly model (3-planar)4(3-pyramidal)4(Td)
-List the Chemical Building Units with 2-linear as the Generic Building Unit
-List the Chemical Building Units with 2-bent as the Generic Building Unit
-Give the MOPs which are triangular
-Give the MOPs which are Anticuboctahedron shaped
-List the MOPs with (3-pyramidal)8(2-bent)12(Cs) as the assembly model
-Show all the MOPs which have Cuboctahedron shape
-MoPs with molecular weight more than 10000
-what is c9h16's molecular weight"""
+    question_list = ["find reactions with O2 as reactant", "Topological Polar Surface Area of methane?",
+                     "heat capacity of C3H4O", "what is the heat capacity of C3H4O",
+                     "what is the power conversion efficiency of TiO2"]
+    #     question_string = """List the Chemical Building Units with 2-linear as the Generic Building Unit
+    # Give the assembly model types that can be created with [(C4H2S)(CO2)2] as the CBU
+    # List the MOPs with assembly model (3-planar)4(3-pyramidal)4(Td)
+    # List the Chemical Building Units with 2-linear as the Generic Building Unit
+    # List the Chemical Building Units with 2-bent as the Generic Building Unit
+    # Give the MOPs which are triangular
+    # Give the MOPs which are Anticuboctahedron shaped
+    # List the MOPs with (3-pyramidal)8(2-bent)12(Cs) as the assembly model
+    # Show all the MOPs which have Cuboctahedron shape
+    # MoPs with molecular weight more than 10000
+    # what is c9h16's molecular weight"""
 
-
-    question_list = question_string.split("\n")
+    # question_list = question_string.split("\n")
     for question in question_list:
         question = question.strip()
         START_TIME = time.time()
