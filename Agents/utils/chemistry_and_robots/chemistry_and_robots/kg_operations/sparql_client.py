@@ -1770,7 +1770,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     # TODO replace this with the proper representation of the species density - at given temperature, what's the density of the given species
     def get_species_density(self, species_iri: str) -> Tuple[float, str]:
-        PLACEHOLDER_HASDENSITY = 'http://www.theworldavatar.com/kg/_for_species/hasDensity'
+        PLACEHOLDER_HASDENSITY = 'https://www.theworldavatar.com/kg/_for_species/hasDensity'
         species_iri = trimIRI(species_iri)
         query = """SELECT ?value ?unit WHERE { <%s> <%s>/<%s> ?density. ?density <%s> ?unit; <%s> ?value. }""" % (
             species_iri, PLACEHOLDER_HASDENSITY, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)
@@ -1784,7 +1784,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     # TODO replace this with the proper representation of the material cost - with the given vendor, what's the cost of the given chemical
     def get_species_material_cost(self, species_iri: str) -> Tuple[float, str]:
-        PLACEHOLDER_HASMATERIALCOST = 'http://www.theworldavatar.com/kg/_for_species/hasMaterialCost'
+        PLACEHOLDER_HASMATERIALCOST = 'https://www.theworldavatar.com/kg/_for_species/hasMaterialCost'
         species_iri = trimIRI(species_iri)
         query = """SELECT ?value ?unit WHERE { <%s> <%s>/<%s> ?cost. ?cost <%s> ?unit; <%s> ?value. }""" % (
             species_iri, PLACEHOLDER_HASMATERIALCOST, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)
@@ -1798,7 +1798,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     # TODO replace this with the proper representation of the eco score - not sure if this is an "intrinsic" property of a given chemical
     def get_species_eco_score(self, species_iri: str) -> Tuple[float, str]:
-        PLACEHOLDER_HASECOSCORE = 'http://www.theworldavatar.com/kg/_for_species/hasEcoScore'
+        PLACEHOLDER_HASECOSCORE = 'https://www.theworldavatar.com/kg/_for_species/hasEcoScore'
         species_iri = trimIRI(species_iri)
         query = """SELECT ?value ?unit WHERE { <%s> <%s>/<%s> ?ecoscore. ?ecoscore <%s> ?unit; <%s> ?value. }""" % (
             species_iri, PLACEHOLDER_HASECOSCORE, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)

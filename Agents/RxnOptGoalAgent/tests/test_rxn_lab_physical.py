@@ -18,8 +18,8 @@ _sample_goal_request['deadline'] = str(datetime.fromtimestamp(int(time.time()) +
 # 0. MAKE SURE ALL THE HARDWARE SIDE IS READY (VAPOURTEC (REAGENT BOTTLE AND FLOW COMMANDER), HPLC SEQUENCE AND DATA OUTPUT FORMAT)
 # 1. the available labs should also be updated to only include the physical lab that to be tested
 # possible choice for available labs:
-# lab_to_test = 'http://www.theworldavatar.com/kg/lab_auto/lab1/Laboratory_Dummy'
-lab_to_test = 'http://www.theworldavatar.com/kg/lab_auto/lab2/Laboratory_Dummy'
+# lab_to_test = 'https://www.theworldavatar.com/kg/lab_auto/lab1/Laboratory_Dummy'
+lab_to_test = 'https://www.theworldavatar.com/kg/lab_auto/lab2/Laboratory_Dummy'
 _sample_goal_request['labs'] = [lab_to_test]
 # 2. the hplc_report_container_dir should be updated to the correct path
 # depending on if running in Windows or WSL2, choose the correct format, e.g.:

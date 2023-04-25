@@ -26,12 +26,12 @@
 @prefix OntoBPR:        <https://www.theworldavatar.com/kg/ontobpr/> .
 
 # specific namespaces for test cases
-@prefix placeholder:     <http://www.theworldavatar.com/kg/_for_species/> .
-@prefix lab1:           <http://www.theworldavatar.com/kg/lab_auto/lab1/> .
-@prefix lab2:           <http://www.theworldavatar.com/kg/lab_auto/lab2/> .
-@prefix chem_rxn:                <http://www.theworldavatar.com/kg/lab_auto/chem_rxn/> .
+@prefix placeholder:     <https://www.theworldavatar.com/kg/_for_species/> .
+@prefix lab1:           <https://www.theworldavatar.com/kg/lab_auto/lab1/> .
+@prefix lab2:           <https://www.theworldavatar.com/kg/lab_auto/lab2/> .
+@prefix chem_rxn:                <https://www.theworldavatar.com/kg/lab_auto/chem_rxn/> .
 
-@prefix :               <http://www.theworldavatar.com/kg/lab_auto/doe_template/> .
+@prefix :               <https://www.theworldavatar.com/kg/lab_auto/doe_template/> .
 
 
 ###################################
