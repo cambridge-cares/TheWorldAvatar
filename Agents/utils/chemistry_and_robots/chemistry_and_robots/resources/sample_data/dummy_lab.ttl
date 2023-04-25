@@ -59,7 +59,6 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 ##################################################
 :AutomatedRxnPlatform_Dummy 
     a OntoLab:LabEquipment;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     saref:consistsOf :VapourtecRS400_Dummy;
     saref:consistsOf :HPLC_Dummy;
     saref:consistsOf :BPR_Dummy;
@@ -71,7 +70,6 @@ exp5:RxnExp_1 ontorxn:isAssignedTo :VapourtecR4_Another_Dummy.
 :HPLC_Dummy
     a ontohplc:HighPerformanceLiquidChromatography;
     dbo:manufacturer :HPLC_Manufacturer;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     OntoLab:hasPowerSupply :HPLC_Dummy_PowerSupply;
     ontohplc:localReportDirectory "/home/user/CHEM32/**/"^^xsd:string; # NOTE "\**\" or "/**/" depends on whether its windows or linux machine
     ontohplc:reportExtension <http://dbpedia.org/resource/Microsoft_Excel>;
@@ -676,7 +674,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 #############################
 :VapourtecRS400_Dummy
     a OntoVapourtec:VapourtecRS400;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     # Basic information
     OntoLab:hasPrice :VapRS400_Price;
     OntoLab:hasWeight :VapRS400_Weight; # TODO
@@ -788,7 +785,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 ##################################
 :VapourtecR4_Dummy
     a OntoVapourtec:VapourtecR4Reactor;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     OntoLab:hasPowerSupply :VapR4_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
     OntoVapourtec:locationID "4"^^xsd:string;
@@ -860,7 +856,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 ##########################################
 :VapourtecR4_Another_Dummy
     a OntoVapourtec:VapourtecR4Reactor;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     OntoLab:hasPowerSupply :VapR4_Another_DummyPowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
     OntoVapourtec:locationID "1"^^xsd:string; # NOTE this is different from the locationID of :VapourtecR4_Dummy
@@ -932,7 +927,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 #################################
 :VapourtecR2_1_Dummy
     a OntoVapourtec:VapourtecR2Pump;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     OntoLab:hasPowerSupply :VapR2_1_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
     OntoVapourtec:locationID "A"^^xsd:string;
@@ -986,7 +980,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 #################################
 :VapourtecR2_2_Dummy
     a OntoVapourtec:VapourtecR2Pump;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     OntoLab:hasPowerSupply :VapR2_2_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
     OntoVapourtec:locationID "B"^^xsd:string;
@@ -997,7 +990,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 #################################
 :VapourtecR2_3_Dummy
     a OntoVapourtec:VapourtecR2Pump;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     OntoLab:hasPowerSupply :VapR2_3_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
     OntoVapourtec:locationID "C"^^xsd:string;
@@ -1008,7 +1000,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 #################################
 :VapourtecR2_4_Dummy
     a OntoVapourtec:VapourtecR2Pump;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     OntoLab:hasPowerSupply :VapR2_4_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
     OntoVapourtec:locationID "D"^^xsd:string;
@@ -1019,7 +1010,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 #########################
 :AutoSampler_Dummy
     a OntoVapourtec:AutoSampler;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     OntoLab:hasPowerSupply :AutoSampler_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
     OntoVapourtec:sampleLoopVolume :AutoSampler_Dummy_SampleLoopVolume;

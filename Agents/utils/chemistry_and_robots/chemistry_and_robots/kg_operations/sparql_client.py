@@ -668,7 +668,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def construct_query_for_autosampler(self, given_autosampler_iri: str = None) -> str:
         # TODO this query will return nothing if the autosampler is an empty rack on line "?site <{ONTOVAPOURTEC_HOLDS}> ?vial; <{ONTOVAPOURTEC_LOCATIONID}> ?loc."
         query = f"""{PREFIX_RDF}
-                SELECT ?autosampler ?autosampler_manufacturer ?laboratory ?autosampler_power_supply
+                SELECT ?autosampler ?autosampler_manufacturer ?autosampler_power_supply
                 ?sample_loop_volume ?sample_loop_volume_value ?sample_loop_volume_unit ?sample_loop_volume_num_val
                 ?site ?loc ?vial ?fill_level ?fill_level_om_value ?fill_level_unit ?fill_level_num_val
                 ?warn_level ?warn_level_om_value ?warn_level_unit ?warn_level_num_val
@@ -677,7 +677,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     {'VALUES ?autosampler { <%s> }' % trimIRI(given_autosampler_iri) if given_autosampler_iri is not None else ""}
                     ?autosampler rdf:type <{ONTOVAPOURTEC_AUTOSAMPLER}>;
                                  <{DBPEDIA_MANUFACTURER}> ?autosampler_manufacturer;
-                                 <{ONTOLAB_ISCONTAINEDIN}> ?laboratory;
                                  <{ONTOLAB_HASPOWERSUPPLY}> ?autosampler_power_supply;
                                  <{ONTOVAPOURTEC_SAMPLELOOPVOLUME}> ?sample_loop_volume.
                     ?sample_loop_volume <{OM_HASVALUE}> ?sample_loop_volume_value.
@@ -727,12 +726,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 unique_specific_autosampler_manufacturer_iri = dal.get_the_unique_value_in_list_of_dict(info_of_specific_autosampler, 'autosampler_manufacturer')
             except Exception as e:
                 logger.error(f"dbpedia:manufacturer is not correctly defined for {specific_autosampler}", exc_info=True)
-                raise e
-
-            try:
-                unique_specific_autosampler_laboratory_iri = dal.get_the_unique_value_in_list_of_dict(info_of_specific_autosampler, 'laboratory')
-            except Exception as e:
-                logger.error(f"OntoLab:isContainedIn is not correctly defined for {specific_autosampler}", exc_info=True)
                 raise e
 
             try:
@@ -828,7 +821,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             autosampler = AutoSampler(
                 instance_iri=specific_autosampler,
                 manufacturer=unique_specific_autosampler_manufacturer_iri,
-                isContainedIn=unique_specific_autosampler_laboratory_iri,
                 hasPowerSupply=unique_specific_autosampler_power_supply_iri,
                 hasSite=list_autosampler_site,
                 sampleLoopVolume=OM_Volume(
@@ -1132,15 +1124,14 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     ) -> List[VapourtecRS400]:
         list_vapourtec_rs400_iri = trimIRI([list_vapourtec_rs400_iri] if not isinstance(list_vapourtec_rs400_iri, list) else list_vapourtec_rs400_iri) if list_vapourtec_rs400_iri is not None else None
         list_of_labs_as_constraint = trimIRI(list_of_labs_as_constraint) if list_of_labs_as_constraint is not None else None
-        query = f"""SELECT ?rs400 ?rs400_manufacturer ?laboratory ?rs400_power_supply ?state
+        query = f"""SELECT ?rs400 ?rs400_manufacturer ?rs400_power_supply ?state
                            ?state_type ?last_update ?autosampler ?is_managed_by
                            ?collection_method ?collection_method_type ?waste_receptacle
                            ?recommended_reaction_scale ?recommended_reaction_scale_measure ?recommended_reaction_scale_unit ?recommended_reaction_scale_val
                 WHERE {{
                     {"VALUES ?rs400 { <%s> } ." % '> <'.join(list_vapourtec_rs400_iri) if list_vapourtec_rs400_iri is not None else ""}
                     {"VALUES ?laboratory { <%s> } ." % '> <'.join(list_of_labs_as_constraint) if list_of_labs_as_constraint is not None else ""}
-                    ?rs400 <{ONTOLAB_ISCONTAINEDIN}> ?laboratory;
-                           <{SAREF_CONSISTSOF}> ?autosampler;
+                    ?rs400 <{SAREF_CONSISTSOF}> ?autosampler;
                            <{DBPEDIA_MANUFACTURER}> ?rs400_manufacturer;
                            <{ONTOLAB_HASPOWERSUPPLY}> ?rs400_power_supply;
                            <{SAREF_HASSTATE}> ?state.
@@ -1179,7 +1170,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             vapourtec_rs400 = VapourtecRS400(
                 instance_iri=rs400_iri,
                 manufacturer=res['rs400_manufacturer'],
-                isContainedIn=res['laboratory'],
                 hasPowerSupply=res['rs400_power_supply'],
                 isManagedBy=res['is_managed_by'] if 'is_managed_by' in res else None,
                 consistsOf=list_vapourtec_reactor_and_pump,
@@ -1204,14 +1194,13 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_vapourtec_rs400_given_autosampler(self, autosampler: AutoSampler) -> VapourtecRS400:
         query = f"""{PREFIX_RDF}
-                SELECT ?rs400 ?rs400_manufacturer ?laboratory ?rs400_power_supply ?state ?state_type ?last_update ?is_managed_by
+                SELECT ?rs400 ?rs400_manufacturer ?rs400_power_supply ?state ?state_type ?last_update ?is_managed_by
                 ?collection_method ?collection_method_type ?waste_receptacle
                 ?recommended_reaction_scale ?recommended_reaction_scale_measure ?recommended_reaction_scale_unit ?recommended_reaction_scale_val
                 WHERE {{
                     ?rs400 <{SAREF_CONSISTSOF}> <{autosampler.instance_iri}>;
                             rdf:type <{ONTOVAPOURTEC_VAPOURTECRS400}>;
                             <{DBPEDIA_MANUFACTURER}> ?rs400_manufacturer;
-                            <{ONTOLAB_ISCONTAINEDIN}> ?laboratory;
                             <{ONTOLAB_HASPOWERSUPPLY}> ?rs400_power_supply;
                             <{SAREF_HASSTATE}> ?state.
                     ?state a ?state_type; <{ONTOLAB_STATELASTUPDATEDAT}> ?last_update.
@@ -1244,7 +1233,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         vapourtec_rs400 = VapourtecRS400(
             instance_iri=res['rs400'],
             manufacturer=res['rs400_manufacturer'],
-            isContainedIn=res['laboratory'],
             hasPowerSupply=res['rs400_power_supply'],
             isManagedBy=res['is_managed_by'] if 'is_managed_by' in res else None,
             consistsOf=list_vapourtec_reactor_and_pump,
@@ -1305,7 +1293,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
         query = PREFIX_RDF + \
                 """
-                SELECT ?r4_reactor ?r4_reactor_manufacturer ?laboratory ?r4_reactor_power_supply ?loc ?r4_reactor_material
+                SELECT ?r4_reactor ?r4_reactor_manufacturer ?r4_reactor_power_supply ?loc ?r4_reactor_material
                 ?r4_reactor_internal_diameter ?r4_reactor_internal_diameter_measure ?r4_reactor_internal_diameter_unit ?r4_reactor_internal_diameter_val
                 ?r4_reactor_length ?r4_reactor_length_measure ?r4_reactor_length_unit ?r4_reactor_length_val
                 ?r4_reactor_volume ?r4_reactor_volume_measure ?r4_reactor_volume_unit ?r4_reactor_volume_val
@@ -1313,7 +1301,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 ?r4_reactor_temp_upper ?r4_reactor_temp_upper_measure ?r4_reactor_temp_upper_unit ?r4_reactor_temp_upper_val
                 WHERE {
                     <%s> <%s> ?r4_reactor .
-                    ?r4_reactor rdf:type <%s>; <%s> ?r4_reactor_manufacturer; <%s> ?laboratory; <%s> ?r4_reactor_power_supply; <%s> ?loc;
+                    ?r4_reactor rdf:type <%s>; <%s> ?r4_reactor_manufacturer; <%s> ?r4_reactor_power_supply; <%s> ?loc;
                     <%s> ?r4_reactor_material; <%s> ?r4_reactor_internal_diameter; <%s> ?r4_reactor_length;
                     <%s> ?r4_reactor_volume; <%s> ?r4_reactor_temp_lower; <%s> ?r4_reactor_temp_upper.
                     ?r4_reactor_internal_diameter <%s> ?r4_reactor_internal_diameter_measure. ?r4_reactor_internal_diameter_measure <%s> ?r4_reactor_internal_diameter_unit; <%s> ?r4_reactor_internal_diameter_val.
@@ -1323,7 +1311,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     ?r4_reactor_temp_upper <%s> ?r4_reactor_temp_upper_measure. ?r4_reactor_temp_upper_measure <%s> ?r4_reactor_temp_upper_unit; <%s> ?r4_reactor_temp_upper_val.
                 }
                 """ % (
-                    vapourtec_rs400_iri, SAREF_CONSISTSOF, ONTOVAPOURTEC_VAPOURTECR4REACTOR, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY, ONTOVAPOURTEC_LOCATIONID,
+                    vapourtec_rs400_iri, SAREF_CONSISTSOF, ONTOVAPOURTEC_VAPOURTECR4REACTOR, DBPEDIA_MANUFACTURER, ONTOLAB_HASPOWERSUPPLY, ONTOVAPOURTEC_LOCATIONID,
                     ONTOVAPOURTEC_HASREACTORMATERIAL, ONTOVAPOURTEC_HASINTERNALDIAMETER, ONTOVAPOURTEC_HASREACTORLENGTH,
                     ONTOVAPOURTEC_HASREACTORVOLUME, ONTOVAPOURTEC_HASREACTORTEMPERATURELOWERLIMIT, ONTOVAPOURTEC_HASREACTORTEMPERATUREUPPERLIMIT,
                     OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
@@ -1349,7 +1337,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             r4_reactor = VapourtecR4Reactor(
                 instance_iri=info_['r4_reactor'],
                 manufacturer=info_['r4_reactor_manufacturer'],
-                isContainedIn=info_['laboratory'],
                 hasPowerSupply=info_['r4_reactor_power_supply'],
                 locationID=info_['loc'],
                 hasReactorMaterial=info_['r4_reactor_material'],
@@ -1380,12 +1367,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_r2_pump_given_vapourtec_rs400(self, vapourtec_rs400_iri: str) -> List[VapourtecR2Pump]:
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
-        query = f"""SELECT ?r2_pump ?r2_pump_manufacturer ?laboratory ?r2_pump_power_supply ?loc ?reagent_bottle
+        query = f"""SELECT ?r2_pump ?r2_pump_manufacturer ?r2_pump_power_supply ?loc ?reagent_bottle
                 WHERE {{
                     <{vapourtec_rs400_iri}> <{SAREF_CONSISTSOF}> ?r2_pump .
                     ?r2_pump a <{ONTOVAPOURTEC_VAPOURTECR2PUMP}>;
                              <{DBPEDIA_MANUFACTURER}> ?r2_pump_manufacturer;
-                             <{ONTOLAB_ISCONTAINEDIN}> ?laboratory;
                              <{ONTOLAB_HASPOWERSUPPLY}> ?r2_pump_power_supply;
                              <{ONTOVAPOURTEC_LOCATIONID}> ?loc.
                     OPTIONAL{{?r2_pump <{ONTOVAPOURTEC_HASREAGENTSOURCE}> ?reagent_bottle.}}
@@ -1408,7 +1394,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             r2_pump = VapourtecR2Pump(
                 instance_iri=info_['r2_pump'],
                 manufacturer=info_['r2_pump_manufacturer'],
-                isContainedIn=info_['laboratory'],
                 hasPowerSupply=info_['r2_pump_power_supply'],
                 locationID=info_['loc'],
                 hasReagentSource=self.get_reagent_bottle(info_['reagent_bottle']) if 'reagent_bottle' in info_ else None,
@@ -2375,9 +2360,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def get_hplc_given_vapourtec_rs400(self, vapourtec_rs400_iri: str) -> HPLC:
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
         query = """SELECT ?hplc ?hplc_manufacturer ?lab ?hplc_power_supply ?is_managed_by ?report_extension
-                WHERE {<%s> ^<%s>/<%s> ?hplc. ?hplc a <%s>; <%s> ?hplc_manufacturer; <%s> ?lab; <%s> ?hplc_power_supply; <%s> ?report_extension.
+                WHERE {<%s> ^<%s>/<%s> ?hplc. ?hplc a <%s>; <%s> ?hplc_manufacturer; <%s> ?hplc_power_supply; <%s> ?report_extension.
                 OPTIONAL{?hplc <%s> ?is_managed_by}}""" % (
-            vapourtec_rs400_iri, SAREF_CONSISTSOF, SAREF_CONSISTSOF, ONTOHPLC_HIGHPERFORMANCELIQUIDCHROMATOGRAPHY, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY,
+            vapourtec_rs400_iri, SAREF_CONSISTSOF, SAREF_CONSISTSOF, ONTOHPLC_HIGHPERFORMANCELIQUIDCHROMATOGRAPHY, DBPEDIA_MANUFACTURER, ONTOLAB_HASPOWERSUPPLY,
             ONTOHPLC_REPORTEXTENSION, ONTOLAB_ISMANAGEDBY
         )
         response = self.performQuery(query)
@@ -2392,7 +2377,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         hplc = HPLC(
             instance_iri=res['hplc'],
             manufacturer=res['hplc_manufacturer'],
-            isContainedIn=res['lab'],
             hasPowerSupply=res['hplc_power_supply'],
             isManagedBy=res['is_managed_by'] if 'is_managed_by' in res else None,
             reportExtension=res['report_extension'],

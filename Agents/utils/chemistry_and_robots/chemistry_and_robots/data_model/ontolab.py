@@ -98,7 +98,6 @@ class Saref_State(BaseOntology):
 class LabEquipment(Saref_Device):
     clz: str = ONTOLAB_LABEQUIPMENT
     manufacturer: str # it should be pointing to an instance of https://dbpedia.org/ontology/Organisation, but we simplified here
-    isContainedIn: Union[str, Laboratory] # NOTE here str is provided as an optional as it seems impossible to circular reference at instance level
     hasPowerSupply: Union[str, PowerSupply] # NOTE TODO [future work] here str is provided as an optional to simplify the implementation
     consistsOf: Optional[List[LabEquipment]] = None
     # TODO [future work] add support for hasHeight, hasLength, hasPrice, hasWeight, and hasWidth

@@ -819,7 +819,6 @@ def test_get_vapourtec_rs400(initialise_triples):
     vapourtec_rs400 = vapourtec_rs400_list[0]
     assert vapourtec_rs400.instance_iri == TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value
     assert vapourtec_rs400.manufacturer == TargetIRIs.VAPOURTEC_LTD.value
-    assert vapourtec_rs400.isContainedIn == TargetIRIs.DUMMY_LAB_IRI.value
     assert vapourtec_rs400.isManagedBy is None
     assert vapourtec_rs400.consistsOf is not None
     assert dal.check_if_two_lists_equal(TargetIRIs.VAPOURTECRS400_DUMMY_CONSISTS_OF_LIST.value,
@@ -928,7 +927,6 @@ def test_get_autosampler(initialise_triples):
     sparql_client = initialise_triples
     autosampler = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
     assert autosampler.instance_iri == TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value
-    assert autosampler.isContainedIn == TargetIRIs.DUMMY_LAB_IRI.value
 
     # Check autosampler sampleLoopVolume is correctly parsed
     assert autosampler.sampleLoopVolume.instance_iri == TargetIRIs.AUTOSAMPLER_SAMPLE_LOOP_VOLUME_IRI.value
@@ -1069,7 +1067,6 @@ def test_get_hplc_given_vapourtec_rs400(initialise_triples):
     hplc = sparql_client.get_hplc_given_vapourtec_rs400(vapourtec_rs400_iri=TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
     assert hplc.instance_iri == TargetIRIs.HPLC_DUMMY_IRI.value
     assert hplc.manufacturer == TargetIRIs.HPLC_DUMMY_MANUFACTURER_IRI.value
-    assert hplc.isContainedIn == TargetIRIs.DUMMY_LAB_IRI.value
     assert hplc.isManagedBy is None
 
     # Register agent with hplc

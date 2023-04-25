@@ -882,7 +882,7 @@ def assert_rxn_iterations(
         assert lst_hplc_report_iri == vapourtec_schedule_derivation_outputs[ONTOHPLC_HPLCREPORT]
         # (3) The assigned reactor should be contained in the lab which the Vapourtec Schedule Derivation isDerivedFrom
         assigned_lab_iri = get_lab_as_constriant_of_vapourtec_schedule_derivation(vapourtec_schedule_derivation, sparql_client)
-        assert sparql_client.check_if_triple_exist(lst_done_rxn_exp_instance[0].isAssignedTo, ONTOLAB_ISCONTAINEDIN, assigned_lab_iri)
+        assert sparql_client.check_if_triple_exist(assigned_lab_iri, ONTOLAB_CONTAINS, lst_done_rxn_exp_instance[0].isAssignedTo)
         print(f"Vapourtec Schedule Derivation checked successfully for reaction experiment {rxn_exp_iri}")
 
         ##################################
