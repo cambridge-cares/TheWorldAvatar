@@ -155,10 +155,11 @@ class IRILookup:
 
 
 if __name__ == "__main__":
+    text = "mops with cuboctahedron shape"
     cn = ChemicalNEL()
     # cn = ChemicalNEL(dataset_name="wikidata_numerical", enable_class_ner=True)
-    iri_lookup = IRILookup(dataset_name="wikidata_numerical", enable_class_ner=True, nel=cn)
-    mention = iri_lookup.get_mention("melting point of CH4")
+    iri_lookup = IRILookup(dataset_name="OntoMoPs", enable_class_ner=True, nel=cn)
+    mention = iri_lookup.get_mention(text)
     print("============== MENTION ===============")
     print("mention:", mention)
     print("======================================")

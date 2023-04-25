@@ -30,13 +30,13 @@ def remove_mention(q_with_mention, mention):
 
     stop_words = ["what", "is", "are", "the", "more", "less", "than", "species", "find", "all", "over", "under", "of", "show"]
     flag_words = ["mops", "cbu", "assembly model"]
-    if "mops" not in q_with_mention:
+    if "mops" not in q_with_mention.lower():
         stop_words += ["with"]
     tokens = [t for t in q_with_mention.split(" ") if t.lower() not in stop_words]
     q_with_mention = " ".join(tokens).strip()
 
     for flag_word in flag_words:
-        if flag_word in q_with_mention:
+        if flag_word in q_with_mention.lower():
             return q_with_mention
 
     if "reaction" not in q_with_mention.lower():
@@ -64,7 +64,7 @@ class CrossGraphQAEngine:
         self.marie_logger = MarieLogger()
         self.nel = ChemicalNEL()
         self.ner_lite = IRILookup(nel=self.nel, enable_class_ner=False)
-
+        self.global_stop_words = ["g/mol", "dalton", "celsius", "show", "give"]
         self.domain_encoding = {"pubchem": 0, "ontocompchem": 1, "ontospecies": 2,
                                 "ontokin": 3, "wikidata": 4, "ontospecies_new": 5,
                                 "ontoagent": 6, "ontomops": 7, "ontokin_reaction": 8}
@@ -186,7 +186,7 @@ class CrossGraphQAEngine:
 
         return predicted_domain_labels, pred_domain_list
 
-    def run(self, orignal_question, disable_alignment: bool = False, heads={}):
+    def run(self, original_question, disable_alignment: bool = False, heads={}):
         """
         The main interface for the integrated QA engine
         :param disable_alignment: whether run for test purpose, if true, score alignment will be disabled
@@ -202,7 +202,10 @@ class CrossGraphQAEngine:
         target_list = {}
         got_numerical_values = False
         numerical_domain = None
-        orignal_question = orignal_question.replace("'s", " of ")
+        original_question = original_question.replace("'s", " of ")
+        tokens = [t for t in original_question.strip().split(" ") if t.lower() not in self.global_stop_words]
+        original_question = " ".join(tokens)
+
         #
         # stop_words = []
         # tokens = [t for t in question.split(" ") if t.lower().strip() not in stop_words]
@@ -212,7 +215,7 @@ class CrossGraphQAEngine:
 
         # if mention is not None:
         #     question = question.replace(mention, "")
-        domain_list_for_question, score_factors = self.get_domain_list(orignal_question)
+        domain_list_for_question, score_factors = self.get_domain_list(original_question)
 
         # print("predicted domain for this question:", domain_list_for_question)
 
@@ -226,20 +229,20 @@ class CrossGraphQAEngine:
                         f"======================== USING ENGINE {domain}============================")
 
                     if domain == "ontoagent":
-                        results = engine.run(question=orignal_question)
+                        results = engine.run(question=original_question)
                         labels, scores, targets = results
                         print("=============== RESULT FROM AGENT ============")
                         print(results)
 
                     elif domain in numerical_domain_list:
-                        results = engine.run(question=orignal_question)
+                        results = engine.run(question=original_question)
                         labels, scores, targets, numerical_list, question_type = results
                         # if question_type == "numerical":
                         if question_type in numerical_label_list and (len(labels) > 0):
                             got_numerical_values = True
                             numerical_domain = domain
                     else:
-                        results = engine.run(question=orignal_question)
+                        results = engine.run(question=original_question)
                         labels, scores, targets = results
                     length_diff = 5 - len(labels)
                     scores = scores + [-999] * length_diff
@@ -337,7 +340,7 @@ if __name__ == '__main__':
         START_TIME = time.time()
         print("==============================================================================")
         #         text = "heat capacity of C3H4O"
-        rst = my_qa_engine.run(orignal_question=question)
+        rst = my_qa_engine.run(original_question=question)
         print(rst)
         print(f"TIME USED: {time.time() - START_TIME}")
 

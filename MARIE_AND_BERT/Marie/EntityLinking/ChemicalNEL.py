@@ -28,6 +28,8 @@ class ChemicalNEL:
 
 if __name__ == '__main__':
     cn = ChemicalNEL()
+    text = "mops with cuboctahedron shape"
+
 
     # cn = ChemicalNEL(dataset_name="wikidata_numerical", enable_class_ner=True)
     # START_TIME = time.time()
