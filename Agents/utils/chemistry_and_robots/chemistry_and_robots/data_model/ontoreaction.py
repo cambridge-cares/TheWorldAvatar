@@ -344,8 +344,8 @@ class ReactionCondition(BaseOntology):
     # StoichiometryRatio indicatesMultiplicityOf InputChemical
     indicatesMultiplicityOf: Optional[str] = None
     # instead of the actual class, str is used to host the instance IRI of OntoReaction:InputChemical for simplicity
-    # ReactionScale indicateUsageOf InputChemical
-    indicateUsageOf: Optional[str] = None
+    # ReactionScale indicatesUsageOf InputChemical
+    indicatesUsageOf: Optional[str] = None
 
     @pydantic.root_validator
     @classmethod
@@ -356,9 +356,9 @@ class ReactionCondition(BaseOntology):
                     'StoichiometryRatio <%s> is not indicatesMultiplicityOf any InputChemical, received values: %s.' % (values.get('instance_iri'), str(values))
                 )
         elif values.get('clz') == ONTOREACTION_REACTIONSCALE:
-            if values.get('indicateUsageOf') == None:
+            if values.get('indicatesUsageOf') == None:
                 raise Exception(
-                    'ReactionScale <%s> is not indicateUsageOf any InputChemical, received values: %s.' % (values.get('instance_iri'), str(values))
+                    'ReactionScale <%s> is not indicatesUsageOf any InputChemical, received values: %s.' % (values.get('instance_iri'), str(values))
                 )
         return values
 
@@ -382,8 +382,8 @@ class ReactionCondition(BaseOntology):
         # Also add indicatesMultiplicityOf/indicatesUsageOf if it's a OntoReaction:StoichiometryRatio/OntoReaction:ReactionScale
         if self.indicatesMultiplicityOf is not None:
             g.add((con_iri, URIRef(ONTOREACTION_INDICATESMULTIPLICITYOF), URIRef(self.indicatesMultiplicityOf)))
-        if self.indicateUsageOf is not None:
-            g.add((con_iri, URIRef(ONTOREACTION_INDICATESUSAGEOF), URIRef(self.indicateUsageOf)))
+        if self.indicatesUsageOf is not None:
+            g.add((con_iri, URIRef(ONTOREACTION_INDICATESUSAGEOF), URIRef(self.indicatesUsageOf)))
 
         return g
 
@@ -406,7 +406,7 @@ class ReactionCondition(BaseOntology):
 
 # @dataclass
 # class ReactionScale(ReactionCondition):
-#     indicateUsageOf: str # indicateUsageOf: InputChemical
+#     indicatesUsageOf: str # indicatesUsageOf: InputChemical
 
 class PerformanceIndicator(BaseOntology):
     rxn_exp_iri: str
@@ -494,7 +494,7 @@ class ReactionExperiment(BaseOntology):
             return None
         reaction_scale = self.get_reaction_scale()
         for input_chemical in self.hasInputChemical:
-            if input_chemical.instance_iri == reaction_scale.indicateUsageOf:
+            if input_chemical.instance_iri == reaction_scale.indicatesUsageOf:
                 return input_chemical
         return None
 

@@ -912,7 +912,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     positionalID=_id[0] if len(_id) == 1 else None,
                     translateToParameterSetting=_parameter_setting[0] if len(_parameter_setting) == 1 else None,
                     indicatesMultiplicityOf=_multi[0] if len(_multi) == 1 else None,
-                    indicateUsageOf=_usage[0] if len(_usage) == 1 else None
+                    indicatesUsageOf=_usage[0] if len(_usage) == 1 else None
                 )
                 list_con.append(rxn_condition)
 

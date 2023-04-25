@@ -151,7 +151,7 @@ def test_getExpReactionCondition(initialise_triples, rxnexp_iri, rxnexp_conditio
             if con.clz == onto.ONTOREACTION_STOICHIOMETRYRATIO:
                 assert con.indicatesMultiplicityOf is not None
             elif con.clz == onto.ONTOREACTION_REACTIONSCALE:
-                assert con.indicateUsageOf is not None
+                assert con.indicatesUsageOf is not None
 
 @pytest.mark.parametrize(
     "rxnexp_iri,rxnexp_pref_indicator_iri,rxn_type",

@@ -193,7 +193,7 @@ def formNewExperiment(
                     hasValue=om_measure,
                     positionalID=first_rxn_exp_con.positionalID,
                     indicatesMultiplicityOf=_input_chemical_dict[first_rxn_exp_con.positionalID].instance_iri if first_rxn_exp_con.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO else None,
-                    indicateUsageOf=_input_chemical_dict[first_rxn_exp_con.positionalID].instance_iri if first_rxn_exp_con.clz == dm.ONTOREACTION_REACTIONSCALE else None,
+                    indicatesUsageOf=_input_chemical_dict[first_rxn_exp_con.positionalID].instance_iri if first_rxn_exp_con.clz == dm.ONTOREACTION_REACTIONSCALE else None,
                 )
 
                 # Add created instance to list
@@ -252,7 +252,7 @@ def formNewExperiment(
                     hasValue=om_measure,
                     positionalID=design_var.positionalID,
                     indicatesMultiplicityOf=_input_chemical_dict[design_var.positionalID].instance_iri if design_var.refersTo.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO else None,
-                    indicateUsageOf=_input_chemical_dict[design_var.positionalID].instance_iri if design_var.refersTo.clz == dm.ONTOREACTION_REACTIONSCALE else None,
+                    indicatesUsageOf=_input_chemical_dict[design_var.positionalID].instance_iri if design_var.refersTo.clz == dm.ONTOREACTION_REACTIONSCALE else None,
                 )
                 list_con.append(con)
 
@@ -298,7 +298,7 @@ def formNewExperiment(
                     hasValue=om_measure,
                     positionalID=fixed_param.positionalID,
                     indicatesMultiplicityOf=_input_chemical_dict[fixed_param.positionalID].instance_iri if fixed_param.refersTo.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO else None,
-                    indicateUsageOf=_input_chemical_dict[fixed_param.positionalID].instance_iri if fixed_param.refersTo.clz == dm.ONTOREACTION_REACTIONSCALE else None,
+                    indicatesUsageOf=_input_chemical_dict[fixed_param.positionalID].instance_iri if fixed_param.refersTo.clz == dm.ONTOREACTION_REACTIONSCALE else None,
                 )
                 list_con.append(con)
 

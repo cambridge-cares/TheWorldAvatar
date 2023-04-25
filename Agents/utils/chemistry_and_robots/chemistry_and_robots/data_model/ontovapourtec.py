@@ -448,7 +448,7 @@ class VapourtecRS400(LabEquipment):
             autosampler_site = None # initialise autosampler_site as None
 
             # note that if the ReactionScale is specified, then we also need to set the sample volume for the pump
-            if input_chem.instance_iri == reaction_scale.indicateUsageOf:
+            if input_chem.instance_iri == reaction_scale.indicatesUsageOf:
                 # if this is the reference reactant then it also MUST be the reference pump
                 ref_pump_chem_amount = reference_pump.get_reagent_chemical_amount()
                 if ref_pump_chem_amount is not None:
