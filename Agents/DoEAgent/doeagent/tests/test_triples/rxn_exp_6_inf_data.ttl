@@ -28,7 +28,7 @@
 ################################
 # The purpose of this additional data is to test the ability of the DoEAgent to handle inf values
 
-doe_instance:HistoricalData_1 OntoDoE:refersTo exp6:RxnExp_1.
+doe_instance:HistoricalData_1 OntoDoE:refersToExperiment exp6:RxnExp_1.
 
 ChemRxn:ChemRxn_1 OntoRxn:isRealisedAs exp6:RxnExp_1.
 SinglePhase:Phase_1 OntoCAPEMat:representsThermodynamicBehavior exp6:InputChemical_1.

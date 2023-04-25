@@ -137,7 +137,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         query = f"""SELECT ?param ?quantity ?clz ?measure ?unit ?value ?id
                     WHERE {{
                         <{domain_iri}> <{ONTODOE_HASFIXEDPARAMETER}> ?param.
-                        ?param <{ONTODOE_REFERSTO}> ?quantity .
+                        ?param <{ONTODOE_REFERSTOQUANTITY}> ?quantity .
                         ?quantity a ?clz; <{OM_HASVALUE}> ?measure.
                         ?measure <{OM_HASUNIT}> ?unit; <{OM_HASNUMERICALVALUE}> ?value.
                         OPTIONAL {{?param <{ONTODOE_POSITIONALID}> ?id . }}
@@ -149,7 +149,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             list_param.append(FixedParameter(
                 instance_iri=res['param'],
                 positionalID=res['id'] if 'id' in res else None,
-                refersTo=OM_Quantity(
+                refersToQuantity=OM_Quantity(
                     instance_iri=res['quantity'],
                     clz=res['clz'],
                     hasValue=OM_Measure(
@@ -177,7 +177,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         query = f"""SELECT DISTINCT ?var ?quantity ?clz ?unit ?id ?lower ?upper
                 WHERE {{
                     <{domain_iri}> <{ONTODOE_HASDESIGNVARIABLE}> ?var .
-                    ?var <{ONTODOE_REFERSTO}> ?quantity .
+                    ?var <{ONTODOE_REFERSTOQUANTITY}> ?quantity .
                     ?quantity a ?clz; <{OM_HASUNIT}> ?unit.
                     OPTIONAL {{?var <{ONTODOE_POSITIONALID}> ?id . }}
                     OPTIONAL {{?var <{ONTODOE_LOWERLIMIT}> ?lower . }}
@@ -197,7 +197,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     upperLimit=res['upper'],
                     lowerLimit=res['lower'],
                     positionalID=res['id'] if 'id' in res else None,
-                    refersTo=OM_Quantity(
+                    refersToQuantity=OM_Quantity(
                         instance_iri=res['quantity'],
                         clz=res['clz'],
                         hasUnit=res['unit']
@@ -229,7 +229,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     <%s> <%s> ?clz . 
                     OPTIONAL {<%s> <%s> ?id} \
                     OPTIONAL {<%s> <%s> ?maximise} \
-                    }""" % (sys_ins, ONTODOE_REFERSTO, sys_ins, ONTODOE_POSITIONALID, sys_ins, ONTODOE_MAXIMISE)
+                    }""" % (sys_ins, ONTODOE_REFERSTOQUANTITY, sys_ins, ONTODOE_POSITIONALID, sys_ins, ONTODOE_MAXIMISE)
             # Perform query
             response = self.performQuery(query)
             list_sys.append(
@@ -238,7 +238,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     name=getShortName(sys_ins), # NOTE this is not part of OntoDoE ontology, but it is used for working with Summit python package
                     maximise=response[0]['maximise'],
                     positionalID=response[0]['id'] if 'id' in response[0] else None,
-                    refersTo=response[0]['clz']
+                    refersToQuantity=response[0]['clz']
                 )
             )
             
@@ -256,7 +256,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         query = f"""SELECT DISTINCT ?exp ?numOfNewExp
                 WHERE {{
-                    OPTIONAL {{<{historicalData_iri}> <{ONTODOE_REFERSTO}> ?exp .}}
+                    OPTIONAL {{<{historicalData_iri}> <{ONTODOE_REFERSTOEXPERIMENT}> ?exp .}}
                     OPTIONAL {{<{historicalData_iri}> <{ONTODOE_NUMOFNEWEXP}> ?numOfNewExp .}}
                 }}"""
 
@@ -271,7 +271,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         historicalData_instance = HistoricalData(
             instance_iri=historicalData_iri,
             numOfNewExp=int(num_[0]) if bool(num_) else HistoricalData.__fields__.get('numOfNewExp').default,
-            refersTo=self.getReactionExperiment(rxnexp_iris) if bool(rxnexp_iris) else None,
+            refersToExperiment=self.getReactionExperiment(rxnexp_iris) if bool(rxnexp_iris) else None,
         )
 
         return historicalData_instance

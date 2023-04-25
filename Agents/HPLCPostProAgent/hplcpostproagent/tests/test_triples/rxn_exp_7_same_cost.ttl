@@ -29,7 +29,7 @@
 ################################
 # The purpose of this additional data is to make sure the HPLCPostProAgent produces the correct cost calculation
 
-doe_instance:HistoricalData_1 OntoDoE:refersTo exp7:RxnExp_1.
+doe_instance:HistoricalData_1 OntoDoE:refersToExperiment exp7:RxnExp_1.
 
 exp7:RxnExp_1 OntoRxn:isAssignedTo dummy_post_proc:VapourtecR4_2. # assigned to dummy_post_proc:VapourtecR4_2
 

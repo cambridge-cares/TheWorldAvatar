@@ -78,7 +78,7 @@ OntoDoE:TSEMO
 # continuous variables
 :ContinuousVariable_1
     rdf:type OntoDoE:ContinuousVariable;
-    OntoDoE:refersTo :StoiRatio;
+    OntoDoE:refersToQuantity :StoiRatio;
     OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3"^^xsd:string;
     OntoDoE:upperLimit "40"^^xsd:double;
     OntoDoE:lowerLimit "5"^^xsd:double;
@@ -86,7 +86,7 @@ OntoDoE:TSEMO
 
 :ContinuousVariable_2
     rdf:type OntoDoE:ContinuousVariable;
-    OntoDoE:refersTo :StoiRatio;
+    OntoDoE:refersToQuantity :StoiRatio;
     OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202"^^xsd:string;
     OntoDoE:upperLimit "0.2"^^xsd:double;
     OntoDoE:lowerLimit "0.05"^^xsd:double;
@@ -99,7 +99,7 @@ OntoDoE:TSEMO
 
 :ContinuousVariable_3
     rdf:type OntoDoE:ContinuousVariable;
-    OntoDoE:refersTo :ResTime;
+    OntoDoE:refersToQuantity :ResTime;
     OntoDoE:upperLimit "15"^^xsd:double;
     OntoDoE:lowerLimit "5"^^xsd:double;
 .
@@ -111,7 +111,7 @@ OntoDoE:TSEMO
 
 :ContinuousVariable_4
     rdf:type OntoDoE:ContinuousVariable;
-    OntoDoE:refersTo :RxnTemp;
+    OntoDoE:refersToQuantity :RxnTemp;
     OntoDoE:upperLimit "70"^^xsd:double;
     OntoDoE:lowerLimit "30"^^xsd:double;
 .
@@ -124,7 +124,7 @@ OntoDoE:TSEMO
 # fixed parameters
 :FixedParameter_1
     rdf:type OntoDoE:FixedParameter;
-    OntoDoE:refersTo :StoiRatio_1;
+    OntoDoE:refersToQuantity :StoiRatio_1;
     OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
 .
 
@@ -141,7 +141,7 @@ OntoDoE:TSEMO
 
 :FixedParameter_2
     rdf:type OntoDoE:FixedParameter;
-    OntoDoE:refersTo :RxnScale_1;
+    OntoDoE:refersToQuantity :RxnScale_1;
     OntoDoE:positionalID "http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b"^^xsd:string;
 .
 

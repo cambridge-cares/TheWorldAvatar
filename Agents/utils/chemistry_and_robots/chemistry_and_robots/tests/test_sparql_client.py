@@ -36,8 +36,8 @@ def test_getDesignVariables(initialise_triples):
     assert len(design_var_iri_list) == len(TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(iri in design_var_iri_list for iri in TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(all([isinstance(var, onto.ContinuousVariable),
-                    var.refersTo is not None,
-                    var.refersTo.hasUnit is not None,
+                    var.refersToQuantity is not None,
+                    var.refersToQuantity.hasUnit is not None,
                     var.upperLimit > var.lowerLimit]) for var in design_var_list)
 
 def test_get_fixed_parameters(initialise_triples):
@@ -52,10 +52,10 @@ def test_get_fixed_parameters(initialise_triples):
         all(
             [
                 isinstance(param, onto.FixedParameter),
-                param.refersTo is not None,
-                param.refersTo.hasValue is not None,
-                param.refersTo.hasValue.hasUnit is not None,
-                param.refersTo.hasValue.hasNumericalValue is not None
+                param.refersToQuantity is not None,
+                param.refersToQuantity.hasValue is not None,
+                param.refersToQuantity.hasValue.hasUnit is not None,
+                param.refersToQuantity.hasValue.hasNumericalValue is not None
             ]
         ) for param in param_list
     )
@@ -75,7 +75,7 @@ def test_getSystemResponses(initialise_triples, sys_res_iri, maximise):
     sys_res_list = sparql_client.getSystemResponses(sys_res_iri)
     length = len(sys_res_iri) if isinstance(sys_res_iri, list) else 1
     assert length == len(sys_res_list)
-    assert all(all([isinstance(r, onto.SystemResponse), r.refersTo is not None]) for r in sys_res_list)
+    assert all(all([isinstance(r, onto.SystemResponse), r.refersToQuantity is not None]) for r in sys_res_list)
     dct_m = {s.instance_iri:s.maximise for s in sys_res_list}
     if isinstance(sys_res_iri, list):
         assert all(m == dct_m.get(s) for s, m in zip(sys_res_iri, maximise))
@@ -108,8 +108,8 @@ def test_getDoEDomain(initialise_triples):
     assert len(lst_var) == len(TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(var in lst_var for var in TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(all([isinstance(var, onto.ContinuousVariable),
-                    var.refersTo is not None,
-                    var.refersTo.hasUnit is not None,
+                    var.refersToQuantity is not None,
+                    var.refersToQuantity.hasUnit is not None,
                     var.upperLimit > var.lowerLimit]) for var in doe_domain_instance.hasDesignVariable)
 
 @pytest.mark.parametrize(
@@ -293,8 +293,8 @@ def test_getDoEHistoricalData(initialise_triples):
     sparql_client = initialise_triples
     hist_data_instance = sparql_client.getDoEHistoricalData(TargetIRIs.DOE_HIST_DATA_IRI.value)
     assert isinstance(hist_data_instance, onto.HistoricalData)
-    assert len(hist_data_instance.refersTo) == len(TargetIRIs.DOE_HIST_DATE_REFERTO_IRI.value)
-    assert all(iri in [h.instance_iri for h in hist_data_instance.refersTo] for iri in TargetIRIs.DOE_HIST_DATE_REFERTO_IRI.value)
+    assert len(hist_data_instance.refersToExperiment) == len(TargetIRIs.DOE_HIST_DATE_REFERTO_IRI.value)
+    assert all(iri in [h.instance_iri for h in hist_data_instance.refersToExperiment] for iri in TargetIRIs.DOE_HIST_DATE_REFERTO_IRI.value)
 
 def test_get_doe_instance(initialise_triples):
     sparql_client = initialise_triples
@@ -305,11 +305,11 @@ def test_get_doe_instance(initialise_triples):
     assert len(lst_var) == len(TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(var in lst_var for var in TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(all([isinstance(var, onto.ContinuousVariable),
-                    var.refersTo is not None,
-                    var.refersTo.hasUnit is not None,
+                    var.refersToQuantity is not None,
+                    var.refersToQuantity.hasUnit is not None,
                     var.upperLimit > var.lowerLimit]) for var in doe_instance.hasDomain.hasDesignVariable)
     # Check SystemResponse
-    assert all(all([isinstance(r, onto.SystemResponse), r.refersTo is not None]) for r in doe_instance.hasSystemResponse)
+    assert all(all([isinstance(r, onto.SystemResponse), r.refersToQuantity is not None]) for r in doe_instance.hasSystemResponse)
     dct_m = {s.instance_iri:s.maximise for s in doe_instance.hasSystemResponse}
     assert all([int(TargetIRIs.DOE_SYS_RES_MAXIMISE_DICT.value[s]) == int(dct_m.get(s)) for s in TargetIRIs.DOE_SYS_RES_MAXIMISE_DICT.value])
     # Check Strategy
