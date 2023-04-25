@@ -363,8 +363,7 @@ public class FeatureInfoAgentTest {
         RemoteStoreClient rsClient = this.mockRemoteStoreClient(false, true, null);
 
         // Mock result when querying for class
-        when(rsClient.executeFederatedQuery(
-            ArgumentMatchers.anyList(),
+        when(rsClient.executeQuery(
             ArgumentMatchers.contains("?class")))
             .thenReturn(
                 new org.json.JSONArray("[{\"class\": \"TIME-ONLY-CLASS\"}]")
@@ -509,7 +508,6 @@ public class FeatureInfoAgentTest {
      * re-enabled within the FeatureInfoAgent, then remove the @Ignore annotation.
      */
     @Test
-    @Ignore
     public void testEnforcedEndpoint() throws Exception {
         FeatureInfoAgent agent = new FeatureInfoAgent();
 
@@ -577,16 +575,14 @@ public class FeatureInfoAgentTest {
         
         if(endpoint != null) {
             // Mock result when querying for class
-            when(rsClient.executeFederatedQuery(
-                (List<String>) MockitoHamcrest.argThat(Matchers.contains(endpoint)),
+            when(rsClient.executeQuery(
                 ArgumentMatchers.contains("?class")))
                 .thenReturn(
                     new org.json.JSONArray("[{\"class\": \"FORCED-ENDPOINT\"}]")
                 );
         } else {
             // Mock result when querying for class
-            when(rsClient.executeFederatedQuery(
-                ArgumentMatchers.anyList(),
+            when(rsClient.executeQuery(
                 ArgumentMatchers.contains("?class")))
                 .thenReturn(
                     new org.json.JSONArray("[{\"class\": \"SAMPLE-CLASS\"}]")
@@ -596,8 +592,7 @@ public class FeatureInfoAgentTest {
 
         // Mock result when querying for metadata
         if(mockMeta) {
-            when(rsClient.executeFederatedQuery(
-                ArgumentMatchers.anyList(),
+            when(rsClient.executeQuery(
                 eq("SAMPLE-META-QUERY")))
                 .thenReturn(
                     new org.json.JSONArray("[{\"Property\":\"propertyOne\",\"Value\":\"1.0\",\"Unit\":\"s\"}]")
@@ -606,8 +601,7 @@ public class FeatureInfoAgentTest {
 
         // Mock result when querying for measurements
         if(mockTime) {
-            when(rsClient.executeFederatedQuery(
-                ArgumentMatchers.anyList(),
+            when(rsClient.executeQuery(
                 eq("SAMPLE-TIME-QUERY")))
                 .thenReturn(
                     new org.json.JSONArray("[{\"Measurement\":\"http://measurement-iri.com\",\"Name\":\"Measurement One\",\"Unit\":\"m/s\"}]")
@@ -616,8 +610,7 @@ public class FeatureInfoAgentTest {
 
         // Mock result when querying with a forced endpoint
         if(endpoint != null) {
-            when(rsClient.executeFederatedQuery(
-                ArgumentMatchers.anyList(),
+            when(rsClient.executeQuery(
                 eq("FORCED-ENDPOINT-QUERY")))
                 .thenReturn(
                     new org.json.JSONArray("[{\"Property\":\"Forced\",\"Value\":\"Yes\"}]")

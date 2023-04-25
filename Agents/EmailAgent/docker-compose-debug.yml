@@ -1,0 +1,9 @@
+version: '3.8'
+
+services:
+
+  email-agent:
+    environment:
+      - "JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:5005"
+    ports:
+      - "${DEBUG_PORT}:5005"

@@ -16,7 +16,7 @@ OWL = 'http://www.w3.org/2002/07/owl#'
 RDF = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#'
 RDFS = 'http://www.w3.org/2000/01/rdf-schema#'
 SKOS = 'http://www.w3.org/2004/02/skos/core#'
-TIME = 'https://www.w3.org/2006/time#'
+TIME = 'http://www.w3.org/2006/time#'
 XSD = 'http://www.w3.org/2001/XMLSchema#'
 # Office for National Statistics
 ONS1 = 'http://statistics.data.gov.uk/def/statistical-geography#'

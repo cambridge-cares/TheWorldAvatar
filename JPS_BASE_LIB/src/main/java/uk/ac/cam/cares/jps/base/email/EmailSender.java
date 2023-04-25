@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -15,21 +14,25 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Properties;
+
 import org.json.JSONObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
 /**
  * This class handles sending HTTP requests to a remote EmailAgent instance to facilitate the
  * sending of an automated email.
  *
- * @author Michael Hillman
+ * @author Michael Hillman (mdhillman<@>cmclinnovations.com)
  */
 public class EmailSender {
 
     /**
-     * Fallback URL for the remote email agent.
+     * Logger for error output.
      */
-    private static final String DEFAULT_AGENT_URL = "http://kg.cmclinnovations.com/agents/email-agent";
+    private static final Logger LOGGER = LogManager.getLogger(EmailSender.class);
 
     /**
      * Contains meta-data to append to email content.
@@ -37,7 +40,7 @@ public class EmailSender {
     private final Properties metadata;
 
     /**
-     * URL for remote EmailAgent instance.
+     * Base URL for remote EmailAgent instance.
      */
     private String emailAgentURL;
 
@@ -50,6 +53,16 @@ public class EmailSender {
      * Create a new EmailSender instance.
      */
     public EmailSender() {
+        this(null);
+    }
+
+    /**
+     * Create a new EmailSender instance.
+     * 
+     * @param emailAgentURL URL of remote EmailAgent instance.
+     */
+    public EmailSender(String emailAgentURL) {
+        this.emailAgentURL = emailAgentURL;
         this.metadata = new Properties();
 
         // Can we reach the remote EmailAgent?
@@ -63,9 +76,8 @@ public class EmailSender {
     /**
      * Attempts to send a HTTP request to the remote EmailAgent instance using the input content.
      *
-     * Note: if this machine is not running on the same network as the EmailAgent instance (or the
-     * remote EmailAgent cannot be reached), then the same content is written to a local file
-     * instead.
+     * Note: if the remote EmailAgent cannot be reached, or returns an error code, then the message
+     * content is written to a local file instead.
      *
      * @param subject email subject
      * @param body email body
@@ -89,7 +101,7 @@ public class EmailSender {
         // Determine whether to send email or write to file
         if (!isAgentReachable) {
             // Write to file.
-            System.out.println("INFO: Not running at CMCL/EmailAgent is unavailable, will write email to file instead.");
+            LOGGER.warn("Could not reach remote EmailAgent, writing message to a local file instead.");
             return Optional.of(writeToFile(subject, strBuilder.toString()));
 
         } else {
@@ -108,32 +120,29 @@ public class EmailSender {
      *
      * @param subject email subject
      * @param body email body
-     *
-     * @throws Exception if request could not be made.
      */
-    private void makeRequest(String subject, String body) throws Exception {
+    private void makeRequest(String subject, String body) {
         JSONObject request = new JSONObject();
         request.put("subject", subject);
-        request.put("message", body);
+        request.put("body", body);
 
         try {
             // Make the HTTP request
-            String result = AgentCaller.executeGetWithURLAndJSON(emailAgentURL, request.toString());
+            String submitURL = (emailAgentURL.endsWith("/")) ? emailAgentURL + "send" : emailAgentURL + "/send";
+            String result = AgentCaller.executeGetWithURLAndJSON(submitURL, request.toString());
 
-            if (result.contains("200") && result.contains("success")) {
+            if (result.contains("Request forwarded")) {
                 // Success
-                System.out.println("INFO: EmailAgent reports successful request, will send email.");
+                LOGGER.info("EmailAgent reports successful request, check recipient mailbox.");
 
             } else {
                 // Failure
                 JSONObject resultJSON = new JSONObject(result);
-
-                System.out.println("ERROR: EmailAgent reports issues, cannot send email!");
-                System.out.println("ERROR:   Status: " + resultJSON.get("status"));
-                System.out.println("ERROR:   Description: " + resultJSON.get("description"));
+                LOGGER.warn("Remote EmailAgent instance reports issues, cannot send email!");
+                LOGGER.warn(resultJSON.get("description"));
             }
         } catch (Exception exception) {
-            System.out.println("WARN: Could not contact remote EmailAgent instance, will write to file instead.");
+            LOGGER.error("Exception when attempting to contact remote EmailAgent instance, will write to file instead.", exception);
         }
     }
 
@@ -155,11 +164,11 @@ public class EmailSender {
         try ( BufferedWriter writer = new BufferedWriter(new FileWriter(logFile.toFile()))) {
             writer.append("Subject: ").append(subject);
             writer.append("\n");
-            writer.append("Message:\n");
+            writer.append("Body:\n");
             writer.append(body);
         }
 
-        System.out.println("INFO: Email content written to file at: " + logFile.toAbsolutePath());
+        LOGGER.info("Message written to file at {}", logFile.toAbsolutePath());
         return logFile;
     }
 
@@ -169,37 +178,37 @@ public class EmailSender {
      *
      * @return remote EmailAgent is reachable.
      */
-    private boolean isReachable() {
+    public boolean isReachable() {
         try {
             // Make the HTTP request
-            String result = AgentCaller.executeGetWithURLAndJSON(emailAgentURL, "{ \"ping\": \"true\" }");
+            String statusURL = (emailAgentURL.endsWith("/")) ? emailAgentURL + "status" : emailAgentURL + "/status";
+            String result = AgentCaller.executeGetWithURL(statusURL);
 
             // Check result contents
-            if (result.contains("200")) {
+            if (result.contains("Ready to serve")) {
                 return true;
             }
         } catch (Exception exception) {
-            System.out.println("WARN: Could not contact remote EmailAgent instance, will log to file instead.");
+            LOGGER.error("Exception when trying to determine if remote EmailAgent is reachable.", exception);
         }
         return false;
     }
 
     /**
-     * Attempts to read the EmailAgent's URL from an environment variable (that should have been set
-     * using Docker). The DEFAULT_AGENT_URL is used if this cannot be found.
-     *
-     * TODO - In future, this could be replaced with an Agent discovery solution, or could contact
-     * the routing table to determine the correct location.
+     * If not already passed in, attempts to read the EmailAgent's URL from an environment variable
+     * (that should have been set using Docker).
      */
     private void determineAgentLocation() {
-        String variable = System.getenv("EMAIL_AGENT_URL");
+        if(emailAgentURL == null) {
+            String variable = System.getenv("EMAIL_AGENT_URL");
 
-        if (variable == null || variable.trim().isEmpty()) {
-            emailAgentURL = DEFAULT_AGENT_URL;
-            System.out.println("WARN: Could not find EMAIL_AGENT_URL variable, using fallback URL: " + emailAgentURL);
-        } else {
-            emailAgentURL = variable;
-            System.out.println("INFO: Found EMAIL_AGENT_URL variable, remote location is: " + emailAgentURL);
+            if (variable == null || variable.trim().isEmpty()) {
+                LOGGER.error("Could not find EMAIL_AGENT_URL variable, cannot continue");
+                isAgentReachable = false;
+            } else {
+                emailAgentURL = variable;
+                LOGGER.info("Found EMAIL_AGENT_URL variable, remote location is: {}", emailAgentURL);
+            }
         }
     }
 
@@ -208,31 +217,31 @@ public class EmailSender {
      */
     private void gatherMetaData() {
         // Hostname
-        String hostname = "Unknown";
+        String hostname = null;
         try {
             hostname = InetAddress.getLocalHost().getHostName();
         } catch (UnknownHostException exception) {
-            System.out.println("WARN: Could not determine host name.");
+            hostname = "Unknown";
         } finally {
             metadata.put("Hostname", hostname);
         }
 
         // Local IP
-        String localIP = "Unknown";
+        String localIP = null;
         try {
             localIP = InetAddress.getLocalHost().getHostAddress();
         } catch (UnknownHostException exception) {
-            System.out.println("WARN: Could not determine local IP address.");
+            localIP = "Unknown";
         } finally {
             metadata.put("Local IP Address", localIP);
         }
 
         // Public IP
-        String publicIP = "Unknown";
+        String publicIP = null;
         try {
             publicIP = getPublicIP();
         } catch (Exception exception) {
-            System.out.println("WARN: Could not determine public IP address.");
+            publicIP = "Unknown";
         } finally {
             metadata.put("Public IP Address", publicIP);
         }
