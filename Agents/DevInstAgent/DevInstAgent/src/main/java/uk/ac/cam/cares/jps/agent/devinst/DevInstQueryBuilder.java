@@ -36,6 +36,7 @@ public class DevInstQueryBuilder {
     private static final Prefix P_TS = SparqlBuilder.prefix("ontotimeseries", iri("https://www.theworldavatar.com/kg/ontotimeseries/"));
     private static final Prefix P_DERIV = SparqlBuilder.prefix("saref", iri("https://www.theworldavatar.com/kg/ontoderivation/"));
     private static final Prefix P_AGENT = SparqlBuilder.prefix("ontoagent",iri("https://www.theworldavatar.com/kg/ontoagent/"));
+    private static final Prefix P_OM = SparqlBuilder.prefix("om", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
 
     //classes
     /*
@@ -58,6 +59,8 @@ public class DevInstQueryBuilder {
     private static Map<String, Iri> Measurement_UUID_Map; //Can one sensor have more than one measurement type?
     private static Map<String, List<String>> DerivedToRawMap = new HashMap<>();
     private static Map<String, Iri> Derived_UUID_Map = new HashMap<>();
+    private static Map<String, Iri> DerivedType_UUID_Map = new HashMap<>();
+    private static Map<String, String> DerivedToUnitMap;
 
     //TODO Implement iterator(?) for Composition sensor and measurement units
     //TODO This includes changing the tmeplate .json file, add unts, unitsIRI, sensorType, sensorTypeIRI
@@ -65,6 +68,7 @@ public class DevInstQueryBuilder {
     private static Map<String, String> SensorTypeMap;
     private static Map<String, Iri> SensorTypeIRIMap;
     
+    private static Map<String, Iri> MeasurementTypeMap;
     private static Map<String, String> MeasurementToUnitMap;
     private static Map<String, Iri> UnitIRIMap;
 
@@ -82,6 +86,8 @@ public class DevInstQueryBuilder {
     private static final Iri belongsTo = P_DERIV.iri("belongsTo");
     private static final Iri isDerivedUsing = P_DERIV.iri("isDerivedUsing");
     private static final Iri isDerivedFrom = P_DERIV.iri("isDerivedFrom");
+    private static final Iri hasUnit = P_OM.iri("hasUnit");
+    private static final Iri symbol = P_OM.iri("symbol");
     
     //LOGGER
     private static final Logger LOGGER = LogManager.getLogger(DevInstAgentLauncher.class);
@@ -131,9 +137,13 @@ public class DevInstQueryBuilder {
                 Iri Sensor_UUID = P_DEV.iri(genUUID(Sensor_UUID_String));
                 SensorComp_UUID_Map.put(Sensor.getString("name"), Sensor_UUID);
                 
-                String Measurement_UUID_String = genUUID(Sensor.getJSONObject("output").getString("fieldname"));
-                Iri Measurement_UUID = P_DEV.iri(Measurement_UUID_String);
+                String Measurement_UUID_String = Sensor.getJSONObject("output").getString("fieldname");
+                Iri Measurement_UUID = P_DEV.iri(genUUID(Measurement_UUID_String));
                 Measurement_UUID_Map.put(Measurement_UUID_String, Measurement_UUID);
+
+                String MeasurementType_UUID_String = Sensor.getJSONObject("output").getString("type");
+                Iri MeasurementType_UUID = iri(IRIMap.getString(MeasurementType_UUID_String));
+                MeasurementTypeMap.put(MeasurementType_UUID_String, MeasurementType_UUID);
 
                 String SensorCompType_String = Sensor.getString("type");
                 //TODO Check IRIMAp first, then if its null, default to oontodevice
@@ -166,6 +176,18 @@ public class DevInstQueryBuilder {
 
             }
             DerivedToRawMap.put(derivVarKey, derivFromList);
+
+
+            String derivVarType= deriv.getString("type");
+            Iri derivVarType_IRI= iri(IRIMap.getString(derivVarType));
+            DerivedType_UUID_Map.put(derivVarKey, derivVarType_IRI);
+
+            String derivVarUnit= deriv.getString("unit");
+            DerivedToUnitMap.put(derivVarKey, derivVarUnit);
+            Iri unit_IRI = iri(IRIMap.getString(derivVarUnit));
+            UnitIRIMap.put(derivVarUnit, unit_IRI);
+
+
 
         }
 
