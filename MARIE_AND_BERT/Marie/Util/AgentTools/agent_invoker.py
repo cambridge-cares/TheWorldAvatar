@@ -34,53 +34,37 @@ class AgentInvoker():
 
             result = {}
             if len(qualifier) == 0:
+                value_node = data['result']['Thermodynamic data over a selected T range at a single P point']
                 if output == 'Thermo property':
-                    result['Enthalpy'] = \
-                        data['result']['Thermodynamic data over a selected T range at a single P point']['Enthalpy']
-                    result['Entropy'] = \
-                        data['result']['Thermodynamic data over a selected T range at a single P point']['Entropy']
-                    result['Internal Energy'] = \
-                        data['result']['Thermodynamic data over a selected T range at a single P point'][
-                            'Internal energy']
-                    result['Gibbs Energy'] = \
-                        data['result']['Thermodynamic data over a selected T range at a single P point']['Gibbs energy']
-                    result['Heat capacity at constant pressure'] = \
-                        data['result']['Thermodynamic data over a selected T range at a single P point'][
-                            'Heat capacity at constant pressure']
-                    result['Heat capacity at constant volume'] = \
-                        data['result']['Thermodynamic data over a selected T range at a single P point'][
-                            'Heat capacity at constant volume']
+                    result['Enthalpy'] = ['Enthalpy']
+                    result['Entropy'] = value_node['Entropy']
+                    result['Internal Energy'] = value_node['Internal energy']
+                    result['Gibbs Energy'] = value_node['Gibbs energy']
+                    result['Heat capacity at constant pressure'] = value_node['Heat capacity at constant pressure']
+                    result['Heat capacity at constant volume'] = value_node['Heat capacity at constant volume']
                 elif output == 'Heat capacity':
                     result['Heat capacity at constant pressure'] = \
-                        data['result']['Thermodynamic data over a selected T range at a single P point'][
-                            'Heat capacity at constant pressure']
+                        {"y": value_node['Heat capacity at constant pressure'],
+                         "x": value_node["Temperature"]}
                     result['Heat capacity at constant volume'] = \
-                        data['result']['Thermodynamic data over a selected T range at a single P point'][
-                            'Heat capacity at constant volume']
+                        {"y": value_node['Heat capacity at constant volume'],
+                         "x": value_node["Temperature"]}
                 else:
-                    result[output] = \
-                        data['result']['Thermodynamic data over a selected T range at a single P point'][output]
+                    result[output] = value_node[output]
             else:
+                value_node = data['result']['Thermodynamic data for a single T, P point']
                 if output == 'Thermo property':
-                    result['Enthalpy'] = data['result']['Thermodynamic data for a single T, P point']['Enthalpy']
-                    result['Entropy'] = data['result']['Thermodynamic data for a single T, P point']['Entropy']
-                    result['Internal Energy'] = data['result']['Thermodynamic data for a single T, P point'][
-                        'Internal energy']
-                    result['Gibbs Energy'] = data['result']['Thermodynamic data for a single T, P point'][
-                        'Gibbs energy']
-                    result['Heat capacity at constant pressure'] = \
-                        data['result']['Thermodynamic data for a single T, P point'][
-                            'Heat capacity at constant pressure']
-                    result['Heat capacity at constant volume'] = \
-                        data['result']['Thermodynamic data for a single T, P point']['Heat capacity at constant volume']
+                    result['Enthalpy'] = value_node['Enthalpy']
+                    result['Entropy'] = value_node['Entropy']
+                    result['Internal Energy'] = value_node['Internal energy']
+                    result['Gibbs Energy'] = value_node['Gibbs energy']
+                    result['Heat capacity at constant pressure'] = value_node['Heat capacity at constant pressure']
+                    result['Heat capacity at constant volume'] = value_node['Heat capacity at constant volume']
                 elif output == 'Heat capacity':
-                    result['Heat capacity at constant pressure'] = \
-                        data['result']['Thermodynamic data for a single T, P point'][
-                            'Heat capacity at constant pressure']
-                    result['Heat capacity at constant volume'] = \
-                        data['result']['Thermodynamic data for a single T, P point']['Heat capacity at constant volume']
+                    result['Heat capacity at constant pressure'] = value_node['Heat capacity at constant pressure']
+                    result['Heat capacity at constant volume'] = value_node['Heat capacity at constant volume']
                 else:
-                    result[output] = data['result']['Thermodynamic data for a single T, P point'][output]
+                    result[output] = value_node[output]
         except ValueError:
             return None
 

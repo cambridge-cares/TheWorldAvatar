@@ -85,14 +85,14 @@ if __name__ == "__main__":
     print(result)
     print(time.time() - START_TIME)
 
-    START_TIME = time.time()
-    question = "what is the power conversion efficiencyof C3H4O"
-    result = agentInterface.run(question)
-    print(result)
-    print(time.time() - START_TIME)
-
-    START_TIME = time.time()
-    question = "what is the heat capacity of C3H4O at 100 K"
-    result = agentInterface.run(question)
-    print(result)
-    print(time.time() - START_TIME)
+    # START_TIME = time.time()
+    # question = "what is the power conversion efficiency of C3H4O"
+    # result = agentInterface.run(question)
+    # print(result)
+    # print(time.time() - START_TIME)
+    #
+    # START_TIME = time.time()
+    # question = "what is the heat capacity of C3H4O at 100 K"
+    # result = agentInterface.run(question)
+    # print(result)
+    # print(time.time() - START_TIME)
