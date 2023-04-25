@@ -9,10 +9,8 @@ def create_app():
     agent = VapourtecAgent(
         vapourtec_digital_twin=vapourtec_agent_config.VAPOURTEC_DIGITAL_TWIN,
         vapourtec_state_periodic_timescale=vapourtec_agent_config.VAPOURTEC_STATE_PERIODIC_TIMESCALE,
-        # NOTE below vapourtec_ip_address is commented out on purpose
-        # developer should populate this value in the env file with the value returned by running below command in WSL2
+        # NOTE developer should populate this value in the env file with the value returned by running below command in WSL2
         # echo $(ipconfig.exe | grep 'vEthernet (WSL)' -A4 | cut -d":" -f 2 | tail -n1 | sed -e 's/\s*//g')
-        # then uncomment the line below
         vapourtec_ip_address=vapourtec_agent_config.VAPOURTEC_IP_ADDRESS,
         fcexp_file_container_folder=vapourtec_agent_config.FCEXP_FILE_CONTAINER_FOLDER,
         fcexp_file_host_folder=vapourtec_agent_config.FCEXP_FILE_HOST_FOLDER,
