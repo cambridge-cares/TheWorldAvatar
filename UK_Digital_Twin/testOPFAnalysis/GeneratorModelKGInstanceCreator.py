@@ -63,18 +63,6 @@ ukec = UKec.UKEnergyConsumption()
 endpoint_label = endpointList.ukdigitaltwin['label']
 endpoint_iri = endpointList.ukdigitaltwin['queryendpoint_iri']
 
-"""T-Box URI"""
-if urllib.request.urlopen("http://www.theworldavatar.com/ontology/").getcode() == 200:
-    ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
-    ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
-    ontocape_mathematical_model     = owlready2.get_ontology(t_box.ontocape_mathematical_model).load()
-    ontopowsys_PowerSystemModel     = owlready2.get_ontology(t_box.ontopowsys_PowerSystemModel).load()
-    ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
-    ontoeip_powerplant              = owlready2.get_ontology(t_box.ontoeip_powerplant).load()
-    ontocape_technical_system      = owlready2.get_ontology(t_box.ontoecape_technical_system).load() 
-else:
-    print('---THE WORLD AVATAR NOT FOUND---')
-
 """User specified folder path"""
 filepath = None
 userSpecified = False
@@ -86,6 +74,17 @@ number_of_localOWLFiles = 1
 """Main function: create the named graph Model_EGen and their sub graphs each EGen"""
 def GeneratorModelKGInstanceCreator(ObjectSet, GeneratorObjectNameList, retrofitResults, OPFIndicator, newGeneratorType:str, numOfBus:int, topologyNodeIRI, powerSystemModelIRI, powerSystemNodetimeStamp, \
     AgentIRI, derivationClient, updateEndpointIRI, OWLFileStoragePath, updateLocalOWLFile = True, storeType = "default"):
+    """T-Box URI"""
+    if urllib.request.urlopen("http://www.theworldavatar.com/ontology/").getcode() == 200:
+        ontocape_upper_level_system     = owlready2.get_ontology(t_box.ontocape_upper_level_system).load()
+        ontocape_derived_SI_units       = owlready2.get_ontology(t_box.ontocape_derived_SI_units).load()
+        ontocape_mathematical_model     = owlready2.get_ontology(t_box.ontocape_mathematical_model).load()
+        ontopowsys_PowerSystemModel     = owlready2.get_ontology(t_box.ontopowsys_PowerSystemModel).load()
+        ontoecape_space_and_time_extended = owlready2.get_ontology(t_box.ontoecape_space_and_time_extended).load()
+        ontoeip_powerplant              = owlready2.get_ontology(t_box.ontoeip_powerplant).load()
+        ontocape_technical_system      = owlready2.get_ontology(t_box.ontoecape_technical_system).load() 
+    else:
+        print('---THE WORLD AVATAR NOT FOUND---')
     ## Set up the default storage path
     store = LocalGraphStore(storeType)
     
