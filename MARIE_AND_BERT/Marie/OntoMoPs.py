@@ -13,11 +13,10 @@ class OntoMoPsQAEngine(QAEngineNumerical):
                  dataset_name='numerical_with_implicit',
                  sub_ontology='numerical_with_implicit',
                  ontology='OntoMoPs',
-                 nel = None):
+                 nel=None):
         self.dataset_dir = dataset_dir
         self.ontology = ontology
         self.sub_ontology = sub_ontology
-
 
         super().__init__(dataset_dir, dataset_name, dim=50, test=False, value_dict_name="node_value_dict.json",
                          seperated_model=True, operator_dict={0: "smaller", 1: "larger", 2: "none"},
@@ -33,7 +32,7 @@ if __name__ == "__main__":
     my_engine = OntoMoPsQAEngine(dataset_dir=dataset_dir, dataset_name=sub_ontology, sub_ontology=sub_ontology,
                                  ontology=ontology, nel=cn)
 
-    text = "Show me the melting point of tungsten"
+    text = "List the Chemical Building Units with 2-linear as the Generic Building Unit"
     rst = my_engine.run(text)
     print(rst)
 

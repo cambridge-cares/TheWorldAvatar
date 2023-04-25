@@ -20,7 +20,7 @@ logger.info("============= Server is ready to go! ===========")
 def answer_question(question):
     logger.info("=======================================================================================")
     logger.info(f" The server received a question: {question}")
-    answer = my_qa_engine.run(question=str(question).strip(), disable_alignment=False,
+    answer = my_qa_engine.run(orignal_question=str(question).strip(), disable_alignment=False,
                               heads={})
     logger.info(f" The server returned answers: {json.dumps(answer)}")
     logger.info("=======================================================================================")

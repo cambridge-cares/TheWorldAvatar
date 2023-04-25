@@ -126,7 +126,11 @@ class QAEngine:
         :return:
         """
         if mention is None:
+            if "what" not in question.lower():
+                question = f"what is the {question}"
             mention = self.chemical_nel.get_mention(question=question)
+            print("============= MENTION ============")
+            print(mention)
         try:
             nel_confidence, cid, mention_string, name = self.extract_head_ent(mention)
             if head is not None:
@@ -139,7 +143,11 @@ class QAEngine:
             return ["EMPTY"], [-999], ["EMPTY"]
 
         try:
+            print("============ REMOVING HEAD ENTITY FROM QUESTION ==============")
+            print("question before ", question)
             question = self.nlp.remove_head_entity(question, mention_string).lower()
+            print("question after ", question)
+
         except AttributeError:
             return ["EMPTY"], [-999], ["EMPTY"]
 
