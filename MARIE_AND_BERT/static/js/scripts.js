@@ -274,18 +274,54 @@ function handleResults(rawResult){
 	console.log("jsonData", jsonData)
 	// split the results, all the rows with domain "ontoagent" goes somewhere else
 
-
-	if ('attribute' in jsonData || 'multiple_results' in jsonData) {
+	if (checkOntoAgent(jsonData)) {
+    jsonData = parseOntoAgentData(jsonData[0]);
+    	console.log('agent')
+        jsonData = jsonData["node"]
         process_matrix_data(jsonData);
-    }
-    else{
+
+    }else{
         processChatbotResults(jsonData);
     }
 
-
-
-
 }
+/*
+function parseJsonChartData(jsondata){
+if (typeof jsondata !== "string") return false;
+let re  = /\"node\": \"\{(.+)\}\"/;
+let b = jsondata.match(re);
+if (b == null) return false;
+let old =  "\"\{"+ b[1] + "\}\"";
+let nb =  "\{"+ b[1] + "\}";
+let a = jsondata.replace(old, nb);
+return a;
+}
+**/
+function parseOntoAgentData(jsonData){
+jsonData['node'] = JSON.parse(jsonData['node'])
+return jsonData
+}
+
+function checkOntoAgent(data){
+let flag = false
+data.forEach((item)=>{
+if (item['domain'] == 'ontoagent'){ flag = true};
+})
+return flag;
+}
+
+function checkChartData(d) {
+    let useChart= false
+    		Object.keys(d).forEach((key) => {
+    			let item =  d[key]
+    			if ('y' in item){
+    			    		console.log('chart');
+    			useChart = true;
+}
+    		})
+    return useChart;
+}
+
 
 
 /*
@@ -530,59 +566,37 @@ function isImageURL(url) {
 // to process matrix data returned from the agent extension ...
 function process_matrix_data(matrix){
     let elements = [];
-    if ("multiple_results" in matrix){
-        elements = matrix['multiple_results'];
-        prepare_chart_data(elements);
-        makeTable(elements);
-    }
-    else{
-        if(typeof matrix['value'] === "string"){
+
+        if(!checkChartData(matrix)){//Single value, no chart
             // single value, table only
             elements = [matrix]
-            makeTable(elements)
+            processChatbotResults(elements)
         }else{
             // serial value, use chart to visualise
-            elements = [matrix];
+            elements = matrix;
             prepare_chart_data(elements);
             makeTable(elements)
         }
-    }
+
 }
 
-function prepare_chart_data(elements){
+function prepare_chart_data(nodes){
     // find the value, find the other array
     // y, x
-    elements.forEach(function (element){
-        let y_data = element['value']
-        let y_unit = element['unit']
-        let x_data = []
+    Object.keys(nodes).forEach(function (elekey){
+        element = nodes[elekey]
+        let y_data = element['y']['value']
+        let y_unit = element['y']['unit']
+        let x_data = element['x']['value']
         let x_data_title = ''
-        let x_data_unit = ''
-        let attribute = element['attribute']
+        let x_data_unit = element['x']['unit']
+        let attribute = elekey
         let fixed_data_title = ''
         let fixed_data = ''
         let fixed_data_unit = ''
         console.log(attribute)
         // find the fixed value and the serial value
         // find the key that is neither value nor attribute
-        Object.keys(element).forEach(function (k) {
-            if(k!== 'value' && k!== 'attribute'){
-                // see whether this is single value or serial
-                if(typeof element[k]['value'] === "object"){
-                    // this is serial, x axis
-                    let x_data_object = element[k]; // containing values and a unit
-                    x_data_unit = x_data_object['unit'];
-                    x_data = x_data_object['value'];
-                    x_data_title = k; // store the title of x axis too
-                }else{
-                    // this is the fixed value
-                    fixed_data_title = k;
-                    let fixed_data_object = element[k];
-                    fixed_data_unit = fixed_data_object['unit'];
-                    fixed_data = fixed_data_object['value'];
-                }
-            }
-        });
         let rows = make_rows(x_data, y_data);
         drawLineChart(rows, attribute, y_unit, x_data_title, x_data_unit, fixed_data_title, fixed_data, fixed_data_unit);
     });
@@ -610,7 +624,7 @@ const hash = function(str, seed = 0) {
 
 function drawLineChart(rows, attribute, y_unit, x_data_title, x_data_unit, fixed_data_title, fixed_data, fixed_data_unit) {
       // create a new id for this element
-    	let element_id = 'data_chart'
+    	let element_id = 'data_chart'+attribute
 
         $('<div>', {
             id: element_id,
@@ -628,7 +642,7 @@ function drawLineChart(rows, attribute, y_unit, x_data_title, x_data_unit, fixed
           data.addRows(rows);
           var options = {
 
-            title: attribute + ' (' + y_unit + ') at ' + fixed_data_title + ' of ' + fixed_data + ' ' + fixed_data_unit,
+            title: attribute + ' (' + y_unit + ')  ',
             hAxis: {
               title: x_data_title + ' (' + x_data_unit + ')',
             },
@@ -647,9 +661,12 @@ function makeTable(matrix_set){
 
     console.log('Making a table from matrix set')
     // let test_valueSet = [{'x': '1', 'y': '2'},{'x': '1', 'y': '2'},{'x': '1', 'y': '2'},{'x': '1', 'y': '2'}]
-    matrix_set.forEach(function (matrix) {
-        let x_data = matrix['value'];
-        let array = []
+    let array = [];
+    let valueSet = {};
+    Object.keys(matrix_set).forEach(function (key) {
+
+        matrix = matrix_set[key]
+        let x_data = matrix['x']['value'];
         let x_data_list = []
         if (typeof x_data === 'string'){
             x_data_list.push([x_data]);
@@ -657,30 +674,19 @@ function makeTable(matrix_set){
         else{
             x_data_list = x_data
         }
-        x_data_list.forEach(function (x,index){
-            let valueSet = {};
-            let x_data_title = matrix['attribute'];
-            let x_data_unit = matrix['unit'];
-            valueSet[x_data_title] = x
-            valueSet['unit'] = x_data_unit;
-
-        Object.keys(matrix).forEach(function (k) {
-            if(k!== 'value' && k!== 'attribute' && k!== 'unit'){
-                let content = '';
-                let unit = matrix[k]['unit'];
-                let value = matrix[k]['value'];
-                if (typeof value === 'string'){
-                    content = value + ' ' + unit;
-                    valueSet[k] = content
-                }else{
-                    valueSet[k] = value[index] + ' ' + unit;
-                }
-            }
-        });
-        array.push(valueSet);
+        valueSet['x'] = x_data_list
+         valueSet['x_unit'] = matrix['x']['unit'];;
+         let unit = matrix['y']['unit'];;
+         let values = []
+         matrix['y']['value'].forEach(function (v) {
+         values.push(v+' '+unit)
+         })
+         valueSet[key] = values;
     });
+    array.push(valueSet);
+    console.log(array)
         processChatbotResults(array);
-    });
+
 }
 
 /*
@@ -704,7 +710,7 @@ function convertToJSONResults(rawResults) {
             console.log('result is parsed into JSON from String', jsonData)
             console.log('Type of the object is ', typeof(jsonData))
 		} catch (err1) {
-            console.log('err1')
+            console.log(err1)
 			console.log("rawResults in err1", rawResults)
 			try {
 				jsonData = JSON.parse(JSON.stringify(rawResults));
