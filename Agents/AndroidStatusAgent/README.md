@@ -1,5 +1,5 @@
 # Android Status Agent
-AndroidStatusAgent is an agent used to assist the BMS Query App coporating with other JPS services. It logs the status of the App, so other services, such as DTVF, can access the status in the app and load the corresponding content.
+AndroidStatusAgent is an agent used to assist the BMS Query App coporating with other TWA services. It logs the status of the App, so other services, such as DTVF, can access the status in the app and load the corresponding content.
 
 ## Example Use Case: Asisst Visualisation with DTVF in the App
 An example use case for AndroidStatusAgent is to record the selected equipment, then the DTVF can retrieve this information from this agent and display the corresponding timeseries graph.
