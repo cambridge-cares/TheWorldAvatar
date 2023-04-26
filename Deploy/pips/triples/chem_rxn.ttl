@@ -44,13 +44,13 @@ OntoRxn:ReactionVariation rdfs:subClassOf OntoRxn:ReactionExperiment .
 ## Chemical reaction instances ##
 #################################
 :ChemRxn_1
-    rdf:type OntoCAPERxn:ChemicalReaction;
+    rdf:type OntoRxn:ChemicalReaction;
     OntoKin:hasEquation "C6H5CHO + CH3COCH3 = C10H10O"^^xsd:string;
     OntoCAPERxn:hasReactant :Species_1;
     OntoCAPERxn:hasReactant :Species_2;
     OntoCAPERxn:hasProduct :Species_3;
     OntoCAPERxn:hasProduct :Species_4;
-    OntoCAPERxn:hasCatalyst :Species_5;
+    OntoRxn:hasCatalyst :Species_5;
     OntoRxn:hasSolvent :Species_6;
     OntoRxn:hasSolvent :Species_7;
     OntoDoE:hasDoETemplate doe_template:DoETemplate_1;

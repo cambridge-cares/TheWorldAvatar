@@ -18,7 +18,7 @@ class RxnOptGoalIterAgent(DerivationAgent):
         self.sparql_client = self.get_sparql_client(RxnOptGoalIterSparqlClient)
 
     def agent_input_concepts(self) -> list:
-        return [ONTOGOAL_GOALSET, ONTOCAPE_CHEMICALREACTION, ONTOREACTION_REACTIONEXPERIMENT, ONTOLAB_LABORATORY]
+        return [ONTOGOAL_GOALSET, ONTOREACTION_CHEMICALREACTION, ONTOREACTION_REACTIONEXPERIMENT, ONTOLAB_LABORATORY]
 
     def agent_output_concepts(self) -> list:
         return [ONTOGOAL_RESULT]
@@ -37,7 +37,7 @@ class RxnOptGoalIterAgent(DerivationAgent):
         # II. Get the chemical reaction and reaction experiment
         # NOTE reaction experiment might not in the derivation inputs as this might be the first reaction where no prior data is available
         # Check if the input is in correct format, and return OntoReaction.ReactionExperiment/ReactionVariation instance
-        list_chemical_reaction_iri = derivation_inputs.getIris(ONTOCAPE_CHEMICALREACTION)
+        list_chemical_reaction_iri = derivation_inputs.getIris(ONTOREACTION_CHEMICALREACTION)
         if len(list_chemical_reaction_iri) != 1:
             raise Exception(f"Exactly one chemical reaction is expected, but found: {list_chemical_reaction_iri}")
         chem_rxn_iri = list_chemical_reaction_iri[0]

@@ -33,7 +33,6 @@ doe_instance:HistoricalData_1 OntoDoE:refersToExperiment exp7:RxnExp_1.
 
 exp7:RxnExp_1 OntoRxn:isAssignedTo dummy_post_proc:VapourtecR4_2. # assigned to dummy_post_proc:VapourtecR4_2
 
-ChemRxn:ChemRxn_1 OntoRxn:isRealisedAs exp7:RxnExp_1.
 SinglePhase:Phase_1 OntoCAPEMat:representsThermodynamicBehavior exp7:InputChemical_1.
 SinglePhase:Phase_2 OntoCAPEMat:representsThermodynamicBehavior exp7:InputChemical_2.
 SinglePhase:Phase_3 OntoCAPEMat:representsThermodynamicBehavior exp7:InputChemical_3.

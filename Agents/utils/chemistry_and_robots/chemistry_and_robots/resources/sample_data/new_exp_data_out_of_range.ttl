@@ -62,8 +62,6 @@
     ns1:hasPhenomenon <https://intentionally_created_ReactionExperiment_out_of_range/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> ;
     ns1:hasValue <https://intentionally_created_ReactionExperiment_out_of_range/Measure_07d73e67-a930-42df-a475-2d1c3ac2d19f> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RxnExp_1> ns2:hasVariation <https://intentionally_created_ReactionExperiment_out_of_range/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> .
-
 <https://intentionally_created_ReactionExperiment_out_of_range/StoichiometryRatio_866bfdf2-0d32-40da-8fcb-f89669cf1d31> a ns2:StoichiometryRatio ;
     ns1:hasPhenomenon <https://intentionally_created_ReactionExperiment_out_of_range/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70> ;
     ns1:hasValue <https://intentionally_created_ReactionExperiment_out_of_range/Measure_740fa259-0149-4f49-99e7-95fbcff8c7e7> ;
@@ -162,8 +160,6 @@
 <https://intentionally_created_ReactionExperiment_out_of_range/ResidenceTime_e8c453af-4dca-4e0b-8137-a073e1ab0d82> a ns2:ResidenceTime ;
     ns1:hasPhenomenon <https://intentionally_created_ReactionExperiment_out_of_range/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> ;
     ns1:hasValue <https://intentionally_created_ReactionExperiment_out_of_range/Measure_37d9d2de-f8b6-419a-8ca0-890cb41fbc6c> .
-
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RxnExp_1> ns2:hasVariation <https://intentionally_created_ReactionExperiment_out_of_range/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> .
 
 <https://intentionally_created_ReactionExperiment_out_of_range/StoichiometryRatio_4f55a3ff-3a06-4749-8775-52d7673497c7> a ns2:StoichiometryRatio ;
     ns1:hasPhenomenon <https://intentionally_created_ReactionExperiment_out_of_range/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8> ;
@@ -266,8 +262,6 @@
 #     ns1:hasPhenomenon <https://intentionally_created_ReactionExperiment_out_of_range/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> ;
 #     ns1:hasValue <https://intentionally_created_ReactionExperiment_out_of_range/Measure_9479bc7e-a5f1-474d-bbd2-0c9d65bb24c3> .
 
-<https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/RxnExp_1> ns2:hasVariation <https://intentionally_created_ReactionExperiment_out_of_range/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> .
-
 <https://intentionally_created_ReactionExperiment_out_of_range/StoichiometryRatio_3712c062-8b67-4a82-82d9-166ff34909ba> a ns2:StoichiometryRatio ;
     ns1:hasPhenomenon <https://intentionally_created_ReactionExperiment_out_of_range/ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf> ;
     ns1:hasValue <https://intentionally_created_ReactionExperiment_out_of_range/Measure_c89f50e2-1909-4e9c-a456-83c894af387f> ;
@@ -367,8 +361,6 @@
     ns1:hasPhenomenon <https://yield_out_of_range/ReactionExperiment_negative_yield> ;
     ns1:hasValue <https://yield_out_of_range/Measure_07d73e67-a930-42df-a475-2d1c3ac2d19f> .
 
-<https://yield_out_of_range/RxnExp_1> ns2:hasVariation <https://yield_out_of_range/ReactionExperiment_negative_yield> .
-
 <https://yield_out_of_range/StoichiometryRatio_866bfdf2-0d32-40da-8fcb-f89669cf1d31> a ns2:StoichiometryRatio ;
     ns1:hasPhenomenon <https://yield_out_of_range/ReactionExperiment_negative_yield> ;
     ns1:hasValue <https://yield_out_of_range/Measure_740fa259-0149-4f49-99e7-95fbcff8c7e7> ;
@@ -467,8 +459,6 @@
 <https://yield_out_of_range/ResidenceTime_e8c453af-4dca-4e0b-8137-a073e1ab0d82> a ns2:ResidenceTime ;
     ns1:hasPhenomenon <https://yield_out_of_range/ReactionExperiment_yield_too_high> ;
     ns1:hasValue <https://yield_out_of_range/Measure_37d9d2de-f8b6-419a-8ca0-890cb41fbc6c> .
-
-<https://yield_out_of_range/RxnExp_1> ns2:hasVariation <https://yield_out_of_range/ReactionExperiment_yield_too_high> .
 
 <https://yield_out_of_range/StoichiometryRatio_4f55a3ff-3a06-4749-8775-52d7673497c7> a ns2:StoichiometryRatio ;
     ns1:hasPhenomenon <https://yield_out_of_range/ReactionExperiment_yield_too_high> ;

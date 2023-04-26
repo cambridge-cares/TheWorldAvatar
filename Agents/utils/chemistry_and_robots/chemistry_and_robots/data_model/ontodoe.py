@@ -244,7 +244,7 @@ class DesignOfExperiment(BaseOntology):
     hasSystemResponse: List[SystemResponse]
     utilisesHistoricalData: HistoricalData
     proposesNewExperiment: Optional[ReactionExperiment]
-    designsChemicalReaction: str # NOTE this should be pointing to OntoCAPE:ChemicalReaction instance, here simplified
+    designsChemicalReaction: str # NOTE this should be pointing to OntoReaction:ChemicalReaction instance, here simplified
 
     def create_instance_for_kg(self, g: Graph):
         # create an instance of DesignOfExperiment

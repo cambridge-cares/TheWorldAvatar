@@ -965,18 +965,13 @@ exp5:RxnScale_1_Measure_1
 ## Chemical reaction instances ##
 #################################
 ChemRxn:ChemRxn_1
-    rdf:type OntoCAPERxn:ChemicalReaction;
-    OntoRxn:isRealisedAs exp1:RxnExp_1;
-    OntoRxn:isRealisedAs exp2:RxnExp_1;
-    OntoRxn:isRealisedAs exp3:RxnExp_1;
-    OntoRxn:isRealisedAs exp4:RxnExp_1;
-    OntoRxn:isRealisedAs exp5:RxnExp_1;
+    rdf:type OntoRxn:ChemicalReaction;
     OntoKin:hasEquation "C6H5CHO + CH3COCH3 = C10H10O"^^xsd:string;
     OntoCAPERxn:hasReactant ChemRxn:Species_1;
     OntoCAPERxn:hasReactant ChemRxn:Species_2;
     OntoCAPERxn:hasProduct ChemRxn:Species_3;
     OntoCAPERxn:hasProduct ChemRxn:Species_4;
-    OntoCAPERxn:hasCatalyst ChemRxn:Species_5;
+    OntoRxn:hasCatalyst ChemRxn:Species_5;
     OntoRxn:hasSolvent ChemRxn:Species_6;
     OntoRxn:hasSolvent ChemRxn:Species_7;
 .

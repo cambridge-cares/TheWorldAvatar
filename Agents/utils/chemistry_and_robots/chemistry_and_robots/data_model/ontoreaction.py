@@ -301,8 +301,8 @@ class TargetProduct(OntoKin_Product):
 class Impurity(OntoKin_Product):
     clz: str = ONTOREACTION_IMPURITY
 
-class OntoCAPE_ChemicalReaction(BaseOntology):
-    clz: str = ONTOCAPE_CHEMICALREACTION
+class ChemicalReaction(BaseOntology):
+    clz: str = ONTOREACTION_CHEMICALREACTION
     hasReactant: List[OntoKin_Species]
     hasProduct: List[OntoKin_Species]
     hasCatalyst: Optional[List[OntoKin_Species]]
@@ -477,7 +477,7 @@ class ReactionExperiment(BaseOntology):
     hasOutputChemical: Optional[List[OutputChemical]] = None
     isAssignedTo: Optional[str] # NOTE here it should be pointing to OntoVapourtec:VapourtecR4Reactor, but we put str to simplify the implementation
     clz: str = ONTOREACTION_REACTIONEXPERIMENT
-    isOccurenceOf: Optional[OntoCAPE_ChemicalReaction] = None
+    isOccurenceOf: Optional[ChemicalReaction] = None
 
     @pydantic.root_validator
     @classmethod
@@ -591,7 +591,7 @@ class ReactionExperiment(BaseOntology):
             raise Exception(f"OutputChemical is already set for {self.instance_iri}: {self.hasOutputChemical}")
 
         if self.isOccurenceOf is None:
-            raise Exception(f"OntoCAPE:ChemicalReaction is not set up for {self.instance_iri}")
+            raise Exception(f"OntoReaction:ChemicalReaction is not set up for {self.instance_iri}")
 
         if self.isAssignedTo is not None:
             raise Exception(f"OntoVapourtec:VapourtecR4Reactor is already assigned for {self.instance_iri}: {self.isAssignedTo}")
@@ -618,7 +618,7 @@ class ReactionExperiment(BaseOntology):
         for input_chemical in self.hasInputChemical:
             g.add((URIRef(self.instance_iri), URIRef(ONTOREACTION_HASINPUTCHEMICAL), URIRef(input_chemical.instance_iri)))
 
-        # <reactionExperimentIRI> <OntoReaction:isOccurenceOf> <OntoCAPE:ChemicalReaction> .
+        # <reactionExperimentIRI> <OntoReaction:isOccurenceOf> <OntoReaction:ChemicalReaction> .
         g.add((URIRef(self.instance_iri), URIRef(ONTOREACTION_ISOCCURENCEOF), URIRef(self.isOccurenceOf.instance_iri)))
 
         return g
@@ -649,11 +649,9 @@ class ReactionVariation(ReactionExperiment):
         # Add below triples:
         # <reactionVariationIRI> <rdf:type> <OntoReaction:ReactionVariation> .
         # <reactionVariationIRI> <OntoReaction:isVariationOf> <reactionExperimentIRI> .
-        # <reactionExperimentIRI> <OntoReaction:hasVariation> <reactionVariationIRI> .
         g.add((rxnvar_iri, RDF.type, URIRef(ONTOREACTION_REACTIONVARIATION)))
         g.add((rxnvar_iri, URIRef(ONTOREACTION_ISVARIATIONOF), rxn_iri))
-        g.add((rxn_iri, URIRef(ONTOREACTION_HASVARIATION), rxnvar_iri))
-        
+
         for con in self.hasReactionCondition:
             # Attach the ReactionCondition instance to the OntoReaction:ReactionVariation instance
             # As we are stating the <reactionVariationIRI> <OntoReaction:isVariationOf> <reactionExperimentIRI>

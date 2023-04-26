@@ -27,7 +27,7 @@ logger = agentlogging.get_logger('dev')
 
 class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def get_all_chemical_reaction_iri(self):
-        query = f"""SELECT ?chem_rxn WHERE {{ ?chem_rxn a <{ONTOCAPE_CHEMICALREACTION}>. }}"""
+        query = f"""SELECT ?chem_rxn WHERE {{ ?chem_rxn a <{ONTOREACTION_CHEMICALREACTION}>. }}"""
         response = self.performQuery(query)
         return [list(res.values())[0] for res in response]
 
@@ -95,10 +95,10 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                       }}"""
         response_1 = self.performQuery(query_1)
         if len(response_1) > 1:
-            raise Exception("OntoDoE:DesignOfExperiment instance <%s> is associated with multiple entries of OntoDoE:Strategy/Domain/HistoricalData/OntoCAPE:ChemicalReaction: %s" % (
+            raise Exception("OntoDoE:DesignOfExperiment instance <%s> is associated with multiple entries of OntoDoE:Strategy/Domain/HistoricalData/OntoReaction:ChemicalReaction: %s" % (
                 doe_iri, str(response_1)))
         elif len(response_1) < 1:
-            raise Exception("OntoDoE:DesignOfExperiment instance <%s> is NOT associated with any entries of OntoDoE:Strategy/Domain/HistoricalData/OntoCAPE:ChemicalReaction" % (doe_iri))
+            raise Exception("OntoDoE:DesignOfExperiment instance <%s> is NOT associated with any entries of OntoDoE:Strategy/Domain/HistoricalData/OntoReaction:ChemicalReaction" % (doe_iri))
         else:
             r = response_1[0]
 
@@ -355,7 +355,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 )
         return list_exp
 
-    def get_chemical_reaction(self, rxnexp_iris: Union[str, list]) -> Dict[str, OntoCAPE_ChemicalReaction]:
+    def get_chemical_reaction(self, rxnexp_iris: Union[str, list]) -> Dict[str, ChemicalReaction]:
         if not isinstance(rxnexp_iris, list):
             rxnexp_iris = [rxnexp_iris]
         rxnexp_iris = trimIRI(rxnexp_iris)
@@ -372,7 +372,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             if rxn_iri not in dict_rxn_chem_mapping:
                 dict_rxn_chem_mapping[rxn_iri] = chem_rxn_iri
             else:
-                raise Exception(f"OntoReaction:ReactionExperiment instance <{rxn_iri}> is found to be occurence of multiple OntoCAPE:ChemicalReaction instance: {dal.get_sublist_in_list_of_dict_matching_key_value(response_mapping, 'rxn', rxn_iri)}")
+                raise Exception(f"OntoReaction:ReactionExperiment instance <{rxn_iri}> is found to be occurence of multiple OntoReaction:ChemicalReaction instance: {dal.get_sublist_in_list_of_dict_matching_key_value(response_mapping, 'rxn', rxn_iri)}")
 
         lst_unique_chem_rxn = dal.get_unique_values_in_list_of_dict(response_mapping, 'chem_rxn')
         query = f"""{PREFIX_RDF}
@@ -387,7 +387,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         ?product rdf:type ?prod_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?prod_species.
                         OPTIONAL{{
                             VALUES ?cata_type {{<{ONTOKIN_SPECIES}> <{ONTOREACTION_CATALYST}>}}.
-                            ?chem_rxn <{ONTOCAPE_CATALYST}> ?catalyst.
+                            ?chem_rxn <{ONTOREACTION_HASCATALYST}> ?catalyst.
                             ?catalyst rdf:type ?cata_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?cata_species.
                         }}
                         OPTIONAL{{
@@ -398,12 +398,12 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         OPTIONAL{{?chem_rxn <{ONTODOE_HASDOETEMPLATE}> ?doe_template.}}
                     }}"""
         response_of_all_chem_rxn = self.performQuery(query)
-        dict_chem_rxn = {} # key: chem_rxn_iri, value: OntoCAPE_ChemicalReaction
+        dict_chem_rxn = {} # key: chem_rxn_iri, value: ChemicalReaction
 
         for iri in lst_unique_chem_rxn:
             response = dal.get_sublist_in_list_of_dict_matching_key_value(response_of_all_chem_rxn, 'chem_rxn', iri)
 
-            chem_rxn = OntoCAPE_ChemicalReaction(
+            chem_rxn = ChemicalReaction(
                 instance_iri=iri,
                 hasReactant=self.get_ontokin_species_from_chem_rxn(response, 'reactant', 'reac_type', 'reac_species'),
                 hasProduct=self.get_ontokin_species_from_chem_rxn(response, 'product', 'prod_type', 'prod_species'),
@@ -420,7 +420,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         return dict_exp_chem_rxn
 
-    def get_chemical_reaction_given_iri(self, chem_rxn_iri: str) -> OntoCAPE_ChemicalReaction:
+    def get_chemical_reaction_given_iri(self, chem_rxn_iri: str) -> ChemicalReaction:
         chem_rxn_iri = trimIRI(chem_rxn_iri)
         query = f"""{PREFIX_RDF}
                 SELECT DISTINCT ?chem_rxn ?reactant ?reac_type ?reac_species ?product ?prod_type ?prod_species
@@ -434,7 +434,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     ?product rdf:type ?prod_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?prod_species.
                     OPTIONAL{{
                         VALUES ?cata_type {{<{ONTOKIN_SPECIES}> <{ONTOREACTION_CATALYST}>}}.
-                        ?chem_rxn <{ONTOCAPE_CATALYST}> ?catalyst.
+                        ?chem_rxn <{ONTOREACTION_HASCATALYST}> ?catalyst.
                         ?catalyst rdf:type ?cata_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?cata_species.
                     }}
                     OPTIONAL{{
@@ -446,7 +446,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 }}"""
         response = self.performQuery(query)
 
-        chem_rxn = OntoCAPE_ChemicalReaction(
+        chem_rxn = ChemicalReaction(
             instance_iri=chem_rxn_iri,
             hasReactant=self.get_ontokin_species_from_chem_rxn(response, 'reactant', 'reac_type', 'reac_species'),
             hasProduct=self.get_ontokin_species_from_chem_rxn(response, 'product', 'prod_type', 'prod_species'),

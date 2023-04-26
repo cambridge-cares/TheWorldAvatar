@@ -168,7 +168,7 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
     def generate_doe_instance_from_goal(
         self,
         goal_set: GoalSet,
-        chem_rxn: OntoCAPE_ChemicalReaction,
+        chem_rxn: ChemicalReaction,
         rxn_exp_as_beliefs: List[ReactionExperiment]=None,
     ) -> DesignOfExperiment:
         # get the doe template
