@@ -28,7 +28,7 @@ public class BMSQueryAgentLauncher extends JPSAgent {
 
     public static final String PARAMETERS_VALIDATION_ERROR_MSG = "Unable to validate request sent to the agent.";
     public static final String EMPTY_PARAMETER_ERROR_MSG = "Empty Request.";
-    public static final String AGENT_Construction_ERROR_MSG = "The BMSQueryAgent could not be constructed.";
+    public static final String AGENT_CONSTRUCTION_ERROR_MSG = "The BMSQueryAgent could not be constructed.";
 
     /**
      * Servlet init.
@@ -143,8 +143,8 @@ public class BMSQueryAgentLauncher extends JPSAgent {
         try {
             agent = new BMSQueryAgent();
         } catch (Exception e) {
-            LOGGER.error(AGENT_Construction_ERROR_MSG, e);
-            throw new JPSRuntimeException(AGENT_Construction_ERROR_MSG, e);
+            LOGGER.error(AGENT_CONSTRUCTION_ERROR_MSG, e);
+            throw new JPSRuntimeException(AGENT_CONSTRUCTION_ERROR_MSG, e);
         }
         return agent;
     }
