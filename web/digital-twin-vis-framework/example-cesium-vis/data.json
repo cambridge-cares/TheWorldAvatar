@@ -14,13 +14,23 @@
             "wmsLayer": "cugir007884",
             "transparency": true,
             "format": "image/png"
-        }
-	], 
+        },
+      {
+        "id": "3d-tiles-ntu",
+        "type": "tiles",
+        "uri": "/data/sg_ntu/citydb/tileset.json"
+      }
+    ],
 	"layers": [
         {
             "id": "3d-tiles-layer",
 			"name": "Buildings of Singapore",
             "source": "3d-tiles-source"    
-        }
+        },
+      {
+        "id": "3d-tiles-ntu",
+        "name": "Buildings of NTU",
+        "source": "3d-tiles-ntu"
+      }
 	]
 }

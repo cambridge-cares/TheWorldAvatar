@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 public class Config  extends ContainerClient {
     private static boolean initialised = false;
     public static PostGISEndpointConfig postGISEndpointConfig = null;
-    public static String apikey = System.getenv("API_KEY"); // api key for open weather
     public static String dburl;
     public static String dbuser;
     public static String dbpassword;
@@ -20,6 +19,7 @@ public class Config  extends ContainerClient {
     public static String kguser;
     public static String kgpassword;
     public static String ontop_url;
+    public static int ratio_intersect;
 
     private static OntopEndpointConfig ontopEndpointConfig;
     public static String DATABASE = System.getenv("DATABASE");
@@ -32,7 +32,6 @@ public class Config  extends ContainerClient {
                 postGISEndpointConfig = this.readEndpointConfig("postgis",
                         PostGISEndpointConfig.class);
 
-                Config.apikey = System.getenv("API_KEY");
                 Config.dburl = postGISEndpointConfig.getJdbcURL(DATABASE);
                 Config.dbuser = postGISEndpointConfig.getUsername();
                 Config.dbpassword = postGISEndpointConfig.getPassword();

@@ -40,7 +40,7 @@ public class KGObjects {
     private String objectIri;
     private String objectName;
     private String geoObjectId;
-    static String envOnto = "http://www.theworldavatar.com/ontology/ontobuiltenv/OntoBuiltEnv.owl";
+    static String envOnto = "https://www.theworldavatar.com/kg/ontobuiltenv/";
     static Prefix p_env = SparqlBuilder.prefix("env",iri(envOnto));
     static Iri hasOntoCityGML = p_env.iri("hasOntoCityGMLRepresentation");
     static Iri busNode = p_j1.iri("BusNode");

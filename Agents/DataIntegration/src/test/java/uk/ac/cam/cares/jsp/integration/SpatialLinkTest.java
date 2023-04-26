@@ -1,39 +1,38 @@
 package uk.ac.cam.cares.jsp.integration;
 
-import org.apache.http.client.utils.URIBuilder;
-import org.json.JSONObject;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.junit.jupiter.api.Test;
 import org.testcontainers.utility.DockerImageName;
-import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.time.Instant;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class SpatialLinkTest {
+
     DockerImageName postgisImage = DockerImageName.parse("postgis/postgis:13-3.2").asCompatibleSubstituteFor("postgres");
     @Container
     private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(postgisImage);
+
     @BeforeEach
-    public void initialise() throws URISyntaxException {
+    public void initialise() {
         Network network = Network.newNetwork();
         postgres.setStartupAttempts(2);
         postgres.withNetwork(network);
         postgres.withNetworkAliases("postgis");
+        postgres.withDatabaseName("sg_ntu");
+        postgres.withUsername("postgres");
+        postgres.withPassword("postgis");
         postgres.start();
+        System.out.println(postgres.getJdbcUrl() + postgres.getUsername() + postgres.getPassword());
     }
     @Test
     public void spatialLinkTest() throws ServletException, IOException {
@@ -46,13 +45,11 @@ class SpatialLinkTest {
 
         SpatialLink spatialLink = new SpatialLink();
         spatialLink.doPut(request, response);
-
-//        when(request.getParameter("username")).thenReturn("postgres");
-//        when(request.getParameter("password")).thenReturn("123456");
+        
     }
 
     @AfterEach
-    public void cleanup() throws IOException {
+    public void cleanup() {
         if (postgres.isRunning()) {
             postgres.stop();
         }
