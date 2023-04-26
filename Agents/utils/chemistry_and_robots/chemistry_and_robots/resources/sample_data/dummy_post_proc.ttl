@@ -110,7 +110,6 @@
 
 :Vial_1_1
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_1_1;
     OntoLab:isFilledWith :ChemicalAmount_1_1;
 .
 
@@ -176,7 +175,6 @@
 
 :Vial_2_1
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_2_1;
     OntoLab:isFilledWith :ChemicalAmount_2_1;
 .
 

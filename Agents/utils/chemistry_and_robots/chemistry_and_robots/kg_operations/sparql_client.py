@@ -809,7 +809,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                             hasNumericalValue=info_of_specific_site['max_level_num_val']
                         )
                     ),
-                    isHeldIn=specific_site
                 )
                 autosampler_site = AutoSamplerSite(
                     instance_iri=specific_site,

@@ -1254,7 +1254,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :Vial_1
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_1;
     OntoLab:isFilledWith :ChemicalAmount_1;
     OntoLab:hasMaxLevel :Vial_1_level_max;
     OntoLab:hasWarningLevel :Vial_1_level_warning;
@@ -1302,7 +1301,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :Vial_2
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_2;
     OntoLab:isFilledWith :ChemicalAmount_2;
     OntoLab:hasMaxLevel :Vial_2_level_max;
     OntoLab:hasWarningLevel :Vial_2_level_warning;
@@ -1350,7 +1348,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :Vial_3
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_3;
     OntoLab:isFilledWith :ChemicalAmount_3;
     OntoLab:hasMaxLevel :Vial_3_level_max;
     OntoLab:hasWarningLevel :Vial_3_level_warning;
@@ -1398,7 +1395,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :Vial_4
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_4;
     OntoLab:isFilledWith :ChemicalAmount_4;
     OntoLab:hasMaxLevel :Vial_4_level_max;
     OntoLab:hasWarningLevel :Vial_4_level_warning;
@@ -1446,7 +1442,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :Vial_5
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_5;
     OntoLab:isFilledWith :ChemicalAmount_For_Dummy_OutputChemical;
     OntoLab:hasMaxLevel :Vial_5_level_max;
     OntoLab:hasWarningLevel :Vial_5_level_warning;
@@ -1495,7 +1490,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :Vial_56
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_56;
     OntoLab:hasMaxLevel :Vial_56_level_max;
     OntoLab:hasWarningLevel :Vial_56_level_warning;
     OntoLab:hasFillLevel :Vial_56_level_fill;
@@ -1543,7 +1537,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :Vial_153
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_153;
     OntoLab:hasMaxLevel :Vial_153_level_max;
     OntoLab:hasWarningLevel :Vial_153_level_warning;
     OntoLab:hasFillLevel :Vial_153_level_fill;
@@ -1591,7 +1584,6 @@ SinglePhase:PhaseComponent_InternalStandard_Property_1_ScalarValue_1
 
 :Vial_216
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_216;
     OntoLab:hasMaxLevel :Vial_216_level_max;
     OntoLab:hasWarningLevel :Vial_216_level_warning;
     OntoLab:hasFillLevel :Vial_216_level_fill;

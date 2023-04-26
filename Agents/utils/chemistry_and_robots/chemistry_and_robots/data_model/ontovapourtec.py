@@ -106,7 +106,6 @@ class PumpSettings(EquipmentSettings):
 
 class Vial(ChemicalContainer):
     clz: str = ONTOLAB_VIAL
-    isHeldIn: str # NOTE here we simplify the implementation to use str instead of the actual AutoSamplerSite
 
 class AutoSamplerSite(BaseOntology):
     clz: str = ONTOVAPOURTEC_AUTOSAMPLERSITE

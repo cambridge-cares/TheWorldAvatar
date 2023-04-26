@@ -692,7 +692,6 @@
 
 :Vial_1
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_1;
     OntoLab:isFilledWith :ChemicalAmount_1;
     OntoLab:hasMaxLevel :Vial_1_level_max;
     OntoLab:hasWarningLevel :Vial_1_level_warning;
@@ -740,7 +739,6 @@
 
 :Vial_2
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_2;
     OntoLab:isFilledWith :ChemicalAmount_2;
     OntoLab:hasMaxLevel :Vial_2_level_max;
     OntoLab:hasWarningLevel :Vial_2_level_warning;
@@ -788,7 +786,6 @@
 
 :Vial_3
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_3;
     OntoLab:isFilledWith :ChemicalAmount_3;
     OntoLab:hasMaxLevel :Vial_3_level_max;
     OntoLab:hasWarningLevel :Vial_3_level_warning;
@@ -836,7 +833,6 @@
 
 :Vial_4
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_4;
     OntoLab:isFilledWith :ChemicalAmount_4;
     OntoLab:hasMaxLevel :Vial_4_level_max;
     OntoLab:hasWarningLevel :Vial_4_level_warning;
@@ -884,7 +880,6 @@
 
 :Vial_5
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_5;
     OntoLab:isFilledWith :ChemicalAmount_5;
     OntoLab:hasMaxLevel :Vial_5_level_max;
     OntoLab:hasWarningLevel :Vial_5_level_warning;
@@ -932,7 +927,6 @@
 
 :Vial_6
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_6;
     OntoLab:isFilledWith :ChemicalAmount_6;
     OntoLab:hasMaxLevel :Vial_6_level_max;
     OntoLab:hasWarningLevel :Vial_6_level_warning;
@@ -980,7 +974,6 @@
 
 :Vial_7
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_7;
     OntoLab:isFilledWith :ChemicalAmount_7;
     OntoLab:hasMaxLevel :Vial_7_level_max;
     OntoLab:hasWarningLevel :Vial_7_level_warning;
@@ -1028,7 +1021,6 @@
 
 :Vial_8
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_8;
     OntoLab:isFilledWith :ChemicalAmount_8;
     OntoLab:hasMaxLevel :Vial_8_level_max;
     OntoLab:hasWarningLevel :Vial_8_level_warning;
@@ -1076,7 +1068,6 @@
 
 :Vial_9
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_9;
     OntoLab:isFilledWith :ChemicalAmount_9;
     OntoLab:hasMaxLevel :Vial_9_level_max;
     OntoLab:hasWarningLevel :Vial_9_level_warning;
@@ -1124,7 +1115,6 @@
 
 :Vial_10
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_10;
     OntoLab:isFilledWith :ChemicalAmount_10;
     OntoLab:hasMaxLevel :Vial_10_level_max;
     OntoLab:hasWarningLevel :Vial_10_level_warning;
@@ -1172,7 +1162,6 @@
 
 :Vial_11
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_11;
     OntoLab:isFilledWith :ChemicalAmount_11;
     OntoLab:hasMaxLevel :Vial_11_level_max;
     OntoLab:hasWarningLevel :Vial_11_level_warning;
@@ -1220,7 +1209,6 @@
 
 :Vial_12
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_12;
     OntoLab:isFilledWith :ChemicalAmount_12;
     OntoLab:hasMaxLevel :Vial_12_level_max;
     OntoLab:hasWarningLevel :Vial_12_level_warning;
@@ -1268,7 +1256,6 @@
 
 :Vial_13
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_13;
     OntoLab:isFilledWith :ChemicalAmount_13;
     OntoLab:hasMaxLevel :Vial_13_level_max;
     OntoLab:hasWarningLevel :Vial_13_level_warning;
@@ -1316,7 +1303,6 @@
 
 :Vial_14
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_14;
     OntoLab:isFilledWith :ChemicalAmount_14;
     OntoLab:hasMaxLevel :Vial_14_level_max;
     OntoLab:hasWarningLevel :Vial_14_level_warning;
@@ -1364,7 +1350,6 @@
 
 :Vial_15
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_15;
     OntoLab:isFilledWith :ChemicalAmount_15;
     OntoLab:hasMaxLevel :Vial_15_level_max;
     OntoLab:hasWarningLevel :Vial_15_level_warning;
@@ -1412,7 +1397,6 @@
 
 :Vial_16
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_16;
     OntoLab:isFilledWith :ChemicalAmount_16;
     OntoLab:hasMaxLevel :Vial_16_level_max;
     OntoLab:hasWarningLevel :Vial_16_level_warning;
@@ -1460,7 +1444,6 @@
 
 :Vial_17
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_17;
     OntoLab:isFilledWith :ChemicalAmount_17;
     OntoLab:hasMaxLevel :Vial_17_level_max;
     OntoLab:hasWarningLevel :Vial_17_level_warning;
@@ -1508,7 +1491,6 @@
 
 :Vial_18
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_18;
     OntoLab:isFilledWith :ChemicalAmount_18;
     OntoLab:hasMaxLevel :Vial_18_level_max;
     OntoLab:hasWarningLevel :Vial_18_level_warning;

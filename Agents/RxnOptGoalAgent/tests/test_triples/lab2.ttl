@@ -857,7 +857,6 @@
 
 :Vial_56
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_56;
     OntoLab:hasMaxLevel :Vial_56_level_max;
     OntoLab:hasWarningLevel :Vial_56_level_warning;
     OntoLab:hasFillLevel :Vial_56_level_fill;

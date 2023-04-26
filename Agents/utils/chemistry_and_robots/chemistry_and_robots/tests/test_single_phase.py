@@ -385,7 +385,6 @@ AUTOSAMPLERSITE_1 = AutoSamplerSite(
                 hasNumericalValue=10.0
             )
         ),
-        isHeldIn='https://example.com/blazegraph/namespace/testlab/dummy_lab/Site_1'
     ),
     locationID='1'
 )
