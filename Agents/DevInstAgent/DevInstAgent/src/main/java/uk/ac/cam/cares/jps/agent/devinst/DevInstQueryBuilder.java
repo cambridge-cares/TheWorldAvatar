@@ -53,8 +53,8 @@ public class DevInstQueryBuilder {
     private static Iri SmartSensor_UUID;
     private static Iri MicroController_UUID;
     private static Map<String, Iri> Sensor_UUID_Map = new HashMap<>();
-    private static Map<String, Iri> SensorComp_UUID_Map = new HashMap<>(); //Is This neccesarry?
-    
+    private static Map<String, Iri> SensorComp_UUID_Map = new HashMap<>();
+    private static Map<String, String> SensorCompToSensorMap = new HashMap<>();
 
     private static Map<String, Iri> Measurement_UUID_Map; //Can one sensor have more than one measurement type?
     private static Map<String, List<Iri>> DerivedToRawMap = new HashMap<>();
@@ -129,6 +129,7 @@ public class DevInstQueryBuilder {
             JSONObject MainSensor = MainSensorMap.getJSONObject(MainSensorName);
             for(String SensorName: MainSensor.keySet()){
                 JSONObject Sensor = MainSensor.getJSONObject(SensorName);
+                SensorCompToSensorMap.put(SensorName, MainSensorName);
 
                 //String Sensor_UUID_String = Sensor.getString("name");
                 //TODO Check IRIMAp first, then if its null, default to oontodevice
@@ -244,12 +245,32 @@ public class DevInstQueryBuilder {
             modify.insert(DerivationWithTimeSeries_UUID.isA(DerivationWithTimeSeries));
         }
 
+        //TODO Add agent instantiation
 
         //Connect properties
         //Connect the microcontroller and sensor instances
 
-        //Connect the sensor instances
+        modify.insert(SmartSensor_UUID.has(consistsOf, MicroController_UUID));
+        for(String SensorName : Sensor_UUID_Map.keySet()){
+            Iri UUID = Sensor_UUID_Map.get(SensorName);
+            modify.insert(SmartSensor_UUID.has(consistsOf, UUID));
+            modify.insert(UUID.has(sendsSignalTo, MicroController_UUID));
+        }
 
+        for(String SensorCompName : SensorCompToSensorMap.keySet()){
+            String MainSensorName = SensorCompToSensorMap.get(SensorCompName);
+            Iri MainSensor_UUID = Sensor_UUID_Map.get(MainSensorName);
+            Iri CompSensor_UUID = SensorComp_UUID_Map.get(SensorCompName);
+
+            modify.insert(MainSensor_UUID.has(consistsOf, CompSensor_UUID));
+
+            Iri Measurement_UUID = Measurement_UUID_Map.get(SensorCompName);
+            modify.insert(CompSensor_UUID.has(measures, Measurement_UUID));
+
+        }
+
+        //Connect the Derived state instances
+        
 
 
     }
