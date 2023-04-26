@@ -16,8 +16,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 
 @Controller
-@WebServlet(urlPatterns = {"/performsewageupdate"})
-
+@WebServlet(urlPatterns = { "/performsewageupdate" })
 
 public class SewerageNetworkAgent extends JPSAgent {
 
@@ -70,10 +69,9 @@ public class SewerageNetworkAgent extends JPSAgent {
 	public static String XSD_BOOLEAN = XSD + "boolean";
 	public static String XSD_INTEGER = XSD + "integer";
 
-
 	@Override
-	public JSONObject processRequestParameters(JSONObject requestParams) {	
-		
+	public JSONObject processRequestParameters(JSONObject requestParams) {
+
 		sparqlendpoint = requestParams.getString(KEY_ENDPOINT);
 		String HG_Path_0 = System.getenv("HGDATA0");
 		String HG_Path_1 = System.getenv("HGDATA1");
@@ -81,7 +79,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 		String HG_Path_3 = System.getenv("HGDATA3");
 		String HG_Path_4 = System.getenv("HGDATA4");
 		String HG_Path_5 = System.getenv("HGDATA5");
-		String HG_Path_6 = System.getenv("HGDATA6");	
+		String HG_Path_6 = System.getenv("HGDATA6");
 		String KG_Path_0 = System.getenv("KGDATA0");
 		String KG_Path_1 = System.getenv("KGDATA1");
 		String KG_Path_2 = System.getenv("KGDATA2");
@@ -92,7 +90,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 		String KG_Path_7 = System.getenv("KGDATA7");
 		String KG_Path_8 = System.getenv("KGDATA8");
 		String KG_Path_9 = System.getenv("KGDATA9");
-		String KG_Path_10 = System.getenv("KGDATA10");		
+		String KG_Path_10 = System.getenv("KGDATA10");
 		String KG_MainNet = System.getenv("KGMainNet");
 		String KG_SubNet = System.getenv("KGSubNet");
 		String BR_Path_0 = System.getenv("Branch0");
@@ -102,29 +100,31 @@ public class SewerageNetworkAgent extends JPSAgent {
 
 		JSONObject jsonMessage = new JSONObject();
 		try {
-			HGInstantiation(HG_Path_0);
-			HGInstantiation(HG_Path_1);
-			HGInstantiation(HG_Path_2);
-			HGInstantiation(HG_Path_3);
-			HGInstantiation(HG_Path_4);
-		    HGInstantiation(HG_Path_5);
-			HGInstantiation(HG_Path_6);
-			KGInstantiation(KG_Path_0);
-			KGInstantiation(KG_Path_1);
-			KGInstantiation(KG_Path_2);
-			KGInstantiation(KG_Path_3);
-			KGInstantiation(KG_Path_4);
-			KGInstantiation(KG_Path_5);
-			KGInstantiation(KG_Path_6);
-			KGInstantiation(KG_Path_7);
-			KGInstantiation(KG_Path_8);
-			KGInstantiation(KG_Path_9);
-			KGInstantiation(KG_Path_10);	
-			BranchInstantiation(BR_Path_0);
-			BranchInstantiation(BR_Path_1);
-			BranchInstantiation(BR_Path_2);
-			BranchInstantiation(BR_Path_3);
-			KGMainSubNetInstantiation(KG_MainNet, KG_SubNet);
+			 HGInstantiation(HG_Path_0);
+			 HGInstantiation(HG_Path_1); 
+			 HGInstantiation(HG_Path_2);
+			 HGInstantiation(HG_Path_3); 
+			 HGInstantiation(HG_Path_4);
+			 HGInstantiation(HG_Path_5); 
+			 HGInstantiation(HG_Path_6);
+			 KGInstantiation(KG_Path_0); 
+			 KGInstantiation(KG_Path_1);
+			 KGInstantiation(KG_Path_2); 
+			 KGInstantiation(KG_Path_3);
+			 KGInstantiation(KG_Path_4); 
+			 KGInstantiation(KG_Path_5);
+			 KGInstantiation(KG_Path_6); 
+			 KGInstantiation(KG_Path_7);
+			 KGInstantiation(KG_Path_8); 
+			 KGInstantiation(KG_Path_9);
+			 KGInstantiation(KG_Path_10); 
+			 BranchInstantiation(BR_Path_0);
+			 BranchInstantiation(BR_Path_1); 
+			 BranchInstantiation(BR_Path_2);
+			 BranchInstantiation(BR_Path_3);
+			 KGMainSubNetInstantiation(KG_MainNet,KG_SubNet);
+			
+			AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y \"None\"} where {?x ?y \"None\"}");
 			jsonMessage.accumulate("Result", "Data has been instantiated.");
 		} catch (JPSRuntimeException e) {
 			LOGGER.error(DATAINSTANTIATION, e);
@@ -142,12 +142,14 @@ public class SewerageNetworkAgent extends JPSAgent {
 			e.printStackTrace();
 		}
 
-		for (int i = 1; i < HG_column_length; i++) { //HG_column_length; i++) {
-			String[] HG_Instance = ReadCol(i, HG_Path, ","); 
+		UpdateBuilder HG_instantiation_ub = new UpdateBuilder();
 
-			// Instantiation HG data	
+		for (int i = 1; i < HG_column_length; i++) { // HG_column_length; i++) {
+			String[] HG_Instance = ReadCol(i, HG_Path, ",");
+
+			// Instantiation HG data
 			String HG_Instance_Name = HG_Instance[0];
-			String HG001 = HG_Instance[1]; 
+			String HG001 = HG_Instance[1];
 			String HG003 = HG_Instance[2];
 			String HG004 = HG_Instance[3];
 			String HG005 = HG_Instance[4];
@@ -159,21 +161,21 @@ public class SewerageNetworkAgent extends JPSAgent {
 			String HG011 = HG_Instance[10];
 			String HG101 = HG_Instance[11];
 			String HG102 = HG_Instance[12];
-			String HG103 = HG_Instance[13]; 
+			String HG103 = HG_Instance[13];
 			String HG104 = HG_Instance[14];
 			String HG107 = HG_Instance[15];
-			String HG108 = HG_Instance[16]; 
-			String HG301 = HG_Instance[17]; 
+			String HG108 = HG_Instance[16];
+			String HG301 = HG_Instance[17];
 			String HG302 = HG_Instance[18];
-			String HG303 = HG_Instance[19]; 
-			String HG304 = HG_Instance[20]; 
-			String HG305 = HG_Instance[21]; 
-			String HG306 = HG_Instance[22]; 
-			String HG307 = HG_Instance[23]; 
-			String HG310 = HG_Instance[24]; 
+			String HG303 = HG_Instance[19];
+			String HG304 = HG_Instance[20];
+			String HG305 = HG_Instance[21];
+			String HG306 = HG_Instance[22];
+			String HG307 = HG_Instance[23];
+			String HG310 = HG_Instance[24];
 			String HG311 = HG_Instance[25];
 			String HG313 = HG_Instance[26];
-			String HG401 = HG_Instance[27]; 
+			String HG401 = HG_Instance[27];
 			String HG402 = HG_Instance[28];
 			String HG403 = HG_Instance[29];
 			String HG404 = HG_Instance[30];
@@ -182,228 +184,552 @@ public class SewerageNetworkAgent extends JPSAgent {
 			String HG500 = HG_Instance[33];
 			String HG_GP002 = HG_Instance[34];
 			String HG_GP001A = HG_Instance[35];
-			String HG_GP001B = HG_Instance[36]; 
+			String HG_GP001B = HG_Instance[36];
 			String HG_GP003A = HG_Instance[37];
-			String HG_GP003B = HG_Instance[38]; 
+			String HG_GP003B = HG_Instance[38];
 			String HG_GP004A = HG_Instance[39];
-			String HG_GP004B = HG_Instance[40]; 
+			String HG_GP004B = HG_Instance[40];
 			String HG_GP007A = HG_Instance[41];
 			String HG_GP007B = HG_Instance[42];
 			String HG_GP008A = HG_Instance[43];
-			String HG_GP008B = HG_Instance[44]; 
-			String HG_GP009A = HG_Instance[45]; 
-			String HG_GP009B = HG_Instance[46]; 
-			String HG_GP010A = HG_Instance[47]; 
+			String HG_GP008B = HG_Instance[44];
+			String HG_GP009A = HG_Instance[45];
+			String HG_GP009B = HG_Instance[46];
+			String HG_GP010A = HG_Instance[47];
 			String HG_GP010B = HG_Instance[48];
 
+			HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE),
+					NodeFactory.createURI(s4watr + "Pipe"));
 
-			UpdateBuilder SewerageComponentHG_ub = 
-					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(s4watr + "Pipe"))
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "componentID"), HG001)		
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "isAssociatedWith"), NodeFactory.createURI(KB + "SewagePlant" + HG108))	
-					.addInsert(NodeFactory.createURI(KB + "SewagePlant" + HG108), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewagePlant"))		
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasUsage"), NodeFactory.createURI(KB + "SewerageUsage" + HG302))
-					.addInsert(NodeFactory.createURI(KB + "SewerageUsage" + HG302), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageUsage"))		
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasSewerageRecords"), NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageRecords"))
-					.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name), NodeFactory.createURI(OS + "hasOwnershipType"), NodeFactory.createURI(KB + "OwnershipType" + HG402))
-					.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name), NodeFactory.createURI(OS + "hasFunctionalState"), NodeFactory.createURI(KB + "FunctionalState" + HG401))
-					.addInsert(NodeFactory.createURI(KB + "OwnershipType" + HG402), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "OwnershipType"))
-					.addInsert(NodeFactory.createURI(KB + "FunctionalState" + HG401), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "FunctionalState"));
-			UpdateRequest SewerageComponentHG_ur = SewerageComponentHG_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, SewerageComponentHG_ur.toString());
-
-
-			UpdateBuilder ConstructionPropertiesHG_ub = 
-					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasConstructionProperties"), NodeFactory.createURI(KB + "ConstructionProperties" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "ConstructionProperties"))
-					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + HG_Instance_Name), NodeFactory.createURI(OS + "constructionYear"), HG303)
-					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + HG_Instance_Name), NodeFactory.createURI(BMO + "hasMaterial"), NodeFactory.createURI(KB + "Material" + HG304))
-					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + HG_Instance_Name), NodeFactory.createURI(OS + "hasChannelType"), NodeFactory.createURI(KB + "ChannelType" + HG301))
-					.addInsert(NodeFactory.createURI(KB + "Material" + HG304), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(BMO + "Material"))
-					.addInsert(NodeFactory.createURI(KB + "ChannelType" + HG301), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "ChannelType"));
-			UpdateRequest ConstructionPropertiesHG_ur = ConstructionPropertiesHG_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, ConstructionPropertiesHG_ur.toString());
-
-            
-			if (HG003.equals("None")) {	
-			} else {
-			UpdateBuilder BranchConnectionHG_ub = 
-					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + "BranchConnection" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "BranchConnection"))	
-					.addInsert(NodeFactory.createURI(KB + "BranchConnection" + HG_Instance_Name), NodeFactory.createURI(OS + "isInFlowDirection"), HG008)			
-					.addInsert(NodeFactory.createURI(KB + "BranchConnection" + HG_Instance_Name), NodeFactory.createURI(OS + "clockPositionOfBranchPipe"), HG009)			
-					.addInsert(NodeFactory.createURI(KB + "BranchConnection" + HG_Instance_Name), NodeFactory.createURI(OS + "relativeDistanceOnMainPipe"), NodeFactory.createURI(KB + "DistanceOnMainPipe" + "BranchConnection" + HG_Instance_Name))			
-					.addInsert(NodeFactory.createURI(KB + "DistanceOnMainPipe" + "BranchConnection" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DISTANCE));
-			UpdateRequest BranchConnectionHG_ur = BranchConnectionHG_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, BranchConnectionHG_ur.toString());
-			omHasValue("DistanceOnMainPipe" + "BranchConnection" + HG_Instance_Name, "metre", HG007);
+			if (!HG001.equals("None")) {
+				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + HG_Instance_Name),
+						NodeFactory.createURI(OS + "componentID"), HG001);
 			}
 
+			if (!HG108.equals("None")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name),
+								NodeFactory.createURI(OS + "isAssociatedWith"),
+								NodeFactory.createURI(KB + HG_Instance_Name + "SewagePlant" + HG108))
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name + "SewagePlant" + HG108),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewagePlant"));
+			}
 
-			UpdateBuilder CrossSectionHG_ub = 
-					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasCrossSection"), NodeFactory.createURI(KB + "CrossSection" + HG_Instance_Name))		
-					.addInsert(NodeFactory.createURI(KB + "CrossSection" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "CrossSection"))			
-					.addInsert(NodeFactory.createURI(KB + "CrossSection" + HG_Instance_Name), NodeFactory.createURI(OS + "hasShape"), NodeFactory.createURI(KB + "Shape" + HG305))
-					.addInsert(NodeFactory.createURI(KB + "Shape" + HG305), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "Shape"))
-					.addInsert(NodeFactory.createURI(KB + "CrossSection" + HG_Instance_Name), NodeFactory.createURI(OS + "hasHeight"), NodeFactory.createURI(KB + "Height" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Height" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT))
-					.addInsert(NodeFactory.createURI(KB + "CrossSection" + HG_Instance_Name), NodeFactory.createURI(OS + "hasWidth"), NodeFactory.createURI(KB + "Width" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Width" +  HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_WIDTH));		
-			UpdateRequest CrossSectionHG_ur = CrossSectionHG_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, CrossSectionHG_ur.toString());
-			omHasValue("Height" + HG_Instance_Name, "millimetre", HG307);		
-			omHasValue("Width"  + HG_Instance_Name, "millimetre", HG306);	
+			if (HG302.equals("PressureDrainage") || HG302.equals("MixedProcess") || HG302.equals("RainWater")
+					|| HG302.equals("WasteWater") || HG302.equals("StreetDrainage") || HG302.equals("PreFlood")
+					|| HG302.equals("WaterPipe")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasUsage"),
+								NodeFactory.createURI(KB + HG_Instance_Name + "SewerageUsage" + HG302))
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name + "SewerageUsage" + HG302),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + HG302));
+			}
 
+			if (!HG401.equals("None") || !HG402.equals("None")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name),
+								NodeFactory.createURI(OS + "hasSewerageRecords"),
+								NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageRecords"));
 
-			UpdateBuilder SewerageFluidHG_ub = 
-					new UpdateBuilder()	
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "usedFor"), NodeFactory.createURI(KB + "SewerageFluid" + HG500))
-					.addInsert(NodeFactory.createURI(KB + "SewerageFluid" + HG500), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageFluid"))
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasConnectionID"), HG011)
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasSourceID"), HG005)
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasPipeType"), NodeFactory.createURI(KB + "PipeType" + HG313))
-					.addInsert(NodeFactory.createURI(KB + "PipeType" + HG313), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "PipeType"))
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasInclination"), NodeFactory.createURI(KB + "Inclination" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Inclination" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "Inclination"))
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasLength"), NodeFactory.createURI(KB + "Length" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Length" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_LENGTH))
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasWallThickness"), NodeFactory.createURI(KB + "WallThickness" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "WallThickness" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_THICKNESS));
-			UpdateRequest SewerageFluidHG_ur = SewerageFluidHG_ub.buildRequest(); 
-			AccessAgentCaller.updateStore(sparqlendpoint, SewerageFluidHG_ur.toString());
-			omHasValue("Inclination" + HG_Instance_Name, "Percentage", HG311);		
-			omHasValue("Length" + HG_Instance_Name, "metre", HG310);	
-			omHasValue("Thickness" + HG_Instance_Name, "metre", HG410);	
-			AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/PipeTypeOther>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/PipeTypeOther>}");
+				if (HG402.equals("Public") || HG402.equals("Private") || HG402.equals("City")) {
+					HG_instantiation_ub
+							.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name),
+									NodeFactory.createURI(OS + "hasOwnershipType"),
+									NodeFactory.createURI(KB + HG_Instance_Name + "OwnershipType" + HG402))
+							.addInsert(NodeFactory.createURI(KB + HG_Instance_Name + "OwnershipType" + HG402),
+									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + HG402));
+				}
 
+				if (HG401.equals("Constructed") || HG402.equals("Stock") || HG402.equals("OutOfService")
+						|| HG402.equals("Planning") || HG402.equals("Insulated")) {
+					HG_instantiation_ub
+							.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name),
+									NodeFactory.createURI(OS + "hasFunctionalState"),
+									NodeFactory.createURI(KB + HG_Instance_Name + "FunctionalState" + HG401))
+							.addInsert(NodeFactory.createURI(KB + HG_Instance_Name + "FunctionalState" + HG401),
+									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + HG401));
+				}
 
-			UpdateBuilder ConnectionPropertiesHG_ub = 
-					new UpdateBuilder()	
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasConnectionProperties"), NodeFactory.createURI(KB + "ConnectionProperties" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "ConnectionProperties" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "ConnectionProperties"))
-					.addInsert(NodeFactory.createURI(KB + "ConnectionProperties" + HG_Instance_Name), NodeFactory.createURI(OS + "hasUpstreamConnector"), HG003)
-					.addInsert(NodeFactory.createURI(KB + "ConnectionProperties" + HG_Instance_Name), NodeFactory.createURI(OS + "hasDownstreamConnector"), HG004)
-					.addInsert(NodeFactory.createURI(KB + "ConnectionProperties" + HG_Instance_Name), NodeFactory.createURI(OS + "hasEndpointObject"), HG006)
-					.addInsert(NodeFactory.createURI(KB + "ConnectionProperties" + HG_Instance_Name), NodeFactory.createURI(OS + "hasEndpointType"), NodeFactory.createURI(KB + "hasEndpointType" + HG010))
-					.addInsert(NodeFactory.createURI(KB + "hasEndpointType" + HG010), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "EndpointType"));
-			UpdateRequest ConnectionPropertiesHG_ur = ConnectionPropertiesHG_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, ConnectionPropertiesHG_ur.toString());
+			}
 
+			if (!HG303.equals("None") || !HG304.equals("None") || !HG301.equals("None")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name),
+								NodeFactory.createURI(OS + "hasConstructionProperties"),
+								NodeFactory.createURI(KB + "ConstructionProperties" + HG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + HG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "ConstructionProperties"));
 
-			UpdateBuilder LocationInletHG_ub = 
-					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasInletLocation"), NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "location"))
-					.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name), NodeFactory.createURI(OS + "isInWaterProtectionZone"), HG403)
-					.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name), NodeFactory.createURI(OS + "isInFloodplane"), HG406)
-					.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name), NodeFactory.createURI(OS + "isAssociatedWith"), NodeFactory.createURI(KB + "AssociatedInfrastructure" + HG404))
-					.addInsert(NodeFactory.createURI(KB + "AssociatedInfrastructure" + HG404), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "AssociatedInfrastructure"))  
-					.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinates"), NodeFactory.createURI(KB + "GeoCoordinateI" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "GeoCoordinateI" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "GeoCoordinates"))   	
-					.addInsert(NodeFactory.createURI(KB + "GeoCoordinateI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasPositionAccuracy"), HG_GP008A)	
-					.addInsert(NodeFactory.createURI(KB + "GeoCoordinateI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinateReference"), HG_GP002)		
-					.addInsert(NodeFactory.createURI(KB + "GeoCoordinateI" + HG_Instance_Name), NodeFactory.createURI(ogc + "asWKT"), "POINT("+HG_GP003A+","+HG_GP004A+")^^ogc:wktLiteral")
-					.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasPointDesignation"), HG_GP001A)
-					.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevation"), NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name))	
-					.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "elevation"))   
-					.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationReference"), HG_GP010A)
-					.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAccuracy"), HG_GP009A)
-					.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAboveSeaLevel"), NodeFactory.createURI(KB + "ElevationHeightI" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "ElevationHeightI" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT))
-					.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCatchmentAreaKey"), HG107)
-					.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name), NodeFactory.createURI(sio + "SIO_000061"), NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(juso + "District"))
-					.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name), NodeFactory.createURI(OS + "hasDistrictReference"), HG103)
-					.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name), NodeFactory.createURI(OS + "hasDistrictName"), HG104)   
-					.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name), NodeFactory.createURI(sio + "SIO_000061"), NodeFactory.createURI(KB + "Street" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(juso + "Street"))
-					.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name), NodeFactory.createURI(OS + "hasStreetReference"), HG101)
-					.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name), NodeFactory.createURI(OS + "hasStreetName"), HG102);
-			UpdateRequest LocationInletHG_ur = LocationInletHG_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, LocationInletHG_ur.toString()); 
-			omHasValue("ElevationHeightI" + HG_Instance_Name, "metre", HG_GP007A);	
+				if (!HG303.equals("None")) {
+					HG_instantiation_ub.addInsert(
+							NodeFactory.createURI(KB + "ConstructionProperties" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "constructionYear"), HG303);
+				}
 
+				if (HG304.equals("Concrete") || HG304.equals("PolyvinylChlorideHard")
+						|| HG304.equals("ReinforcedConcrete") || HG304.equals("Stoneware")
+						|| HG304.equals("GrayCastIron")) {
+					HG_instantiation_ub
+							.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + HG_Instance_Name),
+									NodeFactory.createURI(BMO + "hasMaterial"),
+									NodeFactory.createURI(KB + HG_Instance_Name + "Material" + HG304))
+							.addInsert(NodeFactory.createURI(KB + HG_Instance_Name + "Material" + HG304),
+									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(BMO + HG304));
+				}
 
-			UpdateBuilder LocationOutletHG_ub = 
-					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "hasOutletLocation"), NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "location"))
-					.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name), NodeFactory.createURI(OS + "isInWaterProtectionZone"), HG403)
-					.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name), NodeFactory.createURI(OS + "isInFloodplane"), HG406)
-					.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name), NodeFactory.createURI(OS + "isAssociatedWith"), NodeFactory.createURI(KB + "AssociatedInfrastructure" + HG404))
-					.addInsert(NodeFactory.createURI(KB + "AssociatedInfrastructure" + HG404), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "AssociatedInfrastructure"))  
-					.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinates"), NodeFactory.createURI(KB + "GeoCoordinateO" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "GeoCoordinateO" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "GeoCoordinates"))   	
-					.addInsert(NodeFactory.createURI(KB + "GeoCoordinateO" + HG_Instance_Name), NodeFactory.createURI(OS + "hasPositionAccuracy"), HG_GP008B)	
-					.addInsert(NodeFactory.createURI(KB + "GeoCoordinateO" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinateReference"), HG_GP002)		
-					.addInsert(NodeFactory.createURI(KB + "GeoCoordinateO" + HG_Instance_Name), NodeFactory.createURI(ogc + "asWKT"), "POINT("+HG_GP003B+","+HG_GP004B+")^^ogc:wktLiteral")
-					.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name), NodeFactory.createURI(OS + "hasPointDesignation"), HG_GP001B)
-					.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevation"), NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name))	
-					.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "elevation"))   
-					.addInsert(NodeFactory.createURI(KB + "ElevationOn" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationReference"), HG_GP010B)
-					.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAccuracy"), HG_GP009B)
-					.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAboveSeaLevel"), NodeFactory.createURI(KB + "ElevationHeightO" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "ElevationHeightO" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT))	
-					.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name), NodeFactory.createURI(OS + "hasCatchmentAreaKey"), HG107)
-					.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name), NodeFactory.createURI(sio + "SIO_000061"), NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(juso + "District"))
-					.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name), NodeFactory.createURI(OS + "hasDistrictReference"), HG103)
-					.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name), NodeFactory.createURI(OS + "hasDistrictName"), HG104)   
-					.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name), NodeFactory.createURI(sio + "SIO_000061"), NodeFactory.createURI(KB + "Street" + HG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(juso + "Street"))
-					.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name), NodeFactory.createURI(OS + "hasStreetReference"), HG101)
-					.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name), NodeFactory.createURI(OS + "hasStreetName"), HG102);
-			UpdateRequest LocationOutletHG_ur = LocationOutletHG_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, LocationOutletHG_ur.toString());   
-			omHasValue("ElevationHeightO" + HG_Instance_Name, "metre", HG_GP007B);
+				if (HG301.equals("Penstock") || HG301.equals("OpenGravityPipeline")
+						|| HG301.equals("ClosedGravityPipeline")) {
+					HG_instantiation_ub
+							.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + HG_Instance_Name),
+									NodeFactory.createURI(OS + "hasChannelType"),
+									NodeFactory.createURI(KB + HG_Instance_Name + "ChannelType" + HG301))
+							.addInsert(NodeFactory.createURI(KB + HG_Instance_Name + "ChannelType" + HG301),
+									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + HG301));
+				}
+			}
 
+			if (!HG003.equals("None")) {
+				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "BranchConnection" + HG_Instance_Name),
+						NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "BranchConnection"));
+
+				if (!HG008.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "BranchConnection" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "isInFlowDirection"), HG008);
+				}
+
+				if (!HG009.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "BranchConnection" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "clockPositionOfBranchPipe"), HG009);
+				}
+
+				if (!HG007.equals("None")) {
+					HG_instantiation_ub
+							.addInsert(NodeFactory.createURI(KB + "BranchConnection" + HG_Instance_Name),
+									NodeFactory.createURI(OS + "relativeDistanceOnMainPipe"),
+									NodeFactory.createURI(
+											KB + "DistanceOnMainPipe" + "BranchConnection" + HG_Instance_Name))
+							.addInsert(
+									NodeFactory.createURI(
+											KB + "DistanceOnMainPipe" + "BranchConnection" + HG_Instance_Name),
+									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DISTANCE));
+					HG_instantiation_ub = omHasValue("DistanceOnMainPipe" + "BranchConnection" + HG_Instance_Name,
+							"metre", HG007, HG_instantiation_ub);
+				}
+			}
+
+			if (!HG305.equals("None") || !HG306.equals("None") || !HG307.equals("None")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name),
+								NodeFactory.createURI(OS + "hasCrossSection"),
+								NodeFactory.createURI(KB + "CrossSection" + HG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "CrossSection" + HG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "CrossSection"));
+
+				if (HG305.equals("EggShaped") || HG305.equals("OpenTrench") || HG305.equals("SemiCircle")
+						|| HG305.equals("Circle") || HG305.equals("Rectangle") || HG305.equals("Square")
+						|| HG305.equals("Round") || HG305.equals("Angular")) {
+					HG_instantiation_ub
+							.addInsert(NodeFactory.createURI(KB + "CrossSection" + HG_Instance_Name),
+									NodeFactory.createURI(OS + "hasShape"),
+									NodeFactory.createURI(KB + HG_Instance_Name + "Shape" + HG305))
+							.addInsert(NodeFactory.createURI(KB + HG_Instance_Name + "Shape" + HG305),
+									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + HG305));
+				}
+
+				if (!HG307.equals("None")) {
+					HG_instantiation_ub
+							.addInsert(NodeFactory.createURI(KB + "CrossSection" + HG_Instance_Name),
+									NodeFactory.createURI(OS + "hasHeight"),
+									NodeFactory.createURI(KB + "Height" + HG_Instance_Name))
+							.addInsert(NodeFactory.createURI(KB + "Height" + HG_Instance_Name),
+									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT));
+					HG_instantiation_ub = omHasValue("Height" + HG_Instance_Name, "millimetre", HG307,
+							HG_instantiation_ub);
+				}
+
+				if (!HG306.equals("None")) {
+					HG_instantiation_ub
+							.addInsert(NodeFactory.createURI(KB + "CrossSection" + HG_Instance_Name),
+									NodeFactory.createURI(OS + "hasWidth"),
+									NodeFactory.createURI(KB + "Width" + HG_Instance_Name))
+							.addInsert(NodeFactory.createURI(KB + "Width" + HG_Instance_Name),
+									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_WIDTH));
+					HG_instantiation_ub = omHasValue("Width" + HG_Instance_Name, "millimetre", HG306,
+							HG_instantiation_ub);
+				}
+
+			}
+
+			if (HG500.equals("RainWater") || HG500.equals("DomesticWasteWater")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "usedFor"),
+								NodeFactory.createURI(KB + HG_Instance_Name + "SewerageFluid" + HG500))
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name + "SewerageFluid" + HG500),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + HG500));
+			}
+
+			if (!HG011.equals("None")) {
+				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + HG_Instance_Name),
+						NodeFactory.createURI(OS + "hasConnectionID"), HG011);
+			}
+
+			if (!HG005.equals("None")) {
+				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + HG_Instance_Name),
+						NodeFactory.createURI(OS + "hasSourceID"), HG005);
+			}
+
+			if (HG313.equals("ConnectionLine") || HG313.equals("Pipe") || HG313.equals("ConnectingDuct")
+					|| HG313.equals("ReliefLine")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name),
+								NodeFactory.createURI(OS + "hasPipeType"),
+								NodeFactory.createURI(KB + HG_Instance_Name + "PipeType" + HG313))
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name + "PipeType" + HG313),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + HG313));
+			}
+
+			if (!HG311.equals("None")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name),
+								NodeFactory.createURI(OS + "hasInclination"),
+								NodeFactory.createURI(KB + "Inclination" + HG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "Inclination" + HG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "Inclination"));
+				HG_instantiation_ub = omHasValue("Inclination" + HG_Instance_Name, "Percentage", HG311,
+						HG_instantiation_ub);
+			}
+
+			if (!HG310.equals("None")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name),
+								NodeFactory.createURI(OS + "hasLength"),
+								NodeFactory.createURI(KB + "Length" + HG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "Length" + HG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_LENGTH));
+				HG_instantiation_ub = omHasValue("Length" + HG_Instance_Name, "metre", HG310, HG_instantiation_ub);
+			}
+
+			if (!HG410.equals("None")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name),
+								NodeFactory.createURI(OS + "hasWallThickness"),
+								NodeFactory.createURI(KB + "WallThickness" + HG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "WallThickness" + HG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_THICKNESS));
+				HG_instantiation_ub = omHasValue("Thickness" + HG_Instance_Name, "metre", HG410, HG_instantiation_ub);
+			}
+
+			if (!HG003.equals("None") || !HG004.equals("None") || !HG006.equals("None") || !HG010.equals("None")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name),
+								NodeFactory.createURI(OS + "hasConnectionProperties"),
+								NodeFactory.createURI(KB + "ConnectionProperties" + HG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "ConnectionProperties" + HG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "ConnectionProperties"));
+
+				if (!HG003.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "ConnectionProperties" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasUpstreamConnector"), HG003);
+				}
+
+				if (!HG004.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "ConnectionProperties" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasDownstreamConnector"), HG004);
+				}
+
+				if (!HG006.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "ConnectionProperties" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasEndpointObject"), HG006);
+				}
+
+				if (HG010.equals("PropertyConnection") || HG010.equals("StreetInlet")
+						|| HG010.equals("ManholeEndpoint")) {
+					HG_instantiation_ub
+							.addInsert(NodeFactory.createURI(KB + "ConnectionProperties" + HG_Instance_Name),
+									NodeFactory.createURI(OS + "hasEndpointType"),
+									NodeFactory.createURI(KB + HG_Instance_Name + "hasEndpointType" + HG010))
+							.addInsert(NodeFactory.createURI(KB + HG_Instance_Name + "hasEndpointType" + HG010),
+									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + HG010));
+				}
+			}
+
+			HG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasInletLocation"),
+							NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name),
+							NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "location"));
+
+			if (!HG403.equals("None")) {
+				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name),
+						NodeFactory.createURI(OS + "isInWaterProtectionZone"), HG403);
+			}
+
+			if (!HG406.equals("None")) {
+				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name),
+						NodeFactory.createURI(OS + "isInFloodplane"), HG406);
+			}
+
+			if (HG404.equals("Terrain") || HG404.equals("SideWalk") || HG404.equals("MainRoad")
+					|| HG404.equals("SideRoad") || HG404.equals("PrivateProperty")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name),
+								NodeFactory.createURI(OS + "isAssociatedWith"),
+								NodeFactory.createURI(KB + HG_Instance_Name + "AssociatedInfrastructure" + HG404))
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name + "AssociatedInfrastructure" + HG404),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + HG404));
+			}
+
+			if (!HG_GP008A.equals("None") || !HG_GP002.equals("None") || !HG_GP003A.equals("None")
+					|| !HG_GP004A.equals("None")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name),
+								NodeFactory.createURI(OS + "hasCoordinates"),
+								NodeFactory.createURI(KB + "GeoCoordinateI" + HG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "GeoCoordinateI" + HG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "GeoCoordinates"));
+
+				if (!HG_GP008A.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "GeoCoordinateI" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasPositionAccuracy"), HG_GP008A);
+				}
+
+				if (!HG_GP002.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "GeoCoordinateI" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasCoordinateReference"), HG_GP002);
+				}
+
+				if (!HG_GP003A.equals("None") && !HG_GP004A.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "GeoCoordinateI" + HG_Instance_Name),
+							NodeFactory.createURI(ogc + "asWKT"),
+							"POINT(" + HG_GP003A + "," + HG_GP004A + ")^^ogc:wktLiteral");
+				}
+			}
+
+			if (!HG_GP001A.equals("None")) {
+				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name),
+						NodeFactory.createURI(OS + "hasPointDesignation"), HG_GP001A);
+			}
+
+			if (!HG_GP010A.equals("None") || !HG_GP009A.equals("None") || !HG_GP007A.equals("None")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name),
+								NodeFactory.createURI(OS + "hasElevation"),
+								NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "elevation"));
+
+				if (!HG_GP010A.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasElevationReference"), HG_GP010A);
+				}
+
+				if (!HG_GP009A.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasElevationAccuracy"), HG_GP009A);
+				}
+
+				if (!HG_GP007A.equals("None")) {
+					HG_instantiation_ub
+							.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name),
+									NodeFactory.createURI(OS + "hasElevationAboveSeaLevel"),
+									NodeFactory.createURI(KB + "ElevationHeightI" + HG_Instance_Name))
+							.addInsert(NodeFactory.createURI(KB + "ElevationHeightI" + HG_Instance_Name),
+									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT));
+					HG_instantiation_ub = omHasValue("ElevationHeightI" + HG_Instance_Name, "metre", HG_GP007A,
+							HG_instantiation_ub);
+				}
+			}
+
+			if (!HG107.equals("None")) {
+				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name),
+						NodeFactory.createURI(OS + "hasCatchmentAreaKey"), HG107);
+			}
+
+			if (!HG103.equals("None") || !HG104.equals("None")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name),
+								NodeFactory.createURI(sio + "SIO_000061"),
+								NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(juso + "District"));
+
+				if (!HG103.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasDistrictReference"), HG103);
+				}
+
+				if (!HG104.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasDistrictName"), HG104);
+				}
+			}
+
+			if (!HG101.equals("None") || !HG102.equals("None")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name),
+								NodeFactory.createURI(sio + "SIO_000061"),
+								NodeFactory.createURI(KB + "Street" + HG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(juso + "Street"));
+
+				if (!HG101.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasStreetReference"), HG101);
+				}
+
+				if (!HG102.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasStreetName"), HG102);
+				}
+			}
+
+			HG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasOutletLocation"),
+							NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name),
+							NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "location"));
+
+			if (!HG403.equals("None")) {
+				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name),
+						NodeFactory.createURI(OS + "isInWaterProtectionZone"), HG403);
+			}
+
+			if (!HG406.equals("None")) {
+				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name),
+						NodeFactory.createURI(OS + "isInFloodplane"), HG406);
+			}
+
+			if (HG404.equals("Terrain") || HG404.equals("SideWalk") || HG404.equals("MainRoad")
+					|| HG404.equals("SideRoad") || HG404.equals("PrivateProperty")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name),
+								NodeFactory.createURI(OS + "isAssociatedWith"),
+								NodeFactory.createURI(KB + HG_Instance_Name + "AssociatedInfrastructure" + HG404))
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name + "AssociatedInfrastructure" + HG404),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + HG404));
+			}
+
+			if (!HG_GP008B.equals("None") || !HG_GP002.equals("None") || !HG_GP003B.equals("None")
+					|| !HG_GP004B.equals("None")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name),
+								NodeFactory.createURI(OS + "hasCoordinates"),
+								NodeFactory.createURI(KB + "GeoCoordinateO" + HG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "GeoCoordinateO" + HG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "GeoCoordinates"));
+
+				if (!HG_GP008B.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "GeoCoordinateO" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasPositionAccuracy"), HG_GP008B);
+				}
+
+				if (!HG_GP002.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "GeoCoordinateO" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasCoordinateReference"), HG_GP002);
+				}
+
+				if (!HG_GP003B.equals("None") && !HG_GP004B.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "GeoCoordinateO" + HG_Instance_Name),
+							NodeFactory.createURI(ogc + "asWKT"),
+							"POINT(" + HG_GP003B + "," + HG_GP004B + ")^^ogc:wktLiteral");
+				}
+			}
+
+			if (!HG_GP001B.equals("None")) {
+				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name),
+						NodeFactory.createURI(OS + "hasPointDesignation"), HG_GP001B);
+			}
+
+			if (!HG_GP010B.equals("None") || !HG_GP009B.equals("None") || !HG_GP007B.equals("None")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name),
+								NodeFactory.createURI(OS + "hasElevation"),
+								NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "elevation"));
+
+				if (!HG_GP010B.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "ElevationOn" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasElevationReference"), HG_GP010B);
+				}
+
+				if (!HG_GP009B.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasElevationAccuracy"), HG_GP009B);
+				}
+
+				if (!HG_GP007B.equals("None")) {
+					HG_instantiation_ub
+							.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name),
+									NodeFactory.createURI(OS + "hasElevationAboveSeaLevel"),
+									NodeFactory.createURI(KB + "ElevationHeightO" + HG_Instance_Name))
+							.addInsert(NodeFactory.createURI(KB + "ElevationHeightO" + HG_Instance_Name),
+									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT));
+					HG_instantiation_ub = omHasValue("ElevationHeightO" + HG_Instance_Name, "metre", HG_GP007B,
+							HG_instantiation_ub);
+				}
+			}
+
+			if (!HG107.equals("None")) {
+				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name),
+						NodeFactory.createURI(OS + "hasCatchmentAreaKey"), HG107);
+			}
+
+			if (!HG103.equals("None") || !HG104.equals("None")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name),
+								NodeFactory.createURI(sio + "SIO_000061"),
+								NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(juso + "District"));
+
+				if (!HG103.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasDistrictReference"), HG103);
+				}
+
+				if (!HG104.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasDistrictName"), HG104);
+				}
+			}
+
+			if (!HG101.equals("None") || !HG102.equals("None")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name),
+								NodeFactory.createURI(sio + "SIO_000061"),
+								NodeFactory.createURI(KB + "Street" + HG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(juso + "Street"));
+
+				if (!HG101.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasStreetReference"), HG101);
+				}
+
+				if (!HG102.equals("None")) {
+					HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name),
+							NodeFactory.createURI(OS + "hasStreetName"), HG102);
+				}
+			}
 
 			if (HG006.equals("None")) {
-				UpdateBuilder MainNetworkHG_ub = 
-						new UpdateBuilder()
-						.addInsert(NodeFactory.createURI(KB + "MainNetwork"), NodeFactory.createURI(hasPart), NodeFactory.createURI(KB + HG_Instance_Name));
-				UpdateRequest MainNetworkHG_ur = MainNetworkHG_ub.buildRequest();
-				AccessAgentCaller.updateStore(sparqlendpoint, MainNetworkHG_ur.toString());   
+				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "MainNetwork"), NodeFactory.createURI(hasPart),
+						NodeFactory.createURI(KB + HG_Instance_Name));
 			} else {
-				UpdateBuilder SubNetworkHG_ub = 
-						new UpdateBuilder()
-						.addInsert(NodeFactory.createURI(KB + "SubNetwork"), NodeFactory.createURI(hasPart), NodeFactory.createURI(KB + HG_Instance_Name));
-				UpdateRequest SubNetworkHG_ur = SubNetworkHG_ub.buildRequest();
-				AccessAgentCaller.updateStore(sparqlendpoint, SubNetworkHG_ur.toString()); 
+				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "SubNetwork"), NodeFactory.createURI(hasPart),
+						NodeFactory.createURI(KB + HG_Instance_Name));
 			}
 		}
 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y \"None\"} where {?x ?y \"None\"}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/hasEndpointTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/hasEndpointTypeNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/hasEndpointTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/hasEndpointTypeNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ShapeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShapeNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ClassNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ClassNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ChannelTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ChannelTypeNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ChannelTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ChannelTypeNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewagePlantNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewagePlantNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewagePlantNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewagePlantNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShaftTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShaftTypeNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ShaftTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShaftTypeNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y \"POINT(None,None)^^ogc:wktLiteral\"} where {?x ?y \"POINT(None,None)^^ogc:wktLiteral\"}");
-		}
-	
-		
+		UpdateRequest HG_instantiation_ur = HG_instantiation_ub.buildRequest();
+		AccessAgentCaller.updateStore(sparqlendpoint, HG_instantiation_ur.toString());
+	}
+
 	public static void KGInstantiation(String KG_Path) {
 		int KG_column_length = 0;
 		try {
@@ -411,12 +737,14 @@ public class SewerageNetworkAgent extends JPSAgent {
 		} catch (java.io.IOException e) {
 			e.printStackTrace();
 		}
+		
+		UpdateBuilder KG_instantiation_ub = new UpdateBuilder();
 
-		for (int i = 1; i < KG_column_length; i++) { //KG_column_length; i++) {
-			String[] KG_Instance = ReadCol(i, KG_Path, ","); 
+		for (int i = 1; i < KG_column_length; i++) { // KG_column_length; i++) {
+			String[] KG_Instance = ReadCol(i, KG_Path, ",");
 
 			// Instantiation KG data
-			String KG_Instance_Name = KG_Instance[0];	
+			String KG_Instance_Name = KG_Instance[0];
 			String KG001 = KG_Instance[1];
 			String KG108 = KG_Instance[2];
 			String KG211 = KG_Instance[3];
@@ -440,472 +768,428 @@ public class SewerageNetworkAgent extends JPSAgent {
 			String KG403 = KG_Instance[21];
 			String KG404 = KG_Instance[22];
 			String KG406 = KG_Instance[23];
-			String KG_GP001 = KG_Instance[24];; 
+			String KG_GP001 = KG_Instance[24];
 			String KG_GP002 = KG_Instance[25];
 			String KG_GP010 = KG_Instance[26];
 			String KG_GP003A = KG_Instance[27];
 			String KG_GP003B = KG_Instance[28];
 			String KG_GP004A = KG_Instance[29];
 			String KG_GP004B = KG_Instance[30];
-			String KG_GP007A = KG_Instance[31]; 
+			String KG_GP007A = KG_Instance[31];
 			String KG_GP007B = KG_Instance[32];
 			String KG_GP008A = KG_Instance[33];
 			String KG_GP008B = KG_Instance[34];
 			String KG_GP009A = KG_Instance[35];
 			String KG_GP009B = KG_Instance[36];
 
-
-			UpdateBuilder SewerageComponentKG_ub = 
-					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(s4watr + "Manhole"))
-					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "componentID"), KG001)	
-					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "isAssociatedWith"), NodeFactory.createURI(KB + "SewagePlant" + KG108))	
-					.addInsert(NodeFactory.createURI(KB + "SewagePlant" + KG108), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewagePlant"))	
-					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "hasUsage"), NodeFactory.createURI(KB + "SewerageUsage" + KG302))
-					.addInsert(NodeFactory.createURI(KB + "SewerageUsage" + KG302), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageUsage"))		
-					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "hasSewerageRecords"), NodeFactory.createURI(KB + "SewerageRecords" + KG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageRecords"))	
-					.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + KG_Instance_Name), NodeFactory.createURI(OS + "hasOwnershipType"), NodeFactory.createURI(KB + "OwnershipType" + KG402))
-					.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + KG_Instance_Name), NodeFactory.createURI(OS + "hasFunctionalState"), NodeFactory.createURI(KB + "FunctionalState" + KG401))
-					.addInsert(NodeFactory.createURI(KB + "OwnershipType" + KG402), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "OwnershipType"))
-					.addInsert(NodeFactory.createURI(KB + "FunctionalState" + KG401), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "FunctionalState"));
-			UpdateRequest SewerageComponentKG_ur = SewerageComponentKG_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, SewerageComponentKG_ur.toString());
-
-
-			UpdateBuilder ConstructionPropertiesKG_ub = 
-					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "hasConstructionProperties"), NodeFactory.createURI(KB + "ConstructionProperties" + KG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "ConstructionProperties"))
-					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + KG_Instance_Name), NodeFactory.createURI(OS + "constructionYear"), KG303)
-					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + KG_Instance_Name), NodeFactory.createURI(BMO + "hasMaterial"), NodeFactory.createURI(KB + "Material" + KG304))
-					.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + KG_Instance_Name), NodeFactory.createURI(OS + "hasChannelType"), NodeFactory.createURI(KB + "ChannelType" + KG301))
-					.addInsert(NodeFactory.createURI(KB + "Material" + KG304), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(BMO + "Material"))
-					.addInsert(NodeFactory.createURI(KB + "ChannelType" + KG301), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "ChannelType"));
-			UpdateRequest ConstructionPropertiesKG_ur = ConstructionPropertiesKG_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, ConstructionPropertiesKG_ur.toString());
-
-
-			UpdateBuilder FlumeKG_ub = 
-					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "hasStructureType"), NodeFactory.createURI(KB + "StructureType" + KG306))
-					.addInsert(NodeFactory.createURI(KB + "StructureType" + KG306), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "StructureType"))
-					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "hasFlume"), NodeFactory.createURI(KB + "Flume" + KG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Flume" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "Flume"))
-					.addInsert(NodeFactory.createURI(KB + "Flume" + KG_Instance_Name), NodeFactory.createURI(OS + "hasShape"), NodeFactory.createURI(KB + "Shape" + KG316))
-					.addInsert(NodeFactory.createURI(KB + "Shape" + KG316), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "Shape"))
-					.addInsert(NodeFactory.createURI(KB + "Flume" + KG_Instance_Name), NodeFactory.createURI(OS + "hasLength"), NodeFactory.createURI(KB + "Length" + "Flume" + KG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Length" + "Flume" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_LENGTH))
-					.addInsert(NodeFactory.createURI(KB + "Flume" + KG_Instance_Name), NodeFactory.createURI(OS + "hasWidth"), NodeFactory.createURI(KB + "Width" + "Flume" + KG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Width" + "Flume" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_WIDTH));
-			UpdateRequest FlumeKG_ur = FlumeKG_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, FlumeKG_ur.toString());
-			omHasValue("Length" + "Flume" + KG_Instance_Name, "millimetre", KG319);		
-			omHasValue("Width" + "Flume" + KG_Instance_Name, "millimetre", KG318);	
-
-
-			UpdateBuilder ShaftKG_ub = 
-					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "hasShaft"), NodeFactory.createURI(KB + "Shaft" + KG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Shaft" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "Shaft"))	
-					.addInsert(NodeFactory.createURI(KB + "Shaft" + KG_Instance_Name), NodeFactory.createURI(OS + "hasShaftType"), NodeFactory.createURI(KB + "ShaftType" + KG305))
-					.addInsert(NodeFactory.createURI(KB + "ShaftType" + KG305), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "ShaftType"))	
-					.addInsert(NodeFactory.createURI(KB + "Shaft" + KG_Instance_Name), NodeFactory.createURI(OS + "hasShape"), NodeFactory.createURI(KB + "Shape" + KG307))
-					.addInsert(NodeFactory.createURI(KB + "Shape" + KG307), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "Shape"))
-					.addInsert(NodeFactory.createURI(KB + "Shaft" + KG_Instance_Name), NodeFactory.createURI(OS + "hasLength"), NodeFactory.createURI(KB + "Length" + "Shaft" + KG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Length" + "Shaft" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_LENGTH))
-					.addInsert(NodeFactory.createURI(KB + "Shaft" + KG_Instance_Name), NodeFactory.createURI(OS + "hasWidth"), NodeFactory.createURI(KB + "Width" + "Shaft" + KG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Width" + "Shaft" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_WIDTH))
-					.addInsert(NodeFactory.createURI(KB + "Shaft" + KG_Instance_Name), NodeFactory.createURI(OS + "hasDepth"), NodeFactory.createURI(KB + "Depth" + "Shaft" + KG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Depth" + "Shaft" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DEPTH));
-			UpdateRequest ShaftKG_ur = ShaftKG_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, ShaftKG_ur.toString());
-			omHasValue("Length" + "Shaft" + KG_Instance_Name, "millimetre", KG308);		
-			omHasValue("Width" + "Shaft" + KG_Instance_Name, "millimetre", KG309);	
-			omHasValue("Depth" + "Shaft" + KG_Instance_Name, "metre", KG211);	
-
-
-			UpdateBuilder CoverKG_ub = 
-					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "hasCover"), NodeFactory.createURI(KB + "Cover" + KG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Cover" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "Cover"))
-					.addInsert(NodeFactory.createURI(KB + "Cover" + KG_Instance_Name), NodeFactory.createURI(BMO + "hasMaterial"), NodeFactory.createURI(KB + "Material" + KG311))
-					.addInsert(NodeFactory.createURI(KB + "Material" + KG311), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(BMO + "Material"))
-					.addInsert(NodeFactory.createURI(KB + "Cover" + KG_Instance_Name), NodeFactory.createURI(OS + "hasClass"), NodeFactory.createURI(KB + "Class" + KG312))
-					.addInsert(NodeFactory.createURI(KB + "Class" + KG312), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "CoverClass"))
-					.addInsert(NodeFactory.createURI(KB + "Cover" + KG_Instance_Name), NodeFactory.createURI(OS + "hasShape"), NodeFactory.createURI(KB + "Shape" + KG310))
-					.addInsert(NodeFactory.createURI(KB + "Shape" + KG310), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "Shape"));
-			UpdateRequest CoverKG_ur = CoverKG_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, CoverKG_ur.toString());
-
-
-			UpdateBuilder LocationKG1_ub = 
-					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(dul + "hasLocation"), NodeFactory.createURI(KB + "Location" + KG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "location"))
-					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "isInWaterProtectionZone"), KG403)
-					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "isInFloodplane"), KG406)
-					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "isAssociatedWith"), NodeFactory.createURI(KB + "AssociatedInfrastructure" + KG404))
-					.addInsert(NodeFactory.createURI(KB + "AssociatedInfrastructure" + KG404), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "AssociatedInfrastructure")) 	
-					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "hasPointDesignation"), KG_GP001);			
-			UpdateRequest LocationKG1_ur = LocationKG1_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, LocationKG1_ur.toString()); 	
+			KG_instantiation_ub.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE),
+							NodeFactory.createURI(s4watr + "Manhole"));
 			
+			if (!KG001.equals("None")) {
+				KG_instantiation_ub
+				.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "componentID"),
+						KG001);
+			}
+					
+			if (!KG108.equals("None")) {
+				KG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + KG_Instance_Name),
+								NodeFactory.createURI(OS + "isAssociatedWith"),
+								NodeFactory.createURI(KB + KG_Instance_Name + "SewagePlant" + KG108))
+						.addInsert(NodeFactory.createURI(KB + KG_Instance_Name + "SewagePlant" + KG108),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewagePlant"));
+			}
 			
-			if (!KG_GP003B.equals("None") && !KG_GP004B.equals("None") && !KG_GP007B.equals("None")) {	
-			UpdateBuilder LocationKG2_ub = 
-				   new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinates"), NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "GeoCoordinates"))    
-					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name), NodeFactory.createURI(OS + "hasPositionAccuracy"), KG_GP008B)
-					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name), NodeFactory.createURI(OS + "hasCoordinateReference"), KG_GP002)
-					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name), NodeFactory.createURI(ogc + "asWKT"), "POINT("+KG_GP003B+","+KG_GP004B+")^^ogc:wktLiteral")  
-					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name), NodeFactory.createURI(OS + "hasElevation"), NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name))	
-					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "elevation"))   
-					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name), NodeFactory.createURI(OS + "hasElevationReference"), KG_GP010)
-					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAccuracy"), KG_GP009B)
-					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name), NodeFactory.createURI(OS + "hasElevationAboveSeaLevel"), NodeFactory.createURI(KB + "ElevationAboveSeaLevel" + KG_Instance_Name))
-					.addInsert(NodeFactory.createURI(KB + "ElevationAboveSeaLevel" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT));
-			UpdateRequest LocationKG2_ur = LocationKG2_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, LocationKG2_ur.toString()); 	
-			omHasValue("ElevationAboveSeaLevel" + KG_Instance_Name, "metre", KG_GP007B);	
-			} else {}			
+			if (KG302.equals("PressureDrainage") || KG302.equals("MixedProcess") || KG302.equals("RainWater")
+					|| KG302.equals("WasteWater") || KG302.equals("StreetDrainage") || KG302.equals("PreFlood")
+					|| KG302.equals("WaterPipe")) {
+				KG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "hasUsage"),
+								NodeFactory.createURI(KB + KG_Instance_Name + "SewerageUsage" + KG302))
+						.addInsert(NodeFactory.createURI(KB + KG_Instance_Name + "SewerageUsage" + KG302),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + KG302));
+			}
+			
+			if (!KG401.equals("None") || !KG402.equals("None")) {
+				KG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + KG_Instance_Name),
+								NodeFactory.createURI(OS + "hasSewerageRecords"),
+								NodeFactory.createURI(KB + "SewerageRecords" + KG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + KG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageRecords"));
+
+				if (KG402.equals("Public") || KG402.equals("Private") || KG402.equals("City")) {
+					KG_instantiation_ub
+							.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + KG_Instance_Name),
+									NodeFactory.createURI(OS + "hasOwnershipType"),
+									NodeFactory.createURI(KB + KG_Instance_Name + "OwnershipType" + KG402))
+							.addInsert(NodeFactory.createURI(KB + KG_Instance_Name + "OwnershipType" + KG402),
+									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + KG402));
+				}
+
+				if (KG401.equals("Constructed") || KG402.equals("Stock") || KG402.equals("OutOfService")
+						|| KG402.equals("Planning") || KG402.equals("Insulated")) {
+					KG_instantiation_ub
+							.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + KG_Instance_Name),
+									NodeFactory.createURI(OS + "hasFunctionalState"),
+									NodeFactory.createURI(KB + KG_Instance_Name + "FunctionalState" + KG401))
+							.addInsert(NodeFactory.createURI(KB + KG_Instance_Name + "FunctionalState" + KG401),
+									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + KG401));
+				}
+
+			}
+					
+			if (!KG303.equals("None") || !KG304.equals("None") || !KG301.equals("None")) {
+				KG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + KG_Instance_Name),
+								NodeFactory.createURI(OS + "hasConstructionProperties"),
+								NodeFactory.createURI(KB + "ConstructionProperties" + KG_Instance_Name))
+						.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + KG_Instance_Name),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "ConstructionProperties"));
+
+				if (!KG303.equals("None")) {
+					KG_instantiation_ub.addInsert(
+							NodeFactory.createURI(KB + "ConstructionProperties" + KG_Instance_Name),
+							NodeFactory.createURI(OS + "constructionYear"), KG303);
+				}
+
+				if (KG304.equals("Concrete") || KG304.equals("PolyvinylChlorideHard")
+						|| KG304.equals("ReinforcedConcrete") || KG304.equals("Stoneware")
+						|| KG304.equals("GrayCastIron")) {
+					KG_instantiation_ub
+							.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + KG_Instance_Name),
+									NodeFactory.createURI(BMO + "hasMaterial"),
+									NodeFactory.createURI(KB + KG_Instance_Name + "Material" + KG304))
+							.addInsert(NodeFactory.createURI(KB + KG_Instance_Name + "Material" + KG304),
+									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(BMO + KG304));
+				}
+
+				if (KG301.equals("Penstock") || KG301.equals("OpenGravityPipeline")
+						|| KG301.equals("ClosedGravityPipeline")) {
+					KG_instantiation_ub
+							.addInsert(NodeFactory.createURI(KB + "ConstructionProperties" + KG_Instance_Name),
+									NodeFactory.createURI(OS + "hasChannelType"),
+									NodeFactory.createURI(KB + KG_Instance_Name + "ChannelType" + KG301))
+							.addInsert(NodeFactory.createURI(KB + KG_Instance_Name + "ChannelType" + KG301),
+									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + KG301));
+				}
+			}		
+
+			if (!KG306.equals("None")) {
+				KG_instantiation_ub
+				.addInsert(NodeFactory.createURI(KB + KG_Instance_Name),
+						NodeFactory.createURI(OS + "hasStructureType"),
+						NodeFactory.createURI(KB + KG_Instance_Name + "StructureType" + KG306))
+				.addInsert(NodeFactory.createURI(KB + KG_Instance_Name + "StructureType" + KG306), NodeFactory.createURI(RDF_TYPE),
+						NodeFactory.createURI(OS + KG306));
+			}
+
+			if (!KG316.equals("None") || !KG319.equals("None") || !KG318.equals("None")) {
+				KG_instantiation_ub
+				.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "hasFlume"),
+						NodeFactory.createURI(KB + "Flume" + KG_Instance_Name))
+				.addInsert(NodeFactory.createURI(KB + "Flume" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE),
+						NodeFactory.createURI(OS + "Flume"));
+				
+				if (KG316.equals("EggShaped") || KG316.equals("OpenTrench") || KG316.equals("SemiCircle")
+						|| KG316.equals("Circle") || KG316.equals("Rectangle") ||KG316.equals("Square")
+						|| KG316.equals("Round") || KG316.equals("Angular")) {
+					KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + "Flume" + KG_Instance_Name),
+							NodeFactory.createURI(OS + "hasShape"), NodeFactory.createURI(KB + KG_Instance_Name + "Shape" + KG316))
+					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name + "Shape" + KG316), NodeFactory.createURI(RDF_TYPE),
+							NodeFactory.createURI(OS + KG316));
+				}
+				
+				if (!KG319.equals("None")) {
+					KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + "Flume" + KG_Instance_Name),
+							NodeFactory.createURI(OS + "hasLength"),
+							NodeFactory.createURI(KB + "Length" + "Flume" + KG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "Length" + "Flume" + KG_Instance_Name),
+							NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_LENGTH));
+					KG_instantiation_ub = omHasValue("Length" + "Flume" + KG_Instance_Name, "millimetre", KG319, KG_instantiation_ub);
+				}
+				
+                if (!KG318.equals("None")) {
+                	KG_instantiation_ub
+                	.addInsert(NodeFactory.createURI(KB + "Flume" + KG_Instance_Name),
+							NodeFactory.createURI(OS + "hasWidth"),
+							NodeFactory.createURI(KB + "Width" + "Flume" + KG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "Width" + "Flume" + KG_Instance_Name),
+							NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_WIDTH));
+                	KG_instantiation_ub = omHasValue("Width" + "Flume" + KG_Instance_Name, "millimetre", KG318, KG_instantiation_ub);
+				}
+			}
+					
+			if (!KG305.equals("None") || !KG307.equals("None") || !KG308.equals("None") || !KG309.equals("None") || !KG211.equals("None") ) {
+				KG_instantiation_ub
+				.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "hasShaft"),
+						NodeFactory.createURI(KB + "Shaft" + KG_Instance_Name))
+				.addInsert(NodeFactory.createURI(KB + "Shaft" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE),
+						NodeFactory.createURI(OS + "Shaft"));
+				
+				if (KG307.equals("EggShaped") || KG307.equals("OpenTrench") || KG307.equals("SemiCircle")
+						|| KG307.equals("Circle") || KG307.equals("Rectangle") ||KG307.equals("Square")
+						|| KG307.equals("Round") || KG307.equals("Angular")) {
+					KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + "Shaft" + KG_Instance_Name),
+							NodeFactory.createURI(OS + "hasShape"), NodeFactory.createURI(KB + KG_Instance_Name + "Shape" + KG307))
+					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name + "Shape" + KG307), NodeFactory.createURI(RDF_TYPE),
+							NodeFactory.createURI(OS + KG307));
+				}
+				
+				if (KG305.equals("Outlet") || KG305.equals("Structure") || KG305.equals("StreetInletShaft")
+						|| KG305.equals("FictionalShaft") || KG305.equals("BuildingConnection") 
+						|| KG305.equals("InspectionOpening") || KG305.equals("ShaftNode")) {
+					KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + "Shaft" + KG_Instance_Name),
+							NodeFactory.createURI(OS + "hasShaftType"), NodeFactory.createURI(KB + KG_Instance_Name + "ShaftType" + KG305))
+					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name + "ShaftType" + KG305), NodeFactory.createURI(RDF_TYPE),
+							NodeFactory.createURI(OS + KG305));
+				}
+				
+				if (!KG308.equals("None")) {
+					KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + "Shaft" + KG_Instance_Name),
+							NodeFactory.createURI(OS + "hasLength"),
+							NodeFactory.createURI(KB + "Length" + "Shaft" + KG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "Length" + "Shaft" + KG_Instance_Name),
+							NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_LENGTH));
+					KG_instantiation_ub = omHasValue("Length" + "Shaft" + KG_Instance_Name, "millimetre", KG308, KG_instantiation_ub);
+				}
+				
+				if (!KG309.equals("None")) {
+					KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + "Shaft" + KG_Instance_Name),
+							NodeFactory.createURI(OS + "hasWidth"),
+							NodeFactory.createURI(KB + "Width" + "Shaft" + KG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "Width" + "Shaft" + KG_Instance_Name),
+							NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_WIDTH));
+					KG_instantiation_ub = omHasValue("Width" + "Shaft" + KG_Instance_Name, "millimetre", KG309, KG_instantiation_ub);
+				}
+				
+				if (!KG211.equals("None")) {
+					KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + "Shaft" + KG_Instance_Name),
+							NodeFactory.createURI(OS + "hasDepth"),
+							NodeFactory.createURI(KB + "Depth" + "Shaft" + KG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "Depth" + "Shaft" + KG_Instance_Name),
+							NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_DEPTH));
+					KG_instantiation_ub = omHasValue("Depth" + "Shaft" + KG_Instance_Name, "metre", KG211, KG_instantiation_ub);
+				}
+			}
+					
+			if (!KG311.equals("None") || !KG312.equals("None") || !KG310.equals("None")) {
+				KG_instantiation_ub
+				.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(OS + "hasCover"),
+						NodeFactory.createURI(KB + "Cover" + KG_Instance_Name))
+				.addInsert(NodeFactory.createURI(KB + "Cover" + KG_Instance_Name), NodeFactory.createURI(RDF_TYPE),
+						NodeFactory.createURI(OS + "Cover"));
+				
+				if (KG311.equals("Concrete") || KG311.equals("PolyvinylChlorideHard")
+						|| KG311.equals("ReinforcedConcrete") || KG311.equals("Stoneware")
+						|| KG311.equals("GrayCastIron")) {
+					KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + "Cover" + KG_Instance_Name),
+							NodeFactory.createURI(BMO + "hasMaterial"), NodeFactory.createURI(KB + KG_Instance_Name + "Material" + KG311))
+					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name + "Material" + KG311), NodeFactory.createURI(RDF_TYPE),
+							NodeFactory.createURI(BMO + KG311));
+				}
+				
+				if (KG312.equals("ClassB") || KG311.equals("ClassD")) {
+					KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + "Cover" + KG_Instance_Name),
+							NodeFactory.createURI(OS + "hasClass"), NodeFactory.createURI(KB + KG_Instance_Name + "Class" + KG312))
+					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name + "Class" + KG312), NodeFactory.createURI(RDF_TYPE),
+							NodeFactory.createURI(OS + KG312));
+				}
+				
+				if (KG310.equals("EggShaped") || KG310.equals("OpenTrench") || KG310.equals("SemiCircle")
+						|| KG310.equals("Circle") || KG310.equals("Rectangle") || KG310.equals("Square")
+						|| KG310.equals("Round") || KG310.equals("Angular")) {
+					KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + "Cover" + KG_Instance_Name),
+							NodeFactory.createURI(OS + "hasShape"), NodeFactory.createURI(KB + KG_Instance_Name + "Shape" + KG310))
+					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name + "Shape" + KG310), NodeFactory.createURI(RDF_TYPE),
+							NodeFactory.createURI(OS + KG310));
+				}	
+			}
+			
+	        KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + KG_Instance_Name), NodeFactory.createURI(dul + "hasLocation"),
+							NodeFactory.createURI(KB + "Location" + KG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name),
+							NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "location"));
+	        
+	        if (!KG403.equals("None")) {
+	        	KG_instantiation_ub
+	        	.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name),
+						NodeFactory.createURI(OS + "isInWaterProtectionZone"), KG403);
+	        }
+					
+	        if (!KG406.equals("None")) {	
+	        	KG_instantiation_ub
+	        	.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name),
+						NodeFactory.createURI(OS + "isInFloodplane"), KG406);
+	        }
+	        
+			if (KG404.equals("Terrain") || KG404.equals("SideWalk") || KG404.equals("MainRoad")
+					|| KG404.equals("SideRoad") || KG404.equals("PrivateProperty")) {
+				KG_instantiation_ub
+				        .addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name),
+						        NodeFactory.createURI(OS + "isAssociatedWith"),
+								NodeFactory.createURI(KB + KG_Instance_Name + "AssociatedInfrastructure" + KG404))
+						.addInsert(NodeFactory.createURI(KB + KG_Instance_Name + "AssociatedInfrastructure" + KG404),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + KG404));
+			}
+					
+			if (!KG_GP001.equals("None")) {	
+				KG_instantiation_ub
+				.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name),
+						NodeFactory.createURI(OS + "hasPointDesignation"), KG_GP001);
+			}
+
+			if (!KG_GP003B.equals("None") && !KG_GP004B.equals("None") && !KG_GP008B.equals("None") || !KG_GP002.equals("None")) {
+				KG_instantiation_ub
+				.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name),
+						NodeFactory.createURI(OS + "hasCoordinates"),
+						NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name))
+				.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name),
+						NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "GeoCoordinates"));
+				
+				if (!KG_GP008B.equals("None")) {
+					KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name),
+							NodeFactory.createURI(OS + "hasPositionAccuracy"), KG_GP008B);
+				}
+					
+				if (!KG_GP002.equals("None")) {
+					KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name),
+							NodeFactory.createURI(OS + "hasCoordinateReference"), KG_GP002);
+				}
+				
+				if (!KG_GP003B.equals("None") && !KG_GP004B.equals("None")) {
+					KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + "GeoCoordinate" + KG_Instance_Name),
+							NodeFactory.createURI(ogc + "asWKT"),
+							"POINT(" + KG_GP003B + "," + KG_GP004B + ")^^ogc:wktLiteral");
+				}
+			}
+				
+			if (!KG_GP010.equals("None") || !KG_GP009B.equals("None") || !KG_GP007B.equals("None")) {
+				KG_instantiation_ub
+				.addInsert(NodeFactory.createURI(KB + "Location" + KG_Instance_Name),
+						NodeFactory.createURI(OS + "hasElevation"),
+						NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name))
+				.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name),
+						NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(schema + "elevation"));
+				
+				if (!KG_GP010.equals("None")) {
+					KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name),
+							NodeFactory.createURI(OS + "hasElevationReference"), KG_GP010);
+				}
+				
+				if (!KG_GP009B.equals("None")) {
+					KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name),
+							NodeFactory.createURI(OS + "hasElevationAccuracy"), KG_GP009B);
+				}
+				
+				if (!KG_GP007B.equals("None")) {
+					KG_instantiation_ub
+					.addInsert(NodeFactory.createURI(KB + "Elevation" + KG_Instance_Name),
+							NodeFactory.createURI(OS + "hasElevationAboveSeaLevel"),
+							NodeFactory.createURI(KB + "ElevationAboveSeaLevel" + KG_Instance_Name))
+					.addInsert(NodeFactory.createURI(KB + "ElevationAboveSeaLevel" + KG_Instance_Name),
+							NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_HEIGHT));
+					KG_instantiation_ub =  omHasValue("ElevationAboveSeaLevel" + KG_Instance_Name, "metre", KG_GP007B, KG_instantiation_ub);
+				}	
+			}
 		}
 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y \"None\"} where {?x ?y \"None\"}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/hasEndpointTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/hasEndpointTypeNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/hasEndpointTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/hasEndpointTypeNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ShapeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShapeNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ClassNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ClassNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ChannelTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ChannelTypeNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ChannelTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ChannelTypeNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewagePlantNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewagePlantNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewagePlantNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewagePlantNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShaftTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShaftTypeNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ShaftTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShaftTypeNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y \"POINT(None,None)^^ogc:wktLiteral\"} where {?x ?y \"POINT(None,None)^^ogc:wktLiteral\"}");
+		UpdateRequest KG_instantiation_ur = KG_instantiation_ub.buildRequest();
+		AccessAgentCaller.updateStore(sparqlendpoint, KG_instantiation_ur.toString());
 	}
 
+	public static void KGMainSubNetInstantiation(String KG_MainNet, String KG_SubNet) {
+		String[] KG_Main = ReadCol(0, KG_MainNet, ",");
+		String[] KG_Sub = ReadCol(0, KG_SubNet, ",");
 
-	public static void KGMainSubNetInstantiation (String KG_MainNet, String KG_SubNet) {
-		String[] KG_Main = ReadCol(0,KG_MainNet, ","); 
-		String[] KG_Sub = ReadCol(0,KG_SubNet, ","); 
+		UpdateBuilder SewerageNetwork_ub = new UpdateBuilder()
+				.addInsert(NodeFactory.createURI(KB + "MainNetwork"), NodeFactory.createURI(RDF_TYPE),
+						NodeFactory.createURI(OS + "SewerageNetwork"))
+				.addInsert(NodeFactory.createURI(KB + "SubNetwork"), NodeFactory.createURI(RDF_TYPE),
+						NodeFactory.createURI(OS + "SewerageNetwork"));
+
+		for (int i = 1; i < KG_Main.length; i++) { // KG_Main.length
+			if (!KG_Main[i].equals("None")) {
+				SewerageNetwork_ub
+				.addInsert(NodeFactory.createURI(KB + "MainNetwork"),
+						NodeFactory.createURI(hasPart), NodeFactory.createURI(KB + KG_Main[i]));	
+			}
+		}
+
+		for (int i = 1; i < KG_Sub.length; i++) { // KG_Sub.length
+			if (!KG_Sub[i].equals("None")) {
+				SewerageNetwork_ub
+				.addInsert(NodeFactory.createURI(KB + "SubNetwork"),
+						NodeFactory.createURI(hasPart), NodeFactory.createURI(KB + KG_Sub[i]));
+			}
+		}
 		
-		UpdateBuilder SewerageNetwork_ub = 
-				new UpdateBuilder()
-				.addInsert(NodeFactory.createURI(KB + "MainNetwork"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageNetwork"))
-				.addInsert(NodeFactory.createURI(KB + "SubNetwork"), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "SewerageNetwork"));
 		UpdateRequest SewerageNetwork_ur = SewerageNetwork_ub.buildRequest();
 		AccessAgentCaller.updateStore(sparqlendpoint, SewerageNetwork_ur.toString());
-
-		for (int i = 1; i < KG_Main.length; i++) { //KG_Main.length
-			UpdateBuilder KG_main_ub = 
-					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + "MainNetwork"), NodeFactory.createURI(hasPart), NodeFactory.createURI(KB + KG_Main[i]));
-			UpdateRequest KG_main_ur = KG_main_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, KG_main_ur.toString());   
 		}
 
-		for (int i = 1; i < KG_Sub.length; i++) { //KG_Sub.length
-			UpdateBuilder KG_sub_ub = 
-					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + "SubNetwork"), NodeFactory.createURI(hasPart), NodeFactory.createURI(KB + KG_Sub[i]));
-			UpdateRequest KG_sub_ur = KG_sub_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, KG_sub_ur.toString());   
-		}
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y \"None\"} where {?x ?y \"None\"}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructuren>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructuren>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructuren> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructuren> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialStz>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialStz>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialStz> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialStz> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialMasonry>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialMasonry>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialMasonry> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialMasonry> ?y ?z}"); 
-	    AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPolyvinylChloride>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPolyvinylChloride>}");
-	    AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialPolyvinylChloride> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialPolyvinylChloride> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialDuctileCastIron>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialDuctileCastIron>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialDuctileCastIron> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialDuctileCastIron> ?y ?z}"); 	    
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialKgDrainagePipes>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialKgDrainagePipes>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialKgDrainagePipes> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialKgDrainagePipes> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPolypropylene>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPolypropylene>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialPolypropylene> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialPolypropylene> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialOtherMaterial>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialOtherMaterial>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialOtherMaterial> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialOtherMaterial> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialGlassFiberReinforcedPlastic>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialGlassFiberReinforcedPlastic>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialGlassFiberReinforcedPlastic> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialGlassFiberReinforcedPlastic> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPolyethylene>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPolyethylene>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialPolyethylene> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialPolyethylene> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPolyethyleneHighDensity>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPolyethyleneHighDensity>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialPolyethyleneHighDensity> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialPolyethyleneHighDensity> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialConcreteSegments>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialConcreteSegments>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialConcreteSegments> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialConcreteSegments> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPrestressedConcrete>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPrestressedConcrete>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialPrestressedConcrete> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialPrestressedConcrete> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPavingNaturalStone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPavingNaturalStone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialPavingNaturalStone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialPavingNaturalStone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialKgUltraRib>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialKgUltraRib>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialKgUltraRib> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialKgUltraRib> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPolyvinylChlorideModified>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPolyvinylChlorideModified>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialPolyvinylChlorideModified> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialPolyvinylChlorideModified> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialStainlessSteel>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialStainlessSteel>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialStainlessSteel> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialStainlessSteel> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialSteel>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialSteel>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialSteel> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialSteel> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialInSituConcrete>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialInSituConcrete>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialInSituConcrete> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialInSituConcrete> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPipesWithLongitudinalThreadedConnection>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialPipesWithLongitudinalThreadedConnection>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialPipesWithLongitudinalThreadedConnection> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialPipesWithLongitudinalThreadedConnection> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialWoundPipePehd>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/MaterialWoundPipePehd>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/MaterialWoundPipePehd> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/MaterialWoundPipePehd> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ChannelTypek>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ChannelTypek>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ChannelTypek> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ChannelTypek> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ChannelTypeVentLine>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ChannelTypeVentLine>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ChannelTypeVentLine> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ChannelTypeVentLine> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/FunctionalStateb>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/FunctionalStateb>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/FunctionalStateb> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/FunctionalStateb> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/FunctionalStateOther>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/FunctionalStateOther>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/FunctionalStateOther> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/FunctionalStateOther> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/FunctionalStateRemoved>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/FunctionalStateRemoved>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/FunctionalStateRemoved> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/FunctionalStateRemoved> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/FunctionalStateRebuilt>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/FunctionalStateRebuilt>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/FunctionalStateRebuilt> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/FunctionalStateRebuilt> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/FunctionalStateFictionalModel>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/FunctionalStateFictionalModel>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/FunctionalStateFictionalModel> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/FunctionalStateFictionalModel> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/FunctionalStatep>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/FunctionalStatep>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/FunctionalStatep> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/FunctionalStatep> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/FunctionalStateNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/FunctionalStateNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/FunctionalStateNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/FunctionalStateNone> ?y ?z}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypep>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypep>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypep> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypep> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeOther>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeOther>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeOther> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeOther> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeSewageCompany>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeSewageCompany>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeSewageCompany> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeSewageCompany> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNotKnown>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNotKnown>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNotKnown> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeNotKnown> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeStateOperation>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeStateOperation>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeStateOperation> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeStateOperation> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeFederalRailroad>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeFederalRailroad>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeFederalRailroad> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeFederalRailroad> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypes>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypes>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypes> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypes> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeFederalPropertyOfficeUsBarracks>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeFederalPropertyOfficeUsBarracks>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeFederalPropertyOfficeUsBarracks> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeFederalPropertyOfficeUsBarracks> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeConstructionAid>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeConstructionAid>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeConstructionAid> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeConstructionAid> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeMunicipality>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeMunicipality>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeMunicipality> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/OwnershipTypeMunicipality> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructuren>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructuren>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructuren> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructuren> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureFieldPath>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureFieldPath>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureFieldPath> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureFieldPath> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureCountryRoad>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureCountryRoad>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureCountryRoad> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureCountryRoad> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureSidewalkOrBikePath>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureSidewalkOrBikePath>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureSidewalkOrBikePath> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureSidewalkOrBikePath> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureStairs>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureStairs>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureStairs> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureStairs> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureDevelopedLandParcel>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureDevelopedLandParcel>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureDevelopedLandParcel> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureDevelopedLandParcel> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureGrassVerge>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureGrassVerge>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureGrassVerge> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureGrassVerge> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureFederalRoad>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureFederalRoad>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureFederalRoad> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureFederalRoad> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructurePrivateRoad>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructurePrivateRoad>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructurePrivateRoad> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructurePrivateRoad> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureConstructionRoad>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureConstructionRoad>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureConstructionRoad> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureConstructionRoad> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureField>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureField>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureField> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureField> ?y ?z}");		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureMilitaryArea>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureMilitaryArea>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureMilitaryArea> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureMilitaryArea> ?y ?z}");		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureEmbankment>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureEmbankment>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureEmbankment> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureEmbankment> ?y ?z}");		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructurep>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructurep>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructurep> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructurep> ?y ?z}");		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureAgriculturalRoadPaved>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureAgriculturalRoadPaved>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureAgriculturalRoadPaved> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureAgriculturalRoadPaved> ?y ?z}");		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureParkingStrip>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureParkingStrip>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureParkingStrip> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureParkingStrip> ?y ?z}");	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureh>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureh>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureh> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureh> ?y ?z}");		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureSidewalk>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureSidewalk>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureSidewalk> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureSidewalk> ?y ?z}");		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureUnknown>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureUnknown>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureUnknown> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureUnknown> ?y ?z}");		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureOther>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureOther>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureOther> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/AssociatedInfrastructureOther> ?y ?z}");	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsagem>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsagem>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsagem> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsagem> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsages>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsages>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsages> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsages> ?y ?z}");	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageFictitiousAttitude>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageFictitiousAttitude>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageFictitiousAttitude> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageFictitiousAttitude> ?y ?z}");	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageOpenDitch>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageOpenDitch>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageOpenDitch> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageOpenDitch> ?y ?z}");		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageControlOrElectricCable>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageControlOrElectricCable>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageControlOrElectricCable> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageControlOrElectricCable> ?y ?z}");	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageSpecialRegulation>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageSpecialRegulation>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageSpecialRegulation> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageSpecialRegulation> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageSTR>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageSTR>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageSTR> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageSTR> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageSpecialUse>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageSpecialUse>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageSpecialUse> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageSpecialUse> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageHistory>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageHistory>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageHistory> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageHistory> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsagestk>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsagestk>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsagestk> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsagestk> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageBiochannel>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageUsageBiochannel>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageBiochannel> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageUsageBiochannel> ?y ?z}"); 	    
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/PipeTypeNone>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/PipeTypeNone>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/PipeTypeNone> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/PipeTypeNone> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/PipeTypeOther>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/PipeTypeOther>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/PipeTypeOther> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/PipeTypeOther> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/PipeTypea>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/PipeTypea>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/PipeTypea> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/PipeTypea> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/PipeTypeVenting>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/PipeTypeVenting>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/PipeTypeVenting> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/PipeTypeVenting> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShaftTypeSanitaryObject>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShaftTypeSanitaryObject>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ShaftTypeSanitaryObject> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShaftTypeSanitaryObject> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShaftTypes>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShaftTypes>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ShaftTypes> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShaftTypes> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShaftTypeCleaningOpening>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShaftTypeCleaningOpening>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ShaftTypeCleaningOpening> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShaftTypeCleaningOpening> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShaftTypeOther>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShaftTypeOther>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ShaftTypeOther> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShaftTypeOther> ?y ?z}"); 	    
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeCircleProfile>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeCircleProfile>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ShapeCircleProfile> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShapeCircleProfile> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeTrapezoidal>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeTrapezoidal>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ShapeTrapezoidal> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShapeTrapezoidal> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeUShaped>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeUShaped>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ShapeUShaped> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShapeUShaped> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeMouth>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeMouth>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ShapeMouth> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShapeMouth> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeChannelCrossSection>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeChannelCrossSection>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ShapeChannelCrossSection> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShapeChannelCrossSection> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeArcShapedHood>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeArcShapedHood>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ShapeArcShapedHood> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShapeArcShapedHood> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/Shape00>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/Shape00>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/Shape00> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/Shape00> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeOther>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapeOther>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ShapeOther> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShapeOther> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapePolygon>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ShapePolygon>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ShapePolygon> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ShapePolygon> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeConcealedManhole>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeConcealedManhole>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeConcealedManhole> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeConcealedManhole> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypePumpingStation>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypePumpingStation>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypePumpingStation> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypePumpingStation> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutletStructure>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutletStructure>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutletStructure> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutletStructure> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutlet>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutlet>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutlet> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutlet> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeInlet>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeInlet>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeInlet> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeInlet> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeSpecialStructure>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeSpecialStructure>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeSpecialStructure> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeSpecialStructure> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeStructure>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeStructure>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeStructure> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeStructure> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeRectangularProfileType1>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeRectangularProfileType1>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeRectangularProfileType1> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeRectangularProfileType1> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeDiffuser>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeDiffuser>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeDiffuser> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeDiffuser> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutletReceivingWater>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutletReceivingWater>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutletReceivingWater> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeOutletReceivingWater> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeExpiration>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeExpiration>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeExpiration> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeExpiration> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypePlasterOpening>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypePlasterOpening>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypePlasterOpening> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypePlasterOpening> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeRainInlet>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeRainInlet>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeRainInlet> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeRainInlet> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypen03>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypen03>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypen03> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypen03> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeRainwaterRetentionBasin>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeRainwaterRetentionBasin>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeRainwaterRetentionBasin> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeRainwaterRetentionBasin> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeBlindShaft>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/StructureTypeBlindShaft>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeBlindShaft> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/StructureTypeBlindShaft> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidEmergencyDischarge>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidEmergencyDischarge>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidEmergencyDischarge> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidEmergencyDischarge> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidWasteWaterFromSpecialFacilities>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidWasteWaterFromSpecialFacilities>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidWasteWaterFromSpecialFacilities> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidWasteWaterFromSpecialFacilities> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidCommercialWastewater>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidCommercialWastewater>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidCommercialWastewater> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidCommercialWastewater> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluid2QsCollector>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluid2QsCollector>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluid2QsCollector> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluid2QsCollector> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidWaterPollutingSubstances>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidWaterPollutingSubstances>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidWaterPollutingSubstances> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidWaterPollutingSubstances> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidh>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/SewerageFluidh>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidh> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/SewerageFluidh> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassFictional>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassFictional>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ClassFictional> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ClassFictional> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassClassG>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassClassG>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ClassClassG> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ClassClassG> ?y ?z}"); 	
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassClassH>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassClassH>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ClassClassH> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ClassClassH> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassClassA>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassClassA>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ClassClassA> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ClassClassA> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassClassF>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassClassF>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ClassClassF> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ClassClassF> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassConical>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/ClassConical>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/ClassConical> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/ClassConical> ?y ?z}"); 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/Classunknown>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/Classunknown>}");
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {<https://www.theworldavatar.com/kb/ontosewage/Classunknown> ?y ?z} where {<https://www.theworldavatar.com/kb/ontosewage/Classunknown> ?y ?z}");	 
-	}
-
-	
-	public static void BranchInstantiation (String HG_Branch) {
+	public static void BranchInstantiation(String HG_Branch) {
 		int HG_Branch_length = 0;
 		try {
 			HG_Branch_length = ColNum(HG_Branch, ",");
 		} catch (java.io.IOException e) {
 			e.printStackTrace();
 		}
-
-		for (int i = 0; i < HG_Branch_length; i++) { //HG_Branch_length; i++) {
-			String[] BR_Instance = ReadCol(i, HG_Branch, ","); 
-			String BR_Instance_Name = BR_Instance[0];
-			
-			UpdateBuilder MainPipe_ub = 
-					new UpdateBuilder()
-					.addInsert(NodeFactory.createURI(KB + "BranchConnection" + BR_Instance_Name), NodeFactory.createURI(OS + "hasMainPipe"), NodeFactory.createURI(KB + BR_Instance_Name));		
-			UpdateRequest MainPipe_ur = MainPipe_ub.buildRequest();
-			AccessAgentCaller.updateStore(sparqlendpoint, MainPipe_ur.toString());   
-			
-			for (int j = 1; j < BR_Instance.length; j++) {
-				UpdateBuilder BranchPipe_ub = 
-						new UpdateBuilder()
-						.addInsert(NodeFactory.createURI(KB + "BranchConnection" + BR_Instance_Name), NodeFactory.createURI(OS + "hasBranchPipe"), NodeFactory.createURI(KB + BR_Instance[j]));	
-				UpdateRequest BranchPipe_ur = BranchPipe_ub.buildRequest();
-				AccessAgentCaller.updateStore(sparqlendpoint, BranchPipe_ur.toString());   
-			}
-			
-		}
 		
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y \"None\"} where {?x ?y \"None\"}"); 
-		AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y <https://www.theworldavatar.com/kb/ontosewage/None>} where {?x ?y <https://www.theworldavatar.com/kb/ontosewage/None>}"); 
+		UpdateBuilder Branch_ub = new UpdateBuilder();
+
+		for (int i = 0; i < HG_Branch_length; i++) { // HG_Branch_length; i++) {
+			String[] BR_Instance = ReadCol(i, HG_Branch, ",");
+			String BR_Instance_Name = BR_Instance[0];
+
+			Branch_ub
+			.addInsert(NodeFactory.createURI(KB + "BranchConnection" + BR_Instance_Name),
+					   NodeFactory.createURI(OS + "hasMainPipe"), NodeFactory.createURI(KB + BR_Instance_Name));
+
+			for (int j = 1; j < BR_Instance.length; j++) {
+				if (!BR_Instance[j].equals("None")) {
+					Branch_ub
+					.addInsert(NodeFactory.createURI(KB + "BranchConnection" + BR_Instance_Name),
+							   NodeFactory.createURI(OS + "hasBranchPipe"), NodeFactory.createURI(KB + BR_Instance[j]));
+					}
+			}
+		}
+
+		UpdateRequest Branch_ur = Branch_ub.buildRequest();
+		AccessAgentCaller.updateStore(sparqlendpoint, Branch_ur.toString());	
 	}
 
-	public static void omHasValue(String Instance, String Unit, String NumericalValue) {
-		UpdateBuilder omHasValue_ub =
-				new UpdateBuilder()
-				.addInsert(NodeFactory.createURI(KB + Instance), NodeFactory.createURI(OM_HAS_VALUE), NodeFactory.createURI(KB + "Measure" + Instance))
-				.addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_MEASURE))
-				.addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(OM_HAS_UNIT), NodeFactory.createURI(KB + Unit))
-				.addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OM_UNIT))
+	public static UpdateBuilder omHasValue(String Instance, String Unit, String NumericalValue,
+			UpdateBuilder HG_instantiation_ub) {
+		HG_instantiation_ub
+				.addInsert(NodeFactory.createURI(KB + Instance), NodeFactory.createURI(OM_HAS_VALUE),
+						NodeFactory.createURI(KB + "Measure" + Instance))
+				.addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(RDF_TYPE),
+						NodeFactory.createURI(OM_MEASURE))
+				.addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(OM_HAS_UNIT),
+						NodeFactory.createURI(KB + Unit))
+				.addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(RDF_TYPE),
+						NodeFactory.createURI(OM_UNIT))
 				.addInsert(NodeFactory.createURI(KB + Unit), NodeFactory.createURI(OM_SYMBOL), Unit)
-				.addInsert(NodeFactory.createURI(KB + "Measure" + Instance), NodeFactory.createURI(OM_Has_NUMERICAL_VALUE), NumericalValue);
-		UpdateRequest omHasValue_ur = omHasValue_ub.buildRequest();
-		AccessAgentCaller.updateStore(sparqlendpoint, omHasValue_ur.toString());
+				.addInsert(NodeFactory.createURI(KB + "Measure" + Instance),
+						NodeFactory.createURI(OM_Has_NUMERICAL_VALUE), NumericalValue);
+		return HG_instantiation_ub;
 	}
 
 	public static int ColNum(String filepath, String delimiter) throws java.io.IOException {
