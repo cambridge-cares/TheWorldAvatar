@@ -75,6 +75,7 @@ curl -X GET localhost:3838/data-bridge-agent/sparql?namespace=kb
 
 3. `<base>/sql` route:
    - Execute the agent's task through an HTTP `GET` request. This route will transfer data between the specified source and target databases.
+   - If there are existing tables in the target/destination database with the same name, those will be dropped and recreated. Please do take note of this side effect if you wish to retain old data.
    - Before sending the request, please update the source database url, user, and password, in the `<root>/config/endpoint.properties`.
    - If transferring to any other database, please update the target jdbc url, user, and password, and send the simple `GET` request.
      - The request will return a list of commands to be executed on a CLI to transfer between two remote endpoints.

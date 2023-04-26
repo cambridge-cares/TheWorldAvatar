@@ -34,31 +34,38 @@ public class PostGISClient extends ContainerClient {
     }
 
     /**
-     * Transfers only the data in the specified table. The schema is excluded as it may present out of memory errors as mentioned:
-     * https://stackoverflow.com/questions/3195125/copy-a-table-from-one-database-to-another-in-postgres/16708680#16708680
+     * Transfers the data in the specified table to its equivalent in the target database.
+     *
+     * @param table      Name of the table to transfer.
+     * @param srcJdbcUrl JDBC url of source database.
+     * @param srcUser    Username for the source database.
+     * @param srcPass    Password for the source database.
+     * @param tgtJdbcUrl JDBC url of target database.
+     * @param tgtUser    Username for the target database.
+     * @param tgtPass    Password for the target database.
+     * @return the commands as a string.
      */
     public String transferTable(String table, String srcJdbcUrl, String srcUser, String srcPass, String tgtJdbcUrl, String tgtUser, String tgtPass) {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorStream = new ByteArrayOutputStream();
         StringBuilder psqlCmd = new StringBuilder();
         String[] srcDetails = retrieveComponentsFromUrl(srcJdbcUrl);
         String[] tgtDetails = retrieveComponentsFromUrl(tgtJdbcUrl);
-        // Dump all the SQL data in this table on the source database
+        // Retrieve all the SQL data in this table from the source database
         psqlCmd.append(PASSWORD_OPTION).append(srcPass).append("' pg_dump ")
                 .append(USER_OPTION).append(srcUser).append(WHITESPACE)
                 .append(SERVER_OPTION).append(srcDetails[0]).append(WHITESPACE)
                 .append(PORT_OPTION).append(srcDetails[1]).append(WHITESPACE)
-                .append("-t \\\"").append(table).append("\\\" ")
+                .append("--clean -t \\\"").append(table).append("\\\" ")
                 .append(srcDetails[2]).append(WHITESPACE)
-                // Transfer to target database in the same table
+                // Transfer to target database with the same table name
                 .append("| ").append(PASSWORD_OPTION).append(tgtPass).append("' psql ")
                 .append(USER_OPTION).append(tgtUser).append(WHITESPACE)
                 .append(SERVER_OPTION).append(tgtDetails[0]).append(WHITESPACE)
                 .append(PORT_OPTION).append(tgtDetails[1]).append(WHITESPACE)
                 .append(tgtDetails[2]);
-        if(postGISContainerId!=null) {
+        if (postGISContainerId != null) {
             String execId = createComplexCommand(postGISContainerId, "bash", "-c", psqlCmd.toString())
-                    .withOutputStream(outputStream)
+                    .withOutputStream(null)
                     .withErrorStream(errorStream)
                     .exec();
             handleErrors(errorStream, execId);
@@ -70,6 +77,9 @@ public class PostGISClient extends ContainerClient {
 
     /**
      * Retrieves the server, port, and database name from the jdbc url.
+     *
+     * @param jdbcUrl A input JDBC url.
+     * @return a string array containing the server, port, and database name.
      */
     public String[] retrieveComponentsFromUrl(String jdbcUrl) {
         String[] components = new String[3];
@@ -84,7 +94,7 @@ public class PostGISClient extends ContainerClient {
             int slashIndex = tmp.indexOf("/");
             components[0] = tmp.substring(0, colonIndex); // Server
             components[1] = tmp.substring(colonIndex + 1, slashIndex); // Port
-            components[2] = tmp.substring(slashIndex+1); // Database name
+            components[2] = tmp.substring(slashIndex + 1); // Database name
         } else {
             LOGGER.fatal("Invalid JDBC url: " + jdbcUrl);
             throw new IllegalArgumentException("Invalid JDBC url: " + jdbcUrl);
