@@ -52,8 +52,10 @@
                 "derivedFromSensor":[],
                 "derviedBy":null,
                 "type": null,
-                "unit" : null   
-            }
+                "unit" : null
+            },
+
+            "TimeseriesMapping":{"TS1":["derivVar1", "derivVar2"]}
             
         }
     },
