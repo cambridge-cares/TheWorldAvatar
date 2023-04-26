@@ -471,7 +471,7 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/AutoSampler">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The autosampler is the facility for the reagents to be preloaded into ï¿½Sample Injection Loopsï¿½ and then released into the flow at the correct moment as required (all controlled by the R-Series software if required). [https://www.vapourtec.com/products/r-series-expansion/automation-analysis-automated-reagent-addition/]</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The autosampler is the facility for the reagents to be preloaded into 'Sample Injection Loops' and then released into the flow at the correct moment as required (all controlled by the R-Series software if required). [https://www.vapourtec.com/products/r-series-expansion/automation-analysis-automated-reagent-addition/]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
     
