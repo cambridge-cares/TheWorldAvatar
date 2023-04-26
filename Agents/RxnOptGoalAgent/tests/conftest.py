@@ -712,6 +712,10 @@ def initialise_triples(sparql_client):
     # Delete all triples before initialising prepared triples
     sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
+    # Upload tbox
+    sparql_client.upload_ontology_tbox(ONTODOE)
+    sparql_client.upload_ontology_tbox(ONTOREACTION)
+
     # Upload the example triples for testing
     pathlist = Path(TEST_TRIPLES_DIR).glob('*.ttl')
     for path in pathlist:

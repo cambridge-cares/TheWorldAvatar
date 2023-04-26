@@ -145,6 +145,9 @@ def initialise_triples(initialise_blazegraph_and_fileserver, get_service_auth):
         g.parse(str(path), format='turtle')
         sparql_client.uploadGraph(g)
 
+    sparql_client.upload_ontology_tbox(onto.ONTODOE)
+    sparql_client.upload_ontology_tbox(onto.ONTOREACTION)
+
     # Create folder for downloaded files
     if not os.path.exists(DOWNLOADED_DIR):
         os.mkdir(DOWNLOADED_DIR)

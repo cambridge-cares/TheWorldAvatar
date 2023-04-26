@@ -22,37 +22,6 @@
 @prefix placeholder:	<https://www.theworldavatar.com/kg/_for_species/> .
 
 
-##############################################################
-## Part of OntoRxn ontology for /subPropertyOf relationship ##
-##############################################################
-OntoRxn:ResidenceTime rdfs:subClassOf OntoRxn:ReactionCondition .
-OntoRxn:ReactionTemperature rdfs:subClassOf OntoRxn:ReactionCondition .
-OntoRxn:ReactionPressure rdfs:subClassOf OntoRxn:ReactionCondition .
-OntoRxn:StoichiometryRatio rdfs:subClassOf OntoRxn:ReactionCondition .
-OntoRxn:ReactionScale rdfs:subClassOf OntoRxn:ReactionCondition .
-
-OntoRxn:EnvironmentalFactor rdfs:subClassOf OntoRxn:PerformanceIndicator .
-OntoRxn:Yield rdfs:subClassOf OntoRxn:PerformanceIndicator .
-OntoRxn:EcoScore rdfs:subClassOf OntoRxn:PerformanceIndicator .
-OntoRxn:Conversion rdfs:subClassOf OntoRxn:PerformanceIndicator .
-OntoRxn:SpaceTimeYield rdfs:subClassOf OntoRxn:PerformanceIndicator .
-OntoRxn:RunMaterialCost rdfs:subClassOf OntoRxn:PerformanceIndicator .
-OntoRxn:RunMaterialCostPerKilogramProduct rdfs:subClassOf OntoRxn:PerformanceIndicator .
-
-OntoRxn:hasResTime rdfs:subPropertyOf OntoRxn:hasReactionCondition .
-OntoRxn:hasRxnTemperature rdfs:subPropertyOf OntoRxn:hasReactionCondition .
-OntoRxn:hasRxnPressure rdfs:subPropertyOf OntoRxn:hasReactionCondition .
-OntoRxn:hasStoichiometryRatio rdfs:subPropertyOf OntoRxn:hasReactionCondition .
-OntoRxn:hasRxnScale rdfs:subPropertyOf OntoRxn:hasReactionCondition .
-
-OntoRxn:hasEnvironmentalFactor rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
-OntoRxn:hasYield rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
-OntoRxn:hasEcoScore rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
-OntoRxn:hasConversion rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
-OntoRxn:hasSpaceTimeYield rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
-OntoRxn:hasRunMaterialCost rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
-OntoRxn:hasRunMaterialCostPerKilogramProduct rdfs:subPropertyOf OntoRxn:hasPerformanceIndicator .
-
 ##############################################################################
 ## Placeholder Density data -- TODO to find a proper way of representing it ##
 ##############################################################################

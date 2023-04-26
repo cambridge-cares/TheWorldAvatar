@@ -37,12 +37,6 @@
     OntoDoE:populationSize "20"^^xsd:integer;
 .
 
-# This statement is actually part of OntoDoE TBox
-# just added here to enable query by property paths
-OntoDoE:TSEMO
-    rdfs:subClassOf OntoDoE:Strategy;
-.
-
 # domain
 :Domain_1
     rdf:type OntoDoE:Domain;

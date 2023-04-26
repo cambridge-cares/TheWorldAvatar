@@ -1,6 +1,8 @@
 from pyderivationagent.data_model.iris import *
 
 RDFS_COMMENT = RDFS_BASE_URL + 'comment'
+OWL = 'http://www.w3.org/2002/07/owl#'
+OWL_VERSION = OWL + 'versionInfo'
 
 ###--- Common Base URL ---###
 ONTOCAPE_PHASESYSTEM = 'http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#'
@@ -12,12 +14,23 @@ ONTOCAPE_BEHAVIOR = 'http://www.theworldavatar.com/ontology/ontocape/chemical_pr
 
 ONTODOE = 'https://www.theworldavatar.com/kg/ontodoe/'
 ONTOREACTION = 'https://www.theworldavatar.com/kg/ontoreaction/'
+ONTOGOAL = 'https://www.theworldavatar.com/kg/ontogoal/'
 ONTOKIN = 'http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#'
 ONTOSPECIES = 'http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#'
 ONTOLAB = 'https://www.theworldavatar.com/kg/ontolab/'
 ONTOVAPOURTEC = 'https://www.theworldavatar.com/kg/ontovapourtec/'
 ONTOHPLC = 'https://www.theworldavatar.com/kg/ontohplc/'
 ONTOBPR = 'https://www.theworldavatar.com/kg/ontobpr/'
+
+###--- TBox basic info ---###
+TBOX_DICT = {
+    ONTODOE: 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl',
+    ONTOREACTION: 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl',
+    ONTOGOAL: 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl',
+    ONTOLAB: 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl',
+    ONTOHPLC: 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl',
+    ONTOVAPOURTEC: 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl',
+}
 
 
 ###--- Some IRIs from OM ---###

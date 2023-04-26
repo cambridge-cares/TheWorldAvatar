@@ -33,13 +33,6 @@
 @prefix :                <https://www.theworldavatar.com/kg/lab_auto/chem_rxn/> .
 
 
-############################################################################
-## Subclass relationship between ReactionExperiment and ReactionVariation ##
-############################################################################
-# very important, otherwise the new suggested experiment will not be put back to the chain
-OntoRxn:ReactionVariation rdfs:subClassOf OntoRxn:ReactionExperiment .
-
-
 #################################
 ## Chemical reaction instances ##
 #################################

@@ -26,6 +26,32 @@ logger = agentlogging.get_logger('dev')
 
 
 class ChemistryAndRobotsSparqlClient(PySparqlClient):
+    def upload_ontology_tbox(self, tbox_namespace, alternative_url=None):
+        try:
+            query = f'SELECT * WHERE {{ <{tbox_namespace}> <{OWL_VERSION}> ?v. }}'
+            res = self.performQuery(query)
+        except Exception as ex:
+            logger.error("Unable to retrieve TBox version from KG.")
+            raise Exception("Unable to retrieve TBox version from KG.") from ex
+
+        # Upload TBox if not already instantiated
+        if not res:
+            temp_fp = '_tmp.owl'
+            url_to_upload = TBOX_DICT.get(tbox_namespace) if not alternative_url else alternative_url
+            try:
+                try:
+                    content = requests.get(url_to_upload)
+                    if content.status_code != 200:
+                        raise Exception(f'HTTP error code for retrieving owl file: {content.status_code}')
+                except Exception as ex:
+                    raise Exception(f"Unable to retrieve {url_to_upload} from TWA server.") from ex
+                with open(temp_fp, 'w') as f:
+                    f.write(content.text)
+                    self.uploadOntology(temp_fp)
+                os.remove(temp_fp)
+            except Exception as ex:
+                raise Exception(f"Unable to initialise knowledge graph with {tbox_namespace} TBox ({url_to_upload}).") from ex
+
     def get_all_chemical_reaction_iri(self):
         query = f"""SELECT ?chem_rxn WHERE {{ ?chem_rxn a <{ONTOREACTION_CHEMICALREACTION}>. }}"""
         response = self.performQuery(query)
