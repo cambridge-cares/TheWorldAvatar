@@ -209,7 +209,7 @@ public class DevInstQueryBuilder {
 
     String genUUID(String name){
 
-        return UUID.randomUUID() + name;
+        return name + UUID.randomUUID();
     }
 
     void InstantiateDevices() {
