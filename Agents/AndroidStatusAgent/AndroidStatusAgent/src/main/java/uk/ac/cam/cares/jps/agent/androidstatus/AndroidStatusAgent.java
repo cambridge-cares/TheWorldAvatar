@@ -8,9 +8,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.BadRequestException;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -18,12 +16,12 @@ import java.util.regex.Pattern;
 @WebServlet(urlPatterns = {"/set", "/get"})
 public class AndroidStatusAgent extends JPSAgent{
     private static final Logger LOGGER = LogManager.getLogger(AndroidStatusAgent.class);
-    private String equipmentIRI = "";
-    private final String EQUIPMENT_IRI_KEY = "equipmentIRI";
+    private String iri = "";
+    private final String IRI_KEY = "iri";
 
     /**
      * Handle the POST and GET requests and route to specific handling logic based on the path.
-     * @param requestParams Parameters sent in the request. Only /set expects a parameter equipmentIRI
+     * @param requestParams Parameters sent in the request. Only /set expects a parameter iri
      * @param request HttpServletRequest instance
      * @return result in JSONObject format.
      */
@@ -41,15 +39,15 @@ public class AndroidStatusAgent extends JPSAgent{
                 throw new JPSRuntimeException("Unable to validate request sent to the agent.");
             }
 
-            this.equipmentIRI = requestParams.getString(EQUIPMENT_IRI_KEY);
-            LOGGER.info("Successfully set equipment iri to " + equipmentIRI);
+            this.iri = requestParams.getString(IRI_KEY);
+            LOGGER.info("Successfully set iri to " + iri);
 
             JSONObject response = new JSONObject();
-            response.put("message", "Successfully set equipment iri to " + equipmentIRI);
+            response.put("message", "Successfully set iri to " + iri);
             return response;
         } else if (url.contains("get")) {
             JSONObject result = new JSONObject();
-            result.put("equipmentIRI", equipmentIRI);
+            result.put("iri", iri);
             LOGGER.info("Return: " + result);
             return result;
         }
@@ -59,8 +57,8 @@ public class AndroidStatusAgent extends JPSAgent{
 
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
-        if (!requestParams.has(EQUIPMENT_IRI_KEY)) {
-            LOGGER.error("equipmentIRI is missing");
+        if (!requestParams.has(IRI_KEY)) {
+            LOGGER.error("iri is missing");
             return false;
         }
 
