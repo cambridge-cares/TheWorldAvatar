@@ -9,7 +9,7 @@
      xmlns:dc="http://purl.org/dc/elements/1.1/"
      xmlns:ontodoe="https://www.theworldavatar.com/kg/ontodoe/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontodoe/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">25 April 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">26 April 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for design of experiment.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.9</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -34,7 +34,7 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/designsChemicalReaction">
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodoe/DesignOfExperiment"/>
-        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ChemicalReaction"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a design of experiment excersise and the chemical reaction it is optimising.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -57,7 +57,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontodoe/hasDoETemplate">
-        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ChemicalReaction"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontodoe/DesignOfExperiment"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relation between a chemical reaction and its design of experiment template for optimisation.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
@@ -328,13 +328,6 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction"/>
-    
-
-
     <!-- http://www.theworldavatar.com/ontology/ontoreaction/OntoReaction.owl#ReactionExperiment -->
 
 
@@ -563,6 +556,13 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">&quot;Thompson sampling efficient multiobjective optimization&quot; strategy proposed in paper doi:10.1007/s10898-018-0609-2.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontodoe/</rdfs:isDefinedBy>
     </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/ChemicalReaction -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/ChemicalReaction"/>
     
 
 
