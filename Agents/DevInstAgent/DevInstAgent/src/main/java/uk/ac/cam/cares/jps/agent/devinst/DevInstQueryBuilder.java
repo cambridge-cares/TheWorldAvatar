@@ -103,10 +103,8 @@ public class DevInstQueryBuilder {
         //Get data from descriptor
         parseJSON(desc);
 
-        //Write query
-
-        //Update DB
-        
+        //Write query & Update DB
+        InstantiateDevices();
     }
 
     void parseJSON (JSONObject desc) {
@@ -211,9 +209,50 @@ public class DevInstQueryBuilder {
         return UUID.randomUUID() + name;
     }
 
+    void InstantiateDevices() {
+        ModifyQuery modify = Queries.MODIFY();
+        modify.prefix(P_AGENT, P_DERIV, P_DEV, P_OM, P_SAREF, P_TS);
+
+        //Instantiate the microcontroller, sensors, variable instances
+
+        modify.insert(SmartSensor_UUID.isA(SmartSensor));
+        modify.insert(SmartSensor_UUID.has(RDFS.LABEL, Rdf.literalOf(sensLabel)));
+        
+        modify.insert(MicroController_UUID.isA(MicroController));
+        
+        for(String SensorName : Sensor_UUID_Map.keySet()){
+            Iri UUID = Sensor_UUID_Map.get(SensorName);
+            modify.insert(UUID.isA(Sensor));
+        }
+
+        for(String SensorCompName : SensorComp_UUID_Map.keySet()){
+            Iri UUID = SensorComp_UUID_Map.get(SensorCompName);
+            Iri Type_UUID = SensorTypeIRIMap.get(SensorTypeMap.get(SensorCompName));
+            modify.insert(UUID.isA(Type_UUID));
+
+            Iri Measurement_UUID = Measurement_UUID_Map.get(SensorCompName);
+            Iri MeasurementType_IRI = MeasurementTypeMap.get(SensorCompName);
+            modify.insert(Measurement_UUID.isA(MeasurementType_IRI));
+        }
+
+        for (String DerivedName : Derived_UUID_Map.keySet()){
+            Iri Derivation_UUID = Derived_UUID_Map.get(DerivedName);
+            Iri DerivationTypeIRI = DerivedType_UUID_Map.get(DerivedName);
+            modify.insert(Derivation_UUID.isA(DerivationTypeIRI));
+
+            Iri DerivationWithTimeSeries_UUID = DerivationWithTimeSeries_UUID_Map.get(DerivedName);
+            modify.insert(DerivationWithTimeSeries_UUID.isA(DerivationWithTimeSeries));
+        }
+
+
+        //Connect properties
+        //Connect the microcontroller and sensor instances
+
+        //Connect the sensor instances
 
 
 
+    }
 
 
 }
