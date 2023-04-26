@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">21 April 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">26 April 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ontology for urban building energy modelling (UBEM) and master planning (MP) data</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -37,34 +37,12 @@
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
                     <rdf:Description rdf:about="http://www.purl.org/oema/enaeq/EnergyConsumptionDevice"/>
-                    <rdf:Description rdf:about="http://www.purl.org/oema/infrastructure/Building"/>
+                    <rdf:Description rdf:about="https://w3id.org/bot#Building"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/EnergyConsumption"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://saref.etsi.org/core/hasFunction -->
-
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/hasFunction">
-        <rdfs:domain rdf:resource="https://saref.etsi.org/core/Meter"/>
-        <rdfs:range rdf:resource="https://saref.etsi.org/core/MeteringFunction"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://saref.etsi.org/core/hasMeterReading -->
-
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/hasMeterReading">
-        <rdfs:domain rdf:resource="https://saref.etsi.org/core/MeteringFunction"/>
-        <rdfs:range rdf:resource="https://saref.etsi.org/core/Measurement"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
@@ -84,7 +62,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/consumesUtilities">
-        <rdfs:domain rdf:resource="http://www.purl.org/oema/infrastructure/Building"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Building"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/UtilitiesConsumption"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a facility and its consumed utilities</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
@@ -96,19 +74,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/hasArea">
-        <rdfs:domain rdf:resource="http://www.purl.org/oema/enaeq/Device"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Area"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/hasDevice -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/hasDevice">
-        <rdfs:domain rdf:resource="http://www.purl.org/oema/infrastructure/Building"/>
-        <rdfs:range rdf:resource="http://www.purl.org/oema/enaeq/Device"/>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -171,9 +138,9 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.purl.org/oema/infrastructure/Building"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
                     <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall"/>
+                    <rdf:Description rdf:about="https://w3id.org/bot#Building"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarEnergyGenerator"/>
                 </owl:unionOf>
             </owl:Class>
@@ -259,9 +226,7 @@
     <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity -->
 
 
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity">
-        <owl:equivalentClass rdf:resource="https://saref.etsi.org/core/Measurement"/>
-    </owl:Class>
+    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity"/>
     
 
 
@@ -279,22 +244,11 @@
     
 
 
-    <!-- http://www.purl.org/oema/enaeq/Device -->
-
-
-    <owl:Class rdf:about="http://www.purl.org/oema/enaeq/Device">
-        <owl:equivalentClass rdf:resource="https://saref.etsi.org/core/Device"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An instrumentality invented for a particular purpose</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
     <!-- http://www.purl.org/oema/enaeq/EnergyConsumptionDevice -->
 
 
     <owl:Class rdf:about="http://www.purl.org/oema/enaeq/EnergyConsumptionDevice">
-        <rdfs:subClassOf rdf:resource="http://www.purl.org/oema/enaeq/Device"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Any device that consumes energy</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
@@ -305,7 +259,7 @@
 
 
     <owl:Class rdf:about="http://www.purl.org/oema/enaeq/EnergyGenerator">
-        <rdfs:subClassOf rdf:resource="http://www.purl.org/oema/enaeq/Device"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Any device that produces energy</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
@@ -334,16 +288,6 @@
     
 
 
-    <!-- http://www.purl.org/oema/infrastructure/Building -->
-
-
-    <owl:Class rdf:about="http://www.purl.org/oema/infrastructure/Building">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A structure that has a roof and walls and stands more or less permanently in one place</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
     <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof -->
 
 
@@ -358,40 +302,10 @@
     
 
 
-    <!-- https://saref.etsi.org/core/Device -->
+    <!-- https://w3id.org/bot#Building -->
 
 
-    <owl:Class rdf:about="https://saref.etsi.org/core/Device">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://saref.etsi.org/core/Measurement -->
-
-
-    <owl:Class rdf:about="https://saref.etsi.org/core/Measurement">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://saref.etsi.org/core/Meter -->
-
-
-    <owl:Class rdf:about="https://saref.etsi.org/core/Meter">
-        <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Device"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://saref.etsi.org/core/MeteringFunction -->
-
-
-    <owl:Class rdf:about="https://saref.etsi.org/core/MeteringFunction">
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/</rdfs:isDefinedBy>
-    </owl:Class>
+    <owl:Class rdf:about="https://w3id.org/bot#Building"/>
     
 
 
@@ -403,6 +317,13 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of energy consumed by an energy consuming facility</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontodevice/Device -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontodevice/Device"/>
     
 
 
