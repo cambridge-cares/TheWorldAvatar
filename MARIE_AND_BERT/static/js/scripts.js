@@ -153,7 +153,7 @@ function resetResults() {
 
 	let chatbotResults = document.getElementById("chatbot-results");
 	chatbotResults.innerHTML = html;
-	$("#data_chart").remove();
+	$("#chart_div").html("");
 }
 
 
@@ -167,7 +167,7 @@ function askQuestion() {
 	}
 
 	resetResults();
-    $("#data_chart").remove();
+    $("#chart_div").html("");
 
 	let spinner = imageDir + "spinner.svg";
 
