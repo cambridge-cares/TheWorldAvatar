@@ -69,8 +69,12 @@ This agent support both POST and GET requests.
 ```
 curl -X POST 'http://localhost:3838/android-status-agent/set?iri=http://www.example.com/test-element'
 ```
-
-There will be no return message for POST request. A successful request will have 200 status code.
+This request will return the following message:
+```json
+{
+    "message": "Successfully set iri to http://www.example.com/test-element"
+}
+```
 
 ## Retrieve App Status
 ```
