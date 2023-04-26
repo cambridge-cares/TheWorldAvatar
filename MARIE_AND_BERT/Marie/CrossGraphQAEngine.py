@@ -27,11 +27,12 @@ import threading
 
 
 def remove_mention(q_with_mention, mention):
-
-    stop_words = ["what", "is", "are", "the", "more", "less", "than", "species", "find", "all", "over", "under", "of", "show"]
+    stop_words = ["what", "is", "are", "the", "more", "less", "than", "species", "find", "all", "over", "under", "of",
+                  "show"]
     flag_words = ["mops", "cbu", "assembly model"]
     if "mops" not in q_with_mention.lower():
         stop_words += ["with"]
+
     tokens = [t for t in q_with_mention.split(" ") if t.lower() not in stop_words]
     q_with_mention = " ".join(tokens).strip()
 
@@ -50,7 +51,7 @@ def remove_mention(q_with_mention, mention):
 
 def filter_for_mention(question):
     question = question.lower()
-    if "what" not in question:
+    if "what" not in question and "mop" not in question:
         question = f"what is the {question}"
     return question.strip()
 
@@ -171,7 +172,8 @@ class CrossGraphQAEngine:
     #     return " ".join(tokens)
 
     def get_domain_list(self, q):
-
+        if "mop" in q.lower():
+            return ["ontomops"], torch.tensor([0, 0, 0, 0, 0, 0, 0, 1, 0])
         q = filter_for_mention(q)
         mention = self.ner_lite.get_mention(q)
         q = remove_mention(q, mention=mention)
@@ -203,57 +205,57 @@ class CrossGraphQAEngine:
         got_numerical_values = False
         numerical_domain = None
         original_question = original_question.replace("'s", " of ")
-        tokens = [t for t in original_question.strip().split(" ") if t.lower() not in self.global_stop_words]
-        original_question = " ".join(tokens)
+        if "mop" not in original_question.lower():
+            tokens = [t for t in original_question.strip().split(" ") if t.lower() not in self.global_stop_words]
+            original_question = " ".join(tokens)
 
-        #
-        # stop_words = []
-        # tokens = [t for t in question.split(" ") if t.lower().strip() not in stop_words]
-        # question = " ".join(tokens)
-
-        # mention = self.ner_lite.get_mention(question)
-
-        # if mention is not None:
-        #     question = question.replace(mention, "")
         domain_list_for_question, score_factors = self.get_domain_list(original_question)
-
-        # print("predicted domain for this question:", domain_list_for_question)
+        print("###############################################################")
+        print("predicted domain for this question:", domain_list_for_question)
+        print("score factors", score_factors)
+        print("given question", original_question)
+        print("###############################################################")
 
         def call_domain(domain, index, head, numerical_domain_list, numerical_label_list):
             nonlocal score_list, label_list, target_list, got_numerical_values, numerical_domain
-            if domain in domain_list_for_question:
-                if not got_numerical_values:
-                    engine = self.engine_list[index]
+            try:
+                if domain in domain_list_for_question:
+                    if not got_numerical_values:
+                        engine = self.engine_list[index]
 
-                    self.marie_logger.debug(
-                        f"======================== USING ENGINE {domain}============================")
+                        self.marie_logger.debug(
+                            f"======================== USING ENGINE {domain}============================")
 
-                    if domain == "ontoagent":
-                        results = engine.run(question=original_question)
-                        labels, scores, targets = results
-                        print("=============== RESULT FROM AGENT ============")
-                        print(results)
+                        if domain == "ontoagent":
+                            results = engine.run(question=original_question)
+                            labels, scores, targets = results
+                            print("=============== RESULT FROM AGENT ============")
+                            print(results)
 
-                    elif domain in numerical_domain_list:
-                        results = engine.run(question=original_question)
-                        labels, scores, targets, numerical_list, question_type = results
-                        # if question_type == "numerical":
-                        if question_type in numerical_label_list and (len(labels) > 0):
-                            got_numerical_values = True
-                            numerical_domain = domain
-                    else:
-                        results = engine.run(question=original_question)
-                        labels, scores, targets = results
-                    length_diff = 5 - len(labels)
-                    scores = scores + [-999] * length_diff
-                    labels = labels + ["EMPTY SLOT"] * length_diff
-                    targets = targets + ["EMPTY SLOT"] * length_diff
-                    with self.lock:
-                        score_list[domain] = scores
-                        label_list[domain] = labels
-                        target_list[domain] = targets
+                        elif domain in numerical_domain_list:
+                            results = engine.run(question=original_question)
+                            labels, scores, targets, numerical_list, question_type = results
+                            # if question_type == "numerical":
+                            if question_type in numerical_label_list and (len(labels) > 0):
+                                got_numerical_values = True
+                                numerical_domain = domain
+                        else:
+                            results = engine.run(question=original_question)
+                            labels, scores, targets = results
+                        length_diff = 5 - len(labels)
+                        scores = scores + [-999] * length_diff
+                        labels = labels + ["EMPTY SLOT"] * length_diff
+                        targets = targets + ["EMPTY SLOT"] * length_diff
+                        with self.lock:
+                            score_list[domain] = scores
+                            label_list[domain] = labels
+                            target_list[domain] = targets
 
-            else:
+                else:
+                    score_list[domain] = [-999] * 5
+                    label_list[domain] = ["EMPTY SLOT"] * 5
+                    target_list[domain] = ["EMPTY SLOT"] * 5
+            except:
                 score_list[domain] = [-999] * 5
                 label_list[domain] = ["EMPTY SLOT"] * 5
                 target_list[domain] = ["EMPTY SLOT"] * 5
@@ -335,15 +337,21 @@ if __name__ == '__main__':
     # what is c9h16's molecular weight"""
 
     # question_list = question_string.split("\n")
-    for question in question_list:
+    # for question in question_list:
+
+    # Give the MOPs which are Anticuboctahedron shaped
+    # Give the assembly model types that can be created with [(C4H2S)(CO2)2] as the CBU
+
+    text = ""
+    while text != "quit":
+        question = input("QUESTION: ")
         question = question.strip()
         START_TIME = time.time()
         print("==============================================================================")
-        #         text = "heat capacity of C3H4O"
         rst = my_qa_engine.run(original_question=question)
         print(rst)
         print(f"TIME USED: {time.time() - START_TIME}")
-
+        print("==============================================================================")
     # while text != "quit":
     #     START_TIME = time.time()
     #     rst = my_qa_engine.run(question=text)

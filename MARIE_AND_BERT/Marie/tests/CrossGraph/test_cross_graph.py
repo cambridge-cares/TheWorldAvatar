@@ -22,7 +22,11 @@ class TestCrossGraph(unittest.TestCase):
         my_alignment_model = CrossGraphAlignmentModel(device="cpu")
         dataset_path = os.path.join(DATA_DIR, "CrossGraph/cross_graph_model_with_all_9")
         my_alignment_model.load_state_dict(torch.load(dataset_path, map_location="cpu"))
-        questions = ["molar mass of benzene",
+        global_stop_words = ["g/mol", "dalton", "celsius", "show", "give"]
+
+
+        questions = ["Give the MOPs which are Anticuboctahedron shaped",
+                     "molar mass of benzene",
                      "boiling point of CH4",
                      "geometry",
                      "vapour pressure",
@@ -42,13 +46,18 @@ class TestCrossGraph(unittest.TestCase):
 
 
         for q in questions:
+            original_question = q.replace("'s", " of ")
+            tokens = [t for t in original_question.strip().split(" ") if t.lower() not in global_stop_words]
+            original_question = " ".join(tokens)
+
             predicted_domain_labels = []
-            _, tokenized_q = nlp.tokenize_question(q, 1)
+            _, tokenized_q = nlp.tokenize_question(original_question, 1)
             pred_domain_list = my_alignment_model.predict_domain([tokenized_q])[0]
             for idx, domain in enumerate(pred_domain_list):
                 if domain == 1:
                     predicted_domain_labels.append(label_list[idx])
             print("question", q)
+            print("filtered question", original_question)
             print("domain", predicted_domain_labels)
 
         # print(f"Question: {q} \n Predicted domain: {pred_domain}")
