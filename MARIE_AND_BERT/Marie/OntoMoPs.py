@@ -1,8 +1,7 @@
 import os, sys
 
-from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
-
 sys.path.append("..")
+from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.QAEngineNumerical import QAEngineNumerical
 from Marie.Util.location import DATA_DIR
 

@@ -36,6 +36,7 @@ class QAEngineNumerical:
     def text_filtering(self, question):
         # question = question.replace("(", "").replace(")", "")
         stop_words = ["find", "all", "species", "what", "is", "the", "show", "give", "that", "can", "be", "which", "list", "are"]
+        stop_words_units = ["g/mol", "dalton", "degrees", "degree", "celsius", "g"]
         question_tokens = [token for token in question.split(" ") if token not in stop_words]
         question = " ".join(question_tokens)
         return question
@@ -226,7 +227,7 @@ class QAEngineNumerical:
         prediction_batch = {'single_question': self.input_dict.single_question_embedding,
                             'e_h': head_entity_batch, 'e_t': candidate_entity_batch}
 
-        return prediction_batch, candidates, split_indices, head_entity_batch
+        return prediction_batch, candidate_entity_batch, split_indices, head_entity_batch
 
     def answer_multi_target_question(self):
         print("================== Processing multi-target question ==============")
@@ -243,6 +244,7 @@ class QAEngineNumerical:
 
         scores_top_k = []
         targets_top_k = []
+        labels_top_k = []
         prediction_batch, candidates, split_indices, head_entity_batch = self.prepare_multi_target_prediction_batch()
         triple_scores, pred_p_idx = self.score_model.get_scores(prediction_batch, mode=self.mode)
         if self.input_dict.mention[0] == "mops":
@@ -253,11 +255,12 @@ class QAEngineNumerical:
             triple_string = f"{head}_{pred_p_idx}_{tail}"
             triple_exist = self.subgraph_extractor.check_triple_existence(triple_string)
             if triple_exist:
-                targets_top_k.append(self.idx2entity[tail.item()])
+                labels_top_k.append(self.idx2entity[tail.item()])
+                targets_top_k.append(self.idx2entity[head.item()])
                 scores_top_k.append(score.item())
 
         # labels_top_k = [self.idx2entity[t.item()] for t in targets_top_k]
-        labels_top_k = targets_top_k
+        # labels_top_k = targets_top_k
         numerical_top_k = ["EMPTY"] * len(labels_top_k)
 
         return labels_top_k, scores_top_k, targets_top_k, numerical_top_k, "multi-target"
