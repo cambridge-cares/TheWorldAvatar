@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 
 public class DevInstQueryBuilder {
     private RemoteStoreClient storeClient;
+    public List<String> TimeSeriesIRIList; 
     
     // prefix
 	private static final String ONTODEV = "https://www.theworldavatar.com/kg/ontodevice/";
@@ -95,8 +96,9 @@ public class DevInstQueryBuilder {
     
     
     //Methods
-    public DevInstQueryBuilder (RemoteStoreClient storeClient) {
+    public DevInstQueryBuilder (RemoteStoreClient storeClient, List<String> TimeSeriesIRIList) {
         this.storeClient = storeClient;
+        this.TimeSeriesIRIList = TimeSeriesIRIList;
     }
 
     void InsertDevice(JSONObject desc) {
