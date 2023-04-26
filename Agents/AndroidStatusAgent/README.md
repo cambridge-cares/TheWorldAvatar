@@ -67,7 +67,7 @@ Follow these [steps](https://github.com/cambridge-cares/TheWorldAvatar/tree/main
 This agent support both POST and GET requests.
 ## Log App Status
 ```
-curl -X POST 'http://localhost:3838/android-status-agent/set?equipmentIRI=http://www.example.com/test-element'
+curl -X POST 'http://localhost:3838/android-status-agent/set?iri=http://www.example.com/test-element'
 ```
 
 There will be no return message for POST request. A successful request will have 200 status code.
@@ -79,7 +79,7 @@ curl -X GET 'http://localhost:3838/android-status-agent/get'
 This request will return the previously set status.
 ```json
 {
-    "equipmentIRI": "http://www.example.com/test-element"
+    "iri": "http://www.example.com/test-element"
 }
 ```
 
