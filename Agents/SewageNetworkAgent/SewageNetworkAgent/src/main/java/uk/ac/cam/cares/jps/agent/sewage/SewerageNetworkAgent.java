@@ -242,8 +242,8 @@ public class SewerageNetworkAgent extends JPSAgent {
 									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + HG402));
 				}
 
-				if (HG401.equals("Constructed") || HG402.equals("Stock") || HG402.equals("OutOfService")
-						|| HG402.equals("Planning") || HG402.equals("Insulated")) {
+				if (HG401.equals("Constructed") || HG401.equals("Stock") || HG401.equals("OutOfService")
+						|| HG401.equals("Planning") || HG401.equals("Insulated")) {
 					HG_instantiation_ub
 							.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + HG_Instance_Name),
 									NodeFactory.createURI(OS + "hasFunctionalState"),
@@ -827,8 +827,8 @@ public class SewerageNetworkAgent extends JPSAgent {
 									NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + KG402));
 				}
 
-				if (KG401.equals("Constructed") || KG402.equals("Stock") || KG402.equals("OutOfService")
-						|| KG402.equals("Planning") || KG402.equals("Insulated")) {
+				if (KG401.equals("Constructed") || KG401.equals("Stock") || KG401.equals("OutOfService")
+						|| KG401.equals("Planning") || KG401.equals("Insulated")) {
 					KG_instantiation_ub
 							.addInsert(NodeFactory.createURI(KB + "SewerageRecords" + KG_Instance_Name),
 									NodeFactory.createURI(OS + "hasFunctionalState"),
@@ -997,7 +997,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 							NodeFactory.createURI(BMO + KG311));
 				}
 				
-				if (KG312.equals("ClassB") || KG311.equals("ClassD")) {
+				if (KG312.equals("ClassB") || KG312.equals("ClassD")) {
 					KG_instantiation_ub
 					.addInsert(NodeFactory.createURI(KB + "Cover" + KG_Instance_Name),
 							NodeFactory.createURI(OS + "hasClass"), NodeFactory.createURI(KB + KG_Instance_Name + "Class" + KG312))
