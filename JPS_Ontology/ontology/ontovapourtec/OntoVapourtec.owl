@@ -9,9 +9,9 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">27 March 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">26 April 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoVapourtec is an ontology developed for expressing a Vapourtec experiment module.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.8</owl:versionInfo>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.9</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -29,164 +29,6 @@
     
 
 
-    <!-- https://saref.etsi.org/core/accomplishes -->
-
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/accomplishes">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between AutoSampler and the task it can conduct.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between VapourtecR2Pump and the task it can conduct.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between VapourtecR4Reactor and the task it can conduct.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between VapourtecRS400 and the flow chemistry task it can conduct.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://saref.etsi.org/core/actsUpon -->
-
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/actsUpon">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates that the ClearReactions command can act upon ReactionCompleted state.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates that the ConnectToFlowCommander command can act upon Inactive state.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates that the FaultRecoveryCommand can act upon Faulty state.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates that the GetCommand can act upon all VapourtecState.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates that the LoadExperiment command can act upon Idle state.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates that the StartFlowCommander command can act upon Null state.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://saref.etsi.org/core/consistsOf -->
-
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/consistsOf">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates AutoSampler is a part of VapourtecRS400.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates VapourtecR2Pump is a part of VapourtecRS400.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates VapourtecR4Reactor is a part of VapourtecRS400.</rdfs:comment>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://saref.etsi.org/core/hasCommand -->
-
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/hasCommand">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between AutoSamplerFunction function and AutoSamplerCommand command.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between CleanReactor function and ClearReactions command.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between Connection function and ConnectToFlowCommander command.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between FaultRecovery function and FaultRecoveryCommand command.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between GetState function and GetCommand command.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between Launch function and StartFlowCommander command.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between RunReactor function and LoadExperiment command.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between VapourtecR2PumpFunction function and VapourtecR2PumpCommand command.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between VapourtecR4ReactorFunction function and VapourtecR4ReactorCommand command.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://saref.etsi.org/core/hasFunction -->
-
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/hasFunction">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation identifies the functions of AutoSampler.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation identifies the functions of VapourtecR2Pump.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation identifies the functions of VapourtecR4Reactor.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation identifies the functions of VapourtecRS400.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://saref.etsi.org/core/hasState -->
-
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/hasState">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation identifies the type of states of VapourtecRS400.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://saref.etsi.org/core/isAccomplishedBy -->
-
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/isAccomplishedBy">
-        <owl:inverseOf rdf:resource="https://saref.etsi.org/core/accomplishes"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation identifies that the AutoSampler that can accomplish the AutoSamplerTask task.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation identifies that the VapourtecR2Pump that can accomplish the VapourtecR2PumpTask task.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation identifies that the VapourtecR4Reactor that can accomplish its task.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation identifies that the VapourtecRS400 that can accomplish the flow chemistry task.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://saref.etsi.org/core/isCommandOf -->
-
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/isCommandOf">
-        <owl:inverseOf rdf:resource="https://saref.etsi.org/core/hasCommand"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between AutoSamplerCommand command and AutoSamplerFunction function it can achieve.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between ClearReactions command and CleanReactor function it can achieve.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between ConnectToFlowCommander command and Connection function it can achieve.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between FaultRecoveryCommand command and FaultRecovery function it can achieve.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between GetCommand command and GetState function it can achieve.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between LoadExperiment command and RunReactor function it can achieve.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between StartFlowCommander command and Launch function it can achieve.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between VapourtecR2PumpCommand command and VapourtecR2PumpFunction function it can achieve.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between VapourtecR4ReactorCommand command and VapourtecR4ReactorFunction function it can achieve.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://saref.etsi.org/core/isOfferedBy -->
-
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/isOfferedBy">
-        <owl:inverseOf rdf:resource="https://saref.etsi.org/core/offers"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between FlowCommander service and the VapourtecRS400 that offers the service.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://saref.etsi.org/core/offers -->
-
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/offers">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the VapourtecRS400 and the FlowCommander service it offers.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://saref.etsi.org/core/represents -->
-
-
-    <owl:ObjectProperty rdf:about="https://saref.etsi.org/core/represents">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between FlowCommander service and its functions.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://saref.etsi.org/core/v3.1.1/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontolab/hasQuantity -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/hasQuantity">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the flow rate setting and the quantity it refers to following the units of measure practice.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the reactor residence time setting and the quantity it refers to following the units of measure practice.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the reactor temperature setting and the quantity it refers to following the units of measure practice.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the sample loop volume setting and the quantity it refers to following the units of measure practice.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the stoichiometry ratio setting and the quantity it refers to following the units of measure practice.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontolab/hasSetting -->
 
 
@@ -194,33 +36,12 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontolab/isSpecifiedBy -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/isSpecifiedBy">
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between Vapourtec R2 pump and its settings at which the pump is desired to be.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between Vapourtec R4 reactor and its settings at which the reactor is desired to be.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontolab/specifies -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontolab/specifies">
-        <owl:inverseOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/isSpecifiedBy"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between pump settings and the Vapourtec R2 pump which the settings specify.</rdfs:comment>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between reactor settings and the Vapourtec R4 reactor which the settings specify.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontovapourtec/hasCollectionMethod -->
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/hasCollectionMethod">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecRS400"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/CollectionMethod"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates the collection method of VapourtecRS400.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -232,6 +53,8 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/hasFlowRateSetting">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasSetting"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/PumpSettings"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/FlowRateSetting"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between pump settings and specific flow rate setting.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -242,6 +65,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/hasInternalDiameter">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4Reactor"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Diameter"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between Vapourtec R4 reactor and its internal diameter.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -252,6 +77,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/hasReactorLength">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4Reactor"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Length"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between Vapourtec R4 reactor and its reactor length.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -262,6 +89,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/hasReactorMaterial">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4Reactor"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between Vapourtec R4 reactor and the material from which it was made.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -272,6 +101,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/hasReactorTemperatureLowerLimit">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4Reactor"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/CelsiusTemperature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between Vapourtec R4 reactor and the lower limit of its operation temperature range.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -283,6 +114,8 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/hasReactorTemperatureSetting">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasSetting"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/ReactorSettings"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/ReactorTemperatureSetting"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between reactor settings and specific reactor temperature setting.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -293,6 +126,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/hasReactorTemperatureUpperLimit">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4Reactor"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/CelsiusTemperature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between Vapourtec R4 reactor and the upper limit of its operation temperature range.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -303,6 +138,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/hasReactorVolume">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4Reactor"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between Vapourtec R4 reactor and its volume.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -326,6 +163,8 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/hasResidenceTimeSetting">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasSetting"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/ReactorSettings"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/ResidenceTimeSetting"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between reactor settings and specific reactor residence time setting.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -337,6 +176,8 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/hasSampleLoopVolumeSetting">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasSetting"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/PumpSettings"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/SampleLoopVolumeSetting"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between pump settings and specific sample loop volume setting.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -347,6 +188,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/hasSite">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/AutoSampler"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/AutoSamplerSite"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the auto sampler and the sites it has.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -358,6 +201,8 @@
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/hasStoichiometryRatioSetting">
         <rdfs:subPropertyOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasSetting"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/PumpSettings"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/StoichiometryRatioSetting"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between pump settings and specific stoichiometry ratio setting.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -368,18 +213,9 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/holds">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/AutoSamplerSite"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontolab/Vial"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the auto sampler site and the vial it holds.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontovapourtec/isHeldIn -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/isHeldIn">
-        <owl:inverseOf rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/holds"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between the vial and the auto sampler site where it locates.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -408,6 +244,8 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/recommendedReactionScale">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecRS400"/>
+        <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation indicates the recommended reaction scale to reach steady-state in reaction.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
@@ -421,7 +259,7 @@
         <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/AutoSampler"/>
         <rdfs:range rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation between autosampler and its sample loop volume settings.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
 
@@ -509,13 +347,6 @@
     
 
 
-    <!-- http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate -->
-
-
-    <owl:Class rdf:about="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate"/>
-    
-
-
     <!-- http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount -->
 
 
@@ -582,15 +413,7 @@
     <!-- https://www.theworldavatar.com/kg/ontolab/FlowRateSetting -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/FlowRateSetting">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasQuantity"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/VolumetricFlowRate"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/FlowRateSetting"/>
     
 
 
@@ -625,15 +448,7 @@
     <!-- https://www.theworldavatar.com/kg/ontolab/Vial -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Vial">
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/isHeldIn"/>
-                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/AutoSamplerSite"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Vial"/>
     
 
 
@@ -651,44 +466,11 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoreaction/ReactionTemperature -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/ReactionTemperature"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoreaction/ResidenceTime -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/ResidenceTime"/>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoreaction/StoichiometryRatio -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/StoichiometryRatio"/>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontovapourtec/AutoSampler -->
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/AutoSampler">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasFunction"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/AutoSamplerFunction"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/hasSite"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/AutoSamplerSite"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The autosampler is the facility for the reagents to be preloaded into ï¿½Sample Injection Loopsï¿½ and then released into the flow at the correct moment as required (all controlled by the R-Series software if required). [https://www.vapourtec.com/products/r-series-expansion/automation-analysis-automated-reagent-addition/]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -700,12 +482,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/AutoSamplerCommand">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Command"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/isCommandOf"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/AutoSamplerFunction"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The saref:Command of AutoSampler.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -717,12 +493,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/AutoSamplerFunction">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Function"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasCommand"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/AutoSamplerCommand"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The saref:Function of AutoSampler.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -762,12 +532,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/CleanReactor">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecFunction"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasCommand"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/ClearReactions"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The function to clean the reactor.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -790,18 +554,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/ClearReactions">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Command"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/actsUpon"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/ReactionCompleted"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/isCommandOf"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/CleanReactor"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The command to realise the &quot;CleanReactor&quot; function.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -823,18 +575,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/ConnectToFlowCommander">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Command"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/actsUpon"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/Inactive"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/isCommandOf"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/Connection"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The command to realise the &quot;Connection&quot; function.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -846,12 +586,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/Connection">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecFunction"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasCommand"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/ConnectToFlowCommander"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The function to establish the connection between FlowCommander and the physical existence of Vapourtec module.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -885,12 +619,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/FaultRecovery">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecFunction"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasCommand"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/FaultRecoveryCommand"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The function to recover Vapourtec module from fault.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -902,18 +630,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/FaultRecoveryCommand">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Command"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/actsUpon"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/Faulty"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/isCommandOf"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/FaultRecovery"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The command to realise the &quot;FaultRecovery&quot; function.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -958,18 +674,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/FlowCommander">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Service"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/isOfferedBy"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecRS400"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/represents"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecFunction"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">FlowCommander (R-Series software) is a PC or touchpanel based application that allows the automation and datalogging of Vapourtec R-Series modules. The R-Series software can also control other devices such as UV detectors, fraction collectors, liquid handlers and standalone pumps. [https://www.vapourtec.com/products/r-series-software/]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -992,18 +696,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/GetCommand">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Command"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/actsUpon"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecState"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/isCommandOf"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/GetState"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The command to realise the &quot;GetState&quot; function.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -1015,12 +707,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/GetState">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecFunction"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasCommand"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/GetCommand"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The function to retrieve the state of Vapourtec module.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -1065,12 +751,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/Launch">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecFunction"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasCommand"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/StartFlowCommander"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The function to launch the FlowCommander.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -1082,18 +762,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/LoadExperiment">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Command"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/actsUpon"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/Idle"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/isCommandOf"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/RunReactor"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The command to realise the &quot;RunReactor&quot; function.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -1116,13 +784,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/PumpSettings">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/EquipmentSettings"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/specifies"/>
-                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR2Pump"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/hasFlowRateSetting"/>
@@ -1168,13 +829,6 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/EquipmentSettings"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/specifies"/>
-                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4Reactor"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/hasReactorTemperatureSetting"/>
                 <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
                 <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/ReactorTemperatureSetting"/>
@@ -1198,13 +852,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/ReactorTemperatureSetting">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/TemperatureSetting"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasQuantity"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ReactionTemperature"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Setting that specifies the reactor temperature.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -1216,13 +863,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/ResidenceTimeSetting">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/DurationSetting"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasQuantity"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ResidenceTime"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Setting that specifies the reaction residence time.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -1234,12 +874,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/RunReactor">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecFunction"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasCommand"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/LoadExperiment"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The function to run the reactor.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -1262,13 +896,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/SampleLoopVolumeSetting">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/VolumeSetting"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasQuantity"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Setting that specifies the sample loop volume.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -1291,18 +918,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/StartFlowCommander">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Command"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/actsUpon"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/Null"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/isCommandOf"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/Launch"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The command to realise the &quot;Launch&quot; function.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -1314,13 +929,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/StoichiometryRatioSetting">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/ParameterSetting"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasQuantity"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/StoichiometryRatio"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Setting that specifies the stoichiometry ratio of the inlet streams from the inlet pumps to the reactor.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -1343,19 +951,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR2Pump">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasFunction"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR2PumpFunction"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/isSpecifiedBy"/>
-                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/PumpSettings"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The RS-400 comes with four R2-C (acid resistant pump) pumps as standard. [https://www.vapourtec.com/products/r-series-flow-chemistry-system/reactions-and-reagents-automated-rs-400-features/]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -1367,12 +962,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR2PumpCommand">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Command"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/isCommandOf"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR2PumpFunction"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The saref:Command of VapourtecR2Pump.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -1384,12 +973,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR2PumpFunction">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Function"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasCommand"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR2PumpCommand"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The saref:Function of VapourtecR2Pump.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -1412,18 +995,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4Reactor">
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasFunction"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4ReactorFunction"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/hasReactorMaterial"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/hasInternalDiameter"/>
@@ -1459,13 +1030,6 @@
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
             </owl:Restriction>
         </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/isSpecifiedBy"/>
-                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/ReactorSettings"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The RS-400 comes with a standard heated, cooled and high temperature tube reactors and the standard heated column reactor. [https://www.vapourtec.com/products/r-series-flow-chemistry-system/reactions-and-reagents-automated-rs-400-features/]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -1477,12 +1041,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4ReactorCommand">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Command"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/isCommandOf"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4ReactorFunction"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The saref:Command of VapourtecR4Reactor.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -1494,12 +1052,6 @@
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4ReactorFunction">
         <rdfs:subClassOf rdf:resource="https://saref.etsi.org/core/Function"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasCommand"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4ReactorCommand"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The saref:Function of VapourtecR4Reactor.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontovapourtec/</rdfs:isDefinedBy>
     </owl:Class>
@@ -1524,38 +1076,6 @@
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontolab/LabEquipment"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasFunction"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecFunction"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/hasState"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecState"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/offers"/>
-                <owl:allValuesFrom rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/FlowCommander"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/consistsOf"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR2Pump"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/consistsOf"/>
-                <owl:minQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:minQualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/VapourtecR4Reactor"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/hasCollectionMethod"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/CollectionMethod"/>
@@ -1566,13 +1086,6 @@
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/recommendedReactionScale"/>
                 <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
                 <owl:onClass rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="https://saref.etsi.org/core/consistsOf"/>
-                <owl:maxQualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:maxQualifiedCardinality>
-                <owl:onClass rdf:resource="https://www.theworldavatar.com/kg/ontovapourtec/AutoSampler"/>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The RS-400 is a complex system, with some room for customisation. It is still completely modular, compatible with simpler and older systems. It includes fully automated control, an autosampler/collector, 4 pumps and a number of reactors. It is ideal for library synthesis and catalysis screening. [https://www.vapourtec.com/products/r-series-flow-chemistry-system/reactions-and-reagents-automated-rs-400-features/]</rdfs:comment>
