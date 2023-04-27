@@ -46,17 +46,16 @@
                 "derivedFromSensor":[],
                 "derviedBy":null,
                 "type": null,
-                "unit" : null   
+                "unit" : null,
+                "IRI" : null
             },
             "derivVar2":{
                 "derivedFromSensor":[],
                 "derviedBy":null,
                 "type": null,
-                "unit" : null
-            },
-
-            "TimeseriesMapping":{"TS1":["derivVar1", "derivVar2"]}
-            
+                "unit" : null,
+                "IRI" : null
+            }            
         }
     },
     "IRIMapper":{
