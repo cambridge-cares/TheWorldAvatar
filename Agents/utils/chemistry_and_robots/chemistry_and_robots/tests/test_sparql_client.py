@@ -25,6 +25,12 @@ pytest_plugins = ["docker_compose"]
 # collect_triples_for_equip_settings and collect_triples_for_new_experiment are
 # tested in integration test of agents
 
+def test_get_ontology_tbox_version(initialise_triples):
+    sparql_client = initialise_triples
+    assert sparql_client.get_ontology_tbox_version(onto.ONTODOE) is not None
+    with pytest.raises(Exception):
+        sparql_client.get_ontology_tbox_version(f'http://fake_ontology/{str(uuid.uuid4())}/')
+
 def test_amount_of_triples_none_zero(initialise_triples):
     sparql_client = initialise_triples
     assert sparql_client.getAmountOfTriples() != 0

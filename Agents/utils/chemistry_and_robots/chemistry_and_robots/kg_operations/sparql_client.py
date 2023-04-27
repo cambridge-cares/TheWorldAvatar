@@ -22,12 +22,23 @@ from chemistry_and_robots.hardware import hplc
 from chemistry_and_robots.kg_operations import dict_and_list as dal
 
 from chemistry_and_robots.resources import TBOX_PATH_DICT
+from chemistry_and_robots import __version__
 
 from py4jps import agentlogging
 logger = agentlogging.get_logger('dev')
 
 
 class ChemistryAndRobotsSparqlClient(PySparqlClient):
+    def get_ontology_tbox_version(self, tbox_namespace):
+        if not tbox_namespace:
+            raise Exception("No TBox namespace provided.")
+        if TBOX_PATH_DICT.get(tbox_namespace) is None:
+            raise Exception(f"TBox namespace {tbox_namespace} is NOT packaged in chemistry_and_robots=={__version__}.")
+        g = Graph().parse(TBOX_PATH_DICT.get(tbox_namespace), format='xml')
+        results = g.query(f'SELECT ?v WHERE {{ <{tbox_namespace}> <{OWL_VERSION}> ?v. }}')
+        for row in results:
+            return str(row['v'])
+
     def upload_ontology_tbox(self, tbox_namespace, alternative_url=None):
         try:
             query = f'SELECT * WHERE {{ <{tbox_namespace}> <{OWL_VERSION}> ?v. }}'
