@@ -27,14 +27,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class DevInstQueryBuilder {
-    private RemoteStoreClient storeClient;
-    public List<String> TimeSeriesIRIList; 
+    private RemoteStoreClient storeClient; 
     
     // prefix
 	private static final String ONTODEV = "https://www.theworldavatar.com/kg/ontodevice/";
     private static final Prefix P_DEV = SparqlBuilder.prefix("ontodevice",iri(ONTODEV));
     private static final Prefix P_SAREF = SparqlBuilder.prefix("saref", iri("https://saref.etsi.org/core/"));
-    private static final Prefix P_TS = SparqlBuilder.prefix("ontotimeseries", iri("https://www.theworldavatar.com/kg/ontotimeseries/"));
     private static final Prefix P_DERIV = SparqlBuilder.prefix("saref", iri("https://www.theworldavatar.com/kg/ontoderivation/"));
     private static final Prefix P_AGENT = SparqlBuilder.prefix("ontoagent",iri("https://www.theworldavatar.com/kg/ontoagent/"));
     private static final Prefix P_OM = SparqlBuilder.prefix("om", iri("http://www.ontology-of-units-of-measure.org/resource/om-2/"));
@@ -84,7 +82,6 @@ public class DevInstQueryBuilder {
     private static final Iri consistsOf = P_SAREF.iri("consistsOf");
     private static final Iri sendsSignalTo = P_DEV.iri("sendsSignalTo");
     private static final Iri measures = P_DEV.iri("measures");
-    private static final Iri hasTimeSeries = P_TS.iri("hasTimeSeries");
     private static final Iri belongsTo = P_DERIV.iri("belongsTo");
     private static final Iri isDerivedUsing = P_DERIV.iri("isDerivedUsing");
     private static final Iri isDerivedFrom = P_DERIV.iri("isDerivedFrom");
@@ -96,9 +93,8 @@ public class DevInstQueryBuilder {
     
     
     //Methods
-    public DevInstQueryBuilder (RemoteStoreClient storeClient, List<String> TimeSeriesIRIList) {
+    public DevInstQueryBuilder (RemoteStoreClient storeClient) {
         this.storeClient = storeClient;
-        this.TimeSeriesIRIList = TimeSeriesIRIList;
     }
 
     void InsertDevice(JSONObject desc) {
@@ -166,7 +162,9 @@ public class DevInstQueryBuilder {
         for(String derivVarKey : Derivation.keySet()){
             JSONObject deriv = Derivation.getJSONObject(derivVarKey);
 
-            Iri derivVar_IRI = P_DEV.iri(genUUID(derivVarKey));
+            //Iri derivVar_IRI = P_DEV.iri(genUUID(derivVarKey));
+            String DerivedIRI_String = deriv.getString("IRI");
+            Iri derivVar_IRI = iri(DerivedIRI_String);
             Derived_UUID_Map.put(derivVarKey, derivVar_IRI);
 
             //Takes in SensorComp names instead as its 1:1 correspondene with the measured var.
@@ -214,7 +212,7 @@ public class DevInstQueryBuilder {
 
     void InstantiateDevices() {
         ModifyQuery modify = Queries.MODIFY();
-        modify.prefix(P_AGENT, P_DERIV, P_DEV, P_OM, P_SAREF, P_TS);
+        modify.prefix(P_AGENT, P_DERIV, P_DEV, P_OM, P_SAREF);
 
         //Instantiate the microcontroller, sensors, variable instances
 
@@ -272,6 +270,18 @@ public class DevInstQueryBuilder {
         }
 
         //Connect the Derived state instances
+
+        for(String derivedKey: Derived_UUID_Map.keySet()){
+            Iri DerivedIRI = Derived_UUID_Map.get(derivedKey);
+            Iri DerivationWithTimeSeries_UUID = DerivationWithTimeSeries_UUID_Map.get(derivedKey);
+            modify.insert(DerivedIRI.has(belongsTo, DerivationWithTimeSeries_UUID));
+
+            List<Iri> RawList = DerivedToRawMap.get(derivedKey);
+            for (Iri rawIRI : RawList) {
+                modify.insert(DerivedIRI.has(isDerivedFrom, rawIRI));
+            }
+
+        }
         
 
 
