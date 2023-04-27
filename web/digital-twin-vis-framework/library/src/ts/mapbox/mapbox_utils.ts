@@ -60,8 +60,17 @@ class MapboxUtils {
         }
 
         // Make HTML string
-        let html = "<h3>" + name + "</h3>";
-        if(desc !== undefined) html += desc; 
+        let html = "";
+        if(desc == null) {
+            html += "<h3 style='text-align: center !important;'>" + name + "</h3>";
+        } else {
+            html += "<h3>" + name + "</h3>";
+            if(desc.length > 100) {
+                html += "<div class='desc-popup long-popup'></br>" + desc + "</div>";
+            } else {
+                html += "<div class='desc-popup'></br>" + desc + "</div>";
+            }
+        }
 
         // Add thumbnail if present
         if(properties["thumbnail"]) {

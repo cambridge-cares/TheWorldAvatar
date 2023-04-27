@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   propertyvalue_agent:
-    image: ghcr.io/cambridge-cares/propertyvalue_agent_test:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/propertyvalue_agent_test:1.2.0
     build:
       context: .
       target: test
@@ -18,8 +18,8 @@ services:
       # Stack & Stack Client parameters can be neglected as overwritten by mocked module imports
       #
       #--- Derivation Agent parameters ---#
-      - ONTOAGENT_SERVICE_IRI=http://www.example.com/resource/agents/Service__KL_PropertyValueEstimation/Service
-      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5011/PropertyValueEstimation
+      - ONTOAGENT_SERVICE_IRI=https://www.example.com/resource/agents/Service__KL_PropertyValueEstimation/Service
+      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5012/PropertyValueEstimation
       - DERIVATION_INSTANCE_BASE_URL=https://www.example.com/kg/derivation/
       - DERIVATION_PERIODIC_TIMESCALE=5
       - REGISTER_AGENT=false
@@ -33,7 +33,11 @@ services:
       - FILE_SERVER_USERNAME=''
       - FILE_SERVER_PASSWORD=''
     ports:
-      - 5011:5000
+      - 5012:5000
+    extra_hosts:
+      # To allow connecting to 'host.docker.internal' on Linux
+      # details: https://github.com/moby/libnetwork/pull/2348#issuecomment-1177610499
+      - "host.docker.internal:host-gateway"
     volumes:
       # To run docker inside docker, mount default Unix socket docker.sock as a volume
       # (https://devopscube.com/run-docker-in-docker/)

@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   dispersion-interactor:
-    image: docker.cmclinnovations.com/dispersion-interactor:1.0.0-SNAPSHOT
+    image: docker.cmclinnovations.com/dispersion-interactor:1.0.0
     deploy:
       mode: replicated
       replicas: 1
@@ -13,9 +13,9 @@ services:
       - DATABASE=postgres # currently ontop reads from the default database
       - SCOPE_TABLE_NAME=scopes
       - AERMOD_AGENT_IRI=http://theworldavatar.com/kg/dispersion/AermodAgent 
-      - AERMOD_AGENT_URL=http://aermod-agent:8080/AermodAgent/
-      - WEATHER_AGENT_URL=http://weatheragent:8080/WeatherAgent/CreateStation
-      - SHIP_INPUT_AGENT=http://ship-input-agent:8080/ShipInputAgent/update
+      - AERMOD_AGENT_URL=http://${STACK_NAME}-aermod-agent:8080/AermodAgent/
+      - WEATHER_AGENT_URL=http://${STACK_NAME}-weatheragent:8080/WeatherAgent/CreateStation
+      - SHIP_INPUT_AGENT=http://${STACK_NAME}-ship-input-agent:8080/ShipInputAgent/update
     configs:
       - postgis
       - blazegraph

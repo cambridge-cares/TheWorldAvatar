@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.agent;
 
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.interfaces.JPSAgentInterface;
 import uk.ac.cam.cares.jps.base.query.AccessAgentCaller;
 import uk.ac.cam.cares.jps.base.query.RDBAccessAgentCaller;
@@ -59,6 +60,22 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
             throw new BadRequestException();
         }
         return true;
+    }
+    
+    /**
+	 * Get the SPARQL endpoints for a target resource. The query and update endpoints 
+	 * can be extracted from the JSONObject using the keys
+	 * {@link uk.ac.cam.cares.jps.base.config.JPSConstants#QUERY_ENDPOINT JPSConstants.QUERY_ENDPOINT} 
+	 * and
+	 * {@link uk.ac.cam.cares.jps.base.config.JPSConstants#UPDATE_ENDPOINT JPSConstants.UPDATE_ENDPOINT}. 
+	 * <p>
+	 * This does not perform a SPARQL query/update.
+	 * 
+	 * @param targetResourceID
+	 * @return JSONObject with query and update endpoint
+	 */
+    public JSONObject getEndpoints(String targetResourceID) {
+    	return AccessAgentCaller.getEndpoints(targetResourceID);	
     }
     
     /**

@@ -37,6 +37,8 @@ public class QueryBroker {
      */
     private static final Logger LOGGER = LogManager.getLogger(QueryBroker.class);
 
+    //TODO: remove. AccessAgentCaller.get no longer works 
+    /*
     public String readFile(String url) {
         if (!url.startsWith("http")) {
             throw new JPSRuntimeException("destinationUrl must be a URL");
@@ -44,6 +46,7 @@ public class QueryBroker {
 		String result = AccessAgentCaller.get(null, url, null);
         return result;
     }
+    */
 
     public String readFileLocal(String path) {
         if (path.startsWith("http")) {

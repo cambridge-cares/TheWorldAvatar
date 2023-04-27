@@ -26,7 +26,7 @@ public class WeatherData {
 
     public long getTemperatureInFahrenheit() {
         if (temperature < 0) {
-            throw new RuntimeException("Negative temperatures are not supported yet");
+            throw new RuntimeException("Temperatures below zero degree Celsius are not supported yet");
         }
         return Math.round((temperature * 1.8) + 32);
     }

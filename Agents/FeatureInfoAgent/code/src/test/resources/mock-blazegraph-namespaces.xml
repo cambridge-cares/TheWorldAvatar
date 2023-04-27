@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+	xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+
+<rdf:Description rdf:nodeID="node1gep71499x361">
+	<rdf:type rdf:resource="http://rdfs.org/ns/void#Dataset"/>
+	<title xmlns="http://purl.org/dc/terms/">churchill</title>
+	<Namespace xmlns="http://www.bigdata.com/rdf#/features/KB/">churchill</Namespace>
+	<sparqlEndpoint xmlns="http://rdfs.org/ns/void#" rdf:resource="http://kg.cmclinnovations.com/blazegraph/namespace/churchill/sparql"/>
+	<uriRegexPattern xmlns="http://rdfs.org/ns/void#">^.*</uriRegexPattern>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1gep71499x362">
+	<rdf:type rdf:resource="http://rdfs.org/ns/void#Dataset"/>
+	<title xmlns="http://purl.org/dc/terms/">demokingslynn</title>
+	<Namespace xmlns="http://www.bigdata.com/rdf#/features/KB/">demokingslynn</Namespace>
+	<sparqlEndpoint xmlns="http://rdfs.org/ns/void#" rdf:resource="http://kg.cmclinnovations.com/blazegraph/namespace/demokingslynn/sparql"/>
+	<uriRegexPattern xmlns="http://rdfs.org/ns/void#">^.*</uriRegexPattern>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1gep71499x363">
+	<rdf:type rdf:resource="http://rdfs.org/ns/void#Dataset"/>
+	<title xmlns="http://purl.org/dc/terms/">flood</title>
+	<Namespace xmlns="http://www.bigdata.com/rdf#/features/KB/">flood</Namespace>
+	<sparqlEndpoint xmlns="http://rdfs.org/ns/void#" rdf:resource="http://kg.cmclinnovations.com/blazegraph/namespace/flood/sparql"/>
+	<uriRegexPattern xmlns="http://rdfs.org/ns/void#">^.*</uriRegexPattern>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1gep71499x364">
+	<rdf:type rdf:resource="http://rdfs.org/ns/void#Dataset"/>
+	<title xmlns="http://purl.org/dc/terms/">kb</title>
+	<Namespace xmlns="http://www.bigdata.com/rdf#/features/KB/">kb</Namespace>
+	<sparqlEndpoint xmlns="http://rdfs.org/ns/void#" rdf:resource="http://kg.cmclinnovations.com/blazegraph/namespace/kb/sparql"/>
+	<uriRegexPattern xmlns="http://rdfs.org/ns/void#">^.*</uriRegexPattern>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID="node1gep71499x365">
+	<rdf:type rdf:resource="http://rdfs.org/ns/void#Dataset"/>
+	<title xmlns="http://purl.org/dc/terms/">kingslynnbuildings</title>
+	<Namespace xmlns="http://www.bigdata.com/rdf#/features/KB/">kingslynnbuildings</Namespace>
+	<sparqlEndpoint xmlns="http://rdfs.org/ns/void#" rdf:resource="http://kg.cmclinnovations.com/blazegraph/namespace/kingslynnbuildings/sparql"/>
+	<uriRegexPattern xmlns="http://rdfs.org/ns/void#">^.*</uriRegexPattern>
+</rdf:Description>
+
+</rdf:RDF>
