@@ -254,13 +254,15 @@ class CrossGraphQAEngine:
                             target_list[domain] = targets
 
                 else:
+                    with self.lock:
+                        score_list[domain] = [-999] * 5
+                        label_list[domain] = ["EMPTY SLOT"] * 5
+                        target_list[domain] = ["EMPTY SLOT"] * 5
+            except:
+                with self.lock:
                     score_list[domain] = [-999] * 5
                     label_list[domain] = ["EMPTY SLOT"] * 5
                     target_list[domain] = ["EMPTY SLOT"] * 5
-            except:
-                score_list[domain] = [-999] * 5
-                label_list[domain] = ["EMPTY SLOT"] * 5
-                target_list[domain] = ["EMPTY SLOT"] * 5
 
         threads = []
         for i, domain in enumerate(self.domain_list):

@@ -71,7 +71,7 @@ class AgentInterface:
                 return ["EMPTY"], [-999], ["EMPTY"]
             else:
                 # return my_invoker.result
-                return [result], [1.0], [agent]
+                return [json.dumps(result)], [1.0], [agent]
         else:
             return ["EMPTY"], [-999], ["EMPTY"]
 
