@@ -22,16 +22,6 @@ ONTOVAPOURTEC = 'https://www.theworldavatar.com/kg/ontovapourtec/'
 ONTOHPLC = 'https://www.theworldavatar.com/kg/ontohplc/'
 ONTOBPR = 'https://www.theworldavatar.com/kg/ontobpr/'
 
-###--- TBox basic info ---###
-TBOX_DICT = {
-    ONTODOE: 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontodoe/OntoDoE.owl',
-    ONTOREACTION: 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl',
-    ONTOGOAL: 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl',
-    ONTOLAB: 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontolab/OntoLab.owl',
-    ONTOHPLC: 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontohplc/OntoHPLC.owl',
-    ONTOVAPOURTEC: 'https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontovapourtec/OntoVapourtec.owl',
-}
-
 
 ###--- Some IRIs from OM ---###
 OM_CELSIUSTEMPERATURE = UNITS_OF_MEASURE + 'CelsiusTemperature'
