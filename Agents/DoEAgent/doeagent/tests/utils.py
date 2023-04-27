@@ -8,6 +8,8 @@ from pyderivationagent.data_model import TIME_NUMERICPOSITION
 
 import doeagent.tests.conftest as cf
 
+from chemistry_and_robots.data_model import iris
+
 # ----------------------------------------------------------------------------------
 # Utility functions
 # ----------------------------------------------------------------------------------
@@ -19,6 +21,10 @@ def initialise_triples(sparql_client):
     # Create folder for downloaded files
     if not os.path.exists(cf.DOWNLOADED_DIR):
         os.mkdir(cf.DOWNLOADED_DIR)
+
+    # Upload Ontology TBox
+    sparql_client.upload_ontology_tbox(iris.ONTODOE)
+    sparql_client.upload_ontology_tbox(iris.ONTOREACTION)
 
 	# Upload all relevant example triples provided in the resources folder of 'chemistry_and_robots' package to triple store
     for f in [
