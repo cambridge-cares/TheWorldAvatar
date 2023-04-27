@@ -47,6 +47,7 @@ ENV_FILES_DIR = os.path.join(THIS_DIR,'env_files')
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
 TEST_TRIPLES_DIR = os.path.join(THIS_DIR,'test_triples')
+TEST_TRIPLES_SUZUKI_STEP1_DIR = os.path.join(THIS_DIR,'test_triples_suzuki_step1')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
 DOWNLOADED_DIR = os.path.join(THIS_DIR,'_downloaded_files_for_test')
 HPLC_REPORT_LOCAL_TEST_DIR = os.path.join(THIS_DIR,'_generated_hplc_report_for_test')
@@ -129,6 +130,7 @@ class IRIs(Enum):
     VAPOURTEC_ENV_FILE_DICT = {LAB1_IRI: LAB1_VAPOURTEC_AGENT_ENV, LAB2_IRI: LAB2_VAPOURTEC_AGENT_ENV}
     HPLC_ENV_FILE_DICT = {LAB1_IRI: LAB1_HPLC_AGENT_ENV, LAB2_IRI: LAB2_HPLC_AGENT_ENV}
 
+    HPLC_METHOD_SUZUKI = 'https://www.theworldavatar.com/kg/lab_auto/suzuki/HPLCMethod_Suzuki'
 
 # ----------------------------------------------------------------------------------
 # Pytest session related functions
@@ -1050,5 +1052,19 @@ sample_goal_request = {
     "labs": [
         'https://www.theworldavatar.com/kg/lab_auto/lab1/Laboratory_Dummy',
         'https://www.theworldavatar.com/kg/lab_auto/lab2/Laboratory_Dummy'
+    ]
+}
+
+suzuki_goal_request = {
+    "chem_rxn": "https://www.theworldavatar.com/kg/lab_auto/suzuki/ChemRxn_1",
+    "cycleAllowance": 6,
+    "deadline": str(datetime.fromtimestamp(int(time.time()) + 2 * 60 * 60).isoformat()),
+    "first_goal_clz": "https://www.theworldavatar.com/kg/ontoreaction/Yield",
+    "first_goal_desires": "https://www.theworldavatar.com/kg/ontogoal/desiresGreaterThan",
+    "first_goal_num_val": 99,
+    "first_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/percent",
+    "rxn_opt_goal_plan": "https://www.theworldavatar.com/kg/plans/RxnOpt/rxnoptplan",
+    "labs": [
+        'https://www.theworldavatar.com/kg/lab_auto/lab1/Laboratory_Dummy',
     ]
 }
