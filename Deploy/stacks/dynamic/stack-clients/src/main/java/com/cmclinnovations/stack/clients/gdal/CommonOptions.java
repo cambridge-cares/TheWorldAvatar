@@ -65,6 +65,7 @@ class CommonOptions<T extends CommonOptions<T>> {
         // CSV source files, as described here:
         // https://gdal.org/drivers/vector/csv.html#open-options
         inputDatasetOpenOptions.put("AUTODETECT_TYPE", "YES");
+        inputDatasetOpenOptions.put("EMPTY_STRING_AS_NULL", "YES");
 
         List<String> allArgs = new ArrayList<>(args.length);
         Collections.addAll(allArgs, args);
