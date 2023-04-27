@@ -48,6 +48,7 @@ SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
 TEST_TRIPLES_DIR = os.path.join(THIS_DIR,'test_triples')
 TEST_TRIPLES_SUZUKI_STEP1_DIR = os.path.join(THIS_DIR,'test_triples_suzuki_step1')
+TEST_TRIPLES_SUZUKI_STEP2_DIR = os.path.join(THIS_DIR,'test_triples_suzuki_step2')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
 DOWNLOADED_DIR = os.path.join(THIS_DIR,'_downloaded_files_for_test')
 HPLC_REPORT_LOCAL_TEST_DIR = os.path.join(THIS_DIR,'_generated_hplc_report_for_test')
@@ -131,6 +132,7 @@ class IRIs(Enum):
     HPLC_ENV_FILE_DICT = {LAB1_IRI: LAB1_HPLC_AGENT_ENV, LAB2_IRI: LAB2_HPLC_AGENT_ENV}
 
     HPLC_METHOD_SUZUKI = 'https://www.theworldavatar.com/kg/lab_auto/suzuki/HPLCMethod_Suzuki'
+    HPLC_METHOD_SUZUKI_STEP2 = 'https://www.theworldavatar.com/kg/lab_auto/suzuki/step2/HPLCMethod_Suzuki'
 
 # ----------------------------------------------------------------------------------
 # Pytest session related functions
@@ -142,12 +144,6 @@ def pytest_sessionstart(session):
         os.remove(SECRETS_FILE_PATH)
     if os.path.exists(URL_FILE_PATH):
         os.remove(URL_FILE_PATH)
-    if os.path.exists(DOWNLOADED_DIR):
-        shutil.rmtree(DOWNLOADED_DIR)
-    if os.path.exists(FCEXP_FILE_DIR):
-        shutil.rmtree(FCEXP_FILE_DIR)
-    if os.path.exists(HPLC_REPORT_LOCAL_TEST_DIR):
-        shutil.rmtree(HPLC_REPORT_LOCAL_TEST_DIR)
 
 
 def pytest_sessionfinish(session):
@@ -1057,6 +1053,20 @@ sample_goal_request = {
 
 suzuki_goal_request = {
     "chem_rxn": "https://www.theworldavatar.com/kg/lab_auto/suzuki/ChemRxn_1",
+    "cycleAllowance": 6,
+    "deadline": str(datetime.fromtimestamp(int(time.time()) + 2 * 60 * 60).isoformat()),
+    "first_goal_clz": "https://www.theworldavatar.com/kg/ontoreaction/Yield",
+    "first_goal_desires": "https://www.theworldavatar.com/kg/ontogoal/desiresGreaterThan",
+    "first_goal_num_val": 99,
+    "first_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/percent",
+    "rxn_opt_goal_plan": "https://www.theworldavatar.com/kg/plans/RxnOpt/rxnoptplan",
+    "labs": [
+        'https://www.theworldavatar.com/kg/lab_auto/lab1/Laboratory_Dummy',
+    ]
+}
+
+suzuki_step2_goal_request = {
+    "chem_rxn": "https://www.theworldavatar.com/kg/lab_auto/suzuki/step2/ChemRxn_1",
     "cycleAllowance": 6,
     "deadline": str(datetime.fromtimestamp(int(time.time()) + 2 * 60 * 60).isoformat()),
     "first_goal_clz": "https://www.theworldavatar.com/kg/ontoreaction/Yield",
