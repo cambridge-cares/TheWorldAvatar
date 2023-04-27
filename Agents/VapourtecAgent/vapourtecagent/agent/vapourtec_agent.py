@@ -163,7 +163,7 @@ class VapourtecAgent(DerivationAgent):
         derivation_outputs.addGraph(vapourtec_input_file_graph)
 
         # Send the experiment csv for execution, also update the autosampler liquid level
-        self.dry_run_duration = random.randint(10, 180)
+        self.dry_run_duration = random.randint(1, 10)
         self.send_fcexp_csv_for_execution(local_file_path, list_equip_settings)
 
         # Wait until the vapourtec is running reaction (if not dry_run)
