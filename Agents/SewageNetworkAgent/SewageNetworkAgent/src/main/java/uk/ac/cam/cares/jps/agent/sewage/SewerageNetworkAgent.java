@@ -107,7 +107,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 			 HGInstantiation(HG_Path_4);
 			 HGInstantiation(HG_Path_5); 
 			 HGInstantiation(HG_Path_6);
-			 KGInstantiation(KG_Path_0); 
+			 /*KGInstantiation(KG_Path_0); 
 			 KGInstantiation(KG_Path_1);
 			 KGInstantiation(KG_Path_2); 
 			 KGInstantiation(KG_Path_3);
@@ -122,7 +122,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 			 BranchInstantiation(BR_Path_1); 
 			 BranchInstantiation(BR_Path_2);
 			 BranchInstantiation(BR_Path_3);
-			 KGMainSubNetInstantiation(KG_MainNet,KG_SubNet);
+			 KGMainSubNetInstantiation(KG_MainNet,KG_SubNet);*/
 			
 			AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y \"None\"} where {?x ?y \"None\"}");
 			jsonMessage.accumulate("Result", "Data has been instantiated.");
@@ -362,14 +362,22 @@ public class SewerageNetworkAgent extends JPSAgent {
 
 			}
 
-			if (HG500.equals("RainWater") || HG500.equals("DomesticWasteWater")) {
+			if (HG500.equals("DomesticWastewater")) {
 				HG_instantiation_ub
 						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "usedFor"),
-								NodeFactory.createURI(KB + HG_Instance_Name + "SewerageFluid" + HG500))
-						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name + "SewerageFluid" + HG500),
-								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + HG500));
+								NodeFactory.createURI(KB + HG_Instance_Name + "SewerageFluid" + "DomesticWasteWater"))
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name + "SewerageFluid" + "DomesticWasteWater"),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "DomesticWasteWater"));
 			}
-
+			
+			if (HG500.equals("Rainwater")) {
+				HG_instantiation_ub
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name), NodeFactory.createURI(OS + "usedFor"),
+								NodeFactory.createURI(KB + HG_Instance_Name + "SewerageFluid" + "RainWater"))
+						.addInsert(NodeFactory.createURI(KB + HG_Instance_Name + "SewerageFluid" + "RainWater"),
+								NodeFactory.createURI(RDF_TYPE), NodeFactory.createURI(OS + "RainWater"));
+			}
+			
 			if (!HG011.equals("None")) {
 				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + HG_Instance_Name),
 						NodeFactory.createURI(OS + "hasConnectionID"), HG011);
