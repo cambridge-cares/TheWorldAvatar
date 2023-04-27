@@ -6,6 +6,7 @@ services:
       EXTERNAL_PORT: "${EXTERNAL_PORT-3838}"
       STACK_BASE_DIR: "${STACK_BASE_DIR-}"
     volumes:
+      - jdbc_drivers:/jdbc
       - ./inputs/data:/inputs/data
       - ./inputs/config:/inputs/config
       # Add secret files here as Docker compose doesn't handle "secrets" well

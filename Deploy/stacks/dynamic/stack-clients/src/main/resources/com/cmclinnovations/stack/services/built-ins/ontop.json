@@ -10,11 +10,6 @@
                     "ONTOP_DB_NAME=postgres",
                     "ONTOP_DEV_MODE=true"
                 ],
-                "Command": [
-                    "tail",
-                    "-f",
-                    "/dev/null"
-                ],
                 "Configs": [
                     {
                         "ConfigName": "postgis"
@@ -23,6 +18,14 @@
                 "Secrets": [
                     {
                         "SecretName": "postgis_password"
+                    }
+                ],
+                "Mounts": [
+                    {
+                        "Type": "volume",
+                        "Source": "jdbc_drivers",
+                        "Target": "/opt/ontop/jdbc",
+                        "ReadOnly": false
                     }
                 ]
             }
