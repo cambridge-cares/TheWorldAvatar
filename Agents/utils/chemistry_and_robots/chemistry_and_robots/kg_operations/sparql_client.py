@@ -1281,7 +1281,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 hasCollectionMethod=CollectionMethod(
                     instance_iri=res['collection_method'],
                     clz=res['collection_method_type'],
-                    toReceptacle=res['waste_receptacle'],
+                    toReceptacle=res.get('waste_receptacle'),
                 ),
                 recommendedReactionScale=OM_Volume(
                     instance_iri=res['recommended_reaction_scale'],
@@ -1344,7 +1344,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             hasCollectionMethod=CollectionMethod(
                 instance_iri=res['collection_method'],
                 clz=res['collection_method_type'],
-                toReceptacle=res['waste_receptacle'],
+                toReceptacle=res.get('waste_receptacle'),
             ),
             recommendedReactionScale=OM_Volume(
                 instance_iri=res['recommended_reaction_scale'],
