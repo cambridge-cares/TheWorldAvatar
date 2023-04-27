@@ -232,8 +232,12 @@ function makeRequest(question, type, resultType, successFunction, promises) {
 		timeout: (10000 * 60),
 		success: function (data) {
 			console.log("data received ", data)
+			try{
 			successFunction(data);
+			}catch(err){
+			}finally{
 			asking--;
+			}
 		},
 		error: function (xhr, ajaxOptions, thrownError) {
 			console.log(xhr.status);
