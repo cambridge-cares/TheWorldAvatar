@@ -2,7 +2,7 @@ from setuptools import setup, find_namespace_packages
 
 setup(
     name='rxnoptgoaliteragent',
-    version='0.0.4',
+    version='1.2.0',
     author='Jiaru Bai',
     author_email='jb2197@cam.ac.uk',
     license='MIT',
