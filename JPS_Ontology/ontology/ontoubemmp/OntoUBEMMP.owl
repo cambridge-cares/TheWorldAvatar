@@ -52,7 +52,7 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/consumesUtilities">
-        <rdfs:domain rdf:resource="https://w3id.org/bot#Building"/>
+        <rdfs:domain rdf:resource="https://w3id.org/bot#Zone"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/UtilitiesConsumption"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a facility and its consumed utilities</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
@@ -250,6 +250,13 @@
 
 
     <owl:Class rdf:about="https://w3id.org/bot#Building"/>
+    
+
+
+    <!-- https://w3id.org/bot#Zone -->
+
+
+    <owl:Class rdf:about="https://w3id.org/bot#Zone"/>
     
 
 

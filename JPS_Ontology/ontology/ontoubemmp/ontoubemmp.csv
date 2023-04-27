@@ -53,7 +53,7 @@ WaterConsumption,Class,http://www.ontology-of-units-of-measure.org/resource/om-2
 AnnualWaterConsumption,Class,WaterConsumption,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,
 HeatSupply,Class,EnergySupply,IS-A,,,,The amount of heat energy produced,https://www.theworldavatar.com/kg/ontoubemmp/,
 AnnualHeatSupply,Class,HeatSupply,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,
-consumesUtilities,Object Property,,,https://w3id.org/bot#Building,UtilitiesConsumption,,A relationship between a facility and its consumed utilities,https://www.theworldavatar.com/kg/ontoubemmp/,
+consumesUtilities,Object Property,,,https://w3id.org/bot#Zone,UtilitiesConsumption,,A relationship between a facility and its consumed utilities,https://www.theworldavatar.com/kg/ontoubemmp/,
 Radabshz,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,Average solar radiation energy on a suitable roof area during a year. Minor shading on the surface is taken into account.,https://www.theworldavatar.com/kg/ontoubemmp/,
 SolarIrradiation,Class,http://www.ontology-of-units-of-measure.org/resource/om-2/Quantity,IS-A,,,,"Energy received from solar radation incident on an area, over a time period",https://www.theworldavatar.com/kg/ontoubemmp/,
 AnnualSolarIrradiation,Class,SolarIrradiation,IS-A,,,,,https://www.theworldavatar.com/kg/ontoubemmp/,
