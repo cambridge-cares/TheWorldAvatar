@@ -1,12 +1,14 @@
 package com.cmclinnovations.stack.services;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 
 import com.cmclinnovations.stack.clients.core.StackClient;
+import com.cmclinnovations.stack.clients.docker.DockerClient;
 import com.cmclinnovations.stack.clients.ontop.OntopClient;
 import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
@@ -14,6 +16,8 @@ import com.cmclinnovations.stack.services.config.Connection;
 import com.cmclinnovations.stack.services.config.ServiceConfig;
 import com.github.dockerjava.api.model.ContainerSpec;
 import com.github.dockerjava.api.model.ContainerSpecConfig;
+import com.github.dockerjava.api.model.Mount;
+import com.github.dockerjava.api.model.MountType;
 import com.github.odiszapc.nginxparser.NgxBlock;
 import com.github.odiszapc.nginxparser.NgxComment;
 import com.github.odiszapc.nginxparser.NgxParam;
@@ -28,18 +32,20 @@ public final class OntopService extends ContainerService {
     private static final String ONTOP_DB_DRIVER = "ONTOP_DB_DRIVER";
     private static final String ONTOP_DB_USER = "ONTOP_DB_USER";
     private static final String ONTOP_DB_PASSWORD_FILE = "ONTOP_DB_PASSWORD_FILE";
+    private static final String ONTOP_MAPPING_FILE = "ONTOP_MAPPING_FILE";
 
     private static final String DEFAULT_PORT = "8080";
 
     private final String containerName;
     private final OntopEndpointConfig endpointConfig;
-
-    private Path postgresqlDriverScratchPath;
+    private final String configDir;
 
     public OntopService(String stackName, ServiceConfig config) {
         super(stackName, config);
 
         containerName = StackClient.removeStackName(getConfig().getName());
+
+        configDir = Path.of(getEnvironmentVariable(ONTOP_MAPPING_FILE)).getParent().toString();
 
         endpointConfig = new OntopEndpointConfig(containerName,
                 getHostName(), DEFAULT_PORT, "", null);
@@ -49,6 +55,8 @@ public final class OntopService extends ContainerService {
     public void doPreStartUpConfiguration() {
 
         ContainerSpec containerSpec = getContainerSpec();
+
+        addConfigVolume(containerSpec);
 
         Optional<ContainerSpecConfig> dbConfigRef = containerSpec.getConfigs().stream().findFirst();
         if (dbConfigRef.isPresent()) {
@@ -71,6 +79,19 @@ public final class OntopService extends ContainerService {
         setEnvironmentVariableIfAbsent("ONTOP_DEBUG", "false");
         checkEnvironmentVariableNonNull(OntopClient.ONTOP_MAPPING_FILE);
 
+    }
+
+    private void addConfigVolume(ContainerSpec containerSpec) {
+        List<Mount> mounts = containerSpec.getMounts();
+        if (null == mounts) {
+            mounts = new ArrayList<>();
+            containerSpec.withMounts(mounts);
+        }
+        mounts.add(new Mount()
+                .withSource(containerName)
+                .withTarget(configDir)
+                .withType(MountType.VOLUME)
+                .withReadOnly(false));
     }
 
     @Override
