@@ -1231,6 +1231,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 WHERE {{
                     {"VALUES ?rs400 { <%s> } ." % '> <'.join(list_vapourtec_rs400_iri) if list_vapourtec_rs400_iri is not None else ""}
                     {"VALUES ?laboratory { <%s> } ." % '> <'.join(list_of_labs_as_constraint) if list_of_labs_as_constraint is not None else ""}
+                    ?laboratory <{ONTOLAB_CONTAINS}> ?rs400.
                     ?rs400 <{SAREF_CONSISTSOF}> ?autosampler;
                            <{DBPEDIA_MANUFACTURER}> ?rs400_manufacturer;
                            <{ONTOLAB_HASPOWERSUPPLY}> ?rs400_power_supply;
