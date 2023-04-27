@@ -84,14 +84,19 @@ public class TBoxGeneration implements ITBoxGeneration {
 	public static Map<String, List<String>> relationUnionOfRangeClassMap = new HashMap<String, List<String>>();
 	
 	public static void main(String[] args) {
-		File folder = Dialogs.selectFileDialog(new File(System.getProperty("user.home")),
-				new FileFilter[] { new ExtensionFileFilter("Comma-separated Value", "csv") }, false);
-		if (folder == null) {
-		} else if (!folder.exists()) {
-			Dialogs.showErrorDialog("Selected folder does not exist.", "Read");
+		if (args.length == 0) {
+			File folder = Dialogs.selectFileDialog(new File(System.getProperty("user.home")),
+			new FileFilter[] { new ExtensionFileFilter("Comma-separated Value", "csv") }, false);
+			if (folder == null) {
+			} else if (!folder.exists()) {
+				Dialogs.showErrorDialog("Selected folder does not exist.", "Read");
+			} else {
+				ITBoxGeneration iTBoxGeneration = new TBoxGeneration();
+				iTBoxGeneration.generateTBox(folder.toString());
+			}
 		} else {
 			ITBoxGeneration iTBoxGeneration = new TBoxGeneration();
-			iTBoxGeneration.generateTBox(folder.toString());
+			iTBoxGeneration.generateTBox(args[0]);
 		}
 	}
 
