@@ -29,19 +29,20 @@
     
 
 
-    <!-- http://www.purl.org/oema/enaeq/consumesEnergy -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/consumesEnergy -->
 
 
-    <owl:ObjectProperty rdf:about="http://www.purl.org/oema/enaeq/consumesEnergy">
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/consumesEnergy">
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.purl.org/oema/enaeq/EnergyConsumptionDevice"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Building"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontodevice/Device"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/EnergyConsumption"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between a facility and its consumed energy</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -245,39 +246,6 @@
     
 
 
-    <!-- http://www.purl.org/oema/enaeq/EnergyConsumptionDevice -->
-
-
-    <owl:Class rdf:about="http://www.purl.org/oema/enaeq/EnergyConsumptionDevice">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Any device that consumes energy</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- http://www.purl.org/oema/enaeq/HVAC -->
-
-
-    <owl:Class rdf:about="http://www.purl.org/oema/enaeq/HVAC">
-        <rdfs:subClassOf rdf:resource="http://www.purl.org/oema/enaeq/EnergyConsumptionDevice"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Heating, Ventilation and Air Conditioning (HVAC) device that provides indoor environmental comfort</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- http://www.purl.org/oema/enaeq/HeatingSystem -->
-
-
-    <owl:Class rdf:about="http://www.purl.org/oema/enaeq/HeatingSystem">
-        <rdfs:subClassOf rdf:resource="http://www.purl.org/oema/enaeq/HVAC"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Utility to warm a building (space and water)</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
     <!-- https://w3id.org/bot#Building -->
 
 
@@ -412,17 +380,6 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/CO2Savings">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Volume"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of carbon dioxide savings a device could produce</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/CoolingSystem -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/CoolingSystem">
-        <rdfs:subClassOf rdf:resource="http://www.purl.org/oema/enaeq/HVAC"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Utility to cool a building</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
