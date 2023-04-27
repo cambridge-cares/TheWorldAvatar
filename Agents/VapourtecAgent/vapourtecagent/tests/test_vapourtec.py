@@ -69,24 +69,24 @@ def test_monitor_derivation(
     rxn_exp_instance = sparql_client.getReactionExperiment(new_rxn_exp_iri)[0]
     assert all([condition.translateToParameterSetting is not None for condition in rxn_exp_instance.hasReactionCondition if condition.clz != utils.cf.ONTOREACTION_REACTIONPRESSURE])
 
-    # Third, check there is chemical solution instance
-    chemical_solution_iri = utils.get_chemical_solution_iri(derivation_iri, sparql_client)
-    assert chemical_solution_iri is not None
+    # Third, check there is chemical amount instance
+    chemical_amount_iri = utils.get_chemical_amount_iri(derivation_iri, sparql_client)
+    assert chemical_amount_iri is not None
     new_rs400_list = sparql_client.get_vapourtec_rs400(list_vapourtec_rs400_iri=[vapourtec_rs400_iri])
     assert len(new_rs400_list) == 1
     new_rs400 = new_rs400_list[0]
     new_autosampler = new_rs400.get_autosampler()
     new_autosampler_liquid_level = {s.holds.isFilledWith.instance_iri:s.holds.hasFillLevel.hasValue.hasNumericalValue for s in [site for site in new_autosampler.hasSite if site.holds.isFilledWith is not None]}
     # NOTE below is commented out as the reactor outlet is now send to the waste tank
-    # assert chemical_solution_iri in new_autosampler_liquid_level
-    # assert new_autosampler_liquid_level[chemical_solution_iri] >= 0
+    # assert chemical_amount_iri in new_autosampler_liquid_level
+    # assert new_autosampler_liquid_level[chemical_amount_iri] >= 0
 
     # Forth, check if the autosampler liquid level is changed
-    for chem_sol in old_autosampler_liquid_level:
+    for chem_amount in old_autosampler_liquid_level:
         # NOTE below is commented out as the reactor outlet is now send to the waste tank
-        # if chem_sol == chemical_solution_iri:
-        #     assert new_autosampler_liquid_level[chem_sol] >= old_autosampler_liquid_level[chem_sol]
-        assert new_autosampler_liquid_level[chem_sol] <= old_autosampler_liquid_level[chem_sol]
+        # if chem_amount == chemical_amount_iri:
+        #     assert new_autosampler_liquid_level[chem_amount] >= old_autosampler_liquid_level[chem_amount]
+        assert new_autosampler_liquid_level[chem_amount] <= old_autosampler_liquid_level[chem_amount]
 
     # Shutdown the scheduler to clean up before the next test
     vapourtec_agent.scheduler.shutdown()
@@ -155,24 +155,24 @@ def test_docker_integration(
     rxn_exp_instance = sparql_client.getReactionExperiment(new_rxn_exp_iri)[0]
     assert all([condition.translateToParameterSetting is not None for condition in rxn_exp_instance.hasReactionCondition if condition.clz != utils.cf.ONTOREACTION_REACTIONPRESSURE])
 
-    # Third, check there is chemical solution instance
-    chemical_solution_iri = utils.get_chemical_solution_iri(derivation_iri, sparql_client)
-    assert chemical_solution_iri is not None
+    # Third, check there is chemical amount instance
+    chemical_amount_iri = utils.get_chemical_amount_iri(derivation_iri, sparql_client)
+    assert chemical_amount_iri is not None
     new_rs400_list = sparql_client.get_vapourtec_rs400(list_vapourtec_rs400_iri=[vapourtec_rs400_iri])
     assert len(new_rs400_list) == 1
     new_rs400 = new_rs400_list[0]
     new_autosampler = new_rs400.get_autosampler()
     new_autosampler_liquid_level = {s.holds.isFilledWith.instance_iri:s.holds.hasFillLevel.hasValue.hasNumericalValue for s in [site for site in new_autosampler.hasSite if site.holds.isFilledWith is not None]}
     # NOTE below is commented out as the reactor outlet is now send to the waste tank
-    # assert chemical_solution_iri in new_autosampler_liquid_level
-    # assert new_autosampler_liquid_level[chemical_solution_iri] >= 0
+    # assert chemical_amount_iri in new_autosampler_liquid_level
+    # assert new_autosampler_liquid_level[chemical_amount_iri] >= 0
 
     # Forth, check if the autosampler liquid level is changed
-    for chem_sol in old_autosampler_liquid_level:
+    for chem_amount in old_autosampler_liquid_level:
         # NOTE below is commented out as the reactor outlet is now send to the waste tank
-        # if chem_sol == chemical_solution_iri:
-        #     assert new_autosampler_liquid_level[chem_sol] >= old_autosampler_liquid_level[chem_sol]
-        assert new_autosampler_liquid_level[chem_sol] <= old_autosampler_liquid_level[chem_sol]
+        # if chem_amount == chemical_amount_iri:
+        #     assert new_autosampler_liquid_level[chem_amount] >= old_autosampler_liquid_level[chem_amount]
+        assert new_autosampler_liquid_level[chem_amount] <= old_autosampler_liquid_level[chem_amount]
 
     # NOTE additional check in docker integration
     # Fifth, check if the stateLastUpdatedAt of vapourtec state is changed

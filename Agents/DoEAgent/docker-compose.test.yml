@@ -22,7 +22,7 @@ services:
 
   # Blazegraph
   blazegraph:
-    image: docker.cmclinnovations.com/blazegraph:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
     container_name: "blazegraph_doe_test"
     ports:
       - 27149:8080

@@ -42,7 +42,7 @@ def construct_hypo_end_stream(sparql_client: ChemistryAndRobotsSparqlClient, hpl
             # Third compute a list of information that derived from the "intrinsic" information
             _sp_run_conc, _sp_run_conc_unit = pt.indicatesComponent.hasProperty.hasValue.numericalValue, pt.indicatesComponent.hasProperty.hasValue.hasUnitOfMeasure
             _sp_run_mol = unit_conv.unit_conversion_return_value(_sp_run_conc, _sp_run_conc_unit,
-                unit_conv.UNIFIED_CONCENTRATION_UNIT) / unit_conv.unit_conversion_return_value_dq(hypo_reactor.total_run_volume, unit_conv.UNIFIED_VOLUME_UNIT)
+                unit_conv.UNIFIED_CONCENTRATION_UNIT) * unit_conv.unit_conversion_return_value_dq(hypo_reactor.total_run_volume, unit_conv.UNIFIED_VOLUME_UNIT)
             # Fourth create the instance of HypoStreamSpecies based on the collected information
             end_stream_comp = HypoStreamSpecies(
                 species_iri=_species_iri,
@@ -66,8 +66,8 @@ def construct_hypo_end_stream(sparql_client: ChemistryAndRobotsSparqlClient, hpl
 def construct_hypo_reactor(sparql_client: ChemistryAndRobotsSparqlClient, rxn_exp_instance: ReactionExperiment, internal_standard_instance: InternalStandard) -> Tuple[HypoReactor, float, dict]:
     """This method construct the instance of HypoReactor given the instance of ReactionExperiment and InternalStandard."""
     # Construct a dict of run volume from each pump (start with ReactionScale for the reference pump) in the format of {InputChemical:DimensionalQuantity(concentration)}
-    _run_volume_dct = {con.indicateUsageOf:unit_conv.DimensionalQuantity(hasUnit=con.hasValue.hasUnit,
-        hasNumericalValue=con.hasValue.hasNumericalValue) for con in rxn_exp_instance.hasReactionCondition if con.indicateUsageOf is not None}
+    _run_volume_dct = {con.indicatesUsageOf:unit_conv.DimensionalQuantity(hasUnit=con.hasValue.hasUnit,
+        hasNumericalValue=con.hasValue.hasNumericalValue) for con in rxn_exp_instance.hasReactionCondition if con.indicatesUsageOf is not None}
     # Make sure only one InputChemical is identified as the reference pump
     if len(_run_volume_dct) > 1:
         raise Exception("Multiple ReactionScale conditions were found in the ReactionExperiment instance: %s" % str(rxn_exp_instance))

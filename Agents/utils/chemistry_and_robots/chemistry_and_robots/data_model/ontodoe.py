@@ -53,7 +53,7 @@ class ContinuousVariable(DesignVariable):
     upperLimit: float
     lowerLimit: float
     positionalID: Optional[str]
-    refersTo: OM_Quantity
+    refersToQuantity: OM_Quantity
 
     def create_instance_for_kg(self, g: Graph):
         g = super().create_instance_for_kg(g)
@@ -62,12 +62,12 @@ class ContinuousVariable(DesignVariable):
         if self.positionalID is not None:
             g.add((URIRef(self.instance_iri), URIRef(ONTODOE_POSITIONALID), Literal(self.positionalID)))
 
-        # <continuous_variable> <OntoDoE:refersTo> <quantity>
+        # <continuous_variable> <OntoDoE:refersToQuantity> <quantity>
         # <quantity> <rdf:type> <QuantityType>
         # <quantity> <OntoDoE:hasUnit> <unit>
-        g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTO), URIRef(self.refersTo.instance_iri)))
-        g.add((URIRef(self.refersTo.instance_iri), RDF.type, URIRef(self.refersTo.clz)))
-        g.add((URIRef(self.refersTo.instance_iri), URIRef(OM_HASUNIT), URIRef(self.refersTo.hasUnit)))
+        g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTOQUANTITY), URIRef(self.refersToQuantity.instance_iri)))
+        g.add((URIRef(self.refersToQuantity.instance_iri), RDF.type, URIRef(self.refersToQuantity.clz)))
+        g.add((URIRef(self.refersToQuantity.instance_iri), URIRef(OM_HASUNIT), URIRef(self.refersToQuantity.hasUnit)))
 
         return g
 
@@ -84,27 +84,27 @@ class ContinuousVariable(DesignVariable):
     @pydantic.root_validator
     @classmethod
     def refers_to_quantity_unit(cls, values):
-        # validate the unit exist for the OM:Quantity that refersTo
-        if values.get('refersTo').hasUnit is None:
-            raise Exception(f"ContinuousVariable {values.get('instance_iri')} refersTo an OM:Quantity {values.get('refersTo').instance_iri} that has no unit.")
+        # validate the unit exist for the OM:Quantity that refersToQuantity
+        if values.get('refersToQuantity').hasUnit is None:
+            raise Exception(f"ContinuousVariable {values.get('instance_iri')} refersToQuantity an OM:Quantity {values.get('refersToQuantity').instance_iri} that has no unit.")
         return values
 
 class FixedParameter(BaseOntology):
     clz: str = ONTODOE_FIXEDPARAMETER
     positionalID: Optional[str]
-    refersTo: OM_Quantity
+    refersToQuantity: OM_Quantity
 
     def create_instance_for_kg(self, g: Graph):
         if self.positionalID is not None:
             g.add((URIRef(self.instance_iri), URIRef(ONTODOE_POSITIONALID), Literal(self.positionalID)))
 
-        # <fixed_parameter> <OntoDoE:refersTo> <quantity>
+        # <fixed_parameter> <OntoDoE:refersToQuantity> <quantity>
         # <quantity> <rdf:type> <QuantityType>
         # <quantity> <OntoDoE:hasUnit> <unit>
-        g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTO), URIRef(self.refersTo.instance_iri)))
-        g.add((URIRef(self.refersTo.instance_iri), RDF.type, URIRef(self.refersTo.clz)))
-        g.add((URIRef(self.refersTo.instance_iri), URIRef(OM_HASVALUE), URIRef(self.refersTo.hasValue.instance_iri)))
-        g = self.refersTo.hasValue.create_instance_for_kg(g)
+        g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTOQUANTITY), URIRef(self.refersToQuantity.instance_iri)))
+        g.add((URIRef(self.refersToQuantity.instance_iri), RDF.type, URIRef(self.refersToQuantity.clz)))
+        g.add((URIRef(self.refersToQuantity.instance_iri), URIRef(OM_HASVALUE), URIRef(self.refersToQuantity.hasValue.instance_iri)))
+        g = self.refersToQuantity.hasValue.create_instance_for_kg(g)
 
         return g
 
@@ -142,16 +142,32 @@ class Domain(BaseOntology):
         filtered_rxn_exp_list = []
         for rxn_exp in rxn_exp_list:
             _skip = False
+            # TODO [next iteration] add more thourough check for the performance indicator
+            # check if the performance indicator of the reaction experiment is within a reasonable range
+            # for this iteration, we only check if the yield is within 0% and 100%, skip if not
+            _yield = rxn_exp.get_performance_indicator(ONTOREACTION_YIELD)
+            if _yield is None:
+                _skip = True
+            else:
+                _percent_yield = unit_conv.unit_conversion_return_value(
+                    value=_yield.hasValue.hasNumericalValue,
+                    current_unit=_yield.hasValue.hasUnit,
+                    target_unit=OM_PERCENT
+                )
+                if _percent_yield < 0 or _percent_yield > 100:
+                    _skip = True
+
+            # check for the design variables if they are within the range for this doe campaign
             for var in self.hasDesignVariable:
                 if isinstance(var, ContinuousVariable):
-                    _con = rxn_exp.get_reaction_condition(var.refersTo.clz, var.positionalID)
+                    _con = rxn_exp.get_reaction_condition(var.refersToQuantity.clz, var.positionalID)
                     if _con is None:
                         _skip = True
                         break
                     _dq = unit_conv.DimensionalQuantity(
                         hasUnit=_con.hasValue.hasUnit,
                         hasNumericalValue=_con.hasValue.hasNumericalValue,
-                    ).convert_to(var.refersTo.hasUnit)
+                    ).convert_to(var.refersToQuantity.hasUnit)
                     if not (var.lowerLimit <= _dq.hasNumericalValue <= var.upperLimit):
                         # the reaction experiment does not satisfy the domain, so skip it
                         _skip = True
@@ -166,15 +182,15 @@ class Domain(BaseOntology):
             if not _skip and self.hasFixedParameter is not None:
                 # all fixed parameters must be the same
                 for fixed in self.hasFixedParameter:
-                    _con_fixed = rxn_exp.get_reaction_condition(fixed.refersTo.clz, fixed.positionalID)
+                    _con_fixed = rxn_exp.get_reaction_condition(fixed.refersToQuantity.clz, fixed.positionalID)
                     if _con_fixed is None:
                         _skip = True
                         break
                     _dq_fixed = unit_conv.DimensionalQuantity(
                         hasUnit=_con_fixed.hasValue.hasUnit,
                         hasNumericalValue=_con_fixed.hasValue.hasNumericalValue,
-                    ).convert_to(fixed.refersTo.hasValue.hasUnit)
-                    if not _dq_fixed.hasNumericalValue == fixed.refersTo.hasValue.hasNumericalValue:
+                    ).convert_to(fixed.refersToQuantity.hasValue.hasUnit)
+                    if not _dq_fixed.hasNumericalValue == fixed.refersToQuantity.hasValue.hasNumericalValue:
                         # the reaction experiment does not satisfy the domain, so skip it
                         _skip = True
                         break
@@ -190,19 +206,19 @@ class SystemResponse(BaseOntology):
     maximise: bool
     positionalID: Optional[str]
     # instead of the actual class, str is used to host the concept IRI of om:Quantity for simplicity
-    refersTo: str
+    refersToQuantity: str
 
     def create_instance_for_kg(self, g: Graph):
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
         g.add((URIRef(self.instance_iri), URIRef(ONTODOE_MAXIMISE), Literal(self.maximise)))
         if self.positionalID is not None:
             g.add((URIRef(self.instance_iri), URIRef(ONTODOE_POSITIONALID), Literal(self.positionalID)))
-        g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTO), URIRef(self.refersTo)))
+        g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTOQUANTITY), URIRef(self.refersToQuantity)))
         return g
 
 class HistoricalData(BaseOntology):
     clz: str = ONTODOE_HISTORICALDATA
-    refersTo: Optional[List[ReactionExperiment]]
+    refersToExperiment: Optional[List[ReactionExperiment]]
     numOfNewExp: int = 1
 
     def create_instance_for_kg(self, g: Graph):
@@ -210,11 +226,11 @@ class HistoricalData(BaseOntology):
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
 
         # only add connection if previous data is available
-        if bool(self.refersTo): # if not None and not empty list
+        if bool(self.refersToExperiment): # if not None and not empty list
             # add connection to each ReactionExperiment
             # NOTE here we don't collect triples for each ReactionExperiment, we only make the connection
-            for reaction_experiment in self.refersTo:
-                g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTO), URIRef(reaction_experiment.instance_iri)))
+            for reaction_experiment in self.refersToExperiment:
+                g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTOEXPERIMENT), URIRef(reaction_experiment.instance_iri)))
 
         # add number of new experiments
         g.add((URIRef(self.instance_iri), URIRef(ONTODOE_NUMOFNEWEXP), Literal(self.numOfNewExp)))
@@ -228,7 +244,7 @@ class DesignOfExperiment(BaseOntology):
     hasSystemResponse: List[SystemResponse]
     utilisesHistoricalData: HistoricalData
     proposesNewExperiment: Optional[ReactionExperiment]
-    designsChemicalReaction: str # NOTE this should be pointing to OntoCAPE:ChemicalReaction instance, here simplified
+    designsChemicalReaction: str # NOTE this should be pointing to OntoReaction:ChemicalReaction instance, here simplified
 
     def create_instance_for_kg(self, g: Graph):
         # create an instance of DesignOfExperiment

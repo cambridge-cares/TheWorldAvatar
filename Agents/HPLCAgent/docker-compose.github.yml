@@ -3,7 +3,7 @@ version: "3.8"
 
 services:
   hplc_agent:
-    image: ghcr.io/cambridge-cares/hplc_agent:1.0.0-SNAPSHOT
+    image: ghcr.io/cambridge-cares/hplc_agent:1.1.0
     container_name: hplc_agent
     environment:
       LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"

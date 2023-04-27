@@ -88,7 +88,7 @@ DERIVATION_INSTANCE_BASE_URL = config_derivation_agent(DOE_AGENT_ENV).DERIVATION
 
 
 class IRIs(Enum):
-    GOAL_ITER_BASE_IRI = 'http://www.example.com/triplestore/ontogoal/rxnopt/'
+    GOAL_ITER_BASE_IRI = 'https://www.example.com/triplestore/ontogoal/rxnopt/'
     GOALSET_1 = GOAL_ITER_BASE_IRI + 'GoalSet_1'
 
     GOAL_1 = GOAL_ITER_BASE_IRI + 'Goal_1'
@@ -102,31 +102,30 @@ class IRIs(Enum):
     DESIRED_QUANTITY_2 = GOAL_ITER_BASE_IRI + 'Desired_Quantity_2'
     DESIRED_QUANTITY_2_TYPE = ONTOREACTION_RUNMATERIALCOST
     DESIRED_QUANTITY_MEASURE_2 = GOAL_ITER_BASE_IRI + 'Desired_Quantity_Measure_2'
-    DESIRED_QUANTITY_MEASURE_2_UNIT = OM_POUNDSTERLINGPERKILOGRAM
+    DESIRED_QUANTITY_MEASURE_2_UNIT = OM_POUNDSTERLINGPERLITRE
     DESIRED_QUANTITY_MEASURE_2_NUMVAL = 0.01
 
     RESTRICTION_1 = GOAL_ITER_BASE_IRI + 'Restriction_1'
     RESTRICTION_1_CYCLEALLOWANCE = 5
     RESTRICTION_1_DEADLINE = 4102444800.0
 
-    PLAN_STEP_AGENT_BASE_IRI = 'http://www.theworldavatar.com/resource/plans/RxnOpt/'
+    PLAN_STEP_AGENT_BASE_IRI = 'https://www.theworldavatar.com/kg/plans/RxnOpt/'
     RXN_OPT_PLAN = PLAN_STEP_AGENT_BASE_IRI + 'rxnoptplan'
     STEP_DOE = PLAN_STEP_AGENT_BASE_IRI + 'doe'
-    STEP_DOE_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__DoE/Service'
+    STEP_DOE_AGENT = 'https://www.theworldavatar.com/kg/agents/Service__DoE/Service'
     STEP_SCHEDULEEXE = PLAN_STEP_AGENT_BASE_IRI + 'schedule_exe'
-    STEP_SCHEDULE_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__VapourtecSchedule/Service'
+    STEP_SCHEDULE_AGENT = 'https://www.theworldavatar.com/kg/agents/Service__VapourtecSchedule/Service'
     STEP_POSTPRO = PLAN_STEP_AGENT_BASE_IRI + 'postpro'
-    STEP_POSTPRO_AGENT = 'http://www.theworldavatar.com/resource/agents/Service__HPLC_PostPro/Service'
+    STEP_POSTPRO_AGENT = 'https://www.theworldavatar.com/kg/agents/Service__HPLC_PostPro/Service'
 
-    CHEMICAL_REACTION_IRI = 'https://www.example.com/triplestore/testlab/chem_rxn/ChemRxn_1'
-    RXN_EXP_1 = 'https://www.example.com/triplestore/testlab/rxn_data/RxnExp_1'
+    CHEMICAL_REACTION_IRI = 'https://www.theworldavatar.com/kg/lab_auto/chem_rxn/ChemRxn_1'
 
-    DERIVATION_INPUTS = [GOALSET_1, RXN_EXP_1, CHEMICAL_REACTION_IRI]
+    DERIVATION_INPUTS = [GOALSET_1, CHEMICAL_REACTION_IRI]
 
     DERIVATION_INPUTS_NO_PRIOR_DATA = [GOALSET_1, CHEMICAL_REACTION_IRI]
 
-    LAB1_IRI = 'http://example.com/blazegraph/namespace/testlab/lab1/Laboratory_Dummy'
-    LAB2_IRI = 'http://example.com/blazegraph/namespace/testlab/lab2/Laboratory_Dummy'
+    LAB1_IRI = 'https://www.theworldavatar.com/kg/lab_auto/lab1/Laboratory_Dummy'
+    LAB2_IRI = 'https://www.theworldavatar.com/kg/lab_auto/lab2/Laboratory_Dummy'
     VAPOURTEC_ENV_FILE_DICT = {LAB1_IRI: LAB1_VAPOURTEC_AGENT_ENV, LAB2_IRI: LAB2_VAPOURTEC_AGENT_ENV}
     HPLC_ENV_FILE_DICT = {LAB1_IRI: LAB1_HPLC_AGENT_ENV, LAB2_IRI: LAB2_HPLC_AGENT_ENV}
 
@@ -713,6 +712,10 @@ def initialise_triples(sparql_client):
     # Delete all triples before initialising prepared triples
     sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
+    # Upload tbox
+    sparql_client.upload_ontology_tbox(ONTODOE)
+    sparql_client.upload_ontology_tbox(ONTOREACTION)
+
     # Upload the example triples for testing
     pathlist = Path(TEST_TRIPLES_DIR).glob('*.ttl')
     for path in pathlist:
@@ -784,7 +787,7 @@ def assert_rxn_iterations(
         # Check if all the suggested conditions are within the DoE range
         for design_variable in new_doe_instance.hasDomain.hasDesignVariable:
             if isinstance(design_variable, ContinuousVariable):
-                rxn_cond = new_exp_instance.get_reaction_condition(design_variable.refersTo.clz, design_variable.positionalID)
+                rxn_cond = new_exp_instance.get_reaction_condition(design_variable.refersToQuantity.clz, design_variable.positionalID)
                 assert rxn_cond.hasValue.hasNumericalValue <= design_variable.upperLimit
                 assert design_variable.lowerLimit <= rxn_cond.hasValue.hasNumericalValue
             else:
@@ -793,8 +796,8 @@ def assert_rxn_iterations(
         # Check if all the fixed parameters are the same as the DoE instance
         if new_doe_instance.hasDomain.hasFixedParameter is not None:
             for fixed_parameter in new_doe_instance.hasDomain.hasFixedParameter:
-                rxn_cond = new_exp_instance.get_reaction_condition(fixed_parameter.refersTo.clz, fixed_parameter.positionalID)
-                assert rxn_cond.hasValue.hasNumericalValue == fixed_parameter.refersTo.hasValue.hasNumericalValue
+                rxn_cond = new_exp_instance.get_reaction_condition(fixed_parameter.refersToQuantity.clz, fixed_parameter.positionalID)
+                assert rxn_cond.hasValue.hasNumericalValue == fixed_parameter.refersToQuantity.hasValue.hasNumericalValue
 
         print(f"DoE Derivation checked successfully for reaction experiment {rxn_exp_iri}")
 
@@ -827,9 +830,9 @@ def assert_rxn_iterations(
         rxn_exp_instance = sparql_client.getReactionExperiment(rxn_exp_iri)[0]
         assert all([condition.translateToParameterSetting is not None for condition in rxn_exp_instance.hasReactionCondition if condition.clz != ONTOREACTION_REACTIONPRESSURE])
 
-        # Third, check there is chemical solution instance
-        chemical_solution_iri = get_chemical_solution_iri(vapourtec_derivation, sparql_client)
-        assert chemical_solution_iri is not None
+        # Third, check there is chemical amount instance
+        chemical_amount_iri = get_chemical_amount_iri(vapourtec_derivation, sparql_client)
+        assert chemical_amount_iri is not None
         new_rs400_list = sparql_client.get_vapourtec_rs400(
             list_vapourtec_rs400_iri=[vapourtec_agent.vapourtec_digital_twin for vapourtec_agent in vapourtec_agent_lst],
         )
@@ -838,8 +841,8 @@ def assert_rxn_iterations(
         new_autosampler = new_rs400.get_autosampler()
         new_autosampler_liquid_level = {s.holds.isFilledWith.instance_iri:s.holds.hasFillLevel.hasValue.hasNumericalValue for s in [site for site in new_autosampler.hasSite if site.holds.isFilledWith is not None]}
         # NOTE below is commented out as the reactor outlet is now send to the waste tank
-        # assert chemical_solution_iri in new_autosampler_liquid_level
-        # assert new_autosampler_liquid_level[chemical_solution_iri] >= 0
+        # assert chemical_amount_iri in new_autosampler_liquid_level
+        # assert new_autosampler_liquid_level[chemical_amount_iri] >= 0
 
         print(f"Vapourtec Derivation checked successfully for reaction experiment {rxn_exp_iri}")
 
@@ -850,7 +853,7 @@ def assert_rxn_iterations(
         lst_response = get_hplc_job(
             [hplc_agent.hplc_digital_twin for hplc_agent in hplc_agent_lst],
             new_exp_iri,
-            chemical_solution_iri,
+            chemical_amount_iri,
             sparql_client
         )
         assert len(lst_response) == 1
@@ -881,7 +884,9 @@ def assert_rxn_iterations(
         assert len(lst_hplc_report_iri) == 1
         assert len(vapourtec_schedule_derivation_outputs) == 1
         assert lst_hplc_report_iri == vapourtec_schedule_derivation_outputs[ONTOHPLC_HPLCREPORT]
-
+        # (3) The assigned reactor should be contained in the lab which the Vapourtec Schedule Derivation isDerivedFrom
+        assigned_lab_iri = get_lab_as_constriant_of_vapourtec_schedule_derivation(vapourtec_schedule_derivation, sparql_client)
+        assert sparql_client.check_if_triple_exist(assigned_lab_iri, ONTOLAB_CONTAINS, lst_done_rxn_exp_instance[0].isAssignedTo)
         print(f"Vapourtec Schedule Derivation checked successfully for reaction experiment {rxn_exp_iri}")
 
         ##################################
@@ -1002,19 +1007,19 @@ def get_vapourtec_input_file_iri(derivation_iri: str, sparql_client: PySparqlCli
     return response[0]['vapourtec_input_file']
 
 
-def get_chemical_solution_iri(derivation_iri: str, sparql_client: PySparqlClient):
+def get_chemical_amount_iri(derivation_iri: str, sparql_client: PySparqlClient):
     query = f"""
-        SELECT ?chemical_solution
+        SELECT ?chemical_amount
         WHERE {{
-            ?chemical_solution <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}>; a <{ONTOLAB_CHEMICALSOLUTION}>.
+            ?chemical_amount <{ONTODERIVATION_BELONGSTO}> <{derivation_iri}>; a <{ONTOLAB_CHEMICALAMOUNT}>.
         }}"""
-    return sparql_client.performQuery(query)[0]['chemical_solution']
+    return sparql_client.performQuery(query)[0]['chemical_amount']
 
 
 def get_hplc_job(
     hplc_digital_twin_lst,
     rxn_exp_iri,
-    chemical_solution_iri,
+    chemical_amount_iri,
     sparql_client: PySparqlClient
 ):
     query = f"""
@@ -1024,7 +1029,7 @@ def get_hplc_job(
             ?hplc_job ^<{ONTOHPLC_HASJOB}> ?hplc_digital_twin;
                       a <{ONTOHPLC_HPLCJOB}>;
                       <{ONTOHPLC_CHARACTERISES}> <{rxn_exp_iri}>;
-                      <{ONTOHPLC_HASREPORT}>/<{ONTOHPLC_GENERATEDFOR}> <{chemical_solution_iri}>.
+                      <{ONTOHPLC_HASREPORT}>/<{ONTOHPLC_GENERATEDFOR}> <{chemical_amount_iri}>.
         }}"""
     return sparql_client.performQuery(query)
 
@@ -1037,24 +1042,34 @@ def get_hplc_report_of_hplc_job(hplc_job_iri: str, sparql_client: PySparqlClient
     return [response[i]['hplc_report'] for i in range(len(response))]
 
 
+def get_lab_as_constriant_of_vapourtec_schedule_derivation(vapourtec_schedule_derivation_iri: str, sparql_client: PySparqlClient):
+    query = f"""
+        SELECT ?lab
+        WHERE {{
+            <{vapourtec_schedule_derivation_iri}> <{ONTODERIVATION_ISDERIVEDFROM}> ?lab.
+            ?lab a <{ONTOLAB_LABORATORY}>.
+        }}"""
+    response = sparql_client.performQuery(query)
+    return response[0]['lab'] if len(response) > 0 else None
+
 # ----------------------------------------------------------------------------------
 # Sample data
 # ----------------------------------------------------------------------------------
 sample_goal_request = {
-    "chem_rxn": "https://www.example.com/triplestore/testlab/chem_rxn/ChemRxn_1",
+    "chem_rxn": "https://www.theworldavatar.com/kg/lab_auto/chem_rxn/ChemRxn_1",
     "cycleAllowance": 6,
     "deadline": str(datetime.fromtimestamp(int(time.time()) + 2 * 60 * 60).isoformat()),
-    "first_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#Yield",
-    "first_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresGreaterThan",
+    "first_goal_clz": "https://www.theworldavatar.com/kg/ontoreaction/Yield",
+    "first_goal_desires": "https://www.theworldavatar.com/kg/ontogoal/desiresGreaterThan",
     "first_goal_num_val": 99,
     "first_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/percent",
-    "rxn_opt_goal_plan": "http://www.theworldavatar.com/resource/plans/RxnOpt/rxnoptplan",
-    "second_goal_clz": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#RunMaterialCost",
-    "second_goal_desires": "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#desiresLessThan",
+    "rxn_opt_goal_plan": "https://www.theworldavatar.com/kg/plans/RxnOpt/rxnoptplan",
+    "second_goal_clz": "https://www.theworldavatar.com/kg/ontoreaction/RunMaterialCost",
+    "second_goal_desires": "https://www.theworldavatar.com/kg/ontogoal/desiresLessThan",
     "second_goal_num_val": 0.001,
-    "second_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterlingPerKilogram",
+    "second_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/poundSterlingPerLitre",
     "labs": [
-        'http://example.com/blazegraph/namespace/testlab/lab1/Laboratory_Dummy',
-        'http://example.com/blazegraph/namespace/testlab/lab2/Laboratory_Dummy'
+        'https://www.theworldavatar.com/kg/lab_auto/lab1/Laboratory_Dummy',
+        'https://www.theworldavatar.com/kg/lab_auto/lab2/Laboratory_Dummy'
     ]
 }

@@ -17,13 +17,21 @@ from pyderivationagent.data_model.utils import *
 
 from chemistry_and_robots.data_model.base_ontology import *
 
-AVAILABLE_PERFORMANCE_INDICATOR_LIST = [ONTOREACTION_YIELD, ONTOREACTION_CONVERSION, ONTOREACTION_SPACETIMEYIELD,
-    ONTOREACTION_RUNMATERIALCOST, ONTOREACTION_ECOSCORE, ONTOREACTION_ENVIRONMENTALFACTOR]
+AVAILABLE_PERFORMANCE_INDICATOR_LIST = [
+    ONTOREACTION_YIELD,
+    ONTOREACTION_CONVERSION,
+    ONTOREACTION_SPACETIMEYIELD,
+    ONTOREACTION_RUNMATERIALCOST,
+    ONTOREACTION_RUNMATERIALCOSTPERKILOGRAMPRODUCT,
+    ONTOREACTION_ECOSCORE,
+    ONTOREACTION_ENVIRONMENTALFACTOR,
+]
 OBJECT_RELATIONSHIP_PERFORMANCE_INDICATOR_RXN_EXP_DICT = {
     ONTOREACTION_YIELD:[ONTOREACTION_HASPERFORMANCEINDICATOR, ONTOREACTION_HASYIELD],
     ONTOREACTION_CONVERSION:[ONTOREACTION_HASPERFORMANCEINDICATOR, ONTOREACTION_HASCONVERSION],
     ONTOREACTION_SPACETIMEYIELD:[ONTOREACTION_HASPERFORMANCEINDICATOR, ONTOREACTION_HASSPACETIMEYIELD],
     ONTOREACTION_RUNMATERIALCOST:[ONTOREACTION_HASPERFORMANCEINDICATOR, ONTOREACTION_HASRUNMATERIALCOST],
+    ONTOREACTION_RUNMATERIALCOSTPERKILOGRAMPRODUCT:[ONTOREACTION_HASPERFORMANCEINDICATOR, ONTOREACTION_HASRUNMATERIALCOSTPERKILOGRAMPRODUCT],
     ONTOREACTION_ECOSCORE:[ONTOREACTION_HASPERFORMANCEINDICATOR, ONTOREACTION_HASECOSCORE],
     ONTOREACTION_ENVIRONMENTALFACTOR:[ONTOREACTION_HASPERFORMANCEINDICATOR, ONTOREACTION_HASENVIRONMENTALFACTOR]
 }
@@ -38,9 +46,9 @@ OBJECT_RELATIONSHIP_REACTION_CONDITION_RXN_EXP_DICT = {
 
 ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT = {
     ONTOREACTION_STOICHIOMETRYRATIO: 2,
-    ONTOREACTION_REACTIONTEMPERATURE: 0, # TODO [future work] double-check when adding pressure into optimisation
+    ONTOREACTION_REACTIONTEMPERATURE: 0,
     ONTOREACTION_REACTIONSCALE: 2,
-    ONTOREACTION_REACTIONPRESSURE: 0,
+    ONTOREACTION_REACTIONPRESSURE: 0, # TODO [future work] double-check when adding pressure into optimisation
     ONTOREACTION_RESIDENCETIME: 2,
 }
 
@@ -48,8 +56,9 @@ ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT = {
 AVAILABLE_PERFORMANCE_INDICATOR_UNIT_DICT = {
     ONTOREACTION_YIELD: [UNIFIED_YIELD_UNIT],
     ONTOREACTION_CONVERSION: [UNIFIED_CONVERSION_UNIT],
-    ONTOREACTION_SPACETIMEYIELD: [UNIFIED_SPACETIMEYIELD_UNIT],
+    ONTOREACTION_SPACETIMEYIELD: [UNIFIED_SPACETIMEYIELD_UNIT, SCALED_SPACETIMEYIELD_UNIT],
     ONTOREACTION_RUNMATERIALCOST: [UNIFIED_RUN_MATERIAL_COST_UNIT],
+    ONTOREACTION_RUNMATERIALCOSTPERKILOGRAMPRODUCT: [UNIFIED_RUN_MATERIAL_COST_PER_KILOGRAM_PRODUCT_UNIT],
     ONTOREACTION_ECOSCORE: [UNIFIED_ECOSCORE_UNIT],
     ONTOREACTION_ENVIRONMENTALFACTOR: [UNIFIED_ENVIRONMENTFACTOR_UNIT]
 }
@@ -59,6 +68,17 @@ UNIFIED_UNIT_FOR_PERFORMANCE_INDICATOR_DICT = {
     ONTOREACTION_CONVERSION: UNIFIED_CONVERSION_UNIT,
     ONTOREACTION_SPACETIMEYIELD: UNIFIED_SPACETIMEYIELD_UNIT,
     ONTOREACTION_RUNMATERIALCOST: UNIFIED_RUN_MATERIAL_COST_UNIT,
+    ONTOREACTION_RUNMATERIALCOSTPERKILOGRAMPRODUCT: UNIFIED_RUN_MATERIAL_COST_PER_KILOGRAM_PRODUCT_UNIT,
+    ONTOREACTION_ECOSCORE: UNIFIED_ECOSCORE_UNIT,
+    ONTOREACTION_ENVIRONMENTALFACTOR: UNIFIED_ENVIRONMENTFACTOR_UNIT
+}
+
+DISPLAY_UNIT_FOR_PERFORMANCE_INDICATOR_DICT = {
+    ONTOREACTION_YIELD: UNIFIED_YIELD_UNIT,
+    ONTOREACTION_CONVERSION: UNIFIED_CONVERSION_UNIT,
+    ONTOREACTION_SPACETIMEYIELD: SCALED_SPACETIMEYIELD_UNIT,
+    ONTOREACTION_RUNMATERIALCOST: UNIFIED_RUN_MATERIAL_COST_UNIT,
+    ONTOREACTION_RUNMATERIALCOSTPERKILOGRAMPRODUCT: UNIFIED_RUN_MATERIAL_COST_PER_KILOGRAM_PRODUCT_UNIT,
     ONTOREACTION_ECOSCORE: UNIFIED_ECOSCORE_UNIT,
     ONTOREACTION_ENVIRONMENTALFACTOR: UNIFIED_ENVIRONMENTFACTOR_UNIT
 }
@@ -245,14 +265,18 @@ class OntoCAPE_Material(BaseOntology):
         else:
             raise ValueError(f"Multiple solutes found in {self.instance_iri} given list of species {lst_species}")
 
-class InputChemical(OntoCAPE_Material):
+class Chemical(OntoCAPE_Material):
+    clz: str = ONTOREACTION_CHEMICAL
+
+class InputChemical(Chemical):
     clz: str = ONTOREACTION_INPUTCHEMICAL
+    recommended_reaction_scale: OM_Volume = None # TODO [future work] make proper design for this recommended
 
     def is_reactant_stream(self, reactant_species_iris: List[str]) -> bool:
         # It is a reactant stream if any of the species in the InputChemical appears in reactant_species_iris
         return any([pc.representsOccurenceOf in reactant_species_iris for pc in self.thermodynamicBehaviour.isComposedOfSubsystem])
 
-class OutputChemical(OntoCAPE_Material):
+class OutputChemical(Chemical):
     clz: str = ONTOREACTION_OUTPUTCHEMICAL
 
 class OntoKin_Species(BaseOntology):
@@ -277,8 +301,8 @@ class TargetProduct(OntoKin_Product):
 class Impurity(OntoKin_Product):
     clz: str = ONTOREACTION_IMPURITY
 
-class OntoCAPE_ChemicalReaction(BaseOntology):
-    clz: str = ONTOCAPE_CHEMICALREACTION
+class ChemicalReaction(BaseOntology):
+    clz: str = ONTOREACTION_CHEMICALREACTION
     hasReactant: List[OntoKin_Species]
     hasProduct: List[OntoKin_Species]
     hasCatalyst: Optional[List[OntoKin_Species]]
@@ -315,13 +339,13 @@ class ReactionCondition(BaseOntology):
     objPropWithExp: List[str]
     hasValue: OM_Measure
     positionalID: Optional[str] = None
-    translateToParameterSetting: Optional[str] # NOTE here we put str to simplify the implementation, should be ontolab.ParameterSetting
+    translateToParameterSetting: Optional[str] # NOTE this doesn't belong to ontology, we just put it here for testing purpose
     # instead of the actual class, str is used to host the instance IRI of OntoReaction:InputChemical for simplicity
     # StoichiometryRatio indicatesMultiplicityOf InputChemical
     indicatesMultiplicityOf: Optional[str] = None
     # instead of the actual class, str is used to host the instance IRI of OntoReaction:InputChemical for simplicity
-    # ReactionScale indicateUsageOf InputChemical
-    indicateUsageOf: Optional[str] = None
+    # ReactionScale indicatesUsageOf InputChemical
+    indicatesUsageOf: Optional[str] = None
 
     @pydantic.root_validator
     @classmethod
@@ -332,9 +356,9 @@ class ReactionCondition(BaseOntology):
                     'StoichiometryRatio <%s> is not indicatesMultiplicityOf any InputChemical, received values: %s.' % (values.get('instance_iri'), str(values))
                 )
         elif values.get('clz') == ONTOREACTION_REACTIONSCALE:
-            if values.get('indicateUsageOf') == None:
+            if values.get('indicatesUsageOf') == None:
                 raise Exception(
-                    'ReactionScale <%s> is not indicateUsageOf any InputChemical, received values: %s.' % (values.get('instance_iri'), str(values))
+                    'ReactionScale <%s> is not indicatesUsageOf any InputChemical, received values: %s.' % (values.get('instance_iri'), str(values))
                 )
         return values
 
@@ -358,8 +382,8 @@ class ReactionCondition(BaseOntology):
         # Also add indicatesMultiplicityOf/indicatesUsageOf if it's a OntoReaction:StoichiometryRatio/OntoReaction:ReactionScale
         if self.indicatesMultiplicityOf is not None:
             g.add((con_iri, URIRef(ONTOREACTION_INDICATESMULTIPLICITYOF), URIRef(self.indicatesMultiplicityOf)))
-        if self.indicateUsageOf is not None:
-            g.add((con_iri, URIRef(ONTOREACTION_INDICATESUSAGEOF), URIRef(self.indicateUsageOf)))
+        if self.indicatesUsageOf is not None:
+            g.add((con_iri, URIRef(ONTOREACTION_INDICATESUSAGEOF), URIRef(self.indicatesUsageOf)))
 
         return g
 
@@ -382,7 +406,7 @@ class ReactionCondition(BaseOntology):
 
 # @dataclass
 # class ReactionScale(ReactionCondition):
-#     indicateUsageOf: str # indicateUsageOf: InputChemical
+#     indicatesUsageOf: str # indicatesUsageOf: InputChemical
 
 class PerformanceIndicator(BaseOntology):
     rxn_exp_iri: str
@@ -453,7 +477,7 @@ class ReactionExperiment(BaseOntology):
     hasOutputChemical: Optional[List[OutputChemical]] = None
     isAssignedTo: Optional[str] # NOTE here it should be pointing to OntoVapourtec:VapourtecR4Reactor, but we put str to simplify the implementation
     clz: str = ONTOREACTION_REACTIONEXPERIMENT
-    isOccurenceOf: Optional[OntoCAPE_ChemicalReaction] = None
+    isOccurenceOf: Optional[ChemicalReaction] = None
 
     @pydantic.root_validator
     @classmethod
@@ -470,7 +494,7 @@ class ReactionExperiment(BaseOntology):
             return None
         reaction_scale = self.get_reaction_scale()
         for input_chemical in self.hasInputChemical:
-            if input_chemical.instance_iri == reaction_scale.indicateUsageOf:
+            if input_chemical.instance_iri == reaction_scale.indicatesUsageOf:
                 return input_chemical
         return None
 
@@ -545,8 +569,6 @@ class ReactionExperiment(BaseOntology):
     def get_performance_indicator(self, clz: str, positional_id: Optional[int]=None) -> Optional[PerformanceIndicator]:
         if self.hasPerformanceIndicator is None: return None
         lst_perf_ind = [pi for pi in self.hasPerformanceIndicator if pi.clz == clz and pi.positionalID == positional_id]
-        if len(lst_perf_ind) == 0:
-            return None
         if len(lst_perf_ind) > 1:
             raise Exception("PerformanceIndicator with rdf:type <%s> and positionalID <%s> is not uniquely identified: %s" % (
                 clz, str(positional_id), str(lst_perf_ind)
@@ -569,7 +591,7 @@ class ReactionExperiment(BaseOntology):
             raise Exception(f"OutputChemical is already set for {self.instance_iri}: {self.hasOutputChemical}")
 
         if self.isOccurenceOf is None:
-            raise Exception(f"OntoCAPE:ChemicalReaction is not set up for {self.instance_iri}")
+            raise Exception(f"OntoReaction:ChemicalReaction is not set up for {self.instance_iri}")
 
         if self.isAssignedTo is not None:
             raise Exception(f"OntoVapourtec:VapourtecR4Reactor is already assigned for {self.instance_iri}: {self.isAssignedTo}")
@@ -596,7 +618,7 @@ class ReactionExperiment(BaseOntology):
         for input_chemical in self.hasInputChemical:
             g.add((URIRef(self.instance_iri), URIRef(ONTOREACTION_HASINPUTCHEMICAL), URIRef(input_chemical.instance_iri)))
 
-        # <reactionExperimentIRI> <OntoReaction:isOccurenceOf> <OntoCAPE:ChemicalReaction> .
+        # <reactionExperimentIRI> <OntoReaction:isOccurenceOf> <OntoReaction:ChemicalReaction> .
         g.add((URIRef(self.instance_iri), URIRef(ONTOREACTION_ISOCCURENCEOF), URIRef(self.isOccurenceOf.instance_iri)))
 
         return g
@@ -627,11 +649,9 @@ class ReactionVariation(ReactionExperiment):
         # Add below triples:
         # <reactionVariationIRI> <rdf:type> <OntoReaction:ReactionVariation> .
         # <reactionVariationIRI> <OntoReaction:isVariationOf> <reactionExperimentIRI> .
-        # <reactionExperimentIRI> <OntoReaction:hasVariation> <reactionVariationIRI> .
         g.add((rxnvar_iri, RDF.type, URIRef(ONTOREACTION_REACTIONVARIATION)))
         g.add((rxnvar_iri, URIRef(ONTOREACTION_ISVARIATIONOF), rxn_iri))
-        g.add((rxn_iri, URIRef(ONTOREACTION_HASVARIATION), rxnvar_iri))
-        
+
         for con in self.hasReactionCondition:
             # Attach the ReactionCondition instance to the OntoReaction:ReactionVariation instance
             # As we are stating the <reactionVariationIRI> <OntoReaction:isVariationOf> <reactionExperimentIRI>
