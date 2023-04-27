@@ -38,10 +38,11 @@ def remove_mention(q_with_mention, mention):
 
     for flag_word in flag_words:
         if flag_word in q_with_mention.lower():
+            q_with_mention = q_with_mention.lower().replace(mention.lower(), "")
             return q_with_mention
 
     if "reaction" not in q_with_mention.lower():
-        q_with_mention = q_with_mention.lower().replace(mention, "")
+        q_with_mention = q_with_mention.lower().replace(mention.lower(), "")
         tokens = [t for t in q_with_mention.split(" ") if t.lower() not in stop_words]
         q_with_mention = " ".join(tokens).strip()
         return q_with_mention
@@ -51,8 +52,8 @@ def remove_mention(q_with_mention, mention):
 
 def filter_for_mention(question):
     question = question.lower()
-    if "what" not in question and "mop" not in question:
-        question = f"what is the {question}"
+    # if "what" not in question and ("mop" not in question) and ("pce" not in question) and ("conversion" not in question):
+    #     question = f"what is the {question}"
     return question.strip()
 
 
@@ -65,7 +66,7 @@ class CrossGraphQAEngine:
         self.marie_logger = MarieLogger()
         self.nel = ChemicalNEL()
         self.ner_lite = IRILookup(nel=self.nel, enable_class_ner=False)
-        self.global_stop_words = ["g/mol", "dalton", "celsius", "show", "give"]
+        self.global_stop_words = ["g/mol", "dalton", "celsius", "show", "give", "whats"]
         self.domain_encoding = {"pubchem": 0, "ontocompchem": 1, "ontospecies": 2,
                                 "ontokin": 3, "wikidata": 4, "ontospecies_new": 5,
                                 "ontoagent": 6, "ontomops": 7, "ontokin_reaction": 8}
@@ -91,7 +92,7 @@ class CrossGraphQAEngine:
                                                                         'cross_graph_model_with_all_9_updated'),
                                                            map_location=self.device))
         self.stop_words = ["find", "all", "species", "what", "is", "the", "show", "me", "and", "as", "product"
-            , "products", "reactant", "reactants"]
+            , "products", "reactant", "reactants", "whats"]
         self.init_engines()
 
     def init_engines(self):
@@ -177,6 +178,8 @@ class CrossGraphQAEngine:
         q = filter_for_mention(q)
         mention = self.ner_lite.get_mention(q)
         q = remove_mention(q, mention=mention)
+        print("mention:", mention)
+        print("question after removing mention:", q)
 
         # question = self.filter_for_cross_graph(question)
         predicted_domain_labels = []
@@ -208,9 +211,8 @@ class CrossGraphQAEngine:
         if "mop" not in original_question.lower():
             tokens = [t for t in original_question.strip().split(" ") if t.lower() not in self.global_stop_words]
             original_question = " ".join(tokens)
-
-        domain_list_for_question, score_factors = self.get_domain_list(original_question)
         print("###############################################################")
+        domain_list_for_question, score_factors = self.get_domain_list(original_question)
         print("predicted domain for this question:", domain_list_for_question)
         print("score factors", score_factors)
         print("given question", original_question)

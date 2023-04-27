@@ -20,10 +20,9 @@ class TestCrossGraph(unittest.TestCase):
         self.model = CrossGraphAlignmentModel(device=self.device).to(self.device)
         nlp = NLPTools(tokenizer_name="bert-base-uncased")
         my_alignment_model = CrossGraphAlignmentModel(device="cpu")
-        dataset_path = os.path.join(DATA_DIR, "CrossGraph/cross_graph_model_with_all_9")
+        dataset_path = os.path.join(DATA_DIR, "CrossGraph/cross_graph_model_with_all_9_updated")
         my_alignment_model.load_state_dict(torch.load(dataset_path, map_location="cpu"))
         global_stop_words = ["g/mol", "dalton", "celsius", "show", "give"]
-
 
         questions = ["Give the MOPs which are Anticuboctahedron shaped",
                      "molar mass of benzene",
@@ -42,8 +41,17 @@ class TestCrossGraph(unittest.TestCase):
                      "logs",
                      "logp",
                      "reactions H2 O2",
-                     "mops with cuboctahedron shape"]
-
+                     "mops with cuboctahedron shape",
+                     "power conversion efficiency",
+                     "pce",
+                     "power conversion efficiency",
+                     "Whats the number of covalent unit C12H24O2?",
+                     "What are the chemical species having molecular weight around 150 g/mol",
+                     "Find all species with boiling point above 0 celsius",
+                     "Show all the MOPs which have Cuboctahedron shape",
+                     "Give the MOPs which are Anticuboctahedron shaped",
+                     "Give the assembly model types that can be created with [(C4H2S)(CO2)2] as the CBU",
+                     ]
 
         for q in questions:
             original_question = q.replace("'s", " of ")

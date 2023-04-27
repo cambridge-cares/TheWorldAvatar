@@ -4,14 +4,19 @@ import sys
 import torchmetrics
 from torch import no_grad
 from torch.optim.lr_scheduler import ExponentialLR
+from torchmetrics import Accuracy
 from tqdm import tqdm
 import os
 import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import DataLoader
-
+sys.path.append("")
+sys.path.append("..")
+sys.path.append("../..")
 sys.path.append("../../..")
+sys.path.append("../../../..")
+sys.path.append("../../../../..")
 from Marie.Util.Dataset.CrossGraph_Dataset import CrossGraphDataset
 from Marie.Util.location import DATA_DIR
 from Marie.Util.Models.CrossGraphAlignmentModel import CrossGraphAlignmentModel
@@ -23,7 +28,7 @@ class CrossGraphTrainer:
                  load_model=False):
         self.df = df
         self.dataset_path = dataset_path
-
+        self.load_model = load_model
         self.epoch_num = epoch_num
         self.test_step = test_step
         self.learning_rate = learning_rate
@@ -33,6 +38,8 @@ class CrossGraphTrainer:
         self.device = torch.device("cuda" if use_cuda else "cpu")
         print(f'=========== USING {self.device} ===============')
         self.model = CrossGraphAlignmentModel(device=self.device).to(self.device)
+        if self.load_model:
+            self.model.load_state_dict(torch.load(os.path.join(dataset_path, "cross_graph_model_with_all_9_updated")))
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.learning_rate)
         self.scheduler = ExponentialLR(self.optimizer, gamma=self.gamma)
         # print(df["true_domain"])
@@ -41,9 +48,9 @@ class CrossGraphTrainer:
         df_train = df
         df_test = df.sample(frac=1)
         dataset_train = CrossGraphDataset(df_train)
-        self.dataloader_train = DataLoader(dataset_train, batch_size=batch_size, shuffle=False)
+        self.dataloader_train = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
         dataset_test = CrossGraphDataset(df_test)
-        self.dataloader_test = DataLoader(dataset_test, batch_size=batch_size, shuffle=False)
+        self.dataloader_test = DataLoader(dataset_test, batch_size=batch_size, shuffle=True)
         # ============= init the model ===============
 
     def run(self):
@@ -61,7 +68,6 @@ class CrossGraphTrainer:
                 self.save_model()
                 break
         # self.evaluate()
-
 
     def train(self):
         total_loss_train = 0
@@ -88,7 +94,10 @@ class CrossGraphTrainer:
             # pred_domain = pred_domain.type(torch.LongTensor)
             true_domain = torch.LongTensor(true_domain)
             # print(pred_domain)
-            hit_rate = torchmetrics.functional.accuracy(pred_domain, true_domain, subset_accuracy=True)
+            accuracy = Accuracy(task="multilabel", num_labels=9)
+            hit_rate = accuracy(pred_domain, true_domain)
+
+            # hit_rate = torchmetrics.functional.accuracy(task="multilabel",pred_domain, true_domain)
             total_outrank_rate += hit_rate
             loss.mean().backward()
             total_loss_train += loss.sum().cpu()
@@ -136,7 +145,7 @@ class CrossGraphTrainer:
         print(f"total test outrank rate {total_test_outrank_rate}")
 
     def save_model(self):
-        model_path = os.path.join(self.dataset_path, 'cross_graph_model_with_all_9')
+        model_path = os.path.join(self.dataset_path, 'cross_graph_model_with_all_9_updated')
         print(' - Saving the scoring model')
         torch.save(self.model.state_dict(), model_path)
 
@@ -146,5 +155,5 @@ if __name__ == '__main__':
     df = pd.read_csv(os.path.join(dataset_path, 'cross_graph_alignment_training_updated.tsv'), sep='\t',
                      index_col=None)
     # df.columns = ["question", "true_score", "true_domain"]
-    my_cross_graph_trainer = CrossGraphTrainer(df, dataset_path=dataset_path)
+    my_cross_graph_trainer = CrossGraphTrainer(df, dataset_path=dataset_path, load_model=False)
     my_cross_graph_trainer.run()
