@@ -544,13 +544,13 @@ public class SewerageNetworkAgent extends JPSAgent {
 			}
 
 			if (!HG107.equals("None")) {
-				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name),
+				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name),
 						NodeFactory.createURI(OS + "hasCatchmentAreaKey"), HG107);
 			}
 
 			if (!HG103.equals("None") || !HG104.equals("None")) {
 				HG_instantiation_ub
-						.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name),
+						.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name),
 								NodeFactory.createURI(sio + "SIO_000061"),
 								NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name))
 						.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name),
@@ -569,7 +569,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 
 			if (!HG101.equals("None") || !HG102.equals("None")) {
 				HG_instantiation_ub
-						.addInsert(NodeFactory.createURI(KB + "ElevationI" + HG_Instance_Name),
+						.addInsert(NodeFactory.createURI(KB + "LocationI" + HG_Instance_Name),
 								NodeFactory.createURI(sio + "SIO_000061"),
 								NodeFactory.createURI(KB + "Street" + HG_Instance_Name))
 						.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name),
@@ -675,13 +675,13 @@ public class SewerageNetworkAgent extends JPSAgent {
 			}
 
 			if (!HG107.equals("None")) {
-				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name),
+				HG_instantiation_ub.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name),
 						NodeFactory.createURI(OS + "hasCatchmentAreaKey"), HG107);
 			}
 
 			if (!HG103.equals("None") || !HG104.equals("None")) {
 				HG_instantiation_ub
-						.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name),
+						.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name),
 								NodeFactory.createURI(sio + "SIO_000061"),
 								NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name))
 						.addInsert(NodeFactory.createURI(KB + "Distrcit" + HG_Instance_Name),
@@ -700,7 +700,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 
 			if (!HG101.equals("None") || !HG102.equals("None")) {
 				HG_instantiation_ub
-						.addInsert(NodeFactory.createURI(KB + "ElevationO" + HG_Instance_Name),
+						.addInsert(NodeFactory.createURI(KB + "LocationO" + HG_Instance_Name),
 								NodeFactory.createURI(sio + "SIO_000061"),
 								NodeFactory.createURI(KB + "Street" + HG_Instance_Name))
 						.addInsert(NodeFactory.createURI(KB + "Street" + HG_Instance_Name),
