@@ -147,21 +147,6 @@ def pytest_sessionstart(session):
     if os.path.exists(HPLC_REPORT_LOCAL_TEST_DIR):
         shutil.rmtree(HPLC_REPORT_LOCAL_TEST_DIR)
 
-    # Create folder for test hplc reports
-    if not os.path.exists(HPLC_REPORT_LOCAL_TEST_DIR):
-        os.mkdir(HPLC_REPORT_LOCAL_TEST_DIR)
-    # Create folder for downloaded files
-    if not os.path.exists(DOWNLOADED_DIR):
-        os.mkdir(DOWNLOADED_DIR)
-    # Create folder for downloaded files
-    if not os.path.exists(FCEXP_FILE_DIR):
-        os.mkdir(FCEXP_FILE_DIR)
-    # Create folder for labs
-    if not os.path.exists(LAB1_DIR):
-        os.mkdir(LAB1_DIR)
-    if not os.path.exists(LAB2_DIR):
-        os.mkdir(LAB2_DIR)
-
 
 def pytest_sessionfinish(session):
     """ This will run after all the tests"""
@@ -169,16 +154,6 @@ def pytest_sessionfinish(session):
         os.remove(SECRETS_FILE_PATH)
     if os.path.exists(URL_FILE_PATH):
         os.remove(URL_FILE_PATH)
-    if os.path.exists(DOWNLOADED_DIR):
-        shutil.rmtree(DOWNLOADED_DIR)
-    if os.path.exists(FCEXP_FILE_DIR):
-        shutil.rmtree(FCEXP_FILE_DIR)
-    if os.path.exists(HPLC_REPORT_LOCAL_TEST_DIR):
-        shutil.rmtree(HPLC_REPORT_LOCAL_TEST_DIR)
-    if os.path.exists(LAB1_DIR):
-        shutil.rmtree(LAB1_DIR)
-    if os.path.exists(LAB2_DIR):
-        shutil.rmtree(LAB2_DIR)
 
 
 # ----------------------------------------------------------------------------------
