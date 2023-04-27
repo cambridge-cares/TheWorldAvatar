@@ -47,17 +47,6 @@
     
 
 
-    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/EnergyResourceOntology.owl#producesEnergy -->
-
-
-    <owl:ObjectProperty rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/EnergyResourceOntology.owl#producesEnergy">
-        <rdfs:domain rdf:resource="http://www.purl.org/oema/enaeq/EnergyGenerator"/>
-        <rdfs:range rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/EnergyResourceOntology.owl#EnergySupply"/>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:ObjectProperty>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontoubemmp/consumesUtilities -->
 
 
@@ -123,9 +112,21 @@
 
 
     <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/producesCO2Savings">
-        <rdfs:domain rdf:resource="http://www.purl.org/oema/enaeq/EnergyGenerator"/>
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
         <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/CO2Savings"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship between an energy generating device and the amount of carbond dioxide that it could save</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/producesEnergy -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/producesEnergy">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/EnergySupply"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A relationship that links the solar device to the energy it produces</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:ObjectProperty>
     
@@ -141,7 +142,7 @@
                     <rdf:Description rdf:about="https://w3id.org/bot#Building"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Roof"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Wall"/>
-                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarEnergyGenerator"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
                 </owl:unionOf>
             </owl:Class>
         </rdfs:domain>
@@ -255,17 +256,6 @@
     
 
 
-    <!-- http://www.purl.org/oema/enaeq/EnergyGenerator -->
-
-
-    <owl:Class rdf:about="http://www.purl.org/oema/enaeq/EnergyGenerator">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Any device that produces energy</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
-    
-
-
     <!-- http://www.purl.org/oema/enaeq/HVAC -->
 
 
@@ -292,17 +282,6 @@
 
 
     <owl:Class rdf:about="https://w3id.org/bot#Building"/>
-    
-
-
-    <!-- https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/EnergyResourceOntology.owl#EnergySupply -->
-
-
-    <owl:Class rdf:about="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/EnergyResourceOntology.owl#EnergySupply">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Energy"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of energy consumed by an energy consuming facility</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
-    </owl:Class>
     
 
 
@@ -541,7 +520,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/ElectricitySupply">
-        <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/EnergyResourceOntology.owl#EnergySupply"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/EnergySupply"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of electricity energy produced</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
@@ -554,7 +533,18 @@
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/EnergyConsumption">
         <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Energy"/>
         <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/UtilitiesConsumption"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of energy produced by an energy facility</rdfs:comment>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of energy consumed by an energy consuming facility</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
+    </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/EnergySupply -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/EnergySupply">
+        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Energy"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of energy produced by an energy generating facility or device</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
@@ -587,7 +577,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/HeatSupply">
-        <rdfs:subClassOf rdf:resource="https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/EnergyResourceOntology.owl#EnergySupply"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/EnergySupply"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of heat energy produced</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
@@ -687,7 +677,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVPanels">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarEnergyGenerator"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Photovoltaic panel: converts solar radiation into usable electrical energy</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
@@ -709,7 +699,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/PVTCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarEnergyGenerator"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Photovoltaic thermal hybrid solar collector: converts solar radiation into usable thermal and electrical energy</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
@@ -863,7 +853,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarCollectors">
-        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarEnergyGenerator"/>
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Solar collector: converts solar radiation into usable thermal energy</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
@@ -881,12 +871,12 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SolarEnergyGenerator -->
+    <!-- https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice -->
 
 
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarEnergyGenerator">
-        <rdfs:subClassOf rdf:resource="http://www.purl.org/oema/enaeq/EnergyGenerator"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Device that generate energy by receiving solar radiation</rdfs:comment>
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarDevice">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontodevice/Device"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An energy generator that converts solar radiation into usable energy.</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
     
