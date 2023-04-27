@@ -71,7 +71,7 @@ class AgentInterface:
                 return ["EMPTY"], [-999], ["EMPTY"]
             else:
                 # return my_invoker.result
-                return [str(json.dumps(result))], [1.0], [agent]
+                return [json.dumps(result)], [1.0], [agent]
         else:
             return ["EMPTY"], [-999], ["EMPTY"]
 
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     cn = ChemicalNEL()
     agentInterface = AgentInterface(nel=cn)
     START_TIME = time.time()
-    question = "what is the heat capacity of C3H4O"
+    question = "what is the power conversion efficiency of TiO2"
     result = agentInterface.run(question)
     print(result)
     print(time.time() - START_TIME)

@@ -1,4 +1,5 @@
 import os, sys
+from pprint import pprint
 
 sys.path.append("..")
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
@@ -31,9 +32,16 @@ if __name__ == "__main__":
     my_engine = OntoMoPsQAEngine(dataset_dir=dataset_dir, dataset_name=sub_ontology, sub_ontology=sub_ontology,
                                  ontology=ontology, nel=cn)
 
-    text = "List the Chemical Building Units with 2-linear as the Generic Building Unit"
-    rst = my_engine.run(text)
-    print(rst)
+    text = ""
+    while text != "quit":
+        text = input("QUESTION: ")
+        rst = my_engine.run(text)
+        print("============================= RESULT ==============================")
+        pprint(rst)
+        print("===================================================================")
+    # text = "List the Chemical Building Units with 2-linear as the Generic Building Unit"
+    # rst = my_engine.run(text)
+    # print(rst)
 
     # text = "List the MOPs with (3-pyramidal)8(2-bent)12(Cs) as the assembly model"
     # rst = my_engine.run(text)

@@ -35,8 +35,9 @@ class QAEngineNumerical:
 
     def text_filtering(self, question):
         # question = question.replace("(", "").replace(")", "")
-        stop_words = ["find", "all", "species", "what", "is", "the", "show", "give", "that", "can", "be", "which", "list", "are"]
+        stop_words = ["find", "all", "species", "what", "is", "the", "show", "give", "that", "can", "be", "which", "list", "are", "shaped", "shape"]
         stop_words_units = ["g/mol", "dalton", "degrees", "degree", "celsius", "g"]
+        stop_words += stop_words_units
         question_tokens = [token for token in question.split(" ") if token not in stop_words]
         question = " ".join(question_tokens)
         return question
@@ -497,7 +498,11 @@ class QAEngineNumerical:
             self.input_dict.mention = mention
 
         answer_list, score_list, target_list, numerical_list, answer_type = self.find_answers()
-        if len(score_list) == 0:
+        if score_list:
+            if len(score_list) == 0:
+                return [], [], [], [], "normal"
+
+        else:
             return [], [], [], [], "normal"
         max_score = max(score_list)
         score_list = [(max_score + 1 - s) for s in score_list]
