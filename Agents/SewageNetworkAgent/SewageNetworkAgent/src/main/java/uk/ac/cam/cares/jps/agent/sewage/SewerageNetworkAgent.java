@@ -107,7 +107,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 			 HGInstantiation(HG_Path_4);
 			 HGInstantiation(HG_Path_5); 
 			 HGInstantiation(HG_Path_6);
-			 /*KGInstantiation(KG_Path_0); 
+			 KGInstantiation(KG_Path_0); 
 			 KGInstantiation(KG_Path_1);
 			 KGInstantiation(KG_Path_2); 
 			 KGInstantiation(KG_Path_3);
@@ -122,7 +122,7 @@ public class SewerageNetworkAgent extends JPSAgent {
 			 BranchInstantiation(BR_Path_1); 
 			 BranchInstantiation(BR_Path_2);
 			 BranchInstantiation(BR_Path_3);
-			 KGMainSubNetInstantiation(KG_MainNet,KG_SubNet);*/
+			 KGMainSubNetInstantiation(KG_MainNet,KG_SubNet);
 			
 			AccessAgentCaller.updateStore(sparqlendpoint, "delete {?x ?y \"None\"} where {?x ?y \"None\"}");
 			jsonMessage.accumulate("Result", "Data has been instantiated.");
