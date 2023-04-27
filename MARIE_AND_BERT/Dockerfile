@@ -28,7 +28,7 @@ ENV JAVA_HOME /usr/lib/jvm/java-11-openjdk-amd64/
 RUN export JAVA_HOME
 RUN pip --default-timeout=10000 install --no-cache-dir -r requirements_linux.txt
 RUN echo "uwsgi_read_timeout 300s;" > /etc/nginx/conf.d/custom_timeout.conf
-#RUN echo "uwsgi_connect_timeout 300s;"
-#RUN echo "uwsgi_send_timeout 300s;"
+RUN echo "uwsgi_connect_timeout 300s;" > /etc/nginx/conf.d/custom_timeout.conf
+RUN echo "uwsgi_send_timeout 300s;" > /etc/nginx/conf.d/custom_timeout.conf
 #RUN chmod +x ./script.sh
 #CMD [ "/bin/bash","-c","./script.sh"]
