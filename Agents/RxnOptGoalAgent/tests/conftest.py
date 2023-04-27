@@ -294,7 +294,7 @@ def initialise_test_triples(initialise_triple_store):
         print(f"SPARQL endpoint: {endpoint}")
 
         # Create SparqlClient for testing
-        sparql_client = PySparqlClient(endpoint, endpoint)
+        sparql_client = RxnOptGoalSparqlClient(endpoint, endpoint)
 
         # Clear triple store before any usage
         sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
