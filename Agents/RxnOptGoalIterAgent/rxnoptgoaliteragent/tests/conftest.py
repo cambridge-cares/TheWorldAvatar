@@ -324,6 +324,10 @@ def initialise_triples(sparql_client, derivation_client, derivation_inputs):
     # Delete all triples before initialising prepared triples
     sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
+    # Upload ontology TBox
+    sparql_client.upload_ontology_tbox(ONTODOE)
+    sparql_client.upload_ontology_tbox(ONTOREACTION)
+
 	# Upload all relevant example triples provided in the resources folder of 'chemistry_and_robots' package to triple store
     for f in [
         'sample_data/rxn_data.ttl', # previous experiment data
