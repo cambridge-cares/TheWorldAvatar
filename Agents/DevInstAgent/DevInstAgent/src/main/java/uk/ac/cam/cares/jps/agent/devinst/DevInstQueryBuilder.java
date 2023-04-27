@@ -284,7 +284,7 @@ public class DevInstQueryBuilder {
         }
         
 
-
+        storeClient.executeUpdate(modify.getQueryString());
     }
 
 
