@@ -66,7 +66,6 @@ Once the test is executed, it first DELETES ALL TRIPLES in the specified SPARQL 
 ```
 /path/to/chemistry_and_robots/resources/ontoagent/Service__PostProc.ttl
 /path/to/chemistry_and_robots/resources/sample_data/new_exp_data.ttl
-/path/to/chemistry_and_robots/resources/sample_data/duplicate_ontorxn.ttl
 /path/to/chemistry_and_robots/resources/sample_data/dummy_lab.ttl
 /path/to/chemistry_and_robots/resources/sample_data/rxn_data.ttl
 /path/to/chemistry_and_robots/resources/sample_data/dummy_post_proc.ttl
