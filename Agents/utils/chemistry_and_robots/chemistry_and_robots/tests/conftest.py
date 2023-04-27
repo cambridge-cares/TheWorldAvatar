@@ -173,7 +173,7 @@ def clear_loggers():
 
 class TargetIRIs(Enum):
     CHEMICAL_REACTION_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ChemRxn_1/'
-    DUMMY_VAPOURTEC_EXECUTION_AGENT_SERVICE_IRI = 'https://www.theworldavatar.com/kg/agents/Service__Execution#Service' # same as in rxn_queue_test.ttl
+    DUMMY_VAPOURTEC_EXECUTION_AGENT_SERVICE_IRI = 'https://www.theworldavatar.com/kg/agents/Service__Execution/Service' # same as in rxn_queue_test.ttl
     DUMMY_LAB_BASE_IRI = 'https://example.com/blazegraph/namespace/testlab/dummy_lab/'
     DUMMY_LAB_IRI = DUMMY_LAB_BASE_IRI + 'Laboratory_Dummy'
     AUTOMATEDRXNPLATFORM_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'AutomatedRxnPlatform_Dummy'

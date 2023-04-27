@@ -96,7 +96,7 @@ The IRI of OntoHPLC:HPLCReport will then be used as the derivation inputs by the
 <derivation> <OntoDerivation:isDerivedFrom> <https://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_d3806b3d-821f-4891-859b-4a96522de416>
 
 # agent related
-<derivation> <OntoDerivation:isDerivedUsing> <https://www.theworldavatar.com/kg/agents/Service__PostProc#Service>
+<derivation> <OntoDerivation:isDerivedUsing> <https://www.theworldavatar.com/kg/agents/Service__PostProc/Service>
 
 # timestamp of derivation
 <derivation> <time:hasTime> <time>
