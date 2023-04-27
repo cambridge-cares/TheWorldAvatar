@@ -123,7 +123,7 @@ class CategoricalVariable(DesignVariable):
     name: str=None # NOTE this is not part of OntoDoE ontology, but it is used for working with Summit python package
     hasLevel: List[str]
     positionalID: Optional[str]
-    refersTo: OM_Quantity
+    refersToQuantity: OM_Quantity
 
     def create_instance_for_kg(self, g: Graph):
         g = super().create_instance_for_kg(g)
@@ -134,10 +134,10 @@ class CategoricalVariable(DesignVariable):
         if self.positionalID is not None:
             g.add((URIRef(self.instance_iri), URIRef(ONTODOE_POSITIONALID), Literal(self.positionalID)))
 
-        g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTO), URIRef(self.refersTo.instance_iri)))
-        g.add((URIRef(self.refersTo.instance_iri), RDF.type, URIRef(self.refersTo.clz)))
-        g.add((URIRef(self.refersTo.instance_iri), URIRef(OM_HASVALUE), URIRef(self.refersTo.hasValue.instance_iri)))
-        g = self.refersTo.hasValue.create_instance_for_kg(g)
+        g.add((URIRef(self.instance_iri), URIRef(ONTODOE_REFERSTOQUANTITY), URIRef(self.refersToQuantity.instance_iri)))
+        g.add((URIRef(self.refersToQuantity.instance_iri), RDF.type, URIRef(self.refersToQuantity.clz)))
+        g.add((URIRef(self.refersToQuantity.instance_iri), URIRef(OM_HASVALUE), URIRef(self.refersToQuantity.hasValue.instance_iri)))
+        g = self.refersToQuantity.hasValue.create_instance_for_kg(g)
 
         return g
 

@@ -113,7 +113,7 @@ def formNewExperiment(
         param for param in doe.hasDomain.hasFixedParameter if param.refersToQuantity.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO
     ]
     for var in doe.hasDomain.hasDesignVariable:
-        if isinstance(var, dm.CategoricalVariable) and var.refersTo.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO:
+        if isinstance(var, dm.CategoricalVariable) and var.refersToQuantity.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO:
             var.positionalID = new_exp_ds[var.name].iloc[0]
             _stoi_ratio_list.append(var)
     # NOTE that here we assume the ReactionScale has the same positionalID as the StoichiometryRatio of the reference chemical
@@ -165,7 +165,7 @@ def formNewExperiment(
                             _var.append(design_var)
                             var_loc.append(design_var.name)
                     elif isinstance(design_var, dm.CategoricalVariable):
-                        if design_var.refersTo.clz == first_rxn_exp_con.clz and first_rxn_exp_con.positionalID in design_var.hasLevel:
+                        if design_var.refersToQuantity.clz == first_rxn_exp_con.clz and first_rxn_exp_con.positionalID in design_var.hasLevel:
                             _var.append(design_var)
                             var_loc.append(design_var.name)
 
@@ -277,8 +277,8 @@ def formNewExperiment(
                     om_measure = dm.OM_Measure(
                         instance_iri=dm.INSTANCE_IRI_TO_BE_INITIALISED,
                         namespace_for_init=dm.getNameSpace(design_var.instance_iri),
-                        hasUnit=design_var.refersTo.hasValue.hasUnit,
-                        hasNumericalValue=design_var.refersTo.hasValue.hasNumericalValue
+                        hasUnit=design_var.refersToQuantity.hasValue.hasUnit,
+                        hasNumericalValue=design_var.refersToQuantity.hasValue.hasNumericalValue
                     )
 
                 # Create instance for ReactionCondition
@@ -390,20 +390,20 @@ def constructPreviousResultsTable(doe: dm.DesignOfExperiment) -> DataSet_summit:
                 con = exp.get_reaction_condition(var.refersToQuantity.clz, var.positionalID)
 
                 if con is None:
-                    raise Exception(f"No ReactionCondition found for the DesignVariable (refersTo clz: {var.refersToQuantity.clz} and positionalID: {var.positionalID}) in the historical experiment (instance_iri: {exp.instance_iri})")
+                    raise Exception(f"No ReactionCondition found for the DesignVariable (refersToQuantity clz: {var.refersToQuantity.clz} and positionalID: {var.positionalID}) in the historical experiment (instance_iri: {exp.instance_iri})")
 
                 # append the collected value in the experiment
                 data.append({'rxnexp': exp.instance_iri, var.name: con.hasValue.hasNumericalValue})
 
             elif isinstance(var, dm.CategoricalVariable):
                 list_cat_var.append(var.name)
-                con_list = [exp.get_reaction_condition(var.refersTo.clz, level) for level in var.hasLevel]
+                con_list = [exp.get_reaction_condition(var.refersToQuantity.clz, level) for level in var.hasLevel]
                 con_list_non_none = [con for con in con_list if con is not None]
 
                 if len(con_list_non_none) == 0:
-                    raise Exception(f"No ReactionCondition found for the DesignVariable (refersTo clz: {var.refersTo.clz} and categorical level: {var.hasLevel}) in the historical experiment (instance_iri: {exp.instance_iri})")
+                    raise Exception(f"No ReactionCondition found for the DesignVariable (refersToQuantity clz: {var.refersToQuantity.clz} and categorical level: {var.hasLevel}) in the historical experiment (instance_iri: {exp.instance_iri})")
                 elif len(con_list_non_none) > 1:
-                    raise Exception(f"Multiple ReactionCondition found for the DesignVariable (refersTo clz: {var.refersTo.clz} and categorical level: {var.hasLevel}) in the historical experiment (instance_iri: {exp.instance_iri})")
+                    raise Exception(f"Multiple ReactionCondition found for the DesignVariable (refersToQuantity clz: {var.refersToQuantity.clz} and categorical level: {var.hasLevel}) in the historical experiment (instance_iri: {exp.instance_iri})")
                 else:
                     data.append({'rxnexp': exp.instance_iri, var.name: con_list_non_none[0].positionalID})
 
@@ -426,7 +426,7 @@ def constructPreviousResultsTable(doe: dm.DesignOfExperiment) -> DataSet_summit:
             indi = exp.get_performance_indicator(var.refersToQuantity, var.positionalID)
 
             if indi is None:
-                raise Exception(f"No PerformanceIndicator found for the SystemResponse (refersTo clz: {var.refersToQuantity} and positionalID: {var.positionalID}) in the historical experiment (instance_iri: {exp.instance_iri})")
+                raise Exception(f"No PerformanceIndicator found for the SystemResponse (refersToQuantity clz: {var.refersToQuantity} and positionalID: {var.positionalID}) in the historical experiment (instance_iri: {exp.instance_iri})")
 
             # append the collected value in the experiment
             # NOTE here we clip the value to be within the range of [SYS_RES_LOWER_BOUND, SYS_RES_UPPER_BOUND], i.e. [-2**31-1, 2**31-1]

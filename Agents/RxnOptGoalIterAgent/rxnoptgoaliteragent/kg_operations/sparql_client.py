@@ -199,15 +199,15 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
                         instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                         namespace_for_init=getNameSpace(var.instance_iri),
                         positionalID=var.positionalID,
-                        refersTo=OM_Quantity(
+                        refersToQuantity=OM_Quantity(
                             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                             namespace_for_init=getNameSpace(var.instance_iri),
-                            clz=var.refersTo.clz,
+                            clz=var.refersToQuantity.clz,
                             hasValue=OM_Measure(
                                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                                namespace_for_init=getNameSpace(var.refersTo.instance_iri),
-                                hasUnit=var.refersTo.hasValue.hasUnit,
-                                hasNumericalValue=var.refersTo.hasValue.hasNumericalValue,
+                                namespace_for_init=getNameSpace(var.refersToQuantity.instance_iri),
+                                hasUnit=var.refersToQuantity.hasValue.hasUnit,
+                                hasNumericalValue=var.refersToQuantity.hasValue.hasNumericalValue,
                             ),
                         ),
                         hasLevel=var.hasLevel,

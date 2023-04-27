@@ -256,7 +256,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 <{domain_iri}> <{ONTODOE_HASDESIGNVARIABLE}> ?var .
                 ?var a <{ONTODOE_CATEGORICALVARIABLE}>.
                 ?var <{ONTODOE_HASLEVEL}> ?cat.
-                ?var <{ONTODOE_REFERSTO}> ?quantity .
+                ?var <{ONTODOE_REFERSTOQUANTITY}> ?quantity .
                 ?quantity a ?clz; <{OM_HASVALUE}> ?measure.
                 ?measure <{OM_HASUNIT}> ?unit; <{OM_HASNUMERICALVALUE}> ?value.
                 OPTIONAL {{?var <{ONTODOE_POSITIONALID}> ?id . }}
@@ -272,7 +272,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     instance_iri=_v,
                     name=getShortName(_v), # NOTE this is not part of OntoDoE ontology, but it is used for working with Summit python package
                     hasLevel=dal.get_unique_values_in_list_of_dict(_info_v, 'cat'),
-                    refersTo=OM_Quantity(
+                    refersToQuantity=OM_Quantity(
                         instance_iri=_info_v[0]['quantity'],
                         clz=_info_v[0]['clz'],
                         hasValue=OM_Measure(
