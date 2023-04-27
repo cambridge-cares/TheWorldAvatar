@@ -495,30 +495,6 @@
     
 
 
-    <!-- https://www.theworldavatar.com/kg/ontobms/ElectricalPower-AC -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/ElectricalPower-AC">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Alternating Current (AC) electrical power.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electrical power (AC)</rdfs:label>
-    </owl:Class>
-    
-
-
-    <!-- https://www.theworldavatar.com/kg/ontobms/ElectricalPower-DC -->
-
-
-    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobms/ElectricalPower-DC">
-        <rdfs:subClassOf rdf:resource="http://www.ontology-of-units-of-measure.org/resource/om-2/Power"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Direct Current (DC) electrical power.</rdfs:comment>
-        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontobms/</rdfs:isDefinedBy>
-        <rdfs:label rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electrical power (DC)</rdfs:label>
-    </owl:Class>
-    
-
-
     <!-- https://www.theworldavatar.com/kg/ontobms/ExhaustFan -->
 
 
