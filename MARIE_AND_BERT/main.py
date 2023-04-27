@@ -1,20 +1,16 @@
-import time
-
 from Marie.CrossGraphQAEngine import CrossGraphQAEngine
 import json
 from flask import Flask, request
 from flask import render_template, send_from_directory
 from Marie.Util.Logging import MarieLogger
-import Marie.Util.Web.SPARQLHandshake as Handshake
 
 logger = MarieLogger()
-
-app = Flask(__name__)
 logger.info("============= Initializing the server ===========")
 logger.info("1. Initializing Cross Graph Engine")
 my_qa_engine = CrossGraphQAEngine()
 logger.info(" - Done initializing Cross Graph Engine")
 logger.info("============= Server is ready to go! ===========")
+app = Flask(__name__)
 
 
 def answer_question(question):
