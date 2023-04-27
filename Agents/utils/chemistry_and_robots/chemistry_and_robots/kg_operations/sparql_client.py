@@ -21,6 +21,8 @@ from chemistry_and_robots.hardware import hplc
 
 from chemistry_and_robots.kg_operations import dict_and_list as dal
 
+from chemistry_and_robots.resources import TBOX_PATH_DICT
+
 from py4jps import agentlogging
 logger = agentlogging.get_logger('dev')
 
@@ -36,21 +38,26 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         # Upload TBox if not already instantiated
         if not res:
-            temp_fp = '_tmp.owl'
-            url_to_upload = TBOX_DICT.get(tbox_namespace) if not alternative_url else alternative_url
-            try:
+            if not alternative_url:
+                # Upload TBox from local file by default
+                self.uploadOntology(TBOX_PATH_DICT.get(tbox_namespace))
+            else:
+                # Upload TBox from alternative URL if provided
+                temp_fp = '_tmp.owl'
+                url_to_upload = alternative_url
                 try:
-                    content = requests.get(url_to_upload)
-                    if content.status_code != 200:
-                        raise Exception(f'HTTP error code for retrieving owl file: {content.status_code}')
+                    try:
+                        content = requests.get(url_to_upload)
+                        if content.status_code != 200:
+                            raise Exception(f'HTTP error code for retrieving owl file: {content.status_code}')
+                    except Exception as ex:
+                        raise Exception(f"Unable to retrieve {url_to_upload} from TWA server.") from ex
+                    with open(temp_fp, 'w') as f:
+                        f.write(content.text)
+                        self.uploadOntology(temp_fp)
+                    os.remove(temp_fp)
                 except Exception as ex:
-                    raise Exception(f"Unable to retrieve {url_to_upload} from TWA server.") from ex
-                with open(temp_fp, 'w') as f:
-                    f.write(content.text)
-                    self.uploadOntology(temp_fp)
-                os.remove(temp_fp)
-            except Exception as ex:
-                raise Exception(f"Unable to initialise knowledge graph with {tbox_namespace} TBox ({url_to_upload}).") from ex
+                    raise Exception(f"Unable to initialise knowledge graph with {tbox_namespace} TBox ({url_to_upload}).") from ex
 
     def get_all_chemical_reaction_iri(self):
         query = f"""SELECT ?chem_rxn WHERE {{ ?chem_rxn a <{ONTOREACTION_CHEMICALREACTION}>. }}"""
