@@ -31,6 +31,7 @@ public final class OntopService extends ContainerService {
 
     private static final String DEFAULT_PORT = "8080";
 
+    private final String containerName;
     private final OntopEndpointConfig endpointConfig;
 
     private Path postgresqlDriverScratchPath;
@@ -38,7 +39,9 @@ public final class OntopService extends ContainerService {
     public OntopService(String stackName, ServiceManager serviceManager, ServiceConfig config) {
         super(stackName, serviceManager, config);
 
-        endpointConfig = new OntopEndpointConfig(StackClient.removeStackName(config.getName()),
+        containerName = StackClient.removeStackName(getConfig().getName());
+
+        endpointConfig = new OntopEndpointConfig(containerName,
                 getHostName(), DEFAULT_PORT, "", null);
     }
 
@@ -72,7 +75,7 @@ public final class OntopService extends ContainerService {
 
     @Override
     public void doPostStartUpConfiguration() {
-        OntopClient.getInstance(StackClient.removeStackName(getConfig().getName())).updateOBDA(null);
+        OntopClient.getInstance(containerName).updateOBDA(null);
 
         writeEndpointConfig(endpointConfig);
 
