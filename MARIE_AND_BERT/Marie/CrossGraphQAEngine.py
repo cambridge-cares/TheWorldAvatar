@@ -28,7 +28,7 @@ import threading
 
 def remove_mention(q_with_mention, mention):
     stop_words = ["what", "is", "are", "the", "more", "less", "than", "species", "find", "all", "over", "under", "of",
-                  "show"]
+                  "show", "me"]
     flag_words = ["mops", "cbu", "assembly model"]
     if "mops" not in q_with_mention.lower():
         stop_words += ["with"]
