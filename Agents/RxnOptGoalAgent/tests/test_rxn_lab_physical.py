@@ -57,7 +57,7 @@ def test_rxn_rog_PHYSICAL(
     vapourtec_agent_env_file, vapourtec_ip_address, fcexp_file_container_folder, hplc_agent_env_file, hplc_report_target_folder, local_agent_test, goal_request,
 ):
     # endpoint = initialise_test_triples
-    sparql_client, derivation_client = initialise_blazegraph_fileserver_with_test_triples
+    sparql_client, derivation_client = initialise_blazegraph_fileserver_with_test_triples()
 
     # Create agent instances, this also register the agents to the KG
     # NOTE that this should be done by agent themselves at real deployment

@@ -350,39 +350,42 @@ def initialise_blazegraph_and_fileserver():
 @pytest.fixture(scope="module")
 def initialise_blazegraph_fileserver_with_test_triples(
     initialise_blazegraph_and_fileserver,
-    get_service_auth
+    get_service_auth,
 ):
-    bg_url, fs_url = initialise_blazegraph_and_fileserver
+    def _initialise_blazegraph_fileserver_with_test_triples(
+        triples_dir: str = TEST_TRIPLES_DIR
+    ):
+        bg_url, fs_url = initialise_blazegraph_and_fileserver
 
-    # Wait some arbitrary time until container is reachable
-    time.sleep(8)
+        # Wait some arbitrary time until container is reachable
+        time.sleep(8)
 
-    sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
-    fs_user, fs_pwd = get_service_auth(FS_SERVICE)
+        sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
+        fs_user, fs_pwd = get_service_auth(FS_SERVICE)
 
-    # Create SparqlClient for testing
-    sparql_client = RxnOptGoalSparqlClient(
-        query_endpoint=bg_url,
-        update_endpoint=bg_url,
-        kg_user=sparql_user,
-        kg_password=sparql_pwd,
-        fs_url=fs_url,
-        fs_user=fs_user,
-        fs_pwd=fs_pwd,
-    )
+        # Create SparqlClient for testing
+        sparql_client = RxnOptGoalSparqlClient(
+            query_endpoint=bg_url,
+            update_endpoint=bg_url,
+            kg_user=sparql_user,
+            kg_password=sparql_pwd,
+            fs_url=fs_url,
+            fs_user=fs_user,
+            fs_pwd=fs_pwd,
+        )
 
-    # Clear triple store before any usage
-    sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
+        # Clear triple store before any usage
+        sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
 
-    initialise_triples(sparql_client)
+        initialise_triples(sparql_client, triples_dir)
 
-    # Create DerivationClient for creating derivation instances
-    derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
-        sparql_client.kg_client,
-        DERIVATION_INSTANCE_BASE_URL
-    )
-
-    yield sparql_client, derivation_client
+        # Create DerivationClient for creating derivation instances
+        derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
+            sparql_client.kg_client,
+            DERIVATION_INSTANCE_BASE_URL
+        )
+        return sparql_client, derivation_client
+    yield _initialise_blazegraph_fileserver_with_test_triples
 
     # Clear logger at the end of the test
     clear_loggers()
@@ -639,6 +642,7 @@ def create_hplc_agent():
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
         dry_run:bool=True,
+        hplc_method:str=None,
     ):
         hplc_agent_config = config_hplc_agent(env_file)
         hplc_agent = HPLCAgent(
@@ -646,7 +650,7 @@ def create_hplc_agent():
             hplc_digital_twin=hplc_agent_config.HPLC_DIGITAL_TWIN if hplc_digital_twin is None else hplc_digital_twin,
             hplc_report_periodic_timescale=hplc_agent_config.HPLC_REPORT_PERIODIC_TIMESCALE if hplc_report_periodic_timescale is None else hplc_report_periodic_timescale,
             hplc_report_container_dir=hplc_agent_config.HPLC_REPORT_CONTAINER_DIR if hplc_report_container_dir is None else hplc_report_container_dir,
-            current_hplc_method=hplc_agent_config.CURRENT_HPLC_METHOD,
+            current_hplc_method=hplc_agent_config.CURRENT_HPLC_METHOD if not hplc_method else hplc_method,
             hplc_report_file_extension=hplc_agent_config.HPLC_REPORT_FILE_EXTENSION if hplc_report_file_extension is None else hplc_report_file_extension,
             register_agent=hplc_agent_config.REGISTER_AGENT if not register_agent else register_agent,
             agent_iri=hplc_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
@@ -708,7 +712,7 @@ def clear_loggers():
             logger.removeHandler(handler)
 
 
-def initialise_triples(sparql_client):
+def initialise_triples(sparql_client, triples_dir: str = TEST_TRIPLES_DIR):
     # Delete all triples before initialising prepared triples
     sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
@@ -717,7 +721,7 @@ def initialise_triples(sparql_client):
     sparql_client.upload_ontology_tbox(ONTOREACTION)
 
     # Upload the example triples for testing
-    pathlist = Path(TEST_TRIPLES_DIR).glob('*.ttl')
+    pathlist = Path(triples_dir).glob('*.ttl')
     for path in pathlist:
         g = Graph()
         g.parse(str(path), format='turtle')
