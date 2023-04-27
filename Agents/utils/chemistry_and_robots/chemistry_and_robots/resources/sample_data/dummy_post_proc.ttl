@@ -15,8 +15,8 @@
 @prefix ontohplc:        <https://www.theworldavatar.com/kg/ontohplc/> .
 @prefix ontobpr:        <https://www.theworldavatar.com/kg/ontobpr/> .
 @prefix OntoLab:        <https://www.theworldavatar.com/kg/ontolab/> .
-@prefix :                <http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/> .
-@prefix dummylab:       <http://example.com/blazegraph/namespace/testlab/dummy_lab/> .
+@prefix :                <https://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/> .
+@prefix dummylab:       <https://example.com/blazegraph/namespace/testlab/dummy_lab/> .
 
 @prefix exp1:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/> .
 @prefix exp2:            <https://www.example.com/triplestore/ontorxn/ReactionExperiment_2/> .
@@ -78,7 +78,6 @@
 :VapourtecR4_1
     a OntoVapourtec:VapourtecR4Reactor;
     OntoVapourtec:hasReactorVolume :VapourtecR4_1_ReactorVolume;
-    OntoLab:isSpecifiedBy :ReactorSettings_1;
 .
 
 :VapourtecR4_1_ReactorVolume
@@ -95,6 +94,7 @@
 :ReactorSettings_1
     a OntoVapourtec:ReactorSettings;
     OntoLab:wasGeneratedFor <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70>;
+    OntoLab:specifies :VapourtecR4_1;
 .
 
 :AutoSampler_1
@@ -110,7 +110,6 @@
 
 :Vial_1_1
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_1_1;
     OntoLab:isFilledWith :ChemicalAmount_1_1;
 .
 
@@ -144,7 +143,6 @@
 :VapourtecR4_2
     a OntoVapourtec:VapourtecR4Reactor;
     OntoVapourtec:hasReactorVolume :VapourtecR4_2_ReactorVolume;
-    OntoLab:isSpecifiedBy :ReactorSettings_2;
 .
 
 :VapourtecR4_2_ReactorVolume
@@ -161,6 +159,7 @@
 :ReactorSettings_2
     a OntoVapourtec:ReactorSettings;
     OntoLab:wasGeneratedFor <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8>;
+    OntoLab:specifies :VapourtecR4_2;
 .
 
 :AutoSampler_2
@@ -176,7 +175,6 @@
 
 :Vial_2_1
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_2_1;
     OntoLab:isFilledWith :ChemicalAmount_2_1;
 .
 

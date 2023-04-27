@@ -6,6 +6,8 @@ from pyderivationagent import PySparqlClient
 from pyderivationagent import config_generic
 from pyderivationagent import Config
 
+from chemistry_and_robots.data_model import iris
+
 
 class ConfigKG(Config):
     SPARQL_QUERY_ENDPOINT: str
@@ -37,6 +39,10 @@ if __name__ == '__main__':
         kg_user=config.KG_USERNAME,
         kg_password=config.KG_PASSWORD,
     )
+
+    # Upload tbox
+    sparql_client.upload_ontology_tbox(iris.ONTODOE)
+    sparql_client.upload_ontology_tbox(iris.ONTOREACTION)
 
     # Upload the example triples for testing
     # NOTE remember to put the lab specific triples in the triples folder

@@ -6,5 +6,5 @@ There should be a "data" folder containing json files, the name of the file shou
 
 
 # API
-URL: http://localhost:8082/ShipInputAgent/update
+URL: http://localhost:3838/ship-input-agent/update
 Send a POST request to this URL, no parameters required. This will add 1 timestep worth of data to the knowledge graph from the data stored in the "data" folder.

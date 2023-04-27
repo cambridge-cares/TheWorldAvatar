@@ -25,8 +25,6 @@ class ParameterSetting(BaseOntology):
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
         # <paramSetting> <OntoLab:hasQuantity> <quantity>
         g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_HASQUANTITY), quantity_iri))
-        # <quantity> <OntoLab:translatesToParameterSetting> <paramSetting>
-        g.add((quantity_iri, URIRef(ONTOLAB_TRANSLATESTOPARAMETERSETTING), URIRef(self.instance_iri)))
 
         return g
 
@@ -73,15 +71,11 @@ class EquipmentSettings(BaseOntology):
         g.add((URIRef(self.instance_iri), RDF.type, URIRef(self.clz)))
         # <equip_settings> <OntoLab:wasGeneratedFor> <rxnexp>
         g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_WASGENERATEDFOR), URIRef(self.wasGeneratedFor)))
-        # <reactionExperiment> <OntoReaction:hasEquipmentSettings> <reactorSetting>
-        g.add((URIRef(self.wasGeneratedFor), URIRef(ONTOREACTION_HASEQUIPMENTSETTINGS), URIRef(self.instance_iri)))
 
         # NOTE the links between <equip_settings> and <lab_equipment> are optional depends on if one want to configure the digital twin
         if configure_digital_twin:
             # <equip_settings> <OntoLab:specifies> <lab_equipment>
             g.add((URIRef(self.instance_iri), URIRef(ONTOLAB_SPECIFIES), URIRef(self.specifies.instance_iri)))
-            # <lab_equipment> <OntoLab:isSpecifiedBy> <equip_settings>
-            g.add((URIRef(self.specifies.instance_iri), URIRef(ONTOLAB_ISSPECIFIEDBY), URIRef(self.instance_iri)))
 
         return g
 
@@ -100,10 +94,8 @@ class Saref_State(BaseOntology):
 class LabEquipment(Saref_Device):
     clz: str = ONTOLAB_LABEQUIPMENT
     manufacturer: str # it should be pointing to an instance of https://dbpedia.org/ontology/Organisation, but we simplified here
-    isContainedIn: Union[str, Laboratory] # NOTE here str is provided as an optional as it seems impossible to circular reference at instance level
     hasPowerSupply: Union[str, PowerSupply] # NOTE TODO [future work] here str is provided as an optional to simplify the implementation
     consistsOf: Optional[List[LabEquipment]] = None
-    isSpecifiedBy: Optional[EquipmentSettings] = None
     # TODO [future work] add support for hasHeight, hasLength, hasPrice, hasWeight, and hasWidth
     isManagedBy: Optional[str] # NOTE here str is provided, this should refer to the iri of agent service
 

@@ -25,6 +25,12 @@ pytest_plugins = ["docker_compose"]
 # collect_triples_for_equip_settings and collect_triples_for_new_experiment are
 # tested in integration test of agents
 
+def test_get_ontology_tbox_version(initialise_triples):
+    sparql_client = initialise_triples
+    assert sparql_client.get_ontology_tbox_version(onto.ONTODOE) is not None
+    with pytest.raises(Exception):
+        sparql_client.get_ontology_tbox_version(f'http://fake_ontology/{str(uuid.uuid4())}/')
+
 def test_amount_of_triples_none_zero(initialise_triples):
     sparql_client = initialise_triples
     assert sparql_client.getAmountOfTriples() != 0
@@ -36,8 +42,8 @@ def test_getDesignVariables(initialise_triples):
     assert len(design_var_iri_list) == len(TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(iri in design_var_iri_list for iri in TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(all([isinstance(var, onto.ContinuousVariable),
-                    var.refersTo is not None,
-                    var.refersTo.hasUnit is not None,
+                    var.refersToQuantity is not None,
+                    var.refersToQuantity.hasUnit is not None,
                     var.upperLimit > var.lowerLimit]) for var in design_var_list)
 
 def test_get_fixed_parameters(initialise_triples):
@@ -52,10 +58,10 @@ def test_get_fixed_parameters(initialise_triples):
         all(
             [
                 isinstance(param, onto.FixedParameter),
-                param.refersTo is not None,
-                param.refersTo.hasValue is not None,
-                param.refersTo.hasValue.hasUnit is not None,
-                param.refersTo.hasValue.hasNumericalValue is not None
+                param.refersToQuantity is not None,
+                param.refersToQuantity.hasValue is not None,
+                param.refersToQuantity.hasValue.hasUnit is not None,
+                param.refersToQuantity.hasValue.hasNumericalValue is not None
             ]
         ) for param in param_list
     )
@@ -75,7 +81,7 @@ def test_getSystemResponses(initialise_triples, sys_res_iri, maximise):
     sys_res_list = sparql_client.getSystemResponses(sys_res_iri)
     length = len(sys_res_iri) if isinstance(sys_res_iri, list) else 1
     assert length == len(sys_res_list)
-    assert all(all([isinstance(r, onto.SystemResponse), r.refersTo is not None]) for r in sys_res_list)
+    assert all(all([isinstance(r, onto.SystemResponse), r.refersToQuantity is not None]) for r in sys_res_list)
     dct_m = {s.instance_iri:s.maximise for s in sys_res_list}
     if isinstance(sys_res_iri, list):
         assert all(m == dct_m.get(s) for s, m in zip(sys_res_iri, maximise))
@@ -108,8 +114,8 @@ def test_getDoEDomain(initialise_triples):
     assert len(lst_var) == len(TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(var in lst_var for var in TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(all([isinstance(var, onto.ContinuousVariable),
-                    var.refersTo is not None,
-                    var.refersTo.hasUnit is not None,
+                    var.refersToQuantity is not None,
+                    var.refersToQuantity.hasUnit is not None,
                     var.upperLimit > var.lowerLimit]) for var in doe_domain_instance.hasDesignVariable)
 
 @pytest.mark.parametrize(
@@ -151,7 +157,7 @@ def test_getExpReactionCondition(initialise_triples, rxnexp_iri, rxnexp_conditio
             if con.clz == onto.ONTOREACTION_STOICHIOMETRYRATIO:
                 assert con.indicatesMultiplicityOf is not None
             elif con.clz == onto.ONTOREACTION_REACTIONSCALE:
-                assert con.indicateUsageOf is not None
+                assert con.indicatesUsageOf is not None
 
 @pytest.mark.parametrize(
     "rxnexp_iri,rxnexp_pref_indicator_iri,rxn_type",
@@ -293,8 +299,8 @@ def test_getDoEHistoricalData(initialise_triples):
     sparql_client = initialise_triples
     hist_data_instance = sparql_client.getDoEHistoricalData(TargetIRIs.DOE_HIST_DATA_IRI.value)
     assert isinstance(hist_data_instance, onto.HistoricalData)
-    assert len(hist_data_instance.refersTo) == len(TargetIRIs.DOE_HIST_DATE_REFERTO_IRI.value)
-    assert all(iri in [h.instance_iri for h in hist_data_instance.refersTo] for iri in TargetIRIs.DOE_HIST_DATE_REFERTO_IRI.value)
+    assert len(hist_data_instance.refersToExperiment) == len(TargetIRIs.DOE_HIST_DATE_REFERTO_IRI.value)
+    assert all(iri in [h.instance_iri for h in hist_data_instance.refersToExperiment] for iri in TargetIRIs.DOE_HIST_DATE_REFERTO_IRI.value)
 
 def test_get_doe_instance(initialise_triples):
     sparql_client = initialise_triples
@@ -305,11 +311,11 @@ def test_get_doe_instance(initialise_triples):
     assert len(lst_var) == len(TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(var in lst_var for var in TargetIRIs.DOE_CONT_VAR_IRI_LIST.value)
     assert all(all([isinstance(var, onto.ContinuousVariable),
-                    var.refersTo is not None,
-                    var.refersTo.hasUnit is not None,
+                    var.refersToQuantity is not None,
+                    var.refersToQuantity.hasUnit is not None,
                     var.upperLimit > var.lowerLimit]) for var in doe_instance.hasDomain.hasDesignVariable)
     # Check SystemResponse
-    assert all(all([isinstance(r, onto.SystemResponse), r.refersTo is not None]) for r in doe_instance.hasSystemResponse)
+    assert all(all([isinstance(r, onto.SystemResponse), r.refersToQuantity is not None]) for r in doe_instance.hasSystemResponse)
     dct_m = {s.instance_iri:s.maximise for s in doe_instance.hasSystemResponse}
     assert all([int(TargetIRIs.DOE_SYS_RES_MAXIMISE_DICT.value[s]) == int(dct_m.get(s)) for s in TargetIRIs.DOE_SYS_RES_MAXIMISE_DICT.value])
     # Check Strategy
@@ -819,7 +825,6 @@ def test_get_vapourtec_rs400(initialise_triples):
     vapourtec_rs400 = vapourtec_rs400_list[0]
     assert vapourtec_rs400.instance_iri == TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value
     assert vapourtec_rs400.manufacturer == TargetIRIs.VAPOURTEC_LTD.value
-    assert vapourtec_rs400.isContainedIn == TargetIRIs.DUMMY_LAB_IRI.value
     assert vapourtec_rs400.isManagedBy is None
     assert vapourtec_rs400.consistsOf is not None
     assert dal.check_if_two_lists_equal(TargetIRIs.VAPOURTECRS400_DUMMY_CONSISTS_OF_LIST.value,
@@ -928,7 +933,6 @@ def test_get_autosampler(initialise_triples):
     sparql_client = initialise_triples
     autosampler = sparql_client.get_autosampler(TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value)
     assert autosampler.instance_iri == TargetIRIs.AUTOSAMPLER_DUMMY_IRI.value
-    assert autosampler.isContainedIn == TargetIRIs.DUMMY_LAB_IRI.value
 
     # Check autosampler sampleLoopVolume is correctly parsed
     assert autosampler.sampleLoopVolume.instance_iri == TargetIRIs.AUTOSAMPLER_SAMPLE_LOOP_VOLUME_IRI.value
@@ -1021,20 +1025,20 @@ def test_release_vapourtec_rs400_settings(initialise_triples):
     sparql_client = initialise_triples
 
     vapourtec_rs400_iri = TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value
-    assert not sparql_client.performQuery("""ASK {<%s> <%s>* ?hardware. ?hardware <%s> ?settings.}""" % (
-        vapourtec_rs400_iri, onto.SAREF_CONSISTSOF, onto.ONTOLAB_ISSPECIFIEDBY))[0]['ASK']
+    assert not sparql_client.performQuery("""ASK {<%s> <%s>* ?hardware. ?settings <%s> ?hardware.}""" % (
+        vapourtec_rs400_iri, onto.SAREF_CONSISTSOF, onto.ONTOLAB_SPECIFIES))[0]['ASK']
 
     setting_iri = "http://"+str(uuid.uuid4())
     sparql_client.performUpdate("""
-        INSERT {?hardware <%s> <%s>. <%s> <%s> ?hardware.} WHERE {<%s> <%s>* ?hardware.}""" % (
-            onto.ONTOLAB_ISSPECIFIEDBY, setting_iri, setting_iri, onto.ONTOLAB_SPECIFIES,
+        INSERT {<%s> <%s> ?hardware.} WHERE {<%s> <%s>* ?hardware.}""" % (
+            setting_iri, onto.ONTOLAB_SPECIFIES,
             vapourtec_rs400_iri, onto.SAREF_CONSISTSOF))
-    assert sparql_client.performQuery("""ASK {<%s> <%s>* ?hardware. ?hardware <%s> ?settings.}""" % (
-        vapourtec_rs400_iri, onto.SAREF_CONSISTSOF, onto.ONTOLAB_ISSPECIFIEDBY))[0]['ASK']
+    assert sparql_client.performQuery("""ASK {<%s> <%s>* ?hardware. ?settings <%s> ?hardware.}""" % (
+        vapourtec_rs400_iri, onto.SAREF_CONSISTSOF, onto.ONTOLAB_SPECIFIES))[0]['ASK']
 
     sparql_client.release_vapourtec_rs400_settings(vapourtec_rs400_iri=vapourtec_rs400_iri)
-    assert not sparql_client.performQuery("""ASK {<%s> <%s>* ?hardware. ?hardware <%s> ?settings.}""" % (
-        vapourtec_rs400_iri, onto.SAREF_CONSISTSOF, onto.ONTOLAB_ISSPECIFIEDBY))[0]['ASK']
+    assert not sparql_client.performQuery("""ASK {<%s> <%s>* ?hardware. ?settings <%s> ?hardware.}""" % (
+        vapourtec_rs400_iri, onto.SAREF_CONSISTSOF, onto.ONTOLAB_SPECIFIES))[0]['ASK']
 
 def test_upload_and_get_vapourtec_input_file(initialise_triples, generate_random_download_path):
     """Integration test for upload_vapourtec_input_file_to_kg and test_get_vapourtec_input_file."""
@@ -1069,7 +1073,6 @@ def test_get_hplc_given_vapourtec_rs400(initialise_triples):
     hplc = sparql_client.get_hplc_given_vapourtec_rs400(vapourtec_rs400_iri=TargetIRIs.VAPOURTECRS400_DUMMY_IRI.value)
     assert hplc.instance_iri == TargetIRIs.HPLC_DUMMY_IRI.value
     assert hplc.manufacturer == TargetIRIs.HPLC_DUMMY_MANUFACTURER_IRI.value
-    assert hplc.isContainedIn == TargetIRIs.DUMMY_LAB_IRI.value
     assert hplc.isManagedBy is None
 
     # Register agent with hplc

@@ -26,11 +26,11 @@
 @prefix OntoBPR:        <https://www.theworldavatar.com/kg/ontobpr/> .
 
 # specific namespaces for test cases
-@prefix placeholder:     <http://www.theworldavatar.com/kg/_for_species/> .
-@prefix :                <http://www.theworldavatar.com/kg/lab_auto/lab1/> .
-@prefix lab2:           <http://www.theworldavatar.com/kg/lab_auto/lab2/> .
-@prefix chem_rxn:                <http://www.theworldavatar.com/kg/lab_auto/chem_rxn/> .
-@prefix doe_template:               <http://www.theworldavatar.com/kg/lab_auto/doe_template/> .
+@prefix placeholder:     <https://www.theworldavatar.com/kg/_for_species/> .
+@prefix :                <https://www.theworldavatar.com/kg/lab_auto/lab1/> .
+@prefix lab2:           <https://www.theworldavatar.com/kg/lab_auto/lab2/> .
+@prefix chem_rxn:                <https://www.theworldavatar.com/kg/lab_auto/chem_rxn/> .
+@prefix doe_template:               <https://www.theworldavatar.com/kg/lab_auto/doe_template/> .
 
 
 ########################
@@ -54,7 +54,6 @@
 ##################################################
 :AutomatedRxnPlatform_Dummy
     a OntoLab:LabEquipment;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     saref:consistsOf :VapourtecRS400_Dummy;
     saref:consistsOf :HPLC_Dummy;
     saref:consistsOf :BPR_Dummy;
@@ -66,7 +65,6 @@
 :HPLC_Dummy # TODO
     a OntoHPLC:HighPerformanceLiquidChromatography;
     dbo:manufacturer :HPLC_Manufacturer;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     OntoLab:hasPowerSupply :HPLC_Dummy_PowerSupply;
     OntoHPLC:localReportDirectory "/app/CHEM32/"^^xsd:string; # NOTE "\**\" or "/**/" depends on whether it is windows or linux machine
     OntoHPLC:reportExtension <http://dbpedia.org/resource/Text_file>;
@@ -101,7 +99,7 @@
 # note that this should also be included in the AutoSampler amount part
 :PhaseComponent_InternalStandard
     rdf:type OntoHPLC:InternalStandard;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
     OntoCAPEUpp:hasProperty :PhaseComponent_InternalStandard_Property_1;
 .
 
@@ -119,7 +117,7 @@
 # reactant benzaldehyde
 :RetentionTime_1
     a OntoHPLC:RetentionTime;
-    OntoHPLC:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
+    OntoHPLC:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
     om:hasValue :RetentionTime_1_value;
 .
 
@@ -158,7 +156,7 @@
 # internal standard
 :ResponseFactor_4
     a OntoHPLC:ResponseFactor;
-    OntoHPLC:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
+    OntoHPLC:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
     om:hasValue :ResponseFactor_4_value;
 .
 
@@ -171,7 +169,7 @@
 # internal standard
 :RetentionTime_4
     a OntoHPLC:RetentionTime;
-    OntoHPLC:refersToSpecies <http://www.theworldavatar.com/kb/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
+    OntoHPLC:refersToSpecies <http://www.theworldavatar.com/kg/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
     om:hasValue :RetentionTime_4_value;
 .
 
@@ -213,7 +211,6 @@
 :BPR_Dummy # TODO
     a OntoBPR:BackPressureRegulator;
     dbo:manufacturer :BPR_Manufacturer;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     OntoLab:hasPowerSupply :BPR_Dummy_PowerSupply;
 .
 
@@ -222,7 +219,6 @@
 #############################
 :VapourtecRS400_Dummy
     a OntoVapourtec:VapourtecRS400;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     # Basic information
     OntoLab:hasPrice :VapRS400_Price;
     OntoLab:hasWeight :VapRS400_Weight; # TODO
@@ -345,7 +341,6 @@
 ##################################
 :VapourtecR4_Dummy
     a OntoVapourtec:VapourtecR4Reactor;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     OntoLab:hasPowerSupply :VapR4_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
     OntoVapourtec:locationID "4"^^xsd:string;
@@ -417,7 +412,6 @@
 #################################
 :VapourtecR2_1_Dummy
     a OntoVapourtec:VapourtecR2Pump;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     OntoLab:hasPowerSupply :VapR2_1_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
     OntoVapourtec:locationID "A"^^xsd:string;
@@ -429,7 +423,6 @@
 #################################
 :VapourtecR2_2_Dummy
     a OntoVapourtec:VapourtecR2Pump;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     OntoLab:hasPowerSupply :VapR2_2_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
     OntoVapourtec:locationID "B"^^xsd:string;
@@ -441,7 +434,6 @@
 #################################
 :VapourtecR2_3_Dummy
     a OntoVapourtec:VapourtecR2Pump;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     OntoLab:hasPowerSupply :VapR2_3_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
     OntoVapourtec:locationID "C"^^xsd:string;
@@ -453,7 +445,6 @@
 #########################
 :AutoSampler_Dummy
     a OntoVapourtec:AutoSampler;
-    OntoLab:isContainedIn :Laboratory_Dummy;
     OntoLab:hasPowerSupply :AutoSampler_PowerSupply; # TODO
     dbo:manufacturer :VapourtecLtd;
     OntoVapourtec:sampleLoopVolume :AutoSampler_Dummy_SampleLoopVolume;
@@ -701,7 +692,6 @@
 
 :Vial_1
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_1;
     OntoLab:isFilledWith :ChemicalAmount_1;
     OntoLab:hasMaxLevel :Vial_1_level_max;
     OntoLab:hasWarningLevel :Vial_1_level_warning;
@@ -749,7 +739,6 @@
 
 :Vial_2
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_2;
     OntoLab:isFilledWith :ChemicalAmount_2;
     OntoLab:hasMaxLevel :Vial_2_level_max;
     OntoLab:hasWarningLevel :Vial_2_level_warning;
@@ -797,7 +786,6 @@
 
 :Vial_3
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_3;
     OntoLab:isFilledWith :ChemicalAmount_3;
     OntoLab:hasMaxLevel :Vial_3_level_max;
     OntoLab:hasWarningLevel :Vial_3_level_warning;
@@ -845,7 +833,6 @@
 
 :Vial_4
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_4;
     OntoLab:isFilledWith :ChemicalAmount_4;
     OntoLab:hasMaxLevel :Vial_4_level_max;
     OntoLab:hasWarningLevel :Vial_4_level_warning;
@@ -893,7 +880,6 @@
 
 :Vial_5
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_5;
     OntoLab:isFilledWith :ChemicalAmount_5;
     OntoLab:hasMaxLevel :Vial_5_level_max;
     OntoLab:hasWarningLevel :Vial_5_level_warning;
@@ -941,7 +927,6 @@
 
 :Vial_6
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_6;
     OntoLab:isFilledWith :ChemicalAmount_6;
     OntoLab:hasMaxLevel :Vial_6_level_max;
     OntoLab:hasWarningLevel :Vial_6_level_warning;
@@ -989,7 +974,6 @@
 
 :Vial_7
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_7;
     OntoLab:isFilledWith :ChemicalAmount_7;
     OntoLab:hasMaxLevel :Vial_7_level_max;
     OntoLab:hasWarningLevel :Vial_7_level_warning;
@@ -1037,7 +1021,6 @@
 
 :Vial_8
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_8;
     OntoLab:isFilledWith :ChemicalAmount_8;
     OntoLab:hasMaxLevel :Vial_8_level_max;
     OntoLab:hasWarningLevel :Vial_8_level_warning;
@@ -1085,7 +1068,6 @@
 
 :Vial_9
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_9;
     OntoLab:isFilledWith :ChemicalAmount_9;
     OntoLab:hasMaxLevel :Vial_9_level_max;
     OntoLab:hasWarningLevel :Vial_9_level_warning;
@@ -1133,7 +1115,6 @@
 
 :Vial_10
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_10;
     OntoLab:isFilledWith :ChemicalAmount_10;
     OntoLab:hasMaxLevel :Vial_10_level_max;
     OntoLab:hasWarningLevel :Vial_10_level_warning;
@@ -1181,7 +1162,6 @@
 
 :Vial_11
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_11;
     OntoLab:isFilledWith :ChemicalAmount_11;
     OntoLab:hasMaxLevel :Vial_11_level_max;
     OntoLab:hasWarningLevel :Vial_11_level_warning;
@@ -1229,7 +1209,6 @@
 
 :Vial_12
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_12;
     OntoLab:isFilledWith :ChemicalAmount_12;
     OntoLab:hasMaxLevel :Vial_12_level_max;
     OntoLab:hasWarningLevel :Vial_12_level_warning;
@@ -1277,7 +1256,6 @@
 
 :Vial_13
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_13;
     OntoLab:isFilledWith :ChemicalAmount_13;
     OntoLab:hasMaxLevel :Vial_13_level_max;
     OntoLab:hasWarningLevel :Vial_13_level_warning;
@@ -1325,7 +1303,6 @@
 
 :Vial_14
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_14;
     OntoLab:isFilledWith :ChemicalAmount_14;
     OntoLab:hasMaxLevel :Vial_14_level_max;
     OntoLab:hasWarningLevel :Vial_14_level_warning;
@@ -1373,7 +1350,6 @@
 
 :Vial_15
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_15;
     OntoLab:isFilledWith :ChemicalAmount_15;
     OntoLab:hasMaxLevel :Vial_15_level_max;
     OntoLab:hasWarningLevel :Vial_15_level_warning;
@@ -1421,7 +1397,6 @@
 
 :Vial_16
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_16;
     OntoLab:isFilledWith :ChemicalAmount_16;
     OntoLab:hasMaxLevel :Vial_16_level_max;
     OntoLab:hasWarningLevel :Vial_16_level_warning;
@@ -1469,7 +1444,6 @@
 
 :Vial_17
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_17;
     OntoLab:isFilledWith :ChemicalAmount_17;
     OntoLab:hasMaxLevel :Vial_17_level_max;
     OntoLab:hasWarningLevel :Vial_17_level_warning;
@@ -1517,7 +1491,6 @@
 
 :Vial_18
     a OntoLab:Vial;
-    OntoVapourtec:isHeldIn :Site_18;
     OntoLab:isFilledWith :ChemicalAmount_18;
     OntoLab:hasMaxLevel :Vial_18_level_max;
     OntoLab:hasWarningLevel :Vial_18_level_warning;
@@ -1741,31 +1714,31 @@
 
 :PhaseComponent_1
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b>;
     OntoCAPEUpp:hasProperty :PhaseComponent_1_Property_1;
 .
 
 :PhaseComponent_2
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3>;
     OntoCAPEUpp:hasProperty :PhaseComponent_2_Property_1;
 .
 
 :PhaseComponent_IS_Input
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_471ce681-98f3-4245-be7d-3f38dfb6dd22>;
     OntoCAPEUpp:hasProperty :PhaseComponent_IS_Input_Property_1;
 .
 
 :PhaseComponent_6
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
     OntoCAPEUpp:hasProperty :PhaseComponent_6_Property_1;
 .
 
 :PhaseComponent_6_2
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb>;
     OntoCAPEUpp:hasProperty :PhaseComponent_6_Property_2;
 .
 
@@ -1777,7 +1750,7 @@
 
 :PhaseComponent_7
     rdf:type OntoCAPEPha:PhaseComponent;
-    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
+    OntoCAPEPha:representsOccurenceOf <http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983>;
     OntoCAPEUpp:hasProperty :PhaseComponent_7_Property_1;
 .
 

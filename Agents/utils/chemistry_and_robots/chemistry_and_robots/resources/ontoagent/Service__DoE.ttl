@@ -3,7 +3,7 @@
 @prefix ontorxn:             <https://www.theworldavatar.com/kg/ontoreaction/> .
 @prefix rdf:                 <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd:                 <http://www.w3.org/2001/XMLSchema#> .
-@prefix :                    <http://www.theworldavatar.com/resource/agents/Service__DoE#> .
+@prefix :                    <https://www.theworldavatar.com/kg/agents/Service__DoE/> .
 
 :Service
     rdf:type ontoagent:Service;

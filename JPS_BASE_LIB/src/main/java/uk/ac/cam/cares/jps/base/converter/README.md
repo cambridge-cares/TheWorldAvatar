@@ -198,6 +198,10 @@ In order to run the TBox Generator from the command line, run the following comm
 ```
 java -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.TBoxGeneration
 ```
+One can also pass in the file path of the CSV file as argument directly (this will avoid the pop up selection window):
+```
+java -cp jps-base-lib.jar uk.ac.cam.cares.jps.base.converter.TBoxGeneration D:\TheWorldAvatar\JPS_Ontology\ontology\ontodoe\OntoDoE.csv
+```
 
 To run TBox Generator from Python, use the following code:
 ```

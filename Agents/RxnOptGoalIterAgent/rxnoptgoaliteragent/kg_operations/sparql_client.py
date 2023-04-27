@@ -168,7 +168,7 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
     def generate_doe_instance_from_goal(
         self,
         goal_set: GoalSet,
-        chem_rxn: OntoCAPE_ChemicalReaction,
+        chem_rxn: ChemicalReaction,
         rxn_exp_as_beliefs: List[ReactionExperiment]=None,
     ) -> DesignOfExperiment:
         # get the doe template
@@ -185,11 +185,11 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
                     upperLimit=var.upperLimit,
                     lowerLimit=var.lowerLimit,
                     positionalID=var.positionalID,
-                    refersTo=OM_Quantity(
+                    refersToQuantity=OM_Quantity(
                         instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                        namespace_for_init=getNameSpace(var.refersTo.instance_iri),
-                        clz=var.refersTo.clz,
-                        hasUnit=var.refersTo.hasUnit,
+                        namespace_for_init=getNameSpace(var.refersToQuantity.instance_iri),
+                        clz=var.refersToQuantity.clz,
+                        hasUnit=var.refersToQuantity.hasUnit,
                     ),
                 )
                 list_design_variables.append(design_var)
@@ -223,15 +223,15 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=getNameSpace(param.instance_iri),
                 positionalID=param.positionalID,
-                refersTo=OM_Quantity(
+                refersToQuantity=OM_Quantity(
                     instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                    namespace_for_init=getNameSpace(param.refersTo.instance_iri),
-                    clz=param.refersTo.clz,
+                    namespace_for_init=getNameSpace(param.refersToQuantity.instance_iri),
+                    clz=param.refersToQuantity.clz,
                     hasValue=OM_Measure(
                         instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                        namespace_for_init=getNameSpace(param.refersTo.hasValue.instance_iri),
-                        hasUnit=param.refersTo.hasValue.hasUnit,
-                        hasNumericalValue=param.refersTo.hasValue.hasNumericalValue,
+                        namespace_for_init=getNameSpace(param.refersToQuantity.hasValue.instance_iri),
+                        hasUnit=param.refersToQuantity.hasValue.hasUnit,
+                        hasNumericalValue=param.refersToQuantity.hasValue.hasNumericalValue,
                     ),
                 )
             )
@@ -246,7 +246,7 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
                 namespace_for_init=getNameSpace(goal_set.instance_iri),
                 maximise=boolean_maximise,
                 # positionalID=None, # TODO [only when we are supporting same type of goal]
-                refersTo=goal.desires().clz,
+                refersToQuantity=goal.desires().clz,
             )
             list_system_responses.append(sys_res)
 
@@ -274,7 +274,7 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
             utilisesHistoricalData=HistoricalData(
                 instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
                 namespace_for_init=getNameSpace(goal_set.instance_iri),
-                refersTo=filtered_rxn_exp_as_beliefs,
+                refersToExperiment=filtered_rxn_exp_as_beliefs,
                 # NOTE in utilisesHistoricalData, the default value 1 is used for numOfNewExp
             ),
             designsChemicalReaction=chem_rxn.instance_iri,

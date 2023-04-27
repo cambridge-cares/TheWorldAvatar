@@ -21,13 +21,57 @@ from chemistry_and_robots.hardware import hplc
 
 from chemistry_and_robots.kg_operations import dict_and_list as dal
 
+from chemistry_and_robots.resources import TBOX_PATH_DICT
+from chemistry_and_robots import __version__
+
 from py4jps import agentlogging
 logger = agentlogging.get_logger('dev')
 
 
 class ChemistryAndRobotsSparqlClient(PySparqlClient):
+    def get_ontology_tbox_version(self, tbox_namespace):
+        if not tbox_namespace:
+            raise Exception("No TBox namespace provided.")
+        if TBOX_PATH_DICT.get(tbox_namespace) is None:
+            raise Exception(f"TBox namespace {tbox_namespace} is NOT packaged in chemistry_and_robots=={__version__}.")
+        g = Graph().parse(TBOX_PATH_DICT.get(tbox_namespace), format='xml')
+        results = g.query(f'SELECT ?v WHERE {{ <{tbox_namespace}> <{OWL_VERSION}> ?v. }}')
+        for row in results:
+            return str(row['v'])
+
+    def upload_ontology_tbox(self, tbox_namespace, alternative_url=None):
+        try:
+            query = f'SELECT * WHERE {{ <{tbox_namespace}> <{OWL_VERSION}> ?v. }}'
+            res = self.performQuery(query)
+        except Exception as ex:
+            logger.error("Unable to retrieve TBox version from KG.")
+            raise Exception("Unable to retrieve TBox version from KG.") from ex
+
+        # Upload TBox if not already instantiated
+        if not res:
+            if not alternative_url:
+                # Upload TBox from local file by default
+                self.uploadOntology(TBOX_PATH_DICT.get(tbox_namespace))
+            else:
+                # Upload TBox from alternative URL if provided
+                temp_fp = '_tmp.owl'
+                url_to_upload = alternative_url
+                try:
+                    try:
+                        content = requests.get(url_to_upload)
+                        if content.status_code != 200:
+                            raise Exception(f'HTTP error code for retrieving owl file: {content.status_code}')
+                    except Exception as ex:
+                        raise Exception(f"Unable to retrieve {url_to_upload} from TWA server.") from ex
+                    with open(temp_fp, 'w') as f:
+                        f.write(content.text)
+                        self.uploadOntology(temp_fp)
+                    os.remove(temp_fp)
+                except Exception as ex:
+                    raise Exception(f"Unable to initialise knowledge graph with {tbox_namespace} TBox ({url_to_upload}).") from ex
+
     def get_all_chemical_reaction_iri(self):
-        query = f"""SELECT ?chem_rxn WHERE {{ ?chem_rxn a <{ONTOCAPE_CHEMICALREACTION}>. }}"""
+        query = f"""SELECT ?chem_rxn WHERE {{ ?chem_rxn a <{ONTOREACTION_CHEMICALREACTION}>. }}"""
         response = self.performQuery(query)
         return [list(res.values())[0] for res in response]
 
@@ -95,10 +139,10 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                       }}"""
         response_1 = self.performQuery(query_1)
         if len(response_1) > 1:
-            raise Exception("OntoDoE:DesignOfExperiment instance <%s> is associated with multiple entries of OntoDoE:Strategy/Domain/HistoricalData/OntoCAPE:ChemicalReaction: %s" % (
+            raise Exception("OntoDoE:DesignOfExperiment instance <%s> is associated with multiple entries of OntoDoE:Strategy/Domain/HistoricalData/OntoReaction:ChemicalReaction: %s" % (
                 doe_iri, str(response_1)))
         elif len(response_1) < 1:
-            raise Exception("OntoDoE:DesignOfExperiment instance <%s> is NOT associated with any entries of OntoDoE:Strategy/Domain/HistoricalData/OntoCAPE:ChemicalReaction" % (doe_iri))
+            raise Exception("OntoDoE:DesignOfExperiment instance <%s> is NOT associated with any entries of OntoDoE:Strategy/Domain/HistoricalData/OntoReaction:ChemicalReaction" % (doe_iri))
         else:
             r = response_1[0]
 
@@ -137,7 +181,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         query = f"""SELECT ?param ?quantity ?clz ?measure ?unit ?value ?id
                     WHERE {{
                         <{domain_iri}> <{ONTODOE_HASFIXEDPARAMETER}> ?param.
-                        ?param <{ONTODOE_REFERSTO}> ?quantity .
+                        ?param <{ONTODOE_REFERSTOQUANTITY}> ?quantity .
                         ?quantity a ?clz; <{OM_HASVALUE}> ?measure.
                         ?measure <{OM_HASUNIT}> ?unit; <{OM_HASNUMERICALVALUE}> ?value.
                         OPTIONAL {{?param <{ONTODOE_POSITIONALID}> ?id . }}
@@ -149,7 +193,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             list_param.append(FixedParameter(
                 instance_iri=res['param'],
                 positionalID=res['id'] if 'id' in res else None,
-                refersTo=OM_Quantity(
+                refersToQuantity=OM_Quantity(
                     instance_iri=res['quantity'],
                     clz=res['clz'],
                     hasValue=OM_Measure(
@@ -177,7 +221,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 WHERE {{
                     <{domain_iri}> <{ONTODOE_HASDESIGNVARIABLE}> ?var .
                     ?var a <{ONTODOE_CONTINUOUSVARIABLE}> .
-                    ?var <{ONTODOE_REFERSTO}> ?quantity .
+                    ?var <{ONTODOE_REFERSTOQUANTITY}> ?quantity .
                     ?quantity a ?clz; <{OM_HASUNIT}> ?unit.
                     OPTIONAL {{?var <{ONTODOE_POSITIONALID}> ?id . }}
                     OPTIONAL {{?var <{ONTODOE_LOWERLIMIT}> ?lower . }}
@@ -197,7 +241,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     upperLimit=res['upper'],
                     lowerLimit=res['lower'],
                     positionalID=res['id'] if 'id' in res else None,
-                    refersTo=OM_Quantity(
+                    refersToQuantity=OM_Quantity(
                         instance_iri=res['quantity'],
                         clz=res['clz'],
                         hasUnit=res['unit']
@@ -264,7 +308,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     <%s> <%s> ?clz . 
                     OPTIONAL {<%s> <%s> ?id} \
                     OPTIONAL {<%s> <%s> ?maximise} \
-                    }""" % (sys_ins, ONTODOE_REFERSTO, sys_ins, ONTODOE_POSITIONALID, sys_ins, ONTODOE_MAXIMISE)
+                    }""" % (sys_ins, ONTODOE_REFERSTOQUANTITY, sys_ins, ONTODOE_POSITIONALID, sys_ins, ONTODOE_MAXIMISE)
             # Perform query
             response = self.performQuery(query)
             list_sys.append(
@@ -273,7 +317,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     name=getShortName(sys_ins), # NOTE this is not part of OntoDoE ontology, but it is used for working with Summit python package
                     maximise=response[0]['maximise'],
                     positionalID=response[0]['id'] if 'id' in response[0] else None,
-                    refersTo=response[0]['clz']
+                    refersToQuantity=response[0]['clz']
                 )
             )
             
@@ -291,7 +335,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         query = f"""SELECT DISTINCT ?exp ?numOfNewExp
                 WHERE {{
-                    OPTIONAL {{<{historicalData_iri}> <{ONTODOE_REFERSTO}> ?exp .}}
+                    OPTIONAL {{<{historicalData_iri}> <{ONTODOE_REFERSTOEXPERIMENT}> ?exp .}}
                     OPTIONAL {{<{historicalData_iri}> <{ONTODOE_NUMOFNEWEXP}> ?numOfNewExp .}}
                 }}"""
 
@@ -306,7 +350,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         historicalData_instance = HistoricalData(
             instance_iri=historicalData_iri,
             numOfNewExp=int(num_[0]) if bool(num_) else HistoricalData.__fields__.get('numOfNewExp').default,
-            refersTo=self.getReactionExperiment(rxnexp_iris) if bool(rxnexp_iris) else None,
+            refersToExperiment=self.getReactionExperiment(rxnexp_iris) if bool(rxnexp_iris) else None,
         )
 
         return historicalData_instance
@@ -390,7 +434,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 )
         return list_exp
 
-    def get_chemical_reaction(self, rxnexp_iris: Union[str, list]) -> Dict[str, OntoCAPE_ChemicalReaction]:
+    def get_chemical_reaction(self, rxnexp_iris: Union[str, list]) -> Dict[str, ChemicalReaction]:
         if not isinstance(rxnexp_iris, list):
             rxnexp_iris = [rxnexp_iris]
         rxnexp_iris = trimIRI(rxnexp_iris)
@@ -407,7 +451,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             if rxn_iri not in dict_rxn_chem_mapping:
                 dict_rxn_chem_mapping[rxn_iri] = chem_rxn_iri
             else:
-                raise Exception(f"OntoReaction:ReactionExperiment instance <{rxn_iri}> is found to be occurence of multiple OntoCAPE:ChemicalReaction instance: {dal.get_sublist_in_list_of_dict_matching_key_value(response_mapping, 'rxn', rxn_iri)}")
+                raise Exception(f"OntoReaction:ReactionExperiment instance <{rxn_iri}> is found to be occurence of multiple OntoReaction:ChemicalReaction instance: {dal.get_sublist_in_list_of_dict_matching_key_value(response_mapping, 'rxn', rxn_iri)}")
 
         lst_unique_chem_rxn = dal.get_unique_values_in_list_of_dict(response_mapping, 'chem_rxn')
         query = f"""{PREFIX_RDF}
@@ -423,7 +467,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         ?product rdf:type ?prod_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?prod_species.
                         OPTIONAL{{
                             VALUES ?cata_type {{<{ONTOKIN_SPECIES}> <{ONTOREACTION_CATALYST}>}}.
-                            ?chem_rxn <{ONTOCAPE_CATALYST}> ?catalyst.
+                            ?chem_rxn <{ONTOREACTION_HASCATALYST}> ?catalyst.
                             ?catalyst rdf:type ?cata_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?cata_species.
                         }}
                         OPTIONAL{{
@@ -439,12 +483,12 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         OPTIONAL{{?chem_rxn <{ONTODOE_HASDOETEMPLATE}> ?doe_template.}}
                     }}"""
         response_of_all_chem_rxn = self.performQuery(query)
-        dict_chem_rxn = {} # key: chem_rxn_iri, value: OntoCAPE_ChemicalReaction
+        dict_chem_rxn = {} # key: chem_rxn_iri, value: ChemicalReaction
 
         for iri in lst_unique_chem_rxn:
             response = dal.get_sublist_in_list_of_dict_matching_key_value(response_of_all_chem_rxn, 'chem_rxn', iri)
 
-            chem_rxn = OntoCAPE_ChemicalReaction(
+            chem_rxn = ChemicalReaction(
                 instance_iri=iri,
                 hasReactant=self.get_ontokin_species_from_chem_rxn(response, 'reactant', 'reac_type', 'reac_species'),
                 hasProduct=self.get_ontokin_species_from_chem_rxn(response, 'product', 'prod_type', 'prod_species'),
@@ -462,7 +506,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
         return dict_exp_chem_rxn
 
-    def get_chemical_reaction_given_iri(self, chem_rxn_iri: str) -> OntoCAPE_ChemicalReaction:
+    def get_chemical_reaction_given_iri(self, chem_rxn_iri: str) -> ChemicalReaction:
         chem_rxn_iri = trimIRI(chem_rxn_iri)
         query = f"""{PREFIX_RDF}
                 SELECT DISTINCT ?chem_rxn ?reactant ?reac_type ?reac_species ?product ?prod_type ?prod_species
@@ -477,7 +521,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     ?product rdf:type ?prod_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?prod_species.
                     OPTIONAL{{
                         VALUES ?cata_type {{<{ONTOKIN_SPECIES}> <{ONTOREACTION_CATALYST}>}}.
-                        ?chem_rxn <{ONTOCAPE_CATALYST}> ?catalyst.
+                        ?chem_rxn <{ONTOREACTION_HASCATALYST}> ?catalyst.
                         ?catalyst rdf:type ?cata_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?cata_species.
                     }}
                     OPTIONAL{{
@@ -494,7 +538,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 }}"""
         response = self.performQuery(query)
 
-        chem_rxn = OntoCAPE_ChemicalReaction(
+        chem_rxn = ChemicalReaction(
             instance_iri=chem_rxn_iri,
             hasReactant=self.get_ontokin_species_from_chem_rxn(response, 'reactant', 'reac_type', 'reac_species'),
             hasProduct=self.get_ontokin_species_from_chem_rxn(response, 'product', 'prod_type', 'prod_species'),
@@ -719,7 +763,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def construct_query_for_autosampler(self, given_autosampler_iri: str = None) -> str:
         # TODO this query will return nothing if the autosampler is an empty rack on line "?site <{ONTOVAPOURTEC_HOLDS}> ?vial; <{ONTOVAPOURTEC_LOCATIONID}> ?loc."
         query = f"""{PREFIX_RDF}
-                SELECT ?autosampler ?autosampler_manufacturer ?laboratory ?autosampler_power_supply
+                SELECT ?autosampler ?autosampler_manufacturer ?autosampler_power_supply
                 ?sample_loop_volume ?sample_loop_volume_value ?sample_loop_volume_unit ?sample_loop_volume_num_val
                 ?site ?loc ?vial ?fill_level ?fill_level_om_value ?fill_level_unit ?fill_level_num_val
                 ?warn_level ?warn_level_om_value ?warn_level_unit ?warn_level_num_val
@@ -728,7 +772,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     {'VALUES ?autosampler { <%s> }' % trimIRI(given_autosampler_iri) if given_autosampler_iri is not None else ""}
                     ?autosampler rdf:type <{ONTOVAPOURTEC_AUTOSAMPLER}>;
                                  <{DBPEDIA_MANUFACTURER}> ?autosampler_manufacturer;
-                                 <{ONTOLAB_ISCONTAINEDIN}> ?laboratory;
                                  <{ONTOLAB_HASPOWERSUPPLY}> ?autosampler_power_supply;
                                  <{ONTOVAPOURTEC_SAMPLELOOPVOLUME}> ?sample_loop_volume.
                     ?sample_loop_volume <{OM_HASVALUE}> ?sample_loop_volume_value.
@@ -778,12 +821,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 unique_specific_autosampler_manufacturer_iri = dal.get_the_unique_value_in_list_of_dict(info_of_specific_autosampler, 'autosampler_manufacturer')
             except Exception as e:
                 logger.error(f"dbpedia:manufacturer is not correctly defined for {specific_autosampler}", exc_info=True)
-                raise e
-
-            try:
-                unique_specific_autosampler_laboratory_iri = dal.get_the_unique_value_in_list_of_dict(info_of_specific_autosampler, 'laboratory')
-            except Exception as e:
-                logger.error(f"OntoLab:isContainedIn is not correctly defined for {specific_autosampler}", exc_info=True)
                 raise e
 
             try:
@@ -867,7 +904,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                             hasNumericalValue=info_of_specific_site['max_level_num_val']
                         )
                     ),
-                    isHeldIn=specific_site
                 )
                 autosampler_site = AutoSamplerSite(
                     instance_iri=specific_site,
@@ -879,7 +915,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             autosampler = AutoSampler(
                 instance_iri=specific_autosampler,
                 manufacturer=unique_specific_autosampler_manufacturer_iri,
-                isContainedIn=unique_specific_autosampler_laboratory_iri,
                 hasPowerSupply=unique_specific_autosampler_power_supply_iri,
                 hasSite=list_autosampler_site,
                 sampleLoopVolume=OM_Volume(
@@ -917,7 +952,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     ?subo rdfs:subPropertyOf* <{ONTOREACTION_HASREACTIONCONDITION}> . ?rxn ?subo ?condition .
                     ?condition rdf:type ?clz . FILTER(?clz != owl:Thing && ?clz != owl:NamedIndividual && ?clz != <{ONTOREACTION_REACTIONCONDITION}>) .
                     ?condition <{OM_HASVALUE}> ?measure . ?measure <{OM_HASUNIT}> ?unit; <{OM_HASNUMERICALVALUE}> ?val .
-                    OPTIONAL {{ ?condition <{ONTOLAB_TRANSLATESTOPARAMETERSETTING}> ?parameter_setting . }} .
+                    OPTIONAL {{ ?parameter_setting <{ONTOLAB_HASQUANTITY}> ?condition . }} .
                     OPTIONAL {{ ?condition <{ONTODOE_POSITIONALID}> ?id . }} .
                     OPTIONAL {{ ?condition <{ONTOREACTION_INDICATESMULTIPLICITYOF}> ?multi . }} .
                     OPTIONAL {{ ?condition <{ONTOREACTION_INDICATESUSAGEOF}> ?usage . }} .
@@ -963,7 +998,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     positionalID=_id[0] if len(_id) == 1 else None,
                     translateToParameterSetting=_parameter_setting[0] if len(_parameter_setting) == 1 else None,
                     indicatesMultiplicityOf=_multi[0] if len(_multi) == 1 else None,
-                    indicateUsageOf=_usage[0] if len(_usage) == 1 else None
+                    indicatesUsageOf=_usage[0] if len(_usage) == 1 else None
                 )
                 list_con.append(rxn_condition)
 
@@ -1189,15 +1224,14 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     ) -> List[VapourtecRS400]:
         list_vapourtec_rs400_iri = trimIRI([list_vapourtec_rs400_iri] if not isinstance(list_vapourtec_rs400_iri, list) else list_vapourtec_rs400_iri) if list_vapourtec_rs400_iri is not None else None
         list_of_labs_as_constraint = trimIRI(list_of_labs_as_constraint) if list_of_labs_as_constraint is not None else None
-        query = f"""SELECT ?rs400 ?rs400_manufacturer ?laboratory ?rs400_power_supply ?state
+        query = f"""SELECT ?rs400 ?rs400_manufacturer ?rs400_power_supply ?state
                            ?state_type ?last_update ?autosampler ?is_managed_by
                            ?collection_method ?collection_method_type ?waste_receptacle
                            ?recommended_reaction_scale ?recommended_reaction_scale_measure ?recommended_reaction_scale_unit ?recommended_reaction_scale_val
                 WHERE {{
                     {"VALUES ?rs400 { <%s> } ." % '> <'.join(list_vapourtec_rs400_iri) if list_vapourtec_rs400_iri is not None else ""}
                     {"VALUES ?laboratory { <%s> } ." % '> <'.join(list_of_labs_as_constraint) if list_of_labs_as_constraint is not None else ""}
-                    ?rs400 <{ONTOLAB_ISCONTAINEDIN}> ?laboratory;
-                           <{SAREF_CONSISTSOF}> ?autosampler;
+                    ?rs400 <{SAREF_CONSISTSOF}> ?autosampler;
                            <{DBPEDIA_MANUFACTURER}> ?rs400_manufacturer;
                            <{ONTOLAB_HASPOWERSUPPLY}> ?rs400_power_supply;
                            <{SAREF_HASSTATE}> ?state.
@@ -1236,7 +1270,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             vapourtec_rs400 = VapourtecRS400(
                 instance_iri=rs400_iri,
                 manufacturer=res['rs400_manufacturer'],
-                isContainedIn=res['laboratory'],
                 hasPowerSupply=res['rs400_power_supply'],
                 isManagedBy=res['is_managed_by'] if 'is_managed_by' in res else None,
                 consistsOf=list_vapourtec_reactor_and_pump,
@@ -1261,14 +1294,13 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_vapourtec_rs400_given_autosampler(self, autosampler: AutoSampler) -> VapourtecRS400:
         query = f"""{PREFIX_RDF}
-                SELECT ?rs400 ?rs400_manufacturer ?laboratory ?rs400_power_supply ?state ?state_type ?last_update ?is_managed_by
+                SELECT ?rs400 ?rs400_manufacturer ?rs400_power_supply ?state ?state_type ?last_update ?is_managed_by
                 ?collection_method ?collection_method_type ?waste_receptacle
                 ?recommended_reaction_scale ?recommended_reaction_scale_measure ?recommended_reaction_scale_unit ?recommended_reaction_scale_val
                 WHERE {{
                     ?rs400 <{SAREF_CONSISTSOF}> <{autosampler.instance_iri}>;
                             rdf:type <{ONTOVAPOURTEC_VAPOURTECRS400}>;
                             <{DBPEDIA_MANUFACTURER}> ?rs400_manufacturer;
-                            <{ONTOLAB_ISCONTAINEDIN}> ?laboratory;
                             <{ONTOLAB_HASPOWERSUPPLY}> ?rs400_power_supply;
                             <{SAREF_HASSTATE}> ?state.
                     ?state a ?state_type; <{ONTOLAB_STATELASTUPDATEDAT}> ?last_update.
@@ -1301,7 +1333,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         vapourtec_rs400 = VapourtecRS400(
             instance_iri=res['rs400'],
             manufacturer=res['rs400_manufacturer'],
-            isContainedIn=res['laboratory'],
             hasPowerSupply=res['rs400_power_supply'],
             isManagedBy=res['is_managed_by'] if 'is_managed_by' in res else None,
             consistsOf=list_vapourtec_reactor_and_pump,
@@ -1362,7 +1393,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
         query = PREFIX_RDF + \
                 """
-                SELECT ?r4_reactor ?r4_reactor_manufacturer ?laboratory ?r4_reactor_power_supply ?loc ?r4_reactor_material
+                SELECT ?r4_reactor ?r4_reactor_manufacturer ?r4_reactor_power_supply ?loc ?r4_reactor_material
                 ?r4_reactor_internal_diameter ?r4_reactor_internal_diameter_measure ?r4_reactor_internal_diameter_unit ?r4_reactor_internal_diameter_val
                 ?r4_reactor_length ?r4_reactor_length_measure ?r4_reactor_length_unit ?r4_reactor_length_val
                 ?r4_reactor_volume ?r4_reactor_volume_measure ?r4_reactor_volume_unit ?r4_reactor_volume_val
@@ -1370,7 +1401,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 ?r4_reactor_temp_upper ?r4_reactor_temp_upper_measure ?r4_reactor_temp_upper_unit ?r4_reactor_temp_upper_val
                 WHERE {
                     <%s> <%s> ?r4_reactor .
-                    ?r4_reactor rdf:type <%s>; <%s> ?r4_reactor_manufacturer; <%s> ?laboratory; <%s> ?r4_reactor_power_supply; <%s> ?loc;
+                    ?r4_reactor rdf:type <%s>; <%s> ?r4_reactor_manufacturer; <%s> ?r4_reactor_power_supply; <%s> ?loc;
                     <%s> ?r4_reactor_material; <%s> ?r4_reactor_internal_diameter; <%s> ?r4_reactor_length;
                     <%s> ?r4_reactor_volume; <%s> ?r4_reactor_temp_lower; <%s> ?r4_reactor_temp_upper.
                     ?r4_reactor_internal_diameter <%s> ?r4_reactor_internal_diameter_measure. ?r4_reactor_internal_diameter_measure <%s> ?r4_reactor_internal_diameter_unit; <%s> ?r4_reactor_internal_diameter_val.
@@ -1380,7 +1411,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     ?r4_reactor_temp_upper <%s> ?r4_reactor_temp_upper_measure. ?r4_reactor_temp_upper_measure <%s> ?r4_reactor_temp_upper_unit; <%s> ?r4_reactor_temp_upper_val.
                 }
                 """ % (
-                    vapourtec_rs400_iri, SAREF_CONSISTSOF, ONTOVAPOURTEC_VAPOURTECR4REACTOR, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY, ONTOVAPOURTEC_LOCATIONID,
+                    vapourtec_rs400_iri, SAREF_CONSISTSOF, ONTOVAPOURTEC_VAPOURTECR4REACTOR, DBPEDIA_MANUFACTURER, ONTOLAB_HASPOWERSUPPLY, ONTOVAPOURTEC_LOCATIONID,
                     ONTOVAPOURTEC_HASREACTORMATERIAL, ONTOVAPOURTEC_HASINTERNALDIAMETER, ONTOVAPOURTEC_HASREACTORLENGTH,
                     ONTOVAPOURTEC_HASREACTORVOLUME, ONTOVAPOURTEC_HASREACTORTEMPERATURELOWERLIMIT, ONTOVAPOURTEC_HASREACTORTEMPERATUREUPPERLIMIT,
                     OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE,
@@ -1406,7 +1437,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             r4_reactor = VapourtecR4Reactor(
                 instance_iri=info_['r4_reactor'],
                 manufacturer=info_['r4_reactor_manufacturer'],
-                isContainedIn=info_['laboratory'],
                 hasPowerSupply=info_['r4_reactor_power_supply'],
                 locationID=info_['loc'],
                 hasReactorMaterial=info_['r4_reactor_material'],
@@ -1437,12 +1467,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def get_r2_pump_given_vapourtec_rs400(self, vapourtec_rs400_iri: str) -> List[VapourtecR2Pump]:
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
-        query = f"""SELECT ?r2_pump ?r2_pump_manufacturer ?laboratory ?r2_pump_power_supply ?loc ?reagent_bottle
+        query = f"""SELECT ?r2_pump ?r2_pump_manufacturer ?r2_pump_power_supply ?loc ?reagent_bottle
                 WHERE {{
                     <{vapourtec_rs400_iri}> <{SAREF_CONSISTSOF}> ?r2_pump .
                     ?r2_pump a <{ONTOVAPOURTEC_VAPOURTECR2PUMP}>;
                              <{DBPEDIA_MANUFACTURER}> ?r2_pump_manufacturer;
-                             <{ONTOLAB_ISCONTAINEDIN}> ?laboratory;
                              <{ONTOLAB_HASPOWERSUPPLY}> ?r2_pump_power_supply;
                              <{ONTOVAPOURTEC_LOCATIONID}> ?loc.
                     OPTIONAL{{?r2_pump <{ONTOVAPOURTEC_HASREAGENTSOURCE}> ?reagent_bottle.}}
@@ -1465,7 +1494,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             r2_pump = VapourtecR2Pump(
                 instance_iri=info_['r2_pump'],
                 manufacturer=info_['r2_pump_manufacturer'],
-                isContainedIn=info_['laboratory'],
                 hasPowerSupply=info_['r2_pump_power_supply'],
                 locationID=info_['loc'],
                 hasReagentSource=self.get_reagent_bottle(info_['reagent_bottle']) if 'reagent_bottle' in info_ else None,
@@ -1664,8 +1692,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def identify_rxn_exp_when_uploading_hplc_report(self, hplc_digital_twin: str, hplc_remote_file_path: str) -> str:
         hplc_digital_twin = trimIRI(hplc_digital_twin)
-        query = """SELECT DISTINCT ?rxn_exp WHERE {<%s> ^<%s>/<%s>+/<%s>/<%s> ?rxn_exp.}""" % (
-            hplc_digital_twin, SAREF_CONSISTSOF, SAREF_CONSISTSOF, ONTOLAB_ISSPECIFIEDBY, ONTOLAB_WASGENERATEDFOR)
+        query = """SELECT DISTINCT ?rxn_exp WHERE {<%s> ^<%s>/<%s>+/^<%s>/<%s> ?rxn_exp.}""" % (
+            hplc_digital_twin, SAREF_CONSISTSOF, SAREF_CONSISTSOF, ONTOLAB_SPECIFIES, ONTOLAB_WASGENERATEDFOR)
         response = self.performQuery(query)
         rxn_exp = [list(res.values())[0] for res in response]
         if len(rxn_exp) > 1:
@@ -1827,7 +1855,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     # TODO replace this with the proper representation of the species density - at given temperature, what's the density of the given species
     def get_species_density(self, species_iri: str) -> Tuple[float, str]:
-        PLACEHOLDER_HASDENSITY = 'http://www.theworldavatar.com/kg/_for_species/hasDensity'
+        PLACEHOLDER_HASDENSITY = 'https://www.theworldavatar.com/kg/_for_species/hasDensity'
         species_iri = trimIRI(species_iri)
         query = """SELECT ?value ?unit WHERE { <%s> <%s>/<%s> ?density. ?density <%s> ?unit; <%s> ?value. }""" % (
             species_iri, PLACEHOLDER_HASDENSITY, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)
@@ -1841,7 +1869,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     # TODO replace this with the proper representation of the material cost - with the given vendor, what's the cost of the given chemical
     def get_species_material_cost(self, species_iri: str) -> Tuple[float, str]:
-        PLACEHOLDER_HASMATERIALCOST = 'http://www.theworldavatar.com/kg/_for_species/hasMaterialCost'
+        PLACEHOLDER_HASMATERIALCOST = 'https://www.theworldavatar.com/kg/_for_species/hasMaterialCost'
         species_iri = trimIRI(species_iri)
         query = """SELECT ?value ?unit WHERE { <%s> <%s>/<%s> ?cost. ?cost <%s> ?unit; <%s> ?value. }""" % (
             species_iri, PLACEHOLDER_HASMATERIALCOST, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)
@@ -1855,7 +1883,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     # TODO replace this with the proper representation of the eco score - not sure if this is an "intrinsic" property of a given chemical
     def get_species_eco_score(self, species_iri: str) -> Tuple[float, str]:
-        PLACEHOLDER_HASECOSCORE = 'http://www.theworldavatar.com/kg/_for_species/hasEcoScore'
+        PLACEHOLDER_HASECOSCORE = 'https://www.theworldavatar.com/kg/_for_species/hasEcoScore'
         species_iri = trimIRI(species_iri)
         query = """SELECT ?value ?unit WHERE { <%s> <%s>/<%s> ?ecoscore. ?ecoscore <%s> ?unit; <%s> ?value. }""" % (
             species_iri, PLACEHOLDER_HASECOSCORE, OM_HASVALUE, OM_HASUNIT, OM_HASNUMERICALVALUE)
@@ -2385,8 +2413,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
 
     def release_vapourtec_rs400_settings(self, vapourtec_rs400_iri: str):
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
-        update = """DELETE {?hardware <%s> ?settings. ?settings <%s> ?hardware.} WHERE {<%s> <%s>* ?hardware. ?hardware <%s> ?settings.}""" % (
-                ONTOLAB_ISSPECIFIEDBY, ONTOLAB_SPECIFIES, vapourtec_rs400_iri, SAREF_CONSISTSOF, ONTOLAB_ISSPECIFIEDBY
+        update = """DELETE {?settings <%s> ?hardware.} WHERE {<%s> <%s>* ?hardware. ?settings <%s> ?hardware.}""" % (
+                ONTOLAB_SPECIFIES, vapourtec_rs400_iri, SAREF_CONSISTSOF, ONTOLAB_SPECIFIES
             )
         self.performUpdate(update)
 
@@ -2432,9 +2460,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
     def get_hplc_given_vapourtec_rs400(self, vapourtec_rs400_iri: str) -> HPLC:
         vapourtec_rs400_iri = trimIRI(vapourtec_rs400_iri)
         query = """SELECT ?hplc ?hplc_manufacturer ?lab ?hplc_power_supply ?is_managed_by ?report_extension
-                WHERE {<%s> ^<%s>/<%s> ?hplc. ?hplc a <%s>; <%s> ?hplc_manufacturer; <%s> ?lab; <%s> ?hplc_power_supply; <%s> ?report_extension.
+                WHERE {<%s> ^<%s>/<%s> ?hplc. ?hplc a <%s>; <%s> ?hplc_manufacturer; <%s> ?hplc_power_supply; <%s> ?report_extension.
                 OPTIONAL{?hplc <%s> ?is_managed_by}}""" % (
-            vapourtec_rs400_iri, SAREF_CONSISTSOF, SAREF_CONSISTSOF, ONTOHPLC_HIGHPERFORMANCELIQUIDCHROMATOGRAPHY, DBPEDIA_MANUFACTURER, ONTOLAB_ISCONTAINEDIN, ONTOLAB_HASPOWERSUPPLY,
+            vapourtec_rs400_iri, SAREF_CONSISTSOF, SAREF_CONSISTSOF, ONTOHPLC_HIGHPERFORMANCELIQUIDCHROMATOGRAPHY, DBPEDIA_MANUFACTURER, ONTOLAB_HASPOWERSUPPLY,
             ONTOHPLC_REPORTEXTENSION, ONTOLAB_ISMANAGEDBY
         )
         response = self.performQuery(query)
@@ -2449,7 +2477,6 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         hplc = HPLC(
             instance_iri=res['hplc'],
             manufacturer=res['hplc_manufacturer'],
-            isContainedIn=res['lab'],
             hasPowerSupply=res['hplc_power_supply'],
             isManagedBy=res['is_managed_by'] if 'is_managed_by' in res else None,
             reportExtension=res['report_extension'],

@@ -145,6 +145,9 @@ def initialise_triples(initialise_blazegraph_and_fileserver, get_service_auth):
         g.parse(str(path), format='turtle')
         sparql_client.uploadGraph(g)
 
+    sparql_client.upload_ontology_tbox(onto.ONTODOE)
+    sparql_client.upload_ontology_tbox(onto.ONTOREACTION)
+
     # Create folder for downloaded files
     if not os.path.exists(DOWNLOADED_DIR):
         os.mkdir(DOWNLOADED_DIR)
@@ -170,8 +173,8 @@ def clear_loggers():
 
 class TargetIRIs(Enum):
     CHEMICAL_REACTION_BASE_IRI = 'https://www.example.com/triplestore/ontorxn/ChemRxn_1/'
-    DUMMY_VAPOURTEC_EXECUTION_AGENT_SERVICE_IRI = 'http://www.theworldavatar.com/resource/agents/Service__Execution#Service' # same as in rxn_queue_test.ttl
-    DUMMY_LAB_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab/'
+    DUMMY_VAPOURTEC_EXECUTION_AGENT_SERVICE_IRI = 'https://www.theworldavatar.com/kg/agents/Service__Execution/Service' # same as in rxn_queue_test.ttl
+    DUMMY_LAB_BASE_IRI = 'https://example.com/blazegraph/namespace/testlab/dummy_lab/'
     DUMMY_LAB_IRI = DUMMY_LAB_BASE_IRI + 'Laboratory_Dummy'
     AUTOMATEDRXNPLATFORM_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'AutomatedRxnPlatform_Dummy'
     VAPOURTECRS400_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'VapourtecRS400_Dummy'
@@ -208,14 +211,14 @@ class TargetIRIs(Enum):
         DUMMY_LAB_BASE_IRI + 'Site_4': ['http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2',
             'http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b'],
         DUMMY_LAB_BASE_IRI + 'Site_5': ['http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2',
-            'http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340'],
+            'http://www.theworldavatar.com/kg/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340'],
         DUMMY_LAB_BASE_IRI + 'Site_3': ['http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202',
-            'http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983'],
-        DUMMY_LAB_BASE_IRI + 'Site_1': ['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
-            'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',
-            'http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340'],
-        DUMMY_LAB_BASE_IRI + 'Site_2': ['http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
-            'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb']
+            'http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983'],
+        DUMMY_LAB_BASE_IRI + 'Site_1': ['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
+            'http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',
+            'http://www.theworldavatar.com/kg/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340'],
+        DUMMY_LAB_BASE_IRI + 'Site_2': ['http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+            'http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb']
     }
     AUTOSAMPLER_LIQUID_CONTAINS_UNIDENTIFIED_COMPONENT_DICT = {
         DUMMY_LAB_BASE_IRI + 'Site_4': False,
@@ -301,71 +304,71 @@ class TargetIRIs(Enum):
     NEW_RXN_EXP_2_PERFORMANCE_INDICATOR_IRI_LIST = None
     NEW_RXN_EXP_3_PERFORMANCE_INDICATOR_IRI_LIST = None
     RXN_EXP_REACTION_CONDITION_CLZ_POSITIONAL_ID_DICT = {EXAMPLE_RXN_EXP_1_IRI:{onto.ONTOREACTION_RESIDENCETIME:[None], onto.ONTOREACTION_REACTIONPRESSURE:[None],
-        onto.ONTOREACTION_REACTIONSCALE:['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'],
-        onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
-        'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+        onto.ONTOREACTION_REACTIONSCALE:['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'],
+        onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
+        'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
         'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202']},
         EXAMPLE_RXN_EXP_2_IRI:{onto.ONTOREACTION_RESIDENCETIME:[None], onto.ONTOREACTION_REACTIONPRESSURE:[None],
-        onto.ONTOREACTION_REACTIONSCALE:['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'],
-        onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
-        'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+        onto.ONTOREACTION_REACTIONSCALE:['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'],
+        onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
+        'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
         'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202']},
         EXAMPLE_RXN_EXP_3_IRI:{onto.ONTOREACTION_RESIDENCETIME:[None], onto.ONTOREACTION_REACTIONPRESSURE:[None],
-        onto.ONTOREACTION_REACTIONSCALE:['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'],
-        onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
-        'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+        onto.ONTOREACTION_REACTIONSCALE:['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'],
+        onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
+        'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
         'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202']},
         EXAMPLE_RXN_EXP_4_IRI:{onto.ONTOREACTION_RESIDENCETIME:[None], onto.ONTOREACTION_REACTIONPRESSURE:[None],
-        onto.ONTOREACTION_REACTIONSCALE:['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'],
-        onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
-        'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+        onto.ONTOREACTION_REACTIONSCALE:['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'],
+        onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
+        'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
         'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202']},
         EXAMPLE_RXN_EXP_5_IRI:{onto.ONTOREACTION_RESIDENCETIME:[None], onto.ONTOREACTION_REACTIONPRESSURE:[None],
-        onto.ONTOREACTION_REACTIONSCALE:['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'],
-        onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
-        'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+        onto.ONTOREACTION_REACTIONSCALE:['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'],
+        onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
+        'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
         'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202']},
         NEW_RXN_EXP_1_IRI:{onto.ONTOREACTION_RESIDENCETIME:[None], onto.ONTOREACTION_REACTIONPRESSURE:[None],
-        onto.ONTOREACTION_REACTIONSCALE:['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'],
-        onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
-        'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+        onto.ONTOREACTION_REACTIONSCALE:['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'],
+        onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
+        'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
         'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202']},
         NEW_RXN_EXP_2_IRI:{onto.ONTOREACTION_RESIDENCETIME:[None], onto.ONTOREACTION_REACTIONPRESSURE:[None],
-        onto.ONTOREACTION_REACTIONSCALE:['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'],
-        onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
-        'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+        onto.ONTOREACTION_REACTIONSCALE:['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'],
+        onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
+        'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
         'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202']},
         NEW_RXN_EXP_3_IRI:{onto.ONTOREACTION_RESIDENCETIME:[None], onto.ONTOREACTION_REACTIONPRESSURE:[None],
-        onto.ONTOREACTION_REACTIONSCALE:['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'],
-        onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:['http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
-        'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+        onto.ONTOREACTION_REACTIONSCALE:['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b'],
+        onto.ONTOREACTION_REACTIONTEMPERATURE:[None], onto.ONTOREACTION_STOICHIOMETRYRATIO:['http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
+        'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
         'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202']}}
     RXN_EXP_REACTION_CONDITION_POSITIONAL_ID_DICT = {
-        EXAMPLE_RXN_EXP_1_IRI:{EXP_1_BASE_IRI+'StoiRatio_2':'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+        EXAMPLE_RXN_EXP_1_IRI:{EXP_1_BASE_IRI+'StoiRatio_2':'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
                                EXP_1_BASE_IRI+'StoiRatio_3':'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202'},
-        EXAMPLE_RXN_EXP_2_IRI:{EXP_2_BASE_IRI+'StoiRatio_2':'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+        EXAMPLE_RXN_EXP_2_IRI:{EXP_2_BASE_IRI+'StoiRatio_2':'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
                                EXP_2_BASE_IRI+'StoiRatio_3':'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202'},
-        EXAMPLE_RXN_EXP_3_IRI:{EXP_3_BASE_IRI+'StoiRatio_2':'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+        EXAMPLE_RXN_EXP_3_IRI:{EXP_3_BASE_IRI+'StoiRatio_2':'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
                                EXP_3_BASE_IRI+'StoiRatio_3':'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202'},
-        EXAMPLE_RXN_EXP_4_IRI:{EXP_4_BASE_IRI+'StoiRatio_2':'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+        EXAMPLE_RXN_EXP_4_IRI:{EXP_4_BASE_IRI+'StoiRatio_2':'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
                                EXP_4_BASE_IRI+'StoiRatio_3':'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202'},
-        EXAMPLE_RXN_EXP_5_IRI:{EXP_5_BASE_IRI+'StoiRatio_2':'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+        EXAMPLE_RXN_EXP_5_IRI:{EXP_5_BASE_IRI+'StoiRatio_2':'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
                                EXP_5_BASE_IRI+'StoiRatio_3':'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202'},
-        NEW_RXN_EXP_1_IRI:{EXP_1_BASE_IRI+'StoichiometryRatio_866bfdf2-0d32-40da-8fcb-f89669cf1d31':'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+        NEW_RXN_EXP_1_IRI:{EXP_1_BASE_IRI+'StoichiometryRatio_866bfdf2-0d32-40da-8fcb-f89669cf1d31':'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
                            EXP_1_BASE_IRI+'StoichiometryRatio_c242fa46-e60c-481c-8dc2-741f69386f25':'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202'},
-        NEW_RXN_EXP_2_IRI:{EXP_1_BASE_IRI+'StoichiometryRatio_6a845185-032d-41d8-86ff-6a9952418063':'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+        NEW_RXN_EXP_2_IRI:{EXP_1_BASE_IRI+'StoichiometryRatio_6a845185-032d-41d8-86ff-6a9952418063':'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
                            EXP_1_BASE_IRI+'StoichiometryRatio_4f55a3ff-3a06-4749-8775-52d7673497c7':'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202'},
-        NEW_RXN_EXP_3_IRI:{EXP_1_BASE_IRI+'StoichiometryRatio_fb5fecbb-3de2-4d98-b96c-38a3d033ca2d':'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
+        NEW_RXN_EXP_3_IRI:{EXP_1_BASE_IRI+'StoichiometryRatio_fb5fecbb-3de2-4d98-b96c-38a3d033ca2d':'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3',
                            EXP_1_BASE_IRI+'StoichiometryRatio_3712c062-8b67-4a82-82d9-166ff34909ba':'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202'}}
 
     CHEMICAL_REACTION_IRI = CHEMICAL_REACTION_BASE_IRI + 'ChemRxn_1'
-    REACTANT_SPECIES_DICTIONARY = {CHEMICAL_REACTION_BASE_IRI + 'Species_1': 'http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
-    CHEMICAL_REACTION_BASE_IRI + 'Species_2': 'http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3'}
+    REACTANT_SPECIES_DICTIONARY = {CHEMICAL_REACTION_BASE_IRI + 'Species_1': 'http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b',
+    CHEMICAL_REACTION_BASE_IRI + 'Species_2': 'http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3'}
     PRODUCT_SPECIES_DICTIONARY = {CHEMICAL_REACTION_BASE_IRI + 'Species_3': 'http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2',
     CHEMICAL_REACTION_BASE_IRI + 'Species_4': 'http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b'}
     CATALYST_SPECIES_DICTIONARY = {CHEMICAL_REACTION_BASE_IRI + 'Species_5': 'http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202'}
-    SOLVENT_SPECIES_DICTIONARY = {CHEMICAL_REACTION_BASE_IRI + 'Species_6': 'http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',
-    CHEMICAL_REACTION_BASE_IRI + 'Species_7': 'http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983'}
+    SOLVENT_SPECIES_DICTIONARY = {CHEMICAL_REACTION_BASE_IRI + 'Species_6': 'http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb',
+    CHEMICAL_REACTION_BASE_IRI + 'Species_7': 'http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983'}
     EXP_1_INPUT_CHEMICAL_1_IRI = EXP_1_BASE_IRI + 'InputChemical_1'
     EXP_1_INPUT_CHEMICAL_2_IRI = EXP_1_BASE_IRI + 'InputChemical_2'
     EXP_1_INPUT_CHEMICAL_3_IRI = EXP_1_BASE_IRI + 'InputChemical_3'
@@ -409,14 +412,14 @@ class TargetIRIs(Enum):
         DUMMY_LAB_BASE_IRI + 'Site_2': EXP_1_INPUT_CHEMICAL_2_IRI
     }
 
-    SPECIES_MOLAR_MASS_DICT = {"http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b": 106.12/1000,
-        "http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3": 58.08/1000,
+    SPECIES_MOLAR_MASS_DICT = {"http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b": 106.12/1000,
+        "http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3": 58.08/1000,
         'http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2': 146.19/1000,
         'http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b': 234.29/1000,
         "http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202": 39.997/1000,
-        "http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb": 41.05/1000,
-        "http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983": 46.07/1000,
-        "http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340": 128.17/1000}
+        "http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb": 41.05/1000,
+        "http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983": 46.07/1000,
+        "http://www.theworldavatar.com/kg/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340": 128.17/1000}
 
     RXNEXP_TYPE_DICT = {EXAMPLE_RXN_EXP_1_IRI:onto.ONTOREACTION_REACTIONEXPERIMENT,EXAMPLE_RXN_EXP_2_IRI:onto.ONTOREACTION_REACTIONEXPERIMENT,
         EXAMPLE_RXN_EXP_3_IRI:onto.ONTOREACTION_REACTIONEXPERIMENT,EXAMPLE_RXN_EXP_4_IRI:onto.ONTOREACTION_REACTIONEXPERIMENT,
@@ -451,13 +454,13 @@ class TargetIRIs(Enum):
     # LIST_VAPR4_ANOTHER_DUMMY_CONDUCTED_RXN_EXP = [EXAMPLE_RXN_EXP_3_IRI, EXAMPLE_RXN_EXP_4_IRI, EXAMPLE_RXN_EXP_5_IRI]
     LIST_DUMMY_R2PUMPS = [VAPOURTECR2PUMP_1_DUMMY_IRI, VAPOURTECR2PUMP_2_DUMMY_IRI, VAPOURTECR2PUMP_3_DUMMY_IRI, VAPOURTECR2PUMP_4_DUMMY_IRI]
     LIST_DUMMY_R4REACTORS = [VAPOURTECR4REACTOR_DUMMY_IRI, VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI]
-    RXN_EXP_QUEUE_1 = 'http://example.com/blazegraph/namespace/test_temp/exp_1'
-    RXN_EXP_QUEUE_2 = 'http://example.com/blazegraph/namespace/test_temp/exp_2'
-    RXN_EXP_QUEUE_3 = 'http://example.com/blazegraph/namespace/test_temp/exp_3'
-    RXN_EXP_QUEUE_4 = 'http://example.com/blazegraph/namespace/test_temp/exp_4'
-    RXN_EXP_QUEUE_5 = 'http://example.com/blazegraph/namespace/test_temp/exp_5'
-    RXN_EXP_QUEUE_6 = 'http://example.com/blazegraph/namespace/test_temp/exp_6'
-    RXN_EXP_QUEUE_7 = 'http://example.com/blazegraph/namespace/test_temp/exp_7'
+    RXN_EXP_QUEUE_1 = 'https://example.com/blazegraph/namespace/test_temp/exp_1'
+    RXN_EXP_QUEUE_2 = 'https://example.com/blazegraph/namespace/test_temp/exp_2'
+    RXN_EXP_QUEUE_3 = 'https://example.com/blazegraph/namespace/test_temp/exp_3'
+    RXN_EXP_QUEUE_4 = 'https://example.com/blazegraph/namespace/test_temp/exp_4'
+    RXN_EXP_QUEUE_5 = 'https://example.com/blazegraph/namespace/test_temp/exp_5'
+    RXN_EXP_QUEUE_6 = 'https://example.com/blazegraph/namespace/test_temp/exp_6'
+    RXN_EXP_QUEUE_7 = 'https://example.com/blazegraph/namespace/test_temp/exp_7'
     RXN_EXP_1_PRIOR = []
     RXN_EXP_2_PRIOR = [RXN_EXP_QUEUE_1]
     RXN_EXP_3_PRIOR = [RXN_EXP_QUEUE_1, RXN_EXP_QUEUE_2]
@@ -467,7 +470,7 @@ class TargetIRIs(Enum):
     RXN_EXP_7_PRIOR = [RXN_EXP_QUEUE_1, RXN_EXP_QUEUE_2, RXN_EXP_QUEUE_3, RXN_EXP_QUEUE_4]
     HPLCMETHOD_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'HPLCMethod_Dummy'
     PHASECOMPONENT_INTERNAL_STANDARD_IRI = 'https://www.example.com/triplestore/ontorxn/SinglePhase/PhaseComponent_InternalStandard'
-    ONTOSPECIES_INTERNAL_STANDARD_IRI = 'http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340'
+    ONTOSPECIES_INTERNAL_STANDARD_IRI = 'http://www.theworldavatar.com/kg/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340'
     MOLARITY_INTERNAL_STANDARD = 0.05
     HPLCREPORT_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'HPLCReport_Dummy'
     HPLCJOB_DUMMY_IRI = DUMMY_LAB_BASE_IRI + 'HPLCJob_Dummy'
@@ -523,7 +526,7 @@ class TargetIRIs(Enum):
     DOE_TEMPLATE_IRI = DOE_TEMPLATE_BASE_IRI + 'DoE_1'
     DOE_TEMPLATE_DOMAIN_IRI = DOE_TEMPLATE_BASE_IRI + 'Domain_1'
 
-    DUMMY_LAB_FOR_POST_PROC_BASE_IRI = 'http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/'
+    DUMMY_LAB_FOR_POST_PROC_BASE_IRI = 'https://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/'
     HPLC_1_POST_PROC_IRI = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_1'
     HPLC_2_POST_PROC_IRI = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'HPLC_2'
     CHEMICAL_AMOUNT_1_POST_PROC_IRI = DUMMY_LAB_FOR_POST_PROC_BASE_IRI + 'ChemicalAmount_1_1'
@@ -534,27 +537,27 @@ class TargetIRIs(Enum):
     # NOTE some of the information below are commented out following the changes made to HPLCMETHOD_DUMMY_IRI in dummy_lab.ttl
     # this is to mimic the situation where either the species is not visible in the chromatogram or some information are not available/presented in the HPLC method
     HPLC_DUMMAY_REPORT_FILE_SPECIES_RETENTION_TIME_IDENTIFY = {
-        'http://www.theworldavatar.com/kb/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b': 0.55,
-        # "http://www.theworldavatar.com/kb/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3": 2.55,
+        'http://www.theworldavatar.com/kg/ontospecies/Species_54d8b46b-17bc-4bbd-a3cc-3b3a16d6ae4b': 0.55,
+        # "http://www.theworldavatar.com/kg/ontospecies/Species_353d4667-e25d-476a-bd74-5c34723c8ea3": 2.55,
         'http://www.theworldavatar.com/kg/ontospecies/Species_f999de28-55dc-477e-8afc-e8802064e0d2': 1.55,
         'http://www.theworldavatar.com/kg/ontospecies/Species_8765d201-0da9-4112-b653-3455002f535b': 4.55,
         # "http://www.theworldavatar.com/kg/ontospecies/Species_eab77458-560d-4ce9-9b5e-96650fc3e202": 5.55,
-        # "http://www.theworldavatar.com/kb/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb": 6.55,
-        # "http://www.theworldavatar.com/kb/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983": 7.55,
-        "http://www.theworldavatar.com/kb/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340": 3.55
+        # "http://www.theworldavatar.com/kg/ontospecies/Species_0401f93b-b62d-488e-ba1f-7d5c37e365cb": 6.55,
+        # "http://www.theworldavatar.com/kg/ontospecies/Species_63fefc5a-d49d-4841-a946-2cdb5f356983": 7.55,
+        "http://www.theworldavatar.com/kg/ontospecies/Species_4fa4fdea-ed3d-4b0a-aee5-1f4e97dd2340": 3.55
     }
 
     RXNEXP_REACTOR_ASSIGNED_DICT = {EXAMPLE_RXN_EXP_1_IRI:VAPOURTECR4REACTOR_DUMMY_IRI,EXAMPLE_RXN_EXP_2_IRI:VAPOURTECR4REACTOR_DUMMY_IRI,
         EXAMPLE_RXN_EXP_3_IRI:VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI,EXAMPLE_RXN_EXP_4_IRI:VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI,
         EXAMPLE_RXN_EXP_5_IRI:VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI,NEW_RXN_EXP_1_IRI:VAPOURTECR4_1_POST_PROC_IRI,NEW_RXN_EXP_2_IRI:VAPOURTECR4_2_POST_PROC_IRI,NEW_RXN_EXP_3_IRI:None}
 
-    INTENTIONALLY_OUT_OF_RANGE_BAES_IRI = 'https://intentionally_created_ReactionExperiment_out_of_range/'
-    OUT_OF_RANGE_RXN_EXP_1_IRI = INTENTIONALLY_OUT_OF_RANGE_BAES_IRI + 'ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70'
-    OUT_OF_RANGE_RXN_EXP_2_IRI = INTENTIONALLY_OUT_OF_RANGE_BAES_IRI + 'ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8'
-    OUT_OF_RANGE_RXN_EXP_3_IRI = INTENTIONALLY_OUT_OF_RANGE_BAES_IRI + 'ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf'
-    YIELD_INTENTIONALLY_OUT_OF_RANGE_BAES_IRI = 'https://yield_out_of_range/'
-    YIELD_OUT_OF_RANGE_RXN_EXP_1_IRI = YIELD_INTENTIONALLY_OUT_OF_RANGE_BAES_IRI + 'ReactionExperiment_negative_yield'
-    YIELD_OUT_OF_RANGE_RXN_EXP_2_IRI = YIELD_INTENTIONALLY_OUT_OF_RANGE_BAES_IRI + 'ReactionExperiment_yield_too_high'
+    INTENTIONALLY_OUT_OF_RANGE_BASE_IRI = 'https://intentionally_created_ReactionExperiment_out_of_range/'
+    OUT_OF_RANGE_RXN_EXP_1_IRI = INTENTIONALLY_OUT_OF_RANGE_BASE_IRI + 'ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70'
+    OUT_OF_RANGE_RXN_EXP_2_IRI = INTENTIONALLY_OUT_OF_RANGE_BASE_IRI + 'ReactionVariation_3bd3166d-f782-4cdc-a6a8-75336afd71a8'
+    OUT_OF_RANGE_RXN_EXP_3_IRI = INTENTIONALLY_OUT_OF_RANGE_BASE_IRI + 'ReactionVariation_c4b175d9-e53c-4d7e-b053-3a81f7ca0ddf'
+    YIELD_INTENTIONALLY_OUT_OF_RANGE_BASE_IRI = 'https://yield_out_of_range/'
+    YIELD_OUT_OF_RANGE_RXN_EXP_1_IRI = YIELD_INTENTIONALLY_OUT_OF_RANGE_BASE_IRI + 'ReactionExperiment_negative_yield'
+    YIELD_OUT_OF_RANGE_RXN_EXP_2_IRI = YIELD_INTENTIONALLY_OUT_OF_RANGE_BASE_IRI + 'ReactionExperiment_yield_too_high'
     LIST_INTENTIONALLY_OUT_OF_RANGE_RXN_EXP = [
         OUT_OF_RANGE_RXN_EXP_1_IRI, OUT_OF_RANGE_RXN_EXP_2_IRI, OUT_OF_RANGE_RXN_EXP_3_IRI,
         YIELD_OUT_OF_RANGE_RXN_EXP_1_IRI, YIELD_OUT_OF_RANGE_RXN_EXP_2_IRI

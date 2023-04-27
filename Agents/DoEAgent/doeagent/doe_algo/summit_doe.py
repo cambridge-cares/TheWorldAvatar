@@ -77,7 +77,7 @@ def proposeNewExperiment(
     # 2  |                8.44  |                0.16  |                 7.9  |                62.0  |            54.1  |            6.96
     # 3  |                8.83  |                0.04  |                11.8  |                67.0  |            40.0  |            8.10
     # 4  |                5.01  |                0.17  |                 8.1  |                56.0  |            47.7  |            6.83
-    previous_results = constructPreviousResultsTable(doe) if doe.utilisesHistoricalData.refersTo is not None else None
+    previous_results = constructPreviousResultsTable(doe) if doe.utilisesHistoricalData.refersToExperiment is not None else None
 
     # Suggest the next experiment, the output "next_exp" is a DataSet contains the suggested values for the optimisation variables in the next runs
     next_exp = strategy.suggest_experiments(doe.utilisesHistoricalData.numOfNewExp, prev_res=previous_results)
@@ -108,9 +108,9 @@ def formNewExperiment(
     # TODO [urgent] pass a list of chemical species IRI to the function
     # TODO [next iteration] unify the way of handling continuous and categorical variables for stoichiometry ratio and reaction scale
     _stoi_ratio_list = [
-        var for var in doe.hasDomain.hasDesignVariable if isinstance(var, dm.ContinuousVariable) and var.refersTo.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO
+        var for var in doe.hasDomain.hasDesignVariable if isinstance(var, dm.ContinuousVariable) and var.refersToQuantity.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO
     ] + [
-        param for param in doe.hasDomain.hasFixedParameter if param.refersTo.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO
+        param for param in doe.hasDomain.hasFixedParameter if param.refersToQuantity.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO
     ]
     for var in doe.hasDomain.hasDesignVariable:
         if isinstance(var, dm.CategoricalVariable) and var.refersTo.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO:
@@ -118,9 +118,9 @@ def formNewExperiment(
             _stoi_ratio_list.append(var)
     # NOTE that here we assume the ReactionScale has the same positionalID as the StoichiometryRatio of the reference chemical
     _rxn_scale_list = [
-        var for var in doe.hasDomain.hasDesignVariable if var.refersTo.clz == dm.ONTOREACTION_REACTIONSCALE
+        var for var in doe.hasDomain.hasDesignVariable if var.refersToQuantity.clz == dm.ONTOREACTION_REACTIONSCALE
     ] + [
-        param for param in doe.hasDomain.hasFixedParameter if param.refersTo.clz == dm.ONTOREACTION_REACTIONSCALE
+        param for param in doe.hasDomain.hasFixedParameter if param.refersToQuantity.clz == dm.ONTOREACTION_REACTIONSCALE
     ]
     _rxn_scale_id_list = [_rs.positionalID for _rs in _rxn_scale_list]
     if not all([_rs.positionalID in [_sr.positionalID for _sr in _stoi_ratio_list] for _rs in _rxn_scale_list]):
@@ -149,8 +149,8 @@ def formNewExperiment(
         # The new created ReactionVariation instances <isVariationOf> this ReactionExperiment
         # Most of the information from this ReactionExperiment will be copied to the new created ReactionVariation instance
         # NOTE the ReactionVariation MUST and ONLY <isVariationOf> instance of ReactionExperiment, otherwise it will create huge overhead in recursive querying function getReactionExperiment
-        if doe.utilisesHistoricalData.refersTo is not None:
-            first_rxn_exp = [rxn_exp for rxn_exp in doe.utilisesHistoricalData.refersTo if rxn_exp.clz == dm.ONTOREACTION_REACTIONEXPERIMENT][0]
+        if doe.utilisesHistoricalData.refersToExperiment is not None:
+            first_rxn_exp = [rxn_exp for rxn_exp in doe.utilisesHistoricalData.refersToExperiment if rxn_exp.clz == dm.ONTOREACTION_REACTIONEXPERIMENT][0]
 
             # Prepare a list of ReactionCondition
             list_con = []
@@ -161,7 +161,7 @@ def formNewExperiment(
                 var_loc = []
                 for design_var in doe.hasDomain.hasDesignVariable:
                     if isinstance(design_var, dm.ContinuousVariable):
-                        if tuple((design_var.refersTo.clz, design_var.positionalID)) == tuple((first_rxn_exp_con.clz, first_rxn_exp_con.positionalID)):
+                        if tuple((design_var.refersToQuantity.clz, design_var.positionalID)) == tuple((first_rxn_exp_con.clz, first_rxn_exp_con.positionalID)):
                             _var.append(design_var)
                             var_loc.append(design_var.name)
                     elif isinstance(design_var, dm.CategoricalVariable):
@@ -223,7 +223,7 @@ def formNewExperiment(
                     hasValue=om_measure,
                     positionalID=_ref_var.positionalID,
                     indicatesMultiplicityOf=_input_chemical_dict[_ref_var.positionalID].instance_iri if first_rxn_exp_con.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO else None,
-                    indicateUsageOf=_input_chemical_dict[_ref_var.positionalID].instance_iri if first_rxn_exp_con.clz == dm.ONTOREACTION_REACTIONSCALE else None,
+                    indicatesUsageOf=_input_chemical_dict[_ref_var.positionalID].instance_iri if first_rxn_exp_con.clz == dm.ONTOREACTION_REACTIONSCALE else None,
                 )
 
                 # Add created instance to list
@@ -245,7 +245,7 @@ def formNewExperiment(
             list_rxnvar.append(rxnvar)
 
         else:
-            # doe.utilisesHistoricalData.refersTo is None, therefore, all information should be based on DoE
+            # doe.utilisesHistoricalData.refersToExperiment is None, therefore, all information should be based on DoE
             # the list of ReactionCondition either from the suggested values for each DesignVariable
             # or from the fixed pamameters of DoE
             list_con = []
@@ -258,9 +258,9 @@ def formNewExperiment(
                     _raw_numerical_value_ = new_exp_ds[design_var.name][i]
 
                     try:
-                        _decimal_place = dm.ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT[design_var.refersTo.clz]
+                        _decimal_place = dm.ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT[design_var.refersToQuantity.clz]
                     except KeyError:
-                        raise Exception(f"Decimal places for {design_var.refersTo.clz} is not defined in ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT {dm.ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT}.")
+                        raise Exception(f"Decimal places for {design_var.refersToQuantity.clz} is not defined in ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT {dm.ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT}.")
 
                     _decimal_numerical_val = round(_raw_numerical_value_, _decimal_place) if _decimal_place > 0 else int(_raw_numerical_value_)
 
@@ -268,7 +268,7 @@ def formNewExperiment(
                     om_measure = dm.OM_Measure(
                         instance_iri=dm.INSTANCE_IRI_TO_BE_INITIALISED,
                         namespace_for_init=dm.getNameSpace(design_var.instance_iri),
-                        hasUnit=design_var.refersTo.hasUnit,
+                        hasUnit=design_var.refersToQuantity.hasUnit,
                         # TODO for the moment, a new om:Measure instance is always created
                         hasNumericalValue=_decimal_numerical_val
                     )
@@ -282,16 +282,16 @@ def formNewExperiment(
                     )
 
                 # Create instance for ReactionCondition
-                _objPropWithExp = dm.OBJECT_RELATIONSHIP_REACTION_CONDITION_RXN_EXP_DICT[design_var.refersTo.clz]
+                _objPropWithExp = dm.OBJECT_RELATIONSHIP_REACTION_CONDITION_RXN_EXP_DICT[design_var.refersToQuantity.clz]
                 con = dm.ReactionCondition(
                     instance_iri=dm.INSTANCE_IRI_TO_BE_INITIALISED,
                     namespace_for_init=dm.getNameSpace(design_var.instance_iri),
-                    clz=design_var.refersTo.clz,
+                    clz=design_var.refersToQuantity.clz,
                     objPropWithExp=_objPropWithExp,
                     hasValue=om_measure,
                     positionalID=design_var.positionalID,
-                    indicatesMultiplicityOf=_input_chemical_dict[design_var.positionalID].instance_iri if design_var.refersTo.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO else None,
-                    indicateUsageOf=_input_chemical_dict[design_var.positionalID].instance_iri if design_var.refersTo.clz == dm.ONTOREACTION_REACTIONSCALE else None,
+                    indicatesMultiplicityOf=_input_chemical_dict[design_var.positionalID].instance_iri if design_var.refersToQuantity.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO else None,
+                    indicatesUsageOf=_input_chemical_dict[design_var.positionalID].instance_iri if design_var.refersToQuantity.clz == dm.ONTOREACTION_REACTIONSCALE else None,
                 )
                 list_con.append(con)
 
@@ -299,22 +299,22 @@ def formNewExperiment(
                 # Prepare numerical value for the OM_Measure
                 # NOTE TODO here we took a short-cut wrt decimal places, in the future, this should be connected to KG
                 # NOTE if the fixed parameter is a reaction scale, then we need to use the value of the recommended reaction scale
-                if fixed_param.refersTo.clz == dm.ONTOREACTION_REACTIONSCALE:
+                if fixed_param.refersToQuantity.clz == dm.ONTOREACTION_REACTIONSCALE:
                     _recommended_reaction_scale = _input_chemical_dict[fixed_param.positionalID].recommended_reaction_scale
                     if _recommended_reaction_scale is not None:
                         _raw_numerical_value_ = _recommended_reaction_scale.hasValue.hasNumericalValue
                         _unit = _recommended_reaction_scale.hasValue.hasUnit
                     else:
-                        _raw_numerical_value_ = fixed_param.refersTo.hasValue.hasNumericalValue
-                        _unit = fixed_param.refersTo.hasValue.hasUnit
+                        _raw_numerical_value_ = fixed_param.refersToQuantity.hasValue.hasNumericalValue
+                        _unit = fixed_param.refersToQuantity.hasValue.hasUnit
                 else:
-                    _raw_numerical_value_ = fixed_param.refersTo.hasValue.hasNumericalValue
-                    _unit = fixed_param.refersTo.hasValue.hasUnit
+                    _raw_numerical_value_ = fixed_param.refersToQuantity.hasValue.hasNumericalValue
+                    _unit = fixed_param.refersToQuantity.hasValue.hasUnit
 
                 try:
-                    _decimal_place = dm.ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT[fixed_param.refersTo.clz]
+                    _decimal_place = dm.ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT[fixed_param.refersToQuantity.clz]
                 except KeyError:
-                    raise Exception(f"Decimal places for {fixed_param.refersTo.clz} is not defined in ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT {dm.ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT}.")
+                    raise Exception(f"Decimal places for {fixed_param.refersToQuantity.clz} is not defined in ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT {dm.ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT}.")
 
                 _decimal_numerical_val = round(_raw_numerical_value_, _decimal_place) if _decimal_place > 0 else int(_raw_numerical_value_)
 
@@ -328,16 +328,16 @@ def formNewExperiment(
                 )
 
                 # Create instance for ReactionCondition
-                _objPropWithExp = dm.OBJECT_RELATIONSHIP_REACTION_CONDITION_RXN_EXP_DICT[fixed_param.refersTo.clz]
+                _objPropWithExp = dm.OBJECT_RELATIONSHIP_REACTION_CONDITION_RXN_EXP_DICT[fixed_param.refersToQuantity.clz]
                 con = dm.ReactionCondition(
                     instance_iri=dm.INSTANCE_IRI_TO_BE_INITIALISED,
                     namespace_for_init=dm.getNameSpace(fixed_param.instance_iri),
-                    clz=fixed_param.refersTo.clz,
+                    clz=fixed_param.refersToQuantity.clz,
                     objPropWithExp=_objPropWithExp,
                     hasValue=om_measure,
                     positionalID=fixed_param.positionalID,
-                    indicatesMultiplicityOf=_input_chemical_dict[fixed_param.positionalID].instance_iri if fixed_param.refersTo.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO else None,
-                    indicateUsageOf=_input_chemical_dict[fixed_param.positionalID].instance_iri if fixed_param.refersTo.clz == dm.ONTOREACTION_REACTIONSCALE else None,
+                    indicatesMultiplicityOf=_input_chemical_dict[fixed_param.positionalID].instance_iri if fixed_param.refersToQuantity.clz == dm.ONTOREACTION_STOICHIOMETRYRATIO else None,
+                    indicatesUsageOf=_input_chemical_dict[fixed_param.positionalID].instance_iri if fixed_param.refersToQuantity.clz == dm.ONTOREACTION_REACTIONSCALE else None,
                 )
                 list_con.append(con)
 
@@ -383,14 +383,14 @@ def constructPreviousResultsTable(doe: dm.DesignOfExperiment) -> DataSet_summit:
     for var in doe.hasDomain.hasDesignVariable:
         # prepare data for the previous results table
         data = []
-        for exp in doe.utilisesHistoricalData.refersTo:
+        for exp in doe.utilisesHistoricalData.refersToExperiment:
             if isinstance(var, dm.ContinuousVariable):
                 list_cont_var.append(var.name)
                 # locate the value of the DesignVariable in each historical experiment
-                con = exp.get_reaction_condition(var.refersTo.clz, var.positionalID)
+                con = exp.get_reaction_condition(var.refersToQuantity.clz, var.positionalID)
 
                 if con is None:
-                    raise Exception(f"No ReactionCondition found for the DesignVariable (refersTo clz: {var.refersTo.clz} and positionalID: {var.positionalID}) in the historical experiment (instance_iri: {exp.instance_iri})")
+                    raise Exception(f"No ReactionCondition found for the DesignVariable (refersTo clz: {var.refersToQuantity.clz} and positionalID: {var.positionalID}) in the historical experiment (instance_iri: {exp.instance_iri})")
 
                 # append the collected value in the experiment
                 data.append({'rxnexp': exp.instance_iri, var.name: con.hasValue.hasNumericalValue})
@@ -421,12 +421,12 @@ def constructPreviousResultsTable(doe: dm.DesignOfExperiment) -> DataSet_summit:
         list_sys_res.append(var.name)
         # prepare data for the previous results table
         data = []
-        for exp in doe.utilisesHistoricalData.refersTo:
+        for exp in doe.utilisesHistoricalData.refersToExperiment:
             # locate the value of the SystemResponse in each historical experiment
-            indi = exp.get_performance_indicator(var.refersTo, var.positionalID)
+            indi = exp.get_performance_indicator(var.refersToQuantity, var.positionalID)
 
             if indi is None:
-                raise Exception(f"No PerformanceIndicator found for the SystemResponse (refersTo clz: {var.refersTo} and positionalID: {var.positionalID}) in the historical experiment (instance_iri: {exp.instance_iri})")
+                raise Exception(f"No PerformanceIndicator found for the SystemResponse (refersTo clz: {var.refersToQuantity} and positionalID: {var.positionalID}) in the historical experiment (instance_iri: {exp.instance_iri})")
 
             # append the collected value in the experiment
             # NOTE here we clip the value to be within the range of [SYS_RES_LOWER_BOUND, SYS_RES_UPPER_BOUND], i.e. [-2**31-1, 2**31-1]

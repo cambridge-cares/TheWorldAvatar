@@ -55,7 +55,7 @@ def test_example_doe(
     # Check if all the suggested conditions are within the DoE range
     for design_variable in new_doe_instance.hasDomain.hasDesignVariable:
         if isinstance(design_variable, utils.cf.ContinuousVariable):
-            rxn_cond = new_exp_instance.get_reaction_condition(design_variable.refersTo.clz, design_variable.positionalID)
+            rxn_cond = new_exp_instance.get_reaction_condition(design_variable.refersToQuantity.clz, design_variable.positionalID)
             assert rxn_cond.hasValue.hasNumericalValue <= design_variable.upperLimit
             assert design_variable.lowerLimit <= rxn_cond.hasValue.hasNumericalValue
         else:
@@ -64,8 +64,8 @@ def test_example_doe(
     # Check if all the fixed parameters are the same as the DoE instance
     if new_doe_instance.hasDomain.hasFixedParameter is not None:
         for fixed_parameter in new_doe_instance.hasDomain.hasFixedParameter:
-            rxn_cond = new_exp_instance.get_reaction_condition(fixed_parameter.refersTo.clz, fixed_parameter.positionalID)
-            assert rxn_cond.hasValue.hasNumericalValue == fixed_parameter.refersTo.hasValue.hasNumericalValue
+            rxn_cond = new_exp_instance.get_reaction_condition(fixed_parameter.refersToQuantity.clz, fixed_parameter.positionalID)
+            assert rxn_cond.hasValue.hasNumericalValue == fixed_parameter.refersToQuantity.hasValue.hasNumericalValue
     print("All check passed.")
 
     # Shutdown the scheduler to clean up if it's local agent test (as the doe_agent scheduler must have started)
