@@ -9,7 +9,7 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">26 April 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">27 April 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Ontology for urban building energy modelling (UBEM) and master planning (MP) data</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -138,9 +138,9 @@
         <rdfs:domain>
             <owl:Class>
                 <owl:unionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall"/>
                     <rdf:Description rdf:about="https://w3id.org/bot#Building"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Roof"/>
+                    <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Wall"/>
                     <rdf:Description rdf:about="https://www.theworldavatar.com/kg/ontoubemmp/SolarEnergyGenerator"/>
                 </owl:unionOf>
             </owl:Class>
@@ -288,20 +288,6 @@
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Roof"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall -->
-
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontobim/ontoBIM#Wall"/>
-    
-
-
     <!-- https://w3id.org/bot#Building -->
 
 
@@ -317,6 +303,20 @@
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The amount of energy consumed by an energy consuming facility</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoubemmp/</rdfs:isDefinedBy>
     </owl:Class>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/Roof -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Roof"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobuildingstructure/Wall -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobuildingstructure/Wall"/>
     
 
 
