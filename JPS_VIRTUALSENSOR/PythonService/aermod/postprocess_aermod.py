@@ -8,7 +8,7 @@ from matplotlib.figure import Figure
 from matplotlib.colors import LinearSegmentedColormap
 import geojsoncontour
 from io import StringIO
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify,Response
 from pyproj import Transformer
 import requests
 import agentlogging
@@ -24,18 +24,19 @@ def api():
     logger.info("Received request to process AERMOD dispersion matrix")
     aermod_output_url = request.args["dispersionMatrix"]
     srid = request.args["srid"]
-
+    height = request.args["height"]
+    # download file from url
     dispersion_file = requests.get(aermod_output_url, auth=requests.auth.HTTPBasicAuth('fs_user','fs_pass'))
 
-    # download file from url
-    return get_aermod_geojson(dispersion_file.text, srid)
+    return get_aermod_geojson(dispersion_file.text, srid, height)
+        
 
 # This script is only valid for a 1 hour simulation because this file shows the maximum concentration at each receptor
-def get_aermod_geojson(aermod_output, srid):
+def get_aermod_geojson(aermod_output, srid, height):
     aermod_output_buffer = StringIO(aermod_output)
-    data = pd.read_csv(aermod_output_buffer, delim_whitespace=True, skiprows=range(0,8), header=None, names=['X','Y','AVERAGE CONC', 'ZELEV', 'ZHILL','ZFLAG','AVE','GRP','RANK','NET ID','DATE(CONC)'])
+    data = pd.read_csv(aermod_output_buffer, delim_whitespace=True, skiprows=range(0,8), header=None, names=['X','Y','AVERAGE CONC', 'ZELEV', 'ZHILL','ZFLAG','AVE','GRP','NUM HRS','NET ID'])
     x_all = data['X']
-    y_all = data['Y']
+    y_all = data['Y']    
 
     x_set = sorted(set(x_all))
     y_set = sorted(set(y_all))
@@ -47,18 +48,19 @@ def get_aermod_geojson(aermod_output, srid):
 
     for i in range(len(x_set)):
         for j in range (len(y_set)):
-            x_index = x_set.index(x_set[i])
-            y_index = y_set.index(y_set[j])
             lat,lon = transformer.transform(x_set[i], y_set[j])
-            x_matrix[x_index,y_index] = lon
-            y_matrix[x_index,y_index] = lat
+            x_matrix[i,j] = lon
+            y_matrix[i,j] = lat
 
+    eps = 0.001
+    
+    # filteredData = data[np.abs(data['ZFLAG'] - float(height)) < eps].reset_index()
     conc_list = data['AVERAGE CONC']
     conc_matrix = np.empty((len(x_set), len(y_set)))
 
-    for i in range(len(x_all)):
-        x_index = x_set.index(x_all[i])
-        y_index = y_set.index(y_all[i])
+    for i in range(len(conc_list)):
+        x_index = x_set.index(data['X'][i])
+        y_index = y_set.index(data['Y'][i])
         conc_matrix[x_index,y_index] = conc_list[i]
 
     contour_level = 30
@@ -68,19 +70,20 @@ def get_aermod_geojson(aermod_output, srid):
     crf = ax.contourf(x_matrix, y_matrix, conc_matrix, levels=contour_level,cmap=plt.cm.jet)
     # cbar = fig.colorbar(crf,ax)
     try :
-       cm = 1/2.54
-       plt.figure(figsize=(10*cm, 20*cm))
-       concBar = np.asarray(conc_list)
-       concBar = np.expand_dims(concBar,0)
-       img = plt.imshow(concBar, cmap=plt.cm.jet)
-       plt.gca().set_visible(False)
-       cax = plt.axes([0.1, 0.2, 0.1, 1.0])
-       plt.colorbar(orientation="vertical", cax=cax)
-       cax.tick_params(axis='y', which='major', labelsize=28)
-    #    plt.title(r"Logarithm of CO$_{2}$ concentrations ($\mu$g/m$^3$)")
-       plt.savefig("/var/www/html/colourbar.png", dpi=300, bbox_inches='tight')
+        cm = 1/2.54
+        plt.figure(figsize=(10*cm, 20*cm))
+        concBar = np.asarray(conc_list)
+        concBar = np.expand_dims(concBar,0)
+        img = plt.imshow(concBar, cmap=plt.cm.jet)
+        plt.gca().set_visible(False)
+        cax = plt.axes([0.1, 0.2, 0.1, 1.0])
+        plt.colorbar(orientation="vertical", cax=cax)
+        cax.tick_params(axis='y', which='major', labelsize=28)
+        plt.title(r"NO$_{2}$ concentrations ($\mu$g/m$^3$) at height = " + height + " meters")
+        plt.savefig("/vis_data/colourbar_height_" + height + ".png", dpi=300, bbox_inches='tight')
     except Exception as e :
-       print(e)
-    
+        print(e)
+
     geojsonstring = geojsoncontour.contourf_to_geojson(contourf = crf, fill_opacity = 0.5)
-    return jsonify(json.loads(geojsonstring)), 200
+    return jsonify(json.loads(geojsonstring)),200
+    

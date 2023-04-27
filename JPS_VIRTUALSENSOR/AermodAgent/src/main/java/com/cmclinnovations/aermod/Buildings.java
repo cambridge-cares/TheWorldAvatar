@@ -1829,7 +1829,7 @@ public class Buildings {
 
             String stkId = "Stk" + (i + 1);
             sb.append(String.format("SO LOCATION %s POINT %f %f %f \n", stkId, StackEastUTM, StackNorthUTM, StackBaseElevation));
-            sb.append("SO HOUREMIS hourlyEmissions.dat " + stkId);
+            sb.append("SO HOUREMIS hourlyEmissions.dat " + stkId + " \n");
             sb.append(String.format("SO SRCPARAM %s %f %f %f %f %f \n", stkId,
                     massFlowrateInGs, StackHeight, gasTemperatureKelvin, velocityms, Diameter));
         }
@@ -1844,7 +1844,10 @@ public class Buildings {
             int year = ldt.getYear();
             int month = ldt.getMonthValue();
             int day = ldt.getDayOfMonth();
-            int hour = ldt.getHour();
+            // Adding one because the hour value in the user specified timestamps ranges between 0 and 23. 
+            // Although this is ok for the weather_template.144 file, the values of hour in the hourlyEmissions.dat file
+            // should range between 1 and 24. Otherwise, AERMOD reports a fatal date/time mismatch error. 
+            int hour = ldt.getHour() + 1;
 
             String ys = String.valueOf(year).substring(2);
             String ms = String.valueOf(month);
@@ -1866,6 +1869,34 @@ public class Buildings {
 
             }
         }
+
+        // This part ensures that one will not encounter an EOF error due to different numbers of data points in the 
+        // AERMET_SURF.SFC and hourlyEmissions.dat file. 
+        
+        
+        LocalDateTime lde = LocalDateTime.parse(timeStamps.get(timeStamps.size()-1),DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        int year = lde.getYear();
+        int month = lde.getMonthValue();
+        int day = lde.getDayOfMonth();
+        int hour = lde.getHour() + 1;
+        String ys = String.valueOf(year).substring(2);
+        String line = "SO HOUREMIS " + ys + " " + month + " " + day ;
+
+        while (hour < 24) {
+            hour++;
+            for (int j = 0; j < StackProperties.size(); j++) {
+                String stkId = "Stk" + (j + 1);
+                Double emission = 150.0;
+                double gasTemperatureKelvin = 533.15;
+                double velocityms = 10.0;
+                String newLine = line + " " + hour + " " + stkId + " " + emission + " " + gasTemperatureKelvin + " " + velocityms;
+                sbe.append(newLine + "\n");
+
+            }
+
+        }
+
+
         writeToFile(aermodDirectory.resolve("hourlyEmissions.dat"), sbe.toString());
 
         return writeToFile(aermodDirectory.resolve("plantSources.dat"),sb.toString());

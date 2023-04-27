@@ -72,7 +72,8 @@ def get_aermod_geojson(aermod_output, srid):
             tmp2.extend(tmp[1:])
             ind += 1
             currentRow = int(tmp[0])
-    elevData[ind] = np.array(tmp2).astype(float)
+    if len(lines) > 1:
+        elevData[ind] = np.array(tmp2).astype(float)
 
     fig,ax = plt.subplots()
     contour_level = 30
@@ -89,7 +90,8 @@ def get_aermod_geojson(aermod_output, srid):
        cax = plt.axes([0.1, 0.2, 0.1, 1.0])
        plt.colorbar(orientation="vertical", cax=cax)
        cax.tick_params(axis='y', which='major', labelsize=28)
-       plt.savefig("/var/www/html/elevation.png", dpi=300, bbox_inches='tight')
+       plt.title(r"Elevation profile in meters")
+       plt.savefig("/vis_data/elevation.png", dpi=300, bbox_inches='tight')
     except Exception as e :
        print(e)
     

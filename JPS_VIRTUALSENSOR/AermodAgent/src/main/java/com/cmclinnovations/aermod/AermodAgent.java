@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -21,6 +22,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.locationtech.jts.geom.Polygon;
@@ -141,6 +143,8 @@ public class AermodAgent extends DerivationAgent {
         WeatherData weatherData = queryClient.getOpenMeteoData(stationIRI);
         deleteOpenMeteoStation(scope);
 
+        // Number of weather data values will be >= number of timestamps. The correct range of values is retrieved within the 
+        // create144File method in the Aermod class. 
         weatherData.timeStamps = bpi.timeStamps;
         aermod.create144File(weatherData);
 
@@ -160,23 +164,33 @@ public class AermodAgent extends DerivationAgent {
         if (!bpi.aermodInputCreated) aermod.createAermodInputFile(scope, nx, ny, srid);
         aermod.runAermod("aermod.inp");
         aermod.runAermod("aermodVirtualSensor.inp");
-        // Call Python Service to draw contour plot for pollution concentrations
+
+        // Upload files used by scripts within Python Service to file server.
         String outputFileURL = aermod.uploadToFileServer("averageConcentration.dat");
-        JSONObject geoJSON = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid);
-
         String outFileURL = aermod.uploadToFileServer("receptor.dat");
-        JSONObject geoJSON2 = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_ELEVATION_URL, outFileURL, srid);
+        String sensorFileURL = aermod.uploadToFileServer("virtualSensorConcentrations.dat");
 
 
-        // layer name
-        String dispLayerName = "disp_" + simulationDirectory.getFileName();
+        List<Double> receptorHeights = bpi.receptorHeights;
+        // Set GeoServer layer names
+        List<String> dispLayerNames = new ArrayList <>();
+        for (double ht:receptorHeights) {
+            String dispLayerName = "disp_"+ ht;
+            dispLayerNames.add(dispLayerName);
+        }
         String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent
         String plantsLayerName = "source_layer" ;
         String elevationLayerName = "elevation_layer";
 
-        // upload to PostGIS using GDAL
+        // Get contour plots as geoJSON objects from PythonService and upload them to PostGIS using GDAL
         GDALClient gdalClient = new GDALClient();
-        gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, dispLayerName, geoJSON.toString(), new Ogr2OgrOptions(), true);
+        for (int i = 0; i < dispLayerNames.size(); i++) {
+            double height = receptorHeights.get(i);
+            JSONObject geoJSON = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid,height);
+            gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, dispLayerNames.get(i), 
+            geoJSON.toString(), new Ogr2OgrOptions(), true);
+        }
+        JSONObject geoJSON2 = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_ELEVATION_URL, outFileURL, srid,0.0);
         gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, elevationLayerName, geoJSON2.toString(), new Ogr2OgrOptions(), true);
 
         // create geoserver layer based for that
@@ -188,12 +202,14 @@ public class AermodAgent extends DerivationAgent {
         // then create a layer with that style as default
         GeoServerVectorSettings geoServerVectorSettings = new GeoServerVectorSettings();
         geoServerVectorSettings.setDefaultStyle("dispersion_style");
-        geoServerClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, dispLayerName, geoServerVectorSettings);
+        for (int i = 0; i < dispLayerNames.size(); i++) {
+            geoServerClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, dispLayerNames.get(i), geoServerVectorSettings);
+        }
         geoServerClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, elevationLayerName, geoServerVectorSettings);
 
         // ships_ is hardcoded here and in ShipInputAgent
-        queryClient.updateOutputs(derivationInputs.getDerivationIRI(), outputFileURL, dispLayerName, shipLayerName, simulationTime);
-        if (aermod.createDataJson(shipLayerName, dispLayerName, plantsLayerName,elevationLayerName) != 0) {
+        queryClient.updateOutputs(derivationInputs.getDerivationIRI(), outputFileURL, dispLayerNames.get(0), shipLayerName, simulationTime);
+        if (aermod.createDataJson(shipLayerName, dispLayerNames, plantsLayerName,elevationLayerName) != 0) {
             LOGGER.error("Failed to create data.json file for visualisation, terminating");
             return;
         }

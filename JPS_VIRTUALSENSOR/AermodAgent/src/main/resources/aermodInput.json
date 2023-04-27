@@ -33,9 +33,7 @@
         }
     ],
     "receptorHeights": [
-        0,
-        1,
-        10
+        0
     ],
     "sensorLocations": {
         "Longitude": [
