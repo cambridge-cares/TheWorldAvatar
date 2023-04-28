@@ -96,7 +96,7 @@ Triples for the laboratory digital twin:
    ControlClick, Button1, Pressure Loss Detection Disabled,,,, NA
    return
    ```
-- Check the installed packages with `pip list`, specifically, make sure below packages are installed with the correct version: `chemistry_and_robots==1.4.0`, `py4jps==1.0.34`, `pyderivationagent==1.4.4`, `vapourtecagent` (editable install), `rxngoaloptagent` (editable install), `rxnoptgoaliteragent` (editable install)
+- Check the installed packages with `pip list`, specifically, make sure below packages are installed with the correct version: `chemistry_and_robots==1.6.1`, `py4jps==1.0.34`, `pyderivationagent==1.4.4`, `vapourtecagent` (editable install), `rxngoaloptagent` (editable install), `rxnoptgoaliteragent` (editable install)
 
 
 ## Knowledge graph
