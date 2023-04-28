@@ -190,9 +190,9 @@ def formNewExperiment(
                 # NOTE TODO here we took a short-cut wrt decimal places, in the future, this should be connected to KG
                 _raw_numerical_value_ = first_rxn_exp_con.hasValue.hasNumericalValue if len(var_loc) < 1 or isinstance(_var[0], dm.CategoricalVariable) else new_exp_ds[var_loc[0]][i] # an example: df['ContinuousVariable_1'][0]
                 try:
-                    _decimal_place = dm.ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT[first_rxn_exp_con.clz]
+                    _decimal_place = dm.ROUND_DECIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT[first_rxn_exp_con.clz]
                 except KeyError:
-                    raise Exception(f"Decimal places for {first_rxn_exp_con.clz} is not defined in ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT {dm.ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT}.")
+                    raise Exception(f"Decimal places for {first_rxn_exp_con.clz} is not defined in ROUND_DECIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT {dm.ROUND_DECIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT}.")
 
                 try:
                     _decimal_numerical_val = round(_raw_numerical_value_, _decimal_place) if _decimal_place > 0 else int(_raw_numerical_value_)
@@ -258,9 +258,9 @@ def formNewExperiment(
                     _raw_numerical_value_ = new_exp_ds[design_var.name][i]
 
                     try:
-                        _decimal_place = dm.ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT[design_var.refersToQuantity.clz]
+                        _decimal_place = dm.ROUND_DECIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT[design_var.refersToQuantity.clz]
                     except KeyError:
-                        raise Exception(f"Decimal places for {design_var.refersToQuantity.clz} is not defined in ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT {dm.ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT}.")
+                        raise Exception(f"Decimal places for {design_var.refersToQuantity.clz} is not defined in ROUND_DECIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT {dm.ROUND_DECIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT}.")
 
                     _decimal_numerical_val = round(_raw_numerical_value_, _decimal_place) if _decimal_place > 0 else int(_raw_numerical_value_)
 
@@ -312,9 +312,9 @@ def formNewExperiment(
                     _unit = fixed_param.refersToQuantity.hasValue.hasUnit
 
                 try:
-                    _decimal_place = dm.ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT[fixed_param.refersToQuantity.clz]
+                    _decimal_place = dm.ROUND_DECIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT[fixed_param.refersToQuantity.clz]
                 except KeyError:
-                    raise Exception(f"Decimal places for {fixed_param.refersToQuantity.clz} is not defined in ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT {dm.ROUND_DICIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT}.")
+                    raise Exception(f"Decimal places for {fixed_param.refersToQuantity.clz} is not defined in ROUND_DECIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT {dm.ROUND_DECIMAL_PLACES_REACTION_CONDITION_RXN_EXP_DICT}.")
 
                 _decimal_numerical_val = round(_raw_numerical_value_, _decimal_place) if _decimal_place > 0 else int(_raw_numerical_value_)
 
