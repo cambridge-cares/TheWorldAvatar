@@ -1320,3 +1320,117 @@ label[for="select-feature"] {
     left: revert;
     bottom: revert;
 }
+
+#sliderParent {
+    width: 125px;
+    height: calc(100% - 80px);
+    position: absolute;
+    top: 20px;
+
+    display: flex;
+    flex-direction: column;
+
+    color: white;
+    background-color: rgba(0,0,0,.4);
+    border-radius: 8px;
+    padding: 20px;
+}
+#sliderParent.expanded {
+    right: 520px;
+}
+#sliderParent.collapsed {
+    right: 50px;
+}
+
+#sliderTop {
+    flex-grow: 1;
+    
+    display: flex;
+    flex-direction: row;
+}
+#sliderLeft {
+    flex-grow: 1;
+}
+#sliderRight {
+    flex-grow: 0;
+    height: calc(100% - 20px);
+    width: 12px;
+}
+#sliderBottom {
+    height: 40px;
+    flex-grow: 0;
+}
+.sliderStep {
+    position: absolute;
+    width: 70%;
+    height: 20px;
+
+    right: 30px;
+    margin-left: 20px;
+    padding-top: 2px;
+
+    font-size: 10pt;
+    border: 1px solid white;
+    border-width: 1px 0px 0px 0px;
+    cursor: pointer;
+}
+.sliderStep:hover {
+    text-decoration: underline;
+}
+#sliderInput {
+    width: calc(100% - 20px);
+    height: calc(100% - 10px);
+    float: left;
+    text-align: right;
+    margin-top: 10px;
+}
+
+#clipControlContainer {
+    display: flex;
+    flex-direction: column;
+}
+
+#clipEnableContainer {
+    width: 100%;
+    height: 30px;
+}
+#clipEnableContainer p {
+    font-size: 9pt;
+    font-weight: normal;
+    float: left;
+    line-height: 30px;
+}
+#clipEnableContainer input {
+    float: right;
+    margin-top: 8px;
+}
+
+#clipShowContainer {
+    width: 100%;
+    height: 30px;
+}
+#clipShowContainer p {
+    font-size: 9pt;
+    font-weight: normal;
+    float: left;
+    line-height: 30px;
+}
+#clipShowContainer input {
+    float: right;
+    margin-top: 8px;
+}
+
+#clipSelectContainer {
+    width: 100%;
+    height: 60px;
+}
+#clipSelectContainer p {
+    font-size: 9pt;
+    font-weight: normal;
+    line-height: 30px;
+}
+#clipSelectContainer select {
+    width: 100%;
+    height: 25px;
+    font-size: 9pt;
+}

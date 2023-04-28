@@ -114,6 +114,7 @@ class Manager {
 
                 if(self.searchHandler != null) self.searchHandler.toggle();
                 e.preventDefault();
+
             } else if ((e.ctrlKey || e.metaKey) && e.altKey && e.key === "t") {
                 if(Manager.PROVIDER === MapProvider.CESIUM) {
                     console.log("Camera Longitude: " + Cesium.Math.toDegrees(MapHandler.MAP.camera.positionCartographic.longitude));
@@ -123,6 +124,8 @@ class Manager {
                     console.log("Camera Pitch: " + Cesium.Math.toDegrees(MapHandler.MAP.camera.pitch));
                     console.log("Camera Roll: " + Cesium.Math.toDegrees(MapHandler.MAP.camera.roll));
                 }
+
+                e.preventDefault();
             }
         });
 

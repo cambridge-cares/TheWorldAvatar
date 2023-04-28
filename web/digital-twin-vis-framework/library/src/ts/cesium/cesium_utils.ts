@@ -10,24 +10,6 @@ class CesiumUtils {
     private static OUTLINE_GREEN;
 
     /**
-     * Currently selected clipping plane.
-     */
-    private static SELECTED_PLANE;
-    private static SELECTED_PLANE_ID;
-
-    /**
-     * ???
-     */
-    private static PLANE_HEIGHTS = {};
-
-    private static PLANES_BY_TILESET = {};
-
-    /**
-     * Have the mouse handlers for clipping planes been initialised?
-     */
-    private static CLIPPING_INITIALISED = false;
-
-    /**
      * Returns the visibility state of the layer with the input ID.
      * 
      * @param layerID ID of layer
@@ -77,9 +59,9 @@ class CesiumUtils {
                         let clippingPlanes = dataSource["clippingPlanes"];
                         if(clippingPlanes == null) return;
 
-                        clippingPlanes.enabled = visible;
-                        let planeEntity = CesiumUtils.PLANES_BY_TILESET[layerID];
-                        planeEntity.show = visible;
+                        // clippingPlanes.enabled = visible;
+                        // let planeEntity = ClipHandler.PLANES[layerID];
+                        // planeEntity.show = visible;
                     }
                 }
             }
@@ -270,11 +252,29 @@ class CesiumUtils {
             throw "Callback function is required!";
         }
 
-        // Get the feature at the click point
-        const feature = MapHandler.MAP.scene.pick((!event.position) ? event.endPosition : event.position);
+        // Get (up to 2) features at the mouse position
+        let features = MapHandler.MAP.scene.drillPick(
+            (!event.position) ? event.endPosition : event.position,
+            2
+        );
 
+        // Find the first feature that isn't a clipping plane
+        let feature = null;
+
+        if(features != null) {
+            features.forEach(f => {
+                if(f?.id?._name != null) {
+                    if(f.id._name !== "clipping-plane") {
+                        feature = f;
+                    }
+                } else {
+                    feature = f;
+                }
+            });
+        }
+
+        // Probably a WMS feature, need to get info differently
         if(feature === null || feature === undefined) {
-            // Probably a WMS feature, need to get info differently
             var pickRay = MapHandler.MAP.camera.getPickRay((!event.position) ? event.endPosition : event.position);
             var featuresPromise = MapHandler.MAP.imageryLayers.pickImageryLayerFeatures(pickRay, MapHandler.MAP.scene);
 
@@ -456,128 +456,58 @@ class CesiumUtils {
     }
 
     /**
-     * Prepare the initial position of the clipping plane and setup
-     * movement logic for it.
+     * 
      */
-    public static prepareClippingPlane(tileset, clipHeight, clippingPlanes) {
-        CesiumUtils.PLANE_HEIGHTS[tileset["layerID"]] = clipHeight;
+    public static getLayersWithClipping(dataStore: DataStore) {
+        let matches = {};
 
-        // Once the tileset is ready...
-        tileset.readyPromise.then(function() {
-            let boundingSphere = tileset.boundingSphere;
-            let radius = boundingSphere.radius;
-
-            // The clipping plane is initially positioned at the tileset's root transform.
-            // Apply an additional matrix to center the clipping plane on the bounding sphere center.
-            if (!Cesium.Matrix4.equals(tileset.root.transform, Cesium.Matrix4.IDENTITY)) {
-                let transformCenter = Cesium.Matrix4.getTranslation(
-                    tileset.root.transform,
-                    new Cesium.Cartesian3()
-                );
-
-                let boundingCenter = boundingSphere.center;
-                let boundingSphereCartographic = Cesium.Cartographic.fromCartesian(boundingCenter);
-                let transformCartographic = Cesium.Cartographic.fromCartesian(transformCenter);
-
-                let height = boundingSphereCartographic.height - transformCartographic.height;
-                clippingPlanes.modelMatrix = Cesium.Matrix4.fromTranslation(
-                    new Cesium.Cartesian3(0.0, 0.0, height)
-                );
-            }
-
-            // Get the position of the tileset, so we can place the clipping plane there.
-            let tilesetPosition = Cesium.Matrix4.getTranslation(tileset.modelMatrix, new Cesium.Cartesian3()); 
-
-            // Add visible 2D planes to represent the clipping planes
-            for (let i = 0; i < clippingPlanes.length; ++i) {
-                let clipPlane = clippingPlanes.get(i);
-
-                let planeEntity = MapHandler.MAP.entities.add({
-                    position: tilesetPosition,
-                    id: tileset["layerID"],
-                    plane: {
-                        dimensions: new Cesium.Cartesian2(radius, radius),
-                        material: Cesium.Color.WHITE.withAlpha(0.1),
-                        outlineColor: Cesium.Color.WHITE.withAlpha(0.5),
-                        outline: true,
-                        plane: new Cesium.CallbackProperty(
-                            CesiumUtils.createPlaneUpdateFunction(clipPlane, tileset["layerID"]),
-                            false
-                        )
-                    }
-                });
-                CesiumUtils.PLANES_BY_TILESET[tileset["layerID"]] = planeEntity;
-            }
-            return tileset;
-        });
-
-        // Bug out if handlers are already setup
-        if(CesiumUtils.CLIPPING_INITIALISED) return tileset;
-        
-        // Select plane when mouse down
-        let downHandler = new Cesium.ScreenSpaceEventHandler(MapHandler.MAP.scene.canvas);
-        downHandler.setInputAction(function (movement) {
-            const pickedObject = MapHandler.MAP.scene.pick(movement.position);
-
-            if(Cesium.defined(pickedObject) && Cesium.defined(pickedObject.id) && Cesium.defined(pickedObject.id.plane)) {
-                CesiumUtils.SELECTED_PLANE = pickedObject;
-                CesiumUtils.SELECTED_PLANE_ID = pickedObject.id._id;
-
-                let plane =  CesiumUtils.SELECTED_PLANE.id.plane;
-                plane.material =  Cesium.Color.LIGHTBLUE.withAlpha(0.1);
-                plane.outlineColor = Cesium.Color.LIGHTBLUE.withAlpha(0.5);
-                MapHandler.MAP.scene.screenSpaceCameraController.enableInputs = false;
-            }
-        }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
-        
-        // Release plane on mouse up
-        let upHandler = new Cesium.ScreenSpaceEventHandler(MapHandler.MAP.scene.canvas);
-        upHandler.setInputAction(function () {
-            if (Cesium.defined(CesiumUtils.SELECTED_PLANE)) {
-                let plane = CesiumUtils.SELECTED_PLANE.id.plane;
-
-                plane.material = Cesium.Color.WHITE.withAlpha(0.1);
-                plane.outlineColor = Cesium.Color.LIGHTBLUE.withAlpha(0.5);
-                CesiumUtils.SELECTED_PLANE = undefined;
-                CesiumUtils.SELECTED_PLANE_ID = undefined;
-            }
-            MapHandler.MAP.scene.screenSpaceCameraController.enableInputs = true;
-        }, Cesium.ScreenSpaceEventType.LEFT_UP);
-  
-        // Update plane on mouse move
-        let moveHandler = new Cesium.ScreenSpaceEventHandler(MapHandler.MAP.scene.canvas);
-        moveHandler.setInputAction(function (movement) {
-            if (Cesium.defined(CesiumUtils.SELECTED_PLANE)) {
-                let height = CesiumUtils.PLANE_HEIGHTS[CesiumUtils.SELECTED_PLANE_ID];
-                let deltaY = movement.startPosition.y - movement.endPosition.y;
-                CesiumUtils.PLANE_HEIGHTS[CesiumUtils.SELECTED_PLANE_ID] = height + (deltaY / 5);
-            }
-        }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-
-        // Mark handlers as initialised and return
-        CesiumUtils.CLIPPING_INITIALISED = true;
-        return tileset;
+        dataStore.dataGroups.forEach(group => {
+            this.recurseLayersWithClipping(group, matches);
+        })
+        return matches;
     }
 
     /**
-     * Handles the update of a plane's distance.
      * 
-     * @param plane plane to update
-     * @param tileset ID of tileset plane is attached to
-     * 
-     * @returns updated plane 
+     * @param dataGroup 
+     * @param matches 
      */
-    public static createPlaneUpdateFunction(plane, tilesetID) {
-        return function () {
-            if (Cesium.defined(CesiumUtils.SELECTED_PLANE)) {
-                let selectedID = CesiumUtils.SELECTED_PLANE.id._id;
-                if(tilesetID !== selectedID) return plane;
+    private static recurseLayersWithClipping(dataGroup: DataGroup, matches) {
+        dataGroup.dataLayers.forEach(layer => {
+            if(layer.definition.hasOwnProperty("clipping")) {
+                let layerID = layer.id;
+                let layerName = layer.definition["name"];
 
-                let height = CesiumUtils.PLANE_HEIGHTS[tilesetID];
-                plane.distance = height;
+                if(matches.hasOwnProperty(layerName)) {
+                    matches[layerName] = matches[layerName] + "|" + layerID;
+                } else {
+                    matches[layerName] = layerID;
+                }
             }
-            return plane;
-        };
+        });
+
+        if(dataGroup.subGroups.length > 0) {
+            dataGroup.subGroups.forEach(subGroup => {
+                this.recurseLayersWithClipping(subGroup, matches);
+            });
+        }
+    }
+
+    /**
+     * 
+     * @param layerID 
+     * @returns 
+     */
+    public static getPrimitive(layerID) {
+        let primitives = MapHandler.MAP.scene.primitives;
+
+        for(let i = 0; i < primitives.length; i++) {
+            if(primitives.get(i)?.layerID === layerID) {
+                return primitives.get(i);
+            }
+        }
+
+        return null;
     }
 }
 // End of class.

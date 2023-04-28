@@ -15,10 +15,19 @@ class MapHandler_Cesium extends MapHandler {
     public static DATA_SOURCES = {};
 
     /**
+     * Handles generation and control of clipping planes.
+     */
+    private clipHandler: ClipHandler;
+
+    /**
      * Constructor.
      */
     constructor(manager: Manager) {
         super(manager);
+        this.clipHandler = new ClipHandler();
+
+        let layers = CesiumUtils.getLayersWithClipping(Manager.DATA_STORE);
+        this.clipHandler.setLayers(layers);
     }
 
     /**
@@ -105,6 +114,13 @@ class MapHandler_Cesium extends MapHandler {
 
             // Enable terrain elevations (if set)
             this.addTerrain();
+
+            // Build clipping controls
+            let layersWithClipping = CesiumUtils.getLayersWithClipping(Manager.DATA_STORE);
+            console.log("layersWithClipping:");
+            console.log(layersWithClipping);
+            this.clipHandler.setLayers(layersWithClipping);
+            this.clipHandler.addControls();
 
         } else {
             MapHandler.MAP.camera.setView({
@@ -445,37 +461,22 @@ class MapHandler_Cesium extends MapHandler {
             options["modelMatrix"] = position;
         }
 
-        // If clipping is enabled, add a clipping plane
-        let clippingPlanes = null;
-        let clipHeight = 25.0;
-
-        if(layer.definition.hasOwnProperty("clipPlane") && layer.definition["clipPlane"]) {
-            if(layer.definition.hasOwnProperty("clipHeight")) {
-                clipHeight = layer.definition["clipHeight"];
-            }
-
-            clippingPlanes = new Cesium.ClippingPlaneCollection({
-                planes: [
-                    new Cesium.ClippingPlane(new Cesium.Cartesian3(0.0, 0.0, -1.0), clipHeight)
-                ],
-                edgeWidth: 1.0
-            });
-            
-            clippingPlanes.get(0).id = layer.id;
-            options["clippingPlanes"] = clippingPlanes;
+        // If clipping is enabled, pre-generate a clipping plane
+        if(layer.definition.hasOwnProperty("clipping")) {
+            this.clipHandler.initialiseClippingPlane(
+                layer.id,
+                layer.definition["clipping"]["start"]
+            );
         }
 
         // Create tileset object
         let tileset = new Cesium.Cesium3DTileset(options);
         tileset["layerID"] = layer.id;
        
-        // Setup clipping plane logic
-        if(clippingPlanes != null) CesiumUtils.prepareClippingPlane(tileset, clipHeight, clippingPlanes);
-
         // Add the tileset to the map
         MapHandler.MAP.scene.primitives.add(tileset);
         console.info("Added 3D tileset source to map with layer ID: "+ layer.id);
-         
+
         // Cache knowledge of this source, keyed by layer id
         if(MapHandler_Cesium.DATA_SOURCES[layer.id] === null || MapHandler_Cesium.DATA_SOURCES[layer.id] === undefined) {
             MapHandler_Cesium.DATA_SOURCES[layer.id] = [];

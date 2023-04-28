@@ -158,6 +158,10 @@ class PanelHandler {
 
         var finderContainer = document.getElementById("finderContainer");
 
+
+        // Container for Cesium clipping plane slider
+        let sliderParent = document.getElementById("sliderParent");
+
 		if(sidePanel.classList.contains("small")) {
 
 			if(sidePanel.classList.contains("collapsed")) {
@@ -171,6 +175,7 @@ class PanelHandler {
 				sidePanelInner.style.visibility = "visible";
 
                 if(finderContainer != null) finderContainer.style.width = "calc(100% - 540px)";
+                if(sliderParent != null) sliderParent.classList.replace("collapsed", "expanded");
 				
 			} else if(sidePanel.classList.contains("expanded")) {
 				// Collapse
@@ -183,6 +188,7 @@ class PanelHandler {
 				sidePanelInner.style.visibility = "hidden";
 
                 if(finderContainer != null) finderContainer.style.width = "calc(100% - 80px)";
+                if(sliderParent != null) sliderParent.classList.replace("expanded", "collapsed");
 			}
 		} 
 
