@@ -9,13 +9,13 @@ import time
 import vapourtecscheduleagent.tests.utils as utils
 
 
-# NOTE the derivation_periodic_timescale (6, 7, 8) are chosen randomly for the test cases
+# NOTE the derivation_periodic_timescale (1, 2, 3) are chosen randomly for the test cases
 @pytest.mark.parametrize(
     "new_rxn_exp_iri,derivation_periodic_timescale",
     [
-        (utils.cf.NEW_RXN_EXP_1_IRI, 6),
-        (utils.cf.NEW_RXN_EXP_2_IRI, 7),
-        (utils.cf.NEW_RXN_EXP_3_IRI, 8),
+        (utils.cf.NEW_RXN_EXP_1_IRI, 1),
+        (utils.cf.NEW_RXN_EXP_2_IRI, 2),
+        (utils.cf.NEW_RXN_EXP_3_IRI, 3),
     ],
 )
 def test_monitor_derivation(
@@ -85,13 +85,13 @@ def test_monitor_derivation(
     vapourtec_schedule_agent.scheduler.shutdown()
 
 
-# NOTE the derivation_periodic_timescale (6, 7, 8) are chosen randomly for the test cases
+# NOTE the derivation_periodic_timescale (1, 2, 3) are chosen randomly for the test cases
 @pytest.mark.parametrize(
     "new_rxn_exp_iri,derivation_periodic_timescale",
     [
-        (utils.cf.NEW_RXN_EXP_1_IRI, 6),
-        (utils.cf.NEW_RXN_EXP_2_IRI, 7),
-        (utils.cf.NEW_RXN_EXP_3_IRI, 8),
+        (utils.cf.NEW_RXN_EXP_1_IRI, 1),
+        (utils.cf.NEW_RXN_EXP_2_IRI, 2),
+        (utils.cf.NEW_RXN_EXP_3_IRI, 3),
     ],
 )
 def test_docker_integration(
@@ -156,13 +156,13 @@ def test_docker_integration(
     assert placeholder_hplcreport == lst_derivation_outputs[0]
 
 
-# NOTE the derivation_periodic_timescale (6, 7, 8) are chosen randomly for the test cases
+# NOTE the derivation_periodic_timescale (1, 2, 3) are chosen randomly for the test cases
 @pytest.mark.parametrize(
     "new_rxn_exp_iri,derivation_periodic_timescale,fcexp_file_host_folder,hplc_report_wsl_folder",
     [
-        (utils.cf.NEW_RXN_EXP_1_IRI, 6, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_HPLC_DIR),
-        (utils.cf.NEW_RXN_EXP_2_IRI, 7, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_HPLC_DIR),
-        (utils.cf.NEW_RXN_EXP_3_IRI, 8, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_HPLC_DIR),
+        (utils.cf.NEW_RXN_EXP_1_IRI, 1, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_HPLC_DIR),
+        (utils.cf.NEW_RXN_EXP_2_IRI, 2, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_HPLC_DIR),
+        (utils.cf.NEW_RXN_EXP_3_IRI, 3, utils.cf.DOCKER_INTEGRATION_VAPOURTEC_DIR, utils.cf.DOCKER_INTEGRATION_HPLC_DIR),
     ],
 )
 def test_three_agents_docker_integration(

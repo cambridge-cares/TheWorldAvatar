@@ -194,8 +194,25 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
                 )
                 list_design_variables.append(design_var)
             elif isinstance(var, CategoricalVariable):
-                # TODO [future work]: implement
-                raise NotImplementedError(f"Design variable type {type(var)} is not implemented yet.")
+                list_design_variables.append(
+                    CategoricalVariable(
+                        instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                        namespace_for_init=getNameSpace(var.instance_iri),
+                        positionalID=var.positionalID,
+                        refersToQuantity=OM_Quantity(
+                            instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                            namespace_for_init=getNameSpace(var.instance_iri),
+                            clz=var.refersToQuantity.clz,
+                            hasValue=OM_Measure(
+                                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
+                                namespace_for_init=getNameSpace(var.refersToQuantity.instance_iri),
+                                hasUnit=var.refersToQuantity.hasValue.hasUnit,
+                                hasNumericalValue=var.refersToQuantity.hasValue.hasNumericalValue,
+                            ),
+                        ),
+                        hasLevel=var.hasLevel,
+                    )
+                )
             else:
                 raise NotImplementedError(f"Design variable type {type(var)} is not implemented yet.")
 
@@ -250,15 +267,8 @@ class RxnOptGoalIterSparqlClient(ChemistryAndRobotsSparqlClient):
             instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
             namespace_for_init=getNameSpace(goal_set.instance_iri),
             # TODO [nice-to-have] add support for Strategy defined by user
-            # NOTE at the moment, we use TSEMO and the parameters provided by the template
-            usesStrategy=TSEMO(
-                instance_iri=INSTANCE_IRI_TO_BE_INITIALISED,
-                namespace_for_init=getNameSpace(goal_set.instance_iri),
-                nRetries=doe_template.usesStrategy.nRetries,
-                nSpectralPoints=doe_template.usesStrategy.nSpectralPoints,
-                nGenerations=doe_template.usesStrategy.nGenerations,
-                populationSize=doe_template.usesStrategy.populationSize,
-            ),
+            # TODO [urgent] make sure the strategy is not duplicated if already exists in the KG - current solution will mess up the TSEMO as duplicated data properties will be created
+            usesStrategy=doe_template.usesStrategy,
             hasDomain=constructed_domain,
             hasSystemResponse=list_system_responses,
             utilisesHistoricalData=HistoricalData(

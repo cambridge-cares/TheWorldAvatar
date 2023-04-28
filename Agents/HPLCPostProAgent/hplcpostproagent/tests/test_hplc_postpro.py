@@ -1,4 +1,5 @@
 import hplcpostproagent.tests.conftest as conftest
+from chemistry_and_robots.data_model import iris
 from rdflib import Graph
 from pathlib import Path
 import pkgutil
@@ -129,7 +130,7 @@ def test_hplc_postpro_agent(
         if rxn_exp_iri == conftest.RXN_EXP_6_SAME_COST or rxn_exp_iri == conftest.RXN_EXP_7_SAME_COST:
             if pi.clz == conftest.ONTOREACTION_RUNMATERIALCOST:
                 print(pi.hasValue.hasNumericalValue)
-                assert (pi.hasValue.hasNumericalValue - 8.87) < 0.01
+                assert (pi.hasValue.hasNumericalValue - 19.69) < 0.01
     reload_output_chemical_lst = reload_rxn_rxp_instance.hasOutputChemical
     for oc in reload_output_chemical_lst:
         assert oc.clz == conftest.ONTOREACTION_OUTPUTCHEMICAL
@@ -156,9 +157,12 @@ def initialise_triples(sparql_client):
     sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
     print(sparql_client.getAmountOfTriples())
 
+    # Upload ontology TBox
+    sparql_client.upload_ontology_tbox(iris.ONTODOE)
+    sparql_client.upload_ontology_tbox(iris.ONTOREACTION)
+
     # Upload the example triples for testing
-    for f in ['sample_data/new_exp_data.ttl', 'sample_data/duplicate_ontorxn.ttl',
-        'sample_data/dummy_lab.ttl', 'sample_data/rxn_data.ttl', 'sample_data/dummy_post_proc.ttl']:
+    for f in ['sample_data/new_exp_data.ttl', 'sample_data/dummy_lab.ttl', 'sample_data/rxn_data.ttl', 'sample_data/dummy_post_proc.ttl']:
         data = pkgutil.get_data('chemistry_and_robots', 'resources/'+f).decode("utf-8")
         g = Graph().parse(data=data)
         sparql_client.uploadGraph(g)

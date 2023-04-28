@@ -48,7 +48,7 @@ MAPPING_DECIMAL_PLACE_CONSTRAINT = {
     FC_RESIDENCE_TIME: 2,
     FC_STOICHIOMETRIC_RATIO: 2,
     FC_VOLUMETRIC_RATIO: 2,
-    FC_REAGENT_CONC: 3,
+    FC_REAGENT_CONC: 4, # FlowCommander only display 3 decimal places, but 4 is actually supported
     FC_REAGENT_USE: 2,
     FC_MANUAL_COLLECT: 2,
     FC_MANUAL_DIVERT: 2,
@@ -133,7 +133,9 @@ def get_reagent_conc_of_chem_amount(rxnexp: ReactionExperiment, chem_amount: Che
 
     reagent = list(set(list_reactant+list_catalyst) & set(list_component))
     if len(reagent) > 1:
-        raise Exception("Multiple reactant/catalyst (%s) identified within one chemical amount: %s" % (', '.join(reagent), str(chem_amount.json())))
+        # TODO [future work] need to handle the case where there are multiple reactants/catalysts identified in the same chemical amount
+        reagent = reagent[0]
+        # raise Exception("Multiple reactant/catalyst (%s) identified within one chemical amount: %s" % (', '.join(reagent), str(chem_amount.json())))
     elif len(reagent) < 1:
         raise Exception("No reactant/catalyst identified within one chemical amount: %s" % str(chem_amount.json()))
     else:

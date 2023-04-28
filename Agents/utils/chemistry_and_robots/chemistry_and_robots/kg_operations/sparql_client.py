@@ -216,21 +216,21 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         # Delete "<" and ">" around the IRI
         domain_iri = trimIRI(domain_iri)
 
-        # TODO add support for CategoricalVariable
         # Prepare query string
-        query = f"""SELECT DISTINCT ?var ?quantity ?clz ?unit ?id ?lower ?upper
+        query_continuous = f"""SELECT DISTINCT ?var ?quantity ?clz ?unit ?id ?lower ?upper
                 WHERE {{
                     <{domain_iri}> <{ONTODOE_HASDESIGNVARIABLE}> ?var .
+                    ?var a <{ONTODOE_CONTINUOUSVARIABLE}> .
                     ?var <{ONTODOE_REFERSTOQUANTITY}> ?quantity .
                     ?quantity a ?clz; <{OM_HASUNIT}> ?unit.
                     OPTIONAL {{?var <{ONTODOE_POSITIONALID}> ?id . }}
                     OPTIONAL {{?var <{ONTODOE_LOWERLIMIT}> ?lower . }}
                     OPTIONAL {{?var <{ONTODOE_UPPERLIMIT}> ?upper . }}
                 }}"""
-        
+
         # Perform query
-        response = self.performQuery(query)
-        
+        response = self.performQuery(query_continuous)
+
         # Construct list of design variables
         list_var = []
         for res in response:
@@ -249,6 +249,41 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 )
             )
 
+        # Query for categorical variables
+        query_categorical = f"""
+            SELECT DISTINCT ?var ?cat ?quantity ?clz ?measure ?unit ?value ?id
+            WHERE {{
+                <{domain_iri}> <{ONTODOE_HASDESIGNVARIABLE}> ?var .
+                ?var a <{ONTODOE_CATEGORICALVARIABLE}>.
+                ?var <{ONTODOE_HASLEVEL}> ?cat.
+                ?var <{ONTODOE_REFERSTOQUANTITY}> ?quantity .
+                ?quantity a ?clz; <{OM_HASVALUE}> ?measure.
+                ?measure <{OM_HASUNIT}> ?unit; <{OM_HASNUMERICALVALUE}> ?value.
+                OPTIONAL {{?var <{ONTODOE_POSITIONALID}> ?id . }}
+            }}
+            """
+        response = self.performQuery(query_categorical)
+        _var = dal.get_unique_values_in_list_of_dict(response, 'var')
+        for _v in _var:
+            # NOTE we assume that each categorical variable only refers to ONE quantity
+            _info_v = dal.get_sublist_in_list_of_dict_matching_key_value(response, 'var', _v) # info for a single categorical variable
+            list_var.append(
+                CategoricalVariable(
+                    instance_iri=_v,
+                    name=getShortName(_v), # NOTE this is not part of OntoDoE ontology, but it is used for working with Summit python package
+                    hasLevel=dal.get_unique_values_in_list_of_dict(_info_v, 'cat'),
+                    refersToQuantity=OM_Quantity(
+                        instance_iri=_info_v[0]['quantity'],
+                        clz=_info_v[0]['clz'],
+                        hasValue=OM_Measure(
+                            instance_iri=_info_v[0]['measure'],
+                            hasUnit=_info_v[0]['unit'],
+                            hasNumericalValue=_info_v[0]['value']
+                        )
+                    ),
+                    positionalID=_info_v[0].get('id')
+                )
+            )
         return list_var
 
     def getSystemResponses(self, systemResponse_iris) -> List[SystemResponse]:
@@ -421,7 +456,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         lst_unique_chem_rxn = dal.get_unique_values_in_list_of_dict(response_mapping, 'chem_rxn')
         query = f"""{PREFIX_RDF}
                     SELECT DISTINCT ?chem_rxn ?reactant ?reac_type ?reac_species ?product ?prod_type ?prod_species
-                    ?catalyst ?cata_type ?cata_species ?solvent ?solv_type ?solv_species ?doe_template
+                    ?catalyst ?cata_type ?cata_species ?solvent ?solv_type ?solv_species ?base ?base_type ?base_species
+                    ?doe_template
                     WHERE {{
                         VALUES ?reac_type {{<{ONTOKIN_SPECIES}> <{ONTOKIN_REACTANT}>}}.
                         VALUES ?prod_type {{<{ONTOKIN_SPECIES}> <{ONTOKIN_PRODUCT}> <{ONTOREACTION_TARGETPRODUCT}> <{ONTOREACTION_IMPURITY}>}}.
@@ -439,6 +475,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                             ?chem_rxn <{ONTOREACTION_HASSOLVENT}> ?solvent.
                             ?solvent rdf:type ?solv_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?solv_species.
                         }}
+                        OPTIONAL{{
+                            VALUES ?base_type {{<{ONTOKIN_SPECIES}> <{ONTOREACTION_BASE}>}}.
+                            ?chem_rxn <{ONTOREACTION_HASBASE}> ?base.
+                            ?base rdf:type ?base_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?base_species.
+                        }}
                         OPTIONAL{{?chem_rxn <{ONTODOE_HASDOETEMPLATE}> ?doe_template.}}
                     }}"""
         response_of_all_chem_rxn = self.performQuery(query)
@@ -453,6 +494,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 hasProduct=self.get_ontokin_species_from_chem_rxn(response, 'product', 'prod_type', 'prod_species'),
                 hasCatalyst=self.get_ontokin_species_from_chem_rxn(response, 'catalyst', 'cata_type', 'cata_species'),
                 hasSolvent=self.get_ontokin_species_from_chem_rxn(response, 'solvent', 'solv_type', 'solv_species'),
+                hasBase=self.get_ontokin_species_from_chem_rxn(response, 'base', 'base_type', 'base_species'),
                 hasDoETemplate=dal.get_the_unique_value_in_list_of_dict(response, 'doe_template'),
             )
 
@@ -468,7 +510,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         chem_rxn_iri = trimIRI(chem_rxn_iri)
         query = f"""{PREFIX_RDF}
                 SELECT DISTINCT ?chem_rxn ?reactant ?reac_type ?reac_species ?product ?prod_type ?prod_species
-                ?catalyst ?cata_type ?cata_species ?solvent ?solv_type ?solv_species ?doe_template
+                ?catalyst ?cata_type ?cata_species ?solvent ?solv_type ?solv_species ?base ?base_type ?base_species
+                    ?doe_template
                 WHERE {{
                     VALUES ?reac_type {{<{ONTOKIN_SPECIES}> <{ONTOKIN_REACTANT}>}}.
                     VALUES ?prod_type {{<{ONTOKIN_SPECIES}> <{ONTOKIN_PRODUCT}> <{ONTOREACTION_TARGETPRODUCT}> <{ONTOREACTION_IMPURITY}>}}.
@@ -486,6 +529,11 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                         ?chem_rxn <{ONTOREACTION_HASSOLVENT}> ?solvent.
                         ?solvent rdf:type ?solv_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?solv_species.
                     }}
+                    OPTIONAL{{
+                        VALUES ?base_type {{<{ONTOKIN_SPECIES}> <{ONTOREACTION_BASE}>}}.
+                        ?chem_rxn <{ONTOREACTION_HASBASE}> ?base.
+                        ?base rdf:type ?base_type; <{ONTOSPECIES_HASUNIQUESPECIES}> ?base_species.
+                    }}
                     OPTIONAL{{?chem_rxn <{ONTODOE_HASDOETEMPLATE}> ?doe_template.}}
                 }}"""
         response = self.performQuery(query)
@@ -496,6 +544,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             hasProduct=self.get_ontokin_species_from_chem_rxn(response, 'product', 'prod_type', 'prod_species'),
             hasCatalyst=self.get_ontokin_species_from_chem_rxn(response, 'catalyst', 'cata_type', 'cata_species'),
             hasSolvent=self.get_ontokin_species_from_chem_rxn(response, 'solvent', 'solv_type', 'solv_species'),
+            hasBase=self.get_ontokin_species_from_chem_rxn(response, 'base', 'base_type', 'base_species'),
             hasDoETemplate=dal.get_the_unique_value_in_list_of_dict(response, 'doe_template'),
         )
 
@@ -563,6 +612,8 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                     species = Catalyst(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
                 elif u_s_info[species_type] == ONTOREACTION_SOLVENT:
                     species = Solvent(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
+                elif u_s_info[species_type] == ONTOREACTION_BASE:
+                    species = Base(instance_iri=u_s_info[species_role],hasUniqueSpecies=u_s_info[ontospecies_key])
                 else:
                     raise Exception("Species type (%s) NOT supported for: %s" % (u_s_info[species_type], str(u_s_info)))
                 list_species.append(species)
@@ -1036,14 +1087,13 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         strategy_iri = trimIRI(strategy_iri)
 
         # Construct query string
-        query = PREFIX_RDF + \
-                PREFIX_OWL + \
-                """SELECT ?strategy \
-                WHERE { \
-                <%s> rdf:type ?strategy . \
-                FILTER(?strategy != owl:Thing && ?strategy != owl:NamedIndividual) . \
-                }""" % (strategy_iri)
-        
+        query = f"""{PREFIX_RDF} {PREFIX_OWL}
+                SELECT ?strategy
+                WHERE {{
+                    <{strategy_iri}> rdf:type ?strategy .
+                    FILTER(?strategy != owl:Thing && ?strategy != owl:NamedIndividual) .
+                }}"""
+
         # Perform SPARQL query
         response = self.performQuery(query)
 
@@ -1055,6 +1105,9 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
         if (res[0] == ONTODOE_TSEMO):
             tsemo_instance = self.getTSEMOSettings(strategy_iri)
             return tsemo_instance
+        elif (res[0] == ONTODOE_NEWSTBO):
+            sobo_instance = self.get_newstbo_settings(strategy_iri)
+            return sobo_instance
         elif (res[0] == ONTODOE_LHS):
             # TODO implement handling for LHS
             raise NotImplementedError("LHS as a OntoDoE:Strategy is not yet supported.")
@@ -1088,6 +1141,10 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             raise Exception("Instance <%s> should only have one set of settings." % (tsemo_iri))
         tsemo_instance = TSEMO(instance_iri=tsemo_iri,**response[0])
         return tsemo_instance
+
+    def get_newstbo_settings(self, newstbo_iri: str) -> NewSTBO:
+        # TODO add support for customising NewSTBO settings
+        return NewSTBO(instance_iri=newstbo_iri)
 
     def getNewExperimentFromDoE(self, doe_iri: str) -> ReactionExperiment:
         doe_iri = trimIRI(doe_iri)
@@ -1174,6 +1231,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 WHERE {{
                     {"VALUES ?rs400 { <%s> } ." % '> <'.join(list_vapourtec_rs400_iri) if list_vapourtec_rs400_iri is not None else ""}
                     {"VALUES ?laboratory { <%s> } ." % '> <'.join(list_of_labs_as_constraint) if list_of_labs_as_constraint is not None else ""}
+                    ?laboratory <{ONTOLAB_CONTAINS}> ?rs400.
                     ?rs400 <{SAREF_CONSISTSOF}> ?autosampler;
                            <{DBPEDIA_MANUFACTURER}> ?rs400_manufacturer;
                            <{ONTOLAB_HASPOWERSUPPLY}> ?rs400_power_supply;
@@ -1224,7 +1282,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
                 hasCollectionMethod=CollectionMethod(
                     instance_iri=res['collection_method'],
                     clz=res['collection_method_type'],
-                    toReceptacle=res['waste_receptacle'],
+                    toReceptacle=res.get('waste_receptacle'),
                 ),
                 recommendedReactionScale=OM_Volume(
                     instance_iri=res['recommended_reaction_scale'],
@@ -1287,7 +1345,7 @@ class ChemistryAndRobotsSparqlClient(PySparqlClient):
             hasCollectionMethod=CollectionMethod(
                 instance_iri=res['collection_method'],
                 clz=res['collection_method_type'],
-                toReceptacle=res['waste_receptacle'],
+                toReceptacle=res.get('waste_receptacle'),
             ),
             recommendedReactionScale=OM_Volume(
                 instance_iri=res['recommended_reaction_scale'],

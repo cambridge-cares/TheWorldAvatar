@@ -40,7 +40,7 @@ def test_rxn_rogi_LOCAL(
     create_rogi_agent, create_doe_agent, create_vapourtec_schedule_agent, create_hplc_postpro_agent, create_vapourtec_agent, create_hplc_agent,
     goal_set_iri, derivation_inputs, hplc_report_target_folder, fcexp_file_container_folder, local_agent_test
 ):
-    sparql_client, derivation_client = initialise_blazegraph_fileserver_with_test_triples
+    sparql_client, derivation_client = initialise_blazegraph_fileserver_with_test_triples()
 
     # Create agent instances, this also register the agents to the KG
     # NOTE that this should be done by agent themselves at real deployment
@@ -163,7 +163,7 @@ def test_rxn_goal_request_LOCAL(
     create_rog_agent, create_rogi_agent, create_doe_agent, create_vapourtec_schedule_agent, create_hplc_postpro_agent, create_vapourtec_agent, create_hplc_agent,
     vapourtec_agent_env_file, fcexp_file_container_folder, hplc_agent_env_file, hplc_report_target_folder, local_agent_test, goal_request,
 ):
-    sparql_client, derivation_client = initialise_blazegraph_fileserver_with_test_triples
+    sparql_client, derivation_client = initialise_blazegraph_fileserver_with_test_triples()
 
     # Create agent instances, this also register the agents to the KG
     # NOTE that this should be done by agent themselves at real deployment
@@ -297,7 +297,7 @@ def test_rxn_goal_iterations_LOCAL(
     create_rog_agent, create_rogi_agent, create_doe_agent, create_vapourtec_schedule_agent, create_hplc_postpro_agent, create_vapourtec_agent, create_hplc_agent,
     vapourtec_agent_env_file, fcexp_file_container_folder, hplc_agent_env_file, hplc_report_target_folder, local_agent_test, goal_request,
 ):
-    sparql_client, derivation_client = initialise_blazegraph_fileserver_with_test_triples
+    sparql_client, derivation_client = initialise_blazegraph_fileserver_with_test_triples()
 
     # Create agent instances, this also register the agents to the KG
     # NOTE that this should be done by agent themselves at real deployment

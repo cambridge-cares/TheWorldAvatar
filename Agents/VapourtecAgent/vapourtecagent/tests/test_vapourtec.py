@@ -5,13 +5,13 @@ import time
 import vapourtecagent.tests.utils as utils
 
 
-# NOTE the derivation_periodic_timescale (6, 7, 8) are chosen randomly for the test cases
+# NOTE the derivation_periodic_timescale (1, 2, 3) are chosen randomly for the test cases
 @pytest.mark.parametrize(
     "new_rxn_exp_iri,vapourtec_rs400_iri,vapourtec_r4_reactor_iri,fcexp_file_container_folder,derivation_periodic_timescale",
     [
-        (utils.cf.NEW_RXN_EXP_1_IRI, utils.cf.VAPOURTECRS400_DUMMY_IRI, utils.cf.VAPOURTECR4REACTOR_DUMMY_IRI, utils.cf.FCEXP_FILE_DIR, 6),
-        (utils.cf.NEW_RXN_EXP_2_IRI, utils.cf.VAPOURTECRS400_DUMMY_IRI, utils.cf.VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI, utils.cf.FCEXP_FILE_DIR, 7),
-        (utils.cf.NEW_RXN_EXP_3_IRI, utils.cf.VAPOURTECRS400_DUMMY_IRI, utils.cf.VAPOURTECR4REACTOR_DUMMY_IRI, utils.cf.FCEXP_FILE_DIR, 8),
+        (utils.cf.NEW_RXN_EXP_1_IRI, utils.cf.VAPOURTECRS400_DUMMY_IRI, utils.cf.VAPOURTECR4REACTOR_DUMMY_IRI, utils.cf.FCEXP_FILE_DIR, 1),
+        (utils.cf.NEW_RXN_EXP_2_IRI, utils.cf.VAPOURTECRS400_DUMMY_IRI, utils.cf.VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI, utils.cf.FCEXP_FILE_DIR, 2),
+        (utils.cf.NEW_RXN_EXP_3_IRI, utils.cf.VAPOURTECRS400_DUMMY_IRI, utils.cf.VAPOURTECR4REACTOR_DUMMY_IRI, utils.cf.FCEXP_FILE_DIR, 3),
     ],
 )
 def test_monitor_derivation(
@@ -92,13 +92,13 @@ def test_monitor_derivation(
     vapourtec_agent.scheduler.shutdown()
 
 
-# NOTE the derivation_periodic_timescale (6, 7, 8) are chosen randomly for the test cases
+# NOTE the derivation_periodic_timescale (1, 2, 3) are chosen randomly for the test cases
 @pytest.mark.parametrize(
     "new_rxn_exp_iri,vapourtec_rs400_iri,vapourtec_r4_reactor_iri,derivation_periodic_timescale,fcexp_file_host_folder",
     [
-        (utils.cf.NEW_RXN_EXP_1_IRI, utils.cf.VAPOURTECRS400_DUMMY_IRI, utils.cf.VAPOURTECR4REACTOR_DUMMY_IRI, 6, utils.cf.DOCKER_INTEGRATION_DIR),
-        (utils.cf.NEW_RXN_EXP_2_IRI, utils.cf.VAPOURTECRS400_DUMMY_IRI, utils.cf.VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI, 7, utils.cf.DOCKER_INTEGRATION_DIR),
-        (utils.cf.NEW_RXN_EXP_3_IRI, utils.cf.VAPOURTECRS400_DUMMY_IRI, utils.cf.VAPOURTECR4REACTOR_DUMMY_IRI, 8, utils.cf.DOCKER_INTEGRATION_DIR),
+        (utils.cf.NEW_RXN_EXP_1_IRI, utils.cf.VAPOURTECRS400_DUMMY_IRI, utils.cf.VAPOURTECR4REACTOR_DUMMY_IRI, 1, utils.cf.DOCKER_INTEGRATION_DIR),
+        (utils.cf.NEW_RXN_EXP_2_IRI, utils.cf.VAPOURTECRS400_DUMMY_IRI, utils.cf.VAPOURTECR4REACTOR_ANOTHER_DUMMY_IRI, 2, utils.cf.DOCKER_INTEGRATION_DIR),
+        (utils.cf.NEW_RXN_EXP_3_IRI, utils.cf.VAPOURTECRS400_DUMMY_IRI, utils.cf.VAPOURTECR4REACTOR_DUMMY_IRI, 3, utils.cf.DOCKER_INTEGRATION_DIR),
     ],
 )
 def test_docker_integration(

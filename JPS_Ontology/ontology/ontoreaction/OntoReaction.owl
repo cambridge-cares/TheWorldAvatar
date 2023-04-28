@@ -9,9 +9,9 @@
      xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontoreaction/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">26 April 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">27 April 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">An ontology developed for describing reaction experiment.</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.9</owl:versionInfo>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.10</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
     </owl:Ontology>
     
@@ -33,6 +33,18 @@
 
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#hasCatalyst"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/hasBase -->
+
+
+    <owl:ObjectProperty rdf:about="https://www.theworldavatar.com/kg/ontoreaction/hasBase">
+        <rdfs:domain rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/ChemicalReaction"/>
+        <rdfs:range rdf:resource="https://www.theworldavatar.com/kg/ontoreaction/Base"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The relation hasBase denotes the bases of a ChemicalReaction.</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
+    </owl:ObjectProperty>
     
 
 
@@ -555,6 +567,17 @@
 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontoreaction/Base -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontoreaction/Base">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontokin/OntoKin.owl#Species"/>
+        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A chemical species or molecular entity having an available pair of electrons capable of forming a covalent bond with a hydron (proton) (see Bronsted base) or with the vacant orbital of some other species (see Lewis base). [doi:10.1351/goldbook.B00601]</rdfs:comment>
+        <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontoreaction/</rdfs:isDefinedBy>
+    </owl:Class>
     
 
 

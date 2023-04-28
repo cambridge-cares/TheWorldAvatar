@@ -47,6 +47,8 @@ ENV_FILES_DIR = os.path.join(THIS_DIR,'env_files')
 SECRETS_PATH = os.path.join(THIS_DIR,'dummy_services_secrets')
 SECRETS_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_auth')
 TEST_TRIPLES_DIR = os.path.join(THIS_DIR,'test_triples')
+TEST_TRIPLES_SUZUKI_STEP1_DIR = os.path.join(THIS_DIR,'test_triples_suzuki_step1')
+TEST_TRIPLES_SUZUKI_STEP2_DIR = os.path.join(THIS_DIR,'test_triples_suzuki_step2')
 URL_FILE_PATH = os.path.join(THIS_DIR,'dummy_services_secrets', 'dummy_test_url')
 DOWNLOADED_DIR = os.path.join(THIS_DIR,'_downloaded_files_for_test')
 HPLC_REPORT_LOCAL_TEST_DIR = os.path.join(THIS_DIR,'_generated_hplc_report_for_test')
@@ -129,6 +131,8 @@ class IRIs(Enum):
     VAPOURTEC_ENV_FILE_DICT = {LAB1_IRI: LAB1_VAPOURTEC_AGENT_ENV, LAB2_IRI: LAB2_VAPOURTEC_AGENT_ENV}
     HPLC_ENV_FILE_DICT = {LAB1_IRI: LAB1_HPLC_AGENT_ENV, LAB2_IRI: LAB2_HPLC_AGENT_ENV}
 
+    HPLC_METHOD_SUZUKI = 'https://www.theworldavatar.com/kg/lab_auto/suzuki/HPLCMethod_Suzuki'
+    HPLC_METHOD_SUZUKI_STEP2 = 'https://www.theworldavatar.com/kg/lab_auto/suzuki/step2/HPLCMethod_Suzuki'
 
 # ----------------------------------------------------------------------------------
 # Pytest session related functions
@@ -140,27 +144,6 @@ def pytest_sessionstart(session):
         os.remove(SECRETS_FILE_PATH)
     if os.path.exists(URL_FILE_PATH):
         os.remove(URL_FILE_PATH)
-    if os.path.exists(DOWNLOADED_DIR):
-        shutil.rmtree(DOWNLOADED_DIR)
-    if os.path.exists(FCEXP_FILE_DIR):
-        shutil.rmtree(FCEXP_FILE_DIR)
-    if os.path.exists(HPLC_REPORT_LOCAL_TEST_DIR):
-        shutil.rmtree(HPLC_REPORT_LOCAL_TEST_DIR)
-
-    # Create folder for test hplc reports
-    if not os.path.exists(HPLC_REPORT_LOCAL_TEST_DIR):
-        os.mkdir(HPLC_REPORT_LOCAL_TEST_DIR)
-    # Create folder for downloaded files
-    if not os.path.exists(DOWNLOADED_DIR):
-        os.mkdir(DOWNLOADED_DIR)
-    # Create folder for downloaded files
-    if not os.path.exists(FCEXP_FILE_DIR):
-        os.mkdir(FCEXP_FILE_DIR)
-    # Create folder for labs
-    if not os.path.exists(LAB1_DIR):
-        os.mkdir(LAB1_DIR)
-    if not os.path.exists(LAB2_DIR):
-        os.mkdir(LAB2_DIR)
 
 
 def pytest_sessionfinish(session):
@@ -169,16 +152,6 @@ def pytest_sessionfinish(session):
         os.remove(SECRETS_FILE_PATH)
     if os.path.exists(URL_FILE_PATH):
         os.remove(URL_FILE_PATH)
-    if os.path.exists(DOWNLOADED_DIR):
-        shutil.rmtree(DOWNLOADED_DIR)
-    if os.path.exists(FCEXP_FILE_DIR):
-        shutil.rmtree(FCEXP_FILE_DIR)
-    if os.path.exists(HPLC_REPORT_LOCAL_TEST_DIR):
-        shutil.rmtree(HPLC_REPORT_LOCAL_TEST_DIR)
-    if os.path.exists(LAB1_DIR):
-        shutil.rmtree(LAB1_DIR)
-    if os.path.exists(LAB2_DIR):
-        shutil.rmtree(LAB2_DIR)
 
 
 # ----------------------------------------------------------------------------------
@@ -321,7 +294,7 @@ def initialise_test_triples(initialise_triple_store):
         print(f"SPARQL endpoint: {endpoint}")
 
         # Create SparqlClient for testing
-        sparql_client = PySparqlClient(endpoint, endpoint)
+        sparql_client = RxnOptGoalSparqlClient(endpoint, endpoint)
 
         # Clear triple store before any usage
         sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
@@ -350,39 +323,42 @@ def initialise_blazegraph_and_fileserver():
 @pytest.fixture(scope="module")
 def initialise_blazegraph_fileserver_with_test_triples(
     initialise_blazegraph_and_fileserver,
-    get_service_auth
+    get_service_auth,
 ):
-    bg_url, fs_url = initialise_blazegraph_and_fileserver
+    def _initialise_blazegraph_fileserver_with_test_triples(
+        triples_dir: str = TEST_TRIPLES_DIR
+    ):
+        bg_url, fs_url = initialise_blazegraph_and_fileserver
 
-    # Wait some arbitrary time until container is reachable
-    time.sleep(8)
+        # Wait some arbitrary time until container is reachable
+        time.sleep(8)
 
-    sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
-    fs_user, fs_pwd = get_service_auth(FS_SERVICE)
+        sparql_user, sparql_pwd = get_service_auth(KG_SERVICE)
+        fs_user, fs_pwd = get_service_auth(FS_SERVICE)
 
-    # Create SparqlClient for testing
-    sparql_client = RxnOptGoalSparqlClient(
-        query_endpoint=bg_url,
-        update_endpoint=bg_url,
-        kg_user=sparql_user,
-        kg_password=sparql_pwd,
-        fs_url=fs_url,
-        fs_user=fs_user,
-        fs_pwd=fs_pwd,
-    )
+        # Create SparqlClient for testing
+        sparql_client = RxnOptGoalSparqlClient(
+            query_endpoint=bg_url,
+            update_endpoint=bg_url,
+            kg_user=sparql_user,
+            kg_password=sparql_pwd,
+            fs_url=fs_url,
+            fs_user=fs_user,
+            fs_pwd=fs_pwd,
+        )
 
-    # Clear triple store before any usage
-    sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
+        # Clear triple store before any usage
+        sparql_client.performUpdate("DELETE WHERE {?s ?p ?o.}")
 
-    initialise_triples(sparql_client)
+        initialise_triples(sparql_client, triples_dir)
 
-    # Create DerivationClient for creating derivation instances
-    derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
-        sparql_client.kg_client,
-        DERIVATION_INSTANCE_BASE_URL
-    )
-
-    yield sparql_client, derivation_client
+        # Create DerivationClient for creating derivation instances
+        derivation_client = sparql_client.jpsBaseLib_view.DerivationClient(
+            sparql_client.kg_client,
+            DERIVATION_INSTANCE_BASE_URL
+        )
+        return sparql_client, derivation_client
+    yield _initialise_blazegraph_fileserver_with_test_triples
 
     # Clear logger at the end of the test
     clear_loggers()
@@ -639,6 +615,7 @@ def create_hplc_agent():
         random_agent_iri:bool=False,
         derivation_periodic_timescale:int=None,
         dry_run:bool=True,
+        hplc_method:str=None,
     ):
         hplc_agent_config = config_hplc_agent(env_file)
         hplc_agent = HPLCAgent(
@@ -646,7 +623,7 @@ def create_hplc_agent():
             hplc_digital_twin=hplc_agent_config.HPLC_DIGITAL_TWIN if hplc_digital_twin is None else hplc_digital_twin,
             hplc_report_periodic_timescale=hplc_agent_config.HPLC_REPORT_PERIODIC_TIMESCALE if hplc_report_periodic_timescale is None else hplc_report_periodic_timescale,
             hplc_report_container_dir=hplc_agent_config.HPLC_REPORT_CONTAINER_DIR if hplc_report_container_dir is None else hplc_report_container_dir,
-            current_hplc_method=hplc_agent_config.CURRENT_HPLC_METHOD,
+            current_hplc_method=hplc_agent_config.CURRENT_HPLC_METHOD if not hplc_method else hplc_method,
             hplc_report_file_extension=hplc_agent_config.HPLC_REPORT_FILE_EXTENSION if hplc_report_file_extension is None else hplc_report_file_extension,
             register_agent=hplc_agent_config.REGISTER_AGENT if not register_agent else register_agent,
             agent_iri=hplc_agent_config.ONTOAGENT_SERVICE_IRI if not random_agent_iri else 'http://agent_' + str(uuid.uuid4()),
@@ -708,7 +685,7 @@ def clear_loggers():
             logger.removeHandler(handler)
 
 
-def initialise_triples(sparql_client):
+def initialise_triples(sparql_client, triples_dir: str = TEST_TRIPLES_DIR):
     # Delete all triples before initialising prepared triples
     sparql_client.performUpdate("""DELETE WHERE {?s ?p ?o.}""")
 
@@ -717,7 +694,7 @@ def initialise_triples(sparql_client):
     sparql_client.upload_ontology_tbox(ONTOREACTION)
 
     # Upload the example triples for testing
-    pathlist = Path(TEST_TRIPLES_DIR).glob('*.ttl')
+    pathlist = Path(triples_dir).glob('*.ttl')
     for path in pathlist:
         g = Graph()
         g.parse(str(path), format='turtle')
@@ -1071,5 +1048,33 @@ sample_goal_request = {
     "labs": [
         'https://www.theworldavatar.com/kg/lab_auto/lab1/Laboratory_Dummy',
         'https://www.theworldavatar.com/kg/lab_auto/lab2/Laboratory_Dummy'
+    ]
+}
+
+suzuki_goal_request = {
+    "chem_rxn": "https://www.theworldavatar.com/kg/lab_auto/suzuki/ChemRxn_1",
+    "cycleAllowance": 6,
+    "deadline": str(datetime.fromtimestamp(int(time.time()) + 2 * 60 * 60).isoformat()),
+    "first_goal_clz": "https://www.theworldavatar.com/kg/ontoreaction/Yield",
+    "first_goal_desires": "https://www.theworldavatar.com/kg/ontogoal/desiresGreaterThan",
+    "first_goal_num_val": 99,
+    "first_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/percent",
+    "rxn_opt_goal_plan": "https://www.theworldavatar.com/kg/plans/RxnOpt/rxnoptplan",
+    "labs": [
+        'https://www.theworldavatar.com/kg/lab_auto/lab1/Laboratory_Dummy',
+    ]
+}
+
+suzuki_step2_goal_request = {
+    "chem_rxn": "https://www.theworldavatar.com/kg/lab_auto/suzuki/step2/ChemRxn_1",
+    "cycleAllowance": 6,
+    "deadline": str(datetime.fromtimestamp(int(time.time()) + 2 * 60 * 60).isoformat()),
+    "first_goal_clz": "https://www.theworldavatar.com/kg/ontoreaction/Yield",
+    "first_goal_desires": "https://www.theworldavatar.com/kg/ontogoal/desiresGreaterThan",
+    "first_goal_num_val": 99,
+    "first_goal_unit": "http://www.ontology-of-units-of-measure.org/resource/om-2/percent",
+    "rxn_opt_goal_plan": "https://www.theworldavatar.com/kg/plans/RxnOpt/rxnoptplan",
+    "labs": [
+        'https://www.theworldavatar.com/kg/lab_auto/lab1/Laboratory_Dummy',
     ]
 }
