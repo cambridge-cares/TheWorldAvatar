@@ -1,4 +1,6 @@
 FROM tiangolo/uwsgi-nginx-flask:python3.8 as flask
+ENV UWSGI_CHEAPER 1
+ENV UWSGI_PROCESSES 2
 WORKDIR /app
 #RUN apt-get update && \
 #    apt-get upgrade -y && \
