@@ -31,12 +31,18 @@ public class TBoxGenerationTest {
 	private final String SAMPLE_TBOX_CSV_TEMPLATE_FILE_3 = "sample-tbox-template-input-3.csv";
 	private final String SAMPLE_TBOX_CSV_TEMPLATE_FILE_4 = "sample-tbox-template-input-4.csv";
 	private final String SAMPLE_TBOX_CSV_TEMPLATE_FILE_5 = "sample-tbox-template-input-5.csv";
+	private final String SAMPLE_TBOX_CSV_TEMPLATE_FILE_6 = "sample-tbox-template-input-6.csv";
+	private final String SAMPLE_TBOX_CSV_TEMPLATE_FILE_7 = "sample-tbox-template-input-7.csv";
+	private final String SAMPLE_TBOX_CSV_TEMPLATE_FILE_8 = "sample-tbox-template-input-8.csv";
 
 	private final String REFERENCE_OWL_FILE_1 = "sample-tbox-template-input-1.owl";
 	private final String REFERENCE_OWL_FILE_2 = "sample-tbox-template-input-2.owl";
 	private final String REFERENCE_OWL_FILE_3 = "sample-tbox-template-input-3.owl";
 	private final String REFERENCE_OWL_FILE_4 = "sample-tbox-template-input-4.owl";
 	private final String REFERENCE_OWL_FILE_5 = "sample-tbox-template-input-5.owl";
+	private final String REFERENCE_OWL_FILE_6 = "sample-tbox-template-input-6.owl";
+	private final String REFERENCE_OWL_FILE_7 = "sample-tbox-template-input-7.owl";
+	private final String REFERENCE_OWL_FILE_8 = "sample-tbox-template-input-8.owl";
 
 	private final String FILE_EXTENSION_CSV = ".csv";
 	private final String FILE_EXTENSION_OWL = ".owl";
@@ -133,6 +139,72 @@ public class TBoxGenerationTest {
 		}
 
 		OWLOntology referenceOntology = readReferenceOntology(REFERENCE_OWL_FILE_PATH+REFERENCE_OWL_FILE_5);
+		if (referenceOntology == null) {
+			throw new JPSRuntimeException("The requested reference ontology could not be read from the provided path.");
+		}
+		
+		assertEquals(referenceOntology.getAxiomCount(), generatedOntology.getAxiomCount());
+		assertEquals(referenceOntology.getAxioms(), generatedOntology.getAxioms());		
+	}
+
+	/**
+	 * This is to test if the Domain-Range will not be created when:
+	 * (a) there is a presence of a Quantifier in the Domain-Range relationship
+	 * AND 
+	 * (b) when there IS-A relation between the ancestors of the Domain and Range with the same Object Property  
+	 */
+	@Test
+	public void testSkipDomainRangeCreation(){
+		OWLOntology generatedOntology = generateOntology(SAMPLE_CSV_FILE_PATH+SAMPLE_TBOX_CSV_TEMPLATE_FILE_6);
+		if (generatedOntology == null) {
+			throw new JPSRuntimeException("The requested CSV file could not be converted into an ontology.");
+		}
+
+		OWLOntology referenceOntology = readReferenceOntology(REFERENCE_OWL_FILE_PATH+REFERENCE_OWL_FILE_6);
+		if (referenceOntology == null) {
+			throw new JPSRuntimeException("The requested reference ontology could not be read from the provided path.");
+		}
+		
+		assertEquals(referenceOntology.getAxiomCount(), generatedOntology.getAxiomCount());
+		assertEquals(referenceOntology.getAxioms(), generatedOntology.getAxioms());		
+	}
+
+	/**
+	 * This is to test if the Domain-Range that are Union-ed will not be created when:
+	 * (a) there is a presence of a Quantifier in the Domain-Range relationship
+	 * AND 
+	 * (b) when there IS-A relation between the ancestors of the Domain and Range with the same Object Property  
+	 */
+	@Test
+	public void testSkipDomainRangeCreationUnion(){
+		OWLOntology generatedOntology = generateOntology(SAMPLE_CSV_FILE_PATH+SAMPLE_TBOX_CSV_TEMPLATE_FILE_7);
+		if (generatedOntology == null) {
+			throw new JPSRuntimeException("The requested CSV file could not be converted into an ontology.");
+		}
+
+		OWLOntology referenceOntology = readReferenceOntology(REFERENCE_OWL_FILE_PATH+REFERENCE_OWL_FILE_7);
+		if (referenceOntology == null) {
+			throw new JPSRuntimeException("The requested reference ontology could not be read from the provided path.");
+		}
+		
+		assertEquals(referenceOntology.getAxiomCount(), generatedOntology.getAxiomCount());
+		assertEquals(referenceOntology.getAxioms(), generatedOntology.getAxioms());		
+	}
+
+	/**
+	 * This is to test if the Domain-Range that are Intersect-ed will not be created when:
+	 * (a) there is a presence of a Quantifier in the Domain-Range relationship
+	 * AND 
+	 * (b) when there IS-A relation between the ancestors of the Domain and Range with the same Object Property  
+	 */
+	@Test
+	public void testSkipDomainRangeCreationIntersection(){
+		OWLOntology generatedOntology = generateOntology(SAMPLE_CSV_FILE_PATH+SAMPLE_TBOX_CSV_TEMPLATE_FILE_8);
+		if (generatedOntology == null) {
+			throw new JPSRuntimeException("The requested CSV file could not be converted into an ontology.");
+		}
+
+		OWLOntology referenceOntology = readReferenceOntology(REFERENCE_OWL_FILE_PATH+REFERENCE_OWL_FILE_8);
 		if (referenceOntology == null) {
 			throw new JPSRuntimeException("The requested reference ontology could not be read from the provided path.");
 		}
