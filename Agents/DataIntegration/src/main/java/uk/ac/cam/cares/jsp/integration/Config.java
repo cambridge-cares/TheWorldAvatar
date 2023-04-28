@@ -14,12 +14,11 @@ public class Config  extends ContainerClient {
     public static String dbuser;
     public static String dbpassword;
 
-    private static BlazegraphEndpointConfig blazegraphEndpointConfig;
-    public static String kgurl;
+//    private static BlazegraphEndpointConfig blazegraphEndpointConfig;
+//    public static String kgurl;
     public static String kguser;
     public static String kgpassword;
-    public static String ontop_url;
-    public static int ratio_intersect;
+//    public static String ontop_url;
 
     private static OntopEndpointConfig ontopEndpointConfig;
     public static String DATABASE = System.getenv("DATABASE");
@@ -36,14 +35,14 @@ public class Config  extends ContainerClient {
                 Config.dbuser = postGISEndpointConfig.getUsername();
                 Config.dbpassword = postGISEndpointConfig.getPassword();
 
-                blazegraphEndpointConfig = this.readEndpointConfig("blazegraph",
-                        BlazegraphEndpointConfig.class);
-                Config.kgurl = blazegraphEndpointConfig.getUrl("kb");
-                Config.kguser = blazegraphEndpointConfig.getUsername();
-                Config.kgpassword = blazegraphEndpointConfig.getPassword();
-
-                ontopEndpointConfig = this.readEndpointConfig("ontop", OntopEndpointConfig.class);
-                Config.ontop_url = ontopEndpointConfig.getUrl();
+//                blazegraphEndpointConfig = this.readEndpointConfig("blazegraph",
+//                        BlazegraphEndpointConfig.class);
+//                Config.kgurl = blazegraphEndpointConfig.getUrl("kb");
+//                Config.kguser = blazegraphEndpointConfig.getUsername();
+//                Config.kgpassword = blazegraphEndpointConfig.getPassword();
+//
+//                ontopEndpointConfig = this.readEndpointConfig("ontop", OntopEndpointConfig.class);
+//                Config.ontop_url = ontopEndpointConfig.getUrl();
 
                 initialised = true;
             } catch (Exception e) {

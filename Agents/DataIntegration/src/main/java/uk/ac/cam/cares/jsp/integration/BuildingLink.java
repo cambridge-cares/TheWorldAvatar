@@ -6,19 +6,20 @@ package uk.ac.cam.cares.jsp.integration;
  * @author Jingya yan
  *
  */
+
 import com.intuit.fuzzymatcher.component.MatchService;
-import com.intuit.fuzzymatcher.domain.*;
+import com.intuit.fuzzymatcher.domain.Document;
+import com.intuit.fuzzymatcher.domain.Element;
+import com.intuit.fuzzymatcher.domain.ElementType;
+import com.intuit.fuzzymatcher.domain.Match;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class BuildingLink extends HttpServlet {
         this.geoObject3Ds = geoObject3Ds;
         this.kgObjects = kgObjects;
     }
-    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) {
         new Config().initProperties();
         LOGGER.info("Received POST request to link building");
         LOGGER.info("Received request: " + req);
@@ -41,16 +42,16 @@ public class BuildingLink extends HttpServlet {
         String db3d;
         GeoObject3D object3D = new GeoObject3D();
         String kgurl = req.getParameter("iri");
-        RemoteStoreClient kgClient = new RemoteStoreClient(Config.kgurl,Config.kgurl,Config.kguser,Config.kgpassword);
+        RemoteStoreClient kgClient = new RemoteStoreClient(kgurl,kgurl,Config.kguser,Config.kgpassword);
         KGObjects kgObjects = new KGObjects(kgClient, null, null, null);
 
         try {
+            this.kgObjects =  kgObjects.getAllObjects();
+
             db3d = req.getParameter("db3d");
             PostgresClient conn3 = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
             object3D.setPostGISClient(conn3);
             this.geoObject3Ds = object3D.getObject3D();
-
-            this.kgObjects =  kgObjects.getAllObjects();
         } catch (Exception e) {
             LOGGER.error("Fail to connect database.");
             LOGGER.error(e.getMessage());

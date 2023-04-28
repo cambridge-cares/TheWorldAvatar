@@ -28,12 +28,12 @@ class BuildingLinkTest {
     PostgresClient conn3;
     @BeforeEach
     public void initialise() {
-//        Network network = Network.newNetwork();
-//
-//        postgres.setStartupAttempts(2);
-//        postgres.withNetwork(network);
-//        postgres.withNetworkAliases("postgis");
-//        postgres.start();
+        Network network = Network.newNetwork();
+
+        postgres.setStartupAttempts(2);
+        postgres.withNetwork(network);
+        postgres.withNetworkAliases("postgis");
+        postgres.start();
 
         kgClient = new RemoteStoreClient(queryEndpoint, queryEndpoint);
 
@@ -47,8 +47,10 @@ class BuildingLinkTest {
         HttpServletResponse response = mock(HttpServletResponse.class);
 
         when(request.getParameter("db3d")).thenReturn("sg_ntu");
+        when(request.getParameter("iri")).thenReturn("http://157.245.193.188:48083/blazegraph/namespace/ntuenergy/sparql");
 
         BuildingLink buildingLink = new BuildingLink();
+
         buildingLink.doPut(request, response);
 
     }

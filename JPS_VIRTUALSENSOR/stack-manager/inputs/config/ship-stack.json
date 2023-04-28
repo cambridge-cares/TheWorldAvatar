@@ -8,7 +8,8 @@
 			"dispersion-vis",
 			"aermod-agent",
 			"python-service",
-			"emissions-agent"
+			"emissions-agent",
+			"data-integration"
         ]
     }
 }

@@ -1,0 +1,46 @@
+{
+  "ServiceSpec": {
+    "Name": "data-integration",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "docker.cmclinnovations.com/data-integration:1.0.0",
+        "Env": [
+          "STACK_NAME=${STACK_NAME}",
+          "DATABASE=postgres"
+        ],
+        "Configs": [
+          {
+            "ConfigName": "postgis"
+          },
+          {
+            "ConfigName": "blazegraph"
+          },
+          {
+            "ConfigName": "ontop"
+          }
+        ],
+        "Secrets": [
+          {
+            "SecretName": "postgis_password"
+          },
+          {
+            "SecretName": "geoserver_password"
+          }
+        ],
+        "Mounts": [
+          {
+            "Type": "volume",
+            "Source": "logs",
+            "Target": "/root/.jps"
+          }
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "data-integration": {
+      "url": "http://localhost:8080/DataIntegration/",
+      "externalPath": "/data-integration/"
+    }
+  }
+}

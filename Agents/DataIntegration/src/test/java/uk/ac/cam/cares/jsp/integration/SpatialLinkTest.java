@@ -28,7 +28,7 @@ class SpatialLinkTest {
         postgres.setStartupAttempts(2);
         postgres.withNetwork(network);
         postgres.withNetworkAliases("postgis");
-        postgres.withDatabaseName("sg_ntu");
+        postgres.withDatabaseName("postgres");
         postgres.withUsername("postgres");
         postgres.withPassword("postgis");
         postgres.start();
