@@ -54,13 +54,13 @@ def get_aermod_geojson(aermod_output, srid, height):
 
     eps = 0.001
     
-    # filteredData = data[np.abs(data['ZFLAG'] - float(height)) < eps].reset_index()
-    conc_list = data['AVERAGE CONC']
+    filteredData = data[np.abs(data['ZFLAG'] - float(height)) < eps].reset_index()
+    conc_list = filteredData['AVERAGE CONC']
     conc_matrix = np.empty((len(x_set), len(y_set)))
 
     for i in range(len(conc_list)):
-        x_index = x_set.index(data['X'][i])
-        y_index = y_set.index(data['Y'][i])
+        x_index = x_set.index(filteredData['X'][i])
+        y_index = y_set.index(filteredData['Y'][i])
         conc_matrix[x_index,y_index] = conc_list[i]
 
     contour_level = 30
@@ -79,7 +79,7 @@ def get_aermod_geojson(aermod_output, srid, height):
         cax = plt.axes([0.1, 0.2, 0.1, 1.0])
         plt.colorbar(orientation="vertical", cax=cax)
         cax.tick_params(axis='y', which='major', labelsize=28)
-        plt.title(r"NO$_{2}$ concentrations ($\mu$g/m$^3$) at height = " + height + " meters")
+        # plt.title(r"NO$_{2}$ concentrations ($\mu$g/m$^3$) at height = " + height + " meters")
         plt.savefig("/vis_data/colourbar_height_" + height + ".png", dpi=300, bbox_inches='tight')
     except Exception as e :
         print(e)

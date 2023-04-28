@@ -174,8 +174,8 @@ public class AermodAgent extends DerivationAgent {
         List<Double> receptorHeights = bpi.receptorHeights;
         // Set GeoServer layer names
         List<String> dispLayerNames = new ArrayList <>();
-        for (double ht:receptorHeights) {
-            String dispLayerName = "disp_"+ ht;
+        for (int i = 0; i <receptorHeights.size(); i++) {
+            String dispLayerName = "disp_"+ (i+1);
             dispLayerNames.add(dispLayerName);
         }
         String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent
@@ -183,16 +183,18 @@ public class AermodAgent extends DerivationAgent {
         String elevationLayerName = "elevation_layer";
 
         // Get contour plots as geoJSON objects from PythonService and upload them to PostGIS using GDAL
+        
         GDALClient gdalClient = new GDALClient();
-        for (int i = 0; i < dispLayerNames.size(); i++) {
-            double height = receptorHeights.get(i);
-            JSONObject geoJSON = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid,height);
-            gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, dispLayerNames.get(i), 
-            geoJSON.toString(), new Ogr2OgrOptions(), true);
-        }
         JSONObject geoJSON2 = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_ELEVATION_URL, outFileURL, srid,0.0);
         gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, elevationLayerName, geoJSON2.toString(), new Ogr2OgrOptions(), true);
 
+        for (int i = 0; i < dispLayerNames.size(); i++) {
+            double height = receptorHeights.get(i);
+            JSONObject geoJSON = aermod.getGeoJSON(EnvConfig.PYTHON_SERVICE_URL, outputFileURL, srid,height);
+            String dispLayerName = dispLayerNames.get(i);
+            gdalClient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, dispLayerName, geoJSON.toString(), new Ogr2OgrOptions(), true);
+        }        
+        
         // create geoserver layer based for that
         GeoServerClient geoServerClient = new GeoServerClient();
 

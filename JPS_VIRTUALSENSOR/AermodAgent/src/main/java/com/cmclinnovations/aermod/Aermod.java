@@ -501,8 +501,8 @@ public class Aermod {
             JSONObject dispersionLayer = new JSONObject();
             dispersionLayer.put("id", "dispersion-layer");
             dispersionLayer.put("type", "raster");
-            dispersionLayer.put("name", "Dispersion");
-            dispersionLayer.put("source", "dispersion-source");
+            dispersionLayer.put("name", "Dispersion_"+ "dispersion-source_" + dispersionLayerNames.get(i));
+            dispersionLayer.put("source", "dispersion-source_" + dispersionLayerNames.get(i));
             dispersionLayer.put("source-layer", dispersionLayerNames.get(i));
             dispersionLayer.put("minzoom", 4);
             dispersionLayer.put("layout", new JSONObject().put("visibility", "visible"));
