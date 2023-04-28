@@ -62,5 +62,6 @@
         "id1":null,
         "id2":null,
         "id3":"iri1"
-    }
+    },
+    "AdditionalQuery":[]
 }

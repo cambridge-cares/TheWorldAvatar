@@ -61,6 +61,7 @@ public class DevInstQueryBuilder {
     private static Map<String, Iri> DerivedType_UUID_Map = new HashMap<>();
     private static Map<String, Iri> DerivationWithTimeSeries_UUID_Map = new HashMap<>();
     private static Map<String, String> DerivedToUnitMap;
+    private static List<String> AdditionalQuery;
 
     //TODO Implement iterator(?) for Composition sensor and measurement units
     //TODO This includes changing the tmeplate .json file, add unts, unitsIRI, sensorType, sensorTypeIRI
@@ -101,7 +102,7 @@ public class DevInstQueryBuilder {
         //Get data from descriptor
         parseJSON(desc);
 
-        //Write query & Update DB
+        //Write query & Update DB   
         InstantiateDevices();
     }
 
@@ -197,7 +198,11 @@ public class DevInstQueryBuilder {
 
         }
 
-
+        JSONArray additional = desc.getJSONArray("AdditionalQuery");
+        for(int i = 0; i < additional.length(); i++) {
+            String query = additional.getString(i);
+            AdditionalQuery.add(query);
+        }
 
 
     }
@@ -283,6 +288,17 @@ public class DevInstQueryBuilder {
 
         }
         
+        //Add aditional query
+        for(String query: AdditionalQuery){
+            String[] splits = query.split("\\s+");
+            List<Iri> listIRI = new ArrayList<>();
+            for(int i=0; i < 3; i++){
+                Iri component = iri(splits[i]);
+                listIRI.add(component);
+            }
+            TriplePattern triple = GraphPatterns.tp(listIRI.get(0), listIRI.get(1), listIRI.get(2));
+            modify.insert(triple);
+        }
 
         storeClient.executeUpdate(modify.getQueryString());
     }
