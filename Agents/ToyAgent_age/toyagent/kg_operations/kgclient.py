@@ -9,6 +9,7 @@
 import uuid
 import datetime as dt
 from rdflib import URIRef, Literal
+from SPARQLWrapper import SPARQLWrapper, POST
 
 from py4jps import agentlogging
 from pyderivationagent.kg_operations import PySparqlClient
@@ -35,7 +36,12 @@ class KGClient(PySparqlClient):
         }}
         """
         query = self.remove_unnecessary_whitespace(query)
-        res = self.performQuery(query)
+        #res = self.performQuery(query)
+        sparql = SPARQLWrapper('http://localhost:3846/ontop/ui/sparql')
+        sparql.setMethod(POST)  # POST query, not GET
+        sparql.setQuery(query)
+        res = sparql.query()
+        
         if not res:
             # In case date or price (or both) are missing (i.e. empty SPARQL result), return Nones
             res = dict(zip(['personiri', 'birth'], (None,)*2))

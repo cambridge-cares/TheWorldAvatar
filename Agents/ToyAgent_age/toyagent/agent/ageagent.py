@@ -77,6 +77,8 @@ class AgeAgent(DerivationAgent):
             age_iri = AGE_ID + 'Age_' + str(uuid.uuid4())
 
         g = self.sparql_client.instantiate_age(g, res['personiri'], age_iri, age)
+        
+        print('age has been updated!')
 
         return g
 
