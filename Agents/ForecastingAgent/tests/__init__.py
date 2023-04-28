@@ -1,6 +1,6 @@
 import os
 
-# Set environment variables for testing (i.e. gent deployed as Flask App)
+# Set environment variables for testing (i.e. agent deployed as Flask App)
 # The values provided here need to match information in docker-compose.test file
 # Furthermore, provided endpoints must match KG_ROUTE and DATABASE value in conftest
 

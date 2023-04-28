@@ -728,6 +728,16 @@ public class DerivedQuantityClientTest {
 		// 5. do nothing for the IRI that doesn't have a timestamp accociated with it - no timestamp instances exist for derivedAgentIRI
 		Assert.assertTrue(!testKG.contains(ResourceFactory.createResource(derivedAgentIRI),
 				ResourceFactory.createProperty(namespace + "hasTime")));
+
+		// 6. update again with empty list - the method should do nothing if no IRI is given
+		// sleep for one sec, so that ensure the new timestamp to be used by the updateTimestamps is greater if anything happens at all
+		TimeUnit.SECONDS.sleep(1);
+		devClient.updateTimestamps(new ArrayList<String>());
+		long newtime = testKG.getIndividual(devInstance)
+				.getProperty(ResourceFactory.createProperty(namespace + "hasTime")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "inTimePosition")).getResource()
+				.getProperty(ResourceFactory.createProperty(namespace + "numericPosition")).getLong();
+		Assert.assertEquals(newtime, newtimeDevInstance);
 	}
 
 	@Test
@@ -996,6 +1006,33 @@ public class DerivedQuantityClientTest {
 		for (String input : inputs) {
 			Assert.assertNull(testKG.getIndividual(input));
 		}
+	}
+
+	@Test
+	public void testDropTimestampsOf() {
+		OntModel testKG = mockClient.getKnowledgeBase();
+
+		// add two timestamps and confirm they are there
+		devClient.addTimeInstance(input1);
+		devClient.addTimeInstance(input2);
+		Assert.assertNotNull(testKG.getIndividual(input1));
+		Assert.assertNotNull(testKG.getIndividual(input2));
+
+		// drop one timestamp and confirm it is gone, but the other is still there
+		devClient.dropTimestampsOf(Arrays.asList(input1));
+		Assert.assertNull(testKG.getIndividual(input1));
+		Assert.assertNotNull(testKG.getIndividual(input2));
+
+		// drop a non-existent timestamp and nothing should happen
+		Assert.assertNull(testKG.getIndividual(entity1));
+		devClient.dropTimestampsOf(Arrays.asList(entity1));
+		Assert.assertNull(testKG.getIndividual(entity1));
+
+		// drop a list of timestamps and confirm they are gone
+		devClient.dropTimestampsOf(Arrays.asList(input1, input2, entity1));
+		Assert.assertNull(testKG.getIndividual(input1));
+		Assert.assertNull(testKG.getIndividual(input2));
+		Assert.assertNull(testKG.getIndividual(entity1));
 	}
 
 	@Test

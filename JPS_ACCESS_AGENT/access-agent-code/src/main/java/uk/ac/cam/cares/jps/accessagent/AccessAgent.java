@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.accessagent;
 
+import java.util.List;
+
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
@@ -9,6 +11,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -162,43 +165,48 @@ public class AccessAgent extends JPSAgent{
 	    	return false;
 	    }
 	}
-	
+		
 	 /**
-	 * Perform HTTP GET. This will "get" all triples (from specified graph).
+	 * Perform HTTP GET. This will return the SPARQL endpoints for the targetResourceID
 	 * @param requestParams
 	 * @return
 	 */
-	public JSONObject performGet(JSONObject requestParams) {
+	 public JSONObject performGet(JSONObject requestParams) {
 		
 		String sparqlquery = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_QUERY);
-		String sparqlupdate = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);
-		String accept = MiscUtil.optNullKey(requestParams, JPSConstants.HEADERS);		
+		String sparqlupdate = MiscUtil.optNullKey(requestParams, JPSConstants.QUERY_SPARQL_UPDATE);		
 	    String targetIRI = requestParams.getString(JPSConstants.TARGETIRI);
-	    String graphIRI = MiscUtil.optNullKey(requestParams, JPSConstants.TARGETGRAPH);
-	    	    
+	   
 	    if(sparqlquery!=null || sparqlupdate!=null) {
 	    	throw new JPSRuntimeException("parameters " + JPSConstants.QUERY_SPARQL_QUERY + " and " 
 	    									+ JPSConstants.QUERY_SPARQL_UPDATE + " are not allowed");
 	    }
 	    
 		try {
-			logInputParams(requestParams, sparqlquery, false);
+			logInputParams(requestParams, "", false);
+						
+			List<String> endpoints = getEndpointsFromStoreRouter(targetIRI);
+			String queryIRI = endpoints.get(StoreRouter.QUERY_INDEX);
+			String updateIRI = endpoints.get(StoreRouter.UPDATE_INDEX);
 			
-			TripleStoreClientInterface kbClient = getStoreClient(targetIRI, true, false);
-			
+			if(queryIRI==null && updateIRI==null){
+				LOGGER.error("Endpoint could not be retrieved for the following resource ID:"+targetIRI);
+			}
+					
 			JSONObject JSONresult = new JSONObject();
-			String result = null;
+			JSONresult.put(JPSConstants.QUERY_ENDPOINT, queryIRI);
+			JSONresult.put(JPSConstants.UPDATE_ENDPOINT, updateIRI);
 			
-			//get
-			result = kbClient.get(graphIRI, accept);
-			JSONresult.put(JPSConstants.RESULT_KEY,result);
-		
 			return JSONresult;
 		
 		} catch (RuntimeException e) {
 			logInputParams(requestParams, sparqlquery, true);
 			throw new JPSRuntimeException(e);
 		}
+	}
+	 
+	public List<String> getEndpointsFromStoreRouter(String targetIRI){
+		return StoreRouter.getEndpoints(targetIRI);
 	}
 	
 	/**

@@ -9,9 +9,9 @@
 import os
 import warnings
 
-from py4jps import agentlogging
 
 # Initialise logger instance (ensure consistent logger level with `entrypoint.py`)
+from py4jps import agentlogging
 logger = agentlogging.get_logger('prod')
 
 
@@ -21,7 +21,7 @@ def retrieve_settings():
     """
 
     # Define global scope for global variables
-    global DATABASE, NAMESPACE
+    global DATABASE, NAMESPACE, FLOODWARNINGS_TABLE, POPULATION_TABLE
 
     # Retrieve PostgreSQL/PostGIS database name
     DATABASE = os.getenv('DATABASE')
@@ -43,6 +43,24 @@ def retrieve_settings():
     if NAMESPACE == '':
         logger.error('No "NAMESPACE" value has been provided in environment variables.')
         raise ValueError('No "NAMESPACE" value has been provided in environment variables.')
+    
+    # Retrieve PostGIS table name with flood warnings
+    FLOODWARNINGS_TABLE = os.getenv('FLOODWARNINGS_TABLE')
+    if FLOODWARNINGS_TABLE is None:
+        logger.error('"FLOODWARNINGS_TABLE" name is missing in environment variables.')
+        raise ValueError('"FLOODWARNINGS_TABLE" name is missing in environment variables.')
+    if FLOODWARNINGS_TABLE == '':
+        logger.error('No "FLOODWARNINGS_TABLE" value has been provided in environment variables.')
+        raise ValueError('No "FLOODWARNINGS_TABLE" value has been provided in environment variables.')
+    
+    # Retrieve PostGIS table name with population density raster data
+    POPULATION_TABLE = os.getenv('POPULATION_TABLE')
+    if POPULATION_TABLE is None:
+        logger.error('"POPULATION_TABLE" name is missing in environment variables.')
+        raise ValueError('"POPULATION_TABLE" name is missing in environment variables.')
+    if POPULATION_TABLE == '':
+        logger.error('No "POPULATION_TABLE" value has been provided in environment variables.')
+        raise ValueError('No "POPULATION_TABLE" value has been provided in environment variables.')
 
 
 # Run when module is imported

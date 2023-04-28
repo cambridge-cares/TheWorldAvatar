@@ -8,6 +8,7 @@
 
 import json
 import uuid
+import time
 import urllib.parse
 import requests
 
@@ -28,11 +29,12 @@ class KGClient(PySparqlClient):
     #
     # EXTERNAL SPARQL QUERIES
     #
-    def get_nearby_postcodes(self, postcode_str:str) -> str:
+    def get_nearby_postcodes(self, postcode_str:str,
+                             max_attempts=3, t_wait=30) -> str:
         # Retrieve postcodes within same Super Output Area (SOA, middle layer) as given postcode
         # including their easting and northing coordinates    
         query = f"""
-            SELECT ?pc ?easting ?northing
+            SELECT distinct ?pc ?easting ?northing
             WHERE {{
                 ?s <{RDF_TYPE}> <{ONS_POSTCODE}> ; 
                 <{RDFS_LABEL}> \"{postcode_str}\" ; 
@@ -47,14 +49,27 @@ class KGClient(PySparqlClient):
         query = self.remove_unnecessary_whitespace(query)
         query = urllib.parse.quote(query)
         # Perform GET request
+        # Occasional connection/response issues have been observed with the ONS API
+        # ERROR - HTTPConnectionPool(host='statistics.data.gov.uk', port=80): Max retries exceeded
+        #   (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x7f5d38710a60>: Failed to establish a new connection: [Errno 111] Connection refused'))
+        # --> wait and retry in case this error occurs
+        retrieved = False
         url = ONS_ENDPOINT + '.json?query=' + query
-        res = requests.get(url)
-        if res.status_code != 200:
-            logger.error('Error retrieving data from ONS API.')
-            raise APIException('Error retrieving data from ONS API.')
+        while not retrieved:
+            res = requests.get(url)
+            if res.status_code == 200:
+                # Extract and unwrap results
+                data = json.loads(res.text)    
+                retrieved = True
+            else:
+                logger.error('Error retrieving data from ONS API. Status code: {}'.format(res.status_code))
+                max_attempts -= 1
+                logger.info('Retrying in {} seconds. {} attempts remaining.'.format(t_wait, max_attempts))
+                time.sleep(t_wait)
+                if max_attempts == 0:
+                    logger.error('Error retrieving data from ONS API.')
+                    raise APIException('Error retrieving data from ONS API.')
 
-        # Extract and unwrap results
-        data = json.loads(res.text)
         return data
 
 
@@ -82,7 +97,7 @@ class KGClient(PySparqlClient):
         # Retrieve string(s)/label(s) of postcode IRI(s)
         values_statement = self.format_iris_values_statement(postcode_iris)
         query = f"""
-            SELECT ?pc
+            SELECT distinct ?pc
             WHERE {{    
             VALUES ?pc_iri {{ {values_statement} }}    
             ?pc_iri <{RDF_TYPE}> <{OBE_POSTALCODE}> ; 
@@ -135,6 +150,7 @@ class KGClient(PySparqlClient):
 
     def get_ppi_iri(self, postcode_iri:str) -> str:
         # Retrieve IRI of Property Price Index for postcode
+        # Local authority is most granular geospatial resolution for UK HPI
         query = f"""
             SELECT DISTINCT ?ppi_iri
             WHERE {{        
@@ -202,8 +218,28 @@ class KGClient(PySparqlClient):
             <{avg_price_iri}> <{OBE_REPRESENTATIVE_FOR}> <{postcode_iri}> . 
             <{avg_price_iri}> <{OM_HAS_VALUE}> <{measure_iri}> . 
             <{measure_iri}> <{RDF_TYPE}> <{OM_MEASURE}> . 
-            <{measure_iri}> <{OM_NUM_VALUE}> \"{avg_price}\"^^<{XSD_INTEGER}> . 
+            <{measure_iri}> <{OM_NUM_VALUE}> \"{avg_price}\"^^<{XSD_FLOAT}> . 
             <{measure_iri}> <{OM_HAS_UNIT}> <{UOM_GBP_M2}> . 
+        """
+        return self.remove_unnecessary_whitespace(query)
+    
+
+    def instantiate_unavailable_average_price(self, postcode_iri, avg_price_iri) -> str:
+        # Returns INSERT DATA query to instantiate/update non-computable average
+        # square metre price (due to missing previous transactions)
+
+        # Specify comment to instantiate
+        comment = 'Average square metre price not computable'
+
+        # Create unique IRIs for new instances
+        measure_iri = KB + 'Measure_' + str(uuid.uuid4())
+        
+        query = f"""
+            <{avg_price_iri}> <{RDF_TYPE}> <{OBE_AVERAGE_SM_PRICE}> . 
+            <{avg_price_iri}> <{OBE_REPRESENTATIVE_FOR}> <{postcode_iri}> . 
+            <{avg_price_iri}> <{RDFS_COMMENT}> \"{comment}\"^^<{XSD_STRING}> . 
+            <{avg_price_iri}> <{OM_HAS_VALUE}> <{measure_iri}> . 
+            <{measure_iri}> <{RDF_TYPE}> <{OM_MEASURE}> . 
         """
         return self.remove_unnecessary_whitespace(query)
 
