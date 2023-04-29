@@ -27,10 +27,9 @@ import org.apache.logging.log4j.Logger;
 @WebServlet(urlPatterns = {"/retrieve"})
 public class DevInstAgentLauncher extends JPSAgent {
 	
-	public static final String KEY_AGENTPROPERTIES = "agentProperties";
-	public static final String KEY_APIPROPERTIES = "apiProperties";
-	public static final String KEY_CLIENTPROPERTIES = "clientProperties";
-	public static final String KEY_LAUNCHERPROPERTIES = "launcherProperties";
+	public static final String KEY_MICROCONTROLLER = "MicroController";
+	public static final String KEY_IRIMAPPER = "IRIMapper";
+	public static final String KEY_ADDITRIONALQUERY = "AdditionalQuery";
 	
 	
 	 String agentProperties;
@@ -63,11 +62,11 @@ public class DevInstAgentLauncher extends JPSAgent {
     	JSONObject jsonMessage = new JSONObject();
       if (validateInput(requestParams)) {
         	LOGGER.info("Passing request to RFID Update Agent..");
-            String agentProperties = System.getenv(requestParams.getString(KEY_AGENTPROPERTIES));
-            String clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTIES));
-            String apiProperties = System.getenv(requestParams.getString(KEY_APIPROPERTIES));
-            String launcherProperties = System.getenv(requestParams.getString(KEY_LAUNCHERPROPERTIES));
-            String[] args = new String[] {agentProperties,clientProperties,apiProperties, launcherProperties};
+            JSONObject MicroController = requestParams.getJSONObject(KEY_MICROCONTROLLER);
+            JSONObject IRIMapper = requestParams.getJSONObject(KEY_IRIMAPPER);
+            JSONObject AdditionalQuery = requestParams.getJSONObject(KEY_ADDITRIONALQUERY);
+
+            JSONObject[] args = new JSONObject[] {MicroController,IRIMapper,AdditionalQuery};
             
 				jsonMessage = initializeAgent(args);
 			
@@ -88,42 +87,18 @@ public class DevInstAgentLauncher extends JPSAgent {
       String apiProperties;
       String clientProperties;
       String launcherProperties;
+      //TODO Validate keys on every level of the request
       if (requestParams.isEmpty()) {
     	  validate = false;
       }
       else {
- 		 validate = requestParams.has(KEY_AGENTPROPERTIES);
+ 		 validate = requestParams.has(KEY_MICROCONTROLLER);
  		 if (validate == true) {
- 		 validate = requestParams.has(KEY_CLIENTPROPERTIES);
+ 		 validate = requestParams.has(KEY_IRIMAPPER);
  		 }
  		 if (validate == true) {
- 		 validate = requestParams.has(KEY_APIPROPERTIES);
+ 		 validate = requestParams.has(KEY_ADDITRIONALQUERY);
  		 }
- 		if (validate == true) {
- 	 		 validate = requestParams.has(KEY_LAUNCHERPROPERTIES);
- 	 		 }
- 		 if (validate == true) {
- 		 agentProperties = (requestParams.getString(KEY_AGENTPROPERTIES));
- 		 clientProperties =  (requestParams.getString(KEY_CLIENTPROPERTIES));
- 		 apiProperties = (requestParams.getString(KEY_APIPROPERTIES));
- 		 launcherProperties = (requestParams.getString(KEY_LAUNCHERPROPERTIES));
- 		 
- 		if (System.getenv(agentProperties) == null) {
- 			validate = false;
- 		 
- 		 }
- 		if (System.getenv(apiProperties) == null) {
- 			validate = false;
- 		 
- 		 }
- 		if (System.getenv(clientProperties) == null) {
- 			validate = false;
- 		
- 		 }
- 		if (System.getenv(launcherProperties) == null) {
- 			validate = false;
- 		}
- 		}
  		}
 	return validate;
       
@@ -138,7 +113,7 @@ public class DevInstAgentLauncher extends JPSAgent {
      * @throws FileNotFoundException 
      */
     
-    public static JSONObject initializeAgent(String[] args) {
+    public static JSONObject initializeAgent(JSONObject[] args) {
 
         // Ensure that there are three properties files
         if (args.length != 4) {
