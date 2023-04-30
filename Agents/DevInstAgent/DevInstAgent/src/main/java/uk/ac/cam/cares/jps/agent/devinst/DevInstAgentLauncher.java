@@ -119,53 +119,10 @@ public class DevInstAgentLauncher extends JPSAgent {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
         }
-        LOGGER.debug("Launcher called with the following files: " + String.join(" ", args));
 
         LOGGER.info("Input agent object initialized.");
         JSONObject jsonMessage = new JSONObject();
-
-        // Create and set the time series client
-        TimeSeriesClient<OffsetDateTime> tsClient;
-        try {
-            tsClient = new TimeSeriesClient<>(OffsetDateTime.class, args[1]);
-            agent.setTsClient(tsClient);
-        } catch (IOException | JPSRuntimeException e) {
-            LOGGER.error(TSCLIENT_ERROR_MSG, e);
-            throw new JPSRuntimeException(TSCLIENT_ERROR_MSG, e);
-        }
-        LOGGER.info("Time series client object initialized.");
-        jsonMessage.accumulate("Result", "Time series client object initialized.");
-        // Initialize time series'
-        try {
-            agent.initializeTimeSeriesIfNotExist();
-        }
-        catch (JPSRuntimeException e) {
-            LOGGER.error(INITIALIZE_ERROR_MSG,e);
-            throw new JPSRuntimeException(INITIALIZE_ERROR_MSG, e);
-        }
         
-        File file = new File(args[3]);
-        if (!file.exists()) {
-            throw new JPSRuntimeException("No properties file found at specified filepath: " + args[3]);
-        }
-        // Read username and password for ThingsBoard API from properties file
-        // Try-with-resource to ensure closure of input stream
-        String keys = null;
-        try (InputStream input = new FileInputStream(file)) {
-
-            // Load properties file from specified path
-            Properties prop = new Properties();
-            prop.load(input);
-            if (prop.containsKey("keys")) {
-            	 keys = prop.getProperty("keys");
-            } else {
-                throw new IOException("Properties file is missing \"keys=<keys>\"");
-            }
-        } catch (IOException e) {
-			e.printStackTrace();
-		}
-        
-        // If readings are not empty there is new data
 
         
 		return jsonMessage;
