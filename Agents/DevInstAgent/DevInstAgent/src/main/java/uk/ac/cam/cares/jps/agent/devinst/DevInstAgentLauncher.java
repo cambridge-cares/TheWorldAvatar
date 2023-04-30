@@ -62,13 +62,8 @@ public class DevInstAgentLauncher extends JPSAgent {
     	JSONObject jsonMessage = new JSONObject();
       if (validateInput(requestParams)) {
         	LOGGER.info("Passing request to RFID Update Agent..");
-            JSONObject MicroController = requestParams.getJSONObject(KEY_MICROCONTROLLER);
-            JSONObject IRIMapper = requestParams.getJSONObject(KEY_IRIMAPPER);
-            JSONObject AdditionalQuery = requestParams.getJSONObject(KEY_ADDITRIONALQUERY);
-
-            JSONObject[] args = new JSONObject[] {MicroController,IRIMapper,AdditionalQuery};
             
-				jsonMessage = initializeAgent(args);
+            jsonMessage = initializeAgent(requestParams);
 			
             jsonMessage.accumulate("Result", "Timeseries Data has been updated.");
             requestParams = jsonMessage;
@@ -113,26 +108,21 @@ public class DevInstAgentLauncher extends JPSAgent {
      * @throws FileNotFoundException 
      */
     
-    public static JSONObject initializeAgent(JSONObject[] args) {
+    public static JSONObject initializeAgent(JSONObject args) {
+
+        JSONObject MicroController = args.getJSONObject(KEY_MICROCONTROLLER);
+        JSONObject IRIMapper = args.getJSONObject(KEY_IRIMAPPER);
+        JSONObject AdditionalQuery = args.getJSONObject(KEY_ADDITRIONALQUERY);
 
         // Ensure that there are three properties files
-        if (args.length != 4) {
+        if (args.keySet().size() != 3) {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
         }
         LOGGER.debug("Launcher called with the following files: " + String.join(" ", args));
 
-        // Create the agent
-        DevInstAgent agent;
-        try {
-            agent = new DevInstAgent(args[0]);
-        } catch (IOException e) {
-            LOGGER.error(AGENT_ERROR_MSG, e);
-            throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
-        }
         LOGGER.info("Input agent object initialized.");
         JSONObject jsonMessage = new JSONObject();
-        jsonMessage.accumulate("Result", "Input agent object initialized.");
 
         // Create and set the time series client
         TimeSeriesClient<OffsetDateTime> tsClient;
