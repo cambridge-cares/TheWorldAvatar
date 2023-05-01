@@ -105,6 +105,9 @@ class IRILookup:
         return smiles_string
 
     def get_mention(self, question):
+        question = question.replace("lennard jones well depth", "molecular weight")
+        question = question.replace("chemical species", "species")
+        question = question.replace("more than", "over")
         question = self.nlp_tool.filter_stop_words_for_nel(question)
         if self.enable_class_ner:
             if "find" not in question:

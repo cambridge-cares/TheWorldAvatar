@@ -21,8 +21,9 @@ class LdfRequest:
             return set()
         
         # send the HTTP GET request
-        response = requests.get(self.base_url, params=self.params)
 
+        response = requests.get(self.base_url, params=self.params)
+        print("full request", response.request.url)
         # print the response content
         data = json.loads(response.content)
 

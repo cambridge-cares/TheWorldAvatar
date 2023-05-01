@@ -37,7 +37,7 @@ class QAEngineNumerical:
         # question = question.replace("(", "").replace(")", "")
         stop_words = ["find", "all", "species", "what", "is", "the",
                       "show", "give", "that", "can", "be", "which",
-                      "list", "are", "shaped", "shape", "created"]
+                      "list", "are", "shaped", "shape", "created", "give", "type", "types"]
         stop_words_units = ["g/mol", "dalton", "degrees", "degree", "celsius", "g"]
         stop_words += stop_words_units
         question_tokens = [token for token in question.split(" ") if token.lower() not in stop_words]
@@ -308,8 +308,20 @@ class QAEngineNumerical:
                     triple_exist = self.subgraph_extractor_numerical.check_triple_existence(triple_str)
                     # triple_exist = self.subgraph_extractor.check_triple_existence(triple_str)
                     if triple_exist:
-                        predicted_tails.append(tail_label)
-                        predicted_values_list.append(self.value_lookup(tail_label))
+                        if tail_label in self.value_dictionary:
+                            value = float(self.value_dictionary[tail_label])
+                            required_value = self.input_dict.numerical_value
+                            if self.input_dict.numerical_operator == "larger":
+                                if value > required_value:
+                                    predicted_tails.append(value)
+                            if self.input_dict.numerical_operator == "smaller":
+                                if value < required_value:
+                                    predicted_tails.append(value)
+
+                        else:
+                            predicted_tails.append(tail_label)
+
+                        # predicted_values_list.append(self.value_lookup(tail_label))
                         target_list.append(head_label)
                         score_list.append(1)
 
@@ -431,7 +443,6 @@ class QAEngineNumerical:
         print("========== input dict question =======")
         print("question before filtering", self.input_dict.question)
         mention = self.nel.get_mention(self.input_dict.question)
-        # print(mention)
         self.input_dict.mention = mention
         self.input_dict.question = self.text_filtering(self.input_dict.question)
         print(self.input_dict.question)

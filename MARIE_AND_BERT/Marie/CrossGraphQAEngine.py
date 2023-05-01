@@ -147,9 +147,9 @@ class CrossGraphQAEngine:
     def prepare_for_visualization(self, answer_list, target_list):
         result = []
         for ans, tar in zip(answer_list, target_list):
-            row = {"node": tar, "value": ans}
-            result.append(row)
-
+            if "EMPTY" not in tar:
+                row = {"node": tar, "value": ans}
+                result.append(row)
         return result
 
     def re_rank_answers(self, domain_list, score_list, answer_list, target_list):
@@ -197,31 +197,31 @@ class CrossGraphQAEngine:
 
         return predicted_domain_labels, pred_domain_list
 
-    def run(self, original_question, disable_alignment: bool = False, heads={}):
+    def run(self, input_question, disable_alignment: bool = False, heads={}):
         """
         The main interface for the integrated QA engine
         :param disable_alignment: whether run for test purpose, if true, score alignment will be disabled
-        :param question: question in string, with head entity removed
+        :param input_question: question in string, with head entity removed
         :param heads: IRI of the head entity before cross-ontology translation, always in the form of CID (pubchem ID)
         :return: the re-ranked list of answer labels according to the adjusted scores
         """
         # lets get the domain list in advance first, then selectively call the engines to shorten the response time
-        question_for_domain = self.cross_graph_filter.filter_before_cross_graph(original_question)
+        question_for_domain = self.cross_graph_filter.filter_before_cross_graph(input_question)
         score_list = {}
         label_list = {}
         domain_list = []
         target_list = {}
         got_numerical_values = False
         numerical_domain = None
-        original_question = original_question.replace("'s", " of ")
-        if "mop" not in original_question.lower():
-            tokens = [t for t in original_question.strip().split(" ") if t.lower() not in self.global_stop_words]
-            original_question = " ".join(tokens)
+        input_question = input_question.replace("'s", " of ")
+        if "mop" not in input_question.lower():
+            tokens = [t for t in input_question.strip().split(" ") if t.lower() not in self.global_stop_words]
+            input_question = " ".join(tokens)
         print("###############################################################")
         domain_list_for_question, score_factors = self.get_domain_list(question_for_domain)
         print("predicted domain for this question:", domain_list_for_question)
         print("score factors", score_factors)
-        print("given question", original_question)
+        print("given question", input_question)
         print("###############################################################")
 
         def call_domain(domain, index, head, numerical_domain_list, numerical_label_list):
@@ -235,20 +235,20 @@ class CrossGraphQAEngine:
                         self.marie_logger.info(f"======================== USING ENGINE {domain}============================")
 
                         if domain == "ontoagent":
-                            results = engine.run(question=original_question)
+                            results = engine.run(question=input_question)
                             labels, scores, targets = results
                             print("=============== RESULT FROM AGENT ============")
                             print(results)
 
                         elif domain in numerical_domain_list:
-                            results = engine.run(question=original_question)
+                            results = engine.run(question=input_question)
                             labels, scores, targets, numerical_list, question_type = results
                             # if question_type == "numerical":
                             if question_type in numerical_label_list and (len(labels) > 0):
                                 got_numerical_values = True
                                 numerical_domain = domain
                         else:
-                            results = engine.run(question=original_question)
+                            results = engine.run(question=input_question)
                             labels, scores, targets = results
                         length_diff = 5 - len(labels)
                         scores = scores + [-999] * length_diff
@@ -358,7 +358,7 @@ if __name__ == '__main__':
         question = question.strip()
         START_TIME = time.time()
         print("==============================================================================")
-        rst = my_qa_engine.run(original_question=question)
+        rst = my_qa_engine.run(input_question=question)
         print(rst)
         print(f"TIME USED: {time.time() - START_TIME}")
         print("==============================================================================")

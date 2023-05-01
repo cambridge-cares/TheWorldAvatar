@@ -16,7 +16,7 @@ app = Flask(__name__)
 def answer_question(question):
     logger.info("=======================================================================================")
     logger.info(f" The server received a question: {question}")
-    answer = my_qa_engine.run(original_question=str(question).strip(), disable_alignment=False,
+    answer = my_qa_engine.run(input_question=str(question).strip(), disable_alignment=False,
                               heads={})
     logger.info(f" The server returned answers: {json.dumps(answer)}")
     logger.info("=======================================================================================")
@@ -107,4 +107,4 @@ def search():
 if __name__ == "__main__":
     # Only for debugging while developing
     # app.run(host='0.0.0.0', debug=False, port=8080, threaded=False, processes=1)
-    app.run(host='0.0.0.0', debug=False, port=5003)
+    app.run(host='0.0.0.0', debug=True, port=5003)

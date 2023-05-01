@@ -45,6 +45,10 @@ def remove_mention(q_with_mention, mention):
 
     for flag_word in flag_words:
         if flag_word in q_with_mention.lower():
+            print('-----------')
+            print("DEBUG for mention:", mention)
+            print("DEBUG for question:", q_with_mention)
+            print('-----------')
             q_with_mention = q_with_mention.lower().replace(mention.lower(), "")
             return q_with_mention
 
@@ -64,7 +68,7 @@ class CrossGraphFilter:
         self.stop_words = ["whats", "what", "is", "are", "the", "more", "less",
                            "than", "species", "find", "all", "over",
                            "under", "of", "show", "me",
-                           "chemical species", "having", "that", "can", "be", "?"
+                           "chemical species", "having", "that", "can", "be", "?", "give", "created"
 
                            ]
         self.global_stop_words = ["g/mol", "dalton", "celsius", "show", "give", "find", "all", "the", "species"]

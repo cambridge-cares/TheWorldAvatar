@@ -12,7 +12,7 @@ def numerical_value_extractor(question):
 
    #  numerical_values = re.findall(r"[ ][-]*\d+[\.]*\d+", question)
     # numerical_values = re.findall(r"[ ][-]*\d+[\.]*\d*", question)
-    numerical_values = re.findall(r"[ ]*\d+[\.]*\d*", question)
+    numerical_values = re.findall(r"[ ]\d+[\.]*\d*", question)
     if len(numerical_values) > 0:
         return float(numerical_values[0]), numerical_values[0].strip()
     else:
