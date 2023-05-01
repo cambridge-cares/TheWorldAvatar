@@ -35,10 +35,12 @@ class QAEngineNumerical:
 
     def text_filtering(self, question):
         # question = question.replace("(", "").replace(")", "")
-        stop_words = ["find", "all", "species", "what", "is", "the", "show", "give", "that", "can", "be", "which", "list", "are", "shaped", "shape"]
+        stop_words = ["find", "all", "species", "what", "is", "the",
+                      "show", "give", "that", "can", "be", "which",
+                      "list", "are", "shaped", "shape", "created"]
         stop_words_units = ["g/mol", "dalton", "degrees", "degree", "celsius", "g"]
         stop_words += stop_words_units
-        question_tokens = [token for token in question.split(" ") if token not in stop_words]
+        question_tokens = [token for token in question.split(" ") if token.lower() not in stop_words]
         question = " ".join(question_tokens)
         return question
 
