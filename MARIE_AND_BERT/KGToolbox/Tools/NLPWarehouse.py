@@ -4,6 +4,12 @@ COMPARISON_OPERATOR_LABEL_DICT = {
     "about": ["about", "close to", "near", "around", "similar to"]
 }
 
+COMPARISON_OPERATOR_LABEL_LIST = ["under", "smaller", "beneath", "less than", "smaller than",
+                                  "above", "larger", "over", "more than", "larger than", "bigger than",
+                                  "about", "close to", "near", "around", "similar to"]
+
+
+
 ONTOSPECIE_NEW_ATTRIBUTE_LABEL_DICT = \
     {"hasLogS": ["logs", "log s"],
      "hasLogP": ["logp", "octanol-water partition coefficient"],

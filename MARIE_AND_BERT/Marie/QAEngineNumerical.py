@@ -267,6 +267,7 @@ class QAEngineNumerical:
         return labels_top_k, scores_top_k, targets_top_k, numerical_top_k, "multi-target"
 
     def answer_numerical_question(self):
+        print("============================ NUMERICAL QUESTION ==================================")
         numerical_operator = self.input_dict.numerical_operator
         numerical_string = self.input_dict.numerical_string
         numerical_value = self.input_dict.numerical_value
@@ -276,7 +277,7 @@ class QAEngineNumerical:
         filtered_heads, filtered_numerical_values = self.filter_heads_by_numerical()
         # filtered_heads_labels = [self.idx2entity[h] for h in filtered_heads]
 
-        if len(filtered_heads) == 0: return [], [], [], [], "numerical"
+        if len(filtered_heads) == 0: return [], [], [], [], "normal"
         prediction_batch, tails, split_indices, filtered_heads_tensor = self.prepare_prediction_batch_numerical(
             heads=filtered_heads,
             question_embedding=single_question_embedding)
@@ -321,6 +322,9 @@ class QAEngineNumerical:
         if self.test:
             return numerical_operator, predicted_tails, predicted_tails_filtered, predicted_values_list, pred_p_label
         else:
+            print("=========== NUMERICAL RESULTS ===========")
+            print(predicted_tails, score_list, target_list, predicted_values_list, "numerical")
+            print("=========================================")
             return predicted_tails, score_list, target_list, predicted_values_list, "numerical"
 
     def answer_normal_question(self):
@@ -423,6 +427,7 @@ class QAEngineNumerical:
         # TODO: 1. put the mechanism for question answering sequence on top
         # TODO: 2. wrap question answer mechanism into functions
         print("========== input dict question =======")
+        print("question before filtering", self.input_dict.question)
         mention = self.nel.get_mention(self.input_dict.question)
         # print(mention)
         self.input_dict.mention = mention

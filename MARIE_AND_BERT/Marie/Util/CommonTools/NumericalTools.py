@@ -7,9 +7,14 @@ def numerical_value_extractor(question):
     :param question: question in text
     :return: numerical value (float) extracted from the question
     """
-    numerical_values = re.findall(r"[ ][-]*\d+[\.]*\d+", question)
+    if "-" in question:
+        return None, ""
+
+   #  numerical_values = re.findall(r"[ ][-]*\d+[\.]*\d+", question)
+    # numerical_values = re.findall(r"[ ][-]*\d+[\.]*\d*", question)
+    numerical_values = re.findall(r"[ ]*\d+[\.]*\d*", question)
     if len(numerical_values) > 0:
-        return float(numerical_values[0]), numerical_values[0]
+        return float(numerical_values[0]), numerical_values[0].strip()
     else:
         return None, ""
 
@@ -62,9 +67,17 @@ def qualifier_value_extractor(question):
 
 
 if __name__ == "__main__":
-    rst = qualifier_value_extractor("what is the heat capacity of benzene at room temperature and 100 pa")
-    print(rst)
-    rst = qualifier_value_extractor("what is the heat capacity of benzene at 123 degrees and 100 bar")
-    print(rst)
-    rst = qualifier_value_extractor("what is the heat capacity of benzene and 1 atm")
-    print(rst)
+
+    question = "Find all species with boiling point above 0 celsius"
+    value, value_str = numerical_value_extractor(question)
+    if value is not None:
+        question = question.replace(value_str, "")
+    print(question)
+
+
+    # rst = qualifier_value_extractor("what is the heat capacity of benzene at room temperature and 100 pa")
+    # print(rst)
+    # rst = qualifier_value_extractor("what is the heat capacity of benzene at 123 degrees and 100 bar")
+    # print(rst)
+    # rst = qualifier_value_extractor("what is the heat capacity of benzene and 1 atm")
+    # print(rst)
