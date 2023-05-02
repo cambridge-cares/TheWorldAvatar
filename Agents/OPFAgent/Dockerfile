@@ -22,7 +22,7 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-COPY --from=builder /root/opf-agent/target/opf-agent##1.0.0-SNAPSHOT.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/opf-agent/target/opf-agent##1.0.0.war $CATALINA_HOME/webapps/
 
 # Install Python
 RUN apt-get update
