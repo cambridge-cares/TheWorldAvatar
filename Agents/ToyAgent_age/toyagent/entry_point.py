@@ -48,4 +48,4 @@ def create_app():
     # Expose flask app of agent
     return agent.app
 
-create_app()
+#create_app()
