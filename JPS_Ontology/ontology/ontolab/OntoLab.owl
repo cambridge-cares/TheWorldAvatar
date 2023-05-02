@@ -9,7 +9,7 @@
      xmlns:ontolab="https://www.theworldavatar.com/kg/ontolab/"
      xmlns:dc="http://purl.org/dc/elements/1.1/">
     <owl:Ontology rdf:about="https://www.theworldavatar.com/kg/ontolab/">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">26 April 2023</dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#string">02 May 2023</dc:date>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">OntoLab is an ontology developed for expressing facilities in a research lab.</rdfs:comment>
         <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.9</owl:versionInfo>
         <gitCommitHash rdf:datatype="http://www.w3.org/2001/XMLSchema#string">c0599beca8df55873a1ab061dee64e52c510c6a0</gitCommitHash>
@@ -358,6 +358,20 @@
     
 
 
+    <!-- https://w3id.org/bot#Element -->
+
+
+    <owl:Class rdf:about="https://w3id.org/bot#Element"/>
+    
+
+
+    <!-- https://www.theworldavatar.com/kg/ontobim/Facility -->
+
+
+    <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontobim/Facility"/>
+    
+
+
     <!-- https://www.theworldavatar.com/kg/ontolab/ChemicalAmount -->
 
 
@@ -373,6 +387,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/ChemicalContainer">
+        <rdfs:subClassOf rdf:resource="https://w3id.org/bot#Element"/>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="https://www.theworldavatar.com/kg/ontolab/hasFillLevel"/>
@@ -536,6 +551,7 @@
 
 
     <owl:Class rdf:about="https://www.theworldavatar.com/kg/ontolab/Laboratory">
+        <rdfs:subClassOf rdf:resource="https://www.theworldavatar.com/kg/ontobim/Facility"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Facility that provides controlled conditions in which scientific or technological research, experiments, and measurement may be performed. [https://www.wikidata.org/wiki/Q483242]</rdfs:comment>
         <rdfs:isDefinedBy rdf:datatype="http://www.w3.org/2001/XMLSchema#string">https://www.theworldavatar.com/kg/ontolab/</rdfs:isDefinedBy>
     </owl:Class>
