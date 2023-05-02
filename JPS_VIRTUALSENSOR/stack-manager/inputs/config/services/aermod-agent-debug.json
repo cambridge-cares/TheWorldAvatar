@@ -8,6 +8,7 @@
 					"STACK_NAME=${STACK_NAME}",
 					"PYTHON_SERVICE_URL=http://ship-stack-python-service:5000/getAermodGeoJSON",
 					"PYTHON_SERVICE_ELEVATION_URL=http://ship-stack-python-service:5000/getElevationGeoJSON",
+					"PYTHON_SERVICE_SENSOR_URL=http://ship-stack-python-service:5000/virtualSensor",
 					"NUMBER_SOURCES=600",
 					"NUMBER_BUILDINGS=10",
 					"AERMAP_EXE=/root/aermod/aermap",

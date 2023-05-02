@@ -62,7 +62,8 @@ public class Buildings {
     //    These values are taken from bboxfinder.com and are in EPSG:4326/WGS84 format.
     public static List<String> boundaryPolygons = new ArrayList<> (
             Arrays.asList("POLYGON ((103.650684 1.216988, 103.743038 1.216988, 103.743038 1.308804, 103.650684 1.308804, 103.650684 1.216988))",
-            "POLYGON ((7.572091 49.220582, 7.613289 49.220582, 7.613289 49.233601, 7.572091 49.233601, 7.572091 49.220582))")) ;
+            "POLYGON((7.52 49.21, 7.67 49.21, 7.67 49.25, 7.52 49.25, 7.52 49.21))")) ;
+            
 
 
     public int locindex = -1;
@@ -185,6 +186,11 @@ public class Buildings {
 
             if (createPlantItemsGeoServerLayer() != 0) {
                 LOGGER.error("Failed to create GeoServer Layer for plant items, terminating");
+                return 1;
+            }
+
+            if (createVirtualSensorsGeoServerLayer() != 0) {
+                LOGGER.error("Failed to create GeoServer Layer for virtual sensors, terminating");
                 return 1;
             }
 
@@ -1351,6 +1357,47 @@ public class Buildings {
         // convert the Feature Collection to a JSON string
         // String geojsonString = featureCollection.toString();
         // System.out.println(geojsonString);
+
+        return 0;
+
+    }
+    
+    public int createVirtualSensorsGeoServerLayer() {
+
+
+        List<List<Double>> LonLatCoords = new ArrayList<>();
+
+        for (int i = 0; i < sensorLatitude.size(); i++) {
+            double lat = sensorLatitude.get(i);
+            double lon = sensorLongitude.get(i);
+            LonLatCoords.add(Arrays.asList(lon, lat));
+        }
+
+        // create a JSONObject that represents a GeoJSON Feature Collection
+        JSONObject featureCollection = new JSONObject();
+        featureCollection.put("type", "FeatureCollection");
+        JSONArray features = new JSONArray();
+
+        // loop through the coordinates and add them as GeoJSON Points to the Feature Collection
+        for (List<Double> coordinate : LonLatCoords) {
+            JSONObject geometry = new JSONObject();
+            geometry.put("type", "Point");
+            geometry.put("coordinates", new JSONArray(coordinate));
+            JSONObject feature = new JSONObject();
+            feature.put("type", "Feature");
+            feature.put("geometry", geometry);
+            features.put(feature);
+        }
+        featureCollection.put("features", features);
+
+        LOGGER.info("Uploading virtual sensors GeoJSON to PostGIS");
+		GDALClient gdalclient = new GDALClient();
+		gdalclient.uploadVectorStringToPostGIS(EnvConfig.DATABASE, "sensor_layer", featureCollection.toString(), new Ogr2OgrOptions(), true);
+
+		LOGGER.info("Creating plant items layer in Geoserver");
+		GeoServerClient geoserverclient = new GeoServerClient();
+		geoserverclient.createWorkspace(EnvConfig.GEOSERVER_WORKSPACE);
+		geoserverclient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, EnvConfig.SOURCE_LAYER, new GeoServerVectorSettings());
 
         return 0;
 

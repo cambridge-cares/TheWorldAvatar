@@ -426,7 +426,37 @@ public class Aermod {
         }
     }
 
-    int createDataJson(String shipLayerName, List<String> dispersionLayerNames, String plantsLayerName, String elevationLayerName) {
+      /**
+     * Send request to PythonService to plot virtual sensor data. Also get the concentration values at each sensor location. 
+     */
+    public JSONArray plotVirtualSensorData(String endPoint, String outputFileURL, int srid) {
+        URI httpGet;
+        try {
+            URIBuilder builder = new URIBuilder(endPoint);
+            builder.setParameter("dispersionMatrix", outputFileURL);
+            builder.setParameter("srid", String.valueOf(srid));
+            httpGet = builder.build();
+        } catch (URISyntaxException e) {
+            LOGGER.error("Failed at building URL");
+            throw new RuntimeException(e);
+        }
+
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+            CloseableHttpResponse httpResponse = httpClient.execute(new HttpGet(httpGet))) {
+            String result = EntityUtils.toString(httpResponse.getEntity());
+            return new JSONArray(result);
+        } catch (IOException e) {
+            LOGGER.error("Failed at making connection with python service");
+            throw new RuntimeException(e);
+        } catch (JSONException e) {
+            LOGGER.error("Failed to parse result from python service for aermod geojson");
+            LOGGER.error(outputFileURL);
+            throw new RuntimeException(e);
+        }
+    }
+
+    int createDataJson(String shipLayerName, List<String> dispersionLayerNames, String plantsLayerName, 
+    String elevationLayerName, String sensorLayerName) {
         // wms endpoints template without the layer name
         String shipWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile" +
             "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, shipLayerName);
@@ -439,6 +469,9 @@ public class Aermod {
 
         String elevWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=image/png&transparent=true" +
             "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, elevationLayerName);
+
+        String sensorWms = EnvConfig.GEOSERVER_URL + "/dispersion/wms?service=WMS&version=1.1.0&request=GetMap&width=256&height=256&srs=EPSG:3857&format=application/vnd.mapbox-vector-tile" +
+            "&bbox={bbox-epsg-3857}" + String.format("&layers=%s:%s", EnvConfig.GEOSERVER_WORKSPACE, sensorLayerName);
 
         JSONObject group = new JSONObject();
         group.put("name", "Aermod Simulation"); // hardcoded
@@ -456,6 +489,11 @@ public class Aermod {
         plantSource.put("type", "vector");
         plantSource.put("tiles", new JSONArray().put(plantWms));
 
+        JSONObject sensorSource = new JSONObject();
+        sensorSource.put("id", "sensor-source");
+        sensorSource.put("type", "vector");
+        sensorSource.put("tiles", new JSONArray().put(sensorWms));
+
 
 
         for (int i = 0; i < dispersionLayerNames.size(); i++) {
@@ -471,7 +509,7 @@ public class Aermod {
         elevationSource.put("type", "raster");
         elevationSource.put("tiles", new JSONArray().put(elevWms));
 
-        sources.put(shipSource).put(plantSource).put(elevationSource);
+        sources.put(shipSource).put(plantSource).put(sensorSource).put(elevationSource);
         group.put("sources", sources);
 
         // layers
@@ -492,6 +530,15 @@ public class Aermod {
         plantsLayer.put("name", "Chemical Plant Items");
         plantsLayer.put("source", "plant-source");
         plantsLayer.put("source-layer", plantsLayerName);
+        plantsLayer.put("minzoom", 4);
+        plantsLayer.put("layout", new JSONObject().put("visibility", "visible"));
+
+        JSONObject sensorLayer = new JSONObject();
+        plantsLayer.put("id", "sensor-layer");
+        plantsLayer.put("type", "circle");
+        plantsLayer.put("name", "Virtual Sensors");
+        plantsLayer.put("source", "sensor-source");
+        plantsLayer.put("source-layer", sensorLayerName);
         plantsLayer.put("minzoom", 4);
         plantsLayer.put("layout", new JSONObject().put("visibility", "visible"));
 
@@ -518,7 +565,7 @@ public class Aermod {
         elevationLayer.put("minzoom", 4);
         elevationLayer.put("layout", new JSONObject().put("visibility", "visible"));
 
-        layers.put(shipLayer).put(plantsLayer).put(elevationLayer);
+        layers.put(shipLayer).put(plantsLayer).put(elevationLayer).put(sensorLayer);
         group.put("layers", layers);
 
         JSONObject data = new JSONObject();

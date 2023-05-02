@@ -3,6 +3,7 @@ package com.cmclinnovations.aermod;
 public class EnvConfig {
     public static final String PYTHON_SERVICE_URL = System.getenv("PYTHON_SERVICE_URL");
     public static final String PYTHON_SERVICE_ELEVATION_URL = System.getenv("PYTHON_SERVICE_ELEVATION_URL");
+    public static final String PYTHON_SERVICE_SENSOR_URL = System.getenv("PYTHON_SERVICE_SENSOR_URL");
     public static final String AERMAP_EXE = System.getenv("AERMAP_EXE");
     public static final String AERMET_EXE = System.getenv("AERMET_EXE");
     public static final String BPIPPRM_EXE = System.getenv("BPIPPRM_EXE");
