@@ -2,10 +2,8 @@ import os
 import unittest
 import torch
 
-from KGToolbox.Tools.NLPWarehouse import COMPARISON_OPERATOR_LABEL_LIST
 from Marie.Util.CommonTools.CrossGraphFiltering import CrossGraphFilter
 from Marie.Util.CommonTools.NLPTools import NLPTools
-from Marie.Util.CommonTools import NumericalTools
 from Marie.Util.Models.CrossGraphAlignmentModel import CrossGraphAlignmentModel
 from Marie.Util.location import DATA_DIR
 

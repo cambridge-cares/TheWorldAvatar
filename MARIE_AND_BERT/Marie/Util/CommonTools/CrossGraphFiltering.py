@@ -1,6 +1,6 @@
 import re
 
-from KGToolbox.Tools.NLPWarehouse import COMPARISON_OPERATOR_LABEL_LIST
+from Marie.Util.NLP.NLPWarehouse import COMPARISON_OPERATOR_LABEL_LIST
 # from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 # from Marie.EntityLinking.IRILookup import IRILookup
 from Marie.Util.CommonTools import NumericalTools
