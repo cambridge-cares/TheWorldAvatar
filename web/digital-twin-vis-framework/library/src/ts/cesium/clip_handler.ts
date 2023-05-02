@@ -107,15 +107,31 @@ class ClipHandler {
                 let layerID = ClipHandler.SELECTED_PLANE.id;
                 let tileset = CesiumUtils.getPrimitive(layerID);
                 if(tileset?.clippingPlanes != null) {
+
+                    // Disable clipping planes
                     tileset.clippingPlanes.enabled = false;
-                    console.log("CLIPPING PLANE DISABLED?");
+
+                    // Turn off plane geometry
+                    let plane = ClipHandler.GEOMETRIES[layerID].plane;
+                    plane.show = false;
                 } 
 
                 // Clear selection
                 ClipHandler.SELECTED_PLANE = null;
-            }
 
-            // TODO: Enabled/disable clipping planes
+            } else {
+                let showCombo = document.getElementById("clipSelectCombo") as HTMLSelectElement;
+
+                if(showCombo.selectedIndex !== 0) {
+                    // If there's already a selection
+                    self.changeTargetLayer(selectCombo.value);
+
+                } else if($("#clipSelectCombo option").length === 2){
+                    // If there's only one valid option
+                    showCombo.selectedIndex = 1;
+                    self.changeTargetLayer(selectCombo.value);
+                }
+            }
         });
 
         // Show geometry
@@ -174,9 +190,8 @@ class ClipHandler {
         // Change selected clipping plane
         let self = this;
         selectCombo.addEventListener("change", function() {
-            let showCombo = document.getElementById("clipShowCheck") as HTMLInputElement;
-            if(showCombo != null) showCombo.checked = true;
-
+            // let showCombo = document.getElementById("clipShowCheck") as HTMLInputElement;
+            // if(showCombo != null) showCombo.checked = true;
             self.changeTargetLayer(selectCombo.value);
         });
     }
@@ -188,33 +203,65 @@ class ClipHandler {
      * layer name (separated by '|' character).
      */
     private changeTargetLayer(layerIDs) {
+        console.log("Changing target layers for clipping planes to: " + layerIDs);
+
+        // Turn clipping plane off on old layer (if needed)
+        if(ClipHandler.SELECTED_PLANE != null) {
+            // Turn off clipping plane
+            let layerID = ClipHandler.SELECTED_PLANE.id;
+            let tileset = CesiumUtils.getPrimitive(layerID);
+            if(tileset?.clippingPlanes != null) {
+                tileset.clippingPlanes.enabled = false;
+                ClipHandler.GEOMETRIES[layerID].plane.show = false;
+            } 
+        }
+
         let found = false;
+
+        let splitLayers = (layerIDs.includes("|")) ? layerIDs.split("|") : [layerIDs];
+        console.log(splitLayers);
 
         // Iterate through linked layer IDs to
         // find root layer with clipping enabled
-        layerIDs.split("|").forEach(layerID => {
+        splitLayers.forEach(layerID => {
 
             let layerObj = Manager.DATA_STORE.getLayerWithID(layerID);
 
             if(!found && layerObj != null && layerObj.definition.hasOwnProperty("clipping")) {
+
+                let startHeight =  layerObj.definition["clipping"]["start"];
+                if(ClipHandler.PLANES[layerID] != null) {
+                    startHeight = ClipHandler.PLANES[layerID].get(0).distance;
+                }
+
                 // Build a new slider component
                 this.createSlider(
                     layerObj.definition["clipping"]["min"],
                     layerObj.definition["clipping"]["max"],
-                    layerObj.definition["clipping"]["start"],
+                    startHeight,
                     layerObj.definition["clipping"]["labels"]
                 );
 
                 // Link the pre-created planes to the tileset
                 let tileset = CesiumUtils.getPrimitive(layerID);
                 let planeCollection = ClipHandler.PLANES[layerID];
-                tileset["clippingPlanes"] = planeCollection;
+
+                if(tileset["clippingPlanes"] == null) {
+                    tileset["clippingPlanes"] = planeCollection;
+                } else {
+                    tileset["clippingPlanes"].enabled = true;
+                }
 
                 // Link clipping plane to controls (if not done)
                 if(ClipHandler.GEOMETRIES[layerID] == null) {
                     this.linkClippingPlane(layerID, tileset, layerObj.definition["clipping"]);
-                }
+                    ClipHandler.SELECTED_PLANE = ClipHandler.PLANES[layerID].get(0);
+                } else {
+                    ClipHandler.SELECTED_PLANE = ClipHandler.PLANES[layerID].get(0);
 
+                    let showCombo = document.getElementById("clipShowCheck") as HTMLInputElement;
+                    ClipHandler.GEOMETRIES[layerID].plane.show = showCombo.checked;
+                }
                 found = true;
             }
         });
@@ -238,7 +285,7 @@ class ClipHandler {
         // New clipping plane collection
         let planeCollection = new Cesium.ClippingPlaneCollection({
             planes: [ plane ],            
-            edgeWidth: 1.0
+            edgeWidth: 0.0
         });
 
         // Register plane collection
@@ -320,7 +367,6 @@ class ClipHandler {
 
             // Store visual entity for plane
             ClipHandler.GEOMETRIES[layerID] = planeEntity;
-            ClipHandler.SELECTED_PLANE = clipPlane;
             return tileset;
         });
     }
@@ -370,6 +416,8 @@ class ClipHandler {
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.startValue = startValue;
+
+        console.log("Start value is " + startValue);
 
         // Reset if needed
         this.resetSlider();
