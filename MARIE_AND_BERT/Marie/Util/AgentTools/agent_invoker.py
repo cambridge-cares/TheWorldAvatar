@@ -36,7 +36,7 @@ class AgentInvoker():
             if len(qualifier) == 0:
                 value_node = data['result']['Thermodynamic data over a selected T range at a single P point']
                 if output == 'Thermo property':
-                    result['Enthalpy'] = ['Enthalpy']
+                    result['Enthalpy'] = value_node['Enthalpy']
                     result['Entropy'] = value_node['Entropy']
                     result['Internal Energy'] = value_node['Internal energy']
                     result['Gibbs Energy'] = value_node['Gibbs energy']
