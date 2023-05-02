@@ -2,7 +2,8 @@ package uk.ac.cam.cares.jps.agent.devinst;
 
 import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.timeseries.TimeSeriesClient;
+import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
+import uk.ac.cam.cares.jps.base.derivation.DerivationClient;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 
 import java.io.File;
@@ -11,7 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
-import java.util.Properties;
+import java.util.*;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -26,16 +27,22 @@ import org.apache.logging.log4j.Logger;
  */
 @WebServlet(urlPatterns = {"/retrieve"})
 public class DevInstAgentLauncher extends JPSAgent {
-	
+    
+    public static final String KEY_DESCRIPTOR = "Descriptor";
 	public static final String KEY_MICROCONTROLLER = "MicroController";
 	public static final String KEY_IRIMAPPER = "IRIMapper";
 	public static final String KEY_ADDITRIONALQUERY = "AdditionalQuery";
+    public static final String KEY_CLIENTPROPERTY = "CLIENTPROPERTIES";
+
+    private static RemoteStoreClient storeClient;
+    private static DerivationClient derivClient;
+    
+    private static String baseURL;
+    private static String queryEnd;
+    private static String updateEnd;
 	
-	
-	 String agentProperties;
-	 String apiProperties;
-	 String clientProperties;
-	 String launcherProperties;
+	String clientProperties;
+
 	
     /**
      * Logger for reporting info/errors.
@@ -61,9 +68,18 @@ public class DevInstAgentLauncher extends JPSAgent {
     public JSONObject processRequestParameters(JSONObject requestParams) {
     	JSONObject jsonMessage = new JSONObject();
       if (validateInput(requestParams)) {
-        	LOGGER.info("Passing request to RFID Update Agent..");
+        	LOGGER.info("Passing request to Device Instantiation Agent..");
+            clientProperties = System.getenv(requestParams.getString(KEY_CLIENTPROPERTY));
+
+            try{
+                ReadPropFile(clientProperties);
+            }
             
-            jsonMessage = initializeAgent(requestParams);
+            catch (IOException e){
+                throw new JPSRuntimeException(AGENT_ERROR_MSG + e);
+            }
+
+            jsonMessage = initializeAgent(requestParams.getJSONObject(KEY_DESCRIPTOR));
 			
             jsonMessage.accumulate("Result", "Timeseries Data has been updated.");
             requestParams = jsonMessage;
@@ -78,26 +94,60 @@ public class DevInstAgentLauncher extends JPSAgent {
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
       boolean validate = true;
-      String agentProperties;
-      String apiProperties;
       String clientProperties;
-      String launcherProperties;
+      JSONObject device;
+
+     try{
+        device = requestParams.getJSONObject(KEY_DESCRIPTOR);
+     }
+     catch(Exception e){
+        return false;
+     }
+      
       //TODO Validate keys on every level of the request
       if (requestParams.isEmpty()) {
     	  validate = false;
       }
       else {
- 		 validate = requestParams.has(KEY_MICROCONTROLLER);
+ 		 validate = device.has(KEY_MICROCONTROLLER);
  		 if (validate == true) {
- 		 validate = requestParams.has(KEY_IRIMAPPER);
+ 		 validate = device.has(KEY_IRIMAPPER);
  		 }
  		 if (validate == true) {
- 		 validate = requestParams.has(KEY_ADDITRIONALQUERY);
+ 		 validate = device.has(KEY_ADDITRIONALQUERY);
  		 }
  		}
+
+    if (validate == true) {
+        clientProperties = requestParams.getString(KEY_CLIENTPROPERTY);
+        if (System.getenv(clientProperties) == null) {
+            validate = false;
+        
+        }
+    }
 	return validate;
       
       }
+
+    private void ReadPropFile(String propertiesFile) throws IOException {
+        try (InputStream input = new FileInputStream(propertiesFile)) {
+            // Load properties file from specified path
+            Properties prop = new Properties();
+            prop.load(input);
+            try {
+                // Read the mappings folder from the properties file
+                baseURL = prop.getProperty("derivation.namespace.url");
+                queryEnd = prop.getProperty("sparql.query.endpoint");
+                updateEnd = prop.getProperty("sparql.update.endpoint");
+                
+                }
+                catch (NullPointerException e) {
+                    throw new IOException ("Incomplete key in the client.properties file. " + e);
+                }
+                
+
+        }
+    }
     
  // TODO: Use proper argument parsing
     /**
@@ -118,6 +168,16 @@ public class DevInstAgentLauncher extends JPSAgent {
         if (args.keySet().size() != 3) {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
             throw new JPSRuntimeException(ARGUMENT_MISMATCH_MSG);
+        }
+
+        try{
+            storeClient = new RemoteStoreClient(queryEnd, updateEnd);
+            derivClient = new DerivationClient(storeClient, baseURL);
+        }
+
+        catch (Exception e) {
+            LOGGER.error(AGENT_ERROR_MSG + e);
+            throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
         }
 
         LOGGER.info("Input agent object initialized.");
