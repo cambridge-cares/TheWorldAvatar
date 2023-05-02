@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 
 class SpatialLinkTest {
 
-    DockerImageName postgisImage = DockerImageName.parse("postgis/postgis:13-3.2").asCompatibleSubstituteFor("postgres");
+    DockerImageName postgisImage = DockerImageName.parse("postgis/postgis:14-3.2-alpine").asCompatibleSubstituteFor("postgres");
     @Container
     private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(postgisImage);
 
@@ -28,9 +28,9 @@ class SpatialLinkTest {
         postgres.setStartupAttempts(2);
         postgres.withNetwork(network);
         postgres.withNetworkAliases("postgis");
-        postgres.withDatabaseName("postgres");
-        postgres.withUsername("postgres");
-        postgres.withPassword("postgis");
+//        postgres.withDatabaseName("postgres");
+//        postgres.withUsername("postgres");
+//        postgres.withPassword("postgis");
         postgres.start();
         System.out.println(postgres.getJdbcUrl() + postgres.getUsername() + postgres.getPassword());
     }

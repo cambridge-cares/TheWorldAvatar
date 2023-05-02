@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   data-integration:
-    image: docker.cmclinnovations.com/data-integration:1.0.0
+    image: ghcr.io/cambridge-cares/data-integration:1.0.0
     deploy:
       mode: replicated
       replicas: 1
@@ -13,11 +13,8 @@ services:
       - DATABASE=postgres # currently ontop reads from the default database
     configs:
       - postgis
-      - blazegraph
-      - ontop
     secrets:
       - postgis_password
-      - geoserver_password
     ports:
       - "8086:8080"
     volumes:

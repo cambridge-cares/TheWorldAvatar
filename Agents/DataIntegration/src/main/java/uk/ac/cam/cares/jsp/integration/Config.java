@@ -20,7 +20,7 @@ public class Config  extends ContainerClient {
     public static String kgpassword;
 //    public static String ontop_url;
 
-    private static OntopEndpointConfig ontopEndpointConfig;
+//    private static OntopEndpointConfig ontopEndpointConfig;
     public static String DATABASE = System.getenv("DATABASE");
     private static final Logger LOGGER = LogManager.getLogger(Config.class);
 

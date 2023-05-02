@@ -40,7 +40,7 @@ RUN mvn package -DskipTests
 #==================================================================================================
 FROM tomcat:9.0 as agent
 
-COPY --from=builder /root/code/output/* $CATALINA_HOME/webapps/
+COPY --from=builder /root/code/target/* $CATALINA_HOME/webapps/
 COPY ./docker/entrypoint.sh entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
