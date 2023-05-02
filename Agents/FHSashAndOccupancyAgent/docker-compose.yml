@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  fh-sash-and-occupancy-agent:
+    container_name: fh-sash-and-occupancy-agent
+    image: fh-sash-and-occupancy-agent:1.0.0
+    build:
+      context: .
+      target: agent
+    volumes:
+      - ./config:/usr/local/tomcat/config
+    ports:
+      - "1025:8080"
