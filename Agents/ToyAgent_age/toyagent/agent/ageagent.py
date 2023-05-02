@@ -67,7 +67,6 @@ class AgeAgent(DerivationAgent):
         age = None
         g = Graph()
         res = self.sparql_client.get_birthday(birthday_iri)
-        
         current_time = datetime.datetime.now()
         date = datetime.datetime.strptime(res['birth'], '%Y-%m')
         age = current_time.year - date.year

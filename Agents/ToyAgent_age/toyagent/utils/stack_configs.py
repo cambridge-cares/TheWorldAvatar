@@ -57,4 +57,4 @@ def retrieve_settings():
 DB_URL = ''
 DB_USER = ''
 DB_PASSWORD = ''
-QUERY_ENDPOINT = UPDATE_ENDPOINT = 'http://localhost:8080/blazegraph/namespace/test/sparql'
+QUERY_ENDPOINT = UPDATE_ENDPOINT = 'http://localhost:3846/blazegraph/namespace/test/sparql'

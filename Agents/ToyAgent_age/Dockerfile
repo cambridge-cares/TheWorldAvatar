@@ -71,7 +71,7 @@ COPY  ./agent.env.example ./agent.env.example
 
 # Set the entrypoint
 # Use shell form to enable variable substitution (https://stackoverflow.com/a/37904830)
-ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "${AGENTDIR}:create_app()"
+ENTRYPOINT gunicorn --bind 0.0.0.0:5000 "${AGENTDIR}:create_app()" --preload
 
 
 #------------------------------------------------------
