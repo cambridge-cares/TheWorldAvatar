@@ -24,7 +24,7 @@ _sample_goal_request['deadline'] = str(datetime.fromtimestamp(int(time.time()) +
 
 # the available labs should also be updated to only include the physical lab that to be tested
 # possible choice for available labs:
-lab_to_test = 'http://example.com/blazegraph/namespace/testlab/lab2/Laboratory_Dummy'
+lab_to_test = 'https://www.theworldavatar.com/kg/lab_auto/lab2/Laboratory_Dummy'
 _sample_goal_request['labs'] = [lab_to_test]
 
 @pytest.mark.parametrize(

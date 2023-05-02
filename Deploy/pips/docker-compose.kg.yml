@@ -1,0 +1,32 @@
+version: "3.8"
+name: pips-kg
+
+services:
+  # Blazegraph
+  blazegraph:
+    image: ghcr.io/cambridge-cares/blazegraph:1.1.0
+    container_name: "blazegraph_pips"
+    ports:
+      - 48082:8080
+    environment:
+      BLAZEGRAPH_PASSWORD_FILE: /run/secrets/blazegraph_password
+    # Add a secret to set the password for BASIC authentication
+    secrets:
+      - blazegraph_password
+
+  # File server
+  fileserver:
+    image: ghcr.io/cambridge-cares/fileserver:1.1.0
+    container_name: "fileserver_pips"
+    ports:
+      - 48086:8080
+    # Add secret to set BASIC authentication password
+    secrets:
+      - file_server_password
+
+# Secrets used to set runtime passwords
+secrets:
+  blazegraph_password:
+    file: ./secrets/blazegraph_password.txt
+  file_server_password:
+    file: ./secrets/fileserver_password.txt

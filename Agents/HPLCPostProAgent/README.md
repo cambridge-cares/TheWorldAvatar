@@ -66,7 +66,6 @@ Once the test is executed, it first DELETES ALL TRIPLES in the specified SPARQL 
 ```
 /path/to/chemistry_and_robots/resources/ontoagent/Service__PostProc.ttl
 /path/to/chemistry_and_robots/resources/sample_data/new_exp_data.ttl
-/path/to/chemistry_and_robots/resources/sample_data/duplicate_ontorxn.ttl
 /path/to/chemistry_and_robots/resources/sample_data/dummy_lab.ttl
 /path/to/chemistry_and_robots/resources/sample_data/rxn_data.ttl
 /path/to/chemistry_and_robots/resources/sample_data/dummy_post_proc.ttl
@@ -76,13 +75,13 @@ and upload below sample HPLC raw report to the file server specified (the script
 /path/to/chemistry_and_robots/resources/sample_data/raw_hplc_report_xls.xls
 ```
 
-If the upload to file server is successfully, a series of information will be output to console and an IRI will be generated as the generated OntoHPLC:HPLCReport instance, for example `<http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_73e0b361-9960-454c-9d7a-11f3adb240cc>` in below log messages:
+If the upload to file server is successfully, a series of information will be output to console and an IRI will be generated as the generated OntoHPLC:HPLCReport instance, for example `<https://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_73e0b361-9960-454c-9d7a-11f3adb240cc>` in below log messages:
 ```
 2022-05-25 12:53:14,297 (STDOUT) HPLC raw report (/home/jb2197/wsl_code/TheWorldAvatar/Agents/HPLCPostProAgent/hplcpostproagent/tests/downloaded_files_for_test/0308a669-2fe3-4e92-a6fb-14e2a66be694.xls) was uploaded to fileserver <http://localhost:48086/FileServer/> at 1653479594.189448 with remote file path at: http://localhost:48086/FileServer/0308a669-2fe3-4e92-a6fb-14e2a66be694.xls 
-2022-05-25 12:53:14,298 (STDOUT) The initialised HPLCReport IRI is: <http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_73e0b361-9960-454c-9d7a-11f3adb240cc>; the initialised HPLCJob IRI is: <http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCJob_06b8692c-fc9a-49b6-87e9-8f3c31306179>
-2022-05-25 12:53:14,400 (STDOUT) The identified ReactionExperiment for HPLCReport <http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_73e0b361-9960-454c-9d7a-11f3adb240cc> (remote path: http://localhost:48086/FileServer/0308a669-2fe3-4e92-a6fb-14e2a66be694.xls) is: <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70>
-2022-05-25 12:53:14,400 (STDOUT) The HPLCReport <http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_73e0b361-9960-454c-9d7a-11f3adb240cc> (remote path: http://localhost:48086/FileServer/0308a669-2fe3-4e92-a6fb-14e2a66be694.xls) was generated using HPLCMethod <http://example.com/blazegraph/namespace/testlab/dummy_lab/HPLCMethod_Dummy>
-2022-05-25 12:53:14,508 (STDOUT) HPLCReport <http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_73e0b361-9960-454c-9d7a-11f3adb240cc> is connected to ChemicalSolution <http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/ChemicalSolution_1_1>
+2022-05-25 12:53:14,298 (STDOUT) The initialised HPLCReport IRI is: <https://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_73e0b361-9960-454c-9d7a-11f3adb240cc>; the initialised HPLCJob IRI is: <https://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCJob_06b8692c-fc9a-49b6-87e9-8f3c31306179>
+2022-05-25 12:53:14,400 (STDOUT) The identified ReactionExperiment for HPLCReport <https://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_73e0b361-9960-454c-9d7a-11f3adb240cc> (remote path: http://localhost:48086/FileServer/0308a669-2fe3-4e92-a6fb-14e2a66be694.xls) is: <https://www.example.com/triplestore/ontorxn/ReactionExperiment_1/ReactionVariation_fac53bb1-3ae0-4941-9f5b-38738b07ab70>
+2022-05-25 12:53:14,400 (STDOUT) The HPLCReport <https://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_73e0b361-9960-454c-9d7a-11f3adb240cc> (remote path: http://localhost:48086/FileServer/0308a669-2fe3-4e92-a6fb-14e2a66be694.xls) was generated using HPLCMethod <https://example.com/blazegraph/namespace/testlab/dummy_lab/HPLCMethod_Dummy>
+2022-05-25 12:53:14,508 (STDOUT) HPLCReport <https://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_73e0b361-9960-454c-9d7a-11f3adb240cc> is connected to ChemicalAmount <https://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/ChemicalAmount_1_1>
 ```
 
 The IRI of OntoHPLC:HPLCReport will then be used as the derivation inputs by the script to write below derivation related triples:
@@ -93,10 +92,10 @@ The IRI of OntoHPLC:HPLCReport will then be used as the derivation inputs by the
 <status> <rdf:type> <OntoDerivation:Requested>
 
 # derivation inputs, no outputs were added as here we are requesting for generating new information
-<derivation> <OntoDerivation:isDerivedFrom> <http://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_d3806b3d-821f-4891-859b-4a96522de416>
+<derivation> <OntoDerivation:isDerivedFrom> <https://example.com/blazegraph/namespace/testlab/dummy_lab_for_post_proc/HPLCReport_d3806b3d-821f-4891-859b-4a96522de416>
 
 # agent related
-<derivation> <OntoDerivation:isDerivedUsing> <http://www.theworldavatar.com/resource/agents/Service__PostProc#Service>
+<derivation> <OntoDerivation:isDerivedUsing> <https://www.theworldavatar.com/kg/agents/Service__PostProc/Service>
 
 # timestamp of derivation
 <derivation> <time:hasTime> <time>
@@ -146,8 +145,8 @@ After the derivation is updated, you will see outputs message like:
 Meanwhile, the testing script checks the progress by querying `{?performance_indicator OntoDerivation:belongsTo <createdDerivationInstance>; rdf:type/rdfs:subClassOf OntoRxn:PerformanceIndicator}`, i.e.:
 
 ```sparql
-PREFIX OntoDerivation:     <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoderivation/OntoDerivation.owl#>
-PREFIX OntoRxn:            <https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontoreaction/OntoReaction.owl#>
+PREFIX OntoDerivation:     <https://www.theworldavatar.com/kg/ontoderivation/>
+PREFIX OntoRxn:            <https://www.theworldavatar.com/kg/ontoreaction/>
 PREFIX rdf:                <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs:               <http://www.w3.org/2000/01/rdf-schema#>
 
