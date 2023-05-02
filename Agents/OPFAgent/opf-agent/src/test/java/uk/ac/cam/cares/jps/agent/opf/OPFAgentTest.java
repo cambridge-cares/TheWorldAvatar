@@ -395,6 +395,9 @@ public class OPFAgentTest {
         agent.runPythonScript(script, baseUrl, fileNames);
     }
 
+    // Pypower and Scipy package need to be installed before running this test.
+    // dSbr_dV.py and gausspf.py in Pypower package should be replaced by 
+    // files in opf-agent > python > pypower folder.
     @Test
     public void testRunPythonScript() throws IOException {
         File baseMVAFile = tempFolder.newFile("testPy_baseMVA.txt");

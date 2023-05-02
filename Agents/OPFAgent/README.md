@@ -29,7 +29,7 @@ docker-compose up -d
 The agent is reachable on localhost port 39999 by default (you can change this in docker-compose.yml). Example of requests is given in the [Run the agent](#run-the-agent) section below.
 
 ### Deploying OPFAgent as part of a stack
-- Replace information in the `client.properties` file in `opf-agent`->`config` folder with details of the blazegraph and relational database you are connecting to. Replace the placeholders for stack name with the name of your stack.
+- Replace information in the `client.properties` file in `opf-agent`->`config` folder with details of the blazegraph and relational database you are connecting to. Replace the placeholders for stack name with the name of your stack if you are connecting to the blazegraph in stack.
 - To build Docker image of OPFAgent, from the command line, and in the same directory as this README, run (replace the version number if applicable):
 ```
 docker build -t "opf-agent:1.0.0" .
