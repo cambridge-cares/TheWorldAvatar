@@ -1,7 +1,7 @@
 from chemistry_and_robots.data_model.iris import *
 
 ###--- IRIs for OntoGoal ---###
-ONTOGOAL = "https://raw.githubusercontent.com/cambridge-cares/TheWorldAvatar/main/JPS_Ontology/ontology/ontogoal/OntoGoal.owl#"
+ONTOGOAL = "https://www.theworldavatar.com/kg/ontogoal/"
 ONTOGOAL_GOAL = ONTOGOAL + "Goal"
 ONTOGOAL_GOALSET = ONTOGOAL + "GoalSet"
 ONTOGOAL_PLAN = ONTOGOAL + "Plan"

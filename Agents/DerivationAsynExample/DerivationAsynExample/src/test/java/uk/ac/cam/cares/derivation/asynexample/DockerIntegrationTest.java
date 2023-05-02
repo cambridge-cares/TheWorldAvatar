@@ -33,8 +33,6 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
  * running
  * Please refer to TheWorldAvatar/Agents/DerivationAsynExample/README.md for
  * more details.
- * For information regarding the Docker registry, see:
- * https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
  * 
  * @author Jiaru Bai (jb2197@cam.ac.uk)
  * 

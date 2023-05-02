@@ -15,11 +15,9 @@ import java.util.Properties;
 
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -37,7 +35,6 @@ public class ESPHomeAPI{
     private String path_url; //IP address of the ESPHome web server
     private String domain; //Type of component: Sensor, Binary Sensor, Switch, Light, Fan etc
     private String ID; //ID of the component, this ID is indicated in the web_control.yaml file when setting up the ESPHome server
-    private double esphomeThreshold; //threshold that determines whether to turn a component on or off
     //JSONObjects
     JSONObject message;
     
@@ -48,11 +45,10 @@ public class ESPHomeAPI{
      * @param ID the ID of the component
      * @param esphomeThreshold the threshold value that determines whether to turn a component on or off
      */
-    public ESPHomeAPI(String path_url, String domain, String ID, double esphomeThreshold) {
+    public ESPHomeAPI(String path_url, String domain, String ID) {
         this.path_url = path_url;
         this.domain = domain;
         this.ID = ID;
-        this.esphomeThreshold = esphomeThreshold;
         
     }
     
@@ -60,7 +56,7 @@ public class ESPHomeAPI{
     	loadESPHomeConfigs(propertiesFile);	
     }
     
-    public JSONObject esphomeSwitchControl(double timeSeriesValue, String status) {
+    public JSONObject esphomeSwitchControl(double timeSeriesValue, String status, double esphomeThreshold) {
     	JSONObject message = new JSONObject();
     	if (timeSeriesValue > esphomeThreshold) {
     		if (status.contains("ON")) {
@@ -175,11 +171,6 @@ public class ESPHomeAPI{
             } else {
                 throw new IOException("Properties file is missing \"domain.ID=<ID>\"");
             }
-	        if (prop.containsKey("esphome.threshold")) {
-	        	this.esphomeThreshold = Double.valueOf(prop.getProperty("esphome.threshold"));
-	        } else {
-	        	throw new IOException("Properties file is missing \"esphome.threshold=<esphome_threshold>\"");
-	        }
         }
         }
     }

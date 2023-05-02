@@ -26,7 +26,7 @@ import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 public class BlazegraphClient extends ContainerClient implements ClientWithEndpoint {
 
-    private static final Pattern SERVICE_IRI_PATTERN = Pattern.compile("SERVICE\\s*<([a-z]+)>",
+    private static final Pattern SERVICE_IRI_PATTERN = Pattern.compile("SERVICE\\s*<ontop>",
             Pattern.CASE_INSENSITIVE);
 
     private static BlazegraphClient instance = null;
@@ -148,12 +148,12 @@ public class BlazegraphClient extends ContainerClient implements ClientWithEndpo
      * @return the query after the appropriate substitutions have been made
      */
     public String filterQuery(String query) {
+        return filterQuery(query, readEndpointConfig("ontop", OntopEndpointConfig.class).getUrl());
+    }
+    public String filterQuery(String query, String ontopEndpoint) {
         Matcher matcher = SERVICE_IRI_PATTERN.matcher(query);
         if (matcher.find()) {
-            String serviceName = matcher.group(1).toLowerCase();
-            return matcher.replaceAll("SERVICE <" +
-                    readEndpointConfig(serviceName, OntopEndpointConfig.class).getUrl()
-                    + ">");
+            return matcher.replaceAll("SERVICE <" + ontopEndpoint + ">");
         } else {
             return query;
         }

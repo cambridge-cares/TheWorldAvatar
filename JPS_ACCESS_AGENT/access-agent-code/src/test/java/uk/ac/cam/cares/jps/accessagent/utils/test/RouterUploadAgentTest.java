@@ -17,6 +17,7 @@ import uk.ac.cam.cares.jps.accessagent.utils.RouterUploadTool;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.interfaces.StoreClientInterface;
+import uk.ac.cam.cares.jps.base.interfaces.TripleStoreClientInterface;
 import uk.ac.cam.cares.jps.base.query.MockStoreClient;
 import uk.ac.cam.cares.jps.base.query.StoreRouter;
 
@@ -76,7 +77,7 @@ class RouterUploadAgentTest {
 		RouterUploadAgent agent = Mockito.spy(RouterUploadAgent.class);
 		Mockito.doReturn(true).when(agent).validateInput(any(JSONObject.class));
 		Mockito.doReturn(storeClient).when(agent).getStoreClient(any(String.class));
-		Mockito.doReturn(0).when(agent).uploadTriples(any(JSONArray.class), any(StoreClientInterface.class));
+		Mockito.doReturn(0).when(agent).uploadTriples(any(JSONArray.class), any(TripleStoreClientInterface.class));
 		
 		JSONObject testObj = new JSONObject();
 		testObj.put(JPSConstants.METHOD, HttpPost.METHOD_NAME);

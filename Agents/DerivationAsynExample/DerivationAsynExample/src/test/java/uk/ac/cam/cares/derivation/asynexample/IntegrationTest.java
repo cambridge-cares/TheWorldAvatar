@@ -34,9 +34,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 /**
- * These tests start a Docker container of blazegraph based on "docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"
+ * These tests start a Docker container of blazegraph based on "ghcr.io/cambridge-cares/blazegraph:1.1.0"
  * Please refer to TheWorldAvatar/Agents/DerivationAsynExample/README.md for more details.
- * For information regarding the Docker registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
  * 
  * If one is developing in WSL2 and want to keep the container alive after the test (this will be useful when debugging if any test ran into exceptions),
  * then please follow the instruction from [1/5] to [5/5]
@@ -97,14 +96,12 @@ public class IntegrationTest extends TestCase {
         super.tearDown();
     }
 
-    // NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
-    // For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
     @Container
     private static GenericContainer<?> blazegraph;
     static {
-        blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+        blazegraph = new GenericContainer<>(DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph:1.1.0"))
             // .withReuse(true)
-            .withExposedPorts(9999); // the port is set as 9999 to match with the value set in the docker image
+            .withExposedPorts(8080); // the port is set as 8080 to match with the value set in the docker image
     }
 
     @BeforeAll
@@ -129,6 +126,13 @@ public class IntegrationTest extends TestCase {
         getTimestamp.setAccessible(true);
         getStatusType = devSparql.getClass().getDeclaredMethod("getStatusType", String.class);
         getStatusType.setAccessible(true);
+
+        try {
+            // wait for the blazegraph to be ready
+            TimeUnit.SECONDS.sleep(10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         // the response is a JSON object containing the IRIs of the initialised instances, refer to InitialiseInstances for the keys
         InitialiseInstances initialisation = new InitialiseInstances();

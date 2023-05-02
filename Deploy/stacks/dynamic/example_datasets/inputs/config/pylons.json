@@ -1,7 +1,0 @@
-{
-    "name": "pylons",
-    "externalDatasets": [
-        "ukpn-pylons",
-        "ng-pylons"
-    ]
-}
