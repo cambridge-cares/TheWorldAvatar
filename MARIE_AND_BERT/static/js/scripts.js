@@ -43,8 +43,11 @@
 
 // Variables accessed throughout the script
 $('document').ready(function(){
+
     // =================== search button and enter in input field =======
-    $('#ask-button').click(function (e){
+    let label_dict = global_label_dict // load the label dictionary
+
+	$('#ask-button').click(function (e){
         askQuestion(e);
     });
 
@@ -136,12 +139,12 @@ function pipeQuestion(question) {
  Note that this depends on the fact that the marie-dict.js script
  is also loaded.
  */
-function shuffleQuestion() {
-	// Find all 'sample-question' elements
-	let index = Math.floor(Math.random() * random_questions.length);
-	let sampleQuestion = random_questions[index];
-	pipeQuestion(sampleQuestion);
-}
+// function shuffleQuestion() {
+// 	// Find all 'sample-question' elements
+// 	let index = Math.floor(Math.random() * random_questions.length);
+// 	let sampleQuestion = random_questions[index];
+// 	pipeQuestion(sampleQuestion);
+// }
 
 
 /*
@@ -403,7 +406,9 @@ function parseJSONObject(jsonResults) {
 		Object.keys(item).forEach((key) => {
 			// Store value
 			let subitem = item[key];
-			valueSet[key].push(subitem["value"]);
+			let value = subitem["value"];
+			console.log("value:", value)
+			valueSet[key].push(value);
 		})
 	});
 
@@ -416,7 +421,6 @@ function parseJSONObject(jsonResults) {
 function parseJSONArray(jsonResults) {
 	let forTable = {};
 	forTable["Result"] = [];
-
 	parseResult(jsonResults, forTable);
 	return toTable(forTable);
 }
@@ -475,12 +479,41 @@ function parseValue(value) {
 /*
  Converts input dictionary (of column-mahor data) into a HTML table.
 */
+function select_header_name(valueSet) {
+ 	// 1. sample the first row of the result, get its type
+	let header_name_change_dict = {}
+	try {
+		let sample_nodes = []
+		for (let key in valueSet) {
+			let sample_node = valueSet[key][0]
+			// sample_nodes.push(column[0])
+			if (sample_node in global_type_dict){
+				header_name_change_dict[key] = global_type_dict[sample_node]
+			}
+		}
+ 		return header_name_change_dict
+
+	} catch (e) {
+		console.log("error selecting header name", e)
+		return null;
+	}
+	// return a dict
+}
+
+
 function toTable(valueSet) {
+	let new_headers  = select_header_name(valueSet)
+	// console.log("new headers", new_headers)
 	// Build into HTML table
 	let html = "<table class=\"chatbot-table\"><tr>";
 
 	// Headers
 	Object.keys(valueSet).forEach((header) => {
+		if (header in new_headers)
+		{
+			header = new_headers[header]
+		}
+
 		html += "<th>" + header + "</th>";
 	});
 	html += "</tr>";
@@ -490,10 +523,15 @@ function toTable(valueSet) {
 
 	for (var r = 0; r < rows; r++) {
 		html += "<tr>";
-
 		for (var key in valueSet) {
 			let values = valueSet[key];
 			let value = values[r];
+			console.log("value:", value)
+			console.log("key:", key)
+			if (value in global_label_dict){
+				value = global_label_dict[value]
+			}
+
 
 			html += "<td>";
 
@@ -662,7 +700,7 @@ function drawLineChart(rows, attribute, y_unit, x_data_title, x_data_unit, fixed
 
 
 function makeTable(matrix_set){
-
+	let label_dict = global_label_dict
     console.log('Making a table from matrix set')
     // let test_valueSet = [{'x': '1', 'y': '2'},{'x': '1', 'y': '2'},{'x': '1', 'y': '2'},{'x': '1', 'y': '2'}]
     let array = [];
@@ -673,6 +711,10 @@ function makeTable(matrix_set){
         let x_data = matrix['x']['value'];
         let x_data_list = []
         if (typeof x_data === 'string'){
+        	console.log("x data:", x_data)
+			if (x_data in label_dict){
+				x_data = label_dict[x_data]
+			}
             x_data_list.push([x_data]);
         }
         else{
