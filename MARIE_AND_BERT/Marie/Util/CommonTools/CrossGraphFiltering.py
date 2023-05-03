@@ -26,7 +26,7 @@ def remove_formula(question):
 def remove_mention(q_with_mention, mention):
     stop_words = ["what", "is", "are", "the", "more", "less",
                   "than", "species", "find", "all", "over",
-                  "under", "of", "show", "me",
+                  "under", "show", "me", "with",
                   "chemical species", "having", "that", "can", "be"
                   ]
     flag_words = ["mops", "cbu", "assembly model"]
@@ -54,13 +54,32 @@ def remove_mention(q_with_mention, mention):
         return "reaction"
 
 
+def remove_non_formula_species(question_with_non_formula):
+    regex = r"[ \w]+  | of [\w]+|[ \w]+'s"
+    result = re.sub(regex, "", question_with_non_formula, 0)
+    if result:
+        return result
+    else:
+        return question_with_non_formula
+
+    # non_formula_regex = r"[ \w]+  | of [\w]+|[ \w]+'s"
+    # matches = re.search(non_formula_regex, question_with_non_formula)
+    # if matches:
+    #     print("match:", matches.group())
+
+    # result = "".join([t for t in list(map(join_tuple_string, matches)) if t != ""])# .replace("  ", "##").replace(" ", "").replace("##", " ")
+    # # print("non formula", result)
+    # question_without_non_formula = question_with_non_formula.replace(result, "").replace("'s", "").replace(" of ", " ").strip()
+    question_without_non_formula = question_with_non_formula
+    return question_without_non_formula.lower()
+
 
 class CrossGraphFilter:
 
     def __init__(self):
         self.stop_words = ["whats", "what", "is", "are", "the", "more", "less",
                            "than", "species", "find", "all", "over",
-                           "under", "of", "show", "me",
+                           "under", "show", "me", "with",
                            "chemical species", "having", "that", "can", "be", "?", "give", "created", "waht"
 
                            ]
@@ -78,8 +97,8 @@ class CrossGraphFilter:
             return "MOPs shape"
         elif "reaction" in question.lower():
             return "reaction"
-        original_question = question.replace("'s", " of ")
-        tokens = [t for t in original_question.strip().split(" ") if t.lower() not in self.global_stop_words]
+        # original_question = question.replace("'s", " of ")
+        tokens = [t for t in question.strip().split(" ") if t.lower() not in self.global_stop_words]
         original_question = " ".join(tokens)
         original_question = remove_formula(original_question)
         # print("question after removing formula:", original_question)
@@ -98,6 +117,7 @@ class CrossGraphFilter:
         # TODO: remove the qualifiers from the question
 
         # return original_question
+        original_question = remove_non_formula_species(original_question).replace(" of", "")
         return original_question.lower().strip()
 
 
@@ -204,3 +224,14 @@ if __name__ == "__main__":
     print("===========================")
 
 
+    question = "What is benzene's power conversion efficiency?"
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
+
+    question = "What is power conversion efficiency of benzene?"
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
