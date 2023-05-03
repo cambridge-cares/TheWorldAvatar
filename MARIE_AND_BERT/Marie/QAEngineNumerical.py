@@ -1,5 +1,6 @@
 import json
 import os, sys
+import random
 
 from Marie.EntityLinking.IRILookup import IRILookup
 
@@ -160,6 +161,9 @@ class QAEngineNumerical:
                 heads = self.all_heads_indices
         else:
             heads = self.all_heads_indices
+
+        if len(heads) > 50:
+            heads = random.sample(heads, 50)
         predicted_attr = self.score_model.get_attribute_prediction(self.input_dict.single_question_embedding)
         attr_batch = predicted_attr.repeat(len(heads), 1)
         numerical_values, _ = self.score_model.get_numerical_prediction(heads, attr_batch)

@@ -11,23 +11,16 @@ def join_tuple_string(strings_tuple) -> str:
 # joining all the tuples
 
 def remove_formula(question):
-    # print(question)
+    question = question.replace("?", "").strip()
+    question = f" {question} "
     # formula_regex = r"([a-zA-Z]*[0-9]+[a-zA-Z]*)"
     # formula_regex = r"[A-Z][a-z]?\d*|\((?:[^()]*(?:\(.*\))?[^()]*)+\)\d+"
-    formula_regex = r"([A-Z][a-z]?\d*|\((?:[^()]*(?:\(.*\))?[^()]*)+\)\d+)|([a-z]+\d+)"
-
-    # matches = re.findall(r'(?:\b%s\b\s?)+' % search_str, polymer_str)
-    # longest_match = max(matches)
-    # return longest_match.count(search_str)
-
-    # formula = re.search(formula_regex, question).group()
+    # formula_regex = r"([A-Z][a-z]?\d*|\((?:[^()]*(?:\(.*\))?[^()]*)+\)\d+)|([a-z]+\d+)"
+    formula_regex = r"[A-Za-z]+[0-9]+[A-Za-z0-9]*|[ ][COHcoh]+[ ]+"
     matches = re.findall(formula_regex, question)
-    result = "".join([t.strip() for t in list(map(join_tuple_string, matches)) if t != ""])
-    print("formula", result)
-    question = question.replace(result, "")
-    # print(question)
-    # print("=========================")
-    return question
+    result = "".join([t.strip() for t in list(map(join_tuple_string, matches)) if t != ""]).replace(" ", "")
+    question_without_formula = question.replace(result, "")
+    return question_without_formula.lower()
 
 
 def remove_mention(q_with_mention, mention):
@@ -68,7 +61,7 @@ class CrossGraphFilter:
         self.stop_words = ["whats", "what", "is", "are", "the", "more", "less",
                            "than", "species", "find", "all", "over",
                            "under", "of", "show", "me",
-                           "chemical species", "having", "that", "can", "be", "?", "give", "created"
+                           "chemical species", "having", "that", "can", "be", "?", "give", "created", "waht"
 
                            ]
         self.global_stop_words = ["g/mol", "dalton", "celsius", "show", "give", "find", "all", "the", "species"]
@@ -89,44 +82,125 @@ class CrossGraphFilter:
         tokens = [t for t in original_question.strip().split(" ") if t.lower() not in self.global_stop_words]
         original_question = " ".join(tokens)
         original_question = remove_formula(original_question)
+        # print("question after removing formula:", original_question)
+
             # return ["ontomops"], torch.tensor([0, 0, 0, 0, 0, 0, 0, 1, 0])
         # mention = self.ner_lite.get_mention(question)
         # question = remove_mention(question, mention=mention)
+
+        _, original_question = NumericalTools.qualifier_value_extractor(original_question)
+
+
         value, value_str = NumericalTools.numerical_value_extractor(question=original_question)
         if value is not None:
             original_question = original_question.replace(value_str, "")
 
-        return original_question
+        # TODO: remove the qualifiers from the question
+
+        # return original_question
+        return original_question.lower().strip()
 
 
 if __name__ == "__main__":
-    # my_filter = CrossGraphFilter()
+    my_filter = CrossGraphFilter()
     # filtered_question = my_filter.filter_before_cross_graph("find all species with molecular weight over 100")
     # print("filtered question:", filtered_question)
+    question = "Thermal Properties of C2H2 at 472.9 K and 123000 Pa"
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
+
+
+    question = "Thermal Properties of C2H2 at 472.9K and 123000 Pa"
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
+
     question = "waht is the molecular weight of CH4"
-    filtered_question = remove_formula(question=question)
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
+
+    question = "What is the power conversion efficiency of c6h6?"
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
+
+    question = "What is H2's Enthalpy"
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
+
+    question = "What is the Gibbs energy of C3H4?"
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
+
+    question = "What is ethylene glycol's power conversion efficiency?"
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
+
+    question = "waht is the molecular weight of CH4"
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
 
     question = "waht is the molecular weight of C3H4O5"
-    filtered_question = remove_formula(question=question)
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
+
 
     question = "waht is the molecular weight of H2O"
-    filtered_question = remove_formula(question=question)
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
 
     question = "waht is the molecular weight of O2"
-    filtered_question = remove_formula(question=question)
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
 
     question = "waht is the molecular weight of H2"
-    filtered_question = remove_formula(question=question)
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
 
     question = "waht is the molecular weight of co2"
-    filtered_question = remove_formula(question=question)
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
 
     question = "waht is the molecular weight of CO2"
-    filtered_question = remove_formula(question=question)
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
 
     question = "waht is the molecular weight of h2"
-    filtered_question = remove_formula(question=question)
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
 
     question = "find species with molecular weight more than 100 g/mol"
-    filtered_question = remove_formula(question=question)
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
+
 

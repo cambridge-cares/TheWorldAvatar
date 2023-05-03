@@ -157,7 +157,7 @@ class CrossGraphQAEngine:
         re_ranked_labels = [answer_list[i] for i in indices]
         re_ranked_domain_list = [domain_list[i] for i in indices]
         re_ranked_engine_list = [self.engine_list[domain] for domain in re_ranked_domain_list]
-        re_ranked_score_list = [float(v.item()) for v in values]
+        re_ranked_score_list = [round(float(v.item()),2) for v in values]
         re_ranked_domain_list = [self.encoding_domain[d] for d in re_ranked_domain_list]
 
         result = []
@@ -214,6 +214,7 @@ class CrossGraphQAEngine:
         got_numerical_values = False
         numerical_domain = None
         input_question = input_question.replace("'s", " of ")
+        input_question = input_question.replace("properties", "property")
         if "mop" not in input_question.lower():
             tokens = [t for t in input_question.strip().split(" ") if t.lower() not in self.global_stop_words]
             input_question = " ".join(tokens)

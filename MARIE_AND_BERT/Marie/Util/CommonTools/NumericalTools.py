@@ -20,9 +20,9 @@ def numerical_value_extractor(question):
 
 
 def numerical_value_extractor_with_no_space(text):
-    print("text", text)
+    # print("text", text)
     numerical_values = re.findall(r"[-]*\d*[\.]*\d+", text)
-    print("numerical_values", numerical_values)
+    # print("numerical_values", numerical_values)
 
     if len(numerical_values) > 0:
         return float(numerical_values[0]), numerical_values[0]
@@ -37,33 +37,34 @@ def qualifier_value_extractor(question):
     :return: a dictionary with two keys: temperature and pressure, if no value is under the category, it returns
     None
     """
-    question = question.lower()
+    lower_case_question = question.lower()
     temperature_regex = r"(((\d+[\.]*\d+)|[0-9])+[ ]*(kelvin|k|celsius|farenheit|degree[s]*)+[ ]*(celsius)*)|(room temperature)"
     # pressure_regex = r"([ ][-]*\d+[\.]*\d+[ ]*(atm|bar|pascal|p|pa|bar)) | (room temperature)"
     pressure_regex = r"((\d+[\.]*\d+)|[0-9])[ ]*(atm|bar|pascal|pa|bar)"
-    temperature = re.search(temperature_regex, question)
-    pressure = re.search(pressure_regex, question)
+    temperature = re.search(temperature_regex, lower_case_question)
+    pressure = re.search(pressure_regex, lower_case_question)
+    lower_case_question = lower_case_question.replace(" at ", " ")
 
-    print("question:", question)
+    # print("question:", lower_case_question)
     if temperature:
         temperature = temperature.group()
-        print("temperature", temperature)
-        filtered_question = question.replace(temperature, "")
+        # print("temperature", temperature)
+        lower_case_question = lower_case_question.replace(temperature, "")
         temperature, _ = numerical_value_extractor_with_no_space(temperature)
-        print(temperature)
+        # print(temperature)
 
     if pressure:
         pressure = pressure.group()
-        print("pressure", pressure)
-        filtered_question = question.replace(pressure, "").replace(" and", " ").strip()
+        # print("pressure", pressure)
+        lower_case_question = lower_case_question.replace(pressure, "").replace(" and", " ").strip()
         pressure, _ = numerical_value_extractor_with_no_space(pressure)
-        print(pressure)
+        # print(pressure)
 
     if (temperature is None) and (pressure is None):
         return {}, question
     else:
         return {"temperature": temperature,
-                "pressure": pressure}, filtered_question
+                "pressure": pressure}, lower_case_question
 
 
 if __name__ == "__main__":
