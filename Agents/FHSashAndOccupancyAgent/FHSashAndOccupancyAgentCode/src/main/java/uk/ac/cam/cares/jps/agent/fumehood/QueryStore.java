@@ -86,6 +86,9 @@ public class QueryStore {
         kbClient.setPassword(password);
     }
 
+    /*
+     * Query for all instances with rdf:type ontobms:FumeHood and ontobms:WalkInFumeHood
+     */
     public Map<String, List<String>> queryForFHandWFHDevices() {
         Map<String, List<String>> map = new HashMap<>();
         map.put("FHandWFH", new ArrayList<>());
@@ -123,11 +126,16 @@ public class QueryStore {
     
     //SELECT ?OccupancyState WHERE { <IRIString> saref:hasState ?OccupancyState ;
     //                               ?OccupanyState rdf:type ontodevice:OccupancyState }
+    /*
+     * Query for the occupied state IRIs of all instances with rdf:type ontobms:FumeHood and ontobms:WalkInFumeHood
+     */
     public Map<String, List<String>> queryForOccupancyState(Map<String, List<String>> map) {
         String result = null;
         map.put("OccupancyIRIs", new ArrayList<>());
+
         Variable occupancyState = SparqlBuilder.var("OccupancyState");
         SelectQuery query = Queries.SELECT();
+
         for (int i = 0; i < map.get("FHandWFH").size(); i++){
             TriplePattern queryPattern = iri(map.get("FHandWFH").get(i)).has(hasState, occupancyState);
             TriplePattern queryPattern2 = occupancyState.isA(OccupiedState);
@@ -152,10 +160,14 @@ public class QueryStore {
 
     //SELECT ?label WHERE {<IRIString> rdfs:label ?label}
     //SELECT ?comment WHERE {<IRIString> rdfs:comment ?comment}
+    /*
+     * Query for the sash opening IRIs  of all instances with rdf:type ontobms:FumeHood and ontobms:WalkInFumeHood
+     */
     public Map<String, List<String>> queryForSashOpening(Map<String, List<String>> map) {
-        map.put("SashOpeningIRIs", new ArrayList<>());
-        SelectQuery query = Queries.SELECT();
         String result = null;
+        map.put("SashOpeningIRIs", new ArrayList<>());
+
+        SelectQuery query = Queries.SELECT();
         Variable SashOpeningPercentage = SparqlBuilder.var("SashOpeningPercentage");
         Variable SashOpeningMeasure = SparqlBuilder.var("SashOpeningMeasure");
 
