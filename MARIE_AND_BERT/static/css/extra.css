@@ -10,3 +10,14 @@
   flex: 70%;
   padding: 5px;
 }
+
+.table-custom  th {
+font-size: 1rem;
+background: #b5b5b5;
+    color: #333;
+}
+.table-custom  tr {
+    color: #333;
+    font-weight: 500;
+    border-top: 2px solid #b5b5b5;
+}

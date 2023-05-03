@@ -505,7 +505,7 @@ function toTable(valueSet) {
 	let new_headers  = select_header_name(valueSet)
 	// console.log("new headers", new_headers)
 	// Build into HTML table
-	let html = "<table class=\"chatbot-table\"><tr>";
+	let html = "<table class=\" table table-custom\"><thead><tr>";
 
 	// Headers
 	Object.keys(valueSet).forEach((header) => {
@@ -514,9 +514,9 @@ function toTable(valueSet) {
 			header = new_headers[header]
 		}
 
-		html += "<th>" + header + "</th>";
+		html += "<th >" + header + "</th>";
 	});
-	html += "</tr>";
+	html += "</tr></thead>";
 
 	// Values
 	let rows = valueSet["Result"].length;
