@@ -27,16 +27,17 @@ public class TimeSeriesSparqlIntegrationTest {
 	private final double epsilon = 0.000001d;
 
 	// Will create a container that is shared between tests.
-	// NOTE: requires access to the docker.cmclinnovations.com registry from the machine the test is run on.
 	// For more information regarding the registry, see: https://github.com/cambridge-cares/TheWorldAvatar/wiki/Docker%3A-Image-registry
 	@Container
-	private static final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+	private static final GenericContainer<?> blazegraph = new GenericContainer<>(DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"))
 			.withExposedPorts(9999);
 
 	@BeforeClass
 	public static void initialiseSparqlClient() {
-		// Start the container manually
+		
+        // Start the container manually
 		blazegraph.start();
+
 		// Set up a kb client that points to the location of the triple store
 		// This can be a RemoteStoreClient or the FileBasedStoreClient
 		RemoteStoreClient kbClient = new RemoteStoreClient();

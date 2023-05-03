@@ -44,7 +44,7 @@ public class RemoteStoreIntegrationTest {
 
 	@Container
 	private static GenericContainer<?> blazegraph = new GenericContainer<>(
-			DockerImageName.parse("docker.cmclinnovations.com/blazegraph_for_tests:1.0.0"))
+			DockerImageName.parse("ghcr.io/cambridge-cares/blazegraph_for_tests:1.0.0"))
 												 .withExposedPorts(9999);
 	
 	@BeforeAll
