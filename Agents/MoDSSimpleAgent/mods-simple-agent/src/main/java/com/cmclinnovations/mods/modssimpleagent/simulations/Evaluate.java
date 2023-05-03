@@ -63,9 +63,6 @@ class Evaluate extends Simulation {
                 Streams.zip(outputVarNames.stream(), points.stream(), DataColumn::new)
                         .collect(Collectors.toList()));
 
-        Request results = super.getResults();
-        results.setOutputs(outputValues);
-
-        return results;
+        return super.getResults().toBuilder().outputs(outputValues).build();
     }
 }

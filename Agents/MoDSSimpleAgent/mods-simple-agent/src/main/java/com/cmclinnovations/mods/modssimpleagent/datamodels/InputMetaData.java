@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,7 +29,7 @@ public class InputMetaData {
     public static final String DEFAULT_INPUT_INFO_FILE_NAME = "inputMetaData.csv";
 
     public static InputMetaData createInputMetaData(Request request, MoDSBackend modsBackend) throws IOException {
-        Data inputs = request.getInputs();
+        Data inputs = request.inputs();
 
         List<String> varNames = new ArrayList<>();
         List<Double> minima = new ArrayList<>();
@@ -139,23 +138,23 @@ public class InputMetaData {
     }
 
     public List<String> getVarNames() {
-        return rows.stream().map(InputMetaDataRow::getVarName).collect(Collectors.toList());
+        return rows.stream().map(InputMetaDataRow::varName).collect(Collectors.toList());
     }
 
     public List<Double> getMinima() {
-        return rows.stream().map(InputMetaDataRow::getMinimum).collect(Collectors.toList());
+        return rows.stream().map(InputMetaDataRow::minimum).collect(Collectors.toList());
     }
 
     public List<Double> getMaxima() {
-        return rows.stream().map(InputMetaDataRow::getMaximum).collect(Collectors.toList());
+        return rows.stream().map(InputMetaDataRow::maximum).collect(Collectors.toList());
     }
 
     public List<Double> getMeans() {
-        return rows.stream().map(InputMetaDataRow::getMean).collect(Collectors.toList());
+        return rows.stream().map(InputMetaDataRow::mean).collect(Collectors.toList());
     }
 
     public List<String> getScaling() {
-        return rows.stream().map(InputMetaDataRow::getScaling).collect(Collectors.toList());
+        return rows.stream().map(InputMetaDataRow::scaling).collect(Collectors.toList());
     }
 
     public List<InputMetaDataRow> getRows() {

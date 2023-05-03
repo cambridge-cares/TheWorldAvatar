@@ -5,80 +5,28 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-public class Request {
+import lombok.Builder;
 
-    @JsonInclude(Include.NON_NULL)
-    private final String jobID;
-    @JsonProperty("SimulationType")
-    private final String simulationType;
-    @JsonProperty("Algorithms")
-    @JsonInclude(Include.NON_NULL)
-    private final List<Algorithm> algorithms;
-    @JsonProperty("Inputs")
-    @JsonInclude(Include.NON_NULL)
-    private final Data inputs;
-    @JsonProperty("Outputs")
-    @JsonInclude(Include.NON_NULL)
-    private Data outputs;
-    @JsonProperty("Sensitivities")
-    @JsonInclude(Include.NON_NULL)
-    private List<SensitivityResult> sensitivities;
-
-    private Request() {
-        this(null, null);
-    }
+@JsonInclude(Include.NON_NULL)
+@Builder(toBuilder = true)
+public record Request(String jobID, @JsonProperty("SimulationType") String simulationType,
+        @JsonProperty("Algorithms") List<Algorithm> algorithms, @JsonProperty("Inputs") Data inputs,
+        @JsonProperty("Outputs") Data outputs, @JsonProperty("Sensitivities") List<SensitivityResult> sensitivities) {
 
     public Request(String jobID, String simulationType) {
-        this.jobID = jobID;
-        this.simulationType = simulationType;
-        this.algorithms = null;
-        this.inputs = null;
-        this.outputs = null;
-        this.sensitivities = null;
+        this(jobID, simulationType, null, null, null, null);
     }
 
-    public String getJobID() {
-        return jobID;
-    }
-
-    public String getSimulationType() {
-        return simulationType;
-    }
-
-    public List<Algorithm> getAlgorithms() {
-        return algorithms;
-    }
-
-    public Data getInputs() {
-        return inputs;
-    }
-
-    public Data getOutputs() {
-        return outputs;
-    }
-
-    public void setOutputs(Data outputs) {
-        this.outputs = outputs;
-    }
-
-    public List<SensitivityResult> getSensitivities() {
-        return sensitivities;
-    }
-
-    public void setSensitivities(List<SensitivityResult> sensitivities) {
-        this.sensitivities = sensitivities;
-    }
-
+    @JsonIgnore
     public Algorithm getAlgorithmOfType(String algType) {
-        return getAlgorithms().stream().filter(alg -> alg.getType().equals(algType)).findFirst().orElseThrow();
+        return algorithms.stream().filter(alg -> alg.type().equals(algType)).findFirst().orElseThrow();
     }
 
     @JsonIgnore
     public String getSurrogateToLoad() {
-        return getAlgorithms().stream().map(Algorithm::getSurrogateToLoad).filter(Objects::nonNull).findFirst()
-                .orElse(null);
+        return algorithms.stream().map(Algorithm::surrogateToLoad).filter(Objects::nonNull).findFirst().orElse(null);
     }
 }

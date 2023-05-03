@@ -25,8 +25,7 @@ public class MCDM extends Simulation {
 
     @Override
     protected void populateAlgorithmNodes(List<Variable> variables) {
-        populateMOOAlgorithmNode(Simulation.DEFAULT_MOO_ALGORITHM_NAME, getPrimaryAlgorithm().getName(),
-                variables);
+        populateMOOAlgorithmNode(Simulation.DEFAULT_MOO_ALGORITHM_NAME, getPrimaryAlgorithm().name(), variables);
         super.populateAlgorithmNodes(variables);
     }
 

@@ -74,7 +74,7 @@ public class Simulation {
 
     public static Simulation createSimulation(Request request) throws JAXBException, IOException {
 
-        String simulationType = request.getSimulationType();
+        String simulationType = request.simulationType();
         BackendInputFile inputFile = TemplateLoader.load(simulationType);
 
         MoDSBackend modsBackend = MoDSBackendFactory.createMoDSBackend();
@@ -89,7 +89,7 @@ public class Simulation {
     }
 
     public static Simulation retrieveSimulation(Request request) throws JAXBException, IOException {
-        String jobID = request.getJobID();
+        String jobID = request.jobID();
 
         MoDSBackend modsBackend = MoDSBackendFactory.retrieveMoDSBackend(jobID);
 
@@ -106,7 +106,7 @@ public class Simulation {
             InputMetaData inputMetaData)
             throws IOException {
 
-        String simulationType = request.getSimulationType();
+        String simulationType = request.simulationType();
         switch (simulationType) {
             case "MOO":
                 return new MOO(request, inputFile, modsBackend, inputMetaData);
@@ -154,11 +154,11 @@ public class Simulation {
     }
 
     protected Algorithm getPrimaryAlgorithm() {
-        return request.getAlgorithms().get(0);
+        return request.algorithms().get(0);
     }
 
     protected void populateInputFile() {
-        List<Variable> variables = getPrimaryAlgorithm().getVariables();
+        List<Variable> variables = getPrimaryAlgorithm().variables();
         populateAlgorithmNodes(variables);
         populateCaseNodes();
         populateModelNodes();
@@ -169,16 +169,14 @@ public class Simulation {
 
     protected void populateMOOAlgorithmNode(String mooAlgName, String displayName, List<Variable> variables) {
         Map<String, List<String>> partitionedSubtypes = variables.stream()
-                .filter(variable -> variable.getType().equals("output"))
-                .collect(Collectors.groupingBy(Variable::getObjective,
+                .filter(variable -> variable.type().equals("output")).collect(Collectors.groupingBy(Variable::objective,
                         Collectors.mapping(Variable::getSubtype, Collectors.toList())));
         inputFile.configureMOOAlgorithm(mooAlgName, displayName, partitionedSubtypes);
     }
 
     protected void populateAlgorithmNodes(List<Variable> variables) {
         Map<String, List<String>> partitionedVars = variables.stream().collect(
-                Collectors.groupingBy(Variable::getType,
-                        Collectors.mapping(Variable::getSubtype, Collectors.toList())));
+                Collectors.groupingBy(Variable::type, Collectors.mapping(Variable::getSubtype, Collectors.toList())));
         inputFile.configureAlgorithmParams(partitionedVars.get("input"), partitionedVars.get("output"));
     }
 
@@ -211,11 +209,10 @@ public class Simulation {
         Iterator<Double> minItr = inputMetaData.getMinima().iterator();
         Iterator<Double> maxItr = inputMetaData.getMaxima().iterator();
         for (String name : inputMetaData.getVarNames()) {
-            Variable variable = variables.stream().filter(varToTest -> varToTest.getName().equals(name))
-                    .findFirst().orElseThrow();
-            inputFile.addParameter(name, variable.getSubtype(), variable.getType(),
-                    getVariableCases(name), getVariableModels(name),
-                    minItr.next(), maxItr.next());
+            Variable variable = variables.stream().filter(varToTest -> varToTest.name().equals(name)).findFirst()
+                    .orElseThrow();
+            inputFile.addParameter(name, variable.getSubtype(), variable.type(), getVariableCases(name),
+                    getVariableModels(name), minItr.next(), maxItr.next());
         }
     }
 
@@ -271,7 +268,7 @@ public class Simulation {
     }
 
     protected final void generateInitialFileFromInputs() throws FileGenerationException {
-        Data inputs = getRequest().getInputs();
+        Data inputs = getRequest().inputs();
         Path path = modsBackend.getInitialDir().resolve(INITIAL_FILE_NAME);
         new CSVDataFile(inputs.getAverages()).marshal(path);
     }
@@ -282,15 +279,15 @@ public class Simulation {
     }
 
     protected final void generateDataAlgFiles() throws FileGenerationException {
-        generateAlgorithmFiles(getRequest().getInputs(), DATA_ALGORITHM_NAME);
+        generateAlgorithmFiles(getRequest().inputs(), DATA_ALGORITHM_NAME);
     }
 
     protected final void generateSamplingAlgDataFiles() throws FileGenerationException {
-        generateAlgorithmFiles(getRequest().getInputs(), SAMPLING_ALGORITHM_FILE_NAME);
+        generateAlgorithmFiles(getRequest().inputs(), SAMPLING_ALGORITHM_FILE_NAME);
     }
 
     protected final void generateMOOAlgDataFiles() throws FileGenerationException {
-        generateAlgorithmFiles(getRequest().getInputs(), DEFAULT_MOO_ALGORITHM_NAME);
+        generateAlgorithmFiles(getRequest().inputs(), DEFAULT_MOO_ALGORITHM_NAME);
     }
 
     private final void generateAlgorithmFiles(Data data, String algorithmFileName) throws FileGenerationException {
@@ -337,8 +334,8 @@ public class Simulation {
     }
 
     public void save() {
-        for (Algorithm algorithm : request.getAlgorithms()) {
-            if (algorithm.getSaveSurrogate() != null && algorithm.getSaveSurrogate()) {
+        for (Algorithm algorithm : request.algorithms()) {
+            if (algorithm.saveSurrogate() != null && algorithm.saveSurrogate()) {
                 Path saveDirectory = getSaveDirectory();
                 Path surrogateDirectory = getSurrogateDirectory(modsBackend);
 
@@ -424,7 +421,7 @@ public class Simulation {
     }
 
     public Request getDefaultResponse() {
-        return new Request(getJobID(), request.getSimulationType());
+        return new Request(getJobID(), request.simulationType());
     }
 
     public Request getResults() {
@@ -436,7 +433,7 @@ public class Simulation {
         String simDir = getModsBackend().getSimDir().toString();
         String surrogateName = DEFAULT_SURROGATE_ALGORITHM_NAME;
 
-        String algName = getPrimaryAlgorithm().getType();
+        String algName = getPrimaryAlgorithm().type();
         List<String> xVarNames = MoDSAPI.getXVarNames(simDir, algName);
         List<String> yVarNames = MoDSAPI.getYVarNames(simDir, algName);
 
@@ -486,7 +483,7 @@ public class Simulation {
 
         String simDir = getModsBackend().getSimDir().toString();
 
-        List<Variable> variables = getPrimaryAlgorithm().getVariables();
+        List<Variable> variables = getPrimaryAlgorithm().variables();
 
         List<String> outputVarNames = MoDSAPI.getReducedYVarIDs(simDir, DEFAULT_MOO_ALGORITHM_NAME).stream()
                 .map(MoDSAPI::getVarName)
@@ -500,23 +497,19 @@ public class Simulation {
                 .collect(Collectors.toList());
 
         List<Double> minimaFromData = ListUtils.filterAndSort(getInputMetaData().getRows(), outputVarNames,
-                InputMetaDataRow::getVarName,
-                InputMetaDataRow::getMinimum);
+                InputMetaDataRow::varName, InputMetaDataRow::minimum);
 
         List<Double> maximaFromData = ListUtils.filterAndSort(getInputMetaData().getRows(), outputVarNames,
-                InputMetaDataRow::getVarName,
-                InputMetaDataRow::getMaximum);
+                InputMetaDataRow::varName, InputMetaDataRow::maximum);
 
-        List<Double> minimaFromAlg = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,
-                Variable::getMinimum);
+        List<Double> minimaFromAlg = ListUtils.filterAndSort(variables, outputVarNames, Variable::name,
+                Variable::minimum);
+        List<Double> maximaFromAlg = ListUtils.filterAndSort(variables, outputVarNames, Variable::name,
+                Variable::maximum);
+        List<Double> weightsFromAlg = ListUtils.filterAndSort(variables, outputVarNames, Variable::name,
+                Variable::weight);
 
-        List<Double> maximaFromAlg = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,
-                Variable::getMaximum);
-
-        List<Double> weightsFromAlg = ListUtils.filterAndSort(variables, outputVarNames, Variable::getName,
-                Variable::getWeight);
-
-        int numResults = getPrimaryAlgorithm().getMaxNumberOfResults();
+        int numResults = getPrimaryAlgorithm().maxNumberOfResults();
 
         EnumMap<DataType, List<List<Double>>> allPointsMap = MoDSAPI.getMCDMSimpleWeightedPoints(simDir,
                 DEFAULT_MOO_ALGORITHM_NAME,
@@ -534,10 +527,6 @@ public class Simulation {
                 Streams.zip(allVarNames.stream(), points.stream(), DataColumn::new)
                         .collect(Collectors.toList()));
 
-        Request results = getDefaultResponse();
-        results.setOutputs(values);
-
-        return results;
+        return getDefaultResponse().toBuilder().outputs(values).build();
     }
-
 }

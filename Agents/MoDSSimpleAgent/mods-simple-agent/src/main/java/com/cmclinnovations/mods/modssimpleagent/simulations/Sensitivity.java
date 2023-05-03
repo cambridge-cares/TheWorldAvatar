@@ -11,7 +11,8 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
 
 class Sensitivity extends Simulation {
 
-        public Sensitivity(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData)
+        public Sensitivity(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
+                        InputMetaData inputMetaData)
                         throws IOException {
                 super(request, inputFile, modsBackend, inputMetaData);
         }
@@ -35,8 +36,6 @@ class Sensitivity extends Simulation {
 
         @Override
         public Request getResponse() {
-                Request response = super.getResponse();
-                response.setSensitivities(getSensitivity());
-                return response;
+                return super.getResponse().toBuilder().sensitivities(getSensitivity()).build();
         }
 }
