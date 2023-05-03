@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  data-bridge-agent:
+    container_name: data-bridge-agent
+    image: data-bridge-agent:1.0.0
+    build:
+      context: ..
+      target: test
+    ports:
+      - "3055:8080"
