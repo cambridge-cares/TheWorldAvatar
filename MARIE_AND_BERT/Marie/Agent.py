@@ -11,9 +11,9 @@ import os
 import sys
 import time
 
-from Marie.EntityLinking.IRILookup import IRILookup
-
 sys.path.append("")
+
+from Marie.EntityLinking.IRILookup import IRILookup
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.Util.CommonTools import NumericalTools
 from Marie.Util.AgentTools.agent_invoker import AgentInvoker
@@ -49,7 +49,7 @@ class AgentInterface:
 
     def run(self, question, mention=None):
         # perform qualifier extraction and removal
-        question = self.text_filtering(question)
+        question = self.text_filtering(question).lower()
         qualifier, filtered_question = NumericalTools.qualifier_value_extractor(question)
         mention = self.pce_nel.get_mention(filtered_question)
         print("mention:", mention)
@@ -80,10 +80,16 @@ if __name__ == "__main__":
     cn = ChemicalNEL()
     agentInterface = AgentInterface(nel=cn)
     START_TIME = time.time()
-    question = "what is the power conversion efficiency of TiO2"
-    result = agentInterface.run(question)
-    print(result)
-    print(time.time() - START_TIME)
+
+    text = ""
+    while text != "quit":
+        question = input("Question:")
+        result = agentInterface.run(question)
+        print(result)
+        print(time.time() - START_TIME)
+
+
+    "what is the Heat Capacity of C3H4O"
 
     # START_TIME = time.time()
     # question = "what is the power conversion efficiency of C3H4O"
