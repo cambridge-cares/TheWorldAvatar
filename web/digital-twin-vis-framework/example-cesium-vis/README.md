@@ -148,7 +148,9 @@ There are a few caveats to mention however:
 - The size of the clipping plane is based on the bounds of the tileset itself.
 - If adding planes to an existing visualisation, ensure the version of Cesium JS and CSS files used in the `index.html` file are _at least_ 1.105.
 
-<img src="readme-clipping.JPG" alt="Example of a clipping plane on a 3D tileset" width="75%"/>
+<p align="center">
+    <img src="readme-clipping.JPG" alt="Example of a clipping plane on a 3D tileset" width="75%"/>
+</p>
 
 ## Sample Data
 

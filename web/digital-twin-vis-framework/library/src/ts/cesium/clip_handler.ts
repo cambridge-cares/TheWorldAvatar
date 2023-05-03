@@ -72,6 +72,10 @@ class ClipHandler {
             </div>
         `;
 
+        let controlContents = document.createElement("div");
+        controlContents.classList.add("controlContents");
+        controlContainer.appendChild(controlContents);
+        
         // Insert into document
         let controlParent = document.getElementById("controlContainer");
         let helpIcon = document.getElementById("helpContainer");
@@ -80,7 +84,7 @@ class ClipHandler {
         // Enable clipping
         let checkContainer = document.createElement("div");
         checkContainer.id = "clipEnableContainer";
-        controlContainer.appendChild(checkContainer);
+        controlContents.appendChild(checkContainer);
 
         let enableLabel = document.createElement("p");
         enableLabel.innerHTML = "Enable clipping planes?";
@@ -138,7 +142,7 @@ class ClipHandler {
         let showContainer = document.createElement("div");
         showContainer.id = "clipShowContainer";
         showContainer.style.display = "none";
-        controlContainer.appendChild(showContainer);
+        controlContents.appendChild(showContainer);
 
         let showLabel = document.createElement("p");
         showLabel.innerHTML = "Show plane geometry?";
@@ -163,7 +167,7 @@ class ClipHandler {
         let selectContainer = document.createElement("div");
         selectContainer.id = "clipSelectContainer";
         selectContainer.style.display = "none";
-        controlContainer.appendChild(selectContainer);
+        controlContents.appendChild(selectContainer);
 
         let selectLabel = document.createElement("p");
         selectLabel.innerHTML = "Target layer:";
