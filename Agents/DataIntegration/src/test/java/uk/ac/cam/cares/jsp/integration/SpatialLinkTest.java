@@ -12,18 +12,21 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 class SpatialLinkTest {
 
-    DockerImageName postgisImage = DockerImageName.parse("postgis/postgis:14-3.2-alpine").asCompatibleSubstituteFor("postgres");
+    DockerImageName postgisImage = DockerImageName.parse("postgis/postgis:13-3.2").asCompatibleSubstituteFor("postgres");
     @Container
     private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(postgisImage);
 
     @BeforeEach
-    public void initialise() {
+    public void initialise() throws SQLException {
         Network network = Network.newNetwork();
         postgres.setStartupAttempts(2);
         postgres.withNetwork(network);
@@ -33,6 +36,7 @@ class SpatialLinkTest {
 //        postgres.withPassword("postgis");
         postgres.start();
         System.out.println(postgres.getJdbcUrl() + postgres.getUsername() + postgres.getPassword());
+        Connection conn = DriverManager.getConnection(postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
     }
     @Test
     public void spatialLinkTest() throws ServletException, IOException {

@@ -29,6 +29,8 @@ public class BuildingLink extends HttpServlet {
     List<GeoObject3D> geoObject3Ds = new ArrayList<>();
     List<KGObjects> kgObjects = new ArrayList<>();
 
+    private PostgresClient postgisClient;
+
     BuildingLink () {}
     BuildingLink (List<GeoObject3D> geoObject3Ds, List<KGObjects> kgObjects){
         this.geoObject3Ds = geoObject3Ds;
@@ -42,15 +44,19 @@ public class BuildingLink extends HttpServlet {
         String db3d;
         GeoObject3D object3D = new GeoObject3D();
         String kgurl = req.getParameter("iri");
-        RemoteStoreClient kgClient = new RemoteStoreClient(kgurl,kgurl,Config.kguser,Config.kgpassword);
+        RemoteStoreClient kgClient = new RemoteStoreClient(kgurl,kgurl,null,null);
         KGObjects kgObjects = new KGObjects(kgClient, null, null, null);
 
         try {
             this.kgObjects =  kgObjects.getAllObjects();
 
             db3d = req.getParameter("db3d");
-            PostgresClient conn3 = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
-            object3D.setPostGISClient(conn3);
+
+            if (postgisClient == null) {
+                postgisClient = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
+            }
+//            PostgresClient conn3 = new PostgresClient(Config.dburl + "/" + db3d, Config.dbuser, Config.dbpassword);
+            object3D.setPostGISClient(postgisClient);
             this.geoObject3Ds = object3D.getObject3D();
         } catch (Exception e) {
             LOGGER.error("Fail to connect database.");
@@ -95,5 +101,8 @@ public class BuildingLink extends HttpServlet {
         }
 
 
+    }
+    void setPostGISClient(PostgresClient postgisClient) {
+        this.postgisClient = postgisClient;
     }
 }

@@ -1,8 +1,6 @@
 package uk.ac.cam.cares.jsp.integration;
 
-import com.cmclinnovations.stack.clients.blazegraph.BlazegraphEndpointConfig;
 import com.cmclinnovations.stack.clients.docker.ContainerClient;
-import com.cmclinnovations.stack.clients.ontop.OntopEndpointConfig;
 import com.cmclinnovations.stack.clients.postgis.PostGISEndpointConfig;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,8 +14,8 @@ public class Config  extends ContainerClient {
 
 //    private static BlazegraphEndpointConfig blazegraphEndpointConfig;
 //    public static String kgurl;
-    public static String kguser;
-    public static String kgpassword;
+//    public static String kguser;
+//    public static String kgpassword;
 //    public static String ontop_url;
 
 //    private static OntopEndpointConfig ontopEndpointConfig;

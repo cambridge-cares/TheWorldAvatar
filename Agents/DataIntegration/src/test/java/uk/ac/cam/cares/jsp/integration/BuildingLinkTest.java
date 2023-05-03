@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.utility.DockerImageName;
 import uk.ac.cam.cares.jps.base.query.RemoteStoreClient;
 
 import javax.servlet.ServletException;
@@ -18,8 +19,9 @@ import static org.mockito.Mockito.when;
 
 class BuildingLinkTest {
     // Create Docker container with postgres 13.3 image from Docker Hub
+    DockerImageName postgisImage = DockerImageName.parse("postgis/postgis:13-3.2").asCompatibleSubstituteFor("postgres");
     @Container
-    private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:13.3");
+    private PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(postgisImage);
     RemoteStoreClient kgClient;
     private String queryEndpoint = "http://157.245.193.188:48083/blazegraph/namespace/ntuenergy/sparql";
     private String dburl3D = "jdbc:postgresql://localhost:5432/sg_ntu";
@@ -33,8 +35,12 @@ class BuildingLinkTest {
         postgres.setStartupAttempts(2);
         postgres.withNetwork(network);
         postgres.withNetworkAliases("postgis");
-        postgres.start();
+        postgres.withPassword(dbpassword);
+        postgres.withUsername(dbuser);
 
+
+        postgres.start();
+        System.out.println(postgres.getUsername());
         kgClient = new RemoteStoreClient(queryEndpoint, queryEndpoint);
 
         conn3 = new PostgresClient(dburl3D, dbuser, dbpassword);
@@ -50,7 +56,7 @@ class BuildingLinkTest {
         when(request.getParameter("iri")).thenReturn("http://157.245.193.188:48083/blazegraph/namespace/ntuenergy/sparql");
 
         BuildingLink buildingLink = new BuildingLink();
-
+        buildingLink.setPostGISClient(conn3);
         buildingLink.doPut(request, response);
 
     }
