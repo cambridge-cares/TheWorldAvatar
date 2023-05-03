@@ -34,7 +34,6 @@ public class DevInstAgentLauncher extends JPSAgent {
     public static final String KEY_CLIENTPROPERTY = "CLIENTPROPERTIES";
 
     private static RemoteStoreClient storeClient;
-    private static DerivationClient derivClient;
     
     private static String baseURL;
     private static String queryEnd;
@@ -170,7 +169,6 @@ public class DevInstAgentLauncher extends JPSAgent {
 
         try{
             storeClient = new RemoteStoreClient(queryEnd, updateEnd);
-            derivClient = new DerivationClient(storeClient, baseURL);
         }
 
         catch (Exception e) {
