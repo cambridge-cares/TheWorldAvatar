@@ -235,3 +235,9 @@ if __name__ == "__main__":
     print("===========================")
     print(rst)
     print("===========================")
+
+    question = "Find all species with boiling point above 0 celsius"
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
