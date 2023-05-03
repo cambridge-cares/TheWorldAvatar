@@ -3,7 +3,9 @@ from PVLibAgent.kg_utils.utils import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from PVLibAgent.kg_utils.tsClientForUpdate import TSClientForUpdate
 from PVLibAgent.error_handling.exceptions import TSException
 from PVLibAgent.kg_utils.utils import DB_UPDATE_URL, DB_UPDATE_USER, DB_UPDATE_PASSWORD
-from PVLibAgent.data_retrieval.query_data import query_NTU_Buildings
+from PVLibAgent.data_retrieval.query_data import QueryData
+from PVLibAgent.kg_utils.utils import create_sparql_prefix
+
 import logging
 import uuid
 
@@ -50,29 +52,30 @@ class timeseries_instantiation:
     def link_to_NTU_KG(dataIRIs: list):
         kg_client = KGClient(query_endpoint=UPDATE_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
 
-        NTU_buildings = query_NTU_Buildings(query_endpoint=UPDATE_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
+        NTU_buildings = QueryData.query_NTU_Buildings(query_endpoint=UPDATE_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
 
         for building in NTU_buildings:
             # Create IRI for current sensor
-            pgIRI = create_sparql_prefix('powreal') + 'PhotovoltaicGenerator_' + building['name'] + str(uuid.uuid4())
-            pvIRI = create_sparql_prefix('powreal') + 'PhotovoltaicPanel_' + building['name'] + str(uuid.uuid4())
-            gpIRI = create_sparql_prefix('powsys') + 'GeneratedPower_' + building['name'] + str(uuid.uuid4())
-            measureIRI = create_sparql_prefix('om') + 'Measure_' + building['name'] + str(uuid.uuid4())
+            pgIRI = 'http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#' + 'PhotovoltaicGenerator_' + str(uuid.uuid4())
+            pvIRI = 'http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#' + 'PhotovoltaicPanel_' + str(uuid.uuid4())
+            gpIRI = 'http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#' + 'GeneratedPower_' + str(uuid.uuid4())
+            measureIRI = 'http://www.ontology-of-units-of-measure.org/resource/om-2/' + 'Measure_' + str(uuid.uuid4())
             query = create_sparql_prefix('powreal') + \
-                    create_sparql_prefix('Powsys') + \
+                    create_sparql_prefix('powsys') + \
                     create_sparql_prefix('ontocape') + \
                     create_sparql_prefix('om') + \
                     create_sparql_prefix('ts') + \
+                    create_sparql_prefix('rdf') + \
                     '''INSERT DATA { \
                     <%s> ontocape:contains <%s> . \
                     <%s> rdf:type powreal:PhotovoltaicGenerator . \
                     <%s> ontocape:hasSubsystem <%s> . \
                     <%s> rdf:type powreal:PhotovoltaicPanel . \
-                    <%s> Powsys:hasPowerGenerated <%s> . \
+                    <%s> powsys:hasPowerGenerated <%s> . \
                     <%s> rdf:type powsys:GeneratedPower . \
                     <%s> om:hasValue <%s> . \
                     <%s> rdf:type om:Measure . \
-                    <%s> ts:hasTimeSeries <%s> . \
+                    <%s> ts:hasTimeSeries <%s> . }\
                     ''' % (building['building'], pgIRI, pgIRI, pgIRI, pvIRI, pvIRI, pgIRI, gpIRI, gpIRI, gpIRI, measureIRI, measureIRI, measureIRI, dataIRIs[0])
-            KGClient.executeUpdate(query)
+            kg_client.performUpdate(query)
 

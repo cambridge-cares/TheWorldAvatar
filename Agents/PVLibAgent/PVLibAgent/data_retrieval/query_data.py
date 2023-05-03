@@ -333,9 +333,11 @@ class QueryData:
             kg_client = KGClient(query_endpoint, update_endpoint)
 
             query = create_sparql_prefix('powreal') + \
-                    create_sparql_prefix('Powsys') + \
+                    create_sparql_prefix('powsys') + \
+                    create_sparql_prefix('rdf') + \
+                    create_sparql_prefix('rdfs') + \
                     '''SELECT ?building ?name WHERE {
-                              ?entity  a  powreal:BusNode  .
+                              ?entity  rdf:type  powreal:BusNode  .
                               ?building powsys:hasBusNode ?entity.
                               ?building rdfs:label ?name }'''
 
@@ -345,7 +347,7 @@ class QueryData:
             for building in response:
                 print(building["name"])
                 print(building["building"])
-            return building
+            return response
 
         except Exception as ex:
-            raise KGException("Unable to query for any irradiance data IRI!") from ex
+            raise KGException("Unable to query for any NTU building IRI!") from ex

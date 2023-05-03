@@ -40,7 +40,7 @@ PREFIXES = {
         'geo': 'https://www.w3.org/2003/01/geo/wgs84_pos#',
         's3n': 'https://w3id.org/s3n/',
         'powsys': 'http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#',
-        'powreal': 'http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#'
+        'powreal': 'http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#',
         'ontocape': 'http://www.theworldavatar.com/kg/ontocape/upper_level/system.owl#'
 }
 
