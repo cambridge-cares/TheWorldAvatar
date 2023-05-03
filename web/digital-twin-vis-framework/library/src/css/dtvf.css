@@ -1434,3 +1434,9 @@ label[for="select-feature"] {
     height: 25px;
     font-size: 9pt;
 }
+
+.ui-slider-handler {
+    border-radius: 50%!important;
+    background: #B8B8B8;
+    background-color: #B8B8B8;
+}

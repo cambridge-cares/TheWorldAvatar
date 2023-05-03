@@ -124,16 +124,31 @@ An example specification of terrain elevation is shown below. Note that in this 
 
 #### Clipping Planes
 
-For 3D tileset sources, clipping planes can also be added that allow the user to effectively slice the model, revealing its interior at a specific height; Cesium has an online example of this [here](https://sandcastle.cesium.com/?src=3D%20Tiles%20Clipping%20Planes.html).
+For 3D tileset sources, clipping planes can also be added that allow the user to effectively slice the model, revealing its interior at a specific height; Cesium has an online example of this [here](https://sandcastle.cesium.com/?src=3D%20Tiles%20Clipping%20Planes.html); a demonstration of this feature has also been added to this example visualisation.
 
-To enable clipping planes, within the specification of a 3D tileset layer in the `data.json` file, simply set the `clipPlane` parameter to `true` and add a `clipHeight` parameter to set the default height of the clipping plane (in meters). This should then show a semi-transparent clipping plane above the tileset; clicking and dragging this plane up and down can then reveal the interior of the models within the tileset.
+To enable clipping planes, within the specification of a 3D tileset layer in the `data.json` file, add a `clipping` object to specify the height range (in metres), and an optional array of labelled increments; this can be done for as many tilesets as the developer requires. An example of the specification format is shown below:
+
+```json
+  "clipping": {
+        "min": 0,
+        "max": 10,
+        "start": 10,
+        "labels": {
+            "0": "Ground level",
+            "2.9": "Bottom floor",
+            "5.78": "Top floor",
+            "9.14": "Roof"
+        }
+    }    
+```
 
 There are a few caveats to mention however:
 - This feature is only supported on 3D tileset sources.
-- At the moment, only one clipping plane can be created for each tileset, and it will apply to the _entire_ tileset.
-- The size of the clipping plane is equal to the radius of the boundingSphere Cesium generates for the entire tileset. This is calculated on the bounding volumes set within the tileset's specification file. If your clipping plane is too large/too small, try adjusting your bounding volume.
--  At the time of writing, clipping planes cannot be disabled or hidden through the visualisation itself (this is planned for the future).
--  At the time of writing, models/locations/individual components cannot be selected _through_ the clipping plane (this is planned for the future).
+- Cesium only seems to support clipping planes on the _entire_ tileset.
+- The size of the clipping plane is based on the bounds of the tileset itself.
+- If adding planes to an existing visualisation, ensure the version of Cesium JS and CSS files used in the `index.html` file are _at least_ 1.105.
+
+<img src="readme-clipping.JPG" alt="Example of a clipping plane on a 3D tileset" width="75%"/>
 
 ## Sample Data
 
