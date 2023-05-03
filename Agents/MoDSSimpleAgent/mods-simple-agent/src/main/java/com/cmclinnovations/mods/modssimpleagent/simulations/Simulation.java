@@ -40,6 +40,7 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityLabels;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityResult;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityValues;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
+import com.cmclinnovations.mods.modssimpleagent.utils.FileUtils;
 import com.cmclinnovations.mods.modssimpleagent.utils.ListUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Streams;
@@ -340,7 +341,7 @@ public class Simulation {
                 Path surrogateDirectory = getSurrogateDirectory(modsBackend);
 
                 try {
-                    copyDirectory(surrogateDirectory, saveDirectory);
+                    FileUtils.copyDirectory(surrogateDirectory, saveDirectory);
                     inputMetaData.writeToCSV(saveDirectory.resolve(InputMetaData.DEFAULT_INPUT_INFO_FILE_NAME));
                 } catch (FileGenerationException ex) {
                     throw new ResponseStatusException(HttpStatus.NO_CONTENT,
@@ -373,7 +374,7 @@ public class Simulation {
                             "File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
                 }
 
-                copyDirectory(loadDirectory, surrogateDirectory);
+                FileUtils.copyDirectory(loadDirectory, surrogateDirectory);
 
                 LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
                         surrogateDirectory.toAbsolutePath());
@@ -384,36 +385,6 @@ public class Simulation {
             }
         }
 
-    }
-
-    private static void copyDirectory(Path sourceDirectory, Path destinationDirectory) throws FileGenerationException {
-        if (!Files.exists(destinationDirectory)) {
-            try {
-                Files.createDirectories(destinationDirectory);
-            } catch (IOException ex) {
-                throw new FileGenerationException(
-                        "Failed to create destination directory '" + destinationDirectory.toAbsolutePath() + "'.", ex);
-            }
-        }
-
-        try (Stream<Path> stream = Files.walk(sourceDirectory)) {
-
-            stream.filter(Files::isRegularFile).forEach(source -> {
-                Path destination = destinationDirectory
-                        .resolve(source.toString().substring(sourceDirectory.toString().length() + 1));
-                try {
-                    Files.copy(source, destination);
-                } catch (IOException ex) {
-                    throw new ResponseStatusException(
-                            HttpStatus.NO_CONTENT,
-                            "Failed to copy '"
-                                    + destinationDirectory + "` to `" + sourceDirectory + "'.",
-                            ex);
-                }
-            });
-        } catch (IOException ex) {
-            throw new FileGenerationException("Failed to walk source directory '" + sourceDirectory + "'.", ex);
-        }
     }
 
     public Request getResponse() {
