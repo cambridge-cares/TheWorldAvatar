@@ -173,6 +173,7 @@ public class AermodAgent extends DerivationAgent {
         // Call virtualSensor.py to plot the temporal variation of concentrations 
         JSONArray virtualSensorConcentrations = aermod.plotVirtualSensorData(EnvConfig.PYTHON_SERVICE_SENSOR_URL, sensorFileURL, srid);
         // Instantiate concentrations at virtual sensor locations as time series
+        // queryClient.updateVirtualSensorData(bpi.timeStamps, virtualSensorConcentrations);
 
 
 
@@ -180,7 +181,8 @@ public class AermodAgent extends DerivationAgent {
         // Set GeoServer layer names
         List<String> dispLayerNames = new ArrayList <>();
         for (int i = 0; i <receptorHeights.size(); i++) {
-            String dispLayerName = "disp_"+ (i+1);
+            int receptorHeightInt = (int) Math.round(receptorHeights.get(i)) ;
+            String dispLayerName = "dispersion_height_"+ String.valueOf(receptorHeightInt) + "_meters";
             dispLayerNames.add(dispLayerName);
         }
         String shipLayerName = "ships_" + simulationTime; // hardcoded in ShipInputAgent
@@ -215,6 +217,7 @@ public class AermodAgent extends DerivationAgent {
         }
         geoServerClient.createPostGISLayer(null, EnvConfig.GEOSERVER_WORKSPACE, EnvConfig.DATABASE, elevationLayerName, geoServerVectorSettings);
 
+ 
         // ships_ is hardcoded here and in ShipInputAgent
         queryClient.updateOutputs(derivationInputs.getDerivationIRI(), outputFileURL, dispLayerNames.get(0), shipLayerName, simulationTime);
         if (aermod.createDataJson(shipLayerName, dispLayerNames, plantsLayerName,elevationLayerName,sensorLayerName) != 0) {

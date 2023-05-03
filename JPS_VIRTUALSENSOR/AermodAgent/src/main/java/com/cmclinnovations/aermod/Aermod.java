@@ -534,13 +534,13 @@ public class Aermod {
         plantsLayer.put("layout", new JSONObject().put("visibility", "visible"));
 
         JSONObject sensorLayer = new JSONObject();
-        plantsLayer.put("id", "sensor-layer");
-        plantsLayer.put("type", "circle");
-        plantsLayer.put("name", "Virtual Sensors");
-        plantsLayer.put("source", "sensor-source");
-        plantsLayer.put("source-layer", sensorLayerName);
-        plantsLayer.put("minzoom", 4);
-        plantsLayer.put("layout", new JSONObject().put("visibility", "visible"));
+        sensorLayer.put("id", "sensor-layer");
+        sensorLayer.put("type", "circle");
+        sensorLayer.put("name", "Virtual Sensors");
+        sensorLayer.put("source", "sensor-source");
+        sensorLayer.put("source-layer", sensorLayerName);
+        sensorLayer.put("minzoom", 4);
+        sensorLayer.put("layout", new JSONObject().put("visibility", "visible"));
 
 
         
@@ -548,7 +548,7 @@ public class Aermod {
             JSONObject dispersionLayer = new JSONObject();
             dispersionLayer.put("id", "dispersion-layer");
             dispersionLayer.put("type", "raster");
-            dispersionLayer.put("name", "Dispersion_"+ dispersionLayerNames.get(i));
+            dispersionLayer.put("name", dispersionLayerNames.get(i));
             dispersionLayer.put("source", "dispersion-source_" + dispersionLayerNames.get(i));
             dispersionLayer.put("source-layer", dispersionLayerNames.get(i));
             dispersionLayer.put("minzoom", 4);

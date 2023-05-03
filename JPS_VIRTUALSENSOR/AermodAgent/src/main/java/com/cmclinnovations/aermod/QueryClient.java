@@ -6,6 +6,7 @@ import org.eclipse.rdf4j.sparqlbuilder.core.Prefix;
 import org.eclipse.rdf4j.sparqlbuilder.core.PropertyPaths;
 import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
+import org.eclipse.rdf4j.sparqlbuilder.core.query.ModifyQuery;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPattern;
@@ -14,6 +15,7 @@ import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.json.JSONArray;
+import org.json.JSONObject;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.geom.Polygon;
@@ -37,15 +39,23 @@ import static org.eclipse.rdf4j.sparqlbuilder.rdf.Rdf.iri;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
 
 
 
@@ -86,18 +96,21 @@ public class QueryClient {
     public static final String TEMPERATURE = OM_STRING + "Temperature";
     public static final String MASS_FLOW = OM_STRING + "MassFlow";
     private static final Iri SHIP = P_DISP.iri("Ship");
+    private static final Iri MEASURE = P_OM.iri("Measure");
     // weather types
     private static final String CLOUD_COVER = ONTO_EMS + "CloudCover";
     private static final String AIR_TEMPERATURE = ONTO_EMS + "AirTemperature";
     private static final String RELATIVE_HUMIDITY = ONTO_EMS + "RelativeHumidity";
     private static final String WIND_SPEED = ONTO_EMS + "WindSpeed";
     private static final String WIND_DIRECTION = ONTO_EMS + "WindDirection";
+    private static final String NO2_CONC = ONTO_EMS + "NitrogenDioxideConcentration";
 
     // IRI of units used
     private static final Iri UNIT_DEGREE = P_OM.iri("degree");
     private static final Iri UNIT_CELCIUS = P_OM.iri("degreeCelsius");
     private static final Iri UNIT_MS = P_OM.iri("metrePerSecond-Time");
     private static final Iri UNIT_PERCENTAGE = P_OM.iri("PercentageUnit");
+    private static final Iri UNIT_POLLUTANT_CONC = P_OM.iri("microgramPerCubicmetre");
 
     // Location type
     private static final Iri LOCATION = P_DISP.iri("Location");
@@ -385,6 +398,62 @@ public class QueryClient {
         }
 
         return weatherData;
+    }
+
+    void updateVirtualSensorData(List<String> timeStamps, JSONArray virtualSensorConcentrations) {
+        // Create OntoEMS stations
+        LOGGER.info("Instantiating OntoEMS reporting stations for virtual sensors");
+
+        List<String> dataListForTimeSeries = new ArrayList<>();
+        List<List<?>> valuesListForTimeSeries = new ArrayList<>();
+
+        for (int i = 0; i < virtualSensorConcentrations.length(); i++) {
+            JSONObject sensorProperties = virtualSensorConcentrations.getJSONObject(i);
+            String stationIRI = ONTO_EMS + "sensorstation_" + UUID.randomUUID();
+            Iri station = iri(stationIRI);
+
+            ModifyQuery modify = Queries.MODIFY();
+            double lat = sensorProperties.getDouble("latitude");
+            double lon = sensorProperties.getDouble("longitude");
+            String locString = String.valueOf(lat) + "#" + String.valueOf(lon);
+            modify.insert(station.isA(iri(REPORTING_STATION)).andHas(OBSERVATION_LOCATION, locString));
+
+            Iri quantity = P_EMS.iri("quantity_" + UUID.randomUUID());
+			String measureIri = ONTO_EMS + "measure_" + UUID.randomUUID();
+    		Iri measure = iri(measureIri);
+
+            dataListForTimeSeries.add(measureIri);
+            
+            // triples to insert for each station
+    		modify.insert(station.has(REPORTS,quantity));
+    		modify.insert(quantity.isA(iri(NO2_CONC)).andHas(HAS_VALUE,measure));
+    		modify.insert(measure.isA(MEASURE).andHas(HAS_UNIT,UNIT_POLLUTANT_CONC)); 
+            
+            JSONArray concentrationTimeSeries = sensorProperties.getJSONArray("concentrations");
+            List<?> concentrationValues = IntStream.range(0, concentrationTimeSeries.length())
+            .mapToObj(j -> concentrationTimeSeries.getDouble(j)).collect(Collectors.toList());
+            valuesListForTimeSeries.add(concentrationValues);
+
+        }
+
+        List<Class<?>> classListForTimeSeries = Collections.nCopies(dataListForTimeSeries.size(), Double.class);
+        TimeSeriesClient<LocalDateTime> tsClientLocalDateTime = new TimeSeriesClient<>(storeClient, LocalDateTime.class);
+        tsClientLocalDateTime.initTimeSeries(dataListForTimeSeries, classListForTimeSeries, LocalDateTime.class.getSimpleName());        
+
+        List<LocalDateTime> timesList =  timeStamps.stream().
+        map(i -> LocalDateTime.parse(i, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).collect(Collectors.toList());
+
+        TimeSeries<LocalDateTime> ts = new TimeSeries<>(timesList, dataListForTimeSeries, valuesListForTimeSeries);
+        tsClientLocalDateTime.addTimeSeriesData(ts);
+
+        /* Offset not used for the time being */
+        // List<OffsetDateTime> offsetTimesList = new ArrayList<>();
+        // for (int i = 0; i < timesList.size(); i++) {
+        //     LocalDateTime ldt = timesList.get(i);
+        //     OffsetDateTime odt = OffsetDateTime.of(ldt, ZoneOffset.UTC);
+        //     offsetTimesList.add(odt);
+        // }
+        
     }
 
 
