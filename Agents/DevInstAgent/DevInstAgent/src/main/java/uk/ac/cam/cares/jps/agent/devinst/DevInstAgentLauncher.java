@@ -11,7 +11,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.OffsetDateTime;
 import java.util.*;
 
 import javax.servlet.annotation.WebServlet;
@@ -41,7 +40,10 @@ public class DevInstAgentLauncher extends JPSAgent {
     private static String queryEnd;
     private static String updateEnd;
 	
-	String clientProperties;
+	static String clientProperties;
+    
+    static DevInstQueryBuilder queryBuilder;
+    
 
 	
     /**
@@ -160,10 +162,6 @@ public class DevInstAgentLauncher extends JPSAgent {
     
     public static JSONObject initializeAgent(JSONObject args) {
 
-        JSONObject MicroController = args.getJSONObject(KEY_MICROCONTROLLER);
-        JSONObject IRIMapper = args.getJSONObject(KEY_IRIMAPPER);
-        JSONObject AdditionalQuery = args.getJSONObject(KEY_ADDITRIONALQUERY);
-
         // Ensure that there are three properties files
         if (args.keySet().size() != 3) {
             LOGGER.error(ARGUMENT_MISMATCH_MSG);
@@ -179,6 +177,9 @@ public class DevInstAgentLauncher extends JPSAgent {
             LOGGER.error(AGENT_ERROR_MSG + e);
             throw new JPSRuntimeException(AGENT_ERROR_MSG, e);
         }
+
+        queryBuilder = new DevInstQueryBuilder(storeClient);
+        queryBuilder.InsertDevice(args);
 
         LOGGER.info("Input agent object initialized.");
         JSONObject jsonMessage = new JSONObject();
