@@ -17,5 +17,13 @@ def query_latest_timeseries(iri):
     except Exception as ex:
         logging.error("Unable to get latest data from knowledge graph!")
         raise TSException("Unable to get latest data from knowledge graph!") from ex
+    return
 
+def query_all_timeseries(iri):
+    logging.basicConfig(level=logging.DEBUG)
+    kg_client = KGClient(query_endpoint=QUERY_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
+    ts_client = TSClientForQuery(kg_client=kg_client, rdb_url=DB_QUERY_URL, rdb_user=DB_QUERY_USER, rdb_password=DB_QUERY_PASSWORD)
+
+    with ts_client.connect() as conn:
+        value = ts_client.tsclient.getTimeSeries([iri], conn)
     return value

@@ -2,7 +2,7 @@ from PVLibAgent.error_handling.exceptions import KGException
 from PVLibAgent.kg_utils.kgClient import KGClient
 from PVLibAgent.kg_utils.utils import QUERY_ENDPOINT, UPDATE_ENDPOINT
 from PVLibAgent.kg_utils.utils import create_sparql_prefix
-
+import logging
 
 class QueryData:
 
@@ -290,6 +290,62 @@ class QueryData:
             raise KGException("Unable to query for any longitude value!") from ex
 
 
+    def query_direct_normal_irradiance(iri, query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+        try:
+            kg_client = KGClient(query_endpoint, update_endpoint)
+
+            query = create_sparql_prefix('rdf') + \
+                    create_sparql_prefix('ontoems') + \
+                    create_sparql_prefix('om') + \
+                    '''SELECT ?dni WHERE { ?weatherStation rdf:type ontoems:ReportingStation .
+                                                  ?weatherStation ontoems:reports ?parameter .
+                                                  ?parameter rdf:type ontoems:DirectNormalIrradiance .
+                                                  ?parameter om:hasValue ?dni }'''
+
+            response = kg_client.performQuery(query)
+            if len(response) == 0:
+                raise KGException("Unable to query for any global horizontal irradiance data IRI!")
+            for d in response:
+                val = d["dni"]
+                print(val)
+                return val
+
+        except Exception as ex:
+            raise KGException("Unable to query for any irradiance data IRI!") from ex
 
 
+    def query_busnode_iri(query_endpoint: str = QUERY_ENDPOINT):
+        try:
+            kg_client = KGClient(query_endpoint)
+            query = create_sparql_prefix('powreal') + \
+                    '''SELECT ?busNode WHERE { ?busNode rdf:type powreal:BusNode }'''
 
+            response = kg_client.performQuery(query)
+            if len(response) == 0:
+                raise KGException("Unable to query for any bus node IRI!")
+            return response
+
+        except Exception as ex:
+            raise KGException("Unable to query for bus node IRI!") from ex
+
+    def query_NTU_Buildings(query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+        try:
+            kg_client = KGClient(query_endpoint, update_endpoint)
+
+            query = create_sparql_prefix('powreal') + \
+                    create_sparql_prefix('Powsys') + \
+                    '''SELECT ?building ?name WHERE {
+                              ?entity  a  powreal:BusNode  .
+                              ?building powsys:hasBusNode ?entity.
+                              ?building rdfs:label ?name }'''
+
+            response = kg_client.performQuery(query)
+            if len(response) == 0:
+                raise KGException("Unable to query for any NTU buildings!")
+            for building in response:
+                print(building["name"])
+                print(building["building"])
+            return building
+
+        except Exception as ex:
+            raise KGException("Unable to query for any irradiance data IRI!") from ex
