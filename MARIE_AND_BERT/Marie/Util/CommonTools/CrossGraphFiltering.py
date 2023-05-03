@@ -107,7 +107,7 @@ class CrossGraphFilter:
         # mention = self.ner_lite.get_mention(question)
         # question = remove_mention(question, mention=mention)
 
-        _, original_question = NumericalTools.qualifier_value_extractor(original_question)
+        _, original_question = NumericalTools.qualifier_value_extractor(original_question, for_filter=True)
 
 
         value, value_str = NumericalTools.numerical_value_extractor(question=original_question)
@@ -237,6 +237,13 @@ if __name__ == "__main__":
     print("===========================")
 
     question = "Find all species with boiling point above 0 celsius"
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
+
+
+    question = "what is the heat capacity of C3H4O"
     rst = my_filter.filter_before_cross_graph(question=question)
     print("===========================")
     print(rst)

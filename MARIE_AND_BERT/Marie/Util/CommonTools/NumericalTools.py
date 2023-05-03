@@ -30,14 +30,14 @@ def numerical_value_extractor_with_no_space(text):
         return None, ""
 
 
-def qualifier_value_extractor(question):
+def qualifier_value_extractor(question_before_qualifer, for_filter=False):
     """
     The function separates the numerical value and unit for the qualifiers
     :param question: question in string
     :return: a dictionary with two keys: temperature and pressure, if no value is under the category, it returns
     None
     """
-    lower_case_question = question.lower()
+    lower_case_question = question_before_qualifer.lower()
     temperature_regex = r"(((\d+[\.]*\d+)|[0-9])+[ ]*(kelvin|k|celsius|farenheit|degree[s]*)+[ ]*(celsius)*)|(room temperature)"
     # pressure_regex = r"([ ][-]*\d+[\.]*\d+[ ]*(atm|bar|pascal|p|pa|bar)) | (room temperature)"
     pressure_regex = r"((\d+[\.]*\d+)|[0-9])[ ]*(atm|bar|pascal|pa|bar)"
@@ -59,12 +59,16 @@ def qualifier_value_extractor(question):
         lower_case_question = lower_case_question.replace(pressure, "").replace(" and", " ").strip()
         pressure, _ = numerical_value_extractor_with_no_space(pressure)
         # print(pressure)
+    if for_filter:
+        question_to_return = lower_case_question
+    else:
+        question_to_return = question_before_qualifer
 
     if (temperature is None) and (pressure is None):
-        return {}, question
+        return {}, question_to_return
     else:
         return {"temperature": temperature,
-                "pressure": pressure}, lower_case_question
+                "pressure": pressure}, question_to_return
 
 
 if __name__ == "__main__":
