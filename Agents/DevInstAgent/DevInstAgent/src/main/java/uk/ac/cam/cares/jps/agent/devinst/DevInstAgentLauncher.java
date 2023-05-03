@@ -35,7 +35,6 @@ public class DevInstAgentLauncher extends JPSAgent {
 
     private static RemoteStoreClient storeClient;
     
-    private static String baseURL;
     private static String queryEnd;
     private static String updateEnd;
 	
@@ -137,7 +136,6 @@ public class DevInstAgentLauncher extends JPSAgent {
             prop.load(input);
             try {
                 // Read the mappings folder from the properties file
-                baseURL = prop.getProperty("derivation.namespace.url");
                 queryEnd = prop.getProperty("sparql.query.endpoint");
                 updateEnd = prop.getProperty("sparql.update.endpoint");
                 
