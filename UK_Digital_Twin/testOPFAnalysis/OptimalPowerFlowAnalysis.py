@@ -2797,7 +2797,7 @@ class OptimalPowerFlowAnalysis:
 
                     for i_weight, energyBreakdown_eachWeight in enumerate(specifiedEnergyBreakdownList):
                         ## check the storage path
-                        subPath = 'SMR_'+ str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weather_' + str(cf[2]) + '_weight_' + str(self.weighterList[i_weight])
+                        subPath = 'SMR_'+ str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(self.weighterList[i_weight])
                         self.mkdirPieChart('RegionalAreaEnergyBreakdown/' + subPath + '/')
 
                         for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
@@ -2903,16 +2903,17 @@ class OptimalPowerFlowAnalysis:
 
                             ## Create pie chart
                             plt.pie(energyBreakdown_longList_withoutZero_rearrange, colors = colour_longList, startangle=90, frame=True) ##labels=genLabel_longList_withoutZero_rearrange, autopct='%1.1f%%',
-                            plt.pie(energyBreakdown_shortList_withoutZero, colors = colour_shortList, radius = 0.75, startangle = 90)  ## labels=genLabel_shortList_withoutZero,
-                            ## Convert the pie chart into a ring
-                            centre_circle = plt.Circle((0,0), 0.5, color='black', fc='white', linewidth=0)
-                            fig = plt.gcf()
-                            fig.gca().add_artist(centre_circle)
+                            # plt.pie(energyBreakdown_shortList_withoutZero, colors = colour_shortList, radius = 0.75, startangle = 90)  ## labels=genLabel_shortList_withoutZero,
+                            # ## Convert the pie chart into a ring
+                            # centre_circle = plt.Circle((0,0), 0.5, color='black', fc='white', linewidth=0)
+                            # fig = plt.gcf()
+                            # fig.gca().add_artist(centre_circle)
 
-                            plt.axis('equal')
+                            plt.axis('off')
                             plt.tight_layout()
                             ## plt.legend(loc='upper right')
-                            file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['RegionalLACode'] + '_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ').png' 
+                            ## file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['RegionalLACode'] + '_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ').png' 
+                            file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['RegionalLACode'] + '.png' 
                             plt.savefig(self.pieChartPath + 'RegionalAreaEnergyBreakdown/' + subPath + '/' + file_label, dpi = 1200, bbox_inches='tight', transparent=True)
                             ## plt.show()
                             # plt.close()
@@ -2942,7 +2943,7 @@ class OptimalPowerFlowAnalysis:
                     genLabel_shortList = ['Renewable', 'Fossil fuels', 'Nuclear', 'Others'] ## specified short list of the gen type label 
                     
                     ## check the storage path
-                    subPath = 'SMR_'+ str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weather_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) 
+                    subPath = 'SMR_'+ str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) 
                     self.mkdirPieChart('RegionalAreaEnergyBreakdown/' + subPath + '/')
 
                     for energyBreakdown_eachRegion in specifiedEnergyBreakdownList:
@@ -3056,7 +3057,8 @@ class OptimalPowerFlowAnalysis:
                         plt.axis('equal')
                         plt.tight_layout()
 
-                        file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['RegionalLACode'] + '_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ').pdf' 
+                        ## file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['RegionalLACode'] + '_(SMR_' + str(cf[0]) + '_CarbonTax_' + str(cf[1]) + '_weatherCondition_' + str(cf[2]) + '_weight_' + str(round(cf[3], 2)) + ').pdf' 
+                        file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['RegionalLACode'] + '.pdf'                        
                         plt.savefig(self.pieChartPath + 'RegionalAreaEnergyBreakdown/' + subPath + '/' + file_label, dpi = 1200, bbox_inches='tight')
                         # plt.show()
                         # plt.close()
@@ -3070,7 +3072,7 @@ class OptimalPowerFlowAnalysis:
                     for i_weather, energyBreakdown_eachWeather in enumerate(energyBreakdown_eachCarbonTax):
                         for i_weight, energyBreakdown_eachWeight in enumerate(energyBreakdown_eachWeather):
                             ## check the storage path
-                            subPath = 'SMR_'+ str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weather_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2))                        
+                            subPath = 'SMR_'+ str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2))                        
                             self.mkdirPieChart('RegionalAreaEnergyBreakdown/' + subPath + '/')
                             for energyBreakdown_eachRegion in energyBreakdown_eachWeight:
                                 ## eliminate the zero items for the long list
@@ -3184,7 +3186,7 @@ class OptimalPowerFlowAnalysis:
 
                                 plt.axis('equal')
                                 plt.tight_layout()
-                                file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['RegionalLACode'] + '_(SMR_' + str(NumberOfSMRUnitList[i_smr]) + '_CarbonTax_' + str(CarbonTaxForOPFList[i_carbontax]) + '_weatherCondition_' + str(weatherConditionList[i_weather][2]) + '_weight_' + str(round(self.weighterList[i_weight], 2)) + ').pdf' 
+                                file_label = 'RegionalEnergyBreakdown_PieChart_' + energyBreakdown_eachRegion['RegionalLACode']+ '.pdf' 
                                 plt.savefig(self.pieChartPath + 'RegionalAreaEnergyBreakdown/' + subPath + '/' + file_label, dpi = 1200, bbox_inches='tight')
                                 # plt.show()
                                 # plt.close()
