@@ -53,8 +53,8 @@ def retrieve_settings():
 
 
 # Run when module is imported
-#retrieve_settings()
-DB_URL = ''
-DB_USER = ''
-DB_PASSWORD = ''
-QUERY_ENDPOINT = UPDATE_ENDPOINT = 'http://localhost:3846/blazegraph/namespace/test/sparql'
+retrieve_settings()
+# DB_URL = ''
+# DB_USER = ''
+# DB_PASSWORD = ''
+# QUERY_ENDPOINT = UPDATE_ENDPOINT = 'http://localhost:3846/blazegraph/namespace/test/sparql'
