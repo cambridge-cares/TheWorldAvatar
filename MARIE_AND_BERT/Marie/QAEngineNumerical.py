@@ -316,15 +316,21 @@ class QAEngineNumerical:
                     # triple_exist = self.subgraph_extractor.check_triple_existence(triple_str)
                     if triple_exist:
                         if tail_label in self.value_dictionary:
-                            value = float(self.value_dictionary[tail_label])
+                            try:
+                                value = float(self.value_dictionary[tail_label])
+                            except ValueError:
+                                value = float(self.value_dictionary[tail_label].split(" ")[0].strip())
+
+                            predicted_values_list.append(self.value_dictionary[tail_label])
                             required_value = self.input_dict.numerical_value
                             if self.input_dict.numerical_operator == "larger":
                                 if value > required_value:
-                                    predicted_tails.append(value)
-                            if self.input_dict.numerical_operator == "smaller":
+                                    predicted_tails.append(f"{value} | {tail_label}")
+                            elif self.input_dict.numerical_operator == "smaller":
                                 if value < required_value:
-                                    predicted_tails.append(value)
-
+                                    predicted_tails.append(f"{value} | {tail_label}")
+                            elif self.input_dict.numerical_operator == "about":
+                                predicted_tails.append(f"{value} | {tail_label}")
                         else:
                             predicted_tails.append(tail_label)
 
