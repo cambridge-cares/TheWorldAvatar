@@ -131,26 +131,19 @@ def queryRegionBoundaries(ONS_Endpoint_label):
     r1 = requests.get(getString_1, timeout=60)
     r2 = requests.get(getString_2, timeout=60)
 
-    print(json.loads(r1.text))
-    print(json.loads(r2.text))
+    # print(json.loads(r1.text))
+    # print(json.loads(r2.text))
 
     res_england_region = json.loads(r1.text)['results']['bindings']# [0]['LACode_Region']['value'] ## FIXME: this
     res_SWN = json.loads(r2.text)['results']['bindings']# [0]['LACode_Region']['value'] ## FIXME: this
 
-    print(len(res_england_region))
+    # print(len(res_england_region))
 
     print('...HTTP GET queryRegionBoundaries is done...')
     if int(r1.status_code) != 200 or int(r2.status_code) != 200:
         print('The Region Boundaries cannot be found.')
         return None
 
-    for swn in res_SWN:
-        res_england_region.append(swn)
-########################################################################################################################################
-    print('...remoteQuery Region Boundaries...')
-    res_england_region = json.loads(performQuery(ONS_Endpoint_label, queryStr_england_region))
-    res_SWN = json.loads(performQuery(ONS_Endpoint_label, queryStr_SWN))
-    print('...queryRegionBoundaries is done...')
     for swn in res_SWN:
         res_england_region.append(swn)
     
@@ -164,13 +157,13 @@ def queryRegionBoundaries(ONS_Endpoint_label):
             
     # Check the availability of the geometry of each area
     for r in res_england_region:
-      if len(r["Geo_InfoList"]) == 0: 
+      if len(r["Geo_InfoList"]["value"]) == 0: 
           raise Exception('There is one place does not have geometry information which is', r["LACode_area"], ', please check the query string and the place status in ONS.')
-      elif "***" in r['Geo_InfoList']:
-          r['Geo_InfoList'] = r['Geo_InfoList'].split("***")[0]
-      r['Geo_InfoList'] = loads(r['Geo_InfoList']) # convert wkt into shapely polygons
+      elif "***" in r['Geo_InfoList']["value"]:
+          r['Geo_InfoList']["value"] = r['Geo_InfoList']["value"].split("***")[0]
+      r['Geo_InfoList']["value"] = loads(r['Geo_InfoList']["value"]) # convert wkt into shapely polygons
     return res_england_region
-##TODO: test this method
+
 # if __name__ == '__main__':
 #     res = queryRegionBoundaries('ons')
 
@@ -187,6 +180,7 @@ def queryWithinRegion(LACode:str, ONS_Endpoint):
 
     if LACode[0] == 'E':
         if not typeCode >= 11: # E11, E12 and other places whose code is larger than 11 are not included in any areas
+            LACode = " <http://statistics.data.gov.uk/id/statistical-geography/" + LACode + ">"
             queryStr = """
             PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
             PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -197,10 +191,8 @@ def queryWithinRegion(LACode:str, ONS_Endpoint):
             SELECT DISTINCT ?LACode_Region
             WHERE
             {
-            ?area <http://publishmydata.com/def/ontology/foi/code> "%s" .
-            ?area foi:within+ ?Region .
+            %s foi:within+ ?Region .
             ?Region ons:status "live" .
-            ## ?Region ons_entity:code/rdfs:label "E12" .
             ?Region ons_entity:code <http://statistics.data.gov.uk/id/statistical-entity/E12> .
             ?Region <http://publishmydata.com/def/ontology/foi/code> ?LACode_Region .
             }

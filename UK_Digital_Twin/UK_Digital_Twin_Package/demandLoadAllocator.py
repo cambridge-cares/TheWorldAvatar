@@ -25,7 +25,6 @@ class demandLoadAllocator(object):
     """"This allocation principle is firstly appoled in the 10-bus model (UK) as a most strightforward way. 
     which is to assign the regional demanding to the bus who locatates in the same region. 
     However, when the same region has more than one bus, this method may not be suitable anymore."""  
-    ###FIXME: this method does not atach the LA code of the demanding areas to the bus who take the load, it may need in the site selection model 
     def regionalDemandLoad(self, res_queryBusTopologicalInformation, startTime_of_EnergyConsumption, numOfBus, res_queryElectricityConsumption_LocalArea, busLatLonLabel):
         # res_queryBusTopologicalInformation = [BusNodeIRI, BusLatLon[]]
         # res_queryElectricityConsumption_Region = [RegionOrCountry_LACode, v_TotalELecConsumption]
@@ -59,7 +58,9 @@ class demandLoadAllocator(object):
             for aggregatedBus in aggregatedBusList:               
                 for bus in res_queryBusTopologicalInformation:
                     print("...................", bus[busLatLonKey], [aggregatedBus[2], aggregatedBus[3]])
-                    if bus[busLatLonKey] == [aggregatedBus[2], aggregatedBus[3]]:
+                    distance = (float(bus[busLatLonKey][0]) - float(aggregatedBus[2]))**2 + (float(bus[busLatLonKey][1]) - float(aggregatedBus[3]))**2
+                    if distance < 0.0001:
+                    ##if bus[busLatLonKey] == [aggregatedBus[2], aggregatedBus[3]]:
                         aggregatedBusDict = {}
                         aggregatedBusDict = {**bus, **aggregatedBusDict} # dictionary cannot be renamed, merge a blank dict with an exisiting one equals to rename the dict
                         aggregatedBusDict['Bus_LACode'] = str(aggregatedBus[1])
@@ -78,7 +79,7 @@ class demandLoadAllocator(object):
                     busAndDemandPairList.append(busAndDemandPair)  
                     break
       
-        return busAndDemandPairList, aggregatedBusFlag
+        return busAndDemandPairList, res_queryElectricityConsumption_LocalArea, aggregatedBusFlag
         
    
     """This method is firstly employed in the 29-bus model (UK) which assign the consumption loads to its closest bus on the straight line.
