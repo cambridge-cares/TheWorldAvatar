@@ -34,7 +34,7 @@ FROM tomcat:8.5 as agent
 
 WORKDIR /app
 
-COPY --from=builder /root/HeatEmissionAgentGeoJson/output/heatemissionagentgeojson##1.0.0.war $CATALINA_HOME/webapps/
+COPY --from=builder /root/HeatEmissionAgentGeoJson/output/heatemissionagentgeojson##1.1.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
 ENTRYPOINT ["catalina.sh", "run"]
