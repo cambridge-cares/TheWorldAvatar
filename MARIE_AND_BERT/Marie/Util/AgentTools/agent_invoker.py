@@ -40,13 +40,13 @@ class AgentInvoker():
                     result['Entropy'] = value_node['Entropy']
                     result['Internal Energy'] = value_node['Internal energy']
                     result['Gibbs Energy'] = value_node['Gibbs energy']
-                    result['Heat capacity at constant pressure'] = value_node['Heat capacity at constant pressure']
-                    result['Heat capacity at constant volume'] = value_node['Heat capacity at constant volume']
+                    result['Heat Capacity at Constant Pressure'] = value_node['Heat capacity at constant pressure']
+                    result['Heat capacity at Constant Volume'] = value_node['Heat capacity at constant volume']
                 elif output == 'Heat capacity':
-                    result['Heat capacity at constant pressure'] = \
+                    result['Heat capacity at Constant Pressure'] = \
                         {"y": value_node['Heat capacity at constant pressure'],
                          "x": value_node["Temperature"]}
-                    result['Heat capacity at constant volume'] = \
+                    result['Heat capacity at Constant Volume'] = \
                         {"y": value_node['Heat capacity at constant volume'],
                          "x": value_node["Temperature"]}
                 else:
@@ -58,11 +58,11 @@ class AgentInvoker():
                     result['Entropy'] = value_node['Entropy']
                     result['Internal Energy'] = value_node['Internal energy']
                     result['Gibbs Energy'] = value_node['Gibbs energy']
-                    result['Heat capacity at constant pressure'] = value_node['Heat capacity at constant pressure']
-                    result['Heat capacity at constant volume'] = value_node['Heat capacity at constant volume']
+                    result['Heat capacity at Constant Pressure'] = value_node['Heat capacity at constant pressure']
+                    result['Heat capacity at Constant Volume'] = value_node['Heat capacity at constant volume']
                 elif output == 'Heat capacity':
-                    result['Heat capacity at constant pressure'] = value_node['Heat capacity at constant pressure']
-                    result['Heat capacity at constant volume'] = value_node['Heat capacity at constant volume']
+                    result['Heat capacity at Constant Pressure'] = value_node['Heat capacity at constant pressure']
+                    result['Heat capacity at Constant Volume'] = value_node['Heat capacity at constant volume']
                 else:
                     result[output] = value_node[output]
         except ValueError:
