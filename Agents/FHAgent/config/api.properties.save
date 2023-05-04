@@ -1,0 +1,9 @@
+#--ThingsBoard API properties--#
+# Username and password
+thingsboard.username=michael.laksana@cares.cam.ac.uk
+thingsboard.password=f7B1*Ffe6
+# The default port should be 8080 but can be changed.
+path.url=http://10.25.188.58:9090
+# Which device to retrieve data from
+device.id= What parameters to retrieve
+keys=avgDist1,avgDist2

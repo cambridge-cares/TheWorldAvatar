@@ -20,6 +20,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.TimeZone;
 
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -67,6 +72,10 @@ public class FHAgent{
      * Mapping between raw and derived variable
      */
     public JSONObject derivationMapping = new JSONObject();
+    /*
+     * Data bridge agent URL
+     */
+    public static String dataBridgeURL;
     /**
      * Log messages
      */
@@ -136,6 +145,14 @@ public class FHAgent{
             catch(Exception e){
                 throw new JPSRuntimeException("Error parsing tally threshold in properties file:" + e);
             }
+
+            try{
+                dataBridgeURL = prop.getProperty("data_bridge.url");
+            }
+
+            catch(Exception e){
+                throw new JPSRuntimeException("Error parsing DataBridgeAgent URL in properties file:" + e);
+            }
             
         }
     }
@@ -147,6 +164,32 @@ public class FHAgent{
     public int getNumberOfTimeSeries() {
         return mappings.size();
     }
+
+    /**
+     * Sends a POST request with requested parameters to the specified url.
+     *
+     * @param url        The specified url.
+     * @param jsonParams Request parameters.
+     */
+    protected static void sendPostRequest(String jsonParams) {
+        HttpClient client = HttpClient.newHttpClient();
+        HttpRequest request = null;
+        try {
+            request = HttpRequest.newBuilder()
+                    .header("Content-Type", "application/json")
+                    .uri(URI.create(dataBridgeURL))
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonParams))
+                    .timeout(Duration.ofSeconds(3600))
+                    .build();
+            // Await response before continue executing the rest of the code
+            client.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException e) {
+            throw new JPSRuntimeException(e.getMessage() + " If connection is refused, the url is likely invalid!");
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Thread has been interrupted!" + e.getMessage());
+        }
+    }
+
 
     /**
      * Setter for the time series client.
@@ -677,6 +720,47 @@ public class FHAgent{
 
     private void toggleFH (Boolean latestOccState) {
         //TODO Toggle fumehood here
+    }
+
+
+    public void sendToDataBridge (JSONObject Distance, List<String> keys) {
+        for(String key: keys) {
+            JSONObject latestOccState = TallyDist(Distance, key);
+            LOGGER.debug("latestOccState for key " + key + ":" + latestOccState);
+            String resultString = "";
+
+            for(String occKey : latestOccState.keySet()) {
+                JSONKeyToIRIMapper mapping = varToMapping.get(occKey);
+                String iri = mapping.getIRI(occKey);
+
+                JSONObject result = new JSONObject();
+                JSONArray timestamps = new JSONArray();
+                JSONObject values = new JSONObject();
+
+                JSONArray col = latestOccState.getJSONArray(occKey);
+                values.put("class", Double.class);
+                //values.put("values", new JSONObject());
+
+                //values.getJSONObject(iri).put("values", new JSONArray());
+                JSONArray valArray = new JSONArray();
+                for (int i = 0; i < col.length(); i++){
+                    JSONObject row = col.getJSONObject(i);
+
+                    Double val = row.getDouble("value");
+                    Long ts = row.getLong("ts");
+
+                    timestamps.put(ts);
+                    valArray.put(val);
+
+                }
+                values.put("values", valArray);
+                result.put(iri, values);
+
+                resultString = result.toString();
+            }
+            sendPostRequest(resultString);
+        }
+
     }
 
 }
