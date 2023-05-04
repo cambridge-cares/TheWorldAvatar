@@ -65,9 +65,10 @@ public class QueryStore {
     /**
      * Classes
      */
-    private static final Iri OccupiedState = PREFIX_ONTOBMS.iri("OccupiedState");
+    private static final Iri OccupiedState = PREFIX_ONTODEVICE.iri("OccupiedState");
     private static final Iri Fumehood = PREFIX_ONTOBMS.iri("FumeHood");
     private static final Iri WalkinFumehood = PREFIX_ONTOBMS.iri("WalkInFumeHood");
+    private static final Iri Percentage = PREFIX_OM.iri("Percentage");
 
     RemoteStoreClient kbClient;
 
@@ -98,7 +99,7 @@ public class QueryStore {
         SelectQuery query = Queries.SELECT();
         //create triple pattern
         TriplePattern queryPattern = FHandWFHVar.isA(Fumehood);
-        TriplePattern queryPattern2 = GraphPatterns.tp(FHandWFHVar, label, Label);
+        TriplePattern queryPattern2 = FHandWFHVar.has(label, Label);
         TriplePattern queryPattern3 = FHandWFHVar.isA(WalkinFumehood);
 
         /*
@@ -108,7 +109,8 @@ public class QueryStore {
             { ?FHandWFHVar rdf:type	<https://www.theworldavatar.com/kg/ontobms/WalkInFumeHood> .
               ?FHandWFHVar rdfs:label ?Label .}}
          */
-        query.prefix(PREFIX_ONTOBMS).select(FHandWFHVar,Label).where(queryPattern.and(queryPattern2).union(queryPattern3.and(queryPattern2)));
+        query.prefix(PREFIX_ONTOBMS, PREFIX_RDFS).select(FHandWFHVar,Label).where(queryPattern.and(queryPattern2).union(queryPattern3.and(queryPattern2)));
+        kbClient.setQuery(query.getQueryString());
         try {
             JSONArray queryResult = kbClient.executeQuery();
             if(!queryResult.isEmpty()){
@@ -129,68 +131,56 @@ public class QueryStore {
     /*
      * Query for the occupied state IRIs of all instances with rdf:type ontobms:FumeHood and ontobms:WalkInFumeHood
      */
-    public Map<String, List<String>> queryForOccupancyState(Map<String, List<String>> map) {
+    public String queryForOccupancyState(String IRI) {
         String result = null;
-        map.put("OccupancyIRIs", new ArrayList<>());
-
         Variable occupancyState = SparqlBuilder.var("OccupancyState");
         SelectQuery query = Queries.SELECT();
-
-        for (int i = 0; i < map.get("FHandWFH").size(); i++){
-            TriplePattern queryPattern = iri(map.get("FHandWFH").get(i)).has(hasState, occupancyState);
-            TriplePattern queryPattern2 = occupancyState.isA(OccupiedState);
-            query.prefix(PREFIX_ONTODEVICE, PREFIX_SAREF).select(occupancyState).where(queryPattern,queryPattern2);
-            kbClient.setQuery(query.getQueryString());
-            try {
-                JSONArray queryResult = kbClient.executeQuery();
-                if(!queryResult.isEmpty()){
-                    LOGGER.info(kbClient.executeQuery().getJSONObject(0));
-                    result = kbClient.executeQuery().getJSONObject(0).getString("OccupancyState");
-                    map.get("OccupancyIRIs").add(result);
-                }
-                else {
-                    map.get("OccupancyIRIs").add("This device does not have an occupied state.");
-                }
-            } catch (Exception e){
-                throw new JPSRuntimeException(GETOCCUPANCYSTATE_ERROR_MSG + map.get("FHandWFH").get(i));
+        TriplePattern queryPattern = iri(IRI).has(hasState, occupancyState);
+        TriplePattern queryPattern2 = occupancyState.isA(OccupiedState);
+        query.prefix(PREFIX_ONTODEVICE, PREFIX_SAREF).select(occupancyState).where(queryPattern,queryPattern2);
+        kbClient.setQuery(query.getQueryString());
+        try {
+            JSONArray queryResult = kbClient.executeQuery();
+            if(!queryResult.isEmpty()){
+                LOGGER.info(kbClient.executeQuery().getJSONObject(0));
+                result = kbClient.executeQuery().getJSONObject(0).getString("OccupancyState");      
+            } else {
+                result = "This device does not have a occupied state.";
             }
+        } catch (Exception e) {
+            result = "This device does not have a occupied state.";
         }
-        return map;
+        return result;
     }
 
-    //SELECT ?label WHERE {<IRIString> rdfs:label ?label}
-    //SELECT ?comment WHERE {<IRIString> rdfs:comment ?comment}
     /*
      * Query for the sash opening IRIs  of all instances with rdf:type ontobms:FumeHood and ontobms:WalkInFumeHood
      */
-    public Map<String, List<String>> queryForSashOpening(Map<String, List<String>> map) {
+    public String queryForSashOpening(String IRI) {
         String result = null;
-        map.put("SashOpeningIRIs", new ArrayList<>());
 
         SelectQuery query = Queries.SELECT();
         Variable SashOpeningPercentage = SparqlBuilder.var("SashOpeningPercentage");
         Variable SashOpeningMeasure = SparqlBuilder.var("SashOpeningMeasure");
 
-        for (int i = 0; i < map.get("FHandWFH").size(); i++){
-            TriplePattern queryPattern = iri(map.get("FHandWFH").get(i)).has(hasSashOpenPercentage, SashOpeningPercentage);
-            TriplePattern queryPattern2 = SashOpeningPercentage.has(hasValue, SashOpeningMeasure);
-            query.prefix(PREFIX_ONTOBMS, PREFIX_OM).select(SashOpeningMeasure).where(queryPattern,queryPattern2);
-            kbClient.setQuery(query.getQueryString());
+        TriplePattern queryPattern = iri(IRI).has(iri("https://www.theworldavatar.com/kg/ontobms/hasSashOpenPercentage"), SashOpeningPercentage);
+        TriplePattern queryPattern2 = SashOpeningPercentage.isA(Percentage);
+        TriplePattern queryPattern3 = SashOpeningPercentage.has(hasValue, SashOpeningMeasure);
+        query.prefix(PREFIX_OM).select(SashOpeningMeasure).where(queryPattern,queryPattern2,queryPattern3);
+        kbClient.setQuery(query.getQueryString());
             try {
                 JSONArray queryResult = kbClient.executeQuery();
                 if(!queryResult.isEmpty()){
                     LOGGER.info(kbClient.executeQuery().getJSONObject(0));
                     result = kbClient.executeQuery().getJSONObject(0).getString("SashOpeningMeasure");
-                    map.get("SashOpeningIRIs").add(result);
                 }
                 else {
-                    map.get("SashOpeningIRIs").add("This device does not have a Sash Opening Percentage.");
+                    result = "This device does not have a Sash Opening Percentage.";
                 }
             } catch (Exception e){
-                throw new JPSRuntimeException(GETSASHOPENING_ERROR_MSG + map.get("FHandWFH").get(i));
+                result = "This device does not have a Sash Opening Percentage.";
             }
+            return result;
         }
-        return map;
     }
-}
 

@@ -36,9 +36,12 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
     public static final String QUERYSTORE_CONSTRUCTION_ERROR_MSG = "Unable to construct QueryStore!";
     public static final String GETLATESTDATA_ERROR_MSG = "Unable to get latest timeseries data for the following IRI: ";
 
-    String dbUrl;
-    String dbUsername;
-    String dbPassword;
+    String dbUrlForOccupiedState;
+    String dbUsernameForOccupiedState;
+    String dbPasswordForOccupiedState;
+    String dbUrlForSashOpening;
+    String dbUsernameForSashOpening;
+    String dbPasswordForSashOpening;
     String sparqlQueryEndpoint;
     String sparqlUpdateEndpoint;
     String bgUsername;
@@ -91,13 +94,16 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         
     }
 
+    /*
+     * Initialise agent
+     */
     private JSONObject runAgent() {
         QueryStore queryStore;
         Map<String, List<String>> map = new HashMap<>();
         try {
-            loadTSClientConfigs(System.getenv("CLIENTPROPERTIES"));
+            loadTSClientConfigs(System.getenv("CLIENTPROPERTIES_01"),System.getenv("CLIENTPROPERTIES_02"));
         } catch (IOException e) {
-            LOGGER.info("Unable to read timeseries client configs from properties file");
+            LOGGER.info("Unable to read timeseries client configs from the properties files.");
             LOGGER.info("Attempting to load configs via stack clients...");
         }
 
@@ -107,13 +113,40 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
             throw new JPSRuntimeException(QUERYSTORE_CONSTRUCTION_ERROR_MSG, e);
         }
         map = queryStore.queryForFHandWFHDevices();
-        map = queryStore.queryForOccupancyState(map);
-        map = queryStore.queryForSashOpening(map);
 
-        setTsClientAndRDBClient(dbUsername, dbPassword, dbUrl, bgUsername, bgPassword, sparqlUpdateEndpoint, sparqlQueryEndpoint);
+        map.put("OccupancyIRIs", new ArrayList<>());
+        map.put("SashOpeningIRIs", new ArrayList<>());
+
+        for (int i = 0; i < map.get("FHandWFH").size(); i++){
+            String IRI = queryStore.queryForOccupancyState(map.get("FHandWFH").get(i));
+            map.get("OccupancyIRIs").add(IRI);
+        }
+
+        for (int i = 0; i < map.get("FHandWFH").size(); i++){
+            String IRI = queryStore.queryForSashOpening(map.get("FHandWFH").get(i));
+            map.get("SashOpeningIRIs").add(IRI);
+        }
+
+        LOGGER.info( map.get("FHandWFH").toString());
+        LOGGER.info( map.get("Label").toString());
+        LOGGER.info( map.get("OccupancyIRIs").toString());
+        LOGGER.info( map.get("SashOpeningIRIs").toString());
+        
+        setTsClientAndRDBClient(dbUsernameForOccupiedState, dbPasswordForOccupiedState, dbUrlForOccupiedState, bgUsername, bgPassword, sparqlUpdateEndpoint, sparqlQueryEndpoint);
+
         map = getOccupiedStateTsData(map);
+
+        setTsClientAndRDBClient(dbUsernameForSashOpening, dbPasswordForSashOpening, dbUrlForSashOpening, bgUsername, bgPassword, sparqlUpdateEndpoint, sparqlQueryEndpoint);
+
         map = getSashOpeningTsData(map);
 
+        LOGGER.info( map.get("FHandWFH").toString());
+        LOGGER.info( map.get("Label").toString());
+        LOGGER.info( map.get("OccupancyIRIs").toString());
+        LOGGER.info( map.get("SashOpeningIRIs").toString());
+        LOGGER.info(map.get("OccupiedStateTsData").toString());
+        LOGGER.info(map.get("SashOpeningTsData").toString());
+        
         JSONObject msg = new JSONObject();
         msg.put("result", "Agent has successfully query and check through all fumehoods and walkin-fumehoods.");
         return msg;
@@ -126,7 +159,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
     private JSONObject getStatus() {
         LOGGER.info("Detected request to get agent status...");
         JSONObject result = new JSONObject();
-        result.put("description", "BMSQueryAgent is ready.");
+        result.put("description", "FHSashAndOccupancyAgent is ready.");
         return result;
     }
 
@@ -134,7 +167,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
      * Reads the parameters needed for the timeseries client
      * @param filepath Path to the properties file from which to read the parameters
      */
-    private void loadTSClientConfigs(String filepath) throws IOException {
+    private void loadTSClientConfigs(String filepath , String filepath2) throws IOException {
         // Check whether properties file exists at specified location
         File file = new File(filepath);
         if (!file.exists()) {
@@ -149,17 +182,17 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
 
             // Get timeseries client parameters from properties file
             if (prop.containsKey("db.url")) {
-                this.dbUrl = prop.getProperty("db.url");
+                this.dbUrlForOccupiedState = prop.getProperty("db.url");
             } else {
                 throw new IOException("Properties file is missing \"db.url=<db_url>\"");
             }
             if (prop.containsKey("db.user")) {
-                this.dbUsername = prop.getProperty("db.user");
+                this.dbUsernameForOccupiedState = prop.getProperty("db.user");
             } else {
                 throw new IOException("Properties file is missing \"db.user=<db_user>\"");
             }
             if (prop.containsKey("db.password")) {
-                this.dbPassword = prop.getProperty("db.password");
+                this.dbPasswordForOccupiedState = prop.getProperty("db.password");
             } else {
                 throw new IOException("Properties file is missing \"db.password=<db_password>\"");
             }
@@ -180,6 +213,36 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
                 this.bgPassword = prop.getProperty("bg.password");
             }
         }
+
+        // Check whether properties file exists at specified location
+        file = new File(filepath2);
+        if (!file.exists()) {
+            throw new FileNotFoundException("No properties file found at specified filepath: " + filepath2);
+        }
+        // Try-with-resource to ensure closure of input stream
+        try (InputStream input = new FileInputStream(file)) {
+
+            // Load properties file from specified path
+            Properties prop = new Properties();
+            prop.load(input);
+
+            // Get timeseries client parameters from properties file
+            if (prop.containsKey("db.url")) {
+                this.dbUrlForSashOpening = prop.getProperty("db.url");
+            } else {
+                throw new IOException("Properties file is missing \"db.url=<db_url>\"");
+            }
+            if (prop.containsKey("db.user")) {
+                this.dbUsernameForSashOpening = prop.getProperty("db.user");
+            } else {
+                throw new IOException("Properties file is missing \"db.user=<db_user>\"");
+            }
+            if (prop.containsKey("db.password")) {
+                this.dbPasswordForSashOpening = prop.getProperty("db.password");
+            } else {
+                throw new IOException("Properties file is missing \"db.password=<db_password>\"");
+            }
+        }
     }
 
     private void setTsClientAndRDBClient(String dbUsername, String dbPassword, String dbUrl, String bgUsername, String bgPassword, String sparqlUpdateEndpoint, String sparqlQueryEndpoint) {
@@ -189,8 +252,8 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         kbClient.setUser(bgUsername);
         kbClient.setPassword(bgPassword);
 
-        this.tsClient = new TimeSeriesClient<>(kbClient ,OffsetDateTime.class);
-        this.RDBClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
+        tsClient = new TimeSeriesClient<>(kbClient ,OffsetDateTime.class);
+        RDBClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
     }
 
     private Map<String, List<String>> getOccupiedStateTsData (Map<String, List<String>> map) {
@@ -199,7 +262,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         for (int i = 0; i < map.get("FHandWFH").size(); i++) {
             String occupiedStateIRI = map.get("OccupancyIRIs").get(i);
 
-            if (occupiedStateIRI != "This device does not have an occupied state.") {
+            if (!occupiedStateIRI.contains("This device does not have a occupied state.")) {
                 try (Connection conn = RDBClient.getConnection()) {
                     timeseries = tsClient.getLatestData(occupiedStateIRI, conn);
                     map.get("OccupiedStateTsData").add(timeseries.getValuesAsString(occupiedStateIRI).get(timeseries.getValuesAsString(occupiedStateIRI).size() - 1));
@@ -210,7 +273,6 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
                 map.get("OccupiedStateTsData").add("This device does not have an occupied state.");
             }
         }
-
         return map;
     }
 
@@ -220,7 +282,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         for (int i = 0; i < map.get("FHandWFH").size(); i++) {
             String sashOpeningIRI = map.get("SashOpeningIRIs").get(i);
 
-            if (sashOpeningIRI != "This device does not have a Sash Opening Percentage.") {
+            if (!sashOpeningIRI.contains("This device does not have a Sash Opening Percentage.")) {
                 try (Connection conn = RDBClient.getConnection()) {
                     timeseries = tsClient.getLatestData(sashOpeningIRI, conn);
                     map.get("SashOpeningTsData").add(timeseries.getValuesAsString(sashOpeningIRI).get(timeseries.getValuesAsString(sashOpeningIRI).size() - 1));
@@ -231,7 +293,6 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
                 map.get("SashOpeningTsData").add("This device does not have a sash opening.");
             }
         }
-
         return map;
     }
 
