@@ -402,17 +402,21 @@ public class QueryClient {
 
     void updateVirtualSensorData(List<String> timeStamps, JSONArray virtualSensorConcentrations) {
         // Create OntoEMS stations
-        LOGGER.info("Instantiating OntoEMS reporting stations for virtual sensors");
+        LOGGER.info("Instantiating pollutant concentrations of timeseries for virtual sensors");
 
+        // valuesListForTimeSeries cannot be of type List<List<Double>>> to be used with TimeSeries.  
         List<String> dataListForTimeSeries = new ArrayList<>();
         List<List<?>> valuesListForTimeSeries = new ArrayList<>();
+
+        ModifyQuery modify = Queries.MODIFY();
+        modify.prefix(P_EMS,P_OM);
 
         for (int i = 0; i < virtualSensorConcentrations.length(); i++) {
             JSONObject sensorProperties = virtualSensorConcentrations.getJSONObject(i);
             String stationIRI = ONTO_EMS + "sensorstation_" + UUID.randomUUID();
             Iri station = iri(stationIRI);
 
-            ModifyQuery modify = Queries.MODIFY();
+            
             double lat = sensorProperties.getDouble("latitude");
             double lon = sensorProperties.getDouble("longitude");
             String locString = String.valueOf(lat) + "#" + String.valueOf(lon);
@@ -422,29 +426,44 @@ public class QueryClient {
 			String measureIri = ONTO_EMS + "measure_" + UUID.randomUUID();
     		Iri measure = iri(measureIri);
 
-            dataListForTimeSeries.add(measureIri);
-            
-            // triples to insert for each station
+                      // triples to insert for each station
     		modify.insert(station.has(REPORTS,quantity));
     		modify.insert(quantity.isA(iri(NO2_CONC)).andHas(HAS_VALUE,measure));
     		modify.insert(measure.isA(MEASURE).andHas(HAS_UNIT,UNIT_POLLUTANT_CONC)); 
+
+            dataListForTimeSeries.add(measureIri);           
+  
             
             JSONArray concentrationTimeSeries = sensorProperties.getJSONArray("concentrations");
-            List<?> concentrationValues = IntStream.range(0, concentrationTimeSeries.length())
-            .mapToObj(j -> concentrationTimeSeries.getDouble(j)).collect(Collectors.toList());
-            valuesListForTimeSeries.add(concentrationValues);
+            List<Double> concentrationValues = new ArrayList<>();
+
+            for (int j = 0; j < timeStamps.size(); j++){
+                concentrationValues.add(concentrationTimeSeries.getDouble(j));
+            }
+
+            List<?> tmp = (List<?>) concentrationValues ;
+            valuesListForTimeSeries.add(tmp);
 
         }
 
+        storeClient.executeUpdate(modify.getQueryString());
+
         List<Class<?>> classListForTimeSeries = Collections.nCopies(dataListForTimeSeries.size(), Double.class);
         TimeSeriesClient<LocalDateTime> tsClientLocalDateTime = new TimeSeriesClient<>(storeClient, LocalDateTime.class);
-        tsClientLocalDateTime.initTimeSeries(dataListForTimeSeries, classListForTimeSeries, LocalDateTime.class.getSimpleName());        
 
         List<LocalDateTime> timesList =  timeStamps.stream().
         map(i -> LocalDateTime.parse(i, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))).collect(Collectors.toList());
 
-        TimeSeries<LocalDateTime> ts = new TimeSeries<>(timesList, dataListForTimeSeries, valuesListForTimeSeries);
-        tsClientLocalDateTime.addTimeSeriesData(ts);
+        TimeSeries<LocalDateTime> ts = new TimeSeries<>(timesList, dataListForTimeSeries, valuesListForTimeSeries);   
+        
+
+        try (Connection conn = rdbStoreClient.getConnection()) {
+            tsClientLocalDateTime.initTimeSeries(dataListForTimeSeries, classListForTimeSeries, LocalDateTime.class.getSimpleName(),conn);
+            tsClientLocalDateTime.addTimeSeriesData(ts,conn); 
+        } catch (SQLException e) {
+            LOGGER.error("SQL exception when updating virtual sensor data.");
+            LOGGER.error(e.getMessage());
+        }
 
         /* Offset not used for the time being */
         // List<OffsetDateTime> offsetTimesList = new ArrayList<>();

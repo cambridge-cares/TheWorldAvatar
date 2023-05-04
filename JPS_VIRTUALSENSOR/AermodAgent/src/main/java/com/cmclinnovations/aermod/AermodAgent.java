@@ -173,9 +173,16 @@ public class AermodAgent extends DerivationAgent {
         // Call virtualSensor.py to plot the temporal variation of concentrations 
         JSONArray virtualSensorConcentrations = aermod.plotVirtualSensorData(EnvConfig.PYTHON_SERVICE_SENSOR_URL, sensorFileURL, srid);
         // Instantiate concentrations at virtual sensor locations as time series
-        // queryClient.updateVirtualSensorData(bpi.timeStamps, virtualSensorConcentrations);
 
+        String startTS = bpi.timeStamps.get(0);
+        LocalDateTime ldr = LocalDateTime.parse(StartTS,DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        List<String> timeSteps = bpi.timeStamps;
+        // AERMOD does not recognize hour 0. Weather data for hour 0 in the CD-144 file is discarded. 
+        if (ldr.getHour() == 0) {
+            timeSteps.remove(0);
+        }  
 
+        queryClient.updateVirtualSensorData(timeSteps, virtualSensorConcentrations);
 
         List<Double> receptorHeights = bpi.receptorHeights;
         // Set GeoServer layer names

@@ -62,7 +62,7 @@ public class Buildings {
     //    These values are taken from bboxfinder.com and are in EPSG:4326/WGS84 format.
     public static List<String> boundaryPolygons = new ArrayList<> (
             Arrays.asList("POLYGON ((103.650684 1.216988, 103.743038 1.216988, 103.743038 1.308804, 103.650684 1.308804, 103.650684 1.216988))",
-            "POLYGON((7.52 49.21, 7.67 49.21, 7.67 49.25, 7.52 49.25, 7.52 49.21))")) ;
+            "POLYGON((7.52 49.19, 7.52 49.25, 7.67 49.25, 7.67 49.19, 7.52 49.19))")) ;
             
 
 

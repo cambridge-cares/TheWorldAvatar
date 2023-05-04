@@ -1,0 +1,72 @@
+prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+prefix om:   <http://www.ontology-of-units-of-measure.org/resource/om-2/>
+prefix ems:  <https://www.theworldavatar.com/kg/ontoems/>
+prefix rt:   <http://environment.data.gov.uk/flood-monitoring/def/core/>
+prefix owl:  <http://www.w3.org/2002/07/owl#>
+
+
+
+SELECT ?Measurement ?Name ?Unit
+WHERE { 
+  
+  [IRI] <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <https://www.theworldavatar.com/kg/ontoems/ReportingStation> ;
+            ems:reports ?quantity.
+       ?quantity rdf:type <https://www.theworldavatar.com/kg/ontoems/NitrogenDioxideConcentration>.
+       ?quantity om:hasValue ?Measurement.
+       ?Measurement om:hasUnit <http://www.ontology-of-units-of-measure.org/resource/om-2/microgramPerCubicmetre>;
+                <https://www.theworldavatar.com/kg/ontotimeseries/hasTimeSeries> ?tsIRI.
+       
+       
+      
+      }
+
+
+
+
+SELECT ?Measurement ?Name ?Unit ?Eionet_equivalent ?LastUpdate ?MeasurementMethod ?MeasurementPeriod_sec ?Range ?Trend
+WHERE {
+  # Observations/Measurements: account for different unit relations between MetOffice/AirQuality stations and WaterLevelStations (i.e. EA stations)
+  {
+    # MetOffice stations
+    [IRI] ems:reports/om:hasValue ?Measurement . 
+    ?Measurement ^om:hasValue/rdf:type ?type ; 
+                 om:hasUnit/om:symbol ?Unit .
+    FILTER (!REGEX(str(?type), 'AirPollutantConcentration'))
+    BIND (concat(replace(str(?type), str(ems:), ''), ' observation') as ?Name)
+  } UNION {
+    # AirQuality stations
+    [IRI] ems:reports ?measure .
+    ?measure om:hasValue ?Measurement  ; 
+             rdf:type ?type ; 
+             rdfs:comment ?pollutant .  
+    ?Measurement om:hasUnit/om:symbol ?Unit .
+    FILTER (REGEX(str(?type), 'AirPollutantConcentration'))
+    BIND (concat(ucase(substr(?pollutant, 1, 1)), substr(?pollutant, 2)) as ?Name)   
+    # Add additional information (if available)
+    OPTIONAL { ?measure owl:sameAs ?Eionet_equivalent }
+  } 
+  UNION {
+    # EA River Level stations
+    [IRI] ems:reports/om:hasValue ?Measurement . 
+    ?Measurement rt:parameterName ?Name ;
+                 rt:unitName ?Unit .
+    # Add additional information (if available)
+    OPTIONAL { ?Measurement rt:qualifier ?MeasurementMethod}
+    OPTIONAL { ?Measurement rt:period ?MeasurementPeriod_sec}
+    OPTIONAL { ?Measurement ems:hasCurrentRange ?range_ini . 
+               BIND (replace(replace(str(?range_ini), str(ems:), ''), 'Range', '') as ?Range)
+             }
+    OPTIONAL { ?Measurement ems:hasCurrentTrend ?trend_ini . 
+               BIND (replace(replace(str(?trend_ini), str(ems:), ''), 'Trend', '') as ?Trend)
+             }
+  }
+  # Forecasts: only relevant for MetOffice stations
+  UNION {
+  [IRI] ems:reports/ems:hasForecastedValue ?Measurement . 
+  ?Measurement ^ems:hasForecastedValue/rdf:type ?type ; 
+                ems:createdOn ?LastUpdate ; 
+                om:hasUnit/om:symbol ?Unit .            
+  BIND (concat(replace(str(?type), str(ems:), ''), ' forecast') as ?Name)    
+  }
+}
