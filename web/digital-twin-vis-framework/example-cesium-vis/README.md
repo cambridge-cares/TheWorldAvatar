@@ -126,7 +126,7 @@ An example specification of terrain elevation is shown below. Note that in this 
 
 For 3D tileset sources, clipping planes can also be added that allow the user to effectively slice the model, revealing its interior at a specific height; Cesium has an online example of this [here](https://sandcastle.cesium.com/?src=3D%20Tiles%20Clipping%20Planes.html); a demonstration of this feature has also been added to this example visualisation.
 
-To enable clipping planes, within the specification of a 3D tileset layer in the `data.json` file, add a `clipping` object to specify the height range (in metres), and an optional array of labelled increments; this can be done for as many tilesets as the developer requires. An example of the specification format is shown below:
+To enable clipping planes, within the specification of a 3D tileset layer in the `data.json` file, add a `clipping` object to specify the height range (above sea level, in metres), and an optional array of labelled increments; this can be done for as many tilesets as the developer requires. An example of the specification format is shown below:
 
 ```json
   "clipping": {
@@ -146,6 +146,8 @@ There are a few caveats to mention however:
 - This feature is only supported on 3D tileset sources.
 - Cesium only seems to support clipping planes on the _entire_ tileset.
 - The size of the clipping plane is based on the bounds of the tileset itself.
+- The feature can currently only be active on one tileset at any given time.
+- If adding planes to an existing visualisation, ensure the version of DTVF JS and CSS files used in the `index.html` file are _at least_ 3.4.0.
 - If adding planes to an existing visualisation, ensure the version of Cesium JS and CSS files used in the `index.html` file are _at least_ 1.105.
 
 <p align="center">

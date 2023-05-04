@@ -117,8 +117,6 @@ class MapHandler_Cesium extends MapHandler {
 
             // Build clipping controls
             let layersWithClipping = CesiumUtils.getLayersWithClipping(Manager.DATA_STORE);
-            console.log("layersWithClipping:");
-            console.log(layersWithClipping);
             this.clipHandler.setLayers(layersWithClipping);
             this.clipHandler.addControls();
 
@@ -430,19 +428,32 @@ class MapHandler_Cesium extends MapHandler {
      * @param source JSON definition of source data. 
      * @param layerID ID of layer upon the map.
      */
-    private addTileset(source: Object, layer: DataLayer) {
+    private async addTileset(source: Object, layer: DataLayer) {
         // Check the position (if set)
-        let position = source["position"];
-        if(position !== null && position !== undefined) {
-            let centerCartesian = Cesium.Cartesian3.fromDegrees(position[0], position[1], position[2]);
+        let position = Cesium.Matrix4.IDENTITY;
+        if("position" in source) {
+            let setting = source["position"];
+            let centerCartesian = Cesium.Cartesian3.fromDegrees(setting[0], setting[1], setting[2]);
             position = Cesium.Transforms.eastNorthUpToFixedFrame(centerCartesian);
         }
 
+        // Check the scale (if set)
+        if("scale" in source) {
+            let setting = source["scale"];
+
+            Cesium.Matrix4.setScale(
+                position,
+                new Cesium.Cartesian3(1, 1, setting),
+                position
+            );
+        }
+
         // Check the rotation (if set)
-        let rotation = source["rotation"];
-        if(rotation != null && rotation !== undefined && position != null) {
+        if("rotation" in source) {
+            let setting = source["rotation"];
+
             // Create a heading-pitch-roll object
-            let hpr = new Cesium.HeadingPitchRoll(rotation[2], rotation[1], rotation[0]);
+            let hpr = new Cesium.HeadingPitchRoll(setting[2], setting[1], setting[0]);
 
             // Create a rotation matrix
             let rotationMatrix = Cesium.Matrix3.fromHeadingPitchRoll(hpr, new Cesium.Matrix3());
@@ -453,13 +464,9 @@ class MapHandler_Cesium extends MapHandler {
 
         // Define tileset options
         let options = {
-            url: source["uri"],
+            modelMatrix: position,
             show: layer.definition["visibility"] == undefined || layer.definition["visibility"] === "visible"
         };
-
-        if(position !== null && position !== undefined) {
-            options["modelMatrix"] = position;
-        }
 
         // If clipping is enabled, pre-generate a clipping plane
         if(layer.definition.hasOwnProperty("clipping")) {
@@ -470,7 +477,12 @@ class MapHandler_Cesium extends MapHandler {
         }
 
         // Create tileset object
-        let tileset = new Cesium.Cesium3DTileset(options);
+        let tileset = await Cesium.Cesium3DTileset.fromUrl(
+            source["uri"],
+            options
+        );
+
+        // Cache custom layerID for later use
         tileset["layerID"] = layer.id;
        
         // Add the tileset to the map
@@ -482,6 +494,9 @@ class MapHandler_Cesium extends MapHandler {
             MapHandler_Cesium.DATA_SOURCES[layer.id] = [];
         }
         MapHandler_Cesium.DATA_SOURCES[layer.id].push(tileset);
+
+        // Return the loaded tileset
+        return tileset;
     }
 
     /**

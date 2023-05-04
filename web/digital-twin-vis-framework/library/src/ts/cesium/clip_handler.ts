@@ -42,6 +42,8 @@ class ClipHandler {
     private maxValue;
     private startValue;
 
+    private static OFFSET = 0;
+
     /**
      * Constructor.
      */
@@ -222,20 +224,28 @@ class ClipHandler {
 
         let found = false;
 
-        let splitLayers = (layerIDs.includes("|")) ? layerIDs.split("|") : [layerIDs];
-        console.log(splitLayers);
-
         // Iterate through linked layer IDs to
         // find root layer with clipping enabled
+        let splitLayers = (layerIDs.includes("|")) ? layerIDs.split("|") : [layerIDs];
         splitLayers.forEach(layerID => {
 
             let layerObj = Manager.DATA_STORE.getLayerWithID(layerID);
 
             if(!found && layerObj != null && layerObj.definition.hasOwnProperty("clipping")) {
 
+                // Check if the tileset itself has a height offset
+                let sourceObj = layerObj.source;
+                if("position" in sourceObj.definition) {
+                    ClipHandler.OFFSET = sourceObj.definition["position"][2];
+                } else {
+                    ClipHandler.OFFSET = 0;
+                }
+
+                // Calculate real start height for slider
                 let startHeight =  layerObj.definition["clipping"]["start"];
                 if(ClipHandler.PLANES[layerID] != null) {
                     startHeight = ClipHandler.PLANES[layerID].get(0).distance;
+                    startHeight += ClipHandler.OFFSET;
                 }
 
                 // Build a new slider component
@@ -279,6 +289,14 @@ class ClipHandler {
      * @param defaultHeight default plane height (m)
      */
     public initialiseClippingPlane(layerID, defaultHeight) {
+
+        // Check if the tileset itself has a height offset
+        let layerObj  = Manager.DATA_STORE.getLayerWithID(layerID);
+        let sourceObj = layerObj.source;
+        if("position" in sourceObj.definition) {
+            defaultHeight -= sourceObj.definition["position"][2];
+        }
+
         // New clipping plane
         let plane = new Cesium.ClippingPlane(
             new Cesium.Cartesian3(0.0, 0.0, -1.0),
@@ -312,7 +330,6 @@ class ClipHandler {
         let clipPlane = planeCollection.get(0);
 
         let defaultHeight = settings["start"];
-        ClipHandler.HEIGHTS[layerID] = defaultHeight;
 
         // Once the tileset is loaded onto the map
         tileset.readyPromise.then(function() {
@@ -340,9 +357,22 @@ class ClipHandler {
             
             let result = Cesium.Matrix4.multiplyByPoint(
                 Cesium.Transforms.eastNorthUpToFixedFrame(surface),
-                new Cesium.Cartesian3(0, 0, 0),
+                new Cesium.Cartesian3(0, 0, ClipHandler.OFFSET),
                 new Cesium.Cartesian3()
             );
+
+            // Rotate to match model
+            let layerObj = Manager.DATA_STORE.getLayerWithID(layerID);
+            let sourceObj = layerObj.source;
+            let orientation = null;
+            
+            if("rotation" in sourceObj.definition) {
+                let setting = sourceObj.definition["rotation"];
+
+                // Apply the tileset's rotation to the clipping plane as well
+                let hpr = new Cesium.HeadingPitchRoll(setting[2], setting[1], setting[0]);
+                orientation = Cesium.Transforms.headingPitchRollQuaternion(result, hpr);
+            }
 
             // Get initial visibility state
             let showCheck = document.getElementById("clipShowCheck") as HTMLInputElement;
@@ -351,6 +381,7 @@ class ClipHandler {
             // Add visible 2D planes to represent the functional clipping height
             let planeEntity = MapHandler.MAP.entities.add({
                 position: result,
+                orientation: orientation,
                 id: layerID,
                 show: showState,
                 plane: {
@@ -373,27 +404,6 @@ class ClipHandler {
             ClipHandler.GEOMETRIES[layerID] = planeEntity;
             return tileset;
         });
-    }
-
-    /**
-     * Handles the update of a plane's distance.
-     * 
-     * @param plane plane to update
-     * @param tileset ID of tileset plane is attached to
-     * 
-     * @returns updated plane 
-     */
-     public static createPlaneUpdateFunction(plane, tilesetID) {
-        return function () {
-            if (Cesium.defined(ClipHandler.SELECTED_PLANE)) {
-                let selectedID = ClipHandler.SELECTED_PLANE.id._id;
-                if(tilesetID !== selectedID) return plane;
-
-                let height = ClipHandler.HEIGHTS[tilesetID];
-                plane.distance = height;
-            }
-            return plane;
-        };
     }
 
     /**
@@ -420,8 +430,6 @@ class ClipHandler {
         this.minValue = minValue;
         this.maxValue = maxValue;
         this.startValue = startValue;
-
-        console.log("Start value is " + startValue);
 
         // Reset if needed
         this.resetSlider();
@@ -459,6 +467,7 @@ class ClipHandler {
         // Add event to number input
         let input = document.getElementById("sliderInput") as HTMLInputElement;
         input.value = startValue;
+
         input.addEventListener("change", this.updateSlider);
 
         // Build and add absolute value labels
@@ -509,7 +518,7 @@ class ClipHandler {
         let value = $("#sliderRight").slider("value");
         input.value = String(value);
 
-        ClipHandler.movePlane(input.value);
+        ClipHandler.movePlane(Number(input.value) - ClipHandler.OFFSET);
     }
 
     /**
@@ -520,7 +529,7 @@ class ClipHandler {
         let input = document.getElementById("sliderInput") as HTMLInputElement;
         $("#sliderRight").slider("value", input.value);
 
-        ClipHandler.movePlane(input.value);
+        ClipHandler.movePlane(Number(input.value) - ClipHandler.OFFSET);
     }
 
 
@@ -530,16 +539,38 @@ class ClipHandler {
      * @param newHeight desired height (m)
      */
     public static movePlane(newHeight) {
+        console.log("New height is " + newHeight);
+
         if (Cesium.defined(ClipHandler.SELECTED_PLANE)) {
             let planeID = ClipHandler.SELECTED_PLANE.id._id;
-            ClipHandler.HEIGHTS[planeID] = newHeight;
-            
-            ClipHandler.SELECTED_PLANE.distance = newHeight;
 
+            ClipHandler.HEIGHTS[planeID] = newHeight;
+            ClipHandler.SELECTED_PLANE.distance = newHeight;
         } else {
             console.log("CLIPPING PLANE IS NOT DEFINED!");
         }
+    }
 
+    /**
+     * Handles the update of a plane's distance.
+     * 
+     * @param plane plane to update
+     * @param tileset ID of tileset plane is attached to
+     * 
+     * @returns updated plane 
+     */
+     public static createPlaneUpdateFunction(plane, tilesetID) {
+        return function () {
+            if (Cesium.defined(ClipHandler.SELECTED_PLANE)) {
+                let selectedID = ClipHandler.SELECTED_PLANE.id._id;
+                if(tilesetID !== selectedID) return plane;
+
+                let height = ClipHandler.HEIGHTS[tilesetID];
+                //height += ClipHandler.OFFSET;
+                plane.distance = height;
+            }
+            return plane;
+        };
     }
 
 }

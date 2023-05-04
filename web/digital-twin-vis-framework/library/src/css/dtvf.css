@@ -1423,6 +1423,7 @@ label[for="select-feature"] {
 #clipSelectContainer {
     width: 100%;
     height: 60px;
+    margin-top: 10px;
 }
 #clipSelectContainer p {
     font-size: 9pt;
