@@ -33,7 +33,7 @@ if __name__ == "__main__":
     #                  "find species with molecular weight over 100",
     #                  "what is the boiling point of Metanol"]
 
-    question_list = ["what is the melting point of CH4"]
+    question_list = ["find species with molecular weight over 100", "Find all species with boiling point above 0 celsius", "What are the chemical species having molecular weight around 150 g/mol"]
 
     for question in question_list:
         print(my_engine.run(question))

@@ -13,7 +13,7 @@ from Marie.Util.CommonTools.FileLoader import FileLoader
 
 
 class QAEngine:
-    def __init__(self, dataset_dir, dataset_name, embedding="transe", dim=20, dict_type="json", nel = None):
+    def __init__(self, dataset_dir, dataset_name, embedding="transe", dim=20, dict_type="json", nel=None):
         self.marie_logger = MarieLogger()
         self.model_name = f"bert_{dataset_name}"
         self.dataset_dir = dataset_dir
@@ -32,7 +32,8 @@ class QAEngine:
         if embedding == "transe":
             try:
                 self.score_model = TransEScoreModel(device=self.device, model_name=self.model_name,
-                                                    dataset_dir=self.dataset_dir, dim=dim, tokenizer_name="bert-base-cased")
+                                                    dataset_dir=self.dataset_dir, dim=dim,
+                                                    tokenizer_name="bert-base-cased")
             except RuntimeError:
                 self.score_model = TransEScoreModel(device=self.device, model_name=self.model_name,
                                                     dataset_dir=self.dataset_dir, dim=dim,
@@ -76,6 +77,7 @@ class QAEngine:
 
         try:
             self.marie_logger.info(f" received question: {question}")
+            self.marie_logger.info(f" received head name: {head_name}")
             candidates = self.subgraph_extractor.extract_neighbour_from_idx(self.entity2idx[head_entity])
             self.marie_logger.info(f" candidates: {candidates}")
             pred_batch = self.prepare_prediction_batch(question, self.entity2idx[head_entity], candidates)
@@ -84,13 +86,24 @@ class QAEngine:
             _, indices_top_k = torch.topk(scores, k=k, largest=False)
             labels_top_k = [self.idx2entity[candidates[index]] for index in indices_top_k]
             scores_top_k = [scores[index].item() for index in indices_top_k]
-            targets_top_k = [head_name] * len(scores)
+            targets_top_k = [head_name] * len(scores_top_k)
+            labels_top_k = self.append_value(labels_top_k)
+            # labels_top_k = [f"{self.value_dictionary[l]} | {l}" for l in labels_top_k if l in self.value_dictionary]
             return labels_top_k, scores_top_k, targets_top_k
         except:
             self.marie_logger.error('The attempt to find answer failed')
             self.marie_logger.error(traceback.format_exc())
             # return traceback.format_exc()
             return ["EMPTY"], [-999], ["EMPTY"]
+
+    def append_value(self, label_list):
+        appended_value_list = []
+        for label in label_list:
+            if label in self.value_dictionary:
+                appended_value_list.append(f"{self.value_dictionary[label]} | {label}")
+            else:
+                appended_value_list.append(label)
+        return appended_value_list
 
     def extract_head_ent(self, mention):
         self.marie_logger.info(f"extracting head entity: {mention}")
@@ -113,6 +126,10 @@ class QAEngine:
             combined_confidence = round(min(1, nel_confidence * (1 / score)), 2)
             self.marie_logger.info(f'Confidence:\t\t {combined_confidence}')
             self.marie_logger.info(f'-------------------------')
+            if answer in self.value_dictionary:
+                value = self.value_dictionary[answer]
+                answer = f"{value} | {answer}"
+
             row = {"answer": answer, "from node": answer, "mention": mention_string,
                    "name": name, "confidence": combined_confidence}
             result_list.append(row)
@@ -133,8 +150,13 @@ class QAEngine:
             print(mention)
         try:
             nel_confidence, cid, mention_string, name = self.extract_head_ent(mention)
-            if head is not None:
-                cid = head
+            print("============================== HEAD COMPONENTS ===============================")
+            print("nel confidence:", nel_confidence)
+            print("mention string:", mention_string)
+            print("name:", name)
+            print("==============================================================================")
+            # if head is not None:
+            #    cid = head
         except TypeError:
             self.marie_logger.error(f"Error - Could not recognise any target from the question: "
                                     f"{question} from {__name__}.{self.run.__name__}")
@@ -152,7 +174,7 @@ class QAEngine:
             return ["EMPTY"], [-999], ["EMPTY"]
 
         self.marie_logger.info(f"Question with head entity ({mention_string}) removed {question}")
-        answer_list, score_list, target_list = self.find_answers(question=question, head_entity=cid, head_name=name)
+        answer_list, score_list, target_list = self.find_answers(question=question, head_entity=cid, head_name=mention_string)
         max_score = max(score_list)
         score_list = [(max_score + 1 - s) for s in score_list]
         return answer_list, score_list, target_list

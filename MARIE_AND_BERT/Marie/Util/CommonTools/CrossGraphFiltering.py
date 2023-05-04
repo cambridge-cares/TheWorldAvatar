@@ -80,8 +80,7 @@ class CrossGraphFilter:
         self.stop_words = ["whats", "what", "is", "are", "the", "more", "less",
                            "than", "species", "find", "all", "over",
                            "under", "show", "me", "with",
-                           "chemical species", "having", "that", "can", "be", "?", "give", "created", "waht"
-
+                           "chemical species", "having", "that", "can", "be", "?", "give", "created", "waht", "chemical"
                            ]
         self.global_stop_words = ["g/mol", "dalton", "celsius", "show", "give", "find", "all", "the", "species"]
         self.global_stop_words += COMPARISON_OPERATOR_LABEL_LIST
@@ -244,6 +243,12 @@ if __name__ == "__main__":
 
 
     question = "what is the heat capacity of C3H4O"
+    rst = my_filter.filter_before_cross_graph(question=question)
+    print("===========================")
+    print(rst)
+    print("===========================")
+
+    question = "What are the chemical species having molecular weight around 150 g/mol"
     rst = my_filter.filter_before_cross_graph(question=question)
     print("===========================")
     print(rst)

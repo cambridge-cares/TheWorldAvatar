@@ -8,6 +8,8 @@ class OntoKinQAEngine(QAEngine):
 
 
 if __name__ == "__main__":
-    my_engine = OntoKinQAEngine(dataset_dir="CrossGraph/ontokin", dataset_name="ontokin")
+    from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
+    cn = ChemicalNEL()
+    my_engine = OntoKinQAEngine(dataset_dir="CrossGraph/ontokin", dataset_name="ontokin", nel=cn)
     rst = my_engine.run("what is co2's geometry")
     print(rst)

@@ -8,7 +8,6 @@ sys.path.append("..")
 from torch import no_grad
 import torch
 from Marie.Util.NHopExtractor import HopExtractor
-from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.Util.Logging import MarieLogger
 from Marie.Util.Models.TransEAScoreModel import TransEAScoreModel
 from Marie.Util.CommonTools import NumericalTools
@@ -79,6 +78,7 @@ class QAEngineNumerical:
         self.operator_dict = operator_dict
         self.operator_dim = len(self.operator_dict)
         if nel is None:
+            from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
             nel = ChemicalNEL()
 
         if self.enable_class_ner:
@@ -181,6 +181,9 @@ class QAEngineNumerical:
         else:
             return []
         # select the heads using the indices
+        if len(indices) > 20:
+            indices = indices[0:20]
+
         heads = heads[indices]
         return heads.tolist(), numerical_values[indices].tolist()
 

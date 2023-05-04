@@ -259,6 +259,11 @@ class CrossGraphQAEngine:
                             score_list[domain] = scores
                             label_list[domain] = labels
                             target_list[domain] = targets
+                            print("==== DOMAIN SPECIFIC NEW TARGET LIST ====")
+                            print("TARGET LIST", target_list)
+                            print("DOMAIN", domain)
+                            print("=========================")
+
 
                 else:
                     with self.lock:
@@ -314,7 +319,12 @@ class CrossGraphQAEngine:
                 if domain in label_list and domain in target_list:
                     new_label_list += label_list[domain]
                     new_target_list += target_list[domain]
-
+            print("==== NEW TARGET LIST ====")
+            print(new_target_list)
+            print(new_label_list)
+            print(adjusted_score_list)
+            print(domain_list)
+            print("=========================")
             return self.re_rank_answers(domain_list=domain_list, score_list=adjusted_score_list,
                                         answer_list=new_label_list,
                                         target_list=new_target_list)

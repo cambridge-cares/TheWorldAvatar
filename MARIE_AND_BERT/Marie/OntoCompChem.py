@@ -11,7 +11,6 @@ import pickle
 import pandas as pd
 import torch
 from Marie.Util.NHopExtractor import HopExtractor
-from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.Util.location import DATA_DIR
 from Marie.Util.Models.ComplexScoreModel import ComplexScoreModel
 from Marie.Util.Logging import MarieLogger
@@ -108,6 +107,8 @@ class OntoCompChemEngine:
             k = min(5, len(tails))
             _, indices_top_k = torch.topk(scores, k=k, largest=True)
             labels_top_k = [self.idx2entity[tails[index].item()] for index in indices_top_k]
+            labels_top_k = self.append_value(labels_top_k)
+            # labels_top_k = [f"{self.value_dictionary[l]} | {l}" for l in labels_top_k if l in self.value_dictionary]
             score_top_k = [scores[index].item() for index in indices_top_k]
             target_top_k = [head_name] * k
             return labels_top_k, score_top_k, target_top_k
@@ -129,6 +130,15 @@ class OntoCompChemEngine:
     #     attention_mask_batch = attention_mask.repeat(repeat_num, 1).to(self.device)
     #     input_ids_batch = input_ids.repeat(repeat_num, 1).to(self.device)
     #     return {'attention_mask': attention_mask_batch, 'input_ids': input_ids_batch}
+
+    def append_value(self, label_list):
+        appended_value_list = []
+        for label in label_list:
+            if label in self.value_dictionary:
+                appended_value_list.append(f"{self.value_dictionary[label]} | {label}")
+            else:
+                appended_value_list.append(label)
+        return appended_value_list
 
     def prepare_prediction_batch(self, question, head_entity, candidate_entities):
         """
@@ -154,6 +164,8 @@ class OntoCompChemEngine:
 # 2. Score model
 # 3.
 if __name__ == '__main__':
-    my_ontochemistry_engine = OntoCompChemEngine()
+    from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
+    cn = ChemicalNEL()
+    my_ontochemistry_engine = OntoCompChemEngine(nel=cn)
     rst = my_ontochemistry_engine.run(question="what is co2's geometry", mention="co2")
     print(rst)

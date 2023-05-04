@@ -14,7 +14,6 @@ import time
 sys.path.append("")
 
 from Marie.EntityLinking.IRILookup import IRILookup
-from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.Util.CommonTools import NumericalTools
 from Marie.Util.AgentTools.agent_invoker import AgentInvoker
 from Marie.Util.AgentTools.question_agent_matcher import QuestionAgentMatcher
@@ -77,6 +76,7 @@ class AgentInterface:
 
 
 if __name__ == "__main__":
+    from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
     cn = ChemicalNEL()
     agentInterface = AgentInterface(nel=cn)
     START_TIME = time.time()

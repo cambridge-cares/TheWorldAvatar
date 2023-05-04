@@ -1,4 +1,3 @@
-from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.QAEngineNumerical import QAEngineNumerical
 
 
@@ -25,6 +24,7 @@ class WikidataEngine(QAEngineNumerical):
 
 
 if __name__ == "__main__":
+    from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
     cn = ChemicalNEL()
     my_engine = WikidataEngine(dataset_dir="CrossGraph/wikidata_numerical", dataset_name="wikidata_numerical", nel=cn)
     rst = my_engine.run("what is the melting point of tungsten", mention="tungsten")

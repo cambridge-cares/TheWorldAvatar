@@ -2,7 +2,6 @@ import os, sys
 from pprint import pprint
 
 sys.path.append("..")
-from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.QAEngineNumerical import QAEngineNumerical
 from Marie.Util.location import DATA_DIR
 
@@ -25,6 +24,7 @@ class OntoMoPsQAEngine(QAEngineNumerical):
 
 
 if __name__ == "__main__":
+    from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
     cn = ChemicalNEL()
     ontology = "OntoMoPs"
     sub_ontology = "numerical_with_implicit"
