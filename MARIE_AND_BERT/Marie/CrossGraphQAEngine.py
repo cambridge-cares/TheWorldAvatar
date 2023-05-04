@@ -1,10 +1,11 @@
 import json
 import os, sys
+sys.path.append("")
 
 from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
 from Marie.Util.CommonTools.CrossGraphFiltering import CrossGraphFilter
 
-sys.path.append("..")
+
 import time
 
 import torch
@@ -156,6 +157,7 @@ class CrossGraphQAEngine:
         values, indices = torch.topk(torch.FloatTensor(score_list), k=min(10, len(score_list)), largest=True)
         re_ranked_labels = [answer_list[i] for i in indices]
         re_ranked_domain_list = [domain_list[i] for i in indices]
+        re_ranked_target_list = [target_list[i] for i in indices]
         re_ranked_engine_list = [self.engine_list[domain] for domain in re_ranked_domain_list]
         re_ranked_score_list = [round(float(v.item()),2) for v in values]
         re_ranked_domain_list = [self.encoding_domain[d] for d in re_ranked_domain_list]
@@ -163,7 +165,7 @@ class CrossGraphQAEngine:
         result = []
 
         for label, domain, score, target in zip(re_ranked_labels, re_ranked_domain_list, re_ranked_score_list,
-                                                target_list):
+                                                re_ranked_target_list):
 
             if "EMPTY" not in label:
                 row = {"node": label, "domain": domain, "score": score, "target": target}
