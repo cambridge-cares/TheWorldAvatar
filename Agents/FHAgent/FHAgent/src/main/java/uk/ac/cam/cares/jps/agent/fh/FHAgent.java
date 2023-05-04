@@ -76,6 +76,10 @@ public class FHAgent{
      * Data bridge agent URL
      */
     public static String dataBridgeURL;
+    /*
+     * Bool for whether to use the Stack or not
+     */
+    public Boolean useStack;
     /**
      * Log messages
      */
@@ -152,6 +156,14 @@ public class FHAgent{
 
             catch(Exception e){
                 throw new JPSRuntimeException("Error parsing DataBridgeAgent URL in properties file:" + e);
+            }
+
+            try{
+                useStack = Boolean.parseBoolean(prop.getProperty("data_bridge.url"));
+            }
+
+            catch(Exception e){
+                throw new JPSRuntimeException("Error parsing use Stack key in properties file:" + e);
             }
             
         }
@@ -286,6 +298,20 @@ public class FHAgent{
      * @param OccupiedState The readings received from the ThingsBoard API
      */
     public void updateData(JSONObject Distance, List<String> keys)throws IllegalArgumentException {
+        if (useStack) {
+            sendToDataBridge(Distance, keys);
+        }
+        else {
+            localUpdateData(Distance, keys);
+        }
+    }
+
+    /*
+     * Update data locally
+     * 
+     */
+
+     public void localUpdateData(JSONObject Distance, List<String> keys)throws IllegalArgumentException {
         // Transform readings in hashmap containing a list of objects for each JSON key,
         // will be empty if the JSON Object is empty
 
