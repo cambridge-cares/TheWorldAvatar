@@ -27,10 +27,11 @@ if __name__ == "__main__":
     from Marie.EntityLinking.ChemicalNEL import ChemicalNEL
     cn = ChemicalNEL()
     my_engine = WikidataEngine(dataset_dir="CrossGraph/wikidata_numerical", dataset_name="wikidata_numerical", nel=cn)
-    rst = my_engine.run("what is the melting point of tungsten", mention="tungsten")
-    print(rst)
-    rst = my_engine.run("find all species with moleculear weight more than 100")
-    print(rst)
+    text = ""
+    while text != "quit":
+        text = input("Question:")
+        rst = my_engine.run(text)
+        print(rst)
     # rst = my_engine.run("what is the smiles string of CH4O4S", mention="C7H5NO")
     # print(rst)
     # rst = my_engine.run("what is the boiling point of C7H5NO", mention="C7H5NO")
