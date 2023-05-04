@@ -1,7 +1,11 @@
 import folium, csv
+import matplotlib as mpl
 import matplotlib.colors as colors
+from matplotlib.colors import BoundaryNorm
 import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.cm as cm
+
 
 def read_single_csv(input_path):
     import pandas as pd
@@ -23,6 +27,24 @@ def colourPicker(valueList):
     ##  colourList = [colors.to_hex(c) for c in cmap(1-norm(valueList))] ## reverse the colour map  
     return colourList
 
+def colourBarCreator(upperbound, lowerbound, filePath, cmapName = 'coolwarm'):
+    fig, ax = plt.subplots(figsize=(0.5, 12))
+    fig.subplots_adjust(bottom=0.5)
+
+    cmap = plt.cm.get_cmap(cmapName)    
+    norm=plt.Normalize(lowerbound, upperbound)
+    sample_values = np.linspace(lowerbound, upperbound, 101)
+   
+    cbar = mpl.colorbar.ColorbarBase(ax, 
+                                    cmap = cmap,
+                                    norm = norm,
+                                    boundaries = sample_values)
+    cbar.set_label("Population density (People/$\mathregular{km^2}$)")
+    fig.set_size_inches(0.5, 12)
+
+    plt.savefig(filePath + 'populationDensityLegend.png', dpi = 200, bbox_inches = "tight", transparent = True)
+
+    return 
 
 def pdGeo(dataPath, fileName, resolutionLevel:str):
     if not dataPath[-1] == '/':
@@ -134,14 +156,15 @@ def visualisePoint(dataPath):
     plt.savefig('/mnt/d/wx243/FromAW/populationData/populationUK.png',dpi = 2400, bbox_inches='tight')      
     return 
 if __name__ == '__main__':
-    dataPath = '/mnt/d/wx243/FromAW/populationData/'
-    fileName = 'reduced_file_1km.csv'
+    dataPath = '/mnt/d/wx243/FromTWA/populationUK2019/'
+    fileName = 'reduced_file_grid_size_1km.csv'
     # fileName = 'reduced_file_grid_size_10km.csv'
     ## fileName = 'reduced_file_grid_size_5km.csv'
     resolutionLevel = '1km'
     ## visualisePointOnUKMap(dataPath)
     ## visualisePoint(dataPath)
-    pdGeo(dataPath, fileName, resolutionLevel)
+    ## pdGeo(dataPath, fileName, resolutionLevel)
+    colourBarCreator(20663, 0, dataPath)
 
 
 
