@@ -28,11 +28,11 @@ def busLocatedRegionFinder(busInfoList, ons_label, Bus_lat_lon_key):
         lengthBusDict = len(bus)
         bus_lonlat_point = shapely.geometry.Point(float(bus[Bus_lat_lon_key][1]), float(bus[Bus_lat_lon_key][0]))
         for region in res_regionalBoundary:
-            regionBoundary = region['Geo_InfoList']
+            regionBoundary = region['Geo_InfoList']['value']
             interior = regionBoundary.intersects(bus_lonlat_point)
             if interior == True:
-                bus.update({'Bus_LACode': str(region['LACode_area'])})
-                bus.update({'Bus_LocatedRegionBoundary': region['Geo_InfoList']})
+                bus.update({'Bus_LACode': str(region['LACode_area']['value'])})
+                bus.update({'Bus_LocatedRegionBoundary': region['Geo_InfoList']['value']})
         if len(bus) == lengthBusDict:
             raise Exception('Cannot find the located region of the given bus node', bus, 'please check the lat-lon attribute of the bus.')      
     final_time = time.time_ns()
