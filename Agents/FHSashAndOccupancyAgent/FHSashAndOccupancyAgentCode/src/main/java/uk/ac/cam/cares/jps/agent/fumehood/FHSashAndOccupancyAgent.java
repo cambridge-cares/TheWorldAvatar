@@ -94,12 +94,14 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         
     }
 
-    /*
+    /**
      * Initialise agent
+     * @return successful initialisation message
      */
     private JSONObject runAgent() {
         QueryStore queryStore;
         Map<String, List<String>> map = new HashMap<>();
+
         try {
             loadTSClientConfigs(System.getenv("CLIENTPROPERTIES_01"),System.getenv("CLIENTPROPERTIES_02"));
         } catch (IOException e) {
@@ -112,8 +114,8 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         } catch (IOException e) {
             throw new JPSRuntimeException(QUERYSTORE_CONSTRUCTION_ERROR_MSG, e);
         }
-        map = queryStore.queryForFHandWFHDevices();
 
+        map = queryStore.queryForFHandWFHDevices();
         map.put("OccupancyIRIs", new ArrayList<>());
         map.put("SashOpeningIRIs", new ArrayList<>());
 
@@ -126,11 +128,6 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
             String IRI = queryStore.queryForSashOpening(map.get("FHandWFH").get(i));
             map.get("SashOpeningIRIs").add(IRI);
         }
-
-        LOGGER.info( map.get("FHandWFH").toString());
-        LOGGER.info( map.get("Label").toString());
-        LOGGER.info( map.get("OccupancyIRIs").toString());
-        LOGGER.info( map.get("SashOpeningIRIs").toString());
         
         setTsClientAndRDBClient(dbUsernameForOccupiedState, dbPasswordForOccupiedState, dbUrlForOccupiedState, bgUsername, bgPassword, sparqlUpdateEndpoint, sparqlQueryEndpoint);
 
@@ -152,7 +149,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         return msg;
     }
 
-            /**
+    /**
      * Handle GET /status route and return the status of the agent.
      * @return Status of the agent
      */
@@ -166,6 +163,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
     /**
      * Reads the parameters needed for the timeseries client
      * @param filepath Path to the properties file from which to read the parameters
+     * @param filepath2 Path to second properties file from which to read the parameters
      */
     private void loadTSClientConfigs(String filepath , String filepath2) throws IOException {
         // Check whether properties file exists at specified location
@@ -173,6 +171,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         if (!file.exists()) {
             throw new FileNotFoundException("No properties file found at specified filepath: " + filepath);
         }
+
         // Try-with-resource to ensure closure of input stream
         try (InputStream input = new FileInputStream(file)) {
 
@@ -219,6 +218,7 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         if (!file.exists()) {
             throw new FileNotFoundException("No properties file found at specified filepath: " + filepath2);
         }
+
         // Try-with-resource to ensure closure of input stream
         try (InputStream input = new FileInputStream(file)) {
 
@@ -245,6 +245,16 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         }
     }
 
+    /**
+     * set tsClient and RDBClient
+     * @param dbUsername username for accessing the postgreSQL database
+     * @param dbPassword password for accessing the postgreSQL database
+     * @param dbUrl jdbc URL for accessing the postgreSQL database
+     * @param bgUsername username for accessing an authentication enabled blazegraph
+     * @param bgPassword password for accessing an authentication enabled blazegraph
+     * @param sparqlUpdateEndpoint sparql endpoint for executing updates
+     * @param sparqlQueryEndpoint sparql endpoint for executing queries
+     */
     private void setTsClientAndRDBClient(String dbUsername, String dbPassword, String dbUrl, String bgUsername, String bgPassword, String sparqlUpdateEndpoint, String sparqlQueryEndpoint) {
         RemoteStoreClient kbClient = new RemoteStoreClient();
         kbClient.setQueryEndpoint(sparqlQueryEndpoint);
@@ -256,6 +266,10 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         RDBClient = new RemoteRDBStoreClient(dbUrl, dbUsername, dbPassword);
     }
 
+    /**
+     * Retrieve timeseries data for occupied state
+     * @param map map that consists of several keys where each key has its own List of Strings
+     */
     private Map<String, List<String>> getOccupiedStateTsData (Map<String, List<String>> map) {
         map.put("OccupiedStateTsData", new ArrayList<>());
 
@@ -276,6 +290,10 @@ public class FHSashAndOccupancyAgent extends JPSAgent {
         return map;
     }
 
+    /**
+     * Retrieve timeseries data for sash opening
+     * @param map map that consists of several keys where each key has its own List of Strings
+     */
     private Map<String, List<String>> getSashOpeningTsData (Map<String, List<String>> map) {
         map.put("SashOpeningTsData", new ArrayList<>());
 

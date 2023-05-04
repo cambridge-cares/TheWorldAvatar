@@ -13,7 +13,6 @@ import org.eclipse.rdf4j.sparqlbuilder.core.SparqlBuilder;
 import org.eclipse.rdf4j.sparqlbuilder.core.Variable;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.Queries;
 import org.eclipse.rdf4j.sparqlbuilder.core.query.SelectQuery;
-import org.eclipse.rdf4j.sparqlbuilder.graphpattern.GraphPatterns;
 import org.eclipse.rdf4j.sparqlbuilder.graphpattern.TriplePattern;
 import org.eclipse.rdf4j.sparqlbuilder.rdf.Iri;
 import org.json.JSONArray;
@@ -34,8 +33,7 @@ public class QueryStore {
      * Log messages
      */
     private static final String GETFHANDWFHDEVICES_ERROR_MSG = "Unable to query for fumehood and/or walkin-fumehood devices and their labels!";
-    private static final String GETOCCUPANCYSTATE_ERROR_MSG = "Unable to query for occupancy state for the following device IRI:";
-    private static final String GETSASHOPENING_ERROR_MSG = "Unable to query for sash opening percentage for the following device IRI:";
+
     /**
      * Namespaces for ontologies
      */
@@ -87,7 +85,7 @@ public class QueryStore {
         kbClient.setPassword(password);
     }
 
-    /*
+    /**
      * Query for all instances with rdf:type ontobms:FumeHood and ontobms:WalkInFumeHood
      */
     public Map<String, List<String>> queryForFHandWFHDevices() {
@@ -128,8 +126,9 @@ public class QueryStore {
     
     //SELECT ?OccupancyState WHERE { <IRIString> saref:hasState ?OccupancyState ;
     //                               ?OccupanyState rdf:type ontodevice:OccupancyState }
-    /*
-     * Query for the occupied state IRIs of all instances with rdf:type ontobms:FumeHood and ontobms:WalkInFumeHood
+    /**
+     * Query for the occupied state IRI
+     * @param IRI subject IRI that has a occupied state attached to it via saref:hasState
      */
     public String queryForOccupancyState(String IRI) {
         String result = null;
@@ -153,8 +152,9 @@ public class QueryStore {
         return result;
     }
 
-    /*
-     * Query for the sash opening IRIs  of all instances with rdf:type ontobms:FumeHood and ontobms:WalkInFumeHood
+    /**
+     * Query for the sash opening IRI
+     * @param IRI subject IRI that has a sash opening attached to it via ontobms:hasSashOpenPercentage
      */
     public String queryForSashOpening(String IRI) {
         String result = null;
