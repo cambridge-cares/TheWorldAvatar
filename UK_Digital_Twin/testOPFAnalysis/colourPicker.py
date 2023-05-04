@@ -53,8 +53,8 @@ colourHEXList_11class = [ ## eliminate the first colour, 6class
     '#de2d26', # '#a50f15',
     '#fb6a4a',
     '#fc9272',
-    '#FEEAE2',
     '#fcbba1',
+    '#FEEAE2',
     '#EEF8EC', # '#ffffff', ## white, for the middle is the middle is given
     '#c7e9c0',
     '#a1d99b',
