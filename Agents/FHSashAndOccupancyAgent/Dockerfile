@@ -23,6 +23,18 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
+# Copy in the properties file
+COPY ./config/tsClientForOccupiedState.properties /root/tsClientForOccupiedState.properties
+
+# Set the required environment variable
+ENV CLIENTPROPERTIES_01="/root/tsClientForOccupiedState.properties"
+
+# Copy in the properties file
+COPY ./config/tsClientForSashOpening.properties /root/tsClientForSashOpening.properties
+
+# Set the required environment variable
+ENV CLIENTPROPERTIES_02="/root/tsClientForSashOpening.properties"
+
 COPY --from=builder /root/FHSashAndOccupancyAgentCode/output/fh-sash-and-occupancy-agent##1.0.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
