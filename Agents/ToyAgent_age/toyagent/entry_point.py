@@ -37,9 +37,12 @@ def create_app():
         kg_url=QUERY_ENDPOINT,
         kg_update_url=UPDATE_ENDPOINT,      
         # Miscellaneous settings
-        logger_name='prod',
+        logger_name='dev',
         max_thread_monitor_async_derivations=1
     )
+
+    # Retrieve derivation client from derivation agent
+    deriv_client = agent.derivation_client
 
     agent.add_url_pattern('/', 'root', default, methods=['GET'])
 
