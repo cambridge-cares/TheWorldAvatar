@@ -328,7 +328,7 @@ class QueryData:
         except Exception as ex:
             raise KGException("Unable to query for bus node IRI!") from ex
 
-    def query_NTU_Buildings(query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
+    def query_PV_Panels(query_endpoint: str = QUERY_ENDPOINT, update_endpoint: str = UPDATE_ENDPOINT):
         try:
             kg_client = KGClient(query_endpoint, update_endpoint)
 
@@ -336,18 +336,20 @@ class QueryData:
                     create_sparql_prefix('powsys') + \
                     create_sparql_prefix('rdf') + \
                     create_sparql_prefix('rdfs') + \
-                    '''SELECT ?building ?name WHERE {
-                              ?entity  rdf:type  powreal:BusNode  .
-                              ?building powsys:hasBusNode ?entity.
-                              ?building rdfs:label ?name }'''
+                    create_sparql_prefix('ontocape') + \
+                    '''SELECT ?name ?PV  WHERE { ?entity  rdf:type  powreal:BusNode .
+                                           ?building powsys:hasBusNode ?entity .
+                                           ?building rdfs:label ?name .
+                                           ?building ontocape:contains ?PV. }'''
 
             response = kg_client.performQuery(query)
             if len(response) == 0:
-                raise KGException("Unable to query for any NTU buildings!")
+                raise KGException("Unable to query for any NTU PV panels!")
             for building in response:
                 print(building["name"])
-                print(building["building"])
+                print(building["PV"])
             return response
 
         except Exception as ex:
-            raise KGException("Unable to query for any NTU building IRI!") from ex
+            raise KGException("Unable to query for any NTU PV IRI!") from ex
+

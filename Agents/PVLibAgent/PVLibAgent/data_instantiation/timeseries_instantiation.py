@@ -52,12 +52,9 @@ class timeseries_instantiation:
     def link_to_NTU_KG(dataIRIs: list):
         kg_client = KGClient(query_endpoint=UPDATE_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
 
-        NTU_buildings = QueryData.query_NTU_Buildings(query_endpoint=UPDATE_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
+        NTU_PVs = QueryData.query_PV_Panels(query_endpoint=UPDATE_ENDPOINT, update_endpoint=UPDATE_ENDPOINT)
 
-        for building in NTU_buildings:
-            # Create IRI for current sensor
-            pgIRI = 'http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#' + 'PhotovoltaicGenerator_' + str(uuid.uuid4())
-            pvIRI = 'http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#' + 'PhotovoltaicPanel_' + str(uuid.uuid4())
+        for PV_Panel in NTU_PVs:
             gpIRI = 'http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#' + 'GeneratedPower_' + str(uuid.uuid4())
             measureIRI = 'http://www.ontology-of-units-of-measure.org/resource/om-2/' + 'Measure_' + str(uuid.uuid4())
             query = create_sparql_prefix('powreal') + \
@@ -67,15 +64,11 @@ class timeseries_instantiation:
                     create_sparql_prefix('ts') + \
                     create_sparql_prefix('rdf') + \
                     '''INSERT DATA { \
-                    <%s> ontocape:contains <%s> . \
-                    <%s> rdf:type powreal:PhotovoltaicGenerator . \
-                    <%s> ontocape:hasSubsystem <%s> . \
-                    <%s> rdf:type powreal:PhotovoltaicPanel . \
-                    <%s> powsys:hasPowerGenerated <%s> . \
+                    <%s> powsys:hasGeneratedPower <%s> . \
                     <%s> rdf:type powsys:GeneratedPower . \
                     <%s> om:hasValue <%s> . \
                     <%s> rdf:type om:Measure . \
                     <%s> ts:hasTimeSeries <%s> . }\
-                    ''' % (building['building'], pgIRI, pgIRI, pgIRI, pvIRI, pvIRI, pgIRI, gpIRI, gpIRI, gpIRI, measureIRI, measureIRI, measureIRI, dataIRIs[0])
+                    ''' % (PV_Panel['PV'], gpIRI, gpIRI, gpIRI, measureIRI, measureIRI, measureIRI, dataIRIs[0])
             kg_client.performUpdate(query)
 

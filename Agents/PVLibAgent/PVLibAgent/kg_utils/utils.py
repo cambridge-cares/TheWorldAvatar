@@ -41,7 +41,7 @@ PREFIXES = {
         's3n': 'https://w3id.org/s3n/',
         'powsys': 'http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#',
         'powreal': 'http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#',
-        'ontocape': 'http://www.theworldavatar.com/kg/ontocape/upper_level/system.owl#'
+        'ontocape': 'http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#'
 }
 
 
