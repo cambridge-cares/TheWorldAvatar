@@ -23,17 +23,11 @@ FROM tomcat:9.0 as agent
 
 WORKDIR /app
 
-# Copy in the properties file
-COPY ./config/tsClientForOccupiedState.properties /root/tsClientForOccupiedState.properties
+# Set the required environment variable
+ENV CLIENTPROPERTIES_01="/usr/local/tomcat/config/tsClientForOccupiedState.properties"
 
 # Set the required environment variable
-ENV CLIENTPROPERTIES_01="/root/tsClientForOccupiedState.properties"
-
-# Copy in the properties file
-COPY ./config/tsClientForSashOpening.properties /root/tsClientForSashOpening.properties
-
-# Set the required environment variable
-ENV CLIENTPROPERTIES_02="/root/tsClientForSashOpening.properties"
+ENV CLIENTPROPERTIES_02="/usr/local/tomcat/config/tsClientForSashOpening.properties"
 
 # Set the environment variable that points to where the email agent is located at
 ENV EMAIL_AGENT_URL="http://host.docker.internal:8080/email_agent"
