@@ -1,0 +1,39 @@
+#
+# Checks that the version of the DTVF has been updated.
+#
+# Author: Michael Hillman (mdhillman<@>cmclinnovations.com)
+#
+name: Check DTVF Version
+
+
+# Trigger this workflow during pull requests to the 'main' branch,
+# but ONLY when files within the DTVF source code are changed.
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - web/digital-twin-vis-framework/library/**
+
+
+# Job definitions
+jobs:
+
+  # Single job to run script
+  check-version:
+  
+    # Run on latest version of Ubuntu
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
+      # PRun bash script that checks the version
+      - name: Run version check script
+        working-directory: ./
+        run: |
+          chmod +x ./.github/scripts/dtvf/check-version.sh
+          ./check-version.sh
+  
