@@ -34,6 +34,7 @@ public class TBoxGenerationTest {
 	private final String SAMPLE_TBOX_CSV_TEMPLATE_FILE_6 = "sample-tbox-template-input-6.csv";
 	private final String SAMPLE_TBOX_CSV_TEMPLATE_FILE_7 = "sample-tbox-template-input-7.csv";
 	private final String SAMPLE_TBOX_CSV_TEMPLATE_FILE_8 = "sample-tbox-template-input-8.csv";
+	private final String SAMPLE_TBOX_CSV_TEMPLATE_FILE_9 = "sample-tbox-template-input-9.csv";
 
 	private final String REFERENCE_OWL_FILE_1 = "sample-tbox-template-input-1.owl";
 	private final String REFERENCE_OWL_FILE_2 = "sample-tbox-template-input-2.owl";
@@ -43,6 +44,7 @@ public class TBoxGenerationTest {
 	private final String REFERENCE_OWL_FILE_6 = "sample-tbox-template-input-6.owl";
 	private final String REFERENCE_OWL_FILE_7 = "sample-tbox-template-input-7.owl";
 	private final String REFERENCE_OWL_FILE_8 = "sample-tbox-template-input-8.owl";
+	private final String REFERENCE_OWL_FILE_9 = "sample-tbox-template-input-9.owl";
 
 	private final String FILE_EXTENSION_CSV = ".csv";
 	private final String FILE_EXTENSION_OWL = ".owl";
@@ -213,6 +215,26 @@ public class TBoxGenerationTest {
 		assertEquals(referenceOntology.getAxioms(), generatedOntology.getAxioms());		
 	}
 	
+	/**
+	 * This is to test if the Domain-Range creation with a mix of Union and Intersect are created correctly
+	 */
+	@Test
+	public void testSkipDomainRangeCreationWithUnionAndIntersectionMix(){
+		OWLOntology generatedOntology = generateOntology(SAMPLE_CSV_FILE_PATH+SAMPLE_TBOX_CSV_TEMPLATE_FILE_9);
+		if (generatedOntology == null) {
+			throw new JPSRuntimeException("The requested CSV file could not be converted into an ontology.");
+		}
+
+		OWLOntology referenceOntology = readReferenceOntology(REFERENCE_OWL_FILE_PATH+REFERENCE_OWL_FILE_9);
+		if (referenceOntology == null) {
+			throw new JPSRuntimeException("The requested reference ontology could not be read from the provided path.");
+		}
+		
+		assertEquals(referenceOntology.getAxiomCount(), generatedOntology.getAxiomCount());
+		assertEquals(referenceOntology.getAxioms(), generatedOntology.getAxioms());		
+	}
+
+
 	/**
 	 * Reads an ontology from a file located in the file system.
 	 * 

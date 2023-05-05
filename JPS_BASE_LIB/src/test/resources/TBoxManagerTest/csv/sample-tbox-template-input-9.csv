@@ -1,0 +1,28 @@
+Source,Type,Target,Relation,Domain,Range,Quantifier,Comment,Defined By,Label
+TestTBox,TBox,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,https://www.w3.org/2007/05/powder-s#hasIRI,,,,,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,
+TestTBox,TBox,1,http://www.w3.org/2002/07/owl#versionInfo,,,,,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,
+TestTBox,TBox,OntoKin is an ontology developed for representing chemical kinetic reaction mechanisms.,http://www.w3.org/2000/01/rdf-schema#comment,,,,,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,
+TestTBox,TBox,,http://www.w3.org/2002/07/owl#imports,,,,,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,
+A,Class,,,,,,Comment for A,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,A
+B,Class,A,IS-A,,,,Comment for B,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,B
+C,Class,B,IS-A,,,,Comment for C,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,C
+D,Class,,,,,,Comment for D,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,D
+E,Class,,,,,,Comment for E,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,E
+F,Class,,,,,,Comment for F,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,F
+G,Class,,,,,,Comment for G,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,G
+I,Class,,,,,,Comment for I,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,I
+J,Class,,,,,,Comment for J,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,J
+K,Class,,,,,,Comment for K,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,K
+L,Class,,,,,,Comment for L,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,L
+M,Class,,,,,,Comment for M,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,M
+N,Class,,,,,,Comment for N,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,N
+O,Class,,,,,,Comment for O,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,O
+X,Class,,,,,,Comment for X,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,X
+Y,Class,X,IS-A,,,,Comment for Y,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,Y
+Z,Class,Y,IS-A,,,,Comment for Z,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,Z
+has,Object Property,,,A,X,,Comment for A has X,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,has
+has,Object Property,,,B UNION D,Y UNION E,some,Comment for B has Y,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,has
+has,Object Property,,,C UNION F,Z,only,Comment for C has Z,http://www.theworldavatar.com/ontology/testtbox/TestTBox.owl,has
+hasR,Object Property,,,G,I INTERSECTION J,some,Comment for G hasR I Union J,,hasR
+hasRel,Object Property,,,K INTERSECTION L,M INTERSECTION N INTERSECTION O,only,,,hasRel
+hasRel,Object Property,,,K INTERSECTION L,M INTERSECTION N INTERSECTION O,some,,,hasRel
