@@ -399,7 +399,7 @@ public class OPFAgentTest {
     // dSbr_dV.py and gausspf.py in Pypower package should be replaced by 
     // files in opf-agent > python > pypower folder.
     @Test
-    public void testRunPythonScript() throws IOException {
+    public void testRunPythonScript() throws Exception {
         File baseMVAFile = tempFolder.newFile("testPy_baseMVA.txt");
         File busFile = tempFolder.newFile("testPy_bus.txt");
         File branchFile = tempFolder.newFile("testPy_branch.txt");
@@ -460,88 +460,83 @@ public class OPFAgentTest {
         String baseUrl = tempFolder.getRoot().getAbsolutePath();
 
         OPFAgent agent = new OPFAgent();
-        try {
-            agent.runPythonScript(script, baseUrl, fileNames);
+        agent.runPythonScript(script, baseUrl, fileNames);
 
-            // Check that OPF runs successfully with output status "Converged"
-            String fileName = baseUrl + "/testPy_outputStatus.txt";
-            BufferedReader input = new BufferedReader(new FileReader(fileName));
-            String last, line;
-            last = "";
-            while ((line = input.readLine()) != null) { 
-                last = line;
-            }
-            assertTrue(last.contains("Converged")); 
-                    
-            // Check that the output files are made
-            File branchOutFile = new File(baseUrl +"/testPy_outputBranchOPF.txt");
-            assertTrue(branchOutFile.exists());
-            File busOutFile = new File(baseUrl +"/testPy_outputBusOPF.txt");
-            assertTrue(busOutFile.exists());
-            File genOutFile = new File(baseUrl +"/testPy_outputGenOPF.txt");
-            assertTrue(genOutFile.exists());
-
-        	// Check that the number of rows are the same for inputs and outputs
-			List<String[]> branchIn = readResult(baseUrl, "testPy_branch.txt"); 
-			List<String[]> branchOut = readResult(baseUrl, "testPy_outputBranchOPF.txt");
-			assertEquals(branchIn.size(), branchOut.size());
-
-			List<String[]> busIn = readResult(baseUrl, "testPy_bus.txt"); 
-			List<String[]> busOut = readResult(baseUrl, "testPy_outputBusOPF.txt");
-			assertEquals(busIn.size(), busOut.size());
-
-			List<String[]> genIn = readResult(baseUrl, "testPy_gen.txt"); 
-			List<String[]> genOut = readResult(baseUrl, "testPy_outputGenOPF.txt");
-			assertEquals(genIn.size(), genOut.size());
-
-            // Check output OPF results of branches
-            String[] expectedBranchOutput = {"1	5.9180102141863367e-05	3.991747253512257e-05	2.9590051070931683e-05	1.9958736267561283e-05	3.5692047794689664e-05",
-            "2	7.402129132406954e-05	4.992797856036291e-05	3.701064566203477e-05	2.4963989280181453e-05	4.464290148614567e-05",
-            "3	0.00020488203840132724	0.00013819464820798155	0.00010244101920066362	6.909732410399078e-05	0.0001235661871759531",
-            "4	0.00043990307698940634	0.00029671830014213474	0.00021995153849470317	0.00014835915007106737	0.0002653094734380896",
-            "5	0.005768060851772838	0.003890605271620051	0.002884030425886419	0.0019453026358100256	0.003478769012499685",
-            "6	0.0003936048439138473	0.0002654897844219517	0.00019680242195692366	0.00013274489221097585	0.00023738660386848838",
-            "7	0.00011293772372396316	7.617743620198791e-05	5.646886186198158e-05	3.808871810099396e-05	6.81137490273773e-05",
-            "8	0.00217633516337723	0.0014679562714955408	0.001088167581688615	0.0007339781357477704	0.0013125671752690683",
-            "9	0.0006016202212425908	0.0004057978597456352	0.0003008101106212954	0.0002028989298728176	0.00036284252561618317",
-            "10	0.037702621209810605	0.03687784448858067	0.018851310604905303	0.018438922244290334	0.026369788870099053",
-            "11	0.011289757566546044	0.01104278476286813	0.005644878783273022	0.005521392381434065	0.007896228866212279",
-            "12	0.0024439142032758876	0.002390451529954929	0.0012219571016379438	0.0011952257649774645	0.001709310910135827",
-            "13	5.5380952839606534e-05	3.735491529407997e-05	2.7690476419803267e-05	1.8677457647039986e-05	3.340074712506673e-05",
-            "14	0.0004721922296472142	0.000318497598413639	0.0002360961148236071	0.0001592487992068195	0.000284783348325733"};
-            for (int i = 0; i < branchIn.size(); i++) {
-                assertEquals(expectedBranchOutput[i], branchOut.get(i)[0]);
-            }
-
-            // Check output OPF results of buses
-            String[] expectedBusOutput = {"1	0.9484393336941132	0.08693266395217579	0.0	0.0	0.14	0.1428286", 
-                                        "2	0.9486078372696072	0.0848537514911073	0.0	0.0	0.07	0.0714143", 
-                                        "3	0.9569541625173138	0.2050264292435832	0.0	0.0	0.07	0.0714143", 
-                                        "4	0.9679703457839625	0.07196194092738395	0.0	0.0	0.07	0.0714143", 
-                                        "5	0.9668970214279292	0.0849716632174654	0.0	0.0	0.0441	0.044991", 
-                                        "6	0.9499519353595163	0.13152814134731286	0.0	0.0	0.14	0.1428286", 
-                                        "7	0.9458284078648992	0.1824254008701606	0.0	0.0	0.07	0.0714143", 
-                                        "8	0.944516981204416	0.1986931782173225	0.0	0.0	0.0441	0.044991", 
-                                        "9	1.0	0.0	1.28819441147497	1.308476218318052	0.0	0.0", 
-                                        "10	0.9712828107953471	0.031968402501272586	0.0	0.0	0.0441	0.044991", 
-                                        "11	0.9566689392304171	0.049348233506373816	0.0	0.0	0.07	0.0714143", 
-                                        "12	0.9509046101111183	0.0565157973888409	0.0	0.0	0.14	0.1428286", 
-                                        "13	0.9499178289039322	0.06869120866760962	0.0	0.0	0.0441	0.044991", 
-                                        "14	0.9582313297055367	0.1893886646766468	0.0	0.0	0.14	0.1428286", 
-                                        "15	0.9560079249383326	0.21661168656280289	0.0	0.0	0.14	0.1428286"};
-            for (int i = 0; i < busIn.size(); i++) {
-                assertEquals(expectedBusOutput[i], busOut.get(i)[0]);
-            }
-            
-            // Check output OPF results of generators
-            String expectedGenOut = "1	1.28819441147497	1.308476218318052";
-            assertEquals(expectedGenOut, genOut.get(0)[0]);
-
-            input.close();
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+        // Check that OPF runs successfully with output status "Converged"
+        String fileName = baseUrl + "/testPy_outputStatus.txt";
+        BufferedReader input = new BufferedReader(new FileReader(fileName));
+        String last, line;
+        last = "";
+        while ((line = input.readLine()) != null) { 
+            last = line;
         }
+        assertTrue(last.contains("Converged")); 
+                    
+        // Check that the output files are made
+        File branchOutFile = new File(baseUrl +"/testPy_outputBranchOPF.txt");
+        assertTrue(branchOutFile.exists());
+        File busOutFile = new File(baseUrl +"/testPy_outputBusOPF.txt");
+        assertTrue(busOutFile.exists());
+        File genOutFile = new File(baseUrl +"/testPy_outputGenOPF.txt");
+        assertTrue(genOutFile.exists());
+
+    	// Check that the number of rows are the same for inputs and outputs
+		List<String[]> branchIn = readResult(baseUrl, "testPy_branch.txt"); 
+		List<String[]> branchOut = readResult(baseUrl, "testPy_outputBranchOPF.txt");
+		assertEquals(branchIn.size(), branchOut.size());
+
+		List<String[]> busIn = readResult(baseUrl, "testPy_bus.txt"); 
+		List<String[]> busOut = readResult(baseUrl, "testPy_outputBusOPF.txt");
+		assertEquals(busIn.size(), busOut.size());
+
+		List<String[]> genIn = readResult(baseUrl, "testPy_gen.txt"); 
+		List<String[]> genOut = readResult(baseUrl, "testPy_outputGenOPF.txt");
+		assertEquals(genIn.size(), genOut.size());
+
+        // Check output OPF results of branches
+        String[] expectedBranchOutput = {"1	5.9180102141863367e-05	3.991747253512257e-05	2.9590051070931683e-05	1.9958736267561283e-05	3.5692047794689664e-05",
+                                        "2	7.402129132406954e-05	4.992797856036291e-05	3.701064566203477e-05	2.4963989280181453e-05	4.464290148614567e-05",
+                                        "3	0.00020488203840132724	0.00013819464820798155	0.00010244101920066362	6.909732410399078e-05	0.0001235661871759531",
+                                        "4	0.00043990307698940634	0.00029671830014213474	0.00021995153849470317	0.00014835915007106737	0.0002653094734380896",
+                                        "5	0.005768060851772838	0.003890605271620051	0.002884030425886419	0.0019453026358100256	0.003478769012499685",
+                                        "6	0.0003936048439138473	0.0002654897844219517	0.00019680242195692366	0.00013274489221097585	0.00023738660386848838",
+                                        "7	0.00011293772372396316	7.617743620198791e-05	5.646886186198158e-05	3.808871810099396e-05	6.81137490273773e-05",
+                                        "8	0.00217633516337723	0.0014679562714955408	0.001088167581688615	0.0007339781357477704	0.0013125671752690683",
+                                        "9	0.0006016202212425908	0.0004057978597456352	0.0003008101106212954	0.0002028989298728176	0.00036284252561618317",
+                                        "10	0.037702621209810605	0.03687784448858067	0.018851310604905303	0.018438922244290334	0.026369788870099053",
+                                        "11	0.011289757566546044	0.01104278476286813	0.005644878783273022	0.005521392381434065	0.007896228866212279",
+                                        "12	0.0024439142032758876	0.002390451529954929	0.0012219571016379438	0.0011952257649774645	0.001709310910135827",
+                                        "13	5.5380952839606534e-05	3.735491529407997e-05	2.7690476419803267e-05	1.8677457647039986e-05	3.340074712506673e-05",
+                                        "14	0.0004721922296472142	0.000318497598413639	0.0002360961148236071	0.0001592487992068195	0.000284783348325733"};
+        for (int i = 0; i < branchIn.size(); i++) {
+            assertEquals(expectedBranchOutput[i], branchOut.get(i)[0]);
+        }
+
+        // Check output OPF results of buses
+        String[] expectedBusOutput = {"1	0.9484393336941132	0.08693266395217579	0.0	0.0	0.14	0.1428286", 
+                                    "2	0.9486078372696072	0.0848537514911073	0.0	0.0	0.07	0.0714143", 
+                                    "3	0.9569541625173138	0.2050264292435832	0.0	0.0	0.07	0.0714143", 
+                                    "4	0.9679703457839625	0.07196194092738395	0.0	0.0	0.07	0.0714143", 
+                                    "5	0.9668970214279292	0.0849716632174654	0.0	0.0	0.0441	0.044991", 
+                                    "6	0.9499519353595163	0.13152814134731286	0.0	0.0	0.14	0.1428286", 
+                                    "7	0.9458284078648992	0.1824254008701606	0.0	0.0	0.07	0.0714143", 
+                                    "8	0.944516981204416	0.1986931782173225	0.0	0.0	0.0441	0.044991", 
+                                    "9	1.0	0.0	1.28819441147497	1.308476218318052	0.0	0.0", 
+                                    "10	0.9712828107953471	0.031968402501272586	0.0	0.0	0.0441	0.044991", 
+                                    "11	0.9566689392304171	0.049348233506373816	0.0	0.0	0.07	0.0714143", 
+                                    "12	0.9509046101111183	0.0565157973888409	0.0	0.0	0.14	0.1428286", 
+                                    "13	0.9499178289039322	0.06869120866760962	0.0	0.0	0.0441	0.044991", 
+                                    "14	0.9582313297055367	0.1893886646766468	0.0	0.0	0.14	0.1428286", 
+                                    "15	0.9560079249383326	0.21661168656280289	0.0	0.0	0.14	0.1428286"};
+        for (int i = 0; i < busIn.size(); i++) {
+            assertEquals(expectedBusOutput[i], busOut.get(i)[0]);
+        }
+            
+        // Check output OPF results of generators
+        String expectedGenOut = "1	1.28819441147497	1.308476218318052";
+        assertEquals(expectedGenOut, genOut.get(0)[0]);
+
+        input.close();
     }
 
     @Test(expected = BadRequestException.class)
