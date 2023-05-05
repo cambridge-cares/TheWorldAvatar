@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,9 @@ import com.cmclinnovations.mods.modssimpleagent.datamodels.Algorithm;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Data;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.InputMetaData;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Request;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityResult;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityLabels;
+import com.cmclinnovations.mods.modssimpleagent.datamodels.SensitivityValues;
 import com.cmclinnovations.mods.modssimpleagent.datamodels.Variable;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -71,7 +75,7 @@ public class Simulation {
 
         load(request, modsBackend);
 
-        InputMetaData inputMetaData = InputMetaData.createInputMetaData(request, modsBackend, request.getAlgorithms().get(0));
+        InputMetaData inputMetaData = InputMetaData.createInputMetaData(request, modsBackend);
 
         return createSimulation(request, inputFile, modsBackend, inputMetaData);
     }
@@ -85,8 +89,7 @@ public class Simulation {
         BackendInputFile inputFile = new BackendInputFile(
                 modsBackend.getWorkingDir().resolve(BackendInputFile.FILENAME));
 
-        InputMetaData inputMetaData = InputMetaData.createInputMetaData(originalRequest, modsBackend,
-                originalRequest.getAlgorithms().get(0));
+        InputMetaData inputMetaData = InputMetaData.createInputMetaData(originalRequest, modsBackend);
 
         return createSimulation(originalRequest, inputFile, modsBackend, inputMetaData);
     }
@@ -105,6 +108,8 @@ public class Simulation {
                 return new MOOonly(request, inputFile, modsBackend, inputMetaData);
             case "Evaluate":
                 return new Evaluate(request, inputFile, modsBackend, inputMetaData);
+            case "Sensitivity":
+                return new Sensitivity(request, inputFile, modsBackend, inputMetaData);
             default:
                 throw new IllegalArgumentException("Unknown simulation type requested '" + simulationType + "'.");
         }
@@ -114,7 +119,8 @@ public class Simulation {
         return modsBackend.getSimDir().resolve(REQUEST_FILE_NAME).toFile();
     }
 
-    public Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend, InputMetaData inputMetaData) {
+    public Simulation(Request request, BackendInputFile inputFile, MoDSBackend modsBackend,
+            InputMetaData inputMetaData) {
         this.request = request;
         this.inputFile = inputFile;
         this.modsBackend = modsBackend;
@@ -204,8 +210,7 @@ public class Simulation {
     }
 
     protected Algorithm getAlgorithmOfType(String algType) {
-        return getRequest().getAlgorithms().stream().filter(alg -> alg.getType().equals(algType)).findFirst()
-                .orElseThrow();
+        return getRequest().getAlgorithmOfType(algType);
     }
 
     public String getFullCaseName(String caseGroupName, String caseName) {
@@ -328,26 +333,22 @@ public class Simulation {
     }
 
     public void save() {
-        request.getAlgorithms().stream()
-                .filter(algorithm -> algorithm.getSaveSurrogate() != null && algorithm.getSaveSurrogate())
-                .forEach(algorithm -> {
-                    Path saveDirectory = getSaveDirectory();
-                    Path surrogateDirectory = getSurrogateDirectory(modsBackend);
+        for (Algorithm algorithm : request.getAlgorithms()) {
+            if (algorithm.getSaveSurrogate() != null && algorithm.getSaveSurrogate()) {
+                Path saveDirectory = getSaveDirectory();
+                Path surrogateDirectory = getSurrogateDirectory(modsBackend);
 
-                    try {
-                        copyDirectory(surrogateDirectory, saveDirectory);
-                        inputMetaData.writeToCSV(saveDirectory.resolve(InputMetaData.DEFAULT_INPUT_INFO_FILE_NAME));
-                    } catch (FileGenerationException ex) {
-                        throw new ResponseStatusException(
-                                HttpStatus.NO_CONTENT,
-                                "Algorithm '" + algorithm.getName() + "' from job '" + getModsBackend().getJobID()
-                                        + "' failed to save.",
-                                ex);
-                    }
+                try {
+                    copyDirectory(surrogateDirectory, saveDirectory);
+                    inputMetaData.writeToCSV(saveDirectory.resolve(InputMetaData.DEFAULT_INPUT_INFO_FILE_NAME));
+                } catch (FileGenerationException ex) {
+                    throw new ResponseStatusException(HttpStatus.NO_CONTENT,
+                            "Job '" + getModsBackend().getJobID() + "' failed to save.", ex);
+                }
 
-                    LOGGER.info("Algorithm '{}' from job '{}' saved at '{}'.", algorithm.getName(),
-                            getModsBackend().getJobID(), saveDirectory.toAbsolutePath());
-                });
+                LOGGER.info("Job '{}' saved at '{}'.", getModsBackend().getJobID(), saveDirectory.toAbsolutePath());
+            }
+        }
     }
 
     public static Path getSurrogateDirectory(MoDSBackend modsBackend) {
@@ -360,35 +361,34 @@ public class Simulation {
     }
 
     public static void load(Request request, MoDSBackend modsBackend) {
-        request.getAlgorithms().stream()
-                .filter(algorithm -> algorithm.getSurrogateToLoad() != null)
-                .forEach(algorithm -> {
-                    try {
-                        Path surrogateDirectory = getSurrogateDirectory(modsBackend);
-                        Path loadDirectory = getLoadDirectory(algorithm);
+        for (Algorithm algorithm : request.getAlgorithms()) {
+            if (algorithm.getSurrogateToLoad() != null) {
+                try {
+                    Path surrogateDirectory = getSurrogateDirectory(modsBackend);
+                    Path loadDirectory = getLoadDirectory(algorithm);
 
-                        if (!Files.exists(loadDirectory)) {
-                            throw new IOException("File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
-                        }
+                    if (!Files.exists(loadDirectory)) {
+                        throw new IOException(
+                                "File '" + loadDirectory.toAbsolutePath() + "' could not be found to load.");
+                    }
 
-                        copyDirectory(loadDirectory, surrogateDirectory);
+                    copyDirectory(loadDirectory, surrogateDirectory);
 
-                        LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
+                    LOGGER.info("File '{}' loaded to '{}'.", loadDirectory.toAbsolutePath(),
                             surrogateDirectory.toAbsolutePath());
 
-                    } catch (IOException ex) {
-                        throw new ResponseStatusException(
-                                HttpStatus.NO_CONTENT,
-                                "Algorithm '" + algorithm.getName() + "' from job '" + modsBackend.getJobID()
-                                        + "' failed to load.",
-                                ex);
-                    }
-                });
+                } catch (IOException ex) {
+                    throw new ResponseStatusException(HttpStatus.NO_CONTENT,
+                            "Job '" + modsBackend.getJobID() + "' failed to load.", ex);
+                }
+            }
+        }
     }
 
     private static Path getLoadDirectory(Algorithm algorithm) {
-        return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH
-                .resolve(algorithm.getSurrogateToLoad()).resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+        return DEFAULT_SURROGATE_SAVE_DIRECTORY_PATH.resolve(algorithm.getSurrogateToLoad())
+                .resolve(DEFAULT_SURROGATE_ALGORITHM_NAME);
+
     }
 
     private static void copyDirectory(Path sourceDirectory, Path destinationDirectory) throws FileGenerationException {
@@ -421,15 +421,59 @@ public class Simulation {
         }
     }
 
-    public final Request getResponse() {
-        Request response = new Request();
-        response.setJobID(getJobID());
-        response.setSimulationType(request.getSimulationType());
-        return response;
+    public Request getResponse() {
+        return new Request(getJobID(), request.getSimulationType());
     }
 
     public Request getResults() {
         return getResponse();
+    }
+
+    public List<SensitivityResult> getSensitivity() {
+
+        String simDir = getModsBackend().getSimDir().toString();
+        String surrogateName = DEFAULT_SURROGATE_ALGORITHM_NAME;
+
+        String algName = getPrimaryAlgorithm().getType();
+        List<String> xVarNames = MoDSAPI.getXVarNames(simDir, algName);
+        List<String> yVarNames = MoDSAPI.getYVarNames(simDir, algName);
+
+        List<List<List<Double>>> allSens = MoDSAPI.getHDMRSensitivities(simDir, surrogateName);
+
+        int nX = xVarNames.size();
+        int nY = allSens.size();
+
+        // Compile the labels for each term. Only defined up to second order for now
+        List<List<String>> termLabels = new ArrayList<>(2);
+        termLabels.add(xVarNames);
+        List<String> secondOrderTermLabels = new ArrayList<>(nX * (nX - 1) / 2);
+        for (int ix1 = 0; ix1 < nX; ix1++) {
+            for (int ix2 = ix1 + 1; ix2 < nX; ix2++) {
+                secondOrderTermLabels.add(xVarNames.get(ix1) + " and " + xVarNames.get(ix2));
+            }
+        }
+        termLabels.add(secondOrderTermLabels);
+
+        // /*
+        // * The number of orders shown is limited by both the data and the term
+        // * labels defined above
+        // */
+        int nOrdersToShow = Math.min(allSens.get(0).size(), termLabels.size());
+
+        List<SensitivityResult> sensitivities = new ArrayList<>(nY);
+
+        for (int iy = 0; iy < nY; iy++) {
+            List<SensitivityLabels> sensitivityLabelsList = new ArrayList<>(nOrdersToShow);
+            List<SensitivityValues> sensitivityValuesList = new ArrayList<>(nOrdersToShow);
+            for (int iOrder = 0; iOrder < nOrdersToShow; iOrder++) {
+                // iOrder + 1 so ordering starts at 1 instead of 0
+                sensitivityLabelsList.add(new SensitivityLabels(iOrder + 1, termLabels.get(iOrder)));
+                sensitivityValuesList.add(new SensitivityValues(iOrder + 1, allSens.get(iy).get(iOrder)));
+            }
+            sensitivities.add(new SensitivityResult(yVarNames.get(iy), sensitivityLabelsList, sensitivityValuesList));
+        }
+
+        return sensitivities;
     }
 
     public InputMetaData getInputMetaData() {
