@@ -4,7 +4,7 @@
         "Name": "ontop",
         "TaskTemplate": {
             "ContainerSpec": {
-                "Image": "ontop/ontop-endpoint:4.2.1",
+                "Image": "fracorco/ontop-test:5.1.0-SNAPSHOT",
                 "Env": [
                     "ONTOP_MAPPING_FILE=/ontop.obda",
                     "ONTOP_DB_NAME=postgres",
