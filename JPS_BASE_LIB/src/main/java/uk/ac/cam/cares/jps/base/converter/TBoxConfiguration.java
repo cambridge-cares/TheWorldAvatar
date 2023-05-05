@@ -41,6 +41,42 @@ public class TBoxConfiguration {
 	
 	@Value("${tbox.inverse-of.relation}")
 	private String inverseOfRelation;
+		
+	@Value("${tbox.element.type.class}")
+	private String elementTypeClass;
+
+	@Value("${tbox.element.type.object.property}")
+	private String elementTypeObjectProperty;
+
+	@Value("${tbox.index.of.source.column}")
+	private int indexOfSourceColumn;
+
+	@Value("${tbox.index.of.type.column}")
+	private int indexOfTypeColumn;
+
+	@Value("${tbox.index.of.target.column}")
+	private int indexOfTargetColumn;
+	
+	@Value("${tbox.index.of.relation.column}")
+	private int indexOfRelationColumn;
+
+	@Value("${tbox.index.of.domain.column}")
+	private int indexOfDomainColumn;
+
+	@Value("${tbox.index.of.range.column}")
+	private int indexOfRangeColumn;
+
+	@Value("${tbox.index.of.quantifier.column}")
+	private int indexOfQuantifierColumn;
+
+	@Value("${tbox.index.of.comment.column}")
+	private int indexOfCommentColumn;
+
+	@Value("${tbox.index.of.defined.by.column}")
+	private int indexOfDefinedByColumn;
+
+	@Value("${tbox.index.of.label.column}")
+	private int indexOfLabelColumn;
 	
 	@Value("${tbox.data.of.publication}")
 	private String annotationPropertyDate;
@@ -131,6 +167,102 @@ public class TBoxConfiguration {
 
 	public void setInverseOfRelation(String inverseOfRelation) {
 		this.inverseOfRelation = inverseOfRelation;
+	}
+	
+	public String getElementTypeClass() {
+		return elementTypeClass;
+	}
+
+	public void setElementTypeClass(String elementTypeClass) {
+		this.elementTypeClass = elementTypeClass;
+	}
+
+	public String getElementTypeObjectProperty() {
+		return elementTypeObjectProperty;
+	}
+
+	public void setElementTypeObjectProperty(String elementTypeObjectProperty) {
+		this.elementTypeObjectProperty = elementTypeObjectProperty;
+	}
+
+	public int getIndexOfSourceColumn() {
+		return indexOfSourceColumn;
+	}
+
+	public void setIndexOfSourceColumn(int indexOfSourceColumn) {
+		this.indexOfSourceColumn = indexOfSourceColumn;
+	}
+
+	public int getIndexOfTypeColumn() {
+		return indexOfTypeColumn;
+	}
+
+	public void setIndexOfTypeColumn(int indexOfTypeColumn) {
+		this.indexOfTypeColumn = indexOfTypeColumn;
+	}
+	
+	public int getIndexOfTargetColumn() {
+		return indexOfTargetColumn;
+	}
+
+	public void setIndexOfTargetColumn(int indexOfTargetColumn) {
+		this.indexOfTargetColumn = indexOfTargetColumn;
+	}
+
+	public int getIndexOfRelationColumn() {
+		return indexOfRelationColumn;
+	}
+
+	public void setIndexOfRelationColumn(int indexOfRelationColumn) {
+		this.indexOfRelationColumn = indexOfRelationColumn;
+	}
+
+	public int getIndexOfDomainColumn() {
+		return indexOfDomainColumn;
+	}
+
+	public void setIndexOfDomainColumn(int indexOfDomainColumn) {
+		this.indexOfDomainColumn = indexOfDomainColumn;
+	}
+
+	public int getIndexOfRangeColumn() {
+		return indexOfRangeColumn;
+	}
+
+	public void setIndexOfRangeColumn(int indexOfRangeColumn) {
+		this.indexOfRangeColumn = indexOfRangeColumn;
+	}
+
+	public int getIndexOfQuantifierColumn() {
+		return indexOfQuantifierColumn;
+	}
+
+	public void setIndexOfQuantifierColumn(int indexOfQuantifierColumn) {
+		this.indexOfQuantifierColumn = indexOfQuantifierColumn;
+	}
+
+	public int getIndexOfCommentColumn() {
+		return indexOfCommentColumn;
+	}
+
+	public void setIndexOfCommentColumn(int indexOfCommentColumn) {
+		this.indexOfCommentColumn = indexOfCommentColumn;
+	}
+
+	public int getIndexOfDefinedByColumn() {
+		return indexOfDefinedByColumn;
+	}
+
+	public void setIndexOfDefinedByColumn(int indexOfDefinedByColumn) {
+		this.indexOfDefinedByColumn = indexOfDefinedByColumn;
+	}
+
+	public int getIndexOfLabelColumn() {
+		return indexOfLabelColumn;
+	}
+
+	public void setIndexOfLabelColumn(int indexOfLabelColumn) {
+		this.indexOfLabelColumn = indexOfLabelColumn;
 	}
 
 	public String getAnnotationPropertyDate() {

@@ -1,0 +1,21 @@
+{
+  "ServiceSpec": {
+    "Name": "bms-query-agent",
+    "TaskTemplate": {
+      "ContainerSpec": {
+        "Image": "docker.io/library/bms-query-agent:1.0.0",
+        "Configs": [
+          {
+            "ConfigName": "blazegraph"
+          }
+        ]
+      }
+    }
+  },
+  "endpoints": {
+    "ui": {
+      "url": "http://localhost:8080/bms-query-agent/",
+      "externalPath": "/bms-query-agent/"
+    }
+  }
+}

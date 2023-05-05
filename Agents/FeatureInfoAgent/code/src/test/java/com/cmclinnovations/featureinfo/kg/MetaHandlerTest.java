@@ -123,8 +123,7 @@ public class MetaHandlerTest {
             handler.setClient(rsClient);
 
             // Respond to the metadata query with some fake data
-            when(rsClient.executeFederatedQuery(
-                ArgumentMatchers.anyList(),
+            when(rsClient.executeQuery(
                 eq("SAMPLE-QUERY")))
                 .thenReturn(
                     new org.json.JSONArray("[{\"Property\":\"PropertyOne\",\"Value\":\"ValueOne\"},{\"Property\":\"PropertyTwo\",\"Value\":\"ValueTwo\"}]")
