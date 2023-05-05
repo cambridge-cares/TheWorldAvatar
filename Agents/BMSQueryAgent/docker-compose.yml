@@ -1,0 +1,8 @@
+version: "3.8"
+
+services:
+  bms-query-agent:
+    image: bms-query-agent:1.0.0
+    build: .
+    configs:
+      - blazegraph

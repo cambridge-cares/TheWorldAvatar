@@ -17,7 +17,7 @@ services:
       # For details, see: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_BASE_LIB/python_derivation_agent/pyderivationagent/conf/agent_conf.py
       - ONTOAGENT_SERVICE_IRI=https://www.theworldavatar.com/resource/agents/Service__KL_AvgSqmPrice/Service
       # Host and port of ONTOAGENT_OPERATION_HTTP_URL should match port specified in `port` node below
-      - ONTOAGENT_OPERATION_HTTP_URL=http://localhost:5011/AvgSqmPrice
+      - ONTOAGENT_OPERATION_HTTP_URL=http://host.docker.internal:5011/AvgSqmPrice
       - DERIVATION_INSTANCE_BASE_URL=https://www.theworldavatar.com/kg/derivation/
       - DERIVATION_PERIODIC_TIMESCALE=604800
       - REGISTER_AGENT=true
@@ -34,6 +34,10 @@ services:
       - LOG4J_FORMAT_MSG_NO_LOOKUPS=true
     ports:
       - "5011:5000"
+    # Enable unlimited request line length to allow for large sets of derivation inputs
+    # (details: https://docs.gunicorn.org/en/stable/settings.html#limit-request-line)
+    # NOTE: This should be used with caution, and only commented out if required/expected
+    #entrypoint: ["gunicorn", "--bind", "0.0.0.0:5000", "avgsqmpriceagent:create_app()", "--preload", "--limit-request-line", "0"]
     volumes:
       - logs:/root/.jps
     configs:

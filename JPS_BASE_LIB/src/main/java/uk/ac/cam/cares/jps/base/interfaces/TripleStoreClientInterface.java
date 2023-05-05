@@ -4,7 +4,7 @@ import org.apache.jena.query.Query;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.update.UpdateRequest;
 import org.json.JSONArray;
-import uk.ac.cam.cares.jps.base.tools.CloningTool;
+import uk.ac.cam.cares.jps.base.tools.cloning.CloningTool;
 
 /**
  * This interface is to be implemented by store clients

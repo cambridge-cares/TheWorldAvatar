@@ -1,6 +1,6 @@
 """Root package info."""
 
-__version__ = '1.0.0.-SNAPSHOT'
+__version__ = '1.0.1'
 __author__ = 'Andreas Eibeck, Daniel Nurkowski, Angiras Menon, Jiaru Bai'
 __author_email__ = ''
 __license__ = 'Apache-2.0'

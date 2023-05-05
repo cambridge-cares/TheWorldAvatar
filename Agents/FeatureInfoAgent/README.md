@@ -1,10 +1,12 @@
 # Feature Info Agent
 
-This Feature Info Agent (FIA) acts as a single access point for [DTVF Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) to query for both meta and timeseries data of an individual feature (i.e. a single geographical location) before display within the visualisation's side panel.
+This Feature Info Agent (FIA) acts as a single access point for [DTVF Visualisations](https://github.com/cambridge-cares/TheWorldAvatar/wiki/Digital-Twin-Visualisations) to query for both meta and time series data of an individual feature (i.e. a single geographical location) before display within the side panel of the visualisation.
+
+The current version of the FIA is v2.0.1.
 
 ## Overview
 
-The FIA is a relatiely simple HTTP Agent built using the JPS Base Lib's agent framework. When a new request is received, the internal process proceeds as follows:
+The FIA is a relatively simple HTTP agent built using the JPS Base Lib's agent framework. When a new request is received, the internal process proceeds as follows:
 
 1. Check if the configuration has been loaded.
    1. If not, then load it.
@@ -32,7 +34,8 @@ The FIA is a relatiely simple HTTP Agent built using the JPS Base Lib's agent fr
 
 Note that the agent's configuration file is read and its contents cached when the system first boots (meaning any changes to the file will require a restart), but the individual query files are read as-needed (i.e. once a request has been recieved) and are not currently cached (meaning any changes to these will take effect upon subsequent requests without the requirement for a restart).
 
-It's also worth noting that in the current version of the FIA, any queries to the knowledge graphs are sent to all discovered namespace endpoints via federation. Whilst this will marginally increase processing times, these queries should be pretty quick, and shouldn't be triggered too often, so the risk of delay is hopefully less than the benefit of not having to specify the endpoint beforehand.
+If an `endpoint` parameter is sent to the FIA, that parameter is assumed to be a Blazegraph endpoint and will be the only endpoint used when querying for the class type of an IRI and the subsequent metadata. If this parameter is missing, then the FIA will federate those queries across all namespace endpoints within the current stack's Blazegraph service.
+
 
 ## Restrictions
 
@@ -130,6 +133,7 @@ To build the Agent image and deploy it to the spun up stack, please run the foll
 
 # Build the agent image
 bash ./stack.sh build
+
 # Deploy the agent
 bash ./stack.sh start <STACK_NAME>
 
@@ -142,3 +146,15 @@ It is worth noting that the docker compose setup for this agent creates a bind m
 <!-- Links -->
 [queries]: queries
 [OntoEMS]: https://github.com/cambridge-cares/TheWorldAvatar/blob/main/JPS_Ontology/ontology/ontoems/OntoEMS.owl
+
+# Automated actions
+
+The FIA is currently set up with two automated GitHub actions:
+
+- *Test the FeatureInfoAgent*:
+  - Only runs when files within the agent have changed AND on commits that are part of a PR to the main branch
+  - Tests the FIA by running its unit tests and compiling a Docker image (which is NOT pushed)
+  
+- *Push the FeatureInfoAgent*:
+  - Only runs when files within the agent are changed AND on the commit it on the main branch (i.e. after a PR is approved)
+  - Builds the FIA's docker image (inc. running the unit tests) AND pushed it to the TWA GitHub image registry

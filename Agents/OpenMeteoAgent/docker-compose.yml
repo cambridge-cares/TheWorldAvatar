@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  openmeteo_agent:
+    image: openmeteo_agent:1.1.0
+    build: .
+    container_name: openmeteo_agent
+    environment:
+      LOG4J_FORMAT_MSG_NO_LOOKUPS: "true"
+    ports:
+      - "10101:8080"
+
+    volumes:
+      - external_maven_repo_openmeteo:/root/.m2
+
+
+volumes:
+  external_maven_repo_openmeteo:
+    name: "external_maven_repo_openmeteo"
