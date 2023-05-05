@@ -62,7 +62,7 @@ $('document').ready(function(){
 
 var scriptURL = document.currentScript.src;
 var scriptDir = scriptURL.substring(0, scriptURL.lastIndexOf("/") + 1);
-var imageDir = "/user/images/";
+var imageDir = "/static/img/";
 
 
 // Type variable was missing, have added with value when last present.
@@ -151,7 +151,7 @@ function pipeQuestion(question) {
 	Resets the results containers with default content.
 */
 function resetResults() {
-	let spinner = imageDir + "spinner.svg";
+	let spinner = imageDir + "spinner.gif";
 	let html = "<img src=\"" + spinner + "\" style=\"vertical-align: middle;\" width=\"22px\">  Loading, please wait...";
 
 	let chatbotResults = document.getElementById("chatbot-results");
@@ -172,7 +172,7 @@ function askQuestion() {
 	resetResults();
     $("#chart_div").html("");
 
-	let spinner = imageDir + "spinner.svg";
+	let spinner = imageDir + "spinner.gif";
 
 	// Make the ask button into a loading spinner
 	let askButton = document.getElementById("ask-button");
