@@ -35,6 +35,9 @@ COPY ./config/tsClientForSashOpening.properties /root/tsClientForSashOpening.pro
 # Set the required environment variable
 ENV CLIENTPROPERTIES_02="/root/tsClientForSashOpening.properties"
 
+# Set the environment variable that points to where the email agent is located at
+ENV EMAIL_AGENT_URL="http://host.docker.internal:8080/email_agent"
+
 COPY --from=builder /root/FHSashAndOccupancyAgentCode/output/fh-sash-and-occupancy-agent##1.0.0.war $CATALINA_HOME/webapps/
 
 # Start the Tomcat server
